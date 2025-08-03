@@ -16,6 +16,21 @@ class WidgetTree extends StatelessWidget {
         title: const Text('Later', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.green,
+        actions: [
+          IconButton(
+            onPressed: () {
+              isDarkModeNotifier.value = !isDarkModeNotifier.value;
+            },
+            icon: ValueListenableBuilder(
+              valueListenable: isDarkModeNotifier,
+              builder: (context, isDarkMode, child) {
+                return isDarkMode
+                    ? Icon(Icons.light_mode)
+                    : Icon(Icons.dark_mode);
+              },
+            ),
+          ),
+        ],
       ),
       body: ValueListenableBuilder(
         valueListenable: selectedPageNotifier,
