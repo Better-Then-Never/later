@@ -11,32 +11,13 @@ class WidgetTree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: isDarkModeNotifier,
-      builder: (context, isDarkMode, child) {
+    return ValueListenableBuilder<int>(
+      valueListenable: selectedPageNotifier,
+      builder: (context, selectedPage, child) {
         return Scaffold(
-          appBar: AppBar(
-            title: Text('Later', style: TextStyle(color: isDarkMode ? Colors.white : Colors.black)),
-            centerTitle: true,
-            backgroundColor: isDarkMode ? const Color.fromARGB(217, 1, 14, 49) : Colors.blueAccent[100],
-            actions: [
-              IconButton(
-                onPressed: () {
-                  isDarkModeNotifier.value = !isDarkModeNotifier.value;
-                },
-                icon: isDarkMode
-                    ? Icon(Icons.light_mode)
-                    : Icon(Icons.dark_mode),
-              ),
-            ],
-          ),
-          body: ValueListenableBuilder(
-            valueListenable: selectedPageNotifier,
-            builder: (context, selectedPage, child) {
-              return pages.elementAt(selectedPage);
-            },
-          ),
-          bottomNavigationBar: NavbarWidget(),
+          backgroundColor: Color(0xFFF6F6F6),
+          body: pages[selectedPage],
+          bottomNavigationBar: const NavbarWidget(),
         );
       },
     );
