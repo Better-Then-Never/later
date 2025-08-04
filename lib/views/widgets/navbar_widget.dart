@@ -32,42 +32,52 @@ class NavbarWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildIcon(
-              0,
-              'assets/images/icons/navbar/icon-map.png',
-              NAVBAR_ICON_HEIGHT,
-            ),
-            _buildIcon(
-              1,
-              'assets/images/icons/navbar/icon-history.png',
-              NAVBAR_ICON_HEIGHT,
-            ),
-            _buildIcon(
-              2,
-              'assets/images/icons/navbar/icon-add.png',
-              NAVBAR_ICON_HEIGHT,
-            ),
-            _buildIcon(
-              3,
-              'assets/images/icons/navbar/icon-messages.png',
-              NAVBAR_ICON_HEIGHT,
-            ),
-            _buildIcon(
-              4,
-              'assets/images/icons/navbar/icon-profile.png',
-              NAVBAR_ICON_HEIGHT,
-            ),
+            _buildIcon(0, 'assets/images/icons/navbar/icon-map.png'),
+            _buildIcon(1, 'assets/images/icons/navbar/icon-history.png'),
+            _buildAddIcon(context, 'assets/images/icons/navbar/icon-add.png'),
+            _buildIcon(2, 'assets/images/icons/navbar/icon-messages.png'),
+            _buildIcon(3, 'assets/images/icons/navbar/icon-profile.png'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildIcon(int index, String assetPath, double height) {
+  Widget _buildIcon(int index, String assetPath) {
     final isSelected = index == selectedIndex;
+
     return GestureDetector(
-      onTap: () => onItemTapped(index),
-      child: Image.asset(assetPath, height: isSelected ? height * 1.2 : height),
+      onTap: () {
+        onItemTapped(index);
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        height: NAVBAR_ICON_HEIGHT * (isSelected ? 1.2 : 1.0),
+        width: NAVBAR_ICON_HEIGHT * (isSelected ? 1.2 : 1.0),
+        child: TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 100),
+          tween: Tween(begin: 1.0, end: 1.0),
+          builder: (context, scale, child) {
+            return AnimatedScale(
+              scale: isSelected ? 1.1 : 1.0,
+              duration: const Duration(milliseconds: 10),
+              curve: Curves.easeInOut,
+              child: child,
+            );
+          },
+          child: Image.asset(assetPath),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddIcon(BuildContext context, String assetPath) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/camera');
+      },
+      child: Image.asset(assetPath, height: NAVBAR_ICON_HEIGHT * 1.5),
     );
   }
 }
