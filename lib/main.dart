@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:later/data/notifiers.dart';
 import 'package:later/views/widget_tree.dart';
 import 'package:later/views/pages/welcome_page.dart';
+import 'package:later/views/pages/camera_page.dart';
 
 void main() {
   runApp(const Application());
@@ -17,6 +17,7 @@ class Application extends StatelessWidget {
       routes: {
         '/widgetTree': (context) => const WidgetTree(),
         '/welcome': (context) => const WelcomePage(),
+        '/camera': (context) => const CameraPage(),
       },
       home: WidgetTree(),
       theme: ThemeData(
