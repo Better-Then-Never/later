@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const double NAVBAR_ICON_HEIGHT = 46.0;
+const double navbarIconHeight = 46.0;
 
 class NavbarWidget extends StatelessWidget {
   final int selectedIndex;
@@ -53,8 +53,8 @@ class NavbarWidget extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        height: NAVBAR_ICON_HEIGHT * (isSelected ? 1.2 : 1.0),
-        width: NAVBAR_ICON_HEIGHT * (isSelected ? 1.2 : 1.0),
+        height: navbarIconHeight * (isSelected ? 1.2 : 1.0),
+        width: navbarIconHeight * (isSelected ? 1.2 : 1.0),
         child: TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 100),
           tween: Tween(begin: 1.0, end: 1.0),
@@ -77,7 +77,7 @@ class NavbarWidget extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(context, '/camera');
       },
-      child: Image.asset(assetPath, height: NAVBAR_ICON_HEIGHT * 1.5),
+      child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
     );
   }
 }
