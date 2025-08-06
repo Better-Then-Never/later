@@ -19,14 +19,13 @@ class _RegistrationInputFieldState extends State<RegistrationInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 325,
       height: 55,
       child: TextField(
         obscureText: widget.isTextHidden && isObscured,
         style: TextStyle(fontSize: 20.0),
         decoration: InputDecoration(
-          // contentPadding: EdgeInsets.only(left: 22.5, top: 12.5, bottom: 12.5),
           hintText: widget.textHint,
           suffixIcon: widget.isTextHidden
               ? IconButton(
