@@ -3,6 +3,7 @@ import 'package:later/views/pages/login_page.dart';
 import 'package:later/views/widget_tree.dart';
 import 'package:later/views/pages/welcome_page.dart';
 import 'package:later/views/pages/camera_page.dart';
+import 'package:later/views/pages/signup_page.dart';
 
 void main() {
   runApp(const Application());
@@ -20,6 +21,7 @@ class Application extends StatelessWidget {
         '/welcome': (context) => const WelcomePage(),
         '/camera': (context) => const CameraPage(),
         '/loginPage': (context) => const LoginPage(),
+        '/signupPage': (context) => const SignupPage(),
       },
       home: WelcomePage(),
       theme: ThemeData(
