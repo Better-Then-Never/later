@@ -11,31 +11,54 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+class _MapPageState extends State<MapPage>
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late GoogleMapController controller;
   StreamSubscription<Position>? positionStream;
 
   LatLng? currentLatLng;
 
+  bool locationDenied = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     initialize();
-    startLocationUpdates();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    positionStream?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed && locationDenied) {
+      final status = await Permission.location.status;
+      if (status.isGranted) {
+        setState(() {
+          locationDenied = false;
+        });
+        initialize();
+      }
+    }
   }
 
   @override
   bool get wantKeepAlive => true;
 
   Future<void> initialize() async {
-    // Request permission
     final status = await Permission.location.request();
     if (!status.isGranted) {
-      debugPrint("Location permission denied");
+      setState(() {
+        locationDenied = true;
+      });
       return;
     }
 
-    // Get current location
     final position = await Geolocator.getCurrentPosition(
       locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -46,6 +69,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     setState(() {
       currentLatLng = LatLng(position.latitude, position.longitude);
     });
+
+    startLocationUpdates();
   }
 
   void startLocationUpdates() {
@@ -67,6 +92,24 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    if (locationDenied) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Location permission is required to use the map."),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                openAppSettings();
+              },
+              child: const Text("Open App Settings"),
+            ),
+          ],
+        ),
+      );
+    }
 
     if (currentLatLng == null) {
       return const Center(child: CircularProgressIndicator());
