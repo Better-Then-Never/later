@@ -22,10 +22,10 @@ class WidgetTree extends StatelessWidget {
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
         return Scaffold(
-          backgroundColor: Color(0xFFF6F6F6),
+          backgroundColor: const Color(0xFFF6F6F6),
           body: Stack(
             children: [
-              pages[selectedPage],
+              IndexedStack(index: selectedPage, children: pages),
               Positioned(
                 left: 0,
                 right: 0,
