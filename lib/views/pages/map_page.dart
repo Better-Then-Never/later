@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -10,17 +11,23 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   late GoogleMapController controller;
+  StreamSubscription<Position>? positionStream;
+
   LatLng? currentLatLng;
 
   @override
   void initState() {
     super.initState();
-    _initialize();
+    initialize();
+    startLocationUpdates();
   }
 
-  Future<void> _initialize() async {
+  @override
+  bool get wantKeepAlive => true;
+
+  Future<void> initialize() async {
     // Request permission
     final status = await Permission.location.request();
     if (!status.isGranted) {
@@ -38,8 +45,21 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  void startLocationUpdates() {
+    positionStream =
+        Geolocator.getPositionStream(
+          locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+        ).listen((Position position) {
+          setState(() {
+            currentLatLng = LatLng(position.latitude, position.longitude);
+          });
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     if (currentLatLng == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -52,6 +72,7 @@ class _MapPageState extends State<MapPage> {
       },
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
+      compassEnabled: false,
       zoomControlsEnabled: false,
       mapToolbarEnabled: false,
     );
