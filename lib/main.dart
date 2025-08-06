@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/login_page.dart';
 import 'package:later/views/widget_tree.dart';
 import 'package:later/views/pages/welcome_page.dart';
 import 'package:later/views/pages/camera_page.dart';
@@ -18,6 +19,7 @@ class Application extends StatelessWidget {
         '/widgetTree': (context) => const WidgetTree(),
         '/welcome': (context) => const WelcomePage(),
         '/camera': (context) => const CameraPage(),
+        '/loginPage': (context) => const LoginPage(),
       },
       home: WidgetTree(),
       theme: ThemeData(

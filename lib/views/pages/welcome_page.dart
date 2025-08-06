@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/login_page.dart';
+
+List<Widget> pages = [const LoginPage()];
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -67,7 +70,7 @@ class WelcomePage extends StatelessWidget {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/widgetTree');
+                            Navigator.pushNamed(context, '/loginPage');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF56C92E),
