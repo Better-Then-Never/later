@@ -17,6 +17,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   LatLng? currentLatLng;
 
+  bool locationDenied = false;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +32,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     // Request permission
     final status = await Permission.location.request();
     if (!status.isGranted) {
-      debugPrint("Location permission denied");
+      setState(() {
+        locationDenied = true;
+      });
       return;
     }
 
@@ -68,6 +72,24 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    if (locationDenied) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Location permission is required to use the map."),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                openAppSettings(); // from permission_handler
+              },
+              child: const Text("Open App Settings"),
+            ),
+          ],
+        ),
+      );
+    }
 
     if (currentLatLng == null) {
       return const Center(child: CircularProgressIndicator());
