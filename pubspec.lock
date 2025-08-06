@@ -234,8 +234,6 @@ packages:
     version: "0.0.0"
   geoclue:
     dependency: transitive
-  http:
-    dependency: "direct main"
     description:
       name: geoclue
       sha256: c2a998c77474fc57aa00c6baa2928e58f4b267649057a1c76738656e9dbd2a7f
