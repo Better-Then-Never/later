@@ -135,7 +135,11 @@ class LoginPage extends StatelessWidget {
                                 overlayColor: Colors.transparent,
                               ),
                               onPressed: () {
-                                // TODO: Push to SignUp page
+                               Navigator.pushReplacementNamed(
+                                context,
+                                '/signupPage',
+                                // TODO: Add signup
+                              );
                               },
                               child: Text(
                                 "Sign Up",
