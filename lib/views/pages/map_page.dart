@@ -11,7 +11,8 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
+class _MapPageState extends State<MapPage>
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   late GoogleMapController controller;
   StreamSubscription<Position>? positionStream;
 
@@ -22,14 +23,34 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     initialize();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    positionStream?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed && locationDenied) {
+      final status = await Permission.location.status;
+      if (status.isGranted) {
+        setState(() {
+          locationDenied = false;
+        });
+        initialize();
+      }
+    }
   }
 
   @override
   bool get wantKeepAlive => true;
 
   Future<void> initialize() async {
-    // Request permission
     final status = await Permission.location.request();
     if (!status.isGranted) {
       setState(() {
@@ -38,7 +59,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       return;
     }
 
-    // Get current location
     final position = await Geolocator.getCurrentPosition(
       locationSettings: LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -82,7 +102,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
-                openAppSettings(); // from permission_handler
+                openAppSettings();
               },
               child: const Text("Open App Settings"),
             ),
