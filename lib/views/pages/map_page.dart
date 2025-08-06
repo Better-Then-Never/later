@@ -30,7 +30,10 @@ class _MapPageState extends State<MapPage> {
 
     // Get current location
     final position = await Geolocator.getCurrentPosition(
-      locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
+      locationSettings: LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      ),
     );
 
     setState(() {
