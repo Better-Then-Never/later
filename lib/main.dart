@@ -21,12 +21,13 @@ class Application extends StatelessWidget {
         '/camera': (context) => const CameraPage(),
         '/loginPage': (context) => const LoginPage(),
       },
-      home: WidgetTree(),
+      home: WelcomePage(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.green,
           brightness: Brightness.light,
         ),
+        fontFamily: "Irina",
       ),
     );
   }
