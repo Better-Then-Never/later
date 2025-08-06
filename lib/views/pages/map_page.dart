@@ -45,15 +45,20 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  void startLocationUpdates() {
-    positionStream =
-        Geolocator.getPositionStream(
-          locationSettings: LocationSettings(accuracy: LocationAccuracy.high),
-        ).listen((Position position) {
-          setState(() {
-            currentLatLng = LatLng(position.latitude, position.longitude);
-          });
+ void startLocationUpdates() {
+    positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10, // Only update when moved 10 meters
+        timeLimit: Duration(seconds: 10), // Limit update frequency
+      ),
+    ).listen((Position position) {
+      if (mounted) {
+        setState(() {
+          currentLatLng = LatLng(position.latitude, position.longitude);
         });
+      }
+    });
   }
 
   @override
