@@ -21,7 +21,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   void initState() {
     super.initState();
     initialize();
-    startLocationUpdates();
   }
 
   @override
@@ -46,6 +45,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     setState(() {
       currentLatLng = LatLng(position.latitude, position.longitude);
     });
+
+    startLocationUpdates();
   }
 
   void startLocationUpdates() {
