@@ -71,7 +71,12 @@ class LoginPage extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 25),
-                          SubmitButton(buttonText: 'Log In'),
+                          SubmitButton(
+                            buttonText: 'Log In',
+                            email: emailController,
+                            password: passwordController,
+                            isSignUp: false,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

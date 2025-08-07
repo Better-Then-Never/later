@@ -64,7 +64,12 @@ class _SignupPageState extends State<SignupPage> {
                             ],
                           ),
                           const SizedBox(height: 50),
-                          SubmitButton(buttonText: 'Sign Up'),
+                          SubmitButton(
+                            buttonText: 'Sign Up',
+                            isSignUp: true,
+                            email: emailController,
+                            password: passwordController,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

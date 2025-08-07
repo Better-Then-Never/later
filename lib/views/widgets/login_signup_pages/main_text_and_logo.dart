@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 class MainText extends StatefulWidget {
   final dynamic mainText;
   final dynamic additionalText;
-  const MainText({ Key? key, required this.mainText, required this.additionalText }) : super(key: key);
+  const MainText({
+    super.key,
+    required this.mainText,
+    required this.additionalText,
+  });
 
   @override
   _MainTextState createState() => _MainTextState();
@@ -13,14 +17,10 @@ class _MainTextState extends State<MainText> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Column(
       children: [
-        Image.asset(
-          "assets/images/later_logo.png",
-          height: 150,
-          width: 120,
-        ),
+        Image.asset("assets/images/later_logo.png", height: 150, width: 120),
         SizedBox(height: screenHeight * 0.005),
         Column(
           children: [
