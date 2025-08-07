@@ -30,7 +30,7 @@ class LoginPage extends StatelessWidget {
                             additionalText:
                                 'Please log in to continue using our app',
                           ),
-                          SizedBox(height: 30,),
+                          SizedBox(height: 30),
                           Column(
                             children: [
                               RegistrationInputField(
