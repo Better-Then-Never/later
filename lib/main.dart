@@ -13,13 +13,12 @@ class Application extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/welcome',
       routes: {
         '/widgetTree': (context) => const WidgetTree(),
         '/welcome': (context) => const WelcomePage(),
         '/camera': (context) => const CameraPage(),
       },
-      home: WidgetTree(),
+      home: WelcomePage(),
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.green,

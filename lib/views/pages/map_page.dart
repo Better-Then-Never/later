@@ -31,6 +31,7 @@ class _MapPageState extends State<MapPage>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     positionStream?.cancel();
+    controller.dispose();
     super.dispose();
   }
 
