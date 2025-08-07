@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/registration_input_field.dart';
+import 'package:later/views/widgets/login_signup_pages/login_with_social.dart';
+import 'package:later/views/widgets/login_signup_pages/registration_input_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:later/views/widgets/login_signup_pages/submit_button.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final nameController = TextEditingController();
+  final nickanameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +31,6 @@ class SignupPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(flex: 1, child: Container()), // Flexible spacing
-
                       Container(
                         child: Column(
                           children: [
@@ -59,47 +71,30 @@ class SignupPage extends StatelessWidget {
                             const SizedBox(height: 40),
                             Column(
                               children: [
-                                RegistrationInputField(textHint: "Name"),
-                                const SizedBox(height: 10.0),
-                                RegistrationInputField(textHint: "Nickname"),
-                                const SizedBox(height: 10.0),
-                                RegistrationInputField(textHint: "Email"),
+                                RegistrationInputField(
+                                  controller: nameController,
+                                  textHint: "Name",
+                                ),
                                 const SizedBox(height: 10.0),
                                 RegistrationInputField(
+                                  controller: nickanameController,
+                                  textHint: "Nickname",
+                                ),
+                                const SizedBox(height: 10.0),
+                                RegistrationInputField(
+                                  controller: emailController,
+                                  textHint: "Email",
+                                ),
+                                const SizedBox(height: 10.0),
+                                RegistrationInputField(
+                                  controller: passwordController,
                                   textHint: "Password",
                                   isTextHidden: true,
                                 ),
                               ],
                             ),
                             const SizedBox(height: 50),
-                            SizedBox(
-                              width: 275,
-                              height: 55,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  // TODO: Email login
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/widgetTree',
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF56C92E),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(25.0),
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Sign Up',
-                                  style: TextStyle(
-                                    fontFamily: 'Irina',
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 32.0,
-                                  ),
-                                ),
-                              ),
-                            ),
+                            SubmitButton(buttonText: 'Sign Up',),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -133,40 +128,7 @@ class SignupPage extends StatelessWidget {
                             const SizedBox(
                               height: 20,
                             ), // Replace Expanded with SizedBox
-                            const Text("Or connect with"),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    // TODO: Google LogIn
-                                  },
-                                  icon: Image.asset(
-                                    'assets/images/icons/login_signup_pages/google.png',
-                                    height: 40.0,
-                                    width: 40.0,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 40,
-                                  child: VerticalDivider(
-                                    color: Colors.black,
-                                    width: 20,
-                                    thickness: 2,
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    // TODO: Facebook LogIn
-                                  },
-                                  icon: Image.asset(
-                                    'assets/images/icons/login_signup_pages/facebook.png',
-                                    height: 40.0,
-                                    width: 40.0,
-                                  ),
-                                ),
-                              ],
-                            ),
+                           LoginWithSocial(),
                           ],
                         ),
                       ),
