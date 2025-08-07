@@ -56,7 +56,6 @@ class _SubmitButtonState extends State<SubmitButton> {
           );
         }
       }
-      // Navigation will be handled automatically by the StreamBuilder in main.dart
     } catch (e) {
       ScaffoldMessenger.of(
         context,
