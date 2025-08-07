@@ -38,7 +38,7 @@ class _SignupPageState extends State<SignupPage> {
                             additionalText:
                                 'Please fill the details to create your account',
                           ),
-                          SizedBox(height: 20.0),
+                          SizedBox(height: 17.5),
                           Column(
                             children: [
                               RegistrationInputField(
@@ -63,7 +63,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 50),
+                          const SizedBox(height: 40),
                           SubmitButton(
                             buttonText: 'Sign Up',
                             isSignUp: true,
