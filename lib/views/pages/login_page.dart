@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/registration_input_field.dart';
+import 'package:later/views/widgets/login_signup_pages/login_with_social.dart';
+import 'package:later/views/widgets/login_signup_pages/registration_input_field.dart';
+import 'package:later/views/widgets/login_signup_pages/submit_button.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       backgroundColor: Color(0xFFF6F6F6),
       body: SafeArea(
@@ -59,11 +64,15 @@ class LoginPage extends StatelessWidget {
                           Column(
                             spacing: 0,
                             children: [
-                              RegistrationInputField(textHint: "Email"),
+                              RegistrationInputField(
+                                textHint: "Email",
+                                controller: emailController,
+                              ),
                               SizedBox(height: 10),
                               RegistrationInputField(
                                 textHint: "Password",
                                 isTextHidden: true,
+                                controller: passwordController,
                               ),
                               SizedBox(height: 2),
                               Container(
@@ -94,34 +103,7 @@ class LoginPage extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 25),
-                          SizedBox(
-                            width: 275,
-                            height: 55,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Email login
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  '/widgetTree',
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF56C92E),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25.0),
-                                ),
-                              ),
-                              child: const Text(
-                                'Log In',
-                                style: TextStyle(
-                                  fontFamily: 'Irina',
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  fontSize: 32.0,
-                                ),
-                              ),
-                            ),
-                          ),
+                          SubmitButton(buttonText: 'Log In'),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -157,40 +139,7 @@ class LoginPage extends StatelessWidget {
                             ],
                           ),
                           SizedBox(height: 40.0),
-                          Text("Or connect with"),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  //TODO: Google LogIn
-                                },
-                                icon: Image.asset(
-                                  'assets/images/icons/login_signup_pages/google.png',
-                                  height: 40.0,
-                                  width: 40.0,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 40,
-                                child: VerticalDivider(
-                                  color: Colors.black,
-                                  width: 20,
-                                  thickness: 2,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  //TODO: Facebook LogIn
-                                },
-                                icon: Image.asset(
-                                  'assets/images/icons/login_signup_pages/facebook.png',
-                                  height: 40.0,
-                                  width: 40.0,
-                                ),
-                              ),
-                            ],
-                          ),
+                          LoginWithSocial(),
                         ],
                       ),
                     ),
