@@ -1,40 +1,97 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/auth/auth_services.dart';
+import 'package:provider/provider.dart';
 
 class SubmitButton extends StatefulWidget {
   final dynamic buttonText;
+  final TextEditingController email;
+  final TextEditingController password;
+  final bool isSignUp;
 
-  const SubmitButton({super.key, required this.buttonText});
+  const SubmitButton({
+    super.key,
+    required this.isSignUp,
+    required this.buttonText,
+    required this.email,
+    required this.password,
+  });
 
   @override
   _SubmitButtonState createState() => _SubmitButtonState();
 }
 
 class _SubmitButtonState extends State<SubmitButton> {
+  bool _isLoading = false;
+
+  void _handleSubmit() async {
+    if (widget.email.text.isEmpty || widget.password.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please fill in all fields')));
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try {
+      if (widget.isSignUp) {
+        await authService.createUserWithEmailAndPassword(
+          widget.email.text,
+          widget.password.text,
+        );
+      } else {
+        await authService.signInWithEmailAndPassword(
+          widget.email.text,
+          widget.password.text,
+        );
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/widgetTree',
+            (route) => false,
+          );
+        }
+      }
+      // Navigation will be handled automatically by the StreamBuilder in main.dart
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: 275,
       height: 55,
       child: ElevatedButton(
-        onPressed: () {
-          // TODO: Email login
-          Navigator.pushReplacementNamed(context, '/widgetTree');
-        },
+        onPressed: _isLoading ? null : _handleSubmit,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF56C92E),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25.0),
           ),
         ),
-        child: Text(
-          widget.buttonText,
-          style: const TextStyle(
-            fontFamily: 'Irina',
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            fontSize: 32.0,
-          ),
-        ),
+        child: _isLoading
+            ? CircularProgressIndicator(color: Colors.white)
+            : Text(
+                widget.buttonText,
+                style: const TextStyle(
+                  fontFamily: 'Irina',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 32.0,
+                ),
+              ),
       ),
     );
   }
