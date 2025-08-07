@@ -48,14 +48,14 @@ class _SubmitButtonState extends State<SubmitButton> {
           widget.email.text,
           widget.password.text,
         );
-        if (mounted) {
+      }
+      if (mounted) {
           Navigator.pushNamedAndRemoveUntil(
             context,
             '/widgetTree',
             (route) => false,
           );
         }
-      }
     } catch (e) {
       ScaffoldMessenger.of(
         context,
