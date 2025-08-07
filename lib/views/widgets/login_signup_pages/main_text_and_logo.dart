@@ -16,12 +16,9 @@ class MainText extends StatefulWidget {
 class _MainTextState extends State<MainText> {
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Column(
       children: [
         Image.asset("assets/images/later_logo.png", height: 150, width: 120),
-        SizedBox(height: screenHeight * 0.005),
         Column(
           children: [
             Text(
