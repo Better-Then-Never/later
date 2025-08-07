@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class RegistrationInputField extends StatefulWidget {
   final dynamic textHint;
   final bool isTextHidden;
+  final TextEditingController controller;
 
   const RegistrationInputField({
     super.key,
     required this.textHint,
+    required this.controller,
     this.isTextHidden = false,
   });
 
@@ -23,6 +25,7 @@ class _RegistrationInputFieldState extends State<RegistrationInputField> {
       width: 325,
       height: 55,
       child: TextField(
+        controller: widget.controller,
         obscureText: widget.isTextHidden && isObscured,
         style: TextStyle(fontSize: 20.0),
         decoration: InputDecoration(
