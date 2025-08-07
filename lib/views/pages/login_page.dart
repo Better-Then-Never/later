@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/login_signup_pages/login_with_social.dart';
+import 'package:later/views/widgets/login_signup_pages/main_text_and_logo.dart';
 import 'package:later/views/widgets/login_signup_pages/registration_input_field.dart';
 import 'package:later/views/widgets/login_signup_pages/submit_button.dart';
 
@@ -10,59 +11,27 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
-
     return Scaffold(
       backgroundColor: Color(0xFFF6F6F6),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Transform.translate(
-                      offset: const Offset(0, 100),
-                      child: Column(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Expanded(flex: 1, child: Container()),
+                      Column(
                         children: [
-                          Image.asset(
-                            "assets/images/later_logo.png",
-                            height: 150,
-                            width: 120,
+                          MainText(
+                            mainText: 'Log In Now',
+                            additionalText:
+                                'Please log in to continue using our app',
                           ),
-                          SizedBox(height: 22.5),
-                          Transform.translate(
-                            offset: const Offset(0, -30),
-                            child: Column(
-                              children: [
-                                const Text(
-                                  'Log In Now',
-                                  style: TextStyle(
-                                    fontSize: 40.0,
-                                    fontFamily: 'Irina',
-                                    letterSpacing: -1,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                Transform.translate(
-                                  offset: const Offset(0, 0),
-                                  child: const Text(
-                                    'Please log in to continue using our app',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                      fontFamily: 'Irina',
-                                      letterSpacing: 0.1,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          SizedBox(height: 30,),
                           Column(
-                            spacing: 0,
                             children: [
                               RegistrationInputField(
                                 textHint: "Email",
@@ -87,7 +56,6 @@ class LoginPage extends StatelessWidget {
                                         MaterialTapTargetSize.shrinkWrap,
                                     overlayColor: Colors.transparent,
                                   ),
-
                                   onPressed: () {
                                     // TODO: Password reset
                                   },
@@ -124,7 +92,6 @@ class LoginPage extends StatelessWidget {
                                   Navigator.pushReplacementNamed(
                                     context,
                                     '/signupPage',
-                                    // TODO: Add signup
                                   );
                                 },
                                 child: Text(
@@ -142,8 +109,9 @@ class LoginPage extends StatelessWidget {
                           LoginWithSocial(),
                         ],
                       ),
-                    ),
-                  ],
+                      Expanded(flex: 1, child: Container()),
+                    ],
+                  ),
                 ),
               ),
             );
