@@ -30,15 +30,15 @@ class _SignupPageState extends State<SignupPage> {
                 child: IntrinsicHeight(
                   child: Column(
                     children: [
-                      Spacer(flex: 2),
+                      Expanded(flex: 1, child: Container()),
                       Column(
                         children: [
                           MainText(
                             mainText: 'Sign Up Now',
                             additionalText:
-                                'Please fill the skebobs to create your account',
+                                'Please fill the details to create your account',
                           ),
-                          // Spacer(flex: 1),
+                          SizedBox(height: 20.0),
                           Column(
                             children: [
                               RegistrationInputField(
@@ -99,7 +99,7 @@ class _SignupPageState extends State<SignupPage> {
                           LoginWithSocial(),
                         ],
                       ),
-                      Expanded(flex: 1, child: Container()), // Flexible spacing
+                      Expanded(flex: 1, child: Container()),
                     ],
                   ),
                 ),
