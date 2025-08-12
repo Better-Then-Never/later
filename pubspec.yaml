@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_auth: ^6.0.0
   firebase_core:
+  google_sign_in:
   shared_preferences: ^2.5.3
   flutter_launcher_icons: ^0.14.4
   http: ^1.4.0
