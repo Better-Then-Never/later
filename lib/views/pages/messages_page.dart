@@ -48,25 +48,26 @@ class MessagesPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
                   decoration: InputDecoration(
                     hintText: 'Find chats',
                     hintStyle: const TextStyle(
-                      color: Color(0xFF9E9E9E),
+                      color: Color(0xFF5F5F5F),
                       fontFamily: 'Irina',
-                      fontSize: 16,
+                      fontSize: 20,
                     ),
                     prefixIcon: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Image.asset(
                         'assets/images/icons/message-page/search.png',
-                        width: 20,
-                        height: 20,
+                        width: 29,
+                        height: 29,
                       ),
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20,
-                      vertical: 15,
+                      vertical: 8,
                     ),
                   ),
                 ),
@@ -103,8 +104,9 @@ class MessagesPage extends StatelessWidget {
                       child: Text(
                         'No more chats',
                         style: TextStyle(
-                          color: Color(0xFF9E9E9E),
+                          color: Color(0xFF000000),
                           fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           fontFamily: 'Irina',
                         ),
                       ),
@@ -131,8 +133,8 @@ class MessagesPage extends StatelessWidget {
         children: [
           // Avatar
           Container(
-            width: 50,
-            height: 50,
+            width: 75,
+            height: 75,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: const DecorationImage(
@@ -152,7 +154,7 @@ class MessagesPage extends StatelessWidget {
                 Text(
                   name,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Irina',
                     color: Colors.black,
@@ -162,7 +164,7 @@ class MessagesPage extends StatelessWidget {
                 Text(
                   message,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 18,
                     color: Color(0xFF757575),
                     fontFamily: 'Irina',
                   ),
@@ -180,8 +182,8 @@ class MessagesPage extends StatelessWidget {
               if (hasPin) ...[
                 Image.asset(
                   'assets/images/icons/message-page/pinned_chat.png',
-                  width: 16,
-                  height: 16,
+                  width: 20,
+                  height: 20,
                 ),
                 const SizedBox(width: 12),
               ],
@@ -189,8 +191,8 @@ class MessagesPage extends StatelessWidget {
                 angle: 3.14159, // 180 degrees in radians (π)
                 child: Image.asset(
                   'assets/images/icons/message-page/black_arrow.png',
-                  width: 12,
-                  height: 12,
+                  width: 20,
+                  height: 20,
                 ),
               ),
             ],
