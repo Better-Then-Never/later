@@ -15,7 +15,7 @@ class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
-  final nickanameController = TextEditingController();
+  final usernameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class _SignupPageState extends State<SignupPage> {
                               ),
                               const SizedBox(height: 10.0),
                               RegistrationInputField(
-                                controller: nickanameController,
+                                controller: usernameController,
                                 textHint: "Nickname",
                               ),
                               const SizedBox(height: 10.0),
@@ -69,6 +69,8 @@ class _SignupPageState extends State<SignupPage> {
                             isSignUp: true,
                             email: emailController,
                             password: passwordController,
+                            name: nameController,
+                            username: usernameController,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

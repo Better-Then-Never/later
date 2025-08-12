@@ -12,7 +12,7 @@ class LogOutButton extends StatefulWidget {
   });
 
   @override
-  _LogOutButtonState createState() => _LogOutButtonState();
+  State<LogOutButton> createState() => _LogOutButtonState();
 }
 
 class _LogOutButtonState extends State<LogOutButton> {
@@ -31,6 +31,7 @@ class _LogOutButtonState extends State<LogOutButton> {
         widget.onSignedOut!();
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
