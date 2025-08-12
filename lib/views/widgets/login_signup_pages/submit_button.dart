@@ -6,6 +6,8 @@ class SubmitButton extends StatefulWidget {
   final dynamic buttonText;
   final TextEditingController email;
   final TextEditingController password;
+  final TextEditingController? name;
+  final TextEditingController? username;
   final bool isSignUp;
 
   const SubmitButton({
@@ -14,34 +16,37 @@ class SubmitButton extends StatefulWidget {
     required this.buttonText,
     required this.email,
     required this.password,
+    this.name,
+    this.username,
   });
 
   @override
-  _SubmitButtonState createState() => _SubmitButtonState();
+  State<SubmitButton> createState() => _SubmitButtonState();
 }
 
 class _SubmitButtonState extends State<SubmitButton> {
   bool _isLoading = false;
 
   void _handleSubmit() async {
-    if (widget.email.text.isEmpty || widget.password.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please fill in all fields')));
+    if (widget.email.text.isEmpty ||
+        widget.password.text.isEmpty ||
+        (widget.isSignUp &&
+            ((widget.name?.text.isEmpty ?? true) ||
+                (widget.username?.text.isEmpty ?? true)))) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
       return;
     }
-
-    setState(() {
-      _isLoading = true;
-    });
-
+    setState(() => _isLoading = true);
     final authService = Provider.of<AuthService>(context, listen: false);
-
     try {
       if (widget.isSignUp) {
         await authService.createUserWithEmailAndPassword(
           widget.email.text,
           widget.password.text,
+          name: widget.name!.text,
+          username: widget.username!.text,
         );
       } else {
         await authService.signInWithEmailAndPassword(
@@ -57,13 +62,12 @@ class _SubmitButtonState extends State<SubmitButton> {
         );
       }
     } catch (e) {
+      if(!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

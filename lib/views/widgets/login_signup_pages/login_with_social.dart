@@ -6,7 +6,7 @@ class LoginWithSocial extends StatefulWidget {
   const LoginWithSocial({super.key});
 
   @override
-  _LoginWithSocialState createState() => _LoginWithSocialState();
+  State<LoginWithSocial> createState() => _LoginWithSocialState();
 }
 
 class _LoginWithSocialState extends State<LoginWithSocial> {
@@ -22,6 +22,7 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
             IconButton(
               onPressed: () async {
                 final gooleSignInResult = await signInWithGoogle(context);
+                if (!context.mounted) return;
                 if (gooleSignInResult != null) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
@@ -66,10 +67,11 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   await googleSignIn.initialize();
 
   try {
+    // ignore: unnecessary_nullable_for_final_variable_declarations
     final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
         .authenticate();
 
-    // ✅ Handle cancel / abort
+    if (!context.mounted) return null;
     if (googleUser == null) {
       ScaffoldMessenger.of(
         context,
@@ -77,18 +79,16 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
       return null;
     }
 
-    // Obtain the auth details from the request
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+        googleUser.authentication;
 
-    // Create a new credential
     final credential = GoogleAuthProvider.credential(
       idToken: googleAuth.idToken,
     );
 
-    // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
   } on Exception catch (e) {
+    if(!context.mounted) return null;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(e.toString())));
