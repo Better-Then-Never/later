@@ -28,10 +28,8 @@ class AuthService extends ChangeNotifier {
     required String name,
     required String username,
   }) async {
-    // Optional: enforce lowercase usernames
     final normalizedUsername = username.trim().toLowerCase();
 
-    // Check username uniqueness
     final existing = await FirebaseFirestore.instance
         .collection('users')
         .where('username', isEqualTo: normalizedUsername)
@@ -41,13 +39,11 @@ class AuthService extends ChangeNotifier {
       throw Exception('Username already taken');
     }
 
-    // Create auth user
     final credential = await FirebaseAuth.instance
         .createUserWithEmailAndPassword(email: email, password: password);
 
     final uid = credential.user!.uid;
 
-    // Write profile document
     await FirebaseFirestore.instance.collection('users').doc(uid).set({
       'uid': uid,
       'email': email,
@@ -56,7 +52,6 @@ class AuthService extends ChangeNotifier {
       'createdAt': FieldValue.serverTimestamp(),
     });
 
-    // Optionally update displayName
     await credential.user!.updateDisplayName(name.trim());
 
     notifyListeners();
@@ -81,5 +76,33 @@ class AuthService extends ChangeNotifier {
       default:
         return 'An error occurred. Please try again.';
     }
+  }
+
+  Future<void> addUserToDatabase({
+    required String uid,
+    required String email,
+    required String name,
+    required String username,
+  }) async {
+    final normalizedUsername = username.trim().toLowerCase();
+
+    final existing = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: normalizedUsername)
+        .limit(1)
+        .get();
+    if (existing.docs.isNotEmpty) {
+      throw Exception('Username already taken');
+    }
+
+    await FirebaseFirestore.instance.collection('users').doc(uid).set({
+      'uid': uid,
+      'email': email,
+      'name': name.trim(),
+      'username': normalizedUsername,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    notifyListeners();
   }
 }
