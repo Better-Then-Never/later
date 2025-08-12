@@ -5,16 +5,16 @@ import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-class ProfilePicture extends StatefulWidget { 
+class BackgroundPicture extends StatefulWidget { 
   final double? pictureHeight; 
   final double? pictureWidth; 
-  const ProfilePicture({super.key, this.pictureHeight, this.pictureWidth});
+  const BackgroundPicture({super.key, this.pictureHeight, this.pictureWidth, required Alignment allignment});
 
   @override
-  State<ProfilePicture> createState() => _ProfilePictureState();
+  State<BackgroundPicture> createState() => _BackgroundPictureState();
 }
 
-class _ProfilePictureState extends State<ProfilePicture> {
+class _BackgroundPictureState extends State<BackgroundPicture> {
   Uint8List? pickedImage;
 
   @override
@@ -25,7 +25,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
   Future<void> loadCachedImage() async {
     final prefs = await SharedPreferences.getInstance();
-    final base64Image = prefs.getString('profile_image');
+    final base64Image = prefs.getString('background_image');
     if (base64Image != null) {
       setState(() {
         pickedImage = base64Decode(base64Image);
@@ -41,13 +41,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
     if (image == null) return;
 
     final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("user_1.jpg");
+    final imageRef = storageRef.child("background_user_1.jpg");
     final imageBytes = await image.readAsBytes();
     await imageRef.putData(imageBytes);
 
-    // Cache the image locally
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile_image', base64Encode(imageBytes));
+    await prefs.setString('background_image', base64Encode(imageBytes));
 
     setState(() => pickedImage = imageBytes);
   }
@@ -58,13 +57,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
       final imageRef = storageRef.child("user_1.jpg");
       final imageBytes = await imageRef.getData();
       if (imageBytes != null) {
-        // Cache the image locally
+
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('profile_image', base64Encode(imageBytes));
         setState(() => pickedImage = imageBytes);
       }
     } catch (e) {
-      // Handle error or show default image
     }
   }
 
@@ -73,11 +71,14 @@ class _ProfilePictureState extends State<ProfilePicture> {
     return GestureDetector(
       onTap: onProfileTapped,
       child: Container(
-        height: widget.pictureHeight ?? 150,
-        width: widget.pictureWidth ?? 150,
+        height: widget.pictureHeight ?? 200,
+        width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.grey,
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
           image: pickedImage != null
               ? DecorationImage(
                   image: MemoryImage(pickedImage!),
