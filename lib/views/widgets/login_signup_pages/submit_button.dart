@@ -50,12 +50,12 @@ class _SubmitButtonState extends State<SubmitButton> {
         );
       }
       if (mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            '/widgetTree',
-            (route) => false,
-          );
-        }
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/widgetTree',
+          (route) => false,
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(
         context,

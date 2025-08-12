@@ -20,12 +20,15 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              onPressed: () async{
-                await signInWithGoogle();
-                if(FirebaseAuth.instance.currentUser != null){
-                  Navigator.pushNamed(context, '/widgetTree');
+              onPressed: () async {
+                final gooleSignInResult = await signInWithGoogle(context);
+                if (gooleSignInResult != null) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/widgetTree',
+                    (route) => false,
+                  );
                 }
-                // TODO: Handle error on unsucessfull login
               },
               icon: Image.asset(
                 'assets/images/icons/login_signup_pages/google.png',
@@ -58,20 +61,37 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
   }
 }
 
-
-Future<UserCredential> signInWithGoogle() async {
-
+Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   final GoogleSignIn googleSignIn = GoogleSignIn.instance;
   await googleSignIn.initialize();
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn.instance.authenticate();
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication googleAuth = googleUser!.authentication;
+  try {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
+        .authenticate();
 
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+    // ✅ Handle cancel / abort
+    if (googleUser == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Operation aborted')));
+      return null;
+    }
 
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  } on Exception catch (e) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(e.toString())));
+    return null;
+  }
 }
