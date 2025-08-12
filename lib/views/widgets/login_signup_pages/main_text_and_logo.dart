@@ -10,7 +10,7 @@ class MainText extends StatefulWidget {
   });
 
   @override
-  _MainTextState createState() => _MainTextState();
+  State<MainText> createState() => _MainTextState();
 }
 
 class _MainTextState extends State<MainText> {
