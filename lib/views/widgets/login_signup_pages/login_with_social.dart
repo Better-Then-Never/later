@@ -1,6 +1,8 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:later/services/auth/auth_services.dart';
+import 'package:provider/provider.dart';
 
 class LoginWithSocial extends StatefulWidget {
   const LoginWithSocial({super.key});
@@ -66,29 +68,41 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   final GoogleSignIn googleSignIn = GoogleSignIn.instance;
   await googleSignIn.initialize();
 
+  final authService = Provider.of<AuthService>(
+    context,
+    listen: false,
+  );
+
   try {
-    // ignore: unnecessary_nullable_for_final_variable_declarations
-    final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
+    final GoogleSignInAccount googleUser = await GoogleSignIn.instance
         .authenticate();
 
     if (!context.mounted) return null;
-    if (googleUser == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Operation aborted')));
-      return null;
-    }
 
-    final GoogleSignInAuthentication googleAuth =
-        googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
     final credential = GoogleAuthProvider.credential(
       idToken: googleAuth.idToken,
     );
 
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(
+      credential,
+    );
+
+    final user = userCredential.user;
+    if (user != null) {
+      await authService.addUserToDatabase(
+        uid: user.uid,
+        email: user.email ?? '',
+        name: user.displayName ?? '',
+        username:
+            user.email?.split('@').first ?? '',
+      );
+    }
+
+    return userCredential;
   } on Exception catch (e) {
-    if(!context.mounted) return null;
+    if (!context.mounted) return null;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(e.toString())));
