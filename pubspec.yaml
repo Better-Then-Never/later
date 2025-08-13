@@ -35,10 +35,14 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   firebase_auth: ^6.0.0
+  firebase_core:
+  cloud_firestore: ^6.0.0
+  google_sign_in:
   shared_preferences: ^2.5.3
   flutter_launcher_icons: ^0.14.4
   http: ^1.4.0
-  # google_maps: ^8.1.1
+  provider:
+  google_maps: ^8.1.1
   google_maps_flutter: ^2.12.3
   permission_handler: ^12.0.1
   geolocator: ^14.0.2
@@ -68,6 +72,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/icons/navbar/
+    - assets/images/icons/login_signup_pages/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
