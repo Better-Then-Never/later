@@ -74,7 +74,7 @@ flutter:
     - assets/images/
     - assets/images/icons/navbar/
     - assets/images/icons/login_signup_pages/
-    - assets/images/icons/profile_page/
+    - assets/images/icons/prof_page/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
