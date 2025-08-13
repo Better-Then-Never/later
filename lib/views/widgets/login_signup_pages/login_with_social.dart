@@ -1,5 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:provider/provider.dart';
@@ -89,12 +90,19 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
 
     final user = userCredential.user;
     if (user != null) {
-      await authService.addUserToDatabase(
-        uid: user.uid,
-        email: user.email ?? '',
-        name: user.displayName ?? '',
-        username: user.email?.split('@').first ?? '',
-      );
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        await authService.addUserToDatabase(
+          uid: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+          username: user.email?.split('@').first ?? '',
+        );
+      }
     }
 
     return userCredential;
