@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "250917243354",
+    "project_id": "later-da778",
+    "storage_bucket": "later-da778.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250917243354:android:6969e7b1b124ca272758e3",
+        "android_client_info": {
+          "package_name": "com.example.later"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCg5z_8Yiyod8Pj7ePWGGXTJfdtKtHD-oc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
