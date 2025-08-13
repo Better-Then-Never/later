@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/background_picture.dart';
 import 'package:later/views/widgets/login_signup_pages/logout_button.dart';
+import 'package:later/views/widgets/name_getting.dart';
 import 'package:later/views/widgets/prof_picture.dart';
+import 'package:later/views/widgets/username_getting.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  //Profile and background pictures with name and username texts
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,11 +23,6 @@ class ProfilePage extends StatelessWidget {
                   allignment: Alignment.topLeft,
                   pictureHeight: 230,
                   pictureWidth: MediaQuery.of(context).size.width,
-                ),
-                Positioned(
-                  top: 99,
-                  left: 16,
-                  child: ProfilePicture(pictureHeight: 115, pictureWidth: 115),
                 ),
                 Container(
                   width: double.infinity,
@@ -41,8 +40,81 @@ class ProfilePage extends StatelessWidget {
                     ],
                   ),
                 ),
+                Positioned(
+                  top: 25,
+                  right: 1,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        icon: Image.asset(
+                          'assets/images/icons/prof_page/notifications_button.png',
+                          width: 41,
+                          height: 41,
+                        ),
+                        onPressed: () {
+                          print('Notifications button pressed');
+                        },
+                      ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        icon: Image.asset(
+                          'assets/images/icons/prof_page/share_button.png',
+                          width: 40,
+                          height: 40,
+                        ),
+                        onPressed: () {
+                          print('Share button pressed');
+                        },
+                      ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: BoxConstraints(),
+                        icon: Image.asset(
+                          'assets/images/icons/prof_page/settings_button.png',
+                          width: 40,
+                          height: 40,
+                        ),
+                        onPressed: () {
+                          print('Settings button pressed');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  top: 99,
+                  left: 16,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ProfilePicture(pictureHeight: 115, pictureWidth: 115),
+                      const SizedBox(width: 10),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          NameGettingWidget(
+                            uid:
+                                FirebaseAuth.instance.currentUser?.uid ??
+                                'null',
+                          ),
+                          UsernameGettingWidget(
+                            uid:
+                                FirebaseAuth.instance.currentUser?.uid ??
+                                'null',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
+
+            //My capsules part
             const SizedBox(height: 16),
             const Text(
               "My capsules",
@@ -86,6 +158,37 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                   ),
+                  Row(
+                    children: [
+                      SizedBox(width: 65),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: SizedBox(
+                          width: 304,
+                          height: 39,
+                          child: TextButton(
+                            onPressed: () {
+                              print(
+                                "Add to map friends tapped",
+                              ); //add logic to navigate to add to map friends page
+                            },
+                            style: TextButton.styleFrom(
+                              alignment: Alignment.centerLeft,
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(fontSize: 16),
+                              splashFactory: NoSplash.splashFactory,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              overlayColor: Colors.transparent,
+                            ),
+                            child: const Text(
+                              "Add to map | Only for friends",
+                              style: TextStyle(fontFamily: 'Irina'),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
@@ -94,9 +197,42 @@ class ProfilePage extends StatelessWidget {
                       color: Color.fromARGB(211, 211, 211, 211),
                     ),
                   ),
+                  Row(
+                    children: [
+                      SizedBox(width: 65),
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: SizedBox(
+                          width: 304,
+                          height: 41,
+                          child: TextButton(
+                            onPressed: () {
+                              print(
+                                "Add to map everyone tapped",
+                              ); //add logic to navigate to add to map everyone page
+                            },
+                            style: TextButton.styleFrom(
+                              alignment: Alignment.centerLeft,
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(fontSize: 16),
+                              splashFactory: NoSplash.splashFactory,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              overlayColor: Colors.transparent,
+                            ),
+                            child: const Text(
+                              "Add to map | Everyone",
+                              style: TextStyle(fontFamily: 'Irina'),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
+
+            //Friends part
             const SizedBox(height: 16),
             const Text(
               "Friends",
@@ -107,9 +243,11 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 2),
-            GestureDetector( //Friends rectangle
+            GestureDetector(
               onTap: () {
-                //Add friends page here
+                print(
+                  "Add friends tapped", //add logic to navigate to add friends page
+                );
               },
               child: Container(
                 width: 380,
@@ -137,7 +275,7 @@ class ProfilePage extends StatelessWidget {
                         fit: BoxFit.contain,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 18),
                     const Text(
                       "Add friends",
                       style: TextStyle(
