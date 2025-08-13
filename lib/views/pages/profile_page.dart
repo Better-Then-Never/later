@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/background_picture.dart';
-import 'package:later/views/widgets/login_signup_pages/logout_button.dart';
 import 'package:later/views/widgets/name_getting.dart';
 import 'package:later/views/widgets/prof_picture.dart';
 import 'package:later/views/widgets/username_getting.dart';
