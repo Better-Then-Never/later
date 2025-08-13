@@ -35,6 +35,7 @@ class _LogOutButtonState extends State<LogOutButton> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
+      // TODO: Proper error codes
     } finally {
       setState(() {
         _isLoading = false;

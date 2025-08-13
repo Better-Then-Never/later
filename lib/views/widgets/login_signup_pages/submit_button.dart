@@ -3,7 +3,7 @@ import 'package:later/services/auth/auth_services.dart';
 import 'package:provider/provider.dart';
 
 class SubmitButton extends StatefulWidget {
-  final dynamic buttonText;
+  final String buttonText;
   final TextEditingController email;
   final TextEditingController password;
   final TextEditingController? name;
@@ -66,6 +66,7 @@ class _SubmitButtonState extends State<SubmitButton> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
+      // TODO: Proper error codes
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
