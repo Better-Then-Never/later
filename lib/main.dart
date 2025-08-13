@@ -9,6 +9,7 @@ import 'package:later/views/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/pages/settings_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ class Application extends StatelessWidget {
         '/camera': (context) => const CameraPage(),
         '/loginPage': (context) => const LoginPage(),
         '/signupPage': (context) => const SignupPage(),
+        '/settingsPage': (context) => const SettingsPage(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),

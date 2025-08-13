@@ -78,7 +78,7 @@ class ProfilePage extends StatelessWidget {
                           height: 40,
                         ),
                         onPressed: () {
-                          print('Settings button pressed');
+                          Navigator.pushNamed(context, '/settingsPage');
                         },
                       ),
                     ],
@@ -289,18 +289,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 160.0),
-        child: LogOutButton(
-          onSignedOut: () {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/welcome',
-              (route) => false,
-            );
-          },
         ),
       ),
     );
