@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MainText extends StatefulWidget {
-  final dynamic mainText;
-  final dynamic additionalText;
+  final String mainText;
+  final String additionalText;
   const MainText({
     super.key,
     required this.mainText,
