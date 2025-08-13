@@ -8,6 +8,7 @@ import 'package:later/views/pages/camera_page.dart';
 import 'package:later/views/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:later/views/widget_tree_wrapper.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -28,7 +29,7 @@ class Application extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/widgetTree': (context) => const WidgetTree(),
+        '/widgetTree': (context) => const WidgetTreeWrapper(),
         '/welcome': (context) => const WelcomePage(),
         '/camera': (context) => const CameraPage(),
         '/loginPage': (context) => const LoginPage(),
