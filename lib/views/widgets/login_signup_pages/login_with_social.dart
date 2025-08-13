@@ -23,9 +23,9 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
           children: [
             IconButton(
               onPressed: () async {
-                final gooleSignInResult = await signInWithGoogle(context);
+                final googleSignInResult = await signInWithGoogle(context);
                 if (!context.mounted) return;
-                if (gooleSignInResult != null) {
+                if (googleSignInResult != null) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/widgetTree',
@@ -68,10 +68,8 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   final GoogleSignIn googleSignIn = GoogleSignIn.instance;
   await googleSignIn.initialize();
 
-  final authService = Provider.of<AuthService>(
-    context,
-    listen: false,
-  );
+  if (!context.mounted) return null;
+  final authService = Provider.of<AuthService>(context, listen: false);
 
   try {
     final GoogleSignInAccount googleUser = await GoogleSignIn.instance
@@ -95,8 +93,7 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
         uid: user.uid,
         email: user.email ?? '',
         name: user.displayName ?? '',
-        username:
-            user.email?.split('@').first ?? '',
+        username: user.email?.split('@').first ?? '',
       );
     }
 
@@ -106,6 +103,7 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(e.toString())));
+    // TODO: Proper error codes
     return null;
   }
 }
