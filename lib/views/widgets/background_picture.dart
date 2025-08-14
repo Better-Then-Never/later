@@ -4,6 +4,12 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+
+Future<void> clearBackgroundImageCache() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('background_image');
+}
 
 class BackgroundPicture extends StatefulWidget {
   final double? pictureHeight;
@@ -16,10 +22,12 @@ class BackgroundPicture extends StatefulWidget {
 
 class _BackgroundPictureState extends State<BackgroundPicture> {
   Uint8List? pickedImage;
+  String? uid;
 
   @override
   void initState() {
     super.initState();
+    uid = FirebaseAuth.instance.currentUser?.uid;
     loadCachedImage();
   }
 
@@ -57,8 +65,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
     setState(() => pickedImage = null);
 
     try {
+      if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("background_user_1.jpg");
+      final imageRef = storageRef.child("background_pictures/$uid.jpg");
       await imageRef.delete();
     } catch (e) {
       // Handle error if needed
@@ -66,8 +75,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   }
 
   Future<void> saveBackgroundImage(Uint8List imageBytes) async {
+    if (uid == null) return;
     final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("background_user_1.jpg");
+    final imageRef = storageRef.child("background_pictures/$uid.jpg");
     await imageRef.putData(imageBytes);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('background_image', base64Encode(imageBytes));
@@ -206,8 +216,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
 
   Future<void> getBackgroundPicture() async {
     try {
+      if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("background_user_1.jpg");
+      final imageRef = storageRef.child("background_pictures/$uid.jpg");
       final imageBytes = await imageRef.getData();
       if (imageBytes != null) {
         final prefs = await SharedPreferences.getInstance();
