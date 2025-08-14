@@ -23,6 +23,7 @@ class BackgroundPicture extends StatefulWidget {
 class _BackgroundPictureState extends State<BackgroundPicture> {
   Uint8List? pickedImage;
   String? uid;
+  final String fileName = 'background_image'; // Always use this file name
 
   @override
   void initState() {
@@ -39,7 +40,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
         pickedImage = base64Decode(base64Image);
       });
     } else {
-      getBackgroundPicture();
+      await getBackgroundPicture();
     }
   }
 
@@ -67,7 +68,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
     try {
       if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("background_pictures/$uid.jpg");
+      final imageRef = storageRef.child("background_pictures/$uid/$fileName");
       await imageRef.delete();
     } catch (e) {
       // Handle error if needed
@@ -77,11 +78,27 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   Future<void> saveBackgroundImage(Uint8List imageBytes) async {
     if (uid == null) return;
     final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("background_pictures/$uid.jpg");
+    final imageRef = storageRef.child("background_pictures/$uid/$fileName");
     await imageRef.putData(imageBytes);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('background_image', base64Encode(imageBytes));
     setState(() => pickedImage = imageBytes);
+  }
+
+  Future<void> getBackgroundPicture() async {
+    try {
+      if (uid == null) return;
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageRef = storageRef.child("background_pictures/$uid/$fileName");
+      final imageBytes = await imageRef.getData();
+      if (imageBytes != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('background_image', base64Encode(imageBytes));
+        setState(() => pickedImage = imageBytes);
+      }
+    } catch (e) {
+      // Handle error if needed
+    }
   }
 
   Future<void> onBackgroundTapped() async {
@@ -212,22 +229,6 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
         );
       },
     );
-  }
-
-  Future<void> getBackgroundPicture() async {
-    try {
-      if (uid == null) return;
-      final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("background_pictures/$uid.jpg");
-      final imageBytes = await imageRef.getData();
-      if (imageBytes != null) {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('background_image', base64Encode(imageBytes));
-        setState(() => pickedImage = imageBytes);
-      }
-    } catch (e) {
-      // Handle error if needed
-    }
   }
 
   @override
