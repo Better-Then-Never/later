@@ -41,19 +41,19 @@ class ProfilePage extends StatelessWidget {
                 ),
                 Positioned(
                   top: 25,
-                  right: 1,
+                  right: 12,
                   child: Row(
                     children: [
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: BoxConstraints(minWidth: 0),
                         icon: Image.asset(
                           'assets/images/icons/prof_page/notifications_button.png',
                           width: 41,
                           height: 41,
                         ),
                         onPressed: () {
-                          print('Notifications button pressed');
+                          Navigator.pushNamed(context, '/notificationsPage');
                         },
                       ),
                       IconButton(
@@ -65,7 +65,7 @@ class ProfilePage extends StatelessWidget {
                           height: 40,
                         ),
                         onPressed: () {
-                          print('Share button pressed');
+                          Navigator.pushNamed(context, '/sharePage');
                         },
                       ),
                       IconButton(
@@ -231,7 +231,7 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
 
-            //Friends part
+            //Friends part //Add friends
             const SizedBox(height: 16),
             const Text(
               "Friends",
@@ -285,6 +285,106 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+            ),
+
+            //My Friends list
+            const SizedBox(height: 8),
+            Container(
+              width: 380,
+              height: 150,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(40),
+                    spreadRadius: 1,
+                    blurRadius: 9,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    bottom: 45,
+                    left: 0,
+                    child: Container(
+                      width: 380,
+                      height: 1,
+                      color: const Color.fromARGB(211, 211, 211, 211),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 3,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 18),
+                        SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Image.asset(
+                            'assets/images/icons/prof_page/my_friends.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          width: 305,
+                          height: 40,
+                          child: TextButton(
+                            onPressed: () {
+                              print(
+                                "My friends tapped", //add logic to navigate to add to map my friends page
+                              ); 
+                            },
+                            style: TextButton.styleFrom(
+                              alignment: Alignment.centerLeft,
+                              foregroundColor: Colors.black,
+                              textStyle: const TextStyle(fontSize: 16),
+                              splashFactory: NoSplash.splashFactory,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              overlayColor: Colors.transparent,
+                            ),
+                            child: const Text(
+                              "My friends",
+                              style: TextStyle(fontFamily: 'Irina'),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Map",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Container(
+              width: 380,
+              height: 100,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(40),
+                    spreadRadius: 1,
+                    blurRadius: 9,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
             ),
           ],
