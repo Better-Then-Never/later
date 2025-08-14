@@ -10,6 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/pages/settings_page.dart';
+import 'package:later/views/pages/notifications_page.dart';
+import 'package:later/views/pages/share_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +37,8 @@ class Application extends StatelessWidget {
         '/loginPage': (context) => const LoginPage(),
         '/signupPage': (context) => const SignupPage(),
         '/settingsPage': (context) => const SettingsPage(),
+        '/notificationsPage': (context) => const NotificationsPage(),
+        '/sharePage': (context) => const SharePage(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
