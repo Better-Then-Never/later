@@ -9,9 +9,11 @@ import 'package:later/views/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:later/views/pages/settings_page.dart';
-import 'package:later/views/pages/notifications_page.dart';
-import 'package:later/views/pages/share_page.dart';
+import 'package:later/views/pages/options_profile_page/settings_page.dart';
+import 'package:later/views/pages/options_profile_page/notifications_page.dart';
+import 'package:later/views/pages/options_profile_page/share_page.dart';
+import 'package:later/views/pages/profile_page.dart';
+import 'package:later/views/pages/options_settings_page/name_changing.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +41,8 @@ class Application extends StatelessWidget {
         '/settingsPage': (context) => const SettingsPage(),
         '/notificationsPage': (context) => const NotificationsPage(),
         '/sharePage': (context) => const SharePage(),
+        '/profile_page': (context) => const ProfilePage(),
+        '/nameChangingWidget': (context) => const NameChangingWidget(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
