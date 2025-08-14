@@ -373,7 +373,7 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 2),
             Container(
               width: 380,
-              height: 100,
+              height: 200,
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(25),
