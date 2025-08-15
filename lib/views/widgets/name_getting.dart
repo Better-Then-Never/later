@@ -4,17 +4,23 @@ import 'package:auto_size_text/auto_size_text.dart';
 
 class NameGettingWidget extends StatelessWidget {
   final String uid;
+  final TextStyle? style;
+  final int? maxLines;
+  final double? minFontSize;
 
-  const NameGettingWidget({Key? key, required this.uid}) : super(key: key);
+  const NameGettingWidget({
+    Key? key,
+    required this.uid,
+    this.style,
+    this.maxLines,
+    this.minFontSize,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
         if (snapshot.hasError) {
           return const Text('Error loading name');
         }
@@ -29,14 +35,15 @@ class NameGettingWidget extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.6,
           child: AutoSizeText(
             name,
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              height: 1,
-            ),
-            maxLines: 1,
-            minFontSize: 12,
+            style: style ??
+                const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  height: 1,
+                ),
+            maxLines: maxLines ?? 1,
+            minFontSize: minFontSize ?? 12,
             overflow: TextOverflow.visible,
           ),
         );
