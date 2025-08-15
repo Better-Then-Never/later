@@ -3,11 +3,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UsernameGettingWidget extends StatelessWidget {
   final String uid;
+  final TextStyle? style;
 
-  const UsernameGettingWidget({Key? key, required this.uid}) : super(key: key);
+  const UsernameGettingWidget({
+    Key? key,
+    required this.uid,
+    this.style,
+  }) : super(key: key);
 
   Future<String?> _getUsername() async {
-    DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
     return doc['username'] as String?;
   }
 
@@ -16,9 +24,6 @@ class UsernameGettingWidget extends StatelessWidget {
     return FutureBuilder<String?>(
       future: _getUsername(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
         if (snapshot.hasError) {
           return const Text('Error loading username');
         }
@@ -27,7 +32,13 @@ class UsernameGettingWidget extends StatelessWidget {
         }
         return Text(
           '@${snapshot.data}',
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white, height: 1),
+          style: style ??
+              const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                height: 1,
+              ),
         );
       },
     );
