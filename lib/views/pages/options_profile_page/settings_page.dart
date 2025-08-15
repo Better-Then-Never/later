@@ -166,7 +166,7 @@ class SettingsPage extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(25),
                                     ),
                                     padding: const EdgeInsets.symmetric(
-                                      vertical: 12,
+                                      vertical: 16,
                                       horizontal: 0,
                                     ),
                                     child: Column(
