@@ -35,7 +35,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
         _isSaving = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Name updated!')),
+        const SnackBar(content: Text('Name updated!')),
       );
     } catch (e) {
       setState(() {
@@ -47,30 +47,42 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Change your name:",
-          style: TextStyle(fontSize: 16, color: Colors.black),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Change Name"),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Change your name:",
+              style: const TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                hintText: "Enter new name",
+                errorText: _error,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: _isSaving ? null : _saveName,
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    )
+                  : const Text("Save Name"),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: "Enter new name",
-            errorText: _error,
-          ),
-        ),
-        const SizedBox(height: 12),
-        ElevatedButton(
-          onPressed: _isSaving ? null : _saveName,
-          child: _isSaving
-              ? CircularProgressIndicator(color: Colors.white)
-              : Text("Save Name"),
-        ),
-      ],
+      ),
     );
   }
 }
