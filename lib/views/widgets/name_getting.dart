@@ -25,7 +25,7 @@ class NameGettingWidget extends StatelessWidget {
           return const Text('Error loading name');
         }
         if (!snapshot.hasData || !snapshot.data!.exists) {
-          return const Text('Name not found');
+          return const Text('Loading...');
         }
         final name = snapshot.data!['name'] as String?;
         if (name == null) {
