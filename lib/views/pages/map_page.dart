@@ -13,15 +13,21 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   final Location _locationController = Location();
-
-  final Completer<GoogleMapController> _mapController =
-      Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _mapController = Completer();
   LatLng? _currentPosition;
+
+  StreamSubscription<LocationData>? _locationSubscription;
 
   @override
   void initState() {
     super.initState();
     getLocationUpdates();
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -32,7 +38,7 @@ class _MapPageState extends State<MapPage> {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
-
+        //TODO: Handle Location Permission Properly
         final permission = snapshot.data;
         if (permission != PermissionStatus.granted) {
           return Center(
@@ -64,6 +70,7 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
+  //TODO: Show My Location Button
   Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
     await controller.animateCamera(CameraUpdate.newLatLng(pos));
@@ -74,23 +81,23 @@ class _MapPageState extends State<MapPage> {
     PermissionStatus permissionGranted;
 
     serviceEnabled = await _locationController.serviceEnabled();
-    if (serviceEnabled) {
+    if (!serviceEnabled) {
       serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
+      if (!serviceEnabled) return;
     }
 
     permissionGranted = await _locationController.hasPermission();
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await _locationController.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return;
-      }
+      if (permissionGranted != PermissionStatus.granted) return;
     }
 
-    _locationController.onLocationChanged.listen((
+    _locationController.changeSettings(interval: 5000, distanceFilter: 10);
+
+    _locationSubscription = _locationController.onLocationChanged.listen((
       LocationData currentLocation,
     ) {
+      if (!mounted) return;
       if (currentLocation.latitude != null &&
           currentLocation.longitude != null) {
         setState(() {
@@ -98,7 +105,6 @@ class _MapPageState extends State<MapPage> {
             currentLocation.latitude!,
             currentLocation.longitude!,
           );
-          _cameraToPosition(_currentPosition!);
         });
       }
     });
