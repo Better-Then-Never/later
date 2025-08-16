@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/options_settings_page/email_changing.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widgets/name_getting.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/views/widgets/prof_picture.dart';
 import 'package:later/views/widgets/background_picture.dart';
+import 'package:later/views/widgets/username_getting.dart';
+import 'package:later/views/pages/options_settings_page/username_changing.dart';
+import 'package:later/views/widgets/email_getting.dart';
+import 'package:later/views/pages/options_settings_page/password_changing.dart';
+import 'package:later/views/pages/options_settings_page/language.dart';
+import 'package:later/views/pages/options_settings_page/profile_custom.dart';
+import 'package:later/views/pages/options_settings_page/app_theme.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -22,7 +30,7 @@ class SettingsPage extends StatelessWidget {
           children: [
             Container(
               width: screenWidth,
-              height: screenHeight * 0.12,
+              height: screenHeight * 0.13,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -85,7 +93,7 @@ class SettingsPage extends StatelessWidget {
                 height: screenHeight * 0.45,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
@@ -98,6 +106,7 @@ class SettingsPage extends StatelessWidget {
                 child: Column(
                   children: [
                     _settingsRow(
+                      context,
                       'Name',
                       null,
                       customSubtitle: NameGettingWidget(
@@ -119,28 +128,108 @@ class SettingsPage extends StatelessWidget {
                       screenWidth: screenWidth,
                     ),
                     _settingsRow(
+                      context,
                       'Username',
-                      '@dupkaandrej',
+                      null,
+                      customSubtitle: UsernameGettingWidget(
+                        uid: uid,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          fontFamily: 'Irina',
+                          color: Color.fromARGB(255, 94, 94, 94),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const UsernameChangingWidget(),
+                          ),
+                        );
+                      },
                       screenWidth: screenWidth,
                     ),
                     _settingsRow(
+                      context,
                       'Email',
-                      'andrzejduda@gmail.com',
+                      null,
+                      customSubtitle: EmailGettingWidget(
+                        uid: uid,
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.045,
+                          fontFamily: 'Irina',
+                          color: Color.fromARGB(255, 94, 94, 94),
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const EmailChangingWidget(),
+                          ),
+                        );
+                      },
                       screenWidth: screenWidth,
                     ),
-                    _settingsRow('Password', null, screenWidth: screenWidth),
-                    _settingsRow('Language', null, screenWidth: screenWidth),
                     _settingsRow(
+                      context,
+                      'Password',
+                      null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PasswordChangingPage(),
+                          ),
+                        );
+                      },
+                      screenWidth: screenWidth,
+                    ),
+                    _settingsRow(
+                      context,
+                      'Language',
+                      null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LanguagePage(),
+                          ),
+                        );
+                      },
+                      screenWidth: screenWidth,
+                    ),
+                    _settingsRow(
+                      context,
                       'App Appearance',
                       null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AppThemePage(),
+                          ),
+                        );
+                      },
                       screenWidth: screenWidth,
                     ),
                     _settingsRow(
+                      context,
                       'Customize Profile',
                       null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ProfileCustomizationPage(),
+                          ),
+                        );
+                      },
                       screenWidth: screenWidth,
                     ),
                     _settingsRow(
+                      context,
                       'Log Out',
                       null,
                       isLogout: true,
@@ -231,7 +320,12 @@ class SettingsPage extends StatelessWidget {
                                             Navigator.of(context).pop();
                                           },
                                           style: TextButton.styleFrom(
-                                            foregroundColor: Color.fromARGB(255, 95, 95, 95),
+                                            foregroundColor: Color.fromARGB(
+                                              255,
+                                              95,
+                                              95,
+                                              95,
+                                            ),
                                             textStyle: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -264,6 +358,7 @@ class SettingsPage extends StatelessWidget {
 }
 
 Widget _settingsRow(
+  BuildContext context,
   String title,
   String? subtitle, {
   bool isLogout = false,
@@ -273,46 +368,53 @@ Widget _settingsRow(
 }) {
   return Column(
     children: [
-      ListTile(
-        dense: true,
-        minVerticalPadding: 6,
-        visualDensity: VisualDensity(vertical: -3),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.045,
-            fontFamily: 'Irina',
-            color: isLogout ? Color.fromARGB(255, 253, 65, 64) : Colors.black,
+      Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+        ),
+        child: ListTile(
+          dense: true,
+          minVerticalPadding: 6,
+          visualDensity: VisualDensity(vertical: -3),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.045,
+              fontFamily: 'Irina',
+              color: isLogout ? Color.fromARGB(255, 253, 65, 64) : Colors.black,
+            ),
           ),
-        ),
-        subtitle:
-            customSubtitle ??
-            (subtitle != null
-                ? Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.045,
-                      fontFamily: 'Irina',
-                      color: Color.fromARGB(255, 94, 94, 94),
-                    ),
-                  )
-                : null),
-        trailing: isLogout
-            ? null
-            : Opacity(
-                opacity: 0.65,
-                child: Image.asset(
-                  'assets/images/icons/prof_page/go_here.png',
-                  width: screenWidth * 0.09,
-                  height: screenWidth * 0.09,
+          subtitle:
+              customSubtitle ??
+              (subtitle != null
+                  ? Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.045,
+                        fontFamily: 'Irina',
+                        color: Color.fromARGB(255, 94, 94, 94),
+                      ),
+                    )
+                  : null),
+          trailing: isLogout
+              ? null
+              : Opacity(
+                  opacity: 0.65,
+                  child: Image.asset(
+                    'assets/images/icons/prof_page/go_here.png',
+                    width: screenWidth * 0.09,
+                    height: screenWidth * 0.09,
+                  ),
                 ),
-              ),
-        contentPadding: EdgeInsets.only(
-          left: screenWidth * 0.05,
-          right: screenWidth * 0.03,
+          contentPadding: EdgeInsets.only(
+            left: screenWidth * 0.05,
+            right: screenWidth * 0.03,
+          ),
+          onTap: onTap,
         ),
-        onTap: onTap,
       ),
       if (!isLogout)
         const Divider(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UsernameGettingWidget extends StatelessWidget {
+class EmailGettingWidget extends StatelessWidget {
   final String uid;
   final TextStyle? style;
 
-  const UsernameGettingWidget({
+  const EmailGettingWidget({
     Key? key,
     required this.uid,
     this.style,
@@ -17,17 +17,17 @@ class UsernameGettingWidget extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Text('Error loading username');
+          return const Text('Error loading email');
         }
         if (!snapshot.hasData || !snapshot.data!.exists) {
           return const Text('Loading...');
         }
-        final username = snapshot.data!['username'] as String?;
-        if (username == null) {
-          return const Text('Username not found');
+        final email = snapshot.data!['email'] as String?;
+        if (email == null) {
+          return const Text('Email not found');
         }
         return Text(
-          '@$username',
+          email,
           style: style ??
               const TextStyle(
                 fontSize: 20,

@@ -2,33 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class NameChangingWidget extends StatefulWidget {
-  const NameChangingWidget({super.key});
+class UsernameChangingWidget extends StatefulWidget {
+  const UsernameChangingWidget({super.key});
 
   @override
-  State<NameChangingWidget> createState() => _NameChangingWidgetState();
+  State<UsernameChangingWidget> createState() => _UsernameChangingWidgetState();
 }
 
-class _NameChangingWidgetState extends State<NameChangingWidget> {
-  final TextEditingController _nameController = TextEditingController();
+class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
+  final TextEditingController _usernameController = TextEditingController();
   bool _isSaving = false;
   String? _error;
 
-  Future<void> _saveName() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
+  Future<void> _saveUsername() async {
+    final newUsername = _usernameController.text.trim();
+    final normalizedUsername = newUsername.toLowerCase();
+
+    if (newUsername.isEmpty) {
       setState(() {
         _isSaving = false;
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter a new name!')));
+      ).showSnackBar(const SnackBar(content: Text('Please enter a new username!')));
       return;
     }
+
     setState(() {
       _isSaving = true;
       _error = null;
     });
+
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
       setState(() {
@@ -39,23 +43,39 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       ).showSnackBar(const SnackBar(content: Text('User not logged in.')));
       return;
     }
+
     try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: normalizedUsername)
+          .get();
+
+      if (query.docs.isNotEmpty && query.docs.first.id != uid) {
+        setState(() {
+          _isSaving = false;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Username already taken.')));
+        return;
+      }
+
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'name': name,
+        'username': newUsername,
       });
       setState(() {
         _isSaving = false;
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Name updated!')));
+      ).showSnackBar(const SnackBar(content: Text('Username updated!')));
     } catch (e) {
       setState(() {
         _isSaving = false;
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to update name.')));
+      ).showSnackBar(const SnackBar(content: Text('Failed to update username.')));
     }
   }
 
@@ -74,7 +94,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
               children: [
                 Container(
                   width: screenWidth,
-                  height: screenHeight * 0.18,
+                  height: screenHeight * 0.16,
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -92,21 +112,21 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                           child: Column(
                             children: [
                               Text(
-                                'Name',
+                                'Username',
                                 style: TextStyle(
                                   fontSize: screenWidth * 0.10,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Irina',
                                   color: Colors.black,
                                 ),
-                              ), 
+                              ),
                               Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: screenWidth * 0.05,
                                   vertical: 0,
                                 ),
                                 child: Text(
-                                  'This is how you will be shown on Later, pick a name wisely so your friends know you by',
+                                  'This is how your friends find and add you on Later',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
@@ -122,7 +142,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                         ),
                       ),
                       Positioned(
-                        bottom: 60,
+                        bottom: 40,
                         left: 8,
                         child: GestureDetector(
                           onTap: () {
@@ -159,9 +179,9 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                       ],
                     ),
                     child: TextField(
-                      controller: _nameController,
+                      controller: _usernameController,
                       decoration: InputDecoration(
-                        hintText: "Enter new name",
+                        hintText: "Enter new username",
                         errorText: _error,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: screenWidth * 0.04,
@@ -183,7 +203,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
           Positioned(
             left: screenWidth * 0.15,
             right: screenWidth * 0.15,
-            bottom: screenHeight * 0.05,
+            bottom: screenHeight * 0.025,
             child: Container(
               decoration: BoxDecoration(
                 boxShadow: [
@@ -207,7 +227,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                     ),
                     elevation: 0,
                   ),
-                  onPressed: _isSaving ? null : _saveName,
+                  onPressed: _isSaving ? null : _saveUsername,
                   child: _isSaving
                       ? const SizedBox(
                           width: 20,
