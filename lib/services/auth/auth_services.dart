@@ -85,7 +85,6 @@ class AuthService extends ChangeNotifier {
     required String username,
   }) async {
     final normalizedUsername = username.trim().toLowerCase();
-
     final existing = await FirebaseFirestore.instance
         .collection('users')
         .where('username', isEqualTo: normalizedUsername)

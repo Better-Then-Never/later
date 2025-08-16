@@ -24,6 +24,12 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   @override
+  void dispose() {
+    cameraController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(backgroundColor: Colors.black87, body: _buildUI());
   }
