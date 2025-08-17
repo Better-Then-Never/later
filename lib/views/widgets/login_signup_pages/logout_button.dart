@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/widgets/prof_picture.dart';
+import 'package:later/views/widgets/background_picture.dart';
 
 class LogOutButton extends StatefulWidget {
   final String buttonText;
@@ -12,34 +14,38 @@ class LogOutButton extends StatefulWidget {
   });
 
   @override
-  _LogOutButtonState createState() => _LogOutButtonState();
+  State<LogOutButton> createState() => _LogOutButtonState();
 }
 
 class _LogOutButtonState extends State<LogOutButton> {
   bool _isLoading = false;
 
-  void _handleSignOut() async {
-    setState(() {
-      _isLoading = true;
-    });
+void _handleSignOut() async {
+  setState(() {
+    _isLoading = true;
+  });
 
-    final authService = Provider.of<AuthService>(context, listen: false);
+  final authService = Provider.of<AuthService>(context, listen: false);
 
-    try {
-      await authService.signOut();
-      if (widget.onSignedOut != null) {
-        widget.onSignedOut!();
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+  try {
+    await authService.signOut();
+    await clearProfileImageCache();
+    await clearBackgroundImageCache();
+    if (widget.onSignedOut != null) {
+      widget.onSignedOut!();
     }
+  } catch (e) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(e.toString())));
+    // TODO: Proper error codes
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

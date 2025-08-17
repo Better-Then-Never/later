@@ -1,10 +1,15 @@
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:later/services/auth/auth_services.dart';
+import 'package:provider/provider.dart';
 
 class LoginWithSocial extends StatefulWidget {
   const LoginWithSocial({super.key});
 
   @override
-  _LoginWithSocialState createState() => _LoginWithSocialState();
+  State<LoginWithSocial> createState() => _LoginWithSocialState();
 }
 
 class _LoginWithSocialState extends State<LoginWithSocial> {
@@ -18,8 +23,16 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              onPressed: () {
-                // TODO: Google LogIn
+              onPressed: () async {
+                final googleSignInResult = await signInWithGoogle(context);
+                if (!context.mounted) return;
+                if (googleSignInResult != null) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/widgetTree',
+                    (route) => false,
+                  );
+                }
               },
               icon: Image.asset(
                 'assets/images/icons/login_signup_pages/google.png',
@@ -49,5 +62,56 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
         ),
       ],
     );
+  }
+}
+
+Future<UserCredential?> signInWithGoogle(BuildContext context) async {
+  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+  await googleSignIn.initialize();
+
+  if (!context.mounted) return null;
+  final authService = Provider.of<AuthService>(context, listen: false);
+
+  try {
+    final GoogleSignInAccount googleUser = await GoogleSignIn.instance
+        .authenticate();
+
+    if (!context.mounted) return null;
+
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
+
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(
+      credential,
+    );
+
+    final user = userCredential.user;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        await authService.addUserToDatabase(
+          uid: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+          username: user.email?.split('@').first ?? '',
+        );
+      }
+    }
+
+    return userCredential;
+  } on Exception catch (e) {
+    if (!context.mounted) return null;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(e.toString())));
+    // TODO: Proper error codes
+    return null;
   }
 }
