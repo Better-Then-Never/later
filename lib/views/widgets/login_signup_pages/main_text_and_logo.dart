@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MainText extends StatefulWidget {
-  final dynamic mainText;
-  final dynamic additionalText;
+  final String mainText;
+  final String additionalText;
   const MainText({
     super.key,
     required this.mainText,
@@ -10,7 +10,7 @@ class MainText extends StatefulWidget {
   });
 
   @override
-  _MainTextState createState() => _MainTextState();
+  State<MainText> createState() => _MainTextState();
 }
 
 class _MainTextState extends State<MainText> {
