@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/widgets/prof_picture.dart';
+import 'package:later/views/widgets/background_picture.dart';
 
 class LogOutButton extends StatefulWidget {
   final String buttonText;
@@ -27,6 +29,8 @@ class _LogOutButtonState extends State<LogOutButton> {
 
     try {
       await authService.signOut();
+      await clearProfileImageCache();
+      await clearBackgroundImageCache();
       if (widget.onSignedOut != null) {
         widget.onSignedOut!();
       }
