@@ -18,7 +18,6 @@ import 'package:later/views/widget_tree_wrapper.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
@@ -54,7 +53,9 @@ class Application extends StatelessWidget {
             return Scaffold(body: Center(child: CircularProgressIndicator()));
           }
 
-          return snapshot.hasData ? const WidgetTree() : const WelcomePage();
+          return snapshot.hasData
+              ? const WidgetTreeWrapper()
+              : const WelcomePage();
         },
       ),
       theme: ThemeData(
