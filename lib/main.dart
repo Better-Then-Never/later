@@ -14,8 +14,11 @@ import 'package:later/views/pages/options_profile_page/notifications_page.dart';
 import 'package:later/views/pages/options_profile_page/share_page.dart';
 import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
+import 'package:later/views/widget_tree_wrapper.dart';
+import 'package:provider/provider.dart';
 
-Future<void> main() async {
+void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
@@ -33,7 +36,7 @@ class Application extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/widgetTree': (context) => const WidgetTree(),
+        '/widgetTree': (context) => const WidgetTreeWrapper(),
         '/welcome': (context) => const WelcomePage(),
         '/camera': (context) => const CameraPage(),
         '/loginPage': (context) => const LoginPage(),

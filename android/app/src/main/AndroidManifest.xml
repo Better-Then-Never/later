@@ -2,11 +2,12 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:label="later"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,7 +37,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBM1CQjaf4j2cucP8ST5Lsx1dbP-4d2Pww"/>            
+            android:value="AIzaSyBM1CQjaf4j2cucP8ST5Lsx1dbP-4d2Pww"/>                       
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
