@@ -73,6 +73,8 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   final authService = Provider.of<AuthService>(context, listen: false);
 
   try {
+    await googleSignIn.signOut();
+
     final GoogleSignInAccount googleUser = await GoogleSignIn.instance
         .authenticate();
 
@@ -96,11 +98,19 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
           .get();
 
       if (!userDoc.exists) {
+        final googleInfo = user.providerData.firstWhere(
+          (info) => info.providerId == 'google.com',
+          orElse: () => user.providerData.first,
+        );
+
         await authService.addUserToDatabase(
           uid: user.uid,
-          email: user.email ?? '',
-          name: user.displayName ?? '',
-          username: user.email?.split('@').first ?? '',
+          email: googleInfo.email ?? user.email ?? '',
+          name: googleInfo.displayName ?? user.displayName ?? '',
+          username: (googleInfo.email ?? user.email ?? '')
+              .split('@')
+              .first
+              .toLowerCase(),
         );
       }
     }

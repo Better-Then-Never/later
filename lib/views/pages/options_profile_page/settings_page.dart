@@ -30,7 +30,7 @@ class SettingsPage extends StatelessWidget {
           children: [
             Container(
               width: screenWidth,
-              height: screenHeight * 0.13,
+              height: screenHeight * 0.12,
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -90,7 +90,7 @@ class SettingsPage extends StatelessWidget {
             Center(
               child: Container(
                 width: screenWidth * 0.92,
-                height: screenHeight * 0.45,
+                height: screenHeight * 0.47,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
@@ -222,7 +222,8 @@ class SettingsPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ProfileCustomizationPage(),
+                            builder: (context) =>
+                                const ProfileCustomizationPage(),
                           ),
                         );
                       },

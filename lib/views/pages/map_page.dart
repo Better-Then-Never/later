@@ -1,8 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:geolocator/geolocator.dart';
-import 'dart:async';
+import 'package:location/location.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -11,121 +11,103 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage>
-    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
-  late GoogleMapController controller;
-  StreamSubscription<Position>? positionStream;
+class _MapPageState extends State<MapPage> {
+  final Location _locationController = Location();
+  final Completer<GoogleMapController> _mapController = Completer();
+  LatLng? _currentPosition;
 
-  LatLng? currentLatLng;
-
-  bool locationDenied = false;
+  StreamSubscription<LocationData>? _locationSubscription;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    initialize();
+    getLocationUpdates();
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    positionStream?.cancel();
+    _locationSubscription?.cancel();
     super.dispose();
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed && locationDenied) {
-      final status = await Permission.location.status;
-      if (status.isGranted) {
-        setState(() {
-          locationDenied = false;
-        });
-        initialize();
-      }
-    }
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  Future<void> initialize() async {
-    final status = await Permission.location.request();
-    if (!status.isGranted) {
-      setState(() {
-        locationDenied = true;
-      });
-      return;
-    }
-
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
-      ),
-    );
-
-    setState(() {
-      currentLatLng = LatLng(position.latitude, position.longitude);
-    });
-
-    startLocationUpdates();
-  }
-
-  void startLocationUpdates() {
-    positionStream =
-        Geolocator.getPositionStream(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.high,
-            distanceFilter: 10,
-          ),
-        ).listen((Position position) {
-          if (mounted) {
-            setState(() {
-              currentLatLng = LatLng(position.latitude, position.longitude);
-            });
-          }
-        });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    super.build(context);
+    return FutureBuilder<PermissionStatus>(
+      future: _locationController.hasPermission(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+        //TODO: Handle Location Permission Properly
+        final permission = snapshot.data;
+        if (permission != PermissionStatus.granted) {
+          return Center(
+            child: Text("We need location permission to use the map"),
+          );
+        }
 
-    if (locationDenied) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text("Location permission is required to use the map."),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () {
-                openAppSettings();
-              },
-              child: const Text("Open App Settings"),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (currentLatLng == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return GoogleMap(
-      cloudMapId: '1b016f650a3b702f3fd1d9e1',
-      initialCameraPosition: CameraPosition(target: currentLatLng!, zoom: 15),
-      onMapCreated: (GoogleMapController mapController) {
-        controller = mapController;
+        return _currentPosition == null
+            ? Center(child: CircularProgressIndicator())
+            : GoogleMap(
+                onMapCreated: ((GoogleMapController controller) =>
+                    _mapController.complete(controller)),
+                cloudMapId: '1b016f650a3b702f3fd1d9e1',
+                initialCameraPosition: CameraPosition(
+                  target: _currentPosition!,
+                  zoom: 13,
+                ),
+                markers: {
+                  Marker(
+                    markerId: MarkerId("_currentLocation"),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueRed,
+                    ),
+                    position: _currentPosition!,
+                  ),
+                },
+              );
       },
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      compassEnabled: false,
-      zoomControlsEnabled: false,
-      mapToolbarEnabled: false,
     );
+  }
+
+  //TODO: Show My Location Button
+  Future<void> _cameraToPosition(LatLng pos) async {
+    final GoogleMapController controller = await _mapController.future;
+    await controller.animateCamera(CameraUpdate.newLatLng(pos));
+  }
+
+  Future<void> getLocationUpdates() async {
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    serviceEnabled = await _locationController.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _locationController.requestService();
+      if (!serviceEnabled) return;
+    }
+
+    permissionGranted = await _locationController.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await _locationController.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) return;
+    }
+
+    _locationController.changeSettings(interval: 5000, distanceFilter: 10);
+
+    _locationSubscription = _locationController.onLocationChanged.listen((
+      LocationData currentLocation,
+    ) {
+      if (!mounted) return;
+      if (currentLocation.latitude != null &&
+          currentLocation.longitude != null) {
+        setState(() {
+          _currentPosition = LatLng(
+            currentLocation.latitude!,
+            currentLocation.longitude!,
+          );
+        });
+      }
+    });
   }
 }
+//'1b016f650a3b702f3fd1d9e1'
