@@ -14,7 +14,12 @@ Future<void> clearBackgroundImageCache() async {
 class BackgroundPicture extends StatefulWidget {
   final double? pictureHeight;
   final double? pictureWidth;
-  const BackgroundPicture({super.key, this.pictureHeight, this.pictureWidth, required Alignment allignment});
+  const BackgroundPicture({
+    super.key,
+    this.pictureHeight,
+    this.pictureWidth,
+    required Alignment allignment,
+  });
 
   @override
   State<BackgroundPicture> createState() => _BackgroundPictureState();
@@ -68,7 +73,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
     try {
       if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("background_pictures/$uid/$fileName");
+      final imageRef = storageRef.child(
+        "userdata/$uid/assets/images/$fileName",
+      );
       await imageRef.delete();
     } catch (e) {
       // Handle error if needed
@@ -78,7 +85,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   Future<void> saveBackgroundImage(Uint8List imageBytes) async {
     if (uid == null) return;
     final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("background_pictures/$uid/$fileName");
+    final imageRef = storageRef.child("userdata/$uid/assets/images/$fileName");
     await imageRef.putData(imageBytes);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('background_image', base64Encode(imageBytes));
@@ -89,7 +96,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
     try {
       if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("background_pictures/$uid/$fileName");
+      final imageRef = storageRef.child(
+        "userdata/$uid/assets/images/$fileName",
+      );
       final imageBytes = await imageRef.getData();
       if (imageBytes != null) {
         final prefs = await SharedPreferences.getInstance();
@@ -206,7 +215,12 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                           await deleteBackgroundImage();
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: const Color.fromARGB(253, 253, 65, 64),
+                          foregroundColor: const Color.fromARGB(
+                            253,
+                            253,
+                            65,
+                            64,
+                          ),
                           textStyle: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -218,7 +232,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                             ),
                           ),
                         ),
-                        child: const Center(child: Text('Delete background picture')),
+                        child: const Center(
+                          child: Text('Delete background picture'),
+                        ),
                       ),
                     ),
                   ],

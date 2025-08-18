@@ -43,6 +43,9 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'name': name,
       });
+
+      if (!mounted) return;
+
       setState(() {
         _isSaving = false;
       });
@@ -99,7 +102,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                                   fontFamily: 'Irina',
                                   color: Colors.black,
                                 ),
-                              ), 
+                              ),
                               Padding(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: screenWidth * 0.05,
