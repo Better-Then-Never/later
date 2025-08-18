@@ -22,9 +22,9 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter a new username!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a new username!')),
+      );
       return;
     }
 
@@ -51,18 +51,20 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
           .get();
 
       if (query.docs.isNotEmpty && query.docs.first.id != uid) {
+        if (!mounted) return;
         setState(() {
           _isSaving = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Username already taken.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Username already taken.')),
+        );
         return;
       }
 
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'username': newUsername,
       });
+      if (!mounted) return;
       setState(() {
         _isSaving = false;
       });
@@ -73,9 +75,9 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to update username.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to update username.')),
+      );
     }
   }
 

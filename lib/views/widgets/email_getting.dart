@@ -5,16 +5,15 @@ class EmailGettingWidget extends StatelessWidget {
   final String uid;
   final TextStyle? style;
 
-  const EmailGettingWidget({
-    Key? key,
-    required this.uid,
-    this.style,
-  }) : super(key: key);
+  const EmailGettingWidget({super.key, required this.uid, this.style});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text('Error loading email');
@@ -28,7 +27,8 @@ class EmailGettingWidget extends StatelessWidget {
         }
         return Text(
           email,
-          style: style ??
+          style:
+              style ??
               const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

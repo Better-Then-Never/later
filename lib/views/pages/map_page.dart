@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -71,10 +70,10 @@ class _MapPageState extends State<MapPage> {
   }
 
   //TODO: Show My Location Button
-  Future<void> _cameraToPosition(LatLng pos) async {
+  /*Future<void> _cameraToPosition(LatLng pos) async {
     final GoogleMapController controller = await _mapController.future;
     await controller.animateCamera(CameraUpdate.newLatLng(pos));
-  }
+  }*/
 
   Future<void> getLocationUpdates() async {
     bool serviceEnabled;
