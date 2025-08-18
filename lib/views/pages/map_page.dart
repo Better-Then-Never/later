@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:location/location.dart';
 
 class MapPage extends StatefulWidget {
@@ -14,12 +16,16 @@ class _MapPageState extends State<MapPage> {
   final Location _locationController = Location();
   final Completer<GoogleMapController> _mapController = Completer();
   LatLng? _currentPosition;
+  String? uid;
 
   StreamSubscription<LocationData>? _locationSubscription;
+
+  final Map<MarkerId, Marker> _markers = {};
 
   @override
   void initState() {
     super.initState();
+    uid = FirebaseAuth.instance.currentUser?.uid;
     getLocationUpdates();
   }
 
@@ -45,26 +51,58 @@ class _MapPageState extends State<MapPage> {
           );
         }
 
-        return _currentPosition == null
-            ? Center(child: CircularProgressIndicator())
-            : GoogleMap(
-                onMapCreated: ((GoogleMapController controller) =>
-                    _mapController.complete(controller)),
-                cloudMapId: '1b016f650a3b702f3fd1d9e1',
-                initialCameraPosition: CameraPosition(
-                  target: _currentPosition!,
-                  zoom: 13,
+        if (_currentPosition == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('capsules').snapshots(),
+          builder: (context, capsuleSnapshot) {
+            if (!capsuleSnapshot.hasData)
+              return const Center(child: CircularProgressIndicator());
+
+            _markers.clear();
+
+            _markers[MarkerId("_currentLocation")] = Marker(
+              markerId: const MarkerId("_currentLocation"),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueBlue,
+              ), // or any hue
+              position: _currentPosition!,
+            );
+
+            for (var doc in capsuleSnapshot.data!.docs) {
+              final data = doc.data() as Map<String, dynamic>;
+              final GeoPoint geoPoint =
+                  data['location']; // GeoPoint from Firestore
+              final capsulePos = LatLng(
+                geoPoint.latitude,
+                geoPoint.longitude,
+              ); // access properties directly
+              final capsuleId = doc.id;
+
+              _markers[MarkerId(capsuleId)] = Marker(
+                markerId: MarkerId(capsuleId),
+                position: capsulePos,
+                infoWindow: InfoWindow(
+                  title: data['description'] ?? 'Capsule',
+                  snippet: "Tap for details",
+                  onTap: () => _showCapsuleInfo(data),
                 ),
-                markers: {
-                  Marker(
-                    markerId: MarkerId("_currentLocation"),
-                    icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueRed,
-                    ),
-                    position: _currentPosition!,
-                  ),
-                },
               );
+            }
+
+            return GoogleMap(
+              onMapCreated: (controller) => _mapController.complete(controller),
+              cloudMapId: '1b016f650a3b702f3fd1d9e1',
+              initialCameraPosition: CameraPosition(
+                target: _currentPosition!,
+                zoom: 13,
+              ),
+              markers: Set<Marker>.of(_markers.values),
+            );
+          },
+        );
       },
     );
   }
@@ -74,6 +112,24 @@ class _MapPageState extends State<MapPage> {
     final GoogleMapController controller = await _mapController.future;
     await controller.animateCamera(CameraUpdate.newLatLng(pos));
   }*/
+
+  void _showCapsuleInfo(Map<String, dynamic> capsuleData) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(capsuleData['description'] ?? 'Capsule'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (capsuleData['imageUrl'] != null)
+              Image.network(capsuleData['imageUrl']),
+            const SizedBox(height: 8),
+            Text('Owner: ${capsuleData['ownerId'] ?? 'Unknown'}'),
+          ],
+        ),
+      ),
+    );
+  }
 
   Future<void> getLocationUpdates() async {
     bool serviceEnabled;
