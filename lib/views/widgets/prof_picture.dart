@@ -68,7 +68,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
     try {
       if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("profile_pictures/$uid/$fileName");
+      final imageRef = storageRef.child(
+        "userdata/$uid/assets/images/$fileName",
+      );
       await imageRef.delete();
     } catch (e) {
       // Handle error if needed
@@ -78,7 +80,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
   Future<void> saveProfileImage(Uint8List imageBytes) async {
     if (uid == null) return;
     final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("profile_pictures/$uid/$fileName");
+    final imageRef = storageRef.child("userdata/$uid/assets/images/$fileName");
     await imageRef.putData(imageBytes);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('profile_image', base64Encode(imageBytes));
@@ -89,7 +91,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
     try {
       if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
-      final imageRef = storageRef.child("profile_pictures/$uid/$fileName");
+      final imageRef = storageRef.child(
+        "userdata/$uid/assets/images/$fileName",
+      );
       final imageBytes = await imageRef.getData();
       if (imageBytes != null) {
         final prefs = await SharedPreferences.getInstance();

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/pages/login_page.dart';
-import 'package:later/views/widget_tree.dart';
 import 'package:later/views/pages/welcome_page.dart';
 import 'package:later/views/pages/camera_page.dart';
 import 'package:later/views/pages/signup_page.dart';
@@ -15,7 +14,6 @@ import 'package:later/views/pages/options_profile_page/share_page.dart';
 import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
