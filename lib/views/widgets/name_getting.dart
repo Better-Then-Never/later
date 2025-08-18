@@ -9,17 +9,20 @@ class NameGettingWidget extends StatelessWidget {
   final double? minFontSize;
 
   const NameGettingWidget({
-    Key? key,
+    super.key,
     required this.uid,
     this.style,
     this.maxLines,
     this.minFontSize,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text('Error loading name');
@@ -35,7 +38,8 @@ class NameGettingWidget extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.6,
           child: AutoSizeText(
             name,
-            style: style ??
+            style:
+                style ??
                 const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,

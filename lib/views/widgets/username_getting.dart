@@ -5,16 +5,15 @@ class UsernameGettingWidget extends StatelessWidget {
   final String uid;
   final TextStyle? style;
 
-  const UsernameGettingWidget({
-    Key? key,
-    required this.uid,
-    this.style,
-  }) : super(key: key);
+  const UsernameGettingWidget({super.key, required this.uid, this.style});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').doc(uid).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Text('Error loading username');
@@ -28,7 +27,8 @@ class UsernameGettingWidget extends StatelessWidget {
         }
         return Text(
           '@$username',
-          style: style ??
+          style:
+              style ??
               const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
