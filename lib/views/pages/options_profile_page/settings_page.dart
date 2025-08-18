@@ -299,6 +299,7 @@ class SettingsPage extends StatelessWidget {
                                               Navigator.of(context).pop();
                                               await clearProfileImageCache();
                                               await clearBackgroundImageCache();
+                                              if (!context.mounted) return;
                                               Navigator.pushNamedAndRemoveUntil(
                                                 context,
                                                 '/welcome',

@@ -90,17 +90,24 @@ class ProfilePage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ProfilePicture(pictureHeight: 115, pictureWidth: 115), // No padding
+                      ProfilePicture(
+                        pictureHeight: 115,
+                        pictureWidth: 115,
+                      ), // No padding
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           NameGettingWidget(
-                            uid: FirebaseAuth.instance.currentUser?.uid ?? 'null',
+                            uid:
+                                FirebaseAuth.instance.currentUser?.uid ??
+                                'null',
                           ),
                           UsernameGettingWidget(
-                            uid: FirebaseAuth.instance.currentUser?.uid ?? 'null',
+                            uid:
+                                FirebaseAuth.instance.currentUser?.uid ??
+                                'null',
                           ),
                         ],
                       ),
@@ -167,14 +174,15 @@ class ProfilePage extends StatelessWidget {
                                 height: 39,
                                 child: TextButton(
                                   onPressed: () {
-                                    print("Add to map friends tapped");
+                                    //TODO : Implement Add To Map friends button
                                   },
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                     foregroundColor: Colors.black,
                                     textStyle: const TextStyle(fontSize: 16),
                                     splashFactory: NoSplash.splashFactory,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     overlayColor: Colors.transparent,
                                   ),
                                   child: const Text(
@@ -204,14 +212,15 @@ class ProfilePage extends StatelessWidget {
                                 height: 41,
                                 child: TextButton(
                                   onPressed: () {
-                                    print("Add to map everyone tapped");
+                                    //TODO: Add to map everyone tapped
                                   },
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                     foregroundColor: Colors.black,
                                     textStyle: const TextStyle(fontSize: 16),
                                     splashFactory: NoSplash.splashFactory,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     overlayColor: Colors.transparent,
                                   ),
                                   child: const Text(
@@ -238,7 +247,7 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 2),
                   GestureDetector(
                     onTap: () {
-                      print("Add friends tapped");
+                      //TODO: Add friends tapped
                     },
                     child: Container(
                       width: screenWidth - 32,
@@ -327,14 +336,15 @@ class ProfilePage extends StatelessWidget {
                                 height: 40,
                                 child: TextButton(
                                   onPressed: () {
-                                    print("My friends tapped");
+                                    //TODO: My friends tapped
                                   },
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
                                     foregroundColor: Colors.black,
                                     textStyle: const TextStyle(fontSize: 16),
                                     splashFactory: NoSplash.splashFactory,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     overlayColor: Colors.transparent,
                                   ),
                                   child: const Text(
