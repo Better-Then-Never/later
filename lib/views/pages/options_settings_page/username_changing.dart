@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:later/services/auth/user_services.dart';
+import 'package:provider/provider.dart';
 
 class UsernameChangingWidget extends StatefulWidget {
   const UsernameChangingWidget({super.key});
@@ -33,7 +34,8 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       _error = null;
     });
 
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final userService = Provider.of<UserService>(context, listen: false);
+    final uid = userService.uid;
     if (uid == null) {
       setState(() {
         _isSaving = false;

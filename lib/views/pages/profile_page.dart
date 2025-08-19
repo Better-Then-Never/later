@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:later/services/auth/user_services.dart';
 import 'package:later/views/widgets/background_picture.dart';
-import 'package:later/views/widgets/name_getting.dart';
+import 'package:later/services/auth/name_getting.dart';
 import 'package:later/views/widgets/prof_picture.dart';
-import 'package:later/views/widgets/username_getting.dart';
+import 'package:later/services/auth/username_getting.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -11,6 +12,8 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final userService = Provider.of<UserService>(context, listen: false);
+    final uid = userService.uid ?? 'null';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
@@ -99,16 +102,8 @@ class ProfilePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          NameGettingWidget(
-                            uid:
-                                FirebaseAuth.instance.currentUser?.uid ??
-                                'null',
-                          ),
-                          UsernameGettingWidget(
-                            uid:
-                                FirebaseAuth.instance.currentUser?.uid ??
-                                'null',
-                          ),
+                          NameGettingWidget(uid: uid),
+                          UsernameGettingWidget(uid: uid),
                         ],
                       ),
                     ],
