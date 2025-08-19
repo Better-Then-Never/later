@@ -257,7 +257,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
         height: widget.pictureHeight ?? 200,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Color.fromARGB(255, 187, 187, 187),
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
@@ -270,11 +270,18 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
               : null,
         ),
         child: pickedImage == null
-            ? const Center(
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 35,
-                  color: Colors.black38,
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 80,
+                  ), // Adjust this value as needed
+                  child: Image.asset(
+                    'assets/images/icons/prof_page/choose_bg.png',
+                    width: 35,
+                    height: 35,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               )
             : null,

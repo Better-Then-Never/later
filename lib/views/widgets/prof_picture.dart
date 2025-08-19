@@ -250,7 +250,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
         height: widget.pictureHeight ?? 150,
         width: widget.pictureWidth ?? 150,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Color.fromARGB(255, 223, 223, 223),
           borderRadius: BorderRadius.circular(25),
           image: pickedImage != null
               ? DecorationImage(
@@ -260,11 +260,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
               : null,
         ),
         child: pickedImage == null
-            ? const Center(
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 35,
-                  color: Colors.black38,
+            ? Center(
+                child: Image.asset(
+                  'assets/images/icons/prof_page/choose_pp.png',
+                  width: 35,
+                  height: 35,
+                  fit: BoxFit.contain,
                 ),
               )
             : null,
