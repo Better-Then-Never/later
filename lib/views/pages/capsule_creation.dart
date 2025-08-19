@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:later/views/pages/map_page.dart' as map;
 
 class CapsuleCreationPage extends StatefulWidget {
   final String imagePath;
@@ -68,10 +69,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                 onPressed: () async {
                   // TODO: Implement proper map location picking
                   // For now we use dummy coordinates
-                  _pickedLocation = LatLng(
-                    51.76926904036574,
-                    19.48539528790105,
-                  );
+                  _pickedLocation = map.MapPage.currentPositionStatic;
                   await _saveCapsule();
                 },
                 child: _isSaving
