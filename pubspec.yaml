@@ -46,6 +46,7 @@ dependencies:
   image_picker: ^1.1.2
   location: ^8.0.1
   camera: ^0.11.2
+  custom_info_window: ^1.0.1
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
     - assets/images/icons/prof_page/
     - assets/images/icons/camera/
     - assets/images/icons/map/pins/
+    - assets/images/icons/capsule_creation/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

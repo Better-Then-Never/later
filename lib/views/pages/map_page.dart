@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/services/location/location_service.dart';
 import 'package:later/services/map/marker_icon.dart';
+import 'package:custom_info_window/custom_info_window.dart';
+import 'package:later/views/widgets/map/capsule_info_widget.dart';
 
 class MapPage extends StatefulWidget {
   static LatLng? currentPositionStatic;
@@ -16,6 +18,8 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _mapController = Completer();
+  final CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
   final Map<MarkerId, Marker> _markers = {};
   final LocationService _locationService = LocationService();
 
@@ -64,6 +68,7 @@ class _MapPageState extends State<MapPage> {
   @override
   void dispose() {
     _locationService.dispose();
+    _customInfoWindowController.dispose();
     super.dispose();
   }
 
@@ -101,22 +106,45 @@ class _MapPageState extends State<MapPage> {
             markerId: MarkerId(capsuleId),
             position: capsulePos,
             icon: icon!,
-            infoWindow: InfoWindow(
-              title: data['description'] ?? 'Capsule',
-              snippet: "Tap for details",
-              onTap: () => _showCapsuleInfo(data),
-            ),
+            onTap: () {
+              _customInfoWindowController.addInfoWindow!(
+                CapsuleInfoPanel(
+                  title: data['title'],
+                  onMoreInfo: () => _showCapsuleInfo(data),
+                ),
+                capsulePos,
+              );
+            },
           );
         }
 
-        return GoogleMap(
-          onMapCreated: (controller) => _mapController.complete(controller),
-          cloudMapId: '1b016f650a3b702f3fd1d9e1',
-          initialCameraPosition: CameraPosition(
-            target: _currentPosition!,
-            zoom: 13,
-          ),
-          markers: Set<Marker>.of(_markers.values),
+        return Stack(
+          children: [
+            GoogleMap(
+              onMapCreated: (controller) {
+                _mapController.complete(controller);
+                _customInfoWindowController.googleMapController = controller;
+              },
+              cloudMapId: '1b016f650a3b702f3fd1d9e1',
+              initialCameraPosition: CameraPosition(
+                target: _currentPosition!,
+                zoom: 13,
+              ),
+              markers: Set<Marker>.of(_markers.values),
+              onTap: (_) {
+                _customInfoWindowController.hideInfoWindow!();
+              },
+              onCameraMove: (position) {
+                _customInfoWindowController.onCameraMove!();
+              },
+            ),
+            CustomInfoWindow(
+              controller: _customInfoWindowController,
+              height: 130,
+              width: 200,
+              offset: 50,
+            ),
+          ],
         );
       },
     );
