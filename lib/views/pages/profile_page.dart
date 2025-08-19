@@ -93,10 +93,7 @@ class ProfilePage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ProfilePicture(
-                        pictureHeight: 115,
-                        pictureWidth: 115,
-                      ), // No padding
+                      ProfilePicture(pictureHeight: 115, pictureWidth: 115),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,7 +239,7 @@ class ProfilePage extends StatelessWidget {
                   const SizedBox(height: 2),
                   GestureDetector(
                     onTap: () {
-                      //TODO: Add friends tapped
+                      Navigator.pushNamed(context, '/addFriendsPage');
                     },
                     child: Container(
                       width: screenWidth - 32,
