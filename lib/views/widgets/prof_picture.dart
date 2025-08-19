@@ -1,10 +1,11 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:later/services/auth/user_services.dart';
+import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> clearProfileImageCache() async {
   final prefs = await SharedPreferences.getInstance();
@@ -23,12 +24,13 @@ class ProfilePicture extends StatefulWidget {
 class _ProfilePictureState extends State<ProfilePicture> {
   Uint8List? pickedImage;
   String? uid;
-  final String fileName = 'profile_image'; // Always use this file name
+  final String fileName = 'profile_image';
 
   @override
   void initState() {
     super.initState();
-    uid = FirebaseAuth.instance.currentUser?.uid;
+    final userService = Provider.of<UserService>(context, listen: false);
+    uid = userService.uid;
     loadCachedImage();
   }
 
