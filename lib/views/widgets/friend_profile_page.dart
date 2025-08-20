@@ -4,7 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 class FriendProfilePage extends StatelessWidget {
   final String userId;
 
-  const FriendProfilePage({Key? key, required this.userId}) : super(key: key);
+  const FriendProfilePage({super.key, required this.userId});
 
   Future<String?> _getProfileImageUrl() async {
     final optimizedPath = 'userdata/$userId/assets/images/profile_image_small';
