@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 Future<void> clearProfileImageCache() async {
   final prefs = await SharedPreferences.getInstance();
@@ -97,17 +98,18 @@ class _ProfilePictureState extends State<ProfilePicture> {
     await imageRef.putData(imageBytes);
 
     final smallImageBytes = await _resizeImage(imageBytes, maxSize: 128);
-    print(
+    developer.log(
       'Original size: ${imageBytes.length}, Small size: ${smallImageBytes.length}',
+      name: 'ProfilePicture',
     );
     final smallImageRef = storageRef.child(
       "userdata/$uid/assets/images/profile_image_small",
     );
     try {
       await smallImageRef.putData(smallImageBytes);
-      print('Small image uploaded successfully');
+      developer.log('Small image uploaded successfully', name: 'ProfilePicture');
     } catch (e) {
-      print('Error uploading small image: $e');
+      developer.log('Error uploading small image: $e', name: 'ProfilePicture');
     }
 
     final prefs = await SharedPreferences.getInstance();
