@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/pages/login_page.dart';
-import 'package:later/views/pages/options_profile_page/add_friends.dart';
+import 'package:later/views/pages/options_profile_page/add_friends_page.dart';
+import 'package:later/views/pages/options_profile_page/my_friends_page.dart';
 import 'package:later/views/pages/welcome_page.dart';
 import 'package:later/views/pages/camera_page.dart';
 import 'package:later/views/pages/signup_page.dart';
@@ -49,6 +50,7 @@ class Application extends StatelessWidget {
         '/profile_page': (context) => const ProfilePage(),
         '/nameChangingWidget': (context) => const NameChangingWidget(),
         '/addFriendsPage': (context) => const AddFriendsPage(),
+        '/myFriendsPage': (context) => const MyFriendsPage(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),

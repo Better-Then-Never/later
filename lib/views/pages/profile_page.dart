@@ -328,7 +328,7 @@ class ProfilePage extends StatelessWidget {
                                 height: 40,
                                 child: TextButton(
                                   onPressed: () {
-                                    //TODO: My friends tapped
+                                    Navigator.pushNamed(context, '/myFriendsPage');
                                   },
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
