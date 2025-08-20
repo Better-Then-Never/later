@@ -13,12 +13,12 @@ class FriendsSearchWidget extends StatelessWidget {
   final String searchQuery;
 
   const FriendsSearchWidget({
-    Key? key,
+    super.key,
     required this.onAddFriend,
     required this.onRemoveFriend,
     required this.hiddenUserIds,
     required this.searchQuery,
-  }) : super(key: key);
+  });
 
   Future<String?> _getImageUrl(String userId) async {
     final optimizedPath = 'userdata/$userId/assets/images/profile_image_small';
@@ -246,3 +246,4 @@ class FriendSuggestionRow extends StatelessWidget {
     );
   }
 }
+

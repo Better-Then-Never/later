@@ -18,9 +18,6 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      Provider.of<UserService>(context, listen: false).refreshFriends();
-    });
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.trim();
@@ -29,9 +26,9 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   }
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<UserService>(context, listen: false).refreshFriends();
   }
 
   @override
@@ -101,7 +98,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                   child: TextField(
                                     controller: _searchController,
                                     decoration: InputDecoration(
-                                      hintText: "Search...",
+                                      hintText: "Search by nickname...",
                                       border: InputBorder.none,
                                       isDense: true,
                                     ),
@@ -241,10 +238,10 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                 context,
                 listen: false,
               );
+              final messenger = ScaffoldMessenger.of(context);
               await userService.addFriend(userId);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text('Friend added!')));
+              if (!mounted) return;
+              messenger.showSnackBar(SnackBar(content: Text('Friend added!')));
             },
             onRemoveFriend: (userId) {
               setState(() {
