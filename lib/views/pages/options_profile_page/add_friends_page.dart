@@ -1,8 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/auth/friends_search.dart';
+import 'package:later/services/auth/friend_search.dart';
+import 'package:provider/provider.dart';
+import 'package:later/services/auth/user_services.dart';
 
-class AddFriendsPage extends StatelessWidget {
+class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
+
+  @override
+  State<AddFriendsPage> createState() => _AddFriendsPageState();
+}
+
+class _AddFriendsPageState extends State<AddFriendsPage> {
+  static final Set<String> _hiddenUserIds = {};
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<UserService>(context, listen: false).refreshFriends();
+    });
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.trim();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +99,7 @@ class AddFriendsPage extends StatelessWidget {
                                 ),
                                 Expanded(
                                   child: TextField(
+                                    controller: _searchController,
                                     decoration: InputDecoration(
                                       hintText: "Search...",
                                       border: InputBorder.none,
@@ -115,15 +146,118 @@ class AddFriendsPage extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
-            child: FriendsSearchWidget(
-              onAddFriend: (userId) {
-                // TODO: Implement add friend logic
-              },
-              onRemoveFriend: (userId) {
-                // TODO: Implement remove friend logic
-              },
+          SizedBox(height: screenHeight * 0.015),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFEAEAEA),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: Image.asset(
+                            'assets/images/icons/friends_page/friend_book.png',
+                            width: 32,
+                            height: 32,
+                          ),
+                        ),
+                        Text(
+                          'Invite friends',
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Color(0xFFEAEAEA),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: Image.asset(
+                            'assets/images/icons/friends_page/friend_request.png',
+                            width: 32,
+                            height: 32,
+                          ),
+                        ),
+                        Text(
+                          'Requests',
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 20,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
+          ),
+          SizedBox(height: screenHeight * 0.01),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: screenWidth * 0.07),
+              child: Text(
+                'Make friends',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.045,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Irina',
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: screenHeight * 0.01),
+          FriendsSearchWidget(
+            onAddFriend: (userId) async {
+              final userService = Provider.of<UserService>(
+                context,
+                listen: false,
+              );
+              await userService.addFriend(userId);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('Friend added!')));
+            },
+            onRemoveFriend: (userId) {
+              setState(() {
+                _hiddenUserIds.add(userId);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Suggested friend removed from the list!'),
+                ),
+              );
+            },
+            hiddenUserIds: _hiddenUserIds,
+            searchQuery: _searchQuery,
           ),
         ],
       ),
