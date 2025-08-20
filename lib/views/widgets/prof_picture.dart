@@ -1,4 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:later/services/auth/user_services.dart';
@@ -79,11 +80,36 @@ class _ProfilePictureState extends State<ProfilePicture> {
     }
   }
 
+  Future<Uint8List> _resizeImage(
+    Uint8List imageBytes, {
+    int maxSize = 128,
+  }) async {
+    final original = img.decodeImage(imageBytes);
+    if (original == null) return imageBytes;
+    final resized = img.copyResize(original, width: maxSize, height: maxSize);
+    return Uint8List.fromList(img.encodeJpg(resized, quality: 80));
+  }
+
   Future<void> saveProfileImage(Uint8List imageBytes) async {
     if (uid == null) return;
     final storageRef = FirebaseStorage.instance.ref();
     final imageRef = storageRef.child("userdata/$uid/assets/images/$fileName");
     await imageRef.putData(imageBytes);
+
+    final smallImageBytes = await _resizeImage(imageBytes, maxSize: 128);
+    print(
+      'Original size: ${imageBytes.length}, Small size: ${smallImageBytes.length}',
+    );
+    final smallImageRef = storageRef.child(
+      "userdata/$uid/assets/images/profile_image_small",
+    );
+    try {
+      await smallImageRef.putData(smallImageBytes);
+      print('Small image uploaded successfully');
+    } catch (e) {
+      print('Error uploading small image: $e');
+    }
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('profile_image', base64Encode(imageBytes));
     setState(() => pickedImage = imageBytes);
