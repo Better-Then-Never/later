@@ -97,7 +97,7 @@ class _CameraPageState extends State<CameraPage> {
 
                       if (!mounted) return;
 
-                      await Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
