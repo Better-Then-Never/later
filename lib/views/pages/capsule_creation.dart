@@ -9,6 +9,11 @@ import 'package:later/views/pages/map_page.dart' as map;
 import 'package:later/views/widgets/capsule_creation/capsule_privacy_dropdown.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_image_preview.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_top_bar.dart';
+import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
+import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
+import 'package:later/views/widgets/capsule_creation/capsule_creation_description_input.dart';
+import 'package:later/views/widgets/capsule_creation/capsule_creation_title_input.dart';
+import 'package:intl/intl.dart';
 
 class CapsuleCreationPage extends StatefulWidget {
   final String imagePath;
@@ -24,6 +29,9 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
   final TextEditingController _titleController = TextEditingController();
 
   CapsulePrivacy _privacy = CapsulePrivacy.public;
+  CapsuleColor _color = CapsuleColor.red;
+  Timestamp? _openAt;
+
   LatLng? _pickedLocation;
   String? uid;
   bool _isSaving = false;
@@ -32,6 +40,51 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
   void initState() {
     super.initState();
     uid = FirebaseAuth.instance.currentUser?.uid;
+    _pickedLocation = map.MapPage.currentPositionStatic;
+  }
+
+  void _cyclePrivacy() {
+    final values = CapsulePrivacy.values;
+    final currentIndex = values.indexOf(_privacy);
+    final nextIndex = (currentIndex + 1) % values.length;
+    setState(() {
+      _privacy = values[nextIndex];
+    });
+  }
+
+  void _cycleColor() {
+    final values = CapsuleColor.values;
+    final currentIndex = values.indexOf(_color);
+    final nextIndex = (currentIndex + 1) % values.length;
+    setState(() {
+      _color = values[nextIndex];
+    });
+  }
+
+  Future<void> _pickOpenDate(BuildContext context) async {
+    final now = DateTime.now();
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: now.add(const Duration(days: 1)),
+      firstDate: now.add(const Duration(days: 1)),
+      lastDate: DateTime(now.year + 5),
+    );
+
+    if (picked != null) {
+      final chosenDateTime = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        now.hour,
+        now.minute,
+        now.second,
+      );
+
+      setState(() {
+        _openAt = Timestamp.fromDate(chosenDateTime);
+      });
+    }
   }
 
   @override
@@ -42,7 +95,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 80), // leave space for button
+        padding: const EdgeInsets.only(bottom: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -91,46 +144,98 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                             imagePath: widget.imagePath,
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextField(
+                              CapsuleCreationTitleInput(
                                 controller: _titleController,
-                                decoration: const InputDecoration(
-                                  hintText: "Add Title... ",
-                                  hintStyle: TextStyle(
-                                    fontSize: 25,
-                                    fontFamily: 'Irina',
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  border: InputBorder.none,
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 25,
-                                  fontFamily: 'Irina',
-                                  fontWeight: FontWeight.bold,
-                                ),
                               ),
-                              TextField(
+
+                              CapsuleCreationDescriptionInputField(
                                 controller: _descriptionController,
-                                decoration: const InputDecoration(
-                                  hintText: "Add description...",
-                                  hintStyle: TextStyle(
-                                    fontFamily: 'Irina',
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                  border: InputBorder.none,
-                                ),
-                                style: const TextStyle(
-                                  fontFamily: 'Irina',
-                                  fontWeight: FontWeight.normal,
-                                ),
-                                maxLines: 10,
                               ),
+
+                              CapsuleCreationDateStamp(
+                                height: screenHeight * 0.045,
+                              ),
+                              const SizedBox(height: 8),
+                              CapsuleCreationLocationLabel(
+                                height: screenHeight * 0.05,
+                                iconPath:
+                                    'assets/images/icons/capsule_creation/location_icon.png',
+                                location: _pickedLocation,
+                              ),
+                              const SizedBox(height: 8),
                             ],
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+
+                  Text(
+                    'Capsule Settings',
+                    style: TextStyle(
+                      fontSize: MediaQuery.of(context).size.width * 0.05,
+                      fontFamily: 'Irina',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.185,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.all(Radius.circular(25)),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        _settingsRow(
+                          context,
+                          true,
+                          'Privacy',
+                          infoText: _privacy.label,
+                          onTap: _cyclePrivacy,
+                          leadingIconPath:
+                              'assets/images/icons/capsule_creation/privacy_icon.png',
+                          screenWidth: screenWidth,
+                        ),
+                        _settingsRow(
+                          context,
+                          true,
+                          'Open At',
+                          infoText: _openAt != null
+                              ? DateFormat(
+                                  'yyyy-MM-dd',
+                                ).format(_openAt!.toDate())
+                              : "Select date",
+                          leadingIconPath:
+                              'assets/images/icons/capsule_creation/timer_icon.png',
+                          onTap: () => _pickOpenDate(context),
+                          screenWidth: screenWidth,
+                        ),
+                        _settingsRow(
+                          context,
+                          false,
+                          'Color',
+                          infoText: _color.label,
+                          infoLeadingIconPath:
+                              'assets/images/icons/capsule_creation/pin_${_color.label.toLowerCase()}_icon.png',
+                          leadingIconPath:
+                              'assets/images/icons/capsule_creation/pin_color_icon.png',
+                          onTap: _cycleColor,
+                          screenWidth: screenWidth,
                         ),
                       ],
                     ),
@@ -143,7 +248,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
       ),
 
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 40),
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
         child: SizedBox(
           height: 55,
           child: ElevatedButton(
@@ -155,7 +260,6 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
               elevation: 0,
             ),
             onPressed: () async {
-              _pickedLocation = map.MapPage.currentPositionStatic;
               await _saveCapsule();
             },
             child: _isSaving
@@ -199,8 +303,8 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
             ? 'Capsule'
             : _titleController.text,
         createdAt: Timestamp.now(),
-        isScheduled: false,
-        openAt: Timestamp.now(),
+        isScheduled: true,
+        openAt: _openAt,
         description: _descriptionController.text.isEmpty
             ? null
             : _descriptionController.text,
@@ -209,7 +313,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
           _pickedLocation!.longitude,
         ),
         privacy: _privacy,
-        color: 'blue',
+        color: _color.label.toLowerCase(),
       );
 
       await FirebaseFirestore.instance
@@ -218,7 +322,6 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
           .set(capsule.toMap());
 
       if (context.mounted) Navigator.pop(context);
-      Navigator.pop(context);
     } catch (e, st) {
       print("Error saving capsule: $e\n$st");
       if (context.mounted) {
@@ -230,4 +333,101 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
       setState(() => _isSaving = false);
     }
   }
+}
+
+Widget _settingsRow(
+  BuildContext context,
+  bool withDivider,
+  String title, {
+  VoidCallback? onTap,
+  required double screenWidth,
+  String? leadingIconPath,
+  required String infoText,
+  String? infoLeadingIconPath,
+}) {
+  return Column(
+    children: [
+      Theme(
+        data: Theme.of(context).copyWith(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+        ),
+        child: ListTile(
+          dense: true,
+          minVerticalPadding: 12,
+          visualDensity: const VisualDensity(vertical: -3),
+          leading: leadingIconPath != null
+              ? Image.asset(
+                  leadingIconPath,
+                  width: screenWidth * 0.07,
+                  height: screenWidth * 0.07,
+                )
+              : null,
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.045,
+              fontFamily: 'Irina',
+              color: Colors.black,
+            ),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  color: Color.fromARGB(217, 217, 217, 217),
+                ),
+                width: screenWidth * 0.3,
+                alignment: Alignment.centerRight,
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            infoText,
+                            style: const TextStyle(
+                              fontSize: 35,
+                              fontFamily: 'Irina',
+                              color: Color.fromARGB(255, 106, 106, 106),
+                            ),
+                          ),
+                          if (infoLeadingIconPath != null) SizedBox(width: 8),
+                          if (infoLeadingIconPath != null)
+                            Image.asset(
+                              infoLeadingIconPath,
+                              width: screenWidth * 0.1,
+                              height: screenWidth * 0.1,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          contentPadding: EdgeInsets.only(
+            left: screenWidth * 0.05,
+            right: screenWidth * 0.03,
+          ),
+          onTap: onTap,
+        ),
+      ),
+      if (withDivider)
+        const Divider(
+          height: 1,
+          thickness: 1,
+          indent: 0,
+          endIndent: 0,
+          color: Color.fromARGB(255, 211, 211, 211),
+        ),
+    ],
+  );
 }

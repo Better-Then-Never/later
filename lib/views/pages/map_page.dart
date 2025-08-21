@@ -7,6 +7,7 @@ import 'package:later/services/location/location_service.dart';
 import 'package:later/services/map/marker_icon.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:later/views/widgets/map/capsule_info_widget.dart';
+import 'package:intl/intl.dart';
 
 class MapPage extends StatefulWidget {
   static LatLng? currentPositionStatic;
@@ -56,13 +57,16 @@ class _MapPageState extends State<MapPage> {
     _capsuleIcons['green'] = await MarkerIcon.loadIcon(
       'assets/images/icons/map/pins/green_pin.png',
     );
+    _capsuleIcons['yellow'] = await MarkerIcon.loadIcon(
+      'assets/images/icons/map/pins/yellow_pin.png',
+    );
 
     _capsuleIcons['user'] = await MarkerIcon.loadIcon(
       'assets/images/icons/map/pins/user_pin.png',
       size: Size(64, 64),
     );
 
-    setState(() {}); // rebuild after icons are ready
+    setState(() {});
   }
 
   @override
@@ -100,7 +104,7 @@ class _MapPageState extends State<MapPage> {
           final capsuleId = doc.id;
 
           final color = 'red';
-          final icon = _capsuleIcons[color];
+          final icon = _capsuleIcons[data['color']];
 
           _markers[MarkerId(capsuleId)] = Marker(
             markerId: MarkerId(capsuleId),
@@ -110,6 +114,9 @@ class _MapPageState extends State<MapPage> {
               _customInfoWindowController.addInfoWindow!(
                 CapsuleInfoPanel(
                   title: data['title'],
+                  dateStamp: DateFormat(
+                    'dd-MM-yyyy',
+                  ).format(data['createdAt'].toDate()),
                   onMoreInfo: () => _showCapsuleInfo(data),
                 ),
                 capsulePos,
@@ -160,7 +167,7 @@ class _MapPageState extends State<MapPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(capsuleData['description'] ?? 'Capsule'),
+        title: Text(capsuleData['title'] ?? 'Capsule'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
