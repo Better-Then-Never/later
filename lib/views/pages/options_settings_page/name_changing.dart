@@ -206,7 +206,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                 height: screenHeight * 0.06,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 86, 201, 46),
+                    backgroundColor: const Color.fromARGB(255, 86, 201, 46),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
