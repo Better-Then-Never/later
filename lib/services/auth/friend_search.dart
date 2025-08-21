@@ -3,8 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:later/services/auth/user_services.dart';
-import 'package:later/views/widgets/friend_profile_page.dart';
-
+import 'package:later/views/widgets/add_friend_profile_page.dart';
 
 class FriendsSearchWidget extends StatelessWidget {
   final Function(String userId) onAddFriend;
@@ -109,7 +108,7 @@ class FriendsSearchWidget extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            FriendProfilePage(userId: users[i].id),
+                            AddFriendProfilePage(userId: users[i].id),
                       ),
                     );
                   },
@@ -166,40 +165,25 @@ class FriendSuggestionRow extends StatelessWidget {
           leading: FutureBuilder<String?>(
             future: avatarFuture,
             builder: (context, snapshot) {
+              ImageProvider avatar;
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: screenWidth * 0.07,
-                      backgroundColor: Colors.grey[300],
-                      child: Icon(Icons.person, color: Colors.grey[500]),
-                    ),
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  ],
+                avatar = AssetImage(
+                  'assets/images/icons/navbar/icon-profile.png',
                 );
-              } else if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData &&
+              } else if (snapshot.hasData &&
                   snapshot.data != null &&
                   snapshot.data!.isNotEmpty) {
-                return CircleAvatar(
-                  radius: screenWidth * 0.07,
-                  backgroundImage: NetworkImage(snapshot.data!),
-                  backgroundColor: Colors.grey[200],
-                );
+                avatar = NetworkImage(snapshot.data!);
               } else {
-                return CircleAvatar(
-                  radius: screenWidth * 0.07,
-                  backgroundImage: AssetImage(
-                    'assets/images/icons/navbar/icon-profile.png',
-                  ),
-                  backgroundColor: Colors.grey[200],
+                avatar = AssetImage(
+                  'assets/images/icons/navbar/icon-profile.png',
                 );
               }
+              return CircleAvatar(
+                radius: screenWidth * 0.07,
+                backgroundImage: avatar,
+                backgroundColor: Colors.grey[200],
+              );
             },
           ),
           title: Text(
@@ -246,4 +230,3 @@ class FriendSuggestionRow extends StatelessWidget {
     );
   }
 }
-
