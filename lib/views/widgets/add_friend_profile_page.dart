@@ -16,41 +16,67 @@ class AddFriendProfilePage extends StatefulWidget {
 class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   bool _isAdding = false;
 
+  static final Map<String, String?> _profileImageCache = {};
+  static final Map<String, String?> _backgroundImageCache = {};
+  static final Map<String, Map<String, String>> _nameUsernameCache = {};
+
   Future<String?> _getProfileImageUrl() async {
+    if (_profileImageCache.containsKey(widget.userId)) {
+      return _profileImageCache[widget.userId];
+    }
     final optimizedPath =
         'userdata/${widget.userId}/assets/images/profile_image_small';
     final originalPath =
         'userdata/${widget.userId}/assets/images/profile_image';
     try {
       final ref = FirebaseStorage.instance.ref().child(optimizedPath);
-      return await ref.getDownloadURL();
+      final url = await ref.getDownloadURL();
+      _profileImageCache[widget.userId] = url;
+      return url;
     } catch (e) {
       try {
         final ref = FirebaseStorage.instance.ref().child(originalPath);
-        return await ref.getDownloadURL();
+        final url = await ref.getDownloadURL();
+        _profileImageCache[widget.userId] = url;
+        return url;
       } catch (e) {
+        _profileImageCache[widget.userId] = null;
         return null;
       }
     }
   }
 
   Future<String?> _getBackgroundImageUrl() async {
+    if (_backgroundImageCache.containsKey(widget.userId)) {
+      return _backgroundImageCache[widget.userId];
+    }
     final bgPath = 'userdata/${widget.userId}/assets/images/background_image';
     try {
       final ref = FirebaseStorage.instance.ref().child(bgPath);
-      return await ref.getDownloadURL();
+      final url = await ref.getDownloadURL();
+      _backgroundImageCache[widget.userId] = url;
+      return url;
     } catch (e) {
+      _backgroundImageCache[widget.userId] = null;
       return null;
     }
   }
 
   Future<Map<String, String>> _getNameAndUsername() async {
+    if (_nameUsernameCache.containsKey(widget.userId)) {
+      return _nameUsernameCache[widget.userId]!;
+    }
     final doc = await FirebaseFirestore.instance
         .collection('users')
         .doc(widget.userId)
         .get();
     final data = doc.data();
-    return {'name': data?['name'] ?? '', 'username': data?['username'] ?? ''};
+    final result = {
+      'name': (data?['name'] ?? '').toString(),
+      'username': (data?['username'] ?? '').toString()
+    };
+    _nameUsernameCache[widget.userId] = result;
+    return result;
   }
 
   Future<void> _addFriend() async {
@@ -139,7 +165,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                     ),
                   ),
                 ),
-                                Positioned(
+                Positioned(
                   top: 32,
                   left: 16,
                   child: GestureDetector(
@@ -170,16 +196,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                     child: FutureBuilder<String?>(
                       future: _getProfileImageUrl(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircleAvatar(
-                            radius: avatarRadius,
-                            backgroundColor: Colors.grey[300],
-                            backgroundImage: AssetImage(
-                              'assets/images/icons/navbar/icon-profile.png',
-                            ),
-                          );
-                        } else if (snapshot.hasData && snapshot.data != null) {
+                        if (snapshot.hasData && snapshot.data != null) {
                           return CircleAvatar(
                             radius: avatarRadius,
                             backgroundImage: NetworkImage(snapshot.data!),
@@ -190,6 +207,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                             backgroundImage: AssetImage(
                               'assets/images/icons/navbar/icon-profile.png',
                             ),
+                            backgroundColor: Colors.grey[200],
                           );
                         }
                       },
@@ -272,12 +290,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                       ),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            86,
-                            201,
-                            46,
-                          ),
+                          backgroundColor: Color.fromARGB(255, 86, 201, 46), 
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),

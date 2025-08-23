@@ -11,6 +11,8 @@ class FriendsSearchWidget extends StatelessWidget {
   final Set<String> hiddenUserIds;
   final String searchQuery;
 
+  static final Map<String, String?> _imageUrlCache = {};
+
   const FriendsSearchWidget({
     super.key,
     required this.onAddFriend,
@@ -20,16 +22,24 @@ class FriendsSearchWidget extends StatelessWidget {
   });
 
   Future<String?> _getImageUrl(String userId) async {
+    if (_imageUrlCache.containsKey(userId)) {
+      return _imageUrlCache[userId];
+    }
     final optimizedPath = 'userdata/$userId/assets/images/profile_image_small';
     final originalPath = 'userdata/$userId/assets/images/profile_image';
     try {
       final ref = FirebaseStorage.instance.ref().child(optimizedPath);
-      return await ref.getDownloadURL();
+      final url = await ref.getDownloadURL();
+      _imageUrlCache[userId] = url;
+      return url;
     } catch (e) {
       try {
         final ref = FirebaseStorage.instance.ref().child(originalPath);
-        return await ref.getDownloadURL();
+        final url = await ref.getDownloadURL();
+        _imageUrlCache[userId] = url;
+        return url;
       } catch (e) {
+        _imageUrlCache[userId] = null;
         return null;
       }
     }
@@ -166,11 +176,7 @@ class FriendSuggestionRow extends StatelessWidget {
             future: avatarFuture,
             builder: (context, snapshot) {
               ImageProvider avatar;
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                avatar = AssetImage(
-                  'assets/images/icons/navbar/icon-profile.png',
-                );
-              } else if (snapshot.hasData &&
+              if (snapshot.hasData &&
                   snapshot.data != null &&
                   snapshot.data!.isNotEmpty) {
                 avatar = NetworkImage(snapshot.data!);
