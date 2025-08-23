@@ -5,6 +5,7 @@ import 'package:later/services/auth/name_getting.dart';
 import 'package:later/views/widgets/prof_picture.dart';
 import 'package:later/services/auth/username_getting.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/widgets/friends_row_profile.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -191,7 +192,7 @@ class ProfilePage extends StatelessWidget {
                           child: Container(
                             width: screenWidth - 108,
                             height: 1,
-                            color: Color.fromARGB(211, 211, 211, 211),
+                            color: Color.fromARGB(255, 211, 211, 211),
                           ),
                         ),
                         Row(
@@ -281,75 +282,105 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    width: screenWidth - 32,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withAlpha(40),
-                          spreadRadius: 1,
-                          blurRadius: 9,
-                          offset: Offset(0, 4),
+                  Stack(
+                    children: [
+                      Container(
+                        width: screenWidth - 32,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(40),
+                              spreadRadius: 1,
+                              blurRadius: 9,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: 45,
-                          left: 0,
-                          child: Container(
-                            width: screenWidth - 32,
-                            height: 1,
-                            color: const Color.fromARGB(211, 211, 211, 211),
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        right: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 21),
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: RandomFriendsRow(currentUserUid: uid),
                           ),
                         ),
-                        Positioned(
-                          bottom: 3,
-                          left: 0,
-                          right: 0,
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 18),
-                              SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: Image.asset(
-                                  'assets/images/icons/prof_page/my_friends.png',
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              SizedBox(
-                                width: screenWidth - 95,
-                                height: 40,
-                                child: TextButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/myFriendsPage');
-                                  },
-                                  style: TextButton.styleFrom(
-                                    alignment: Alignment.centerLeft,
-                                    foregroundColor: Colors.black,
-                                    textStyle: const TextStyle(fontSize: 16),
-                                    splashFactory: NoSplash.splashFactory,
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    overlayColor: Colors.transparent,
-                                  ),
-                                  child: const Text(
-                                    "My friends",
-                                    style: TextStyle(fontFamily: 'Irina'),
-                                  ),
-                                ),
-                              ),
-                            ],
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          width: screenWidth - 32,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Positioned(
+                        bottom: 3,
+                        left: 0,
+                        right: 0,
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 18),
+                            SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: Image.asset(
+                                'assets/images/icons/prof_page/my_friends.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            SizedBox(
+                              width: screenWidth - 95,
+                              height: 40,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/myFriendsPage',
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  alignment: Alignment.centerLeft,
+                                  foregroundColor: Colors.black,
+                                  textStyle: const TextStyle(fontSize: 16),
+                                  splashFactory: NoSplash.splashFactory,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  overlayColor: Colors.transparent,
+                                ),
+                                child: const Text(
+                                  "My friends",
+                                  style: TextStyle(fontFamily: 'Irina'),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 45,
+                        left: 0,
+                        child: Container(
+                          width: screenWidth - 32,
+                          height: 1,
+                          color: const Color.fromARGB(255, 211, 211, 211),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   const Text(

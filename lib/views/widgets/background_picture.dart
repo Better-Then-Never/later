@@ -132,7 +132,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                 height: 153,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -147,6 +147,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                             color: Color.fromARGB(255, 86, 201, 46),
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                       ),
@@ -167,8 +168,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
@@ -196,8 +198,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                         child: const Center(child: Text('Take a photo')),
@@ -224,13 +227,14 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                             64,
                           ),
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
                             ),
                           ),
                         ),
@@ -275,7 +279,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                 child: Padding(
                   padding: const EdgeInsets.only(
                     top: 80,
-                  ), // Adjust this value as needed
+                  ), 
                   child: Image.asset(
                     'assets/images/icons/prof_page/choose_bg.png',
                     width: 35,

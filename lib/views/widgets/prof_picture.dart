@@ -155,7 +155,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                 height: 153,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -170,6 +170,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                             color: Color.fromARGB(255, 86, 201, 46),
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                       ),
@@ -190,8 +191,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
@@ -219,8 +221,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                         child: const Center(child: Text('Take a photo')),
@@ -247,13 +250,14 @@ class _ProfilePictureState extends State<ProfilePicture> {
                             64,
                           ),
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
                             ),
                           ),
                         ),
