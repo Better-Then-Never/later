@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:later/services/auth/name_getting.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart';
+import 'package:later/views/widgets/overlay_notification.dart'; // Add this import
 
 class RandomFriendsRow extends StatefulWidget {
   final String currentUserUid;
@@ -23,11 +24,20 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
   static final Map<String, String?> _imageUrlCache = {};
   List<String> _pinnedFriendUids = [];
   Map<String, String?> _pinnedFriendImages = {};
+  List<String> _friendsList = [];
+  Map<String, Map<String, String>> _friendInfoMap = {};
+  bool _isLoadingPinned = true;
 
   @override
   void initState() {
     super.initState();
     _loadPinnedFriends();
+  }
+
+  @override
+  void dispose() {
+    OverlayNotification.hide(); // Clean up any active notifications
+    super.dispose();
   }
 
   Future<void> _loadPinnedFriends() async {
@@ -37,35 +47,38 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     for (final uid in uids) {
       images[uid] = await _getImageUrl(uid);
     }
-    setState(() {
-      _pinnedFriendUids = uids;
-      _pinnedFriendImages = images;
-    });
+    if (mounted) {
+      setState(() {
+        _pinnedFriendUids = uids;
+        _pinnedFriendImages = images;
+        _isLoadingPinned = false;
+      });
+    }
   }
 
   Future<void> _setPinnedFriends(List<String> uids) async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Get current friends list from Firestore
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.currentUserUid)
-        .get();
-    final data = userDoc.data() ?? {};
-    final friendsList = List<String>.from(data['friends'] ?? []);
-
-    // Only keep UIDs that are in friendsList
-    final filteredUids = uids.where((uid) => friendsList.contains(uid)).toList();
-
+    final filteredUids = uids
+        .where((uid) => _friendsList.contains(uid))
+        .toList();
     await prefs.setStringList('pinned_friend_uids', filteredUids);
+
+    // Use cached images if available, only fetch for new UIDs
     Map<String, String?> images = {};
     for (final uid in filteredUids) {
-      images[uid] = await _getImageUrl(uid);
+      if (_pinnedFriendImages.containsKey(uid)) {
+        images[uid] = _pinnedFriendImages[uid];
+      } else {
+        images[uid] = await _getImageUrl(uid);
+      }
     }
-    setState(() {
-      _pinnedFriendUids = filteredUids;
-      _pinnedFriendImages = images;
-    });
+
+    if (mounted) {
+      setState(() {
+        _pinnedFriendUids = filteredUids;
+        _pinnedFriendImages = images;
+      });
+    }
     if (widget.onPinnedFriends != null) {
       widget.onPinnedFriends!(filteredUids);
     }
@@ -95,6 +108,34 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     }
   }
 
+  Future<void> _updateFriendsData(List<String> friendsList) async {
+    Map<String, Map<String, String>> infoMap = {};
+    if (friendsList.isNotEmpty) {
+      final friendsDocs = await Future.wait(
+        friendsList.map(
+          (friendId) => FirebaseFirestore.instance
+              .collection('users')
+              .doc(friendId)
+              .get(),
+        ),
+      );
+      for (var doc in friendsDocs) {
+        final friendData = doc.data() ?? {};
+        final uid = doc.id;
+        infoMap[uid] = {
+          'name': friendData['name'] ?? '',
+          'username': friendData['username'] ?? '',
+        };
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _friendsList = friendsList;
+        _friendInfoMap = infoMap;
+      });
+    }
+  }
+
   Future<List<Map<String, String>>> _getFriendsData(
     List<String> friendsList, {
     int max = 3,
@@ -110,155 +151,127 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     return fetchedFriends;
   }
 
-  Future<void> _showChoosePinnedFriendsModal(
-    BuildContext context,
-    List<String> friendsList,
-  ) async {
+  Future<void> _showChoosePinnedFriendsModal(BuildContext context) async {
+    List<String> tempPinned = List<String>.from(_pinnedFriendUids);
+    TextEditingController _searchController = TextEditingController();
+    String _searchQuery = '';
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       barrierColor: Colors.black.withAlpha(128),
       builder: (BuildContext context) {
-        List<String> tempPinned = List<String>.from(_pinnedFriendUids);
-        TextEditingController _searchController = TextEditingController();
-        String _searchQuery = '';
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            // Filter by search
+            final filteredFriends = _friendsList.where((uid) {
+              final info = _friendInfoMap[uid];
+              if (info == null) return false;
+              final name = info['name']?.toLowerCase() ?? '';
+              final username = info['username']?.toLowerCase() ?? '';
+              return name.contains(_searchQuery) ||
+                  username.contains(_searchQuery);
+            }).toList();
 
-        // Fetch latest friends data from Firestore
-        return FutureBuilder<List<DocumentSnapshot>>(
-          future: Future.wait(
-            friendsList.map(
-              (friendId) => FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(friendId)
-                  .get(),
-            ),
-          ),
-          builder: (context, friendsSnapshot) {
-            if (friendsSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (!friendsSnapshot.hasData || friendsSnapshot.data!.isEmpty) {
-              return const Center(child: Text('No friends found'));
-            }
-            final friendsDocs = friendsSnapshot.data!;
-            // Build info map for search
-            final friendInfoMap = <String, Map<String, String>>{};
-            for (var doc in friendsDocs) {
-              final friendData = doc.data() as Map<String, dynamic>? ?? {};
-              final uid = doc.id;
-              friendInfoMap[uid] = {
-                'name': friendData['name'] ?? '',
-                'username': friendData['username'] ?? '',
-              };
-            }
+            // Sort so checked (pinned) friends are always on top
+            filteredFriends.sort((a, b) {
+              final aPinned = tempPinned.contains(a) ? 0 : 1;
+              final bPinned = tempPinned.contains(b) ? 0 : 1;
+              return aPinned.compareTo(bPinned);
+            });
 
-            // Keep the full list for filtering
-            List<String> allFriends = friendsList;
-
-            return StatefulBuilder(
-              builder: (context, setModalState) {
-                // Filter by search
-                final filteredFriends = allFriends.where((uid) {
-                  final info = friendInfoMap[uid];
-                  if (info == null) return false;
-                  final name = info['name']?.toLowerCase() ?? '';
-                  final username = info['username']?.toLowerCase() ?? '';
-                  return name.contains(_searchQuery) ||
-                      username.contains(_searchQuery);
-                }).toList();
-
-                // Sort so checked (pinned) friends are always on top
-                filteredFriends.sort((a, b) {
-                  final aPinned = tempPinned.contains(a) ? 0 : 1;
-                  final bPinned = tempPinned.contains(b) ? 0 : 1;
-                  return aPinned.compareTo(bPinned);
-                });
-
-                return Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
+                ),
+              ),
+              child: SafeArea(
+                top: false, // Don't add top safe area
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'Choose up to 3 pinned friends',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 86, 201, 46),
+                              fontFamily: 'Irina',
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            'If you choose fewer than 3, random friends from your list will be shown',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                              fontFamily: 'Irina',
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          // --- Search Bar ---
+                          Container(
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: Color(0xFFEAEAEA),
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/icons/friends_page/look_for.png',
+                                    width: 28,
+                                    height: 28,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _searchController,
+                                    decoration: const InputDecoration(
+                                      hintText: "Search...",
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                    ),
+                                    style: const TextStyle(
+                                      fontFamily: 'Irina',
+                                      fontSize: 22,
+                                    ),
+                                    onChanged: (val) {
+                                      setModalState(() {
+                                        _searchQuery = val.trim().toLowerCase();
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Choose up to 3 pinned friends',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 86, 201, 46),
-                          fontFamily: 'Irina',
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'If you choose fewer than 3, random friends from your list will be shown',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color.fromARGB(255, 0, 0, 0),
-                          fontFamily: 'Irina',
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 12),
-                      // --- Search Bar ---
-                      Container(
-                        height: 45,
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: Color(0xFFEAEAEA),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12.0,
-                              ),
-                              child: Image.asset(
-                                'assets/images/icons/friends_page/look_for.png',
-                                width: 28,
-                                height: 28,
-                              ),
-                            ),
-                            Expanded(
-                              child: TextField(
-                                controller: _searchController,
-                                decoration: const InputDecoration(
-                                  hintText: "Search...",
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                ),
-                                style: const TextStyle(
-                                  fontFamily: 'Irina',
-                                  fontSize: 22,
-                                ),
-                                onChanged: (val) {
-                                  setModalState(() {
-                                    _searchQuery = val.trim().toLowerCase();
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // --- Friends List ---
-                      SizedBox(
-                        height: 300,
+                    // --- Friends List ---
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: ListView.builder(
-                          shrinkWrap: true,
                           itemCount: filteredFriends.length,
                           itemBuilder: (context, index) {
                             final uid = filteredFriends[index];
-                            final info = friendInfoMap[uid] ?? {};
+                            final info = _friendInfoMap[uid] ?? {};
                             final name = info['name'] ?? '';
                             final username = info['username'] ?? '';
                             final isPinned = tempPinned.contains(uid);
@@ -304,64 +317,99 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 onChanged: (val) {
-                                  setModalState(() {
-                                    if (val == true) {
-                                      if (tempPinned.length < 3 &&
-                                          !tempPinned.contains(uid)) {
-                                        tempPinned.add(uid);
-                                      }
-                                    } else {
-                                      tempPinned.remove(uid);
+                                  if (val == true) {
+                                    if (tempPinned.length >= 3) {
+                                      // Show notification using the widget
+                                      OverlayNotification.showError(
+                                        context: context,
+                                        message:
+                                            'You can only pin up to 3 friends',
+                                      );
+                                      return;
                                     }
-                                  });
+                                    if (!tempPinned.contains(uid)) {
+                                      setModalState(() {
+                                        tempPinned.add(uid);
+                                      });
+                                    }
+                                  } else {
+                                    setModalState(() {
+                                      tempPinned.remove(uid);
+                                    });
+                                  }
                                 },
                               ),
                             );
                           },
                         ),
                       ),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromARGB(
-                            255,
-                            86,
-                            201,
-                            46,
+                    ),
+                    // Save Button
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Container(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              86,
+                              201,
+                              46,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          elevation: 0,
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _setPinnedFriends(tempPinned);
-                        },
-                        child: const Text(
-                          "Save",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Irina',
-                            color: Colors.white,
+                          onPressed: () {
+                            final widgetContext = this.context;
+                            Navigator.pop(context);
+                            _setPinnedFriends(tempPinned);
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () {
+                                if (mounted) {
+                                  OverlayNotification.showSuccess(
+                                    context: widgetContext,
+                                    message:
+                                        'Pinned friends updated successfully!',
+                                  );
+                                }
+                              },
+                            );
+                          },
+                          child: const Text(
+                            "Save",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Irina',
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                );
-              },
+                    ),
+                  ],
+                ),
+              ),
             );
           },
         );
       },
-    );
+    ).whenComplete(() {
+      // Clean up overlay when modal is dismissed
+      OverlayNotification.hide();
+    });
   }
+
+  // ...rest of the existing code remains the same (no changes to build method and other methods)...
 
   Future<void> _showFriendOptionsModal(
     BuildContext context,
     String friendUid,
-    List<String> friendsList,
   ) async {
     showModalBottomSheet(
       context: context,
@@ -447,7 +495,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                       child: TextButton(
                         onPressed: () {
                           Navigator.pop(context);
-                          _showChoosePinnedFriendsModal(context, friendsList);
+                          _showChoosePinnedFriendsModal(context);
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
@@ -474,6 +522,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
 
   @override
   Widget build(BuildContext context) {
+    // ...existing build method code remains exactly the same...
+    final screenWidth = MediaQuery.of(context).size.width;
+    final size = screenWidth / 3.8;
+
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
@@ -486,8 +538,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
             child: Center(child: CircularProgressIndicator()),
           );
         }
+
         final data = snapshot.data!.data() as Map<String, dynamic>? ?? {};
         final friendsList = List<String>.from(data['friends'] ?? []);
+
         if (friendsList.isEmpty) {
           return SizedBox(
             height: 70,
@@ -505,28 +559,26 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
           );
         }
 
-        // Filter pinned friends to only those in friendsList
-        final validPinnedUids =
-            _pinnedFriendUids.where((uid) => friendsList.contains(uid)).toList();
-
-        // If there are invalid pinned friends, update local state and SharedPreferences after build
-        if (validPinnedUids.length != _pinnedFriendUids.length) {
-          SchedulerBinding.instance.addPostFrameCallback((_) async {
-            _pinnedFriendUids = validPinnedUids;
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setStringList('pinned_friend_uids', validPinnedUids);
-            // Optionally, update images cache as well
-            Map<String, String?> images = {};
-            for (final uid in validPinnedUids) {
-              images[uid] = _pinnedFriendImages[uid];
-            }
-            if (mounted) {
-              setState(() {
-                _pinnedFriendImages = images;
-              });
-            }
+        // Use proper list comparison to avoid unnecessary updates
+        final listEquality = ListEquality<String>();
+        if (!listEquality.equals(_friendsList, friendsList)) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _updateFriendsData(friendsList);
           });
         }
+
+        // Show loading while pinned friends are being loaded initially
+        if (_isLoadingPinned || _friendInfoMap.isEmpty) {
+          return SizedBox(
+            height: 80,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        // Filter pinned friends to only those in friendsList
+        final validPinnedUids = _pinnedFriendUids
+            .where((uid) => friendsList.contains(uid))
+            .toList();
 
         List<Widget> friendWidgets = [];
         for (final uid in validPinnedUids) {
@@ -541,13 +593,16 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
           }
           friendWidgets.add(
             GestureDetector(
-              onTap: () => _showFriendOptionsModal(context, uid, friendsList),
+              onTap: () => _showFriendOptionsModal(context, uid),
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 1),
-                width: 110,
-                height: 110,
+                width: size,
+                height: size,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
+                  ),
                   color: Color.fromARGB(255, 244, 188, 0),
                 ),
                 clipBehavior: Clip.hardEdge,
@@ -566,10 +621,105 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
             .where((uid) => !validPinnedUids.contains(uid))
             .toList();
         final slotsLeft = 3 - friendWidgets.length;
+
+        if (friendWidgets.isEmpty && nonPinnedFriends.isNotEmpty) {
+          return FutureBuilder<List<Map<String, String>>>(
+            future: _getFriendsData(nonPinnedFriends, max: 3),
+            builder: (context, friendSnapshot) {
+              if (friendSnapshot.connectionState == ConnectionState.waiting) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    3,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      width: size,
+                      height: size,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
+                        ),
+                        color: Colors.grey[300],
+                      ),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+                );
+              }
+              if (friendSnapshot.hasData) {
+                final friendsData = friendSnapshot.data!;
+                final widgets = friendsData.map((friend) {
+                  ImageProvider avatar;
+                  if (friend['imageUrl'] != null &&
+                      friend['imageUrl']!.isNotEmpty) {
+                    avatar = NetworkImage(friend['imageUrl']!);
+                  } else {
+                    avatar = const AssetImage(
+                      'assets/images/icons/prof_page/no_photo.png',
+                    );
+                  }
+                  return GestureDetector(
+                    onTap: () =>
+                        _showFriendOptionsModal(context, friend['uid']!),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      width: size,
+                      height: size,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
+                        ),
+                        color: Color.fromARGB(255, 244, 188, 0),
+                      ),
+                      clipBehavior: Clip.hardEdge,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: avatar,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList();
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: widgets,
+                );
+              }
+              // If error or no data, show placeholder
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  3,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                    width: size,
+                    height: size,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
+                      ),
+                      color: Colors.grey[300],
+                    ),
+                    child: Center(child: Icon(Icons.person)),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+
         if (slotsLeft > 0 && nonPinnedFriends.isNotEmpty) {
           return FutureBuilder<List<Map<String, String>>>(
             future: _getFriendsData(nonPinnedFriends, max: slotsLeft),
             builder: (context, friendSnapshot) {
+              List<Widget> currentWidgets = List.from(friendWidgets);
+
               if (friendSnapshot.hasData) {
                 final friendsData = friendSnapshot.data!;
                 for (var friend in friendsData) {
@@ -582,19 +732,19 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                       'assets/images/icons/prof_page/no_photo.png',
                     );
                   }
-                  friendWidgets.add(
+                  currentWidgets.add(
                     GestureDetector(
-                      onTap: () => _showFriendOptionsModal(
-                        context,
-                        friend['uid']!,
-                        friendsList,
-                      ),
+                      onTap: () =>
+                          _showFriendOptionsModal(context, friend['uid']!),
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 1),
-                        width: 110,
-                        height: 110,
+                        width: size,
+                        height: size,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(25),
+                            topRight: Radius.circular(25),
+                          ),
                           color: Color.fromARGB(255, 244, 188, 0),
                         ),
                         clipBehavior: Clip.hardEdge,
@@ -611,20 +761,30 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                   );
                 }
               } else {
-                friendWidgets.addAll(
+                // Show loading placeholders for remaining slots
+                currentWidgets.addAll(
                   List.generate(
                     slotsLeft,
-                    (index) => SizedBox(
-                      width: 110,
-                      height: 110,
+                    (index) => Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      width: size,
+                      height: size,
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
+                        ),
+                        color: Colors.grey[300],
+                      ),
                       child: Center(child: CircularProgressIndicator()),
                     ),
                   ),
                 );
               }
+
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: friendWidgets.take(3).toList(),
+                children: currentWidgets.take(3).toList(),
               );
             },
           );

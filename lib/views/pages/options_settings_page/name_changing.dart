@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:later/services/auth/user_services.dart';
+import 'package:later/views/widgets/overlay_notification.dart'; // Add this import
 import 'package:provider/provider.dart';
 
 class NameChangingWidget extends StatefulWidget {
@@ -15,15 +16,23 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
   bool _isSaving = false;
   String? _error;
 
+  @override
+  void dispose() {
+    OverlayNotification.hide(); // Clean up any active notifications
+    super.dispose();
+  }
+
   Future<void> _saveName() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter a new name!')));
+      OverlayNotification.showError(
+        context: context,
+        message: 'Please enter a new name!',
+        center: true,
+      );
       return;
     }
     setState(() {
@@ -36,9 +45,11 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('User not logged in.')));
+      OverlayNotification.showError(
+        context: context,
+        message: 'User not logged in.',
+        center: true,
+      );
       return;
     }
     try {
@@ -51,16 +62,20 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Name updated!')));
+      OverlayNotification.showSuccess(
+        context: context,
+        message: 'Name updated successfully!',
+        center: true,
+      );
     } catch (e) {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Failed to update name.')));
+      OverlayNotification.showError(
+        context: context,
+        message: 'Failed to update name.',
+        center: true,
+      );
     }
   }
 

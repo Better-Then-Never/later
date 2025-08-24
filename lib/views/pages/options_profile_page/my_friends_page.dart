@@ -24,9 +24,12 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   void initState() {
     super.initState();
     _searchController.addListener(() {
-      setState(() {
-        _searchQuery = _searchController.text.trim();
-      });
+      final newQuery = _searchController.text.trim();
+      if (newQuery != _searchQuery) {
+        setState(() {
+          _searchQuery = newQuery;
+        });
+      }
     });
     _fetchFriends();
   }
@@ -57,10 +60,8 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     }
     final friendsDocs = await Future.wait(
       friendsList.map(
-        (friendId) => FirebaseFirestore.instance
-            .collection('users')
-            .doc(friendId)
-            .get(),
+        (friendId) =>
+            FirebaseFirestore.instance.collection('users').doc(friendId).get(),
       ),
     );
     setState(() {
@@ -210,119 +211,131 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
             child: _isLoadingFriends
                 ? Center(child: CircularProgressIndicator())
                 : _allFriendsDocs.isEmpty
-                    ? Center(child: Text('No friends added yet'))
-                    : Builder(
-                        builder: (context) {
-                          final filteredFriends = _allFriendsDocs.where((doc) {
-                            final friendData =
-                                doc.data() as Map<String, dynamic>? ?? {};
-                            final friendName = friendData['name'] ?? '';
-                            final friendUsername = friendData['username'] ?? '';
-                            final query = _searchQuery.toLowerCase();
-                            return friendName.toLowerCase().contains(query) ||
-                                friendUsername.toLowerCase().contains(query);
-                          }).toList();
+                ? Center(
+                    child: Text(
+                      'No friends added yet',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.045,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Irina',
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                : Builder(
+                    builder: (context) {
+                      final filteredFriends = _allFriendsDocs.where((doc) {
+                        final friendData =
+                            doc.data() as Map<String, dynamic>? ?? {};
+                        final friendName = friendData['name'] ?? '';
+                        final friendUsername = friendData['username'] ?? '';
+                        final query = _searchQuery.toLowerCase();
+                        return friendName.toLowerCase().contains(query) ||
+                            friendUsername.toLowerCase().contains(query);
+                      }).toList();
 
-                          final Map<String, List<DocumentSnapshot>> grouped = {};
-                          for (var doc in filteredFriends) {
-                            final friendData =
-                                doc.data() as Map<String, dynamic>? ?? {};
-                            final friendName =
-                                (friendData['name'] ?? '').toString();
-                            if (friendName.isEmpty) continue;
-                            final letter = friendName[0].toUpperCase();
-                            grouped.putIfAbsent(letter, () => []).add(doc);
-                          }
-                          final sortedKeys = grouped.keys.toList()..sort();
+                      final Map<String, List<DocumentSnapshot>> grouped = {};
+                      for (var doc in filteredFriends) {
+                        final friendData =
+                            doc.data() as Map<String, dynamic>? ?? {};
+                        final friendName = (friendData['name'] ?? '')
+                            .toString();
+                        if (friendName.isEmpty) continue;
+                        final letter = friendName[0].toUpperCase();
+                        grouped.putIfAbsent(letter, () => []).add(doc);
+                      }
+                      final sortedKeys = grouped.keys.toList()..sort();
 
-                          if (filteredFriends.isEmpty) {
-                            return Center(
-                              child: Text(
-                                'No friends match your search',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.045,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Irina',
-                                  color: Colors.black,
+                      if (filteredFriends.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No friends match your search',
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.045,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Irina',
+                              color: Colors.black,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
+                        itemCount: sortedKeys.length,
+                        itemBuilder: (context, groupIndex) {
+                          final letter = sortedKeys[groupIndex];
+                          final group = grouped[letter]!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: screenWidth * 0.04,
+                                  vertical: 0,
+                                ),
+                                child: Text(
+                                  letter,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: screenWidth * 0.055,
+                                    fontFamily: 'Irina',
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
-                            );
-                          }
-
-                          return ListView.builder(
-                            itemCount: sortedKeys.length,
-                            itemBuilder: (context, groupIndex) {
-                              final letter = sortedKeys[groupIndex];
-                              final group = grouped[letter]!;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: screenWidth * 0.04,
-                                      vertical: 8,
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                  horizontal: screenWidth * 0.03,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      spreadRadius: 1,
+                                      blurRadius: 9,
+                                      offset: Offset(0, 4),
                                     ),
-                                    child: Text(
-                                      letter,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: screenWidth * 0.055,
-                                        fontFamily: 'Irina',
-                                        color: Colors.black,
+                                  ],
+                                ),
+                                child: Column(
+                                  children: [
+                                    for (int i = 0; i < group.length; i++) ...[
+                                      _FriendRow(
+                                        friendData:
+                                            group[i].data()
+                                                as Map<String, dynamic>? ??
+                                            {},
+                                        screenWidth: screenWidth,
+                                        getImageUrl: _getImageUrl,
                                       ),
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.symmetric(
-                                      horizontal: screenWidth * 0.03,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(25),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          spreadRadius: 1,
-                                          blurRadius: 9,
-                                          offset: Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        for (int i = 0; i < group.length; i++) ...[
-                                          _FriendRow(
-                                            friendData: group[i].data()
-                                                    as Map<String, dynamic>? ??
-                                                {},
-                                            screenWidth: screenWidth,
-                                            getImageUrl: _getImageUrl,
+                                      if (i < group.length - 1)
+                                        const Divider(
+                                          height: 1,
+                                          thickness: 1,
+                                          indent: 0,
+                                          endIndent: 0,
+                                          color: Color.fromARGB(
+                                            255,
+                                            211,
+                                            211,
+                                            211,
                                           ),
-                                          if (i < group.length - 1)
-                                            const Divider(
-                                              height: 1,
-                                              thickness: 1,
-                                              indent: 0,
-                                              endIndent: 0,
-                                              color: Color.fromARGB(
-                                                255,
-                                                211,
-                                                211,
-                                                211,
-                                              ),
-                                            ),
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
+                                        ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
                           );
                         },
-                      ),
+                      );
+                    },
+                  ),
           ),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -379,7 +392,7 @@ class _FriendRow extends StatelessWidget {
                 : null,
             child: ListTile(
               contentPadding: EdgeInsets.symmetric(
-                vertical: 4,
+                vertical: 0,
                 horizontal: screenWidth * 0.02,
               ),
               leading: CircleAvatar(

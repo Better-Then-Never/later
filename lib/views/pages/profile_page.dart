@@ -383,31 +383,6 @@ class ProfilePage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    "Map",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Container(
-                    width: screenWidth - 32,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withAlpha(40),
-                          spreadRadius: 1,
-                          blurRadius: 9,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),

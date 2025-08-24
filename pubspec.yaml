@@ -48,6 +48,7 @@ dependencies:
   location: ^8.0.1
   camera: ^0.11.2
   path_provider: ^2.0.15
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

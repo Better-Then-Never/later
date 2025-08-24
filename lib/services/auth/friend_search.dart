@@ -9,6 +9,7 @@ class FriendsSearchWidget extends StatelessWidget {
   final Function(String userId) onAddFriend;
   final Function(String userId) onRemoveFriend;
   final Set<String> hiddenUserIds;
+  final Set<String> addedFriendIds;
   final String searchQuery;
 
   static final Map<String, String?> _imageUrlCache = {};
@@ -18,6 +19,7 @@ class FriendsSearchWidget extends StatelessWidget {
     required this.onAddFriend,
     required this.onRemoveFriend,
     required this.hiddenUserIds,
+    required this.addedFriendIds,
     required this.searchQuery,
   });
 
@@ -57,9 +59,11 @@ class FriendsSearchWidget extends StatelessWidget {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
+        
         final users = snapshot.data!.docs
             .where((user) => user.id != currentUid)
-            .where((user) => !(userService.friends.contains(user.id)))
+            // Modified: Don't filter out users that are in addedFriendIds, even if they're in friends list
+            .where((user) => !(userService.friends.contains(user.id) && !addedFriendIds.contains(user.id)))
             .where((user) => !hiddenUserIds.contains(user.id))
             .where((user) {
               if (searchQuery.isEmpty) return true;
@@ -97,9 +101,9 @@ class FriendsSearchWidget extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.black12,
-                spreadRadius: 1,
+                spreadRadius: 0,
                 blurRadius: 9,
-                offset: Offset(0, 4),
+                offset: Offset(0, 8),
               ),
             ],
           ),
@@ -108,6 +112,7 @@ class FriendsSearchWidget extends StatelessWidget {
             children: [
               for (int i = 0; i < users.length; i++) ...[
                 FriendSuggestionRow(
+                  userId: users[i].id,
                   name: (users[i].data() as Map<String, dynamic>)['name'] ?? '',
                   username:
                       (users[i].data() as Map<String, dynamic>)['username'] ??
@@ -124,6 +129,7 @@ class FriendsSearchWidget extends StatelessWidget {
                   },
                   onAdd: () => onAddFriend(users[i].id),
                   onRemove: () => onRemoveFriend(users[i].id),
+                  isAdded: addedFriendIds.contains(users[i].id),
                   screenWidth: screenWidth,
                 ),
                 if (i < users.length - 1)
@@ -144,22 +150,26 @@ class FriendsSearchWidget extends StatelessWidget {
 }
 
 class FriendSuggestionRow extends StatelessWidget {
+  final String userId;
   final String name;
   final String username;
   final Future<String?> avatarFuture;
   final VoidCallback onTapProfile;
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final bool isAdded;
   final double screenWidth;
 
   const FriendSuggestionRow({
     super.key,
+    required this.userId,
     required this.name,
     required this.username,
     required this.avatarFuture,
     required this.onTapProfile,
     required this.onAdd,
     required this.onRemove,
+    required this.isAdded,
     required this.screenWidth,
   });
 
@@ -171,7 +181,7 @@ class FriendSuggestionRow extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 4),
+          contentPadding: EdgeInsets.symmetric(vertical: 0),
           leading: FutureBuilder<String?>(
             future: avatarFuture,
             builder: (context, snapshot) {
@@ -213,12 +223,18 @@ class FriendSuggestionRow extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: onAdd,
-                child: Image.asset(
-                  'assets/images/icons/prof_page/add_friend.png',
-                  width: screenWidth * 0.09,
-                  height: screenWidth * 0.09,
-                ),
+                onTap: isAdded ? null : onAdd,
+                child: isAdded
+                    ? Icon(
+                        Icons.check_circle,
+                        color: Color.fromARGB(255, 86, 201, 46),
+                        size: screenWidth * 0.09,
+                      )
+                    : Image.asset(
+                        'assets/images/icons/prof_page/add_friend.png',
+                        width: screenWidth * 0.09,
+                        height: screenWidth * 0.09,
+                      ),
               ),
               SizedBox(width: 8),
               GestureDetector(
