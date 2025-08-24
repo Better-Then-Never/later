@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:later/services/auth/user_services.dart';
+import 'package:later/views/widgets/overlay_notification.dart'; // Add this import
 import 'package:provider/provider.dart';
 
 class UsernameChangingWidget extends StatefulWidget {
@@ -15,6 +16,12 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
   bool _isSaving = false;
   String? _error;
 
+  @override
+  void dispose() {
+    OverlayNotification.hide(); // Clean up any active notifications
+    super.dispose();
+  }
+
   Future<void> _saveUsername() async {
     final newUsername = _usernameController.text.trim();
     final normalizedUsername = newUsername.toLowerCase();
@@ -23,8 +30,10 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a new username!')),
+      OverlayNotification.showError(
+        context: context,
+        message: 'Please enter a new username!',
+        center: true,
       );
       return;
     }
@@ -40,9 +49,11 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('User not logged in.')));
+      OverlayNotification.showError(
+        context: context,
+        message: 'User not logged in.',
+        center: true,
+      );
       return;
     }
 
@@ -57,8 +68,10 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
         setState(() {
           _isSaving = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Username already taken.')),
+        OverlayNotification.showError(
+          context: context,
+          message: 'Username already taken.',
+          center: true,
         );
         return;
       }
@@ -70,15 +83,19 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Username updated!')));
+      OverlayNotification.showSuccess(
+        context: context,
+        message: 'Username updated successfully!',
+        center: true,
+      );
     } catch (e) {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to update username.')),
+      OverlayNotification.showError(
+        context: context,
+        message: 'Failed to update username.',
+        center: true,
       );
     }
   }
