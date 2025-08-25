@@ -168,7 +168,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Irina',
                           ),
@@ -198,7 +198,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Irina',
                           ),
@@ -227,7 +227,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                             64,
                           ),
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Irina',
                           ),

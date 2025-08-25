@@ -147,7 +147,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                       33,
                                       150,
                                       243,
-                                    ), 
+                                    ),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: _isRefreshing
@@ -339,47 +339,52 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.only(top: screenHeight * 0.01),
-                  child: FriendsSearchWidget(
-                    onAddFriend: (userId) async {
-                      try {
-                        final userService = Provider.of<UserService>(
-                          context,
-                          listen: false,
-                        );
-                        await userService.addFriend(userId);
-                        if (!mounted) return;
+                  child: Column(
+                    children: [
+                      FriendsSearchWidget(
+                        onAddFriend: (userId) async {
+                          try {
+                            final userService = Provider.of<UserService>(
+                              context,
+                              listen: false,
+                            );
+                            await userService.addFriend(userId);
+                            if (!mounted) return;
 
-                        setState(() {
-                          _addedFriendIds.add(userId);
-                        });
+                            setState(() {
+                              _addedFriendIds.add(userId);
+                            });
 
-                        OverlayNotification.showSuccess(
-                          context: context,
-                          message: 'Friend added!',
-                          position: NotificationPosition.center,
-                        );
-                      } catch (e) {
-                        if (!mounted) return;
-                        OverlayNotification.showError(
-                          context: context,
-                          message: 'Failed to add friend',
-                          position: NotificationPosition.center,
-                        );
-                      }
-                    },
-                    onRemoveFriend: (userId) {
-                      setState(() {
-                        _hiddenUserIds.add(userId);
-                      });
-                      OverlayNotification.showInfo(
-                        context: context,
-                        message: 'Suggested friend removed from the list!',
-                        position: NotificationPosition.center,
-                      );
-                    },
-                    hiddenUserIds: _hiddenUserIds,
-                    addedFriendIds: _addedFriendIds,
-                    searchQuery: _searchQuery,
+                            OverlayNotification.showSuccess(
+                              context: context,
+                              message: 'Friend added!',
+                              position: NotificationPosition.center,
+                            );
+                          } catch (e) {
+                            if (!mounted) return;
+                            OverlayNotification.showError(
+                              context: context,
+                              message: 'Failed to add friend',
+                              position: NotificationPosition.center,
+                            );
+                          }
+                        },
+                        onRemoveFriend: (userId) {
+                          setState(() {
+                            _hiddenUserIds.add(userId);
+                          });
+                          OverlayNotification.showInfo(
+                            context: context,
+                            message: 'Suggested friend removed from the list!',
+                            position: NotificationPosition.center,
+                          );
+                        },
+                        hiddenUserIds: _hiddenUserIds,
+                        addedFriendIds: _addedFriendIds,
+                        searchQuery: _searchQuery,
+                      ),
+                      SizedBox(height: screenHeight * 0.12),
+                    ],
                   ),
                 ),
               ),

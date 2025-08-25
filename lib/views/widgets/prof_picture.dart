@@ -191,7 +191,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Irina',
                           ),
@@ -221,7 +221,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Irina',
                           ),
@@ -250,7 +250,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                             64,
                           ),
                           textStyle: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Irina',
                           ),
