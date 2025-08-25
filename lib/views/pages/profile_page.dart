@@ -45,7 +45,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 25,
+                  top: 35,
                   right: 12,
                   child: Row(
                     children: [
@@ -63,11 +63,11 @@ class ProfilePage extends StatelessWidget {
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: BoxConstraints(minWidth: 0),
                         icon: Image.asset(
                           'assets/images/icons/prof_page/share_button.png',
-                          width: 40,
-                          height: 40,
+                          width: 41,
+                          height: 41,
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, '/sharePage');
@@ -75,11 +75,11 @@ class ProfilePage extends StatelessWidget {
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: BoxConstraints(minWidth: 0),
                         icon: Image.asset(
                           'assets/images/icons/prof_page/settings_button.png',
-                          width: 40,
-                          height: 40,
+                          width: 41,
+                          height: 41,
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, '/settingsPage');

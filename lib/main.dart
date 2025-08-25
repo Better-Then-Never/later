@@ -9,7 +9,6 @@ import 'package:later/views/pages/camera_page.dart';
 import 'package:later/views/pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:later/views/widgets/your_friend_profile_page.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/pages/options_profile_page/settings_page.dart';
 import 'package:later/views/pages/options_profile_page/notifications_page.dart';
@@ -52,7 +51,6 @@ class Application extends StatelessWidget {
         '/nameChangingWidget': (context) => const NameChangingWidget(),
         '/addFriendsPage': (context) => const AddFriendsPage(),
         '/myFriendsPage': (context) => const MyFriendsPage(),
-        '/yourFriendsProfilePage': (context) => const YourFriendProfilePage(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),

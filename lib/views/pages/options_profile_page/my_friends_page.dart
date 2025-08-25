@@ -342,6 +342,8 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   }
 }
 
+// ...existing code...
+
 class _FriendRow extends StatelessWidget {
   final Map<String, dynamic> friendData;
   final double screenWidth;
@@ -357,8 +359,8 @@ class _FriendRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final friendName = friendData['name'] ?? '';
     final friendUsername = friendData['username'] ?? '';
-    final friendId =
-        friendData['uid'] ?? friendData['id'] ?? friendData['userId'];
+    final friendId = friendData['uid'] ?? friendData['id'] ?? friendData['userId'];
+    
     return FutureBuilder<String?>(
       future: friendId != null ? getImageUrl(friendId) : Future.value(null),
       builder: (context, snapshot) {
@@ -384,8 +386,7 @@ class _FriendRow extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            YourFriendProfilePage(), // (userId: friendId) ADD LOGIC HERE
+                        builder: (context) => YourFriendProfilePage(friendUid: friendId),
                       ),
                     );
                   }
