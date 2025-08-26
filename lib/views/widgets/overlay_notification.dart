@@ -4,6 +4,7 @@ enum NotificationPosition { top, center, bottom }
 
 class OverlayNotification {
   static OverlayEntry? _overlayEntry;
+  static AnimationController? _exitController;
 
   static void show({
     required BuildContext context,
@@ -18,298 +19,105 @@ class OverlayNotification {
     NotificationPosition position = NotificationPosition.top,
     @Deprecated('Use position parameter instead') bool center = false,
   }) {
-    // Handle backward compatibility
-    NotificationPosition finalPosition = position;
-    if (center) {
-      finalPosition = NotificationPosition.center;
-    }
+    // Check if context is still valid
+    if (!context.mounted) return;
 
-    // Remove any existing overlay
-    _overlayEntry?.remove();
-
-    // Create an animation controller
-    late AnimationController animationController;
-    late Animation<double> fadeAnimation;
-    late Animation<Offset> slideAnimation;
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) {
-        animationController = AnimationController(
-          duration: const Duration(milliseconds: 300),
-          vsync: Overlay.of(context),
-        );
-
-        fadeAnimation = Tween<double>(
-          begin: 0.0,
-          end: 1.0,
-        ).animate(CurvedAnimation(
-          parent: animationController,
-          curve: Curves.easeOut,
-        ));
-
-        // Define slide animation based on position
-        Offset startOffset;
-        switch (finalPosition) {
-          case NotificationPosition.top:
-            startOffset = const Offset(0, -1);
-            break;
-          case NotificationPosition.center:
-            startOffset = const Offset(0, 0.3);
-            break;
-          case NotificationPosition.bottom:
-            startOffset = const Offset(0, 1);
-            break;
-        }
-
-        slideAnimation = Tween<Offset>(
-          begin: startOffset,
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animationController,
-          curve: Curves.easeOut,
-        ));
-
-        // Start the animation
-        animationController.forward();
-
-        return AnimatedBuilder(
-          animation: animationController,
-          builder: (context, child) {
-            Widget notificationWidget = SlideTransition(
-              position: slideAnimation,
-              child: FadeTransition(
-                opacity: fadeAnimation,
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: finalPosition == NotificationPosition.center
-                          ? MainAxisSize.min
-                          : MainAxisSize.max,
-                      children: [
-                        Icon(
-                          icon,
-                          color: iconColor,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        finalPosition == NotificationPosition.center
-                            ? Flexible(
-                                child: Text(
-                                  message,
-                                  style: TextStyle(
-                                    fontFamily: 'Irina',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: textColor,
-                                  ),
-                                ),
-                              )
-                            : Expanded(
-                                child: Text(
-                                  message,
-                                  style: TextStyle(
-                                    fontFamily: 'Irina',
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: textColor,
-                                  ),
-                                ),
-                              ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-
-            switch (finalPosition) {
-              case NotificationPosition.top:
-                return Positioned(
-                  top: MediaQuery.of(context).padding.top + topOffset,
-                  left: 16,
-                  right: 16,
-                  child: notificationWidget,
-                );
-              case NotificationPosition.center:
-                return Center(child: notificationWidget);
-              case NotificationPosition.bottom:
-                return Positioned(
-                  bottom: MediaQuery.of(context).padding.bottom + bottomOffset,
-                  left: 16,
-                  right: 16,
-                  child: notificationWidget,
-                );
-            }
-          },
-        );
-      },
-    );
-
-    Overlay.of(context).insert(_overlayEntry!);
-
-    // Auto remove after duration with smooth exit animation
-    Future.delayed(duration, () async {
-      if (_overlayEntry != null) {
-        // Get the animation controller from the overlay
-        final overlayState = _overlayEntry!.mounted ? Overlay.of(context) : null;
-        if (overlayState != null) {
-          // Create exit animations
-          final exitController = AnimationController(
-            duration: const Duration(milliseconds: 300),
-            vsync: overlayState,
-          );
-
-          final exitFadeAnimation = Tween<double>(
-            begin: 1.0,
-            end: 0.0,
-          ).animate(CurvedAnimation(
-            parent: exitController,
-            curve: Curves.easeIn,
-          ));
-
-          // Define exit slide animation based on position
-          Offset endOffset;
-          switch (finalPosition) {
-            case NotificationPosition.top:
-              endOffset = const Offset(0, -1);
-              break;
-            case NotificationPosition.center:
-              endOffset = const Offset(0, -0.3);
-              break;
-            case NotificationPosition.bottom:
-              endOffset = const Offset(0, 1);
-              break;
-          }
-
-          final exitSlideAnimation = Tween<Offset>(
-            begin: Offset.zero,
-            end: endOffset,
-          ).animate(CurvedAnimation(
-            parent: exitController,
-            curve: Curves.easeIn,
-          ));
-
-          // Update the overlay with exit animation
-          _overlayEntry?.remove();
-          _overlayEntry = OverlayEntry(
-            builder: (context) => AnimatedBuilder(
-              animation: exitController,
-              builder: (context, child) {
-                Widget notificationWidget = SlideTransition(
-                  position: exitSlideAnimation,
-                  child: FadeTransition(
-                    opacity: exitFadeAnimation,
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: finalPosition == NotificationPosition.center
-                              ? MainAxisSize.min
-                              : MainAxisSize.max,
-                          children: [
-                            Icon(
-                              icon,
-                              color: iconColor,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            finalPosition == NotificationPosition.center
-                                ? Flexible(
-                                    child: Text(
-                                      message,
-                                      style: TextStyle(
-                                        fontFamily: 'Irina',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: textColor,
-                                      ),
-                                    ),
-                                  )
-                                : Expanded(
-                                    child: Text(
-                                      message,
-                                      style: TextStyle(
-                                        fontFamily: 'Irina',
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: textColor,
-                                      ),
-                                    ),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-
-                switch (finalPosition) {
-                  case NotificationPosition.top:
-                    return Positioned(
-                      top: MediaQuery.of(context).padding.top + topOffset,
-                      left: 16,
-                      right: 16,
-                      child: notificationWidget,
-                    );
-                  case NotificationPosition.center:
-                    return Center(child: notificationWidget);
-                  case NotificationPosition.bottom:
-                    return Positioned(
-                      bottom: MediaQuery.of(context).padding.bottom + bottomOffset,
-                      left: 16,
-                      right: 16,
-                      child: notificationWidget,
-                    );
-                }
-              },
-            ),
-          );
-
-          overlayState.insert(_overlayEntry!);
-          
-          // Start exit animation
-          exitController.forward();
-          
-          // Remove after animation completes
-          await Future.delayed(const Duration(milliseconds: 300));
-        }
-        
-        _overlayEntry?.remove();
-        _overlayEntry = null;
+    try {
+      // Handle backward compatibility
+      NotificationPosition finalPosition = position;
+      if (center) {
+        finalPosition = NotificationPosition.center;
       }
-    });
+
+      // Remove any existing overlay
+      hide();
+
+      // Get overlay state with null check
+      final overlay = Overlay.of(context, rootOverlay: true);
+
+      _overlayEntry = OverlayEntry(
+        builder: (context) {
+          return _NotificationWidget(
+            message: message,
+            backgroundColor: backgroundColor,
+            textColor: textColor,
+            iconColor: iconColor,
+            icon: icon,
+            position: finalPosition,
+            topOffset: topOffset,
+            bottomOffset: bottomOffset,
+            duration: duration,
+          );
+        },
+      );
+
+      overlay.insert(_overlayEntry!);
+
+      // Auto remove after duration with exit animation
+      Future.delayed(duration, () {
+        _hideWithAnimation(context, finalPosition, message, backgroundColor, textColor, iconColor, icon, topOffset, bottomOffset);
+      });
+    } catch (e) {
+      print('Error showing notification: $e');
+    }
+  }
+
+  static void _hideWithAnimation(
+    BuildContext context,
+    NotificationPosition position,
+    String message,
+    Color backgroundColor,
+    Color textColor,
+    Color iconColor,
+    IconData icon,
+    double topOffset,
+    double bottomOffset,
+  ) async {
+    if (_overlayEntry == null || !context.mounted) return;
+
+    try {
+      // Remove current overlay
+      _overlayEntry?.remove();
+
+      // Create exit animation overlay
+      final overlay = Overlay.of(context, rootOverlay: true);
+      
+      _overlayEntry = OverlayEntry(
+        builder: (context) {
+          return _ExitNotificationWidget(
+            message: message,
+            backgroundColor: backgroundColor,
+            textColor: textColor,
+            iconColor: iconColor,
+            icon: icon,
+            position: position,
+            topOffset: topOffset,
+            bottomOffset: bottomOffset,
+            onComplete: () {
+              hide();
+            },
+          );
+        },
+      );
+
+      overlay.insert(_overlayEntry!);
+    } catch (e) {
+      print('Error in exit animation: $e');
+      hide();
+    }
   }
 
   static void hide() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
+    try {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      _exitController?.dispose();
+      _exitController = null;
+    } catch (e) {
+      print('Error hiding notification: $e');
+      _overlayEntry = null;
+      _exitController = null;
+    }
   }
 
   // Success notification preset
@@ -367,5 +175,341 @@ class OverlayNotification {
       position: position,
       center: center,
     );
+  }
+}
+
+class _NotificationWidget extends StatefulWidget {
+  final String message;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color iconColor;
+  final IconData icon;
+  final NotificationPosition position;
+  final double topOffset;
+  final double bottomOffset;
+  final Duration duration;
+
+  const _NotificationWidget({
+    required this.message,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.iconColor,
+    required this.icon,
+    required this.position,
+    required this.topOffset,
+    required this.bottomOffset,
+    required this.duration,
+  });
+
+  @override
+  State<_NotificationWidget> createState() => _NotificationWidgetState();
+}
+
+class _NotificationWidgetState extends State<_NotificationWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    // Define slide animation based on position
+    Offset startOffset;
+    switch (widget.position) {
+      case NotificationPosition.top:
+        startOffset = const Offset(0, -1);
+        break;
+      case NotificationPosition.center:
+        startOffset = const Offset(0, 0.3);
+        break;
+      case NotificationPosition.bottom:
+        startOffset = const Offset(0, 1);
+        break;
+    }
+
+    _slideAnimation = Tween<Offset>(
+      begin: startOffset,
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildNotificationContent();
+  }
+
+  Widget _buildNotificationContent() {
+    Widget notificationWidget = SlideTransition(
+      position: _slideAnimation,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: widget.position == NotificationPosition.center
+                  ? MainAxisSize.min
+                  : MainAxisSize.max,
+              children: [
+                Icon(
+                  widget.icon,
+                  color: widget.iconColor,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                widget.position == NotificationPosition.center
+                    ? Flexible(
+                        child: Text(
+                          widget.message,
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: widget.textColor,
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: Text(
+                          widget.message,
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: widget.textColor,
+                          ),
+                        ),
+                      ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    switch (widget.position) {
+      case NotificationPosition.top:
+        return Positioned(
+          top: MediaQuery.of(context).padding.top + widget.topOffset,
+          left: 16,
+          right: 16,
+          child: notificationWidget,
+        );
+      case NotificationPosition.center:
+        return Center(child: notificationWidget);
+      case NotificationPosition.bottom:
+        return Positioned(
+          bottom: MediaQuery.of(context).padding.bottom + widget.bottomOffset,
+          left: 16,
+          right: 16,
+          child: notificationWidget,
+        );
+    }
+  }
+}
+
+class _ExitNotificationWidget extends StatefulWidget {
+  final String message;
+  final Color backgroundColor;
+  final Color textColor;
+  final Color iconColor;
+  final IconData icon;
+  final NotificationPosition position;
+  final double topOffset;
+  final double bottomOffset;
+  final VoidCallback onComplete;
+
+  const _ExitNotificationWidget({
+    required this.message,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.iconColor,
+    required this.icon,
+    required this.position,
+    required this.topOffset,
+    required this.bottomOffset,
+    required this.onComplete,
+  });
+
+  @override
+  State<_ExitNotificationWidget> createState() => _ExitNotificationWidgetState();
+}
+
+class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+
+    // Define exit slide animation based on position
+    Offset endOffset;
+    switch (widget.position) {
+      case NotificationPosition.top:
+        endOffset = const Offset(0, -1);
+        break;
+      case NotificationPosition.center:
+        endOffset = const Offset(0, -0.3);
+        break;
+      case NotificationPosition.bottom:
+        endOffset = const Offset(0, 1);
+        break;
+    }
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: endOffset,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeIn,
+    ));
+
+    // Start exit animation
+    _controller.forward().then((_) {
+      widget.onComplete();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget notificationWidget = SlideTransition(
+      position: _slideAnimation,
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: widget.position == NotificationPosition.center
+                  ? MainAxisSize.min
+                  : MainAxisSize.max,
+              children: [
+                Icon(
+                  widget.icon,
+                  color: widget.iconColor,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                widget.position == NotificationPosition.center
+                    ? Flexible(
+                        child: Text(
+                          widget.message,
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: widget.textColor,
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: Text(
+                          widget.message,
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: widget.textColor,
+                          ),
+                        ),
+                      ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    switch (widget.position) {
+      case NotificationPosition.top:
+        return Positioned(
+          top: MediaQuery.of(context).padding.top + widget.topOffset,
+          left: 16,
+          right: 16,
+          child: notificationWidget,
+        );
+      case NotificationPosition.center:
+        return Center(child: notificationWidget);
+      case NotificationPosition.bottom:
+        return Positioned(
+          bottom: MediaQuery.of(context).padding.bottom + widget.bottomOffset,
+          left: 16,
+          right: 16,
+          child: notificationWidget,
+        );
+    }
   }
 }

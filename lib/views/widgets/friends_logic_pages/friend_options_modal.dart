@@ -372,6 +372,24 @@ class RemoveFriendConfirmModal extends StatelessWidget {
         'friends': FieldValue.arrayRemove([currentUserUid])
       });
 
+      // Delete friend request records (both directions)
+      final requestId1 = '${currentUserUid}_${friendUid}';
+      final requestId2 = '${friendUid}_${currentUserUid}';
+      
+      final friendRequestRef1 = firestore.collection('friend_requests').doc(requestId1);
+      final friendRequestRef2 = firestore.collection('friend_requests').doc(requestId2);
+      
+      // Check if documents exist before trying to delete them
+      final doc1 = await friendRequestRef1.get();
+      if (doc1.exists) {
+        batch.delete(friendRequestRef1);
+      }
+      
+      final doc2 = await friendRequestRef2.get();
+      if (doc2.exists) {
+        batch.delete(friendRequestRef2);
+      }
+
       // Commit the batch
       await batch.commit();
 
