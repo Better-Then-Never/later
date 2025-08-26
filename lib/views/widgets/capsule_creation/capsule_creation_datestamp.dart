@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Add intl to your pubspec.yaml
+import 'package:intl/intl.dart';
 
 class CapsuleCreationDateStamp extends StatelessWidget {
   final double height;
   final Color backgroundColor;
+  final DateTime? date;
 
   const CapsuleCreationDateStamp({
     super.key,
     required this.height,
     this.backgroundColor = const Color.fromARGB(255, 85, 201, 46),
+    this.date,
   });
 
-  String get todayDate {
-    final now = DateTime.now();
-    return DateFormat('dd.MM.yyyy').format(now);
+  String get formattedDate {
+    final chosenDate = date ?? DateTime.now(); // 👈 fallback
+    return DateFormat('dd.MM.yyyy').format(chosenDate);
   }
 
   @override
@@ -31,7 +33,7 @@ class CapsuleCreationDateStamp extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              todayDate,
+              formattedDate,
               style: const TextStyle(
                 fontSize: 50,
                 fontFamily: 'Irina',

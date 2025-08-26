@@ -8,6 +8,7 @@ import 'package:later/services/map/marker_icon.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:later/views/widgets/map/capsule_info_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:later/views/widgets/map/opened_capsule_widget.dart';
 
 class MapPage extends StatefulWidget {
   static LatLng? currentPositionStatic;
@@ -29,6 +30,13 @@ class _MapPageState extends State<MapPage> {
   String? uid;
 
   final Map<String, BitmapDescriptor> _capsuleIcons = {};
+  final Map<String, String> _iconPaths = {
+    'red': 'assets/images/icons/map/pins/red_pin.png',
+    'blue': 'assets/images/icons/map/pins/blue_pin.png',
+    'green': 'assets/images/icons/map/pins/green_pin.png',
+    'yellow': 'assets/images/icons/map/pins/yellow_pin.png',
+    'user': 'assets/images/icons/map/pins/user_pin.png',
+  };
 
   @override
   void initState() {
@@ -48,24 +56,12 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _initIcons() async {
-    _capsuleIcons['red'] = await MarkerIcon.loadIcon(
-      'assets/images/icons/map/pins/red_pin.png',
-    );
-    _capsuleIcons['blue'] = await MarkerIcon.loadIcon(
-      'assets/images/icons/map/pins/blue_pin.png',
-    );
-    _capsuleIcons['green'] = await MarkerIcon.loadIcon(
-      'assets/images/icons/map/pins/green_pin.png',
-    );
-    _capsuleIcons['yellow'] = await MarkerIcon.loadIcon(
-      'assets/images/icons/map/pins/yellow_pin.png',
-    );
-
-    _capsuleIcons['user'] = await MarkerIcon.loadIcon(
-      'assets/images/icons/map/pins/user_pin.png',
-      size: Size(64, 64),
-    );
-
+    for (final entry in _iconPaths.entries) {
+      _capsuleIcons[entry.key] = await MarkerIcon.loadIcon(
+        entry.value,
+        size: entry.key == 'user' ? const Size(64, 64) : const Size(48, 48),
+      );
+    }
     setState(() {});
   }
 
@@ -102,8 +98,6 @@ class _MapPageState extends State<MapPage> {
           final GeoPoint geoPoint = data['location'];
           final capsulePos = LatLng(geoPoint.latitude, geoPoint.longitude);
           final capsuleId = doc.id;
-
-          final color = 'red';
           final icon = _capsuleIcons[data['color']];
 
           _markers[MarkerId(capsuleId)] = Marker(
@@ -117,7 +111,8 @@ class _MapPageState extends State<MapPage> {
                   dateStamp: DateFormat(
                     'dd-MM-yyyy',
                   ).format(data['createdAt'].toDate()),
-                  onMoreInfo: () => _showCapsuleInfo(data),
+                  openAt: data['openAt'] ?? Timestamp.now(),
+                  onMoreInfo: () => _showCapsuleInfo(context, data),
                 ),
                 capsulePos,
               );
@@ -147,8 +142,8 @@ class _MapPageState extends State<MapPage> {
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
-              height: 130,
-              width: 200,
+              height: 140,
+              width: 230,
               offset: 50,
             ),
           ],
@@ -163,20 +158,20 @@ class _MapPageState extends State<MapPage> {
   }*/
   }
 
-  void _showCapsuleInfo(Map<String, dynamic> capsuleData) {
+  void _showCapsuleInfo(
+    BuildContext context,
+    Map<String, dynamic> capsuleData,
+  ) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text(capsuleData['title'] ?? 'Capsule'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (capsuleData['imageUrl'] != null)
-              Image.network(capsuleData['imageUrl']),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(16),
+          child: CapsulePreviewCard(capsuleData: capsuleData),
+        );
+      },
     );
   }
 
