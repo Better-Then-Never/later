@@ -1,16 +1,30 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:later/services/auth/user_services.dart';
 import 'package:later/views/widgets/background_picture.dart';
-import 'package:later/views/widgets/name_getting.dart';
+import 'package:later/services/auth/name_getting.dart';
 import 'package:later/views/widgets/prof_picture.dart';
-import 'package:later/views/widgets/username_getting.dart';
+import 'package:later/services/auth/username_getting.dart';
+import 'package:provider/provider.dart';
+import 'package:later/views/widgets/friends_logic_pages/friends_row_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  Stream<int> _getReceivedRequestsCount(String uid) {
+    return FirebaseFirestore.instance
+        .collection('friend_requests')
+        .where('toUserId', isEqualTo: uid)
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final userService = Provider.of<UserService>(context, listen: false);
+    final uid = userService.uid ?? 'null';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
@@ -41,7 +55,7 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 25,
+                  top: 35,
                   right: 12,
                   child: Row(
                     children: [
@@ -50,8 +64,8 @@ class ProfilePage extends StatelessWidget {
                         constraints: BoxConstraints(minWidth: 0),
                         icon: Image.asset(
                           'assets/images/icons/prof_page/notifications_button.png',
-                          width: 41,
-                          height: 41,
+                          width: 45,
+                          height: 45,
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, '/notificationsPage');
@@ -59,11 +73,11 @@ class ProfilePage extends StatelessWidget {
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: BoxConstraints(minWidth: 0),
                         icon: Image.asset(
                           'assets/images/icons/prof_page/share_button.png',
-                          width: 40,
-                          height: 40,
+                          width: 41,
+                          height: 41,
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, '/sharePage');
@@ -71,11 +85,11 @@ class ProfilePage extends StatelessWidget {
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: BoxConstraints(minWidth: 0),
                         icon: Image.asset(
                           'assets/images/icons/prof_page/settings_button.png',
-                          width: 40,
-                          height: 40,
+                          width: 41,
+                          height: 41,
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, '/settingsPage');
@@ -90,25 +104,14 @@ class ProfilePage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ProfilePicture(
-                        pictureHeight: 115,
-                        pictureWidth: 115,
-                      ), // No padding
+                      ProfilePicture(pictureHeight: 115, pictureWidth: 115),
                       const SizedBox(width: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          NameGettingWidget(
-                            uid:
-                                FirebaseAuth.instance.currentUser?.uid ??
-                                'null',
-                          ),
-                          UsernameGettingWidget(
-                            uid:
-                                FirebaseAuth.instance.currentUser?.uid ??
-                                'null',
-                          ),
+                          NameGettingWidget(uid: uid),
+                          UsernameGettingWidget(uid: uid),
                         ],
                       ),
                     ],
@@ -199,7 +202,7 @@ class ProfilePage extends StatelessWidget {
                           child: Container(
                             width: screenWidth - 108,
                             height: 1,
-                            color: Color.fromARGB(211, 211, 211, 211),
+                            color: Color.fromARGB(255, 211, 211, 211),
                           ),
                         ),
                         Row(
@@ -245,9 +248,10 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
+
                   GestureDetector(
                     onTap: () {
-                      //TODO: Add friends tapped
+                      Navigator.pushNamed(context, '/addFriendsPage');
                     },
                     child: Container(
                       width: screenWidth - 32,
@@ -264,127 +268,178 @@ class ProfilePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: Row(
+                      child: Stack(
                         children: [
-                          const SizedBox(width: 18),
-                          SizedBox(
-                            width: 40,
-                            height: 40,
-                            child: Image.asset(
-                              'assets/images/icons/prof_page/add_friend.png',
-                              fit: BoxFit.contain,
+                          Positioned(
+                            top: 3, 
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 18),
+                                SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child: Image.asset(
+                                    'assets/images/icons/prof_page/add_friend.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
+                                const SizedBox(width: 18),
+                                const Text(
+                                  "Add friends",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 18),
-                          const Text(
-                            "Add friends",
-                            style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
+                          StreamBuilder<int>(
+                            stream: _getReceivedRequestsCount(uid),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData || snapshot.data == 0) {
+                                return SizedBox.shrink(); 
+                              }
+
+                              final count = snapshot.data!;
+                              final displayCount = count > 99
+                                  ? '99+'
+                                  : count.toString();
+
+                              return Positioned(
+                                top:
+                                    13, 
+                                right: 16,
+                                child: Container(
+                                  constraints: BoxConstraints(minWidth: 20),
+                                  height: 20,
+                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      displayCount,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Irina',
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    width: screenWidth - 32,
-                    height: 150,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withAlpha(40),
-                          spreadRadius: 1,
-                          blurRadius: 9,
-                          offset: Offset(0, 4),
+                  Stack(
+                    children: [
+                      Container(
+                        width: screenWidth - 32,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(40),
+                              spreadRadius: 1,
+                              blurRadius: 9,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          bottom: 45,
-                          left: 0,
-                          child: Container(
-                            width: screenWidth - 32,
-                            height: 1,
-                            color: const Color.fromARGB(211, 211, 211, 211),
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        right: 0,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 21),
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: RandomFriendsRow(currentUserUid: uid),
                           ),
                         ),
-                        Positioned(
-                          bottom: 3,
-                          left: 0,
-                          right: 0,
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 18),
-                              SizedBox(
-                                width: 40,
-                                height: 40,
-                                child: Image.asset(
-                                  'assets/images/icons/prof_page/my_friends.png',
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              SizedBox(
-                                width: screenWidth - 95,
-                                height: 40,
-                                child: TextButton(
-                                  onPressed: () {
-                                    //TODO: My friends tapped
-                                  },
-                                  style: TextButton.styleFrom(
-                                    alignment: Alignment.centerLeft,
-                                    foregroundColor: Colors.black,
-                                    textStyle: const TextStyle(fontSize: 16),
-                                    splashFactory: NoSplash.splashFactory,
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    overlayColor: Colors.transparent,
-                                  ),
-                                  child: const Text(
-                                    "My friends",
-                                    style: TextStyle(fontFamily: 'Irina'),
-                                  ),
-                                ),
-                              ),
-                            ],
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          width: screenWidth - 32,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Positioned(
+                        bottom: 3,
+                        left: 0,
+                        right: 0,
+                        child: Row(
+                          children: [
+                            const SizedBox(width: 18),
+                            SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: Image.asset(
+                                'assets/images/icons/prof_page/my_friends.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            SizedBox(
+                              width: screenWidth - 95,
+                              height: 40,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/myFriendsPage',
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  alignment: Alignment.centerLeft,
+                                  foregroundColor: Colors.black,
+                                  textStyle: const TextStyle(fontSize: 16),
+                                  splashFactory: NoSplash.splashFactory,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                  overlayColor: Colors.transparent,
+                                ),
+                                child: const Text(
+                                  "My friends",
+                                  style: TextStyle(fontFamily: 'Irina'),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 45,
+                        left: 0,
+                        child: Container(
+                          width: screenWidth - 32,
+                          height: 1,
+                          color: const Color.fromARGB(255, 211, 211, 211),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    "Map",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Container(
-                    width: screenWidth - 32,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withAlpha(40),
-                          spreadRadius: 1,
-                          blurRadius: 9,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),

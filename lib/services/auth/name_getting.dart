@@ -7,6 +7,7 @@ class NameGettingWidget extends StatelessWidget {
   final TextStyle? style;
   final int? maxLines;
   final double? minFontSize;
+  final TextAlign? textAlign;
 
   const NameGettingWidget({
     super.key,
@@ -14,6 +15,7 @@ class NameGettingWidget extends StatelessWidget {
     this.style,
     this.maxLines,
     this.minFontSize,
+    this.textAlign,
   });
 
   @override
@@ -49,6 +51,7 @@ class NameGettingWidget extends StatelessWidget {
             maxLines: maxLines ?? 1,
             minFontSize: minFontSize ?? 12,
             overflow: TextOverflow.visible,
+            textAlign: textAlign ?? TextAlign.start,
           ),
         );
       },

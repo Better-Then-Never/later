@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/pages/login_page.dart';
+import 'package:later/views/pages/options_profile_page/add_friends_page.dart';
+import 'package:later/views/pages/options_profile_page/my_friends_page.dart';
 import 'package:later/views/pages/welcome_page.dart';
 import 'package:later/views/pages/camera_page.dart';
 import 'package:later/views/pages/signup_page.dart';
@@ -14,13 +16,17 @@ import 'package:later/views/pages/options_profile_page/share_page.dart';
 import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
+import 'package:later/services/auth/user_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AuthService(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AuthService()),
+        ChangeNotifierProvider(create: (context) => UserService()),
+      ],
       child: const Application(),
     ),
   );
@@ -43,6 +49,8 @@ class Application extends StatelessWidget {
         '/sharePage': (context) => const SharePage(),
         '/profile_page': (context) => const ProfilePage(),
         '/nameChangingWidget': (context) => const NameChangingWidget(),
+        '/addFriendsPage': (context) => const AddFriendsPage(),
+        '/myFriendsPage': (context) => const MyFriendsPage(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
