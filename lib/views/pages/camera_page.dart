@@ -91,11 +91,13 @@ class _CameraPageState extends State<CameraPage> {
                 child: Center(
                   child: GestureDetector(
                     onTap: () async {
+                      if (cameraController == null) return;
+
                       XFile picture = await cameraController!.takePicture();
 
                       if (!mounted) return;
 
-                      await Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (_) =>
