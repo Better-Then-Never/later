@@ -3,24 +3,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:later/services/auth/user_services.dart';
-import 'package:later/views/widgets/add_friend_profile_page.dart';
+import 'package:later/services/auth/friend_request.dart';
+import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 
 class FriendsSearchWidget extends StatelessWidget {
-  final Function(String userId) onAddFriend;
+  final Function(String userId) onSendRequest;
   final Function(String userId) onRemoveFriend;
   final Set<String> hiddenUserIds;
-  final Set<String> addedFriendIds;
+  final Set<String> sentRequestIds;
   final String searchQuery;
+  final VoidCallback? onStateChanged;
 
   static final Map<String, String?> _imageUrlCache = {};
+  final FriendRequestService _requestService = FriendRequestService();
 
-  const FriendsSearchWidget({
+  FriendsSearchWidget({
     super.key,
-    required this.onAddFriend,
+    required this.onSendRequest,
     required this.onRemoveFriend,
     required this.hiddenUserIds,
-    required this.addedFriendIds,
+    required this.sentRequestIds,
     required this.searchQuery,
+    this.onStateChanged,
   });
 
   Future<String?> _getImageUrl(String userId) async {
@@ -59,11 +63,10 @@ class FriendsSearchWidget extends StatelessWidget {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
-        
+
         final users = snapshot.data!.docs
             .where((user) => user.id != currentUid)
-            // Modified: Don't filter out users that are in addedFriendIds, even if they're in friends list
-            .where((user) => !(userService.friends.contains(user.id) && !addedFriendIds.contains(user.id)))
+            .where((user) => !userService.friends.contains(user.id))
             .where((user) => !hiddenUserIds.contains(user.id))
             .where((user) {
               if (searchQuery.isEmpty) return true;
@@ -122,15 +125,20 @@ class FriendsSearchWidget extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            AddFriendProfilePage(userId: users[i].id),
+                        builder: (context) => AddFriendProfilePage(
+                          userId: users[i].id,
+                          onStateChanged: onStateChanged, // Pass the callback
+                        ),
                       ),
                     );
                   },
-                  onAdd: () => onAddFriend(users[i].id),
+                  onSendRequest: () => onSendRequest(users[i].id),
                   onRemove: () => onRemoveFriend(users[i].id),
-                  isAdded: addedFriendIds.contains(users[i].id),
+                  isSent: sentRequestIds.contains(users[i].id),
                   screenWidth: screenWidth,
+                  requestService: _requestService,
+                  currentUid: currentUid!,
+                  onStateChanged: onStateChanged, // Pass callback to row
                 ),
                 if (i < users.length - 1)
                   const Divider(
@@ -149,16 +157,19 @@ class FriendsSearchWidget extends StatelessWidget {
   }
 }
 
-class FriendSuggestionRow extends StatelessWidget {
+class FriendSuggestionRow extends StatefulWidget {
   final String userId;
   final String name;
   final String username;
   final Future<String?> avatarFuture;
   final VoidCallback onTapProfile;
-  final VoidCallback onAdd;
+  final VoidCallback onSendRequest;
   final VoidCallback onRemove;
-  final bool isAdded;
+  final bool isSent;
   final double screenWidth;
+  final FriendRequestService requestService;
+  final String currentUid;
+  final VoidCallback? onStateChanged; // Add this callback
 
   const FriendSuggestionRow({
     super.key,
@@ -167,23 +178,107 @@ class FriendSuggestionRow extends StatelessWidget {
     required this.username,
     required this.avatarFuture,
     required this.onTapProfile,
-    required this.onAdd,
+    required this.onSendRequest,
     required this.onRemove,
-    required this.isAdded,
+    required this.isSent,
     required this.screenWidth,
+    required this.requestService,
+    required this.currentUid,
+    this.onStateChanged, // Add this parameter
   });
 
+  @override
+  State<FriendSuggestionRow> createState() => _FriendSuggestionRowState();
+}
+
+class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
+  String? requestStatus;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRequestStatus();
+    
+    // Listen for state changes from parent
+    if (widget.onStateChanged != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Set up listener for when we come back from profile page
+        ModalRoute.of(context)?.addScopedWillPopCallback(() async {
+          _checkRequestStatus();
+          return true;
+        });
+      });
+    }
+  }
+
+  @override
+  void didUpdateWidget(FriendSuggestionRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Refresh status when widget updates (like when parent refreshes)
+    if (oldWidget.userId != widget.userId || 
+        oldWidget.currentUid != widget.currentUid) {
+      _checkRequestStatus();
+    }
+  }
+
+  Future<void> _checkRequestStatus() async {
+    setState(() {
+      isLoading = true;
+    });
+    
+    final status = await widget.requestService.getRequestStatus(
+      widget.currentUid,
+      widget.userId,
+    );
+    
+    if (mounted) {
+      setState(() {
+        requestStatus = status;
+        isLoading = false;
+      });
+    }
+  }
+
+  Widget _buildActionButton() {
+    if (isLoading) {
+      return SizedBox(
+        width: 20,
+        height: 20,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
+
+    if (widget.isSent || requestStatus == 'pending') {
+      return Image.asset(
+        'assets/images/icons/friends_page/pending.png',
+        width: widget.screenWidth * 0.09,
+        height: widget.screenWidth * 0.09,
+      );
+    }
+
+    return GestureDetector(
+      onTap: widget.onSendRequest,
+      child: Image.asset(
+        'assets/images/icons/prof_page/add_friend.png',
+        width: widget.screenWidth * 0.09,
+        height: widget.screenWidth * 0.09,
+      ),
+    );
+  }
+
+  // ... rest of the build method stays the same
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(25),
-      onTap: onTapProfile,
+      onTap: widget.onTapProfile,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
+        padding: EdgeInsets.symmetric(horizontal: widget.screenWidth * 0.02),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(vertical: 0),
           leading: FutureBuilder<String?>(
-            future: avatarFuture,
+            future: widget.avatarFuture,
             builder: (context, snapshot) {
               ImageProvider avatar;
               if (snapshot.hasData &&
@@ -196,25 +291,25 @@ class FriendSuggestionRow extends StatelessWidget {
                 );
               }
               return CircleAvatar(
-                radius: screenWidth * 0.07,
+                radius: widget.screenWidth * 0.07,
                 backgroundImage: avatar,
                 backgroundColor: Colors.grey[200],
               );
             },
           ),
           title: Text(
-            name,
+            widget.name,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.045,
+              fontSize: widget.screenWidth * 0.045,
               fontFamily: 'Irina',
               color: Colors.black,
             ),
           ),
           subtitle: Text(
-            '@$username',
+            '@${widget.username}',
             style: TextStyle(
-              fontSize: screenWidth * 0.040,
+              fontSize: widget.screenWidth * 0.040,
               fontFamily: 'Irina',
               color: Color.fromARGB(255, 94, 94, 94),
             ),
@@ -222,27 +317,14 @@ class FriendSuggestionRow extends StatelessWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              GestureDetector(
-                onTap: isAdded ? null : onAdd,
-                child: isAdded
-                    ? Icon(
-                        Icons.check_circle,
-                        color: Color.fromARGB(255, 86, 201, 46),
-                        size: screenWidth * 0.09,
-                      )
-                    : Image.asset(
-                        'assets/images/icons/prof_page/add_friend.png',
-                        width: screenWidth * 0.09,
-                        height: screenWidth * 0.09,
-                      ),
-              ),
+              _buildActionButton(),
               SizedBox(width: 8),
               GestureDetector(
-                onTap: onRemove,
+                onTap: widget.onRemove,
                 child: Image.asset(
                   'assets/images/icons/friends_page/delete_reset.png',
-                  width: screenWidth * 0.07,
-                  height: screenWidth * 0.07,
+                  width: widget.screenWidth * 0.07,
+                  height: widget.screenWidth * 0.07,
                 ),
               ),
             ],

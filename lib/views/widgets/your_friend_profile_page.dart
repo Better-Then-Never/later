@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:later/views/widgets/friend_options_modal.dart';
+import 'package:later/views/widgets/friends_logic_pages/friend_options_modal.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;

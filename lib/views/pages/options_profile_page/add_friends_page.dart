@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/auth/friend_search.dart';
+import 'package:later/services/auth/friend_request.dart';
+import 'package:later/views/widgets/friends_logic_pages/friend_requests_page.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/auth/user_services.dart';
 import 'package:later/views/widgets/overlay_notification.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
@@ -13,10 +16,12 @@ class AddFriendsPage extends StatefulWidget {
 
 class _AddFriendsPageState extends State<AddFriendsPage> {
   static final Set<String> _hiddenUserIds = {};
-  static final Set<String> _addedFriendIds = {};
+  static final Set<String> _sentRequestIds = {};
+  final FriendRequestService _requestService = FriendRequestService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isRefreshing = false;
+  int _refreshKey = 0;
 
   @override
   void initState() {
@@ -32,12 +37,19 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   void dispose() {
     OverlayNotification.hide();
     _searchController.dispose();
-
-    // Clear the static sets when leaving the page
     _hiddenUserIds.clear();
-    _addedFriendIds.clear();
-
+    _sentRequestIds.clear();
     super.dispose();
+  }
+
+  Stream<int> _getReceivedRequestsCount() {
+    final userService = Provider.of<UserService>(context, listen: false);
+    return FirebaseFirestore.instance
+        .collection('friend_requests')
+        .where('toUserId', isEqualTo: userService.uid)
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
   }
 
   Future<void> _refreshPage() async {
@@ -46,24 +58,20 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     });
 
     try {
-      // Clear all tracking sets
       _hiddenUserIds.clear();
-      _addedFriendIds.clear();
-
-      // Clear search query
+      _sentRequestIds.clear();
       _searchController.clear();
 
-      // Refresh user service friends list
       final userService = Provider.of<UserService>(context, listen: false);
       await userService.refreshFriends();
 
-      // Add a small delay to show the loading state
       await Future.delayed(const Duration(milliseconds: 300));
 
       if (mounted) {
         setState(() {
           _searchQuery = '';
           _isRefreshing = false;
+          _refreshKey++;
         });
 
         OverlayNotification.showInfo(
@@ -94,9 +102,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
     return WillPopScope(
       onWillPop: () async {
-        // Also clear when back button is pressed
         _hiddenUserIds.clear();
-        _addedFriendIds.clear();
+        _sentRequestIds.clear();
         return true;
       },
       child: Scaffold(
@@ -134,9 +141,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                   color: Colors.black,
                                 ),
                               ),
-                              SizedBox(
-                                width: 12,
-                              ), // Space between text and button
+                              SizedBox(width: 12),
                               GestureDetector(
                                 onTap: _isRefreshing ? null : _refreshPage,
                                 child: Container(
@@ -231,9 +236,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                     left: 8,
                     child: GestureDetector(
                       onTap: () {
-                        // Clear sets before navigating back
                         _hiddenUserIds.clear();
-                        _addedFriendIds.clear();
+                        _sentRequestIds.clear();
                         Navigator.pop(context);
                       },
                       child: Image.asset(
@@ -287,33 +291,95 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                   ),
                   SizedBox(width: 16),
                   Expanded(
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFEAEAEA),
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 6.0),
-                            child: Image.asset(
-                              'assets/images/icons/friends_page/friend_request.png',
-                              width: 32,
-                              height: 32,
-                            ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FriendRequestsPage(),
                           ),
-                          Text(
-                            'Requests',
-                            style: TextStyle(
-                              fontFamily: 'Irina',
-                              fontSize: 19,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
+                        );
+                      },
+                      child: Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFEAEAEA),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Stack(
+                          children: [
+                            // Main button content - centered
+                            Center(
+                              child: Row(
+                                mainAxisSize:
+                                    MainAxisSize.min, // Only take needed space
+                                children: [
+                                  Image.asset(
+                                    'assets/images/icons/friends_page/friend_request.png',
+                                    width: 32,
+                                    height: 32,
+                                  ),
+                                  SizedBox(
+                                    width: 6,
+                                  ), // Space between icon and text
+                                  Text(
+                                    'Requests',
+                                    style: TextStyle(
+                                      fontFamily: 'Irina',
+                                      fontSize: 19,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 16,
+                                  ), // Bigger space between text and bubble
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                            // Red bubble with count
+                            StreamBuilder<int>(
+                              stream: _getReceivedRequestsCount(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData || snapshot.data == 0) {
+                                  return SizedBox.shrink(); // Hide bubble when count is 0
+                                }
+
+                                final count = snapshot.data!;
+                                final displayCount = count > 99
+                                    ? '99+'
+                                    : count.toString();
+
+                                return Positioned(
+                                  top: 15,
+                                  right: 12,
+                                  child: Container(
+                                    constraints: BoxConstraints(minWidth: 20),
+                                    height: 20,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        displayCount,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Irina',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -342,29 +408,48 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                   child: Column(
                     children: [
                       FriendsSearchWidget(
-                        onAddFriend: (userId) async {
+                        key: ValueKey(_refreshKey),
+                        onSendRequest: (userId) async {
                           try {
                             final userService = Provider.of<UserService>(
                               context,
                               listen: false,
                             );
-                            await userService.addFriend(userId);
+
+                            // Check if request already exists
+                            final requestExists = await _requestService
+                                .requestExists(userService.uid!, userId);
+
+                            if (requestExists) {
+                              OverlayNotification.showInfo(
+                                context: context,
+                                message: 'Friend request already exists',
+                                position: NotificationPosition.center,
+                              );
+                              return;
+                            }
+
+                            await _requestService.sendFriendRequest(
+                              userService.uid!,
+                              userId,
+                            );
+
                             if (!mounted) return;
 
                             setState(() {
-                              _addedFriendIds.add(userId);
+                              _sentRequestIds.add(userId);
                             });
 
                             OverlayNotification.showSuccess(
                               context: context,
-                              message: 'Friend added!',
+                              message: 'Friend request sent!',
                               position: NotificationPosition.center,
                             );
                           } catch (e) {
                             if (!mounted) return;
                             OverlayNotification.showError(
                               context: context,
-                              message: 'Failed to add friend',
+                              message: 'Failed to send friend request',
                               position: NotificationPosition.center,
                             );
                           }
@@ -380,8 +465,13 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                           );
                         },
                         hiddenUserIds: _hiddenUserIds,
-                        addedFriendIds: _addedFriendIds,
+                        sentRequestIds: _sentRequestIds,
                         searchQuery: _searchQuery,
+                        onStateChanged: () {
+                          setState(() {
+                            _refreshKey++;
+                          });
+                        },
                       ),
                       SizedBox(height: screenHeight * 0.12),
                     ],
