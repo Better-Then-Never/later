@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/options_settings_page/email_changing.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
-import 'package:later/views/widgets/name_getting.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:later/services/auth/name_getting.dart';
 import 'package:later/views/widgets/prof_picture.dart';
 import 'package:later/views/widgets/background_picture.dart';
-import 'package:later/views/widgets/username_getting.dart';
+import 'package:later/services/auth/username_getting.dart';
 import 'package:later/views/pages/options_settings_page/username_changing.dart';
-import 'package:later/views/widgets/email_getting.dart';
+import 'package:later/services/auth/email_getting.dart';
 import 'package:later/views/pages/options_settings_page/password_changing.dart';
 import 'package:later/views/pages/options_settings_page/language.dart';
 import 'package:later/views/pages/options_settings_page/profile_custom.dart';
 import 'package:later/views/pages/options_settings_page/app_theme.dart';
+import 'package:later/services/auth/user_services.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final String uid = FirebaseAuth.instance.currentUser?.uid ?? 'null';
+    final userService = Provider.of<UserService>(context, listen: false);
+    final String uid = userService.uid ?? 'null';
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
