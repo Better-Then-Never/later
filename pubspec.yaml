@@ -28,6 +28,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  image: ^4.0.0
   cupertino_icons: ^1.0.8
   firebase_core: ^4.0.0
   firebase_storage: ^13.0.0
@@ -49,6 +50,8 @@ dependencies:
   custom_info_window: ^1.0.1
   intl: ^0.20.2
   geocoding: ^4.0.0
+  path_provider: ^2.0.15
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +85,7 @@ flutter:
     - assets/images/icons/camera/
     - assets/images/icons/map/pins/
     - assets/images/icons/capsule_creation/
+    - assets/images/icons/friends_page/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

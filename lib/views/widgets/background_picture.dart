@@ -1,10 +1,11 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:later/services/auth/user_services.dart';
+import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> clearBackgroundImageCache() async {
   final prefs = await SharedPreferences.getInstance();
@@ -33,7 +34,8 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   @override
   void initState() {
     super.initState();
-    uid = FirebaseAuth.instance.currentUser?.uid;
+    final userService = Provider.of<UserService>(context, listen: false);
+    uid = userService.uid;
     loadCachedImage();
   }
 
@@ -130,7 +132,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                 height: 153,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -145,6 +147,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                             color: Color.fromARGB(255, 86, 201, 46),
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                       ),
@@ -165,8 +168,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
@@ -194,8 +198,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.black,
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                         child: const Center(child: Text('Take a photo')),
@@ -222,13 +227,14 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
                             64,
                           ),
                           textStyle: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
                             ),
                           ),
                         ),
@@ -255,7 +261,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
         height: widget.pictureHeight ?? 200,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.grey,
+          color: Color.fromARGB(255, 187, 187, 187),
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
@@ -268,11 +274,18 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
               : null,
         ),
         child: pickedImage == null
-            ? const Center(
-                child: Icon(
-                  Icons.person_rounded,
-                  size: 35,
-                  color: Colors.black38,
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 80,
+                  ), 
+                  child: Image.asset(
+                    'assets/images/icons/prof_page/choose_bg.png',
+                    width: 35,
+                    height: 35,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               )
             : null,
