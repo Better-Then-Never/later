@@ -53,6 +53,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
   }
 
   Future<void> _refreshPage() async {
+    if (!mounted) return;
+
     setState(() {
       _isRefreshing = true;
     });
@@ -100,11 +102,10 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
         _hiddenUserIds.clear();
         _sentRequestIds.clear();
-        return true;
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F6F6),
@@ -410,19 +411,23 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                       FriendsSearchWidget(
                         key: ValueKey(_refreshKey),
                         onSendRequest: (userId) async {
-                          try {
-                            final userService = Provider.of<UserService>(
-                              context,
-                              listen: false,
-                            );
+                          if (!mounted) return;
 
+                          // Get userService before any async gap
+                          final userService = Provider.of<UserService>(
+                            context,
+                            listen: false,
+                          );
+
+                          try {
                             // Check if request already exists
                             final requestExists = await _requestService
                                 .requestExists(userService.uid!, userId);
 
+                            if (!mounted) return;
                             if (requestExists) {
                               OverlayNotification.showInfo(
-                                context: context,
+                                context: this.context,
                                 message: 'Friend request already exists',
                                 position: NotificationPosition.center,
                               );
@@ -441,20 +446,21 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             });
 
                             OverlayNotification.showSuccess(
-                              context: context,
+                              context: this.context,
                               message: 'Friend request sent!',
                               position: NotificationPosition.center,
                             );
                           } catch (e) {
                             if (!mounted) return;
                             OverlayNotification.showError(
-                              context: context,
+                              context: this.context,
                               message: 'Failed to send friend request',
                               position: NotificationPosition.center,
                             );
                           }
                         },
                         onRemoveFriend: (userId) {
+                          if (!mounted) return;
                           setState(() {
                             _hiddenUserIds.add(userId);
                           });

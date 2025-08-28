@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/views/pages/map_page.dart' as map;
-import 'package:later/views/widgets/capsule_creation/capsule_privacy_dropdown.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_image_preview.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_top_bar.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
@@ -321,10 +320,10 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
           .doc(capsuleId)
           .set(capsule.toMap());
 
-      if (context.mounted) Navigator.pop(context);
-    } catch (e, st) {
-      print("Error saving capsule: $e\n$st");
-      if (context.mounted) {
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      // Handle error
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Failed to save capsule: $e")));
