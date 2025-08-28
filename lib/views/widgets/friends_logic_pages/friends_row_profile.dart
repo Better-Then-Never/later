@@ -4,8 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:later/services/auth/name_getting.dart';
 import 'package:later/views/widgets/your_friend_profile_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:collection/collection.dart';
-import 'package:later/views/widgets/overlay_notification.dart'; // Add this import
+import 'package:later/views/widgets/overlay_notification.dart';
 
 class RandomFriendsRow extends StatefulWidget {
   final String currentUserUid;
@@ -152,27 +151,27 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     return fetchedFriends;
   }
 
-  Future<void> _showChoosePinnedFriendsModal(BuildContext context) async {
-    List<String> tempPinned = List<String>.from(_pinnedFriendUids);
-    TextEditingController _searchController = TextEditingController();
-    String _searchQuery = '';
+ Future<void> _showChoosePinnedFriendsModal(BuildContext context) async {
+  List<String> tempPinned = List<String>.from(_pinnedFriendUids);
+  TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    barrierColor: Colors.black.withAlpha(128),
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (context, setModalState) {
             // Filter by search
             final filteredFriends = _friendsList.where((uid) {
               final info = _friendInfoMap[uid];
               if (info == null) return false;
               final name = info['name']?.toLowerCase() ?? '';
               final username = info['username']?.toLowerCase() ?? '';
-              return name.contains(_searchQuery) ||
-                  username.contains(_searchQuery);
+              return name.contains(searchQuery) ||
+                  username.contains(searchQuery);
             }).toList();
 
             // Sort so checked (pinned) friends are always on top
@@ -241,7 +240,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                                 ),
                                 Expanded(
                                   child: TextField(
-                                    controller: _searchController,
+                                    controller: searchController,
                                     decoration: const InputDecoration(
                                       hintText: "Search...",
                                       border: InputBorder.none,
@@ -253,7 +252,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                                     ),
                                     onChanged: (val) {
                                       setModalState(() {
-                                        _searchQuery = val.trim().toLowerCase();
+                                        searchQuery = val.trim().toLowerCase();
                                       });
                                     },
                                   ),
@@ -348,7 +347,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                     // Save Button
                     Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Container(
+                      child: SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -364,22 +363,18 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          onPressed: () {
-                            final widgetContext = this.context;
-                            Navigator.pop(context);
+                          onPressed: () async {
+                            Navigator.pop(context); 
                             _setPinnedFriends(tempPinned);
-                            Future.delayed(
+                            await Future.delayed(
                               const Duration(milliseconds: 300),
-                              () {
-                                if (mounted) {
-                                  OverlayNotification.showSuccess(
-                                    context: widgetContext,
-                                    message:
-                                        'Pinned friends updated successfully!',
-                                  );
-                                }
-                              },
                             );
+                            if (mounted) {
+                              OverlayNotification.showSuccess(
+                                context: this.context, 
+                                message: 'Pinned friends updated successfully!',
+                              );
+                            }
                           },
                           child: const Text(
                             "Save",
@@ -401,7 +396,6 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
         );
       },
     ).whenComplete(() {
-      // Clean up overlay when modal is dismissed
       OverlayNotification.hide();
     });
   }
@@ -409,118 +403,119 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
   // ...rest of the existing code remains the same (no changes to build method and other methods)...
 
   Future<void> _showFriendOptionsModal(
-  BuildContext context,
-  String friendUid,
-) async {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    barrierColor: Colors.black.withAlpha(128),
-    builder: (BuildContext context) {
-      return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          Navigator.of(context).pop();
-        },
-        child: Center(
-          child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: 264,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height: 37,
-                    width: 264,
-                    child: Center(
-                      child: NameGettingWidget(
-                        uid: friendUid,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 86, 201, 46),
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Irina',
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 264,
-                    height: 1,
-                    color: Color.fromARGB(255, 86, 201, 46),
-                  ),
-                  SizedBox(
-                    height: 37,
-                    width: 264,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => YourFriendProfilePage(friendUid: friendUid),
-                          ),
-                        );
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        textStyle: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Irina',
-                        ),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(0),
-                            topRight: Radius.circular(0),
+    BuildContext context,
+    String friendUid,
+  ) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withAlpha(128),
+      builder: (BuildContext context) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                width: 264,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 37,
+                      width: 264,
+                      child: Center(
+                        child: NameGettingWidget(
+                          uid: friendUid,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 86, 201, 46),
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
                           ),
                         ),
                       ),
-                      child: const Center(child: Text('View profile page')),
                     ),
-                  ),
-                  Container(
-                    width: 264,
-                    height: 2,
-                    color: Color.fromARGB(255, 211, 211, 211),
-                  ),
-                  SizedBox(
-                    height: 37,
-                    width: 264,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _showChoosePinnedFriendsModal(context);
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        textStyle: const TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Irina',
+                    Container(
+                      width: 264,
+                      height: 1,
+                      color: Color.fromARGB(255, 86, 201, 46),
+                    ),
+                    SizedBox(
+                      height: 37,
+                      width: 264,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  YourFriendProfilePage(friendUid: friendUid),
+                            ),
+                          );
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          textStyle: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
+                          ),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(0),
+                              topRight: Radius.circular(0),
+                            ),
+                          ),
+                        ),
+                        child: const Center(child: Text('View profile page')),
+                      ),
+                    ),
+                    Container(
+                      width: 264,
+                      height: 2,
+                      color: Color.fromARGB(255, 211, 211, 211),
+                    ),
+                    SizedBox(
+                      height: 37,
+                      width: 264,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _showChoosePinnedFriendsModal(context);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          textStyle: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
+                          ),
+                        ),
+                        child: const Center(
+                          child: Text('Choose pinned friends'),
                         ),
                       ),
-                      child: const Center(
-                        child: Text('Choose pinned friends'),
-                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

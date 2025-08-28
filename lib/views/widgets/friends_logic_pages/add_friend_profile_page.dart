@@ -78,7 +78,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
         });
       }
     } catch (e) {
-      print('Error checking relationship status: $e');
+      // Handle error
     }
   }
 
@@ -135,21 +135,25 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   Future<void> _handleButtonPress() async {
     if (_buttonState == 'friends') {
       // Show info that they're already friends
-      OverlayNotification.showInfo(
-        context: context,
-        message: 'You are already friends!',
-        position: NotificationPosition.center,
-      );
+      if (mounted) {
+        OverlayNotification.showInfo(
+          context: context,
+          message: 'You are already friends!',
+          position: NotificationPosition.center,
+        );
+      }
       return;
     }
 
     if (_buttonState == 'pending') {
       // Show info that request is pending
-      OverlayNotification.showInfo(
-        context: context,
-        message: 'Friend request is pending',
-        position: NotificationPosition.center,
-      );
+      if (mounted) {
+        OverlayNotification.showInfo(
+          context: context,
+          message: 'Friend request is pending',
+          position: NotificationPosition.center,
+        );
+      }
       return;
     }
 
@@ -168,14 +172,16 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       );
 
       if (requestExists) {
-        setState(() {
-          _buttonState = 'pending';
-        });
-        OverlayNotification.showInfo(
-          context: context,
-          message: 'Friend request already exists',
-          position: NotificationPosition.center,
-        );
+        if (mounted) {
+          setState(() {
+            _buttonState = 'pending';
+          });
+          OverlayNotification.showInfo(
+            context: context,
+            message: 'Friend request already exists',
+            position: NotificationPosition.center,
+          );
+        }
         // Notify parent of state change
         widget.onStateChanged?.call();
         return;
@@ -183,28 +189,34 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
       await _requestService.sendFriendRequest(userService.uid!, widget.userId);
 
-      setState(() {
-        _buttonState = 'pending';
-      });
+      if (mounted) {
+        setState(() {
+          _buttonState = 'pending';
+        });
 
-      // Notify parent of state change
-      widget.onStateChanged?.call();
+        // Notify parent of state change
+        widget.onStateChanged?.call();
 
-      OverlayNotification.showSuccess(
-        context: context,
-        message: 'Friend request sent!',
-        position: NotificationPosition.center,
-      );
+        OverlayNotification.showSuccess(
+          context: context,
+          message: 'Friend request sent!',
+          position: NotificationPosition.center,
+        );
+      }
     } catch (e) {
-      OverlayNotification.showError(
-        context: context,
-        message: 'Failed to send friend request',
-        position: NotificationPosition.center,
-      );
+      if (mounted) {
+        OverlayNotification.showError(
+          context: context,
+          message: 'Failed to send friend request',
+          position: NotificationPosition.center,
+        );
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -219,28 +231,34 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
       await _requestService.rejectFriendRequest(requestId);
 
-      setState(() {
-        _buttonState = 'add';
-      });
+      if (mounted) {
+        setState(() {
+          _buttonState = 'add';
+        });
 
-      // Notify parent of state change
-      widget.onStateChanged?.call();
+        // Notify parent of state change
+        widget.onStateChanged?.call();
 
-      OverlayNotification.showInfo(
-        context: context,
-        message: 'Friend request cancelled',
-        position: NotificationPosition.center,
-      );
+        OverlayNotification.showInfo(
+          context: context,
+          message: 'Friend request cancelled',
+          position: NotificationPosition.center,
+        );
+      }
     } catch (e) {
-      OverlayNotification.showError(
-        context: context,
-        message: 'Failed to cancel request',
-        position: NotificationPosition.center,
-      );
+      if (mounted) {
+        OverlayNotification.showError(
+          context: context,
+          message: 'Failed to cancel request',
+          position: NotificationPosition.center,
+        );
+      }
     } finally {
-      setState(() {
-        _isCancelling = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isCancelling = false;
+        });
+      }
     }
   }
 

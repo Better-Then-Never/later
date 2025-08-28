@@ -14,7 +14,7 @@ class CapsuleCreationLocationLabel extends StatelessWidget {
     this.location,
   });
 
-  Future<String> _getAddress(LatLng? loc) async {
+  Future<Object> _getAddress(LatLng? loc) async {
     if (loc == null) return "No location";
     try {
       final placemarks = await placemarkFromCoordinates(
@@ -23,7 +23,7 @@ class CapsuleCreationLocationLabel extends StatelessWidget {
       );
       if (placemarks.isEmpty) return "Unknown location";
       final p = placemarks.first;
-      return "${p.locality ?? p.subAdministrativeArea ?? p.administrativeArea ?? 'Unknown'}";
+      return p.locality ?? p.subAdministrativeArea ?? p.administrativeArea ?? 'Unknown';
     } catch (e) {
       return "Error getting location";
     }
@@ -41,10 +41,10 @@ class CapsuleCreationLocationLabel extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(25)),
             ),
             child: Center(
-              child: FutureBuilder<String>(
+              child: FutureBuilder<Object>(
                 future: _getAddress(location),
                 builder: (context, snapshot) {
-                  final text = snapshot.data ?? "Loading...";
+                  final text = snapshot.data?.toString() ?? "Loading...";
                   return FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Padding(

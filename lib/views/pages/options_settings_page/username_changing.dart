@@ -33,7 +33,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       OverlayNotification.showError(
         context: context,
         message: 'Please enter a new username!',
-        center: true,
+        position: NotificationPosition.center,
       );
       return;
     }
@@ -52,7 +52,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       OverlayNotification.showError(
         context: context,
         message: 'User not logged in.',
-        center: true,
+        position: NotificationPosition.center,
       );
       return;
     }
@@ -71,7 +71,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
         OverlayNotification.showError(
           context: context,
           message: 'Username already taken.',
-          center: true,
+          position: NotificationPosition.center,
         );
         return;
       }
@@ -86,7 +86,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       OverlayNotification.showSuccess(
         context: context,
         message: 'Username updated successfully!',
-        center: true,
+        position: NotificationPosition.center,
       );
     } catch (e) {
       setState(() {
@@ -95,7 +95,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       OverlayNotification.showError(
         context: context,
         message: 'Failed to update username.',
-        center: true,
+        position: NotificationPosition.center,
       );
     }
   }
