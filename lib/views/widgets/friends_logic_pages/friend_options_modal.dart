@@ -373,8 +373,8 @@ class RemoveFriendConfirmModal extends StatelessWidget {
       });
 
       // Delete friend request records (both directions)
-      final requestId1 = '${currentUserUid}_${friendUid}';
-      final requestId2 = '${friendUid}_${currentUserUid}';
+      final requestId1 = '${currentUserUid}_$friendUid';
+      final requestId2 = '${friendUid}_$currentUserUid';
       
       final friendRequestRef1 = firestore.collection('friend_requests').doc(requestId1);
       final friendRequestRef2 = firestore.collection('friend_requests').doc(requestId2);

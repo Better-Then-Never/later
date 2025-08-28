@@ -169,7 +169,7 @@ class FriendSuggestionRow extends StatefulWidget {
   final double screenWidth;
   final FriendRequestService requestService;
   final String currentUid;
-  final VoidCallback? onStateChanged; // Add this callback
+  final VoidCallback? onStateChanged;
 
   const FriendSuggestionRow({
     super.key,
@@ -184,7 +184,7 @@ class FriendSuggestionRow extends StatefulWidget {
     required this.screenWidth,
     required this.requestService,
     required this.currentUid,
-    this.onStateChanged, // Add this parameter
+    this.onStateChanged,
   });
 
   @override
@@ -199,42 +199,41 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
   void initState() {
     super.initState();
     _checkRequestStatus();
-    
-    // Listen for state changes from parent
-    if (widget.onStateChanged != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Set up listener for when we come back from profile page
-        ModalRoute.of(context)?.addScopedWillPopCallback(() async {
-          _checkRequestStatus();
-          return true;
-        });
-      });
-    }
   }
 
   @override
   void didUpdateWidget(FriendSuggestionRow oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Refresh status when widget updates (like when parent refreshes)
-    if (oldWidget.userId != widget.userId || 
+    if (oldWidget.userId != widget.userId ||
         oldWidget.currentUid != widget.currentUid) {
       _checkRequestStatus();
     }
   }
 
   Future<void> _checkRequestStatus() async {
+    if (!mounted) return;
+    
     setState(() {
       isLoading = true;
     });
-    
-    final status = await widget.requestService.getRequestStatus(
-      widget.currentUid,
-      widget.userId,
-    );
-    
-    if (mounted) {
+
+    try {
+      final status = await widget.requestService.getRequestStatus(
+        widget.currentUid,
+        widget.userId,
+      );
+
+      if (!mounted) return;
+      
       setState(() {
         requestStatus = status;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      
+      setState(() {
         isLoading = false;
       });
     }
@@ -267,67 +266,80 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
     );
   }
 
-  // ... rest of the build method stays the same
-  @override
+@override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(25),
-      onTap: widget.onTapProfile,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: widget.screenWidth * 0.02),
-        child: ListTile(
-          contentPadding: EdgeInsets.symmetric(vertical: 0),
-          leading: FutureBuilder<String?>(
-            future: widget.avatarFuture,
-            builder: (context, snapshot) {
-              ImageProvider avatar;
-              if (snapshot.hasData &&
-                  snapshot.data != null &&
-                  snapshot.data!.isNotEmpty) {
-                avatar = NetworkImage(snapshot.data!);
-              } else {
-                avatar = AssetImage(
-                  'assets/images/icons/navbar/icon-profile.png',
+    return PopScope(
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) {
+          // Add mounted check here too
+          if (!mounted) return;
+          
+          // Refresh status when returning from a page
+          await _checkRequestStatus();
+          
+          if (!mounted) return;
+          widget.onStateChanged?.call();
+        }
+      },
+      child: InkWell(
+        borderRadius: BorderRadius.circular(25),
+        onTap: widget.onTapProfile,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: widget.screenWidth * 0.02),
+          child: ListTile(
+            contentPadding: EdgeInsets.symmetric(vertical: 0),
+            leading: FutureBuilder<String?>(
+              future: widget.avatarFuture,
+              builder: (context, snapshot) {
+                ImageProvider avatar;
+                if (snapshot.hasData &&
+                    snapshot.data != null &&
+                    snapshot.data!.isNotEmpty) {
+                  avatar = NetworkImage(snapshot.data!);
+                } else {
+                  avatar = AssetImage(
+                    'assets/images/icons/navbar/icon-profile.png',
+                  );
+                }
+                return CircleAvatar(
+                  radius: widget.screenWidth * 0.07,
+                  backgroundImage: avatar,
+                  backgroundColor: Colors.grey[200],
                 );
-              }
-              return CircleAvatar(
-                radius: widget.screenWidth * 0.07,
-                backgroundImage: avatar,
-                backgroundColor: Colors.grey[200],
-              );
-            },
-          ),
-          title: Text(
-            widget.name,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: widget.screenWidth * 0.045,
-              fontFamily: 'Irina',
-              color: Colors.black,
+              },
             ),
-          ),
-          subtitle: Text(
-            '@${widget.username}',
-            style: TextStyle(
-              fontSize: widget.screenWidth * 0.040,
-              fontFamily: 'Irina',
-              color: Color.fromARGB(255, 94, 94, 94),
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildActionButton(),
-              SizedBox(width: 8),
-              GestureDetector(
-                onTap: widget.onRemove,
-                child: Image.asset(
-                  'assets/images/icons/friends_page/delete_reset.png',
-                  width: widget.screenWidth * 0.07,
-                  height: widget.screenWidth * 0.07,
-                ),
+            title: Text(
+              widget.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: widget.screenWidth * 0.045,
+                fontFamily: 'Irina',
+                color: Colors.black,
               ),
-            ],
+            ),
+            subtitle: Text(
+              '@${widget.username}',
+              style: TextStyle(
+                fontSize: widget.screenWidth * 0.040,
+                fontFamily: 'Irina',
+                color: Color.fromARGB(255, 94, 94, 94),
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildActionButton(),
+                SizedBox(width: 8),
+                GestureDetector(
+                  onTap: widget.onRemove,
+                  child: Image.asset(
+                    'assets/images/icons/friends_page/delete_reset.png',
+                    width: widget.screenWidth * 0.07,
+                    height: widget.screenWidth * 0.07,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
