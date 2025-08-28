@@ -31,7 +31,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       OverlayNotification.showError(
         context: context,
         message: 'Please enter a new name!',
-        center: true,
+        position: NotificationPosition.center,
       );
       return;
     }
@@ -48,7 +48,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       OverlayNotification.showError(
         context: context,
         message: 'User not logged in.',
-        center: true,
+        position: NotificationPosition.center,
       );
       return;
     }
@@ -65,7 +65,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       OverlayNotification.showSuccess(
         context: context,
         message: 'Name updated successfully!',
-        center: true,
+        position: NotificationPosition.center,
       );
     } catch (e) {
       setState(() {
@@ -73,8 +73,8 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       });
       OverlayNotification.showError(
         context: context,
-        message: 'Failed to update name.',
-        center: true,
+        message: 'Please enter a new name!',
+        position: NotificationPosition.center,
       );
     }
   }

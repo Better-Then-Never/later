@@ -17,22 +17,13 @@ class OverlayNotification {
     double topOffset = 50,
     double bottomOffset = 50,
     NotificationPosition position = NotificationPosition.top,
-    @Deprecated('Use position parameter instead') bool center = false,
   }) {
-    // Check if context is still valid
     if (!context.mounted) return;
 
     try {
-      // Handle backward compatibility
-      NotificationPosition finalPosition = position;
-      if (center) {
-        finalPosition = NotificationPosition.center;
-      }
-
-      // Remove any existing overlay
       hide();
 
-      // Get overlay state with null check
+      // Capture overlay before async gap
       final overlay = Overlay.of(context, rootOverlay: true);
 
       _overlayEntry = OverlayEntry(
@@ -43,7 +34,7 @@ class OverlayNotification {
             textColor: textColor,
             iconColor: iconColor,
             icon: icon,
-            position: finalPosition,
+            position: position,
             topOffset: topOffset,
             bottomOffset: bottomOffset,
             duration: duration,
@@ -53,17 +44,28 @@ class OverlayNotification {
 
       overlay.insert(_overlayEntry!);
 
-      // Auto remove after duration with exit animation
+      // Use overlay instead of context after async gap
       Future.delayed(duration, () {
-        _hideWithAnimation(context, finalPosition, message, backgroundColor, textColor, iconColor, icon, topOffset, bottomOffset);
+        _hideWithAnimation(
+          overlay,
+          position,
+          message,
+          backgroundColor,
+          textColor,
+          iconColor,
+          icon,
+          topOffset,
+          bottomOffset,
+        );
       });
     } catch (e) {
-      print('Error showing notification: $e');
+      // Handle error
     }
   }
 
+  // Change _hideWithAnimation to use OverlayState instead of BuildContext
   static void _hideWithAnimation(
-    BuildContext context,
+    OverlayState overlay,
     NotificationPosition position,
     String message,
     Color backgroundColor,
@@ -73,15 +75,11 @@ class OverlayNotification {
     double topOffset,
     double bottomOffset,
   ) async {
-    if (_overlayEntry == null || !context.mounted) return;
+    if (_overlayEntry == null) return;
 
     try {
-      // Remove current overlay
       _overlayEntry?.remove();
 
-      // Create exit animation overlay
-      final overlay = Overlay.of(context, rootOverlay: true);
-      
       _overlayEntry = OverlayEntry(
         builder: (context) {
           return _ExitNotificationWidget(
@@ -102,7 +100,6 @@ class OverlayNotification {
 
       overlay.insert(_overlayEntry!);
     } catch (e) {
-      print('Error in exit animation: $e');
       hide();
     }
   }
@@ -114,7 +111,7 @@ class OverlayNotification {
       _exitController?.dispose();
       _exitController = null;
     } catch (e) {
-      print('Error hiding notification: $e');
+      // Handle error
       _overlayEntry = null;
       _exitController = null;
     }
@@ -126,7 +123,6 @@ class OverlayNotification {
     required String message,
     Duration duration = const Duration(seconds: 2),
     NotificationPosition position = NotificationPosition.top,
-    @Deprecated('Use position parameter instead') bool center = false,
   }) {
     show(
       context: context,
@@ -135,7 +131,6 @@ class OverlayNotification {
       icon: Icons.check_circle,
       duration: duration,
       position: position,
-      center: center,
     );
   }
 
@@ -145,7 +140,6 @@ class OverlayNotification {
     required String message,
     Duration duration = const Duration(seconds: 2),
     NotificationPosition position = NotificationPosition.top,
-    @Deprecated('Use position parameter instead') bool center = false,
   }) {
     show(
       context: context,
@@ -154,7 +148,6 @@ class OverlayNotification {
       icon: Icons.warning_amber_rounded,
       duration: duration,
       position: position,
-      center: center,
     );
   }
 
@@ -164,7 +157,6 @@ class OverlayNotification {
     required String message,
     Duration duration = const Duration(seconds: 2),
     NotificationPosition position = NotificationPosition.top,
-    @Deprecated('Use position parameter instead') bool center = false,
   }) {
     show(
       context: context,
@@ -173,7 +165,6 @@ class OverlayNotification {
       icon: Icons.info,
       duration: duration,
       position: position,
-      center: center,
     );
   }
 }
@@ -222,10 +213,7 @@ class _NotificationWidgetState extends State<_NotificationWidget>
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     // Define slide animation based on position
     Offset startOffset;
@@ -244,10 +232,7 @@ class _NotificationWidgetState extends State<_NotificationWidget>
     _slideAnimation = Tween<Offset>(
       begin: startOffset,
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
   }
@@ -278,7 +263,7 @@ class _NotificationWidgetState extends State<_NotificationWidget>
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha((0.2 * 255).round()),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -289,11 +274,7 @@ class _NotificationWidgetState extends State<_NotificationWidget>
                   ? MainAxisSize.min
                   : MainAxisSize.max,
               children: [
-                Icon(
-                  widget.icon,
-                  color: widget.iconColor,
-                  size: 20,
-                ),
+                Icon(widget.icon, color: widget.iconColor, size: 20),
                 const SizedBox(width: 8),
                 widget.position == NotificationPosition.center
                     ? Flexible(
@@ -370,7 +351,8 @@ class _ExitNotificationWidget extends StatefulWidget {
   });
 
   @override
-  State<_ExitNotificationWidget> createState() => _ExitNotificationWidgetState();
+  State<_ExitNotificationWidget> createState() =>
+      _ExitNotificationWidgetState();
 }
 
 class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
@@ -382,7 +364,7 @@ class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -391,10 +373,7 @@ class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
     _fadeAnimation = Tween<double>(
       begin: 1.0,
       end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     // Define exit slide animation based on position
     Offset endOffset;
@@ -413,10 +392,7 @@ class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
     _slideAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: endOffset,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     // Start exit animation
     _controller.forward().then((_) {
@@ -446,7 +422,7 @@ class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha((0.2 * 255).round()),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -457,11 +433,7 @@ class _ExitNotificationWidgetState extends State<_ExitNotificationWidget>
                   ? MainAxisSize.min
                   : MainAxisSize.max,
               children: [
-                Icon(
-                  widget.icon,
-                  color: widget.iconColor,
-                  size: 20,
-                ),
+                Icon(widget.icon, color: widget.iconColor, size: 20),
                 const SizedBox(width: 8),
                 widget.position == NotificationPosition.center
                     ? Flexible(

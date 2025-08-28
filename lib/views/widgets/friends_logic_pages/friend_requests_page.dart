@@ -106,7 +106,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
       overlay.insert(_notificationOverlay!);
     } catch (e) {
-      print('Error in exit animation: $e');
+      // Handle error
       _hideCurrentNotification();
     }
   }
@@ -913,7 +913,7 @@ class _AnimatedNotificationState extends State<_AnimatedNotification>
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withAlpha((0.2 * 255).round()),
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
