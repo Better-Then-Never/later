@@ -14,7 +14,7 @@ class CapsuleCreationDateStamp extends StatelessWidget {
   });
 
   String get formattedDate {
-    final chosenDate = date ?? DateTime.now(); // 👈 fallback
+    final chosenDate = date ?? DateTime.now(); 
     return DateFormat('dd.MM.yyyy').format(chosenDate);
   }
 

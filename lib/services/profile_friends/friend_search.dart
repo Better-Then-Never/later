@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:later/services/auth/user_services.dart';
-import 'package:later/services/auth/friend_request.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/profile_friends/friend_request.dart';
 import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 
 class FriendsSearchWidget extends StatelessWidget {
@@ -127,7 +127,7 @@ class FriendsSearchWidget extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => AddFriendProfilePage(
                           userId: users[i].id,
-                          onStateChanged: onStateChanged, // Pass the callback
+                          onStateChanged: onStateChanged, 
                         ),
                       ),
                     );
@@ -138,7 +138,7 @@ class FriendsSearchWidget extends StatelessWidget {
                   screenWidth: screenWidth,
                   requestService: _requestService,
                   currentUid: currentUid!,
-                  onStateChanged: onStateChanged, // Pass callback to row
+                  onStateChanged: onStateChanged, 
                 ),
                 if (i < users.length - 1)
                   const Divider(

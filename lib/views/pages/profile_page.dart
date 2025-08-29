@@ -1,24 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/auth/user_services.dart';
-import 'package:later/views/widgets/background_picture.dart';
-import 'package:later/services/auth/name_getting.dart';
-import 'package:later/views/widgets/prof_picture.dart';
-import 'package:later/services/auth/username_getting.dart';
+import 'package:later/services/profile_friends/friend_request_helper.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/profile_friends/background_picture.dart';
+import 'package:later/services/profile_friends/name_getting.dart';
+import 'package:later/services/profile_friends/prof_picture.dart';
+import 'package:later/services/profile_friends/username_getting.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/friends_logic_pages/friends_row_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
-  Stream<int> _getReceivedRequestsCount(String uid) {
-    return FirebaseFirestore.instance
-        .collection('friend_requests')
-        .where('toUserId', isEqualTo: uid)
-        .where('status', isEqualTo: 'pending')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.length);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +287,7 @@ class ProfilePage extends StatelessWidget {
                             ),
                           ),
                           StreamBuilder<int>(
-                            stream: _getReceivedRequestsCount(uid),
+                            stream: FriendRequestHelper.getReceivedRequestsCount(uid),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData || snapshot.data == 0) {
                                 return SizedBox.shrink(); 
@@ -308,8 +299,7 @@ class ProfilePage extends StatelessWidget {
                                   : count.toString();
 
                               return Positioned(
-                                top:
-                                    13, 
+                                top: 13, 
                                 right: 16,
                                 child: Container(
                                   constraints: BoxConstraints(minWidth: 20),

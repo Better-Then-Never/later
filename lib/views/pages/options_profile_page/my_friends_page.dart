@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/cache_firebase/firebase_storage_services.dart';
+import 'package:later/services/profile_friends/user_data_services.dart';
+import 'package:later/services/appearance/widget_factory.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/auth/user_services.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:later/views/widgets/your_friend_profile_page.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
 
 class MyFriendsPage extends StatefulWidget {
   const MyFriendsPage({super.key});
@@ -15,9 +16,8 @@ class MyFriendsPage extends StatefulWidget {
 class _MyFriendsPageState extends State<MyFriendsPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  static final Map<String, String?> _imageUrlCache = {};
 
-  List<DocumentSnapshot> _allFriendsDocs = [];
+  List<Map<String, dynamic>> _allFriends = [];
   bool _isLoadingFriends = true;
 
   @override
@@ -39,58 +39,49 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     final currentUid = userService.uid;
     if (currentUid == null) {
       setState(() {
-        _allFriendsDocs = [];
+        _allFriends = [];
         _isLoadingFriends = false;
       });
       return;
     }
 
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUid)
-        .get();
-    final data = userDoc.data() ?? {};
-    final friendsList = List<String>.from(data['friends'] ?? []);
-    if (friendsList.isEmpty) {
-      setState(() {
-        _allFriendsDocs = [];
-        _isLoadingFriends = false;
-      });
-      return;
-    }
-    final friendsDocs = await Future.wait(
-      friendsList.map(
-        (friendId) =>
-            FirebaseFirestore.instance.collection('users').doc(friendId).get(),
-      ),
-    );
-    setState(() {
-      _allFriendsDocs = friendsDocs;
-      _isLoadingFriends = false;
-    });
-  }
-
-  Future<String?> _getImageUrl(String userId) async {
-    if (_imageUrlCache.containsKey(userId)) {
-      return _imageUrlCache[userId];
-    }
-    final optimizedPath = 'userdata/$userId/assets/images/profile_image_small';
-    final originalPath = 'userdata/$userId/assets/images/profile_image';
     try {
-      final ref = FirebaseStorage.instance.ref().child(optimizedPath);
-      final url = await ref.getDownloadURL();
-      _imageUrlCache[userId] = url;
-      return url;
-    } catch (e) {
-      try {
-        final ref = FirebaseStorage.instance.ref().child(originalPath);
-        final url = await ref.getDownloadURL();
-        _imageUrlCache[userId] = url;
-        return url;
-      } catch (e) {
-        _imageUrlCache[userId] = null;
-        return null;
+      final friendsList = await UserDataService.getUserFriends(currentUid);
+      if (friendsList.isEmpty) {
+        setState(() {
+          _allFriends = [];
+          _isLoadingFriends = false;
+        });
+        return;
       }
+
+      final friendsDocs = await UserDataService.getUserDocuments(friendsList);
+      final friends = <Map<String, dynamic>>[];
+
+      for (var doc in friendsDocs) {
+        if (doc.exists) {
+          final data = doc.data() as Map<String, dynamic>? ?? {};
+          final imageUrl = await FirebaseStorageService.getProfileImageUrl(
+            doc.id,
+          );
+          friends.add({
+            'id': doc.id,
+            'name': data['name'] ?? '',
+            'username': data['username'] ?? '',
+            'imageUrl': imageUrl,
+          });
+        }
+      }
+
+      setState(() {
+        _allFriends = friends;
+        _isLoadingFriends = false;
+      });
+    } catch (e) {
+      setState(() {
+        _allFriends = [];
+        _isLoadingFriends = false;
+      });
     }
   }
 
@@ -210,7 +201,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
           Expanded(
             child: _isLoadingFriends
                 ? Center(child: CircularProgressIndicator())
-                : _allFriendsDocs.isEmpty
+                : _allFriends.isEmpty
                 ? Center(
                     child: Text(
                       'No friends added yet',
@@ -224,25 +215,21 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                   )
                 : Builder(
                     builder: (context) {
-                      final filteredFriends = _allFriendsDocs.where((doc) {
-                        final friendData =
-                            doc.data() as Map<String, dynamic>? ?? {};
-                        final friendName = friendData['name'] ?? '';
-                        final friendUsername = friendData['username'] ?? '';
+                      final filteredFriends = _allFriends.where((friend) {
+                        final friendName = friend['name'] ?? '';
+                        final friendUsername = friend['username'] ?? '';
                         final query = _searchQuery.toLowerCase();
                         return friendName.toLowerCase().contains(query) ||
                             friendUsername.toLowerCase().contains(query);
                       }).toList();
 
-                      final Map<String, List<DocumentSnapshot>> grouped = {};
-                      for (var doc in filteredFriends) {
-                        final friendData =
-                            doc.data() as Map<String, dynamic>? ?? {};
-                        final friendName = (friendData['name'] ?? '')
-                            .toString();
+                      final Map<String, List<Map<String, dynamic>>> grouped =
+                          {};
+                      for (var friend in filteredFriends) {
+                        final friendName = friend['name'] ?? '';
                         if (friendName.isEmpty) continue;
                         final letter = friendName[0].toUpperCase();
-                        grouped.putIfAbsent(letter, () => []).add(doc);
+                        grouped.putIfAbsent(letter, () => []).add(friend);
                       }
                       final sortedKeys = grouped.keys.toList()..sort();
 
@@ -303,13 +290,75 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                                 child: Column(
                                   children: [
                                     for (int i = 0; i < group.length; i++) ...[
-                                      _FriendRow(
-                                        friendData:
-                                            group[i].data()
-                                                as Map<String, dynamic>? ??
-                                            {},
-                                        screenWidth: screenWidth,
-                                        getImageUrl: _getImageUrl,
+                                      Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          splashFactory: NoSplash.splashFactory,
+                                          overlayColor: WidgetStateProperty.all(
+                                            Colors.transparent,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            25,
+                                          ),
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    YourFriendProfilePage(
+                                                      friendUid: group[i]['id'],
+                                                    ),
+                                              ),
+                                            ).then((result) {
+                                              if (result == 'friend_removed') {
+                                                if (context.mounted) {
+                                                ScaffoldMessenger.of(
+                                                  context,
+                                                ).showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                      'Friend removed successfully',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontFamily: 'Irina',
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    backgroundColor:
+                                                        const Color.fromARGB(
+                                                          255,
+                                                          86,
+                                                          201,
+                                                          46,
+                                                        ),
+                                                    duration: const Duration(
+                                                      seconds: 3,
+                                                    ),
+                                                    behavior: SnackBarBehavior
+                                                        .floating,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            10,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                );
+                                                }
+                                                _fetchFriends();
+                                              }
+                                            });
+                                          },
+                                          child:
+                                              WidgetFactory.buildUserListTile(
+                                                name: group[i]['name'] ?? '',
+                                                username:
+                                                    group[i]['username'] ?? '',
+                                                imageUrl: group[i]['imageUrl'],
+                                                screenWidth: screenWidth,
+                                              ),
+                                        ),
                                       ),
                                       if (i < group.length - 1)
                                         const Divider(
@@ -338,90 +387,6 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
           const SizedBox(height: 24),
         ],
       ),
-    );
-  }
-}
-
-// ...existing code...
-
-class _FriendRow extends StatelessWidget {
-  final Map<String, dynamic> friendData;
-  final double screenWidth;
-  final Future<String?> Function(String userId) getImageUrl;
-
-  const _FriendRow({
-    required this.friendData,
-    required this.screenWidth,
-    required this.getImageUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final friendName = friendData['name'] ?? '';
-    final friendUsername = friendData['username'] ?? '';
-    final friendId = friendData['uid'] ?? friendData['id'] ?? friendData['userId'];
-    
-    return FutureBuilder<String?>(
-      future: friendId != null ? getImageUrl(friendId) : Future.value(null),
-      builder: (context, snapshot) {
-        ImageProvider avatar;
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          avatar = AssetImage('assets/images/icons/navbar/icon-profile.png');
-        } else if (snapshot.hasData &&
-            snapshot.data != null &&
-            snapshot.data!.isNotEmpty) {
-          avatar = NetworkImage(snapshot.data!);
-        } else {
-          avatar = AssetImage('assets/images/icons/navbar/icon-profile.png');
-        }
-
-        return Material(
-          color: Colors.transparent,
-          child: InkWell(
-            splashFactory: NoSplash.splashFactory,
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
-            borderRadius: BorderRadius.circular(25),
-            onTap: friendId != null
-                ? () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => YourFriendProfilePage(friendUid: friendId),
-                      ),
-                    );
-                  }
-                : null,
-            child: ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: 0,
-                horizontal: screenWidth * 0.02,
-              ),
-              leading: CircleAvatar(
-                radius: screenWidth * 0.07,
-                backgroundImage: avatar,
-                backgroundColor: Colors.grey[200],
-              ),
-              title: Text(
-                friendName,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.045,
-                  fontFamily: 'Irina',
-                  color: Colors.black,
-                ),
-              ),
-              subtitle: Text(
-                '@$friendUsername',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.040,
-                  fontFamily: 'Irina',
-                  color: Color.fromARGB(255, 94, 94, 94),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
