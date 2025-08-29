@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/auth/user_services.dart';
-import 'package:later/views/widgets/overlay_notification.dart'; // Add this import
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/appearance/notification_system.dart'; 
 import 'package:provider/provider.dart';
 
 class NameChangingWidget extends StatefulWidget {
@@ -18,7 +18,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
 
   @override
   void dispose() {
-    OverlayNotification.hide(); // Clean up any active notifications
+    UnifiedNotification.hide(); 
     super.dispose();
   }
 
@@ -28,7 +28,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showError(
+      UnifiedNotification.showError(
         context: context,
         message: 'Please enter a new name!',
         position: NotificationPosition.center,
@@ -45,7 +45,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showError(
+      UnifiedNotification.showError(
         context: context,
         message: 'User not logged in.',
         position: NotificationPosition.center,
@@ -62,7 +62,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showSuccess(
+      UnifiedNotification.showSuccess(
         context: context,
         message: 'Name updated successfully!',
         position: NotificationPosition.center,
@@ -71,9 +71,9 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showError(
+      UnifiedNotification.showError(
         context: context,
-        message: 'Please enter a new name!',
+        message: 'Failed to update name!',
         position: NotificationPosition.center,
       );
     }

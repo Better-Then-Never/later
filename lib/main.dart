@@ -16,7 +16,7 @@ import 'package:later/views/pages/options_profile_page/share_page.dart';
 import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
-import 'package:later/services/auth/user_services.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

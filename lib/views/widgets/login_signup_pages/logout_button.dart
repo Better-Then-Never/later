@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:provider/provider.dart';
-import 'package:later/views/widgets/prof_picture.dart';
-import 'package:later/views/widgets/background_picture.dart';
+import 'package:later/services/profile_friends/prof_picture.dart';
+import 'package:later/services/profile_friends/background_picture.dart';
 
 class LogOutButton extends StatefulWidget {
   final String buttonText;
