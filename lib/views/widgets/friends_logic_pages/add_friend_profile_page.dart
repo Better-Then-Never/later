@@ -71,8 +71,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
         UnifiedNotification.showInfo(
           context: context,
           message: 'You are already friends!',
-          position: NotificationPosition
-              .center, 
+          position: NotificationPosition.center, 
         );
       }
       return;
@@ -149,9 +148,8 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
     try {
       final userService = Provider.of<UserService>(context, listen: false);
-      final requestId = '${userService.uid!}_${widget.userId}';
-
-      await _requestService.rejectFriendRequest(requestId);
+      
+      await _requestService.cancelFriendRequest(userService.uid!, widget.userId);
 
       if (mounted) {
         setState(() => _buttonState = 'add');
@@ -449,14 +447,13 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   Widget _buildActionButtons(double screenWidth, double screenHeight) {
     return Stack(
       children: [
-        Positioned(
-          left: screenWidth * 0.15,
-          right: screenWidth * 0.15,
-          bottom: _buttonState == 'pending'
-              ? screenHeight * 0.16
-              : screenHeight * 0.1,
-          child: _buildMainActionButton(screenWidth, screenHeight),
-        ),
+        if (_buttonState != 'pending')
+          Positioned(
+            left: screenWidth * 0.15,
+            right: screenWidth * 0.15,
+            bottom: screenHeight * 0.1,
+            child: _buildMainActionButton(screenWidth, screenHeight),
+          ),
         if (_buttonState == 'pending')
           Positioned(
             left: screenWidth * 0.25,
