@@ -6,17 +6,14 @@ import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/profile_friends/user_data_services.dart';
 import 'package:later/services/cache_firebase/firebase_storage_services.dart';
 import 'package:later/services/appearance/widget_factory.dart';
-import 'package:later/services/appearance/notification_system.dart'; 
+import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/services/profile_friends/friend_request_helper.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_accept_reject_page.dart';
 
 class FriendRequestsPage extends StatefulWidget {
   final VoidCallback? onFriendListChanged;
-  
-  const FriendRequestsPage({
-    super.key,
-    this.onFriendListChanged,
-  });
+
+  const FriendRequestsPage({super.key, this.onFriendListChanged});
 
   @override
   State<FriendRequestsPage> createState() => _FriendRequestsPageState();
@@ -26,10 +23,11 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
   final FriendRequestService _requestService = FriendRequestService();
   bool _showReceived = true;
   bool _hasAcceptedRequest = false;
+  bool _hasCancelledRequest = false;
 
   @override
   void dispose() {
-    UnifiedNotification.hide(); 
+    UnifiedNotification.hide();
     super.dispose();
   }
 
@@ -437,11 +435,9 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
         userService.uid!,
       );
       await userService.refreshFriends();
-      
-      // Mark that a request was accepted
+
       _hasAcceptedRequest = true;
-      
-      // Notify parent page that friend list changed
+
       if (widget.onFriendListChanged != null) {
         widget.onFriendListChanged!();
       }
@@ -489,6 +485,12 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
   Future<void> _cancelRequest(String fromUserId, String toUserId) async {
     try {
       await _requestService.cancelFriendRequest(fromUserId, toUserId);
+
+      _hasCancelledRequest = true;
+
+      if (widget.onFriendListChanged != null) {
+        widget.onFriendListChanged!();
+      }
 
       if (mounted && context.mounted) {
         UnifiedNotification.showInfo(
@@ -551,10 +553,12 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return WillPopScope(
-      onWillPop: () async {
-        Navigator.pop(context, _hasAcceptedRequest);
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pop(context, _hasAcceptedRequest || _hasCancelledRequest);
+        }
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F6F6),
@@ -614,7 +618,10 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                     bottom: 54,
                     left: 8,
                     child: GestureDetector(
-                      onTap: () => Navigator.pop(context, _hasAcceptedRequest),
+                      onTap: () => Navigator.pop(
+                        context,
+                        _hasAcceptedRequest || _hasCancelledRequest,
+                      ),
                       child: Image.asset(
                         'assets/images/icons/prof_page/go_back.png',
                         width: screenWidth * 0.11,

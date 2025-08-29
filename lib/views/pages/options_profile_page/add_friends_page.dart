@@ -50,7 +50,6 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     });
 
     try {
-      _hiddenUserIds.clear();
       _sentRequestIds.clear();
       _searchController.clear();
 
@@ -289,13 +288,12 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                           MaterialPageRoute(
                             builder: (context) => FriendRequestsPage(
                               onFriendListChanged: () {
-                                // This will be called immediately when a request is accepted
                                 if (mounted) {
                                   setState(() {
                                     _refreshKey++;
+                                    _sentRequestIds.clear();
                                   });
 
-                                  // Refresh friends list
                                   final userService = Provider.of<UserService>(
                                     context,
                                     listen: false,
@@ -307,14 +305,12 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                           ),
                         );
 
-                        // This will be true if any friend request was accepted
                         if (result == true && mounted) {
-                          // Additional refresh if needed when returning to the page
                           setState(() {
                             _refreshKey++;
+                            _sentRequestIds.clear();
                           });
 
-                          // Show notification that friends list was updated
                           if (context.mounted) {
                             UnifiedNotification.showSuccess(
                               context: context,
