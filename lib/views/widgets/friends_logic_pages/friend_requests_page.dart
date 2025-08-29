@@ -11,7 +11,12 @@ import 'package:later/services/profile_friends/friend_request_helper.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_accept_reject_page.dart';
 
 class FriendRequestsPage extends StatefulWidget {
-  const FriendRequestsPage({super.key});
+  final VoidCallback? onFriendListChanged;
+  
+  const FriendRequestsPage({
+    super.key,
+    this.onFriendListChanged,
+  });
 
   @override
   State<FriendRequestsPage> createState() => _FriendRequestsPageState();
@@ -19,8 +24,8 @@ class FriendRequestsPage extends StatefulWidget {
 
 class _FriendRequestsPageState extends State<FriendRequestsPage> {
   final FriendRequestService _requestService = FriendRequestService();
-
   bool _showReceived = true;
+  bool _hasAcceptedRequest = false;
 
   @override
   void dispose() {
@@ -432,6 +437,14 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
         userService.uid!,
       );
       await userService.refreshFriends();
+      
+      // Mark that a request was accepted
+      _hasAcceptedRequest = true;
+      
+      // Notify parent page that friend list changed
+      if (widget.onFriendListChanged != null) {
+        widget.onFriendListChanged!();
+      }
 
       if (mounted && context.mounted) {
         UnifiedNotification.showSuccess(
@@ -538,81 +551,87 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
-      body: Column(
-        children: [
-          Container(
-            width: screenWidth,
-            height: screenHeight * 0.16,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(25),
-                bottomRight: Radius.circular(25),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context, _hasAcceptedRequest);
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF6F6F6),
+        body: Column(
+          children: [
+            Container(
+              width: screenWidth,
+              height: screenHeight * 0.16,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(25),
+                  bottomRight: Radius.circular(25),
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    bottom: 50,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Text(
+                        'Friend requests',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.09,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Irina',
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    left: 16,
+                    right: 16,
+                    child: Row(
+                      children: [
+                        _buildToggleButton(
+                          text: 'Received',
+                          isSelected: _showReceived,
+                          onTap: () => setState(() => _showReceived = true),
+                          screenWidth: screenWidth,
+                        ),
+                        SizedBox(width: 12),
+                        _buildToggleButton(
+                          text: 'Sent',
+                          isSelected: !_showReceived,
+                          onTap: () => setState(() => _showReceived = false),
+                          screenWidth: screenWidth,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 54,
+                    left: 8,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pop(context, _hasAcceptedRequest),
+                      child: Image.asset(
+                        'assets/images/icons/prof_page/go_back.png',
+                        width: screenWidth * 0.11,
+                        height: screenWidth * 0.11,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: 50,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Text(
-                      'Friend requests',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.09,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Irina',
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 8,
-                  left: 16,
-                  right: 16,
-                  child: Row(
-                    children: [
-                      _buildToggleButton(
-                        text: 'Received',
-                        isSelected: _showReceived,
-                        onTap: () => setState(() => _showReceived = true),
-                        screenWidth: screenWidth,
-                      ),
-                      SizedBox(width: 12),
-                      _buildToggleButton(
-                        text: 'Sent',
-                        isSelected: !_showReceived,
-                        onTap: () => setState(() => _showReceived = false),
-                        screenWidth: screenWidth,
-                      ),
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 54,
-                  left: 8,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Image.asset(
-                      'assets/images/icons/prof_page/go_back.png',
-                      width: screenWidth * 0.11,
-                      height: screenWidth * 0.11,
-                    ),
-                  ),
-                ),
-              ],
+            Expanded(
+              child: _showReceived
+                  ? _buildReceivedRequestsWidget(userService, screenWidth)
+                  : _buildSentRequestsWidget(userService, screenWidth),
             ),
-          ),
-          Expanded(
-            child: _showReceived
-                ? _buildReceivedRequestsWidget(userService, screenWidth)
-                : _buildSentRequestsWidget(userService, screenWidth),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
