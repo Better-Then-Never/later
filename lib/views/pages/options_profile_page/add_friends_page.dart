@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/services/profile_friends/friend_request_helper.dart';
 import 'package:later/services/profile_friends/friend_search.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/appearance/notification_system.dart'; 
+import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_requests_page.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
@@ -35,7 +35,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide(); 
+    UnifiedNotification.hide();
     _searchController.dispose();
     _hiddenUserIds.clear();
     _sentRequestIds.clear();
@@ -283,13 +283,46 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                   SizedBox(width: 16),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => FriendRequestsPage(),
+                            builder: (context) => FriendRequestsPage(
+                              onFriendListChanged: () {
+                                // This will be called immediately when a request is accepted
+                                if (mounted) {
+                                  setState(() {
+                                    _refreshKey++;
+                                  });
+
+                                  // Refresh friends list
+                                  final userService = Provider.of<UserService>(
+                                    context,
+                                    listen: false,
+                                  );
+                                  userService.refreshFriends();
+                                }
+                              },
+                            ),
                           ),
                         );
+
+                        // This will be true if any friend request was accepted
+                        if (result == true && mounted) {
+                          // Additional refresh if needed when returning to the page
+                          setState(() {
+                            _refreshKey++;
+                          });
+
+                          // Show notification that friends list was updated
+                          if (context.mounted) {
+                            UnifiedNotification.showSuccess(
+                              context: context,
+                              message: 'Friends list updated!',
+                              position: NotificationPosition.bottom,
+                            );
+                          }
+                        }
                       },
                       child: Container(
                         height: 48,
@@ -412,7 +445,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                 .requestExists(userService.uid!, userId);
 
                             if (!mounted) {
-                              return; 
+                              return;
                             }
                             if (requestExists) {
                               if (context.mounted) {
@@ -431,7 +464,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             );
 
                             if (!mounted) {
-                              return; 
+                              return;
                             }
                             setState(() {
                               _sentRequestIds.add(userId);
@@ -446,7 +479,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             }
                           } catch (e) {
                             if (!mounted) {
-                              return; 
+                              return;
                             }
                             if (context.mounted) {
                               UnifiedNotification.showError(

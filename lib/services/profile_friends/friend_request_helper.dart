@@ -14,6 +14,7 @@ class FriendRequestHelper {
     return FirebaseFirestore.instance
         .collection('friend_requests')
         .where('fromUserId', isEqualTo: uid)
+        .where('status', isEqualTo: 'pending')  
         .snapshots();
   }
   
