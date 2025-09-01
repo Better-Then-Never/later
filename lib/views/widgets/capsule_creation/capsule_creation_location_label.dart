@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class CapsuleCreationLocationLabel extends StatelessWidget {
   final double height;
   final String iconPath;
-  final LatLng? location; // pass location here
+  final LatLng? location; 
 
   const CapsuleCreationLocationLabel({
     super.key,

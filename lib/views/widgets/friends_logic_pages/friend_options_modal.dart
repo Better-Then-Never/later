@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:async';
+import 'package:later/services/profile_friends/friend_request.dart';
+import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:provider/provider.dart';
 
 class FriendOptionsModal extends StatelessWidget {
   final String friendUid;
@@ -17,9 +18,7 @@ class FriendOptionsModal extends StatelessWidget {
       builder: (BuildContext context) {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            Navigator.of(context).pop();
-          },
+          onTap: () => Navigator.of(context).pop(),
           child: Center(
             child: GestureDetector(
               onTap: () {},
@@ -33,132 +32,42 @@ class FriendOptionsModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 264,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-      ),
+    return _ModalContainer(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Manage friendship option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ManageFriendshipModal.show(context, friendUid);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Manage friendship')),
-            ),
+          _ModalOption(
+            text: 'Manage friendship',
+            onPressed: () {
+              Navigator.pop(context);
+              ManageFriendshipModal.show(context, friendUid);
+            },
+            isFirst: true,
           ),
-          // Gray separator line
-          Container(
-            width: 264,
-            height: 2,
-            color: Color.fromARGB(255, 211, 211, 211),
+          _ModalDivider(),
+          _ModalOption(
+            text: 'Chat settings',
+            onPressed: () {
+              Navigator.pop(context);
+              // TODO: Handle chat settings action
+            },
           ),
-          // Chat settings option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // TODO: Handle chat settings action
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Chat settings')),
-            ),
+          _ModalDivider(),
+          _ModalOption(
+            text: 'Capsules settings',
+            onPressed: () {
+              Navigator.pop(context);
+              // TODO: Handle capsules settings action
+            },
           ),
-          // Gray separator line
-          Container(
-            width: 264,
-            height: 2,
-            color: Color.fromARGB(255, 211, 211, 211),
-          ),
-          // Capsules settings option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // TODO: Handle capsules settings action
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Capsules settings')),
-            ),
-          ),
-          // Gray separator line
-          Container(
-            width: 264,
-            height: 2,
-            color: Color.fromARGB(255, 211, 211, 211),
-          ),
-          // Share profile option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // TODO: Handle share profile action
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.black,
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(25),
-                    bottomRight: Radius.circular(25),
-                  ),
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Share profile')),
-            ),
+          _ModalDivider(),
+          _ModalOption(
+            text: 'Share profile',
+            onPressed: () {
+              Navigator.pop(context);
+              // TODO: Handle share profile action
+            },
+            isLast: true,
           ),
         ],
       ),
@@ -180,9 +89,7 @@ class ManageFriendshipModal extends StatelessWidget {
       builder: (BuildContext context) {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            Navigator.of(context).pop();
-          },
+          onTap: () => Navigator.of(context).pop(),
           child: Center(
             child: GestureDetector(
               onTap: () {},
@@ -196,124 +103,38 @@ class ManageFriendshipModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 264,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-      ),
+    return _ModalContainer(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Manage friendship header
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: Container(
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(25),
-                  topRight: Radius.circular(25),
-                ),
-              ),
-              child: const Center(
-                child: Text(
-                  'Manage friendship',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Irina',
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
+          _ModalHeader(text: 'Manage friendship'),
+          _ModalDivider(color: Colors.black, thickness: 1),
+          _ModalOption(
+            text: 'Report',
+            onPressed: () {
+              Navigator.pop(context);
+              // TODO: Handle report action
+            },
+            textColor: const Color.fromARGB(255, 253, 65, 64),
           ),
-          // Gray separator line
-          Container(width: 264, height: 1, color: Color.fromARGB(255, 0, 0, 0)),
-          // Report option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // TODO: Handle report action
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Color.fromARGB(255, 253, 65, 64),
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Report')),
-            ),
+          _ModalDivider(),
+          _ModalOption(
+            text: 'Block',
+            onPressed: () {
+              Navigator.pop(context);
+              // TODO: Handle block action
+            },
+            textColor: const Color.fromARGB(255, 253, 65, 64),
           ),
-          // Gray separator line
-          Container(
-            width: 264,
-            height: 2,
-            color: Color.fromARGB(255, 211, 211, 211),
-          ),
-          // Block option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // TODO: Handle block action
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Color.fromARGB(255, 253, 65, 64),
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Block')),
-            ),
-          ),
-          // Gray separator line
-          Container(
-            width: 264,
-            height: 2,
-            color: Color.fromARGB(255, 211, 211, 211),
-          ),
-          // Remove from friends option
-          SizedBox(
-            height: 37,
-            width: 264,
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                RemoveFriendConfirmModal.show(context, friendUid);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.red,
-                textStyle: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(25),
-                    bottomRight: Radius.circular(25),
-                  ),
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Center(child: Text('Remove from friends')),
-            ),
+          _ModalDivider(),
+          _ModalOption(
+            text: 'Remove from friends',
+            onPressed: () {
+              Navigator.pop(context);
+              RemoveFriendConfirmModal.show(context, friendUid);
+            },
+            textColor: Colors.red,
+            isLast: true,
           ),
         ],
       ),
@@ -321,7 +142,7 @@ class ManageFriendshipModal extends StatelessWidget {
   }
 }
 
-class RemoveFriendConfirmModal extends StatelessWidget {
+class RemoveFriendConfirmModal extends StatefulWidget {
   final String friendUid;
 
   const RemoveFriendConfirmModal({super.key, required this.friendUid});
@@ -335,9 +156,7 @@ class RemoveFriendConfirmModal extends StatelessWidget {
       builder: (BuildContext context) {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () {
-            Navigator.of(context).pop();
-          },
+          onTap: () => Navigator.of(context).pop(),
           child: Center(
             child: GestureDetector(
               onTap: () {},
@@ -349,73 +168,53 @@ class RemoveFriendConfirmModal extends StatelessWidget {
     );
   }
 
-  Future<void> _removeFriend(BuildContext context) async {
+  @override
+  State<RemoveFriendConfirmModal> createState() =>
+      _RemoveFriendConfirmModalState();
+}
+
+class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
+  bool _isRemoving = false;
+  final FriendRequestService _requestService = FriendRequestService();
+
+  @override
+  void dispose() {
+    UnifiedNotification.hide();
+    super.dispose();
+  }
+
+  Future<void> _removeFriend() async {
+    if (_isRemoving) return;
+
+    setState(() {
+      _isRemoving = true;
+    });
+
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) return;
+      final userService = Provider.of<UserService>(context, listen: false);
+      final currentUserUid = userService.uid;
 
-      final currentUserUid = currentUser.uid;
-      final firestore = FirebaseFirestore.instance;
-
-      // Start a batch write for atomic operation
-      final batch = firestore.batch();
-
-      // Remove friend from current user's friends list
-      final currentUserRef = firestore.collection('users').doc(currentUserUid);
-      batch.update(currentUserRef, {
-        'friends': FieldValue.arrayRemove([friendUid])
-      });
-
-      // Remove current user from friend's friends list
-      final friendRef = firestore.collection('users').doc(friendUid);
-      batch.update(friendRef, {
-        'friends': FieldValue.arrayRemove([currentUserUid])
-      });
-
-      // Delete friend request records (both directions)
-      final requestId1 = '${currentUserUid}_$friendUid';
-      final requestId2 = '${friendUid}_$currentUserUid';
-      
-      final friendRequestRef1 = firestore.collection('friend_requests').doc(requestId1);
-      final friendRequestRef2 = firestore.collection('friend_requests').doc(requestId2);
-      
-      // Check if documents exist before trying to delete them
-      final doc1 = await friendRequestRef1.get();
-      if (doc1.exists) {
-        batch.delete(friendRequestRef1);
-      }
-      
-      final doc2 = await friendRequestRef2.get();
-      if (doc2.exists) {
-        batch.delete(friendRequestRef2);
+      if (currentUserUid == null) {
+        throw Exception('User not authenticated');
       }
 
-      // Commit the batch
-      await batch.commit();
+      await _requestService.removeFriend(currentUserUid, widget.friendUid);
+      await userService.refreshFriends();
 
-      // Close the modal and show success message
-      if (context.mounted) {
-        Navigator.of(context).pop(); // Close confirmation modal
-        Navigator.of(context).pop(); // Close profile page
-        
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Friend removed successfully'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
+      if (mounted) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop('friend_removed');
       }
     } catch (e) {
-      // Show error message
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error removing friend: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
+      if (mounted) {
+        setState(() {
+          _isRemoving = false;
+        });
+
+        UnifiedNotification.showError(
+          context: context,
+          message: 'Failed to remove friend',
+          position: NotificationPosition.bottom,
         );
       }
     }
@@ -444,48 +243,217 @@ class RemoveFriendConfirmModal extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Container(
-            width: 140,
-            height: 45,
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 253, 65, 64),
-              borderRadius: BorderRadius.circular(25),
-            ),
-            child: TextButton(
-              onPressed: () async {
-                await _removeFriend(context);
-              },
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                textStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                ),
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: Colors.transparent,
-              ),
-              child: const Text('Remove'),
-            ),
+          _ConfirmButton(
+            text: _isRemoving ? 'Removing...' : 'Remove',
+            onPressed: _isRemoving ? null : _removeFriend,
+            backgroundColor: const Color.fromARGB(255, 253, 65, 64),
+            textColor: Colors.white,
+            isLoading: _isRemoving,
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Color.fromARGB(255, 95, 95, 95),
-              textStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Irina',
-              ),
-              splashFactory: NoSplash.splashFactory,
-              overlayColor: Colors.transparent,
-            ),
-            child: const Text('Cancel'),
+          _CancelButton(
+            onPressed: _isRemoving ? null : () => Navigator.pop(context),
           ),
         ],
       ),
+    );
+  }
+}
+
+
+class _ModalContainer extends StatelessWidget {
+  final Widget child;
+
+  const _ModalContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 264,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _ModalHeader extends StatelessWidget {
+  final String text;
+
+  const _ModalHeader({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 37,
+      width: 264,
+      child: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Irina',
+              color: Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ModalOption extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final Color? textColor;
+  final bool isFirst;
+  final bool isLast;
+
+  const _ModalOption({
+    required this.text,
+    required this.onPressed,
+    this.textColor,
+    this.isFirst = false,
+    this.isLast = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    BorderRadius? borderRadius;
+    if (isFirst && isLast) {
+      borderRadius = BorderRadius.circular(25);
+    } else if (isFirst) {
+      borderRadius = const BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25),
+      );
+    } else if (isLast) {
+      borderRadius = const BorderRadius.only(
+        bottomLeft: Radius.circular(25),
+        bottomRight: Radius.circular(25),
+      );
+    }
+
+    return SizedBox(
+      height: 37,
+      width: 264,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: textColor ?? Colors.black,
+          textStyle: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Irina',
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: borderRadius ?? BorderRadius.zero,
+          ),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: Colors.transparent,
+        ),
+        child: Center(child: Text(text)),
+      ),
+    );
+  }
+}
+
+class _ModalDivider extends StatelessWidget {
+  final Color? color;
+  final double thickness;
+
+  const _ModalDivider({this.color, this.thickness = 2});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 264,
+      height: thickness,
+      color: color ?? const Color.fromARGB(255, 211, 211, 211),
+    );
+  }
+}
+
+class _ConfirmButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final Color backgroundColor;
+  final Color textColor;
+  final bool isLoading;
+
+  const _ConfirmButton({
+    required this.text,
+    required this.onPressed,
+    required this.backgroundColor,
+    required this.textColor,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 140,
+      height: 45,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: textColor,
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Irina',
+          ),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: Colors.transparent,
+        ),
+        child: isLoading
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  color: textColor,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(text),
+      ),
+    );
+  }
+}
+
+class _CancelButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+
+  const _CancelButton({required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        foregroundColor: const Color.fromARGB(255, 95, 95, 95),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Irina',
+        ),
+        splashFactory: NoSplash.splashFactory,
+        overlayColor: Colors.transparent,
+      ),
+      child: const Text('Cancel'),
     );
   }
 }
