@@ -234,7 +234,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                         horizontal: 12.0,
                                       ),
                                       child: Image.asset(
-                                        'assets/images/icons/friends_page/open_camera.png',
+                                        'assets/images/icons/friends_page/qr_scan.png',
                                         width: screenWidth * 0.08,
                                         height: screenWidth * 0.08,
                                       ),
