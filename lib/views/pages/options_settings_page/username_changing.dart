@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/auth/user_services.dart';
-import 'package:later/views/widgets/overlay_notification.dart'; // Add this import
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/appearance/notification_system.dart'; 
 import 'package:provider/provider.dart';
 
 class UsernameChangingWidget extends StatefulWidget {
@@ -18,7 +18,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
 
   @override
   void dispose() {
-    OverlayNotification.hide(); // Clean up any active notifications
+    UnifiedNotification.hide(); 
     super.dispose();
   }
 
@@ -30,7 +30,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showError(
+      UnifiedNotification.showError(
         context: context,
         message: 'Please enter a new username!',
         position: NotificationPosition.center,
@@ -49,7 +49,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showError(
+      UnifiedNotification.showError(
         context: context,
         message: 'User not logged in.',
         position: NotificationPosition.center,
@@ -68,7 +68,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
         setState(() {
           _isSaving = false;
         });
-        OverlayNotification.showError(
+        UnifiedNotification.showError(
           context: context,
           message: 'Username already taken.',
           position: NotificationPosition.center,
@@ -83,7 +83,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showSuccess(
+      UnifiedNotification.showSuccess(
         context: context,
         message: 'Username updated successfully!',
         position: NotificationPosition.center,
@@ -92,7 +92,7 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
       setState(() {
         _isSaving = false;
       });
-      OverlayNotification.showError(
+      UnifiedNotification.showError(
         context: context,
         message: 'Failed to update username.',
         position: NotificationPosition.center,

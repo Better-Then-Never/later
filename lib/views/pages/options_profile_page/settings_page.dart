@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/options_settings_page/email_changing.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
-import 'package:later/services/auth/name_getting.dart';
-import 'package:later/views/widgets/prof_picture.dart';
-import 'package:later/views/widgets/background_picture.dart';
-import 'package:later/services/auth/username_getting.dart';
+import 'package:later/services/profile_friends/name_getting.dart';
+import 'package:later/services/profile_friends/prof_picture.dart';
+import 'package:later/services/profile_friends/background_picture.dart';
+import 'package:later/services/profile_friends/username_getting.dart';
 import 'package:later/views/pages/options_settings_page/username_changing.dart';
-import 'package:later/services/auth/email_getting.dart';
+import 'package:later/services/profile_friends/email_getting.dart';
 import 'package:later/views/pages/options_settings_page/password_changing.dart';
 import 'package:later/views/pages/options_settings_page/language.dart';
 import 'package:later/views/pages/options_settings_page/profile_custom.dart';
 import 'package:later/views/pages/options_settings_page/app_theme.dart';
-import 'package:later/services/auth/user_services.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {

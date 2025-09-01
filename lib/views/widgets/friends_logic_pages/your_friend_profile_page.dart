@@ -283,7 +283,6 @@ class YourFriendProfilePage extends StatelessWidget {
                     },
                   ),
                 ),
-                // Right side icons - moved down a bit
                 Positioned(
                   top: 35,
                   right: 12,

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/auth/friend_search.dart';
-import 'package:later/services/auth/friend_request.dart';
+import 'package:later/services/profile_friends/friend_request_helper.dart';
+import 'package:later/services/profile_friends/friend_search.dart';
+import 'package:later/services/profile_friends/friend_request.dart';
+import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_requests_page.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/auth/user_services.dart';
-import 'package:later/views/widgets/overlay_notification.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/qr_code_scanner.dart';
+import 'package:later/services/cache_firebase/deep_link_handler.dart';
 
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
@@ -35,21 +38,32 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
   @override
   void dispose() {
-    OverlayNotification.hide();
+    UnifiedNotification.hide();
     _searchController.dispose();
     _hiddenUserIds.clear();
     _sentRequestIds.clear();
     super.dispose();
   }
 
-  Stream<int> _getReceivedRequestsCount() {
-    final userService = Provider.of<UserService>(context, listen: false);
-    return FirebaseFirestore.instance
-        .collection('friend_requests')
-        .where('toUserId', isEqualTo: userService.uid)
-        .where('status', isEqualTo: 'pending')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.length);
+  Future<void> _openQRScanner() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => QRScannerPage()),
+    );
+
+    if (result != null && result is String) {
+      if (DeepLinkHandler.isLaterDeepLink(result)) {
+        final userId = DeepLinkHandler.extractUserIdFromLink(result);
+        if (userId != null && mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddFriendProfilePage(userId: userId),
+            ),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _refreshPage() async {
@@ -60,7 +74,6 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     });
 
     try {
-      _hiddenUserIds.clear();
       _sentRequestIds.clear();
       _searchController.clear();
 
@@ -76,10 +89,10 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
           _refreshKey++;
         });
 
-        OverlayNotification.showInfo(
+        UnifiedNotification.showInfo(
           context: context,
           message: 'Friends list refreshed!',
-          position: NotificationPosition.center,
+          position: NotificationPosition.bottom,
         );
       }
     } catch (e) {
@@ -88,10 +101,10 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
           _isRefreshing = false;
         });
 
-        OverlayNotification.showError(
+        UnifiedNotification.showError(
           context: context,
           message: 'Failed to refresh friends list',
-          position: NotificationPosition.center,
+          position: NotificationPosition.bottom,
         );
       }
     }
@@ -214,14 +227,17 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/images/icons/friends_page/open_camera.png',
-                                      width: screenWidth * 0.08,
-                                      height: screenWidth * 0.08,
+                                  GestureDetector(
+                                    onTap: _openQRScanner, 
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0,
+                                      ),
+                                      child: Image.asset(
+                                        'assets/images/icons/friends_page/qr_scan.png',
+                                        width: screenWidth * 0.08,
+                                        height: screenWidth * 0.08,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -293,13 +309,43 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                   SizedBox(width: 16),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => FriendRequestsPage(),
+                            builder: (context) => FriendRequestsPage(
+                              onFriendListChanged: () {
+                                if (mounted) {
+                                  setState(() {
+                                    _refreshKey++;
+                                    _sentRequestIds.clear();
+                                  });
+
+                                  final userService = Provider.of<UserService>(
+                                    context,
+                                    listen: false,
+                                  );
+                                  userService.refreshFriends();
+                                }
+                              },
+                            ),
                           ),
                         );
+
+                        if (result == true && mounted) {
+                          setState(() {
+                            _refreshKey++;
+                            _sentRequestIds.clear();
+                          });
+
+                          if (context.mounted) {
+                            UnifiedNotification.showSuccess(
+                              context: context,
+                              message: 'Friends list updated!',
+                              position: NotificationPosition.bottom,
+                            );
+                          }
+                        }
                       },
                       child: Container(
                         height: 48,
@@ -309,20 +355,16 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                         ),
                         child: Stack(
                           children: [
-                            // Main button content - centered
                             Center(
                               child: Row(
-                                mainAxisSize:
-                                    MainAxisSize.min, // Only take needed space
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Image.asset(
                                     'assets/images/icons/friends_page/friend_request.png',
                                     width: 32,
                                     height: 32,
                                   ),
-                                  SizedBox(
-                                    width: 6,
-                                  ), // Space between icon and text
+                                  SizedBox(width: 6),
                                   Text(
                                     'Requests',
                                     style: TextStyle(
@@ -332,18 +374,21 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 16,
-                                  ), // Bigger space between text and bubble
+                                  SizedBox(width: 16),
                                 ],
                               ),
                             ),
-                            // Red bubble with count
                             StreamBuilder<int>(
-                              stream: _getReceivedRequestsCount(),
+                              stream:
+                                  FriendRequestHelper.getReceivedRequestsCount(
+                                    Provider.of<UserService>(
+                                      context,
+                                      listen: false,
+                                    ).uid!,
+                                  ),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData || snapshot.data == 0) {
-                                  return SizedBox.shrink(); // Hide bubble when count is 0
+                                  return SizedBox.shrink();
                                 }
 
                                 final count = snapshot.data!;
@@ -413,24 +458,26 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                         onSendRequest: (userId) async {
                           if (!mounted) return;
 
-                          // Get userService before any async gap
                           final userService = Provider.of<UserService>(
                             context,
                             listen: false,
                           );
 
                           try {
-                            // Check if request already exists
                             final requestExists = await _requestService
                                 .requestExists(userService.uid!, userId);
 
-                            if (!mounted) return;
+                            if (!mounted) {
+                              return;
+                            }
                             if (requestExists) {
-                              OverlayNotification.showInfo(
-                                context: this.context,
-                                message: 'Friend request already exists',
-                                position: NotificationPosition.center,
-                              );
+                              if (context.mounted) {
+                                UnifiedNotification.showInfo(
+                                  context: context,
+                                  message: 'Friend request already exists',
+                                  position: NotificationPosition.bottom,
+                                );
+                              }
                               return;
                             }
 
@@ -439,24 +486,31 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                               userId,
                             );
 
-                            if (!mounted) return;
-
+                            if (!mounted) {
+                              return;
+                            }
                             setState(() {
                               _sentRequestIds.add(userId);
                             });
 
-                            OverlayNotification.showSuccess(
-                              context: this.context,
-                              message: 'Friend request sent!',
-                              position: NotificationPosition.center,
-                            );
+                            if (context.mounted) {
+                              UnifiedNotification.showSuccess(
+                                context: context,
+                                message: 'Friend request sent!',
+                                position: NotificationPosition.bottom,
+                              );
+                            }
                           } catch (e) {
-                            if (!mounted) return;
-                            OverlayNotification.showError(
-                              context: this.context,
-                              message: 'Failed to send friend request',
-                              position: NotificationPosition.center,
-                            );
+                            if (!mounted) {
+                              return;
+                            }
+                            if (context.mounted) {
+                              UnifiedNotification.showError(
+                                context: context,
+                                message: 'Failed to send friend request',
+                                position: NotificationPosition.bottom,
+                              );
+                            }
                           }
                         },
                         onRemoveFriend: (userId) {
@@ -464,11 +518,14 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                           setState(() {
                             _hiddenUserIds.add(userId);
                           });
-                          OverlayNotification.showInfo(
-                            context: context,
-                            message: 'Suggested friend removed from the list!',
-                            position: NotificationPosition.center,
-                          );
+                          if (context.mounted) {
+                            UnifiedNotification.showInfo(
+                              context: context,
+                              message:
+                                  'Suggested friend removed from the list!',
+                              position: NotificationPosition.bottom,
+                            );
+                          }
                         },
                         hiddenUserIds: _hiddenUserIds,
                         sentRequestIds: _sentRequestIds,

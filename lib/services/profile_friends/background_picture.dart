@@ -1,32 +1,35 @@
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:later/services/auth/user_services.dart';
+import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'dart:developer' as developer;
 
-Future<void> clearProfileImageCache() async {
+Future<void> clearBackgroundImageCache() async {
   final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('profile_image');
+  await prefs.remove('background_image');
 }
 
-class ProfilePicture extends StatefulWidget {
+class BackgroundPicture extends StatefulWidget {
   final double? pictureHeight;
   final double? pictureWidth;
-  const ProfilePicture({super.key, this.pictureHeight, this.pictureWidth});
+  const BackgroundPicture({
+    super.key,
+    this.pictureHeight,
+    this.pictureWidth,
+    required Alignment allignment,
+  });
 
   @override
-  State<ProfilePicture> createState() => _ProfilePictureState();
+  State<BackgroundPicture> createState() => _BackgroundPictureState();
 }
 
-class _ProfilePictureState extends State<ProfilePicture> {
+class _BackgroundPictureState extends State<BackgroundPicture> {
   Uint8List? pickedImage;
   String? uid;
-  final String fileName = 'profile_image';
+  final String fileName = 'background_image'; 
 
   @override
   void initState() {
@@ -38,13 +41,13 @@ class _ProfilePictureState extends State<ProfilePicture> {
 
   Future<void> loadCachedImage() async {
     final prefs = await SharedPreferences.getInstance();
-    final base64Image = prefs.getString('profile_image');
+    final base64Image = prefs.getString('background_image');
     if (base64Image != null) {
       setState(() {
         pickedImage = base64Decode(base64Image);
       });
     } else {
-      await getProfilePicture();
+      await getBackgroundPicture();
     }
   }
 
@@ -53,7 +56,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image == null) return;
     final imageBytes = await image.readAsBytes();
-    await saveProfileImage(imageBytes);
+    await saveBackgroundImage(imageBytes);
   }
 
   Future<void> pickFromCamera() async {
@@ -61,12 +64,12 @@ class _ProfilePictureState extends State<ProfilePicture> {
     final XFile? image = await picker.pickImage(source: ImageSource.camera);
     if (image == null) return;
     final imageBytes = await image.readAsBytes();
-    await saveProfileImage(imageBytes);
+    await saveBackgroundImage(imageBytes);
   }
 
-  Future<void> deleteProfileIcon() async {
+  Future<void> deleteBackgroundImage() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('profile_image');
+    await prefs.remove('background_image');
     setState(() => pickedImage = null);
 
     try {
@@ -81,43 +84,17 @@ class _ProfilePictureState extends State<ProfilePicture> {
     }
   }
 
-  Future<Uint8List> _resizeImage(
-    Uint8List imageBytes, {
-    int maxSize = 128,
-  }) async {
-    final original = img.decodeImage(imageBytes);
-    if (original == null) return imageBytes;
-    final resized = img.copyResize(original, width: maxSize, height: maxSize);
-    return Uint8List.fromList(img.encodeJpg(resized, quality: 80));
-  }
-
-  Future<void> saveProfileImage(Uint8List imageBytes) async {
+  Future<void> saveBackgroundImage(Uint8List imageBytes) async {
     if (uid == null) return;
     final storageRef = FirebaseStorage.instance.ref();
     final imageRef = storageRef.child("userdata/$uid/assets/images/$fileName");
     await imageRef.putData(imageBytes);
-
-    final smallImageBytes = await _resizeImage(imageBytes, maxSize: 128);
-    developer.log(
-      'Original size: ${imageBytes.length}, Small size: ${smallImageBytes.length}',
-      name: 'ProfilePicture',
-    );
-    final smallImageRef = storageRef.child(
-      "userdata/$uid/assets/images/profile_image_small",
-    );
-    try {
-      await smallImageRef.putData(smallImageBytes);
-      developer.log('Small image uploaded successfully', name: 'ProfilePicture');
-    } catch (e) {
-      developer.log('Error uploading small image: $e', name: 'ProfilePicture');
-    }
-
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile_image', base64Encode(imageBytes));
+    await prefs.setString('background_image', base64Encode(imageBytes));
     setState(() => pickedImage = imageBytes);
   }
 
-  Future<void> getProfilePicture() async {
+  Future<void> getBackgroundPicture() async {
     try {
       if (uid == null) return;
       final storageRef = FirebaseStorage.instance.ref();
@@ -127,7 +104,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
       final imageBytes = await imageRef.getData();
       if (imageBytes != null) {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('profile_image', base64Encode(imageBytes));
+        await prefs.setString('background_image', base64Encode(imageBytes));
         setState(() => pickedImage = imageBytes);
       }
     } catch (e) {
@@ -135,7 +112,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
     }
   }
 
-  Future<void> onProfileTapped() async {
+  Future<void> onBackgroundTapped() async {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -165,7 +142,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       width: 264,
                       child: Center(
                         child: Text(
-                          'Profile picture',
+                          'Background picture',
                           style: TextStyle(
                             color: Color.fromARGB(255, 86, 201, 46),
                             fontSize: 25,
@@ -240,7 +217,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
                       child: TextButton(
                         onPressed: () async {
                           Navigator.pop(context);
-                          await deleteProfileIcon();
+                          await deleteBackgroundImage();
                         },
                         style: TextButton.styleFrom(
                           foregroundColor: const Color.fromARGB(
@@ -261,7 +238,9 @@ class _ProfilePictureState extends State<ProfilePicture> {
                             ),
                           ),
                         ),
-                        child: const Center(child: Text('Delete profile icon')),
+                        child: const Center(
+                          child: Text('Delete background picture'),
+                        ),
                       ),
                     ),
                   ],
@@ -277,13 +256,16 @@ class _ProfilePictureState extends State<ProfilePicture> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onProfileTapped,
+      onTap: onBackgroundTapped,
       child: Container(
-        height: widget.pictureHeight ?? 150,
-        width: widget.pictureWidth ?? 150,
+        height: widget.pictureHeight ?? 200,
+        width: double.infinity,
         decoration: BoxDecoration(
-          color: Color.fromARGB(255, 223, 223, 223),
-          borderRadius: BorderRadius.circular(25),
+          color: Color.fromARGB(255, 187, 187, 187),
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
           image: pickedImage != null
               ? DecorationImage(
                   image: MemoryImage(pickedImage!),
@@ -292,12 +274,18 @@ class _ProfilePictureState extends State<ProfilePicture> {
               : null,
         ),
         child: pickedImage == null
-            ? Center(
-                child: Image.asset(
-                  'assets/images/icons/prof_page/choose_pp.png',
-                  width: 35,
-                  height: 35,
-                  fit: BoxFit.contain,
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 80,
+                  ), 
+                  child: Image.asset(
+                    'assets/images/icons/prof_page/choose_bg.png',
+                    width: 35,
+                    height: 35,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               )
             : null,
