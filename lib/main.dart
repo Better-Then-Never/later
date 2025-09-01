@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/pages/login_page.dart';
@@ -17,6 +18,10 @@ import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/deep_link_handler.dart';
+
+// Add global navigator key
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,11 +37,65 @@ void main() async {
   );
 }
 
-class Application extends StatelessWidget {
+class Application extends StatefulWidget {
   const Application({super.key});
+
+  @override
+  State<Application> createState() => _ApplicationState();
+}
+
+class _ApplicationState extends State<Application> {
+  static const platform = MethodChannel('later.app/deeplink');
+
+  @override
+  void initState() {
+    super.initState();
+    _setupDeepLinkHandling();
+  }
+
+  void _setupDeepLinkHandling() {
+    // Set up method channel to receive deep links
+    platform.setMethodCallHandler((call) async {
+      if (call.method == 'handleDeepLink') {
+        final String link = call.arguments as String;
+        _handleIncomingLink(link);
+      }
+    });
+
+    // Check for initial deep link
+    _getInitialLink();
+  }
+
+  Future<void> _getInitialLink() async {
+    try {
+      final String? initialLink = await platform.invokeMethod('getInitialLink');
+      if (initialLink != null) {
+        // Delay handling to ensure app is fully initialized
+        Future.delayed(Duration(seconds: 2), () {
+          _handleIncomingLink(initialLink);
+        });
+      }
+    } on PlatformException {
+      // Handle error
+    }
+  }
+
+  void _handleIncomingLink(String link) {
+    if (navigatorKey.currentContext != null) {
+      DeepLinkHandler.handleDeepLink(navigatorKey.currentContext!, link);
+    } else {
+      Future.delayed(Duration(milliseconds: 500), () {
+        if (navigatorKey.currentContext != null) {
+          DeepLinkHandler.handleDeepLink(navigatorKey.currentContext!, link);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       routes: {
         '/widgetTree': (context) => const WidgetTreeWrapper(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
@@ -65,13 +66,25 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     }
   }
 
-  Future<void> _handleButtonPress() async {
+    Future<void> _handleButtonPress() async {
     if (_buttonState == 'friends') {
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => YourFriendProfilePage(friendUid: widget.userId),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (_buttonState == 'pending') {
       if (context.mounted) {
         UnifiedNotification.showInfo(
           context: context,
-          message: 'You are already friends!',
-          position: NotificationPosition.center, 
+          message: 'Friend request is pending',
+          position: NotificationPosition.center,
         );
       }
       return;
@@ -180,7 +193,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       case 'pending':
         return 'Pending';
       case 'friends':
-        return 'Friends';
+        return 'View Profile';
       default:
         return 'Add';
     }
@@ -191,7 +204,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       case 'pending':
         return Color.fromARGB(255, 253, 219, 7);
       case 'friends':
-        return Colors.grey[400]!;
+        return const Color.fromARGB(255, 54, 144, 255);
       default:
         return const Color.fromARGB(255, 86, 201, 46);
     }

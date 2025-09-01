@@ -3,9 +3,12 @@ import 'package:later/services/profile_friends/friend_request_helper.dart';
 import 'package:later/services/profile_friends/friend_search.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
 import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_requests_page.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/qr_code_scanner.dart';
+import 'package:later/services/cache_firebase/deep_link_handler.dart';
 
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
@@ -40,6 +43,27 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     _hiddenUserIds.clear();
     _sentRequestIds.clear();
     super.dispose();
+  }
+
+  Future<void> _openQRScanner() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => QRScannerPage()),
+    );
+
+    if (result != null && result is String) {
+      if (DeepLinkHandler.isLaterDeepLink(result)) {
+        final userId = DeepLinkHandler.extractUserIdFromLink(result);
+        if (userId != null && mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddFriendProfilePage(userId: userId),
+            ),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _refreshPage() async {
@@ -203,14 +227,17 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/images/icons/friends_page/open_camera.png',
-                                      width: screenWidth * 0.08,
-                                      height: screenWidth * 0.08,
+                                  GestureDetector(
+                                    onTap: _openQRScanner, 
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0,
+                                      ),
+                                      child: Image.asset(
+                                        'assets/images/icons/friends_page/open_camera.png',
+                                        width: screenWidth * 0.08,
+                                        height: screenWidth * 0.08,
+                                      ),
                                     ),
                                   ),
                                 ],

@@ -58,8 +58,8 @@ class TimeCapsule {
         ),
         createdAt: map['createdAt'] as Timestamp,
         isScheduled: map['isScheduled'] ?? false,
-        openAt: map['openAt'], // can be null
-        color: map['color'] ?? 'red', // default if missing
+        openAt: map['openAt'],
+        color: map['color'] ?? 'red', 
       );
 }
 
