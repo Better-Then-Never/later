@@ -25,7 +25,7 @@ class AddFriendProfilePage extends StatefulWidget {
 class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   bool _isLoading = false;
   bool _isCancelling = false;
-  String _buttonState = 'add'; 
+  String _buttonState = 'add';
   final FriendRequestService _requestService = FriendRequestService();
 
   @override
@@ -36,7 +36,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide(); 
+    UnifiedNotification.hide();
     super.dispose();
   }
 
@@ -46,6 +46,12 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       final currentUserUid = userService.uid;
 
       if (currentUserUid != null) {
+        // Check if user is viewing their own profile
+        if (currentUserUid == widget.userId) {
+          setState(() => _buttonState = 'own_profile');
+          return;
+        }
+
         final areFriends = await _requestService.areFriends(
           currentUserUid,
           widget.userId,
@@ -66,25 +72,26 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     }
   }
 
-    Future<void> _handleButtonPress() async {
-    if (_buttonState == 'friends') {
+  Future<void> _handleButtonPress() async {
+    if (_buttonState == 'own_profile') {
       if (context.mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => YourFriendProfilePage(friendUid: widget.userId),
-          ),
+        UnifiedNotification.showInfo(
+          context: context,
+          message: 'This is your account',
+          position: NotificationPosition.center,
         );
       }
       return;
     }
 
-    if (_buttonState == 'pending') {
+    if (_buttonState == 'friends') {
       if (context.mounted) {
-        UnifiedNotification.showInfo(
-          context: context,
-          message: 'Friend request is pending',
-          position: NotificationPosition.center,
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                YourFriendProfilePage(friendUid: widget.userId),
+          ),
         );
       }
       return;
@@ -161,8 +168,11 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
     try {
       final userService = Provider.of<UserService>(context, listen: false);
-      
-      await _requestService.cancelFriendRequest(userService.uid!, widget.userId);
+
+      await _requestService.cancelFriendRequest(
+        userService.uid!,
+        widget.userId,
+      );
 
       if (mounted) {
         setState(() => _buttonState = 'add');
@@ -190,6 +200,8 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   String _getButtonText() {
     switch (_buttonState) {
+      case 'own_profile':
+        return 'My Profile';
       case 'pending':
         return 'Pending';
       case 'friends':
@@ -201,6 +213,8 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   Color _getButtonColor() {
     switch (_buttonState) {
+      case 'own_profile':
+        return const Color.fromARGB(255, 108, 117, 125);
       case 'pending':
         return Color.fromARGB(255, 253, 219, 7);
       case 'friends':
