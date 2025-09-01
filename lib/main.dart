@@ -17,9 +17,16 @@ import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
 import 'package:later/services/auth/user_services.dart';
+import 'package:later/views/pages/permission_gate_page/permission_gate.dart';
+import 'package:flutter/services.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
@@ -37,6 +44,7 @@ class Application extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       routes: {
         '/widgetTree': (context) => const WidgetTreeWrapper(),
@@ -59,9 +67,18 @@ class Application extends StatelessWidget {
             return Scaffold(body: Center(child: CircularProgressIndicator()));
           }
 
-          return snapshot.hasData
-              ? const WidgetTreeWrapper()
-              : const WelcomePage();
+          if (!snapshot.hasData) {
+            return const WelcomePage();
+          }
+
+          return PermissionGatePage(
+            onAllGranted: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const WidgetTreeWrapper()),
+              );
+            },
+          );
         },
       ),
       theme: ThemeData(
