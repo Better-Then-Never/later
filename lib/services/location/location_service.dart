@@ -11,27 +11,7 @@ class LocationService {
 
   Stream<LatLng> get locationStream => _locationStreamController.stream;
 
-  Future<bool> _checkPermissions() async {
-    bool serviceEnabled = await _locationController.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await _locationController.requestService();
-      if (!serviceEnabled) return false;
-    }
-
-    PermissionStatus permissionGranted = await _locationController
-        .hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await _locationController.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) return false;
-    }
-
-    return true;
-  }
-
   Future<void> startLocationUpdates() async {
-    final hasPermission = await _checkPermissions();
-    if (!hasPermission) return;
-
     _locationController.changeSettings(interval: 5000, distanceFilter: 10);
 
     _locationSubscription = _locationController.onLocationChanged.listen((
@@ -47,9 +27,6 @@ class LocationService {
   }
 
   Future<LatLng?> getCurrentLocation() async {
-    final hasPermission = await _checkPermissions();
-    if (!hasPermission) return null;
-
     final currentLocation = await _locationController.getLocation();
     if (currentLocation.latitude != null && currentLocation.longitude != null) {
       return LatLng(currentLocation.latitude!, currentLocation.longitude!);

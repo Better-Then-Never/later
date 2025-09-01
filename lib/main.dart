@@ -19,12 +19,15 @@ import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
+import 'package:later/views/pages/permission_gate_page/permission_gate.dart';
 
-// Add global navigator key
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
@@ -118,9 +121,18 @@ class _ApplicationState extends State<Application> {
             return Scaffold(body: Center(child: CircularProgressIndicator()));
           }
 
-          return snapshot.hasData
-              ? const WidgetTreeWrapper()
-              : const WelcomePage();
+          if (!snapshot.hasData) {
+            return const WelcomePage();
+          }
+
+          return PermissionGatePage(
+            onAllGranted: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const WidgetTreeWrapper()),
+              );
+            },
+          );
         },
       ),
       theme: ThemeData(
