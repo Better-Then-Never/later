@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/pages/permission_gate_page/permission_gate.dart';
+import 'package:later/views/widget_tree_wrapper.dart';
+import 'package:later/main.dart';
 
 class SubmitButton extends StatefulWidget {
   final String buttonText;
@@ -54,15 +57,21 @@ class _SubmitButtonState extends State<SubmitButton> {
           widget.password.text,
         );
       }
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/widgetTree',
-          (route) => false,
-        );
-      }
+
+      if (!mounted) return;
+      navigatorKey.currentState?.pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => PermissionGatePage(
+            onAllGranted: () {
+              navigatorKey.currentState?.pushReplacement(
+                MaterialPageRoute(builder: (_) => const WidgetTreeWrapper()),
+              );
+            },
+          ),
+        ),
+      );
     } catch (e) {
-      if(!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
