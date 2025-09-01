@@ -5,6 +5,9 @@ import 'package:later/services/appearance/widget_factory.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
+import 'package:later/services/cache_firebase/qr_code_scanner.dart';
+import 'package:later/services/cache_firebase/deep_link_handler.dart';
+import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 
 class MyFriendsPage extends StatefulWidget {
   const MyFriendsPage({super.key});
@@ -32,6 +35,27 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
       }
     });
     _fetchFriends();
+  }
+
+  Future<void> _openQRScanner() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => QRScannerPage()),
+    );
+
+    if (result != null && result is String) {
+      if (DeepLinkHandler.isLaterDeepLink(result)) {
+        final userId = DeepLinkHandler.extractUserIdFromLink(result);
+        if (userId != null && mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddFriendProfilePage(userId: userId),
+            ),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _fetchFriends() async {
@@ -85,7 +109,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     }
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -162,14 +186,17 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0,
-                                  ),
-                                  child: Image.asset(
-                                    'assets/images/icons/friends_page/open_camera.png',
-                                    width: screenWidth * 0.08,
-                                    height: screenWidth * 0.08,
+                                GestureDetector(
+                                  onTap: _openQRScanner,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0,
+                                    ),
+                                    child: Image.asset(
+                                      'assets/images/icons/friends_page/open_camera.png',
+                                      width: screenWidth * 0.08,
+                                      height: screenWidth * 0.08,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -197,7 +224,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
               ],
             ),
           ),
-
+          
           Expanded(
             child: _isLoadingFriends
                 ? Center(child: CircularProgressIndicator())
@@ -312,39 +339,39 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                                             ).then((result) {
                                               if (result == 'friend_removed') {
                                                 if (context.mounted) {
-                                                ScaffoldMessenger.of(
-                                                  context,
-                                                ).showSnackBar(
-                                                  SnackBar(
-                                                    content: Text(
-                                                      'Friend removed successfully',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontFamily: 'Irina',
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Friend removed successfully',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontFamily: 'Irina',
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                            255,
+                                                            86,
+                                                            201,
+                                                            46,
+                                                          ),
+                                                      duration: const Duration(
+                                                        seconds: 3,
+                                                      ),
+                                                      behavior: SnackBarBehavior
+                                                          .floating,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
                                                       ),
                                                     ),
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                          255,
-                                                          86,
-                                                          201,
-                                                          46,
-                                                        ),
-                                                    duration: const Duration(
-                                                      seconds: 3,
-                                                    ),
-                                                    behavior: SnackBarBehavior
-                                                        .floating,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            10,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                );
+                                                  );
                                                 }
                                                 _fetchFriends();
                                               }
