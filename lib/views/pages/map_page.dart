@@ -9,6 +9,7 @@ import 'package:custom_info_window/custom_info_window.dart';
 import 'package:later/views/widgets/map/capsule_info_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:later/views/widgets/map/opened_capsule_widget.dart';
+import 'package:later/views/widgets/loading/later_loading_bar.dart';
 
 class MapPage extends StatefulWidget {
   static LatLng? currentPositionStatic;
@@ -75,14 +76,14 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     if (_currentPosition == null) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: LaterLoadingBar(width: 150, height: 150));
     }
 
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('capsules').snapshots(),
       builder: (context, capsuleSnapshot) {
         if (!capsuleSnapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: LaterLoadingBar(width: 150, height: 150));
         }
 
         _markers.clear();
