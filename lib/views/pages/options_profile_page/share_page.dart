@@ -309,7 +309,7 @@ class QRShareWidget extends StatelessWidget {
                 ),
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 33, 150, 243),
+                    backgroundColor: const Color.fromARGB(255, 86, 201, 46),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),

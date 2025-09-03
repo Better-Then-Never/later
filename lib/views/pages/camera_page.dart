@@ -3,7 +3,9 @@ import 'package:camera/camera.dart';
 import 'package:later/views/pages/capsule_creation.dart';
 
 class CameraPage extends StatefulWidget {
-  const CameraPage({super.key});
+  final Map<String, dynamic>? arguments;
+  
+  const CameraPage({super.key, this.arguments});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -29,7 +31,7 @@ class _CameraPageState extends State<CameraPage> {
     super.dispose();
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
     return Scaffold(backgroundColor: Colors.black87, body: _buildUI());
   }
@@ -39,8 +41,6 @@ class _CameraPageState extends State<CameraPage> {
         cameraController?.value.isInitialized == false) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    //TODO: Handle Camera & Microphone Permission Properly
 
     return SafeArea(
       child: Column(
@@ -100,8 +100,10 @@ class _CameraPageState extends State<CameraPage> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) =>
-                              CapsuleCreationPage(imagePath: picture.path),
+                          builder: (_) => CapsuleCreationPage(
+                            imagePath: picture.path,
+                            initialPrivacy: widget.arguments?['privacy'],
+                          ),
                         ),
                       );
                     },
