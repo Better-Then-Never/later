@@ -29,6 +29,7 @@ class _MapPageState extends State<MapPage> {
   LatLng? _currentPosition;
   LatLng? get currentPosition => _currentPosition;
   String? uid;
+  List<String> _userFriends = [];
 
   final Map<String, BitmapDescriptor> _capsuleIcons = {};
   final Map<String, String> _iconPaths = {
@@ -43,8 +44,9 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     uid = FirebaseAuth.instance.currentUser?.uid;
-
+    
     _initIcons();
+    _loadUserFriends();
 
     _locationService.startLocationUpdates();
     _locationService.locationStream.listen((pos) {
@@ -54,6 +56,54 @@ class _MapPageState extends State<MapPage> {
         MapPage.currentPositionStatic = pos;
       });
     });
+  }
+
+  Future<void> _loadUserFriends() async {
+    if (uid == null) return;
+    
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+      
+      if (userDoc.exists) {
+        final userData = userDoc.data() as Map<String, dynamic>;
+        final friends = userData['friends'] as List<dynamic>? ?? [];
+        setState(() {
+          _userFriends = friends.cast<String>();
+        });
+      }
+    } catch (e) {
+      print('Error loading user friends: $e');
+    }
+  }
+
+  bool _canViewCapsule(Map<String, dynamic> capsuleData) {
+    final privacy = capsuleData['privacy'] as String? ?? 'public';
+    final ownerId = capsuleData['ownerId'] as String?;
+    
+    // User can always see their own capsules
+    if (ownerId == uid) {
+      return true;
+    }
+    
+    // Public capsules are visible to everyone
+    if (privacy == 'public') {
+      return true;
+    }
+    
+    // Friends-only capsules are visible only to friends
+    if (privacy == 'friends') {
+      return _userFriends.contains(ownerId);
+    }
+    
+    // Private capsules are visible only to owner (already handled above)
+    if (privacy == 'private') {
+      return false;
+    }
+    
+    return false;
   }
 
   Future<void> _initIcons() async {
@@ -96,6 +146,12 @@ class _MapPageState extends State<MapPage> {
 
         for (var doc in capsuleSnapshot.data!.docs) {
           final data = doc.data() as Map<String, dynamic>;
+          
+          // Check if user can view this capsule based on privacy settings
+          if (!_canViewCapsule(data)) {
+            continue; // Skip this capsule
+          }
+          
           final GeoPoint geoPoint = data['location'];
           final capsulePos = LatLng(geoPoint.latitude, geoPoint.longitude);
           final capsuleId = doc.id;
@@ -151,12 +207,6 @@ class _MapPageState extends State<MapPage> {
         );
       },
     );
-
-    //TODO: Show My Location Button
-    /*Future<void> _cameraToPosition(LatLng pos) async {
-    final GoogleMapController controller = await _mapController.future;
-    await controller.animateCamera(CameraUpdate.newLatLng(pos));
-  }*/
   }
 
   void _showCapsuleInfo(
@@ -175,6 +225,4 @@ class _MapPageState extends State<MapPage> {
       },
     );
   }
-
-  //'1b016f650a3b702f3fd1d9e1'
 }

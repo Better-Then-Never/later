@@ -62,7 +62,7 @@ class FriendOptionsModal extends StatelessWidget {
           ),
           _ModalDivider(),
           _ModalOption(
-            text: 'Share profile',
+            text: 'Share profile to ...',
             onPressed: () {
               Navigator.pop(context);
               // TODO: Handle share profile action
