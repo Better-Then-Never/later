@@ -3,6 +3,8 @@ import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/views/widgets/loading/later_loading_bar.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,6 +29,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
   Uint8List? pickedImage;
   String? uid;
   final String fileName = 'profile_image';
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -65,6 +68,8 @@ class _ProfilePictureState extends State<ProfilePicture> {
   }
 
   Future<void> deleteProfileIcon() async {
+    setState(() => isUploading = true);
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('profile_image');
     setState(() => pickedImage = null);
@@ -78,6 +83,8 @@ class _ProfilePictureState extends State<ProfilePicture> {
       await imageRef.delete();
     } catch (e) {
       // Handle error if needed
+    } finally {
+      setState(() => isUploading = false);
     }
   }
 
@@ -91,30 +98,68 @@ class _ProfilePictureState extends State<ProfilePicture> {
     return Uint8List.fromList(img.encodeJpg(resized, quality: 80));
   }
 
-  Future<void> saveProfileImage(Uint8List imageBytes) async {
-    if (uid == null) return;
-    final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("userdata/$uid/assets/images/$fileName");
-    await imageRef.putData(imageBytes);
+Future<void> saveProfileImage(Uint8List imageBytes) async {
+    setState(() => isUploading = true);
 
-    final smallImageBytes = await _resizeImage(imageBytes, maxSize: 128);
-    developer.log(
-      'Original size: ${imageBytes.length}, Small size: ${smallImageBytes.length}',
-      name: 'ProfilePicture',
-    );
-    final smallImageRef = storageRef.child(
-      "userdata/$uid/assets/images/profile_image_small",
-    );
-    try {
-      await smallImageRef.putData(smallImageBytes);
-      developer.log('Small image uploaded successfully', name: 'ProfilePicture');
-    } catch (e) {
-      developer.log('Error uploading small image: $e', name: 'ProfilePicture');
+    if (uid == null) {
+      setState(() => isUploading = false);
+      return;
     }
 
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('profile_image', base64Encode(imageBytes));
-    setState(() => pickedImage = imageBytes);
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageRef = storageRef.child(
+        "userdata/$uid/assets/images/$fileName",
+      );
+      await imageRef.putData(imageBytes);
+
+      final smallImageBytes = await _resizeImage(imageBytes, maxSize: 128);
+      developer.log(
+        'Original size: ${imageBytes.length}, Small size: ${smallImageBytes.length}',
+        name: 'ProfilePicture',
+      );
+      final smallImageRef = storageRef.child(
+        "userdata/$uid/assets/images/profile_image_small",
+      );
+      try {
+        await smallImageRef.putData(smallImageBytes);
+        developer.log(
+          'Small image uploaded successfully',
+          name: 'ProfilePicture',
+        );
+      } catch (e) {
+        developer.log(
+          'Error uploading small image: $e',
+          name: 'ProfilePicture',
+        );
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('profile_image', base64Encode(imageBytes));
+      setState(() => pickedImage = imageBytes);
+      
+      if (mounted) {
+        UnifiedNotification.showSuccess(
+          context: context,
+          message: 'Profile picture updated successfully!',
+          duration: const Duration(seconds: 2),
+          position: NotificationPosition.top,
+        );
+      }
+    } catch (e) {
+      developer.log('Error uploading image: $e', name: 'ProfilePicture');
+      
+      if (mounted) {
+        UnifiedNotification.showError(
+          context: context,
+          message: 'Failed to upload profile picture',
+          duration: const Duration(seconds: 3),
+          position: NotificationPosition.top,
+        );
+      }
+    } finally {
+      setState(() => isUploading = false);
+    }
   }
 
   Future<void> getProfilePicture() async {
@@ -277,21 +322,33 @@ class _ProfilePictureState extends State<ProfilePicture> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onProfileTapped,
+      onTap: isUploading ? null : onProfileTapped,
       child: Container(
         height: widget.pictureHeight ?? 150,
         width: widget.pictureWidth ?? 150,
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 223, 223, 223),
           borderRadius: BorderRadius.circular(25),
-          image: pickedImage != null
+          image: pickedImage != null && !isUploading
               ? DecorationImage(
                   image: MemoryImage(pickedImage!),
                   fit: BoxFit.cover,
                 )
               : null,
         ),
-        child: pickedImage == null
+        child: isUploading
+            ? LaterLoadingBar(
+                width: 40,
+                height: 40,
+                message: "Updating...",
+                messageSpacing: 5,
+                messageStyle: TextStyle(
+                  fontSize: 12,
+                  fontFamily: 'Inria',
+                  fontWeight: FontWeight.normal,
+                ),
+              )
+            : pickedImage == null
             ? Center(
                 child: Image.asset(
                   'assets/images/icons/prof_page/choose_pp.png',
