@@ -2,6 +2,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/views/widgets/loading/later_loading_bar.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,7 +31,8 @@ class BackgroundPicture extends StatefulWidget {
 class _BackgroundPictureState extends State<BackgroundPicture> {
   Uint8List? pickedImage;
   String? uid;
-  final String fileName = 'background_image'; 
+  final String fileName = 'background_image';
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -68,6 +71,8 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   }
 
   Future<void> deleteBackgroundImage() async {
+    setState(() => isUploading = true);
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('background_image');
     setState(() => pickedImage = null);
@@ -81,18 +86,51 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
       await imageRef.delete();
     } catch (e) {
       // Handle error if needed
+    } finally {
+      setState(() => isUploading = false);
     }
   }
 
   Future<void> saveBackgroundImage(Uint8List imageBytes) async {
-    if (uid == null) return;
-    final storageRef = FirebaseStorage.instance.ref();
-    final imageRef = storageRef.child("userdata/$uid/assets/images/$fileName");
-    await imageRef.putData(imageBytes);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('background_image', base64Encode(imageBytes));
-    setState(() => pickedImage = imageBytes);
+    setState(() => isUploading = true);
+
+    if (uid == null) {
+      setState(() => isUploading = false);
+      return;
+    }
+
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageRef = storageRef.child(
+        "userdata/$uid/assets/images/$fileName",
+      );
+      await imageRef.putData(imageBytes);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('background_image', base64Encode(imageBytes));
+      setState(() => pickedImage = imageBytes);
+      
+      if (mounted) {
+        UnifiedNotification.showSuccess(
+          context: context,
+          message: 'Background picture updated successfully!',
+          duration: const Duration(seconds: 2),
+          position: NotificationPosition.top,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        UnifiedNotification.showError(
+          context: context,
+          message: 'Failed to upload background picture',
+          duration: const Duration(seconds: 3),
+          position: NotificationPosition.top,
+        );
+      }
+    } finally {
+      setState(() => isUploading = false);
+    }
   }
+
 
   Future<void> getBackgroundPicture() async {
     try {
@@ -113,6 +151,8 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   }
 
   Future<void> onBackgroundTapped() async {
+    if (isUploading) return; // Disable tap during upload
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -256,7 +296,9 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onBackgroundTapped,
+      onTap: isUploading
+          ? null
+          : onBackgroundTapped, // Disable tap during upload
       child: Container(
         height: widget.pictureHeight ?? 200,
         width: double.infinity,
@@ -266,20 +308,37 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
           ),
-          image: pickedImage != null
+          image: pickedImage != null && !isUploading
               ? DecorationImage(
                   image: MemoryImage(pickedImage!),
                   fit: BoxFit.cover,
                 )
               : null,
         ),
-        child: pickedImage == null
+        child: isUploading
             ? Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 80,
-                  ), 
+                  padding: const EdgeInsets.only(bottom: 60),
+                  child: LaterLoadingBar(
+                    width: 40,
+                    height: 40,
+                    message: "Updating...",
+                    messageSpacing: 5,
+                    messageStyle: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Inria',
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
+            : pickedImage == null
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 80),
                   child: Image.asset(
                     'assets/images/icons/prof_page/choose_bg.png',
                     width: 35,

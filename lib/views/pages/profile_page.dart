@@ -8,11 +8,20 @@ import 'package:later/services/profile_friends/username_getting.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/friends_logic_pages/friends_row_profile.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final userService = Provider.of<UserService>(context, listen: false);
     final uid = userService.uid ?? 'null';
