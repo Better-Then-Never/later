@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:later/views/pages/capsule_image_view_page.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
 
@@ -45,9 +46,20 @@ class CapsulePreviewCard extends StatelessWidget {
             SizedBox(
               width: screenWidth * 0.45,
               height: double.infinity,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(imageUrl, fit: BoxFit.cover),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CapsuleImageViewPage(imageUrl: imageUrl),
+                    ),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.network(imageUrl, fit: BoxFit.cover),
+                ),
               ),
             ),
           const SizedBox(width: 12),
