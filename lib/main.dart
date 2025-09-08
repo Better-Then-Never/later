@@ -103,7 +103,12 @@ class _ApplicationState extends State<Application> {
       routes: {
         '/widgetTree': (context) => const WidgetTreeWrapper(),
         '/welcome': (context) => const WelcomePage(),
-        '/camera': (context) => const CameraPage(),
+        '/camera': (context) {
+          final args =
+              ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>?;
+          return CameraPage(arguments: args);
+        },
         '/loginPage': (context) => const LoginPage(),
         '/signupPage': (context) => const SignupPage(),
         '/settingsPage': (context) => const SettingsPage(),

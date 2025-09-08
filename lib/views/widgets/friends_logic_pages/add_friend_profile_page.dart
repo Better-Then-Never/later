@@ -7,6 +7,7 @@ import 'package:later/services/profile_friends/user_data_services.dart';
 import 'package:later/services/cache_firebase/firebase_storage_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/services/appearance/widget_factory.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AddFriendProfilePage extends StatefulWidget {
   final String userId;
@@ -38,6 +39,32 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   void dispose() {
     UnifiedNotification.hide();
     super.dispose();
+  }
+
+  String _generateProfileLink(String userId) {
+    return 'https://later-da778.web.app/?userId=$userId';
+  }
+
+  Future<void> _shareProfile(BuildContext context, String userId) async {
+    try {
+      final link = _generateProfileLink(userId);
+
+      final userData = await UserDataService.getUserNameAndUsername(userId);
+      final friendName = userData['name'] ?? 'Unknown User';
+
+      await Share.share(
+        'Check out $friendName on Later! \n$link',
+        subject: 'Connect with $friendName on Later',
+      );
+    } catch (e) {
+      if (context.mounted) {
+        UnifiedNotification.showError(
+          context: context,
+          message: 'Failed to share profile',
+          position: NotificationPosition.bottom,
+        );
+      }
+    }
   }
 
   Future<void> _checkRelationshipStatus() async {
@@ -381,10 +408,13 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
               height: 44,
             ),
           ),
-          Image.asset(
-            'assets/images/icons/prof_page/share_button.png',
-            width: 44,
-            height: 44,
+          GestureDetector(
+            onTap: () => _shareProfile(context, widget.userId),
+            child: Image.asset(
+              'assets/images/icons/prof_page/share_button.png',
+              width: 44,
+              height: 44,
+            ),
           ),
         ],
       ),

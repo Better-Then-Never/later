@@ -109,7 +109,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     }
   }
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -230,14 +230,26 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                 ? Center(child: CircularProgressIndicator())
                 : _allFriends.isEmpty
                 ? Center(
-                    child: Text(
-                      'No friends added yet',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Irina',
-                        color: Colors.black,
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/icons/prof_page/friend_search.png',
+                          width: 72,
+                          height: 72,
+                          color: Colors.black,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'No friends added yet',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Irina',
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
                   )
                 : Builder(
@@ -262,14 +274,26 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
 
                       if (filteredFriends.isEmpty) {
                         return Center(
-                          child: Text(
-                            'No friends match your search',
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.045,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Irina',
-                              color: Colors.black,
-                            ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/icons/prof_page/friend_search.png',
+                                width: 72,
+                                height: 72,
+                                color: Colors.black,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'No friends match your search',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Irina',
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       }
