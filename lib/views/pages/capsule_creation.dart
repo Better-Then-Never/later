@@ -16,8 +16,13 @@ import 'package:intl/intl.dart';
 
 class CapsuleCreationPage extends StatefulWidget {
   final String imagePath;
+  final String? initialPrivacy;
 
-  const CapsuleCreationPage({super.key, required this.imagePath});
+  const CapsuleCreationPage({
+    super.key, 
+    required this.imagePath,
+    this.initialPrivacy,
+  });
 
   @override
   State<CapsuleCreationPage> createState() => _CapsuleCreationPageState();
@@ -40,6 +45,13 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
     super.initState();
     uid = FirebaseAuth.instance.currentUser?.uid;
     _pickedLocation = map.MapPage.currentPositionStatic;
+    
+    // Set initial privacy based on arguments
+    if (widget.initialPrivacy == 'friends') {
+      _privacy = CapsulePrivacy.friends;
+    } else if (widget.initialPrivacy == 'public') {
+      _privacy = CapsulePrivacy.public;
+    }
   }
 
   void _cyclePrivacy() {
@@ -314,11 +326,13 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
         privacy: _privacy,
         color: _color.label.toLowerCase(),
       );
+      final capsuleMap = capsule.toMap();
+      capsuleMap['privacy'] = _privacy.name; 
 
       await FirebaseFirestore.instance
           .collection('capsules')
           .doc(capsuleId)
-          .set(capsule.toMap());
+          .set(capsuleMap);
 
       if (mounted) Navigator.pop(context);
     } catch (e) {

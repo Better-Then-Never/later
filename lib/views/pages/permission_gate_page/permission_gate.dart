@@ -7,12 +7,14 @@ class AppPermission {
   final String description;
   final String iconAsset;
   final Permission permission;
+  final bool isOptional;
 
   AppPermission({
     required this.name,
     required this.description,
     required this.permission,
     required this.iconAsset,
+    this.isOptional = false,
   });
 }
 
@@ -34,6 +36,13 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
 
   final List<AppPermission> _permissionsList = [
     AppPermission(
+      name: "Access your contacts",
+      description: "To invite friends and find people you know on Later!",
+      permission: Permission.contacts,
+      iconAsset: "assets/images/icons/friends_page/friend_book.png",
+      isOptional: true,
+    ),
+    AppPermission(
       name: "Share Camera acess with Later",
       description: "And you will be able to create time capsules!",
       permission: Permission.camera,
@@ -41,7 +50,7 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
     ),
     AppPermission(
       name: "Provide Later with microphone access",
-      description: "Camera won’t work without it",
+      description: "Camera won't work without it",
       permission: Permission.microphone,
       iconAsset: "assets/images/icons/capsule_creation/microphone_icon.png",
     ),
@@ -60,17 +69,20 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
   }
 
   Future<void> _checkPermissions() async {
-    bool allGranted = true;
-
     for (var item in _permissionsList) {
       final status = await item.permission.status;
       _statuses[item.permission] = status;
-      if (!status.isGranted) allGranted = false;
     }
 
     if (!mounted) return;
 
-    if (allGranted) {
+    // Check if all required permissions are granted
+    final requiredPermissions = _permissionsList.where((p) => !p.isOptional);
+    final allRequiredGranted = requiredPermissions.every(
+      (p) => _statuses[p.permission]?.isGranted ?? false,
+    );
+
+    if (allRequiredGranted) {
       widget.onAllGranted();
     } else {
       setState(() => _loaded = true);
@@ -93,13 +105,29 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
 
     if (_statuses.length != _permissionsList.length) return;
 
-    final allGranted = _statuses.values.every((s) => s.isGranted);
+    // Check if all required permissions are granted
+    final requiredPermissions = _permissionsList.where((p) => !p.isOptional);
+    final allRequiredGranted = requiredPermissions.every(
+      (p) => _statuses[p.permission]?.isGranted ?? false,
+    );
 
-    if (allGranted && mounted) {
+    if (allRequiredGranted && mounted) {
       _navigated = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) widget.onAllGranted();
       });
+    }
+  }
+
+  void _skipOptionalPermission() {
+    // Skip to next page or finish if this is the last one
+    if (_currentPage < _permissionsList.length - 1) {
+      _pageController.nextPage(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      _checkIfAllGranted();
     }
   }
 
@@ -196,6 +224,21 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
                                 ),
                               ),
                             ),
+                            if (item.isOptional == true && !granted) ...[
+                              const SizedBox(height: 15),
+                              TextButton(
+                                onPressed: _skipOptionalPermission,
+                                child: const Text(
+                                  'Maybe later',
+                                  style: TextStyle(
+                                    fontFamily: 'Irina',
+                                    fontSize: 16,
+                                    color: Colors.grey,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

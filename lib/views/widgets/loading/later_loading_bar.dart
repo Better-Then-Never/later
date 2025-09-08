@@ -5,6 +5,8 @@ class LaterLoadingBar extends StatelessWidget {
   final double width;
   final double height;
   final String? message;
+  final double? messageSpacing;
+  final TextStyle? messageStyle;
 
   const LaterLoadingBar({
     super.key,
@@ -12,6 +14,8 @@ class LaterLoadingBar extends StatelessWidget {
     this.width = 150,
     this.height = 150,
     this.message,
+    this.messageSpacing,
+    this.messageStyle,
   });
 
   @override
@@ -22,10 +26,10 @@ class LaterLoadingBar extends StatelessWidget {
         children: [
           Image.asset(assetPath, width: width, height: height),
           if (message != null) ...[
-            const SizedBox(height: 20),
+            SizedBox(height: messageSpacing ?? 20),
             Text(
               message!,
-              style: const TextStyle(fontSize: 18),
+              style: messageStyle ?? const TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
           ],

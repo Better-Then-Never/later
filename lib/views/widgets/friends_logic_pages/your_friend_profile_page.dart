@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_options_modal.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
@@ -14,6 +16,32 @@ class YourFriendProfilePage extends StatelessWidget {
   static final Map<String, _CachedUserData> _nameUsernameCacheNew = {};
 
   static const Duration _cacheExpiration = Duration(hours: 1);
+
+  String _generateProfileLink(String userId) {
+    return 'https://later-da778.web.app/?userId=$userId';
+  }
+
+  Future<void> _shareProfile(BuildContext context, String userId) async {
+    try {
+      final link = _generateProfileLink(userId);
+
+      final userData = await _getNameAndUsername();
+      final friendName = userData['name'] ?? 'Unknown User';
+
+      await Share.share(
+        'Check out $friendName on Later! \n$link',
+        subject: 'Connect with $friendName on Later',
+      );
+    } catch (e) {
+      if (context.mounted) {
+        UnifiedNotification.showError(
+          context: context,
+          message: 'Failed to share profile',
+          position: NotificationPosition.bottom,
+        );
+      }
+    }
+  }
 
   Future<String?> _getProfileImageUrl() async {
     final now = DateTime.now();
@@ -298,7 +326,10 @@ class YourFriendProfilePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                         onPressed: () {
-                          // TODO: Handle send capsule action
+                          _shareProfile(
+                            context,
+                            friendUid,
+                          ); 
                         },
                       ),
                       IconButton(

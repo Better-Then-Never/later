@@ -8,11 +8,20 @@ import 'package:later/services/profile_friends/username_getting.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/friends_logic_pages/friends_row_profile.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final userService = Provider.of<UserService>(context, listen: false);
     final uid = userService.uid ?? 'null';
@@ -168,7 +177,11 @@ class ProfilePage extends StatelessWidget {
                                 height: 39,
                                 child: TextButton(
                                   onPressed: () {
-                                    //TODO : Implement Add To Map friends button
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/camera',
+                                      arguments: {'privacy': 'friends'},
+                                    );
                                   },
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
@@ -206,7 +219,11 @@ class ProfilePage extends StatelessWidget {
                                 height: 41,
                                 child: TextButton(
                                   onPressed: () {
-                                    //TODO: Add to map everyone tapped
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/camera',
+                                      arguments: {'privacy': 'public'},
+                                    );
                                   },
                                   style: TextButton.styleFrom(
                                     alignment: Alignment.centerLeft,
@@ -262,7 +279,7 @@ class ProfilePage extends StatelessWidget {
                       child: Stack(
                         children: [
                           Positioned(
-                            top: 3, 
+                            top: 3,
                             child: Row(
                               children: [
                                 const SizedBox(width: 18),
@@ -287,10 +304,13 @@ class ProfilePage extends StatelessWidget {
                             ),
                           ),
                           StreamBuilder<int>(
-                            stream: FriendRequestHelper.getReceivedRequestsCount(uid),
+                            stream:
+                                FriendRequestHelper.getReceivedRequestsCount(
+                                  uid,
+                                ),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData || snapshot.data == 0) {
-                                return SizedBox.shrink(); 
+                                return SizedBox.shrink();
                               }
 
                               final count = snapshot.data!;
@@ -299,7 +319,7 @@ class ProfilePage extends StatelessWidget {
                                   : count.toString();
 
                               return Positioned(
-                                top: 13, 
+                                top: 13,
                                 right: 16,
                                 child: Container(
                                   constraints: BoxConstraints(minWidth: 20),

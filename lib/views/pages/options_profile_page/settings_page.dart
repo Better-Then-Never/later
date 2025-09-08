@@ -12,6 +12,7 @@ import 'package:later/views/pages/options_settings_page/language.dart';
 import 'package:later/views/pages/options_settings_page/profile_custom.dart';
 import 'package:later/views/pages/options_settings_page/app_theme.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/views/pages/options_settings_page/permissions_settings.dart';
 import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -92,7 +93,7 @@ class SettingsPage extends StatelessWidget {
             Center(
               child: Container(
                 width: screenWidth * 0.92,
-                height: screenHeight * 0.47,
+                height: screenHeight * 0.52,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(25),
@@ -204,7 +205,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                     _settingsRow(
                       context,
-                      'App Appearance',
+                      'App appearance',
                       null,
                       onTap: () {
                         Navigator.push(
@@ -218,7 +219,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                     _settingsRow(
                       context,
-                      'Customize Profile',
+                      'Customize profile',
                       null,
                       onTap: () {
                         Navigator.push(
@@ -226,6 +227,21 @@ class SettingsPage extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) =>
                                 const ProfileCustomizationPage(),
+                          ),
+                        );
+                      },
+                      screenWidth: screenWidth,
+                    ),
+                    _settingsRow(
+                      context,
+                      'App permissions',
+                      null,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PermissionsSettingsPage(),
                           ),
                         );
                       },

@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/cache_firebase/qr_code_scanner.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
+import 'package:later/views/widgets/friends_logic_pages/invite_friends_page.dart';
 
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
@@ -228,7 +229,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: _openQRScanner, 
+                                    onTap: _openQRScanner,
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 12.0,
@@ -276,33 +277,43 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Color(0xFFEAEAEA),
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 6.0),
-                            child: Image.asset(
-                              'assets/images/icons/friends_page/friend_book.png',
-                              width: 32,
-                              height: 32,
-                            ),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => InviteFriendsPage(),
                           ),
-                          Text(
-                            'Invite friends',
-                            style: TextStyle(
-                              fontFamily: 'Irina',
-                              fontSize: 19,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
+                        );
+                      },
+                      child: Container(
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Color(0xFFEAEAEA),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: Image.asset(
+                                'assets/images/icons/friends_page/friend_book.png',
+                                width: 32,
+                                height: 32,
+                              ),
                             ),
-                          ),
-                        ],
+                            Text(
+                              'Invite friends',
+                              style: TextStyle(
+                                fontFamily: 'Irina',
+                                fontSize: 19,
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
