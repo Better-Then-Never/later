@@ -97,6 +97,7 @@ flutter:
     - assets/images/icons/capsule_creation/
     - assets/images/icons/friends_page/
     - assets/gifs/loading/
+    - assets/images/icons/history_page/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
