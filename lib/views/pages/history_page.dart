@@ -396,28 +396,6 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
-  int _calculateOpensInDays(dynamic openAt) {
-    if (openAt == null) return 0;
-
-    try {
-      DateTime openDate;
-      if (openAt is Timestamp) {
-        openDate = openAt.toDate();
-      } else if (openAt is String) {
-        openDate = DateTime.parse(openAt);
-      } else {
-        return 0;
-      }
-
-      final now = DateTime.now();
-      final difference = openDate.difference(now);
-
-      return difference.inDays;
-    } catch (e) {
-      return 0;
-    }
-  }
-
   void _showSortOptions() {
     showModalBottomSheet(
       context: context,
