@@ -24,7 +24,11 @@ class _MapPageState extends State<MapPage> {
   final CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
   final Map<MarkerId, Marker> _markers = {};
+  final Set<Heatmap> _heatmaps = {};
   final LocationService _locationService = LocationService();
+
+  double _currentZoom = 13.0;
+  final double _markerZoomThreshold = 12.0;
 
   LatLng? _currentPosition;
   LatLng? get currentPosition => _currentPosition;
@@ -44,7 +48,7 @@ class _MapPageState extends State<MapPage> {
   void initState() {
     super.initState();
     uid = FirebaseAuth.instance.currentUser?.uid;
-    
+
     _initIcons();
     _loadUserFriends();
 
@@ -60,13 +64,13 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _loadUserFriends() async {
     if (uid == null) return;
-    
+
     try {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
           .get();
-      
+
       if (userDoc.exists) {
         final userData = userDoc.data() as Map<String, dynamic>;
         final friends = userData['friends'] as List<dynamic>? ?? [];
@@ -82,27 +86,27 @@ class _MapPageState extends State<MapPage> {
   bool _canViewCapsule(Map<String, dynamic> capsuleData) {
     final privacy = capsuleData['privacy'] as String? ?? 'public';
     final ownerId = capsuleData['ownerId'] as String?;
-    
+
     // User can always see their own capsules
     if (ownerId == uid) {
       return true;
     }
-    
+
     // Public capsules are visible to everyone
     if (privacy == 'public') {
       return true;
     }
-    
+
     // Friends-only capsules are visible only to friends
     if (privacy == 'friends') {
       return _userFriends.contains(ownerId);
     }
-    
+
     // Private capsules are visible only to owner (already handled above)
     if (privacy == 'private') {
       return false;
     }
-    
+
     return false;
   }
 
@@ -137,6 +141,7 @@ class _MapPageState extends State<MapPage> {
         }
 
         _markers.clear();
+        _heatmaps.clear();
 
         _markers[const MarkerId("_currentLocation")] = Marker(
           markerId: const MarkerId("_currentLocation"),
@@ -144,38 +149,55 @@ class _MapPageState extends State<MapPage> {
           position: _currentPosition!,
         );
 
+        final List<WeightedLatLng> heatmapData = [];
+
         for (var doc in capsuleSnapshot.data!.docs) {
           final data = doc.data() as Map<String, dynamic>;
-          
-          // Check if user can view this capsule based on privacy settings
+
           if (!_canViewCapsule(data)) {
-            continue; // Skip this capsule
+            continue;
           }
-          
+
           final GeoPoint geoPoint = data['location'];
           final capsulePos = LatLng(geoPoint.latitude, geoPoint.longitude);
           final capsuleId = doc.id;
           final icon = _capsuleIcons[data['color']];
 
-          _markers[MarkerId(capsuleId)] = Marker(
-            markerId: MarkerId(capsuleId),
-            position: capsulePos,
-            icon: icon!,
-            onTap: () {
-              _customInfoWindowController.addInfoWindow!(
-                CapsuleInfoPanel(
-                  title: data['title'],
-                  dateStamp: DateFormat(
-                    'dd-MM-yyyy',
-                  ).format(data['createdAt'].toDate()),
-                  openAt: data['openAt'] ?? Timestamp.now(),
-                  onMoreInfo: () => _showCapsuleInfo(context, data),
-                ),
-                capsulePos,
-              );
-            },
-          );
+          heatmapData.add(WeightedLatLng(capsulePos, weight: 1.0));
+          if (_currentZoom >= _markerZoomThreshold) {
+            _markers[MarkerId(capsuleId)] = Marker(
+              markerId: MarkerId(capsuleId),
+              position: capsulePos,
+              icon: icon!,
+              onTap: () {
+                _customInfoWindowController.addInfoWindow!(
+                  CapsuleInfoPanel(
+                    title: data['title'],
+                    dateStamp: DateFormat(
+                      'dd-MM-yyyy',
+                    ).format(data['createdAt'].toDate()),
+                    openAt: data['openAt'] ?? Timestamp.now(),
+                    onMoreInfo: () => _showCapsuleInfo(context, data),
+                  ),
+                  capsulePos,
+                );
+              },
+            );
+          }
         }
+
+        _heatmaps.add(
+          Heatmap(
+            heatmapId: const HeatmapId("capsules_heatmap"),
+            data: heatmapData,
+            radius: HeatmapRadius.fromPixels(50),
+            gradient: HeatmapGradient([
+              HeatmapGradientColor(Colors.green, 0.2),
+              HeatmapGradientColor(Colors.yellow, 0.5),
+              HeatmapGradientColor(Colors.red, 1.0),
+            ]),
+          ),
+        );
 
         return Stack(
           children: [
@@ -195,7 +217,14 @@ class _MapPageState extends State<MapPage> {
               },
               onCameraMove: (position) {
                 _customInfoWindowController.onCameraMove!();
+
+                if ((_currentZoom - position.zoom).abs() > 0.1) {
+                  setState(() {
+                    _currentZoom = position.zoom;
+                  });
+                }
               },
+              heatmaps: _heatmaps,
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
