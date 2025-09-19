@@ -70,12 +70,14 @@ class CapsuleCard extends StatelessWidget {
               'Somewhere';
         }
         return Container(
-          constraints: const BoxConstraints(maxWidth: 200, minWidth: 60),
+          width: 130,
+          height: 37,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: const Color.fromARGB(255, 255, 217, 0),
             borderRadius: BorderRadius.circular(25),
           ),
+          alignment: Alignment.center,
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
@@ -87,6 +89,7 @@ class CapsuleCard extends StatelessWidget {
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              softWrap: false,
             ),
           ),
         );
@@ -202,10 +205,35 @@ class CapsuleCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       locationPill,
                       const SizedBox(width: 8),
-                      Image.asset(
-                        _getPinAsset(pinColorString),
-                        width: 22,
-                        height: 22,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(color: Colors.black, width: 2),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Color',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(width: 3),
+                            Image.asset(
+                              _getPinAsset(pinColorString),
+                              width: 18,
+                              height: 18,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
