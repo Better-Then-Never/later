@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/widgets/history_page_widgets/history_header.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:later/views/widgets/history_page_widgets/confirm_delete_modal.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -21,9 +22,9 @@ class _HistoryPageState extends State<HistoryPage> {
   Set<String> _selectedCapsules = {};
   Position? _userPosition;
   bool get _isAnyFilterActive =>
-    (_filterColor != null && _filterColor!.isNotEmpty) ||
-    (_filterVisibility != null && _filterVisibility!.isNotEmpty) ||
-    (_filterOpensIn != null && _filterOpensIn!.isNotEmpty);
+      (_filterColor != null && _filterColor!.isNotEmpty) ||
+      (_filterVisibility != null && _filterVisibility!.isNotEmpty) ||
+      (_filterOpensIn != null && _filterOpensIn!.isNotEmpty);
 
   // Filter fields
   String? _filterColor;
@@ -46,19 +47,20 @@ class _HistoryPageState extends State<HistoryPage> {
       backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
-HistoryHeader(
-  searchController: _searchController,
-  isSelectMode: _isSelectMode,
-  onSortTap: _showSortOptions,
-  onSelectToggle: _toggleSelectMode,
-  onSearchChanged: (value) {
-    setState(() {
-      _searchQuery = value.toLowerCase();
-    });
-  },
-  onFilterTap: _showFilterOptions,
-  isFilterActive: _isAnyFilterActive, 
-),
+          HistoryHeader(
+            searchController: _searchController,
+            isSelectMode: _isSelectMode,
+            onSortTap: _showSortOptions,
+            onSelectToggle: _toggleSelectMode,
+            onSearchChanged: (value) {
+              setState(() {
+                _searchQuery = value.toLowerCase();
+              });
+            },
+            onFilterTap: _showFilterOptions,
+            isFilterActive: _isAnyFilterActive,
+            onDeletePressed: _deleteSelectedCapsules, // Pass delete callback
+          ),
           Expanded(child: _buildCapsulesList()),
         ],
       ),
@@ -130,19 +132,46 @@ HistoryHeader(
               );
             }
 
-            return ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 150),
-              itemCount: filteredCapsules.length,
-              itemBuilder: (context, index) {
-                final capsule = filteredCapsules[index];
-                final data = capsule.data() as Map<String, dynamic>;
-                return CapsuleCard(
-                  capsuleId: capsule.id,
-                  data: data,
-                  isSelected: _selectedCapsules.contains(capsule.id),
-                  isSelectMode: _isSelectMode,
-                  onSelectToggle: () => _toggleCapsuleSelection(capsule.id),
-                  userPosition: _userPosition,
+            return StatefulBuilder(
+              builder: (context, setLocalState) {
+                return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 150),
+                  itemCount: filteredCapsules.length,
+                  itemBuilder: (context, index) {
+                    final capsule = filteredCapsules[index];
+                    final data = capsule.data() as Map<String, dynamic>;
+                    return CapsuleCard(
+                      capsuleId: capsule.id,
+                      data: data,
+                      isSelected: _selectedCapsules.contains(capsule.id),
+                      isSelectMode: _isSelectMode,
+                      onSelectToggle: () {
+                        setLocalState(() {
+                          if (_selectedCapsules.contains(capsule.id)) {
+                            _selectedCapsules.remove(capsule.id);
+                          } else {
+                            _selectedCapsules.add(capsule.id);
+                          }
+                          if (_selectedCapsules.isEmpty) {
+                            setState(() {
+                              _isSelectMode = false;
+                            });
+                          }
+                        });
+                      },
+                      userPosition: _userPosition,
+                      onLongPress: () {
+                        if (!_isSelectMode) {
+                          setState(() {
+                            _isSelectMode = true;
+                          });
+                          setLocalState(() {
+                            _selectedCapsules.add(capsule.id);
+                          });
+                        }
+                      },
+                    );
+                  },
                 );
               },
             );
@@ -151,6 +180,35 @@ HistoryHeader(
       },
     );
   }
+
+  void _toggleSelectMode() {
+    setState(() {
+      _isSelectMode = !_isSelectMode;
+      if (!_isSelectMode) {
+        _selectedCapsules.clear();
+      }
+    });
+  }
+
+Future<void> _deleteSelectedCapsules() async {
+  if (_selectedCapsules.isEmpty) return;
+  final confirm = await showModalBottomSheet<bool>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    barrierColor: Colors.black.withAlpha(128),
+    builder: (context) => const ConfirmDeleteModal(),
+  );
+  if (confirm != true) return;
+
+  for (final id in _selectedCapsules) {
+    await FirebaseFirestore.instance.collection('capsules').doc(id).delete();
+  }
+  setState(() {
+    _selectedCapsules.clear();
+    _isSelectMode = false;
+  });
+}
 
   List<QueryDocumentSnapshot> _filterAndSortCapsules(
     List<QueryDocumentSnapshot> capsules,
@@ -429,26 +487,53 @@ HistoryHeader(
                   children: [
                     Expanded(
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            86,
+                            201,
+                            46,
+                          ), // Green
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
                         onPressed: () {
-                          setState(() {}); // Apply filter
+                          setState(() {});
                           Navigator.pop(context);
                         },
-                        child: const Text('Apply'),
+                        child: const Text(
+                          'Apply',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: OutlinedButton(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(
+                            255,
+                            255,
+                            87,
+                            87,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
                         onPressed: () {
                           setModalState(() {
-                            // _filterPlace = null; // removed
                             _filterColor = null;
                             _filterVisibility = null;
                             _filterOpensIn = null;
                           });
                           setState(() {});
                         },
-                        child: const Text('Clear'),
+                        child: const Text(
+                          'Clear',
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
                       ),
                     ),
                   ],
@@ -478,25 +563,6 @@ HistoryHeader(
         Navigator.pop(context);
       },
     );
-  }
-
-  void _toggleSelectMode() {
-    setState(() {
-      _isSelectMode = !_isSelectMode;
-      if (!_isSelectMode) {
-        _selectedCapsules.clear();
-      }
-    });
-  }
-
-  void _toggleCapsuleSelection(String capsuleId) {
-    setState(() {
-      if (_selectedCapsules.contains(capsuleId)) {
-        _selectedCapsules.remove(capsuleId);
-      } else {
-        _selectedCapsules.add(capsuleId);
-      }
-    });
   }
 
   @override

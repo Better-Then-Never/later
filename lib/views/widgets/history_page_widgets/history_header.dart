@@ -8,6 +8,7 @@ class HistoryHeader extends StatelessWidget {
   final Function(String) onSearchChanged;
   final VoidCallback onFilterTap;
   final bool isFilterActive;
+  final VoidCallback onDeletePressed;
 
   const HistoryHeader({
     super.key,
@@ -18,6 +19,7 @@ class HistoryHeader extends StatelessWidget {
     required this.onSearchChanged,
     required this.onFilterTap,
     required this.isFilterActive,
+    required this.onDeletePressed,
   });
 
   @override
@@ -134,76 +136,150 @@ class HistoryHeader extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.049),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Sort by
-              GestureDetector(
-                onTap: onSortTap,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEAEAEA),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/icons/history_page/sort.png',
-                        width: 24,
-                        height: 24,
-                      ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'Sort by',
-                        style: TextStyle(
-                          fontFamily: 'Irina',
-                          fontSize: 19,
-                          color: Colors.black,
+              if (!isSelectMode) ...[
+                // Sort by
+                GestureDetector(
+                  onTap: onSortTap,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAEAEA),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/icons/history_page/sort.png',
+                          width: 24,
+                          height: 24,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Sort by',
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 19,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              // Filter by
-              GestureDetector(
-                onTap: onFilterTap,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isFilterActive
-                        ? const Color(0xFFD0D0D0) // Darker when active
-                        : const Color(0xFFEAEAEA), // Default color
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        'assets/images/icons/history_page/filter.png',
-                        width: 24,
-                        height: 24,
-                      ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'Filter by',
-                        style: TextStyle(
-                          fontFamily: 'Irina',
-                          fontSize: 19,
-                          color: Colors.black,
+                const SizedBox(width: 12),
+                // Filter by
+                GestureDetector(
+                  onTap: onFilterTap,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isFilterActive
+                          ? const Color(0xFFD0D0D0)
+                          : const Color(0xFFEAEAEA),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/icons/history_page/filter.png',
+                          width: 24,
+                          height: 24,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Filter by',
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 19,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              // Select (now with logic and color change)
+                const SizedBox(width: 12),
+              ] else ...[
+                // Like
+                GestureDetector(
+                  onTap: () {
+                    // TODO: Implement your Like action callback
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 86, 201, 46),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/icons/history_page/like.png',
+                          width: 24,
+                          height: 24,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Like',
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 19,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Delete
+                GestureDetector(
+                  onTap: onDeletePressed,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 255, 87, 87),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          'assets/images/icons/history_page/delete.png', // <-- your delete PNG
+                          width: 24,
+                          height: 24,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontFamily: 'Irina',
+                            fontSize: 19,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+              ],
+              // Select/Cancel button (always shown)
               GestureDetector(
                 onTap: onSelectToggle,
                 child: Container(

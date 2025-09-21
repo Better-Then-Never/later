@@ -279,7 +279,7 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
                     const SizedBox(height: 8),
                     Text(
                       'This user will be removed from your search suggestions until the app restarts.', 
-                      //TODO: change the text until the app restarts for forever
+                      //TODO: Change the text "until the app restarts" for "forever"
                       style: TextStyle(
                         color: Colors.grey[600],
                         fontSize: 14,

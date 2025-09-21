@@ -12,6 +12,7 @@ class CapsuleCard extends StatelessWidget {
   final VoidCallback? onSelectToggle;
   final VoidCallback? onTap;
   final Position? userPosition;
+  final VoidCallback? onLongPress;
 
   const CapsuleCard({
     super.key,
@@ -22,6 +23,7 @@ class CapsuleCard extends StatelessWidget {
     this.onSelectToggle,
     this.onTap,
     this.userPosition,
+    this.onLongPress,
   });
 
   @override
@@ -159,218 +161,229 @@ class CapsuleCard extends StatelessWidget {
       ],
     );
     double? distanceKm;
-if (userPosition != null && location != null) {
-  distanceKm = Geolocator.distanceBetween(
-    userPosition!.latitude,
-    userPosition!.longitude,
-    location.latitude,
-    location.longitude,
-  ) / 1000;
-}
-Widget distanceRow = Row(
-  children: [
-    Image.asset(
-      'assets/images/icons/capsule_creation/location_icon.png',
-      width: 24,
-      height: 24,
-      color: Colors.black,
-    ),
-    const SizedBox(width: 7),
-    const Text(
-      'Distance:',
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-    ),
-    const SizedBox(width: 2),
-    Text(
-      distanceKm != null ? '${distanceKm.toStringAsFixed(1)}km' : '...',
-      style: const TextStyle(fontSize: 22),
-    ),
-  ],
-);
+    if (userPosition != null && location != null) {
+      distanceKm =
+          Geolocator.distanceBetween(
+            userPosition!.latitude,
+            userPosition!.longitude,
+            location.latitude,
+            location.longitude,
+          ) /
+          1000;
+    }
+    Widget distanceRow = Row(
+      children: [
+        Image.asset(
+          'assets/images/icons/capsule_creation/location_icon.png',
+          width: 24,
+          height: 24,
+          color: Colors.black,
+        ),
+        const SizedBox(width: 7),
+        const Text(
+          'Distance:',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
+        const SizedBox(width: 2),
+        Text(
+          distanceKm != null ? '${distanceKm.toStringAsFixed(1)}km' : '...',
+          style: const TextStyle(fontSize: 22),
+        ),
+      ],
+    );
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(40),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 4, bottom: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title, date, location in one row
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 2, top: 2),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
+    return GestureDetector(
+      onTap: isSelectMode ? onSelectToggle : onTap,
+      onLongPress: onLongPress,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(40),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 4, bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title, date, location in one row
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 2, top: 2),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                // Date, location, and pin in one row
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      datePill,
-                      const SizedBox(width: 6),
-                      locationPill,
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(25),
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Color',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.black,
+                  const SizedBox(height: 4),
+                  // Date, location, and pin in one row
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        datePill,
+                        const SizedBox(width: 6),
+                        locationPill,
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Color',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
                               ),
+                              const SizedBox(width: 3),
+                              Image.asset(
+                                _getPinAsset(pinColorString),
+                                width: 18,
+                                height: 18,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 1,
+                    color: Colors.black,
+                    margin: const EdgeInsets.symmetric(vertical: 2),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: capsuleImage,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/images/icons/capsule_creation/timer_icon.png',
+                                  width: 24,
+                                  height: 24,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 7),
+                                const Text(
+                                  'Opens in:',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  opensIn,
+                                  style: const TextStyle(fontSize: 22),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 3),
-                            Image.asset(
-                              _getPinAsset(pinColorString),
-                              width: 18,
-                              height: 18,
+                            const SizedBox(height: 4),
+                            distanceRow,
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/images/icons/capsule_creation/privacy_icon.png',
+                                  width: 24,
+                                  height: 24,
+                                  color: Colors.black,
+                                ),
+                                const SizedBox(width: 7),
+                                const Text(
+                                  'Visibility:',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 22,
+                                  ),
+                                ),
+                                const SizedBox(width: 2),
+                                Text(
+                                  privacy,
+                                  style: const TextStyle(fontSize: 22),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                ),
-                Container(
-                  height: 1,
-                  color: Colors.black,
-                  margin: const EdgeInsets.symmetric(vertical: 2),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20),
-                      child: capsuleImage,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/icons/capsule_creation/timer_icon.png',
-                                width: 24,
-                                height: 24,
-                                color: Colors.black,
-                              ),
-                              const SizedBox(width: 7),
-                              const Text(
-                                'Opens in:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                opensIn,
-                                style: const TextStyle(fontSize: 22),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          distanceRow,
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/icons/capsule_creation/privacy_icon.png',
-                                width: 24,
-                                height: 24,
-                                color: Colors.black,
-                              ),
-                              const SizedBox(width: 7),
-                              const Text(
-                                'Visibility:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                privacy,
-                                style: const TextStyle(fontSize: 22),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          if (isSelectMode)
-            Positioned.fill(
-              child: GestureDetector(
-                onTap: onSelectToggle,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? Colors.blue.withOpacity(0.3)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(16),
-                    border: isSelected
-                        ? Border.all(color: Colors.blue, width: 2)
-                        : null,
-                  ),
-                  child: isSelected
-                      ? const Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(Icons.check_circle, color: Colors.blue),
-                          ),
-                        )
-                      : null,
-                ),
+                ],
               ),
             ),
-        ],
+            if (isSelectMode)
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: onSelectToggle,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.blue.withAlpha(77)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(16),
+                      border: isSelected
+                          ? Border.all(color: Colors.blue, width: 2)
+                          : null,
+                    ),
+                    child: isSelected
+                        ? Align(
+                            alignment: Alignment.topRight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Image.asset(
+                                'assets/images/icons/friends_page/done.png',
+                                width: 18,
+                                height: 18,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
