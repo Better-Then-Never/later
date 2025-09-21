@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/widgets/history_page_widgets/history_header.dart';
+import 'package:geolocator/geolocator.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -15,9 +16,29 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  String _sortBy = 'date';
+  String _sortBy = 'date_newest';
   bool _isSelectMode = false;
   Set<String> _selectedCapsules = {};
+  Position? _userPosition;
+  bool get _isAnyFilterActive =>
+    (_filterColor != null && _filterColor!.isNotEmpty) ||
+    (_filterVisibility != null && _filterVisibility!.isNotEmpty) ||
+    (_filterOpensIn != null && _filterOpensIn!.isNotEmpty);
+
+  // Filter fields
+  String? _filterColor;
+  String? _filterVisibility;
+  String? _filterOpensIn;
+
+  @override
+  void initState() {
+    super.initState();
+    Geolocator.getCurrentPosition().then((pos) {
+      setState(() {
+        _userPosition = pos;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,17 +46,19 @@ class _HistoryPageState extends State<HistoryPage> {
       backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
-          HistoryHeader(
-            searchController: _searchController,
-            isSelectMode: _isSelectMode,
-            onSortTap: _showSortOptions,
-            onSelectToggle: _toggleSelectMode,
-            onSearchChanged: (value) {
-              setState(() {
-                _searchQuery = value.toLowerCase();
-              });
-            },
-          ),
+HistoryHeader(
+  searchController: _searchController,
+  isSelectMode: _isSelectMode,
+  onSortTap: _showSortOptions,
+  onSelectToggle: _toggleSelectMode,
+  onSearchChanged: (value) {
+    setState(() {
+      _searchQuery = value.toLowerCase();
+    });
+  },
+  onFilterTap: _showFilterOptions,
+  isFilterActive: _isAnyFilterActive, 
+),
           Expanded(child: _buildCapsulesList()),
         ],
       ),
@@ -84,10 +107,6 @@ class _HistoryPageState extends State<HistoryPage> {
             }
 
             final capsules = snapshot.data?.docs ?? [];
-            print(
-              'Found ${capsules.length} capsules for user ${currentUser.uid}',
-            );
-
             final filteredCapsules = _filterAndSortCapsules(capsules);
 
             if (filteredCapsules.isEmpty) {
@@ -112,12 +131,7 @@ class _HistoryPageState extends State<HistoryPage> {
             }
 
             return ListView.builder(
-              padding: const EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                150,
-              ), // Added extra bottom padding
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 150),
               itemCount: filteredCapsules.length,
               itemBuilder: (context, index) {
                 final capsule = filteredCapsules[index];
@@ -128,6 +142,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   isSelected: _selectedCapsules.contains(capsule.id),
                   isSelectMode: _isSelectMode,
                   onSelectToggle: () => _toggleCapsuleSelection(capsule.id),
+                  userPosition: _userPosition,
                 );
               },
             );
@@ -140,12 +155,59 @@ class _HistoryPageState extends State<HistoryPage> {
   List<QueryDocumentSnapshot> _filterAndSortCapsules(
     List<QueryDocumentSnapshot> capsules,
   ) {
-    // Filter by search query
     var filtered = capsules.where((capsule) {
       final data = capsule.data() as Map<String, dynamic>;
       final title = (data['title'] ?? '').toLowerCase();
       final description = (data['description'] ?? '').toLowerCase();
-      return title.contains(_searchQuery) || description.contains(_searchQuery);
+
+      // Search
+      if (_searchQuery.isNotEmpty &&
+          !title.contains(_searchQuery) &&
+          !description.contains(_searchQuery)) {
+        return false;
+      }
+
+      // Color filter
+      if (_filterColor != null && _filterColor!.isNotEmpty) {
+        final color = (data['color'] ?? '').toString().toLowerCase();
+        if (color != _filterColor) return false;
+      }
+
+      // Visibility filter (now includes 'friends')
+      if (_filterVisibility != null && _filterVisibility!.isNotEmpty) {
+        final privacy = (data['privacy'] ?? '').toString().toLowerCase();
+        if (privacy != _filterVisibility) return false;
+      }
+
+      // Opens in status filter
+      if (_filterOpensIn != null) {
+        final openAt = data['openAt'];
+        final now = DateTime.now();
+        if (_filterOpensIn == 'opened') {
+          if (openAt is Timestamp) {
+            final openDate = openAt.toDate();
+            if (openDate.isAfter(now)) return false;
+          } else {
+            // If not scheduled, not considered opened
+            return false;
+          }
+        } else if (_filterOpensIn == 'future') {
+          if (openAt is Timestamp) {
+            final openDate = openAt.toDate();
+            if (openDate.isBefore(now)) return false;
+          } else {
+            // If not scheduled, not considered future
+            return false;
+          }
+        } else if (_filterOpensIn == 'not_scheduled') {
+          if (openAt is Timestamp) {
+            // If scheduled, not "not scheduled"
+            return false;
+          }
+        }
+      }
+
+      return true;
     }).toList();
 
     // Sort based on selected criteria
@@ -153,24 +215,44 @@ class _HistoryPageState extends State<HistoryPage> {
       final dataA = a.data() as Map<String, dynamic>;
       final dataB = b.data() as Map<String, dynamic>;
 
+      double getDistance(dynamic loc) {
+        if (_userPosition == null) return double.infinity;
+        if (loc is GeoPoint) {
+          return Geolocator.distanceBetween(
+            _userPosition!.latitude,
+            _userPosition!.longitude,
+            loc.latitude,
+            loc.longitude,
+          );
+        }
+        return double.infinity;
+      }
+
       switch (_sortBy) {
-        case 'date':
+        case 'date_newest':
           final timestampA = dataA['createdAt'] as Timestamp?;
           final timestampB = dataB['createdAt'] as Timestamp?;
           if (timestampA == null && timestampB == null) return 0;
           if (timestampA == null) return 1;
           if (timestampB == null) return -1;
           return timestampB.compareTo(timestampA);
-        case 'visibility':
-          return (dataA['privacy'] ?? '').compareTo(dataB['privacy'] ?? '');
-        case 'destination':
-          // Since location is GeoPoint, we can't easily sort by it
-          return 0;
-        case 'opensIn':
-          // Since openAt can be null, we'll sort by scheduled status
-          final scheduledA = dataA['isScheduled'] ?? false;
-          final scheduledB = dataB['isScheduled'] ?? false;
-          return scheduledB.toString().compareTo(scheduledA.toString());
+        case 'date_oldest':
+          final timestampA = dataA['createdAt'] as Timestamp?;
+          final timestampB = dataB['createdAt'] as Timestamp?;
+          if (timestampA == null && timestampB == null) return 0;
+          if (timestampA == null) return 1;
+          if (timestampB == null) return -1;
+          return timestampA.compareTo(timestampB);
+        case 'distance_farthest':
+          if (_userPosition == null) return 0;
+          final distA = getDistance(dataA['location']);
+          final distB = getDistance(dataB['location']);
+          return distB.compareTo(distA);
+        case 'distance_closest':
+          if (_userPosition == null) return 0;
+          final distA = getDistance(dataA['location']);
+          final distB = getDistance(dataB['location']);
+          return distA.compareTo(distB);
         default:
           return 0;
       }
@@ -182,6 +264,10 @@ class _HistoryPageState extends State<HistoryPage> {
   void _showSortOptions() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
       builder: (context) => Container(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -192,10 +278,184 @@ class _HistoryPageState extends State<HistoryPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            _buildSortOption('Date', 'date'),
-            _buildSortOption('Privacy', 'visibility'),
-            _buildSortOption('Scheduled Status', 'opensIn'),
+            _buildSortOption('Date (newest to oldest)', 'date_newest'),
+            _buildSortOption('Date (oldest to newest)', 'date_oldest'),
+            _buildSortOption('Distance (closest)', 'distance_closest'),
+            _buildSortOption('Distance (farthest)', 'distance_farthest'),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showFilterOptions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Filter by',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                // Color
+                DropdownButtonFormField<String>(
+                  value: _filterColor,
+                  decoration: InputDecoration(
+                    labelText: 'Color',
+                    labelStyle: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 86, 201, 46),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  dropdownColor: Colors.white,
+                  iconEnabledColor: Color.fromARGB(190, 0, 0, 0),
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  items: const [
+                    DropdownMenuItem(value: null, child: Text('Any')),
+                    DropdownMenuItem(value: 'green', child: Text('Green')),
+                    DropdownMenuItem(value: 'yellow', child: Text('Yellow')),
+                    DropdownMenuItem(value: 'red', child: Text('Red')),
+                    DropdownMenuItem(value: 'blue', child: Text('Blue')),
+                    DropdownMenuItem(value: 'orange', child: Text('Orange')),
+                    DropdownMenuItem(value: 'pink', child: Text('Pink')),
+                    DropdownMenuItem(value: 'purple', child: Text('Purple')),
+                  ],
+                  onChanged: (val) {
+                    setModalState(() => _filterColor = val);
+                  },
+                ),
+                const SizedBox(height: 12),
+                // Visibility
+                DropdownButtonFormField<String>(
+                  value: _filterVisibility,
+                  decoration: InputDecoration(
+                    labelText: 'Visibility',
+                    labelStyle: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 86, 201, 46),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  dropdownColor: Colors.white,
+                  iconEnabledColor: Color.fromARGB(190, 0, 0, 0),
+                  borderRadius: const BorderRadius.all(Radius.circular(25)),
+                  items: const [
+                    DropdownMenuItem(value: null, child: Text('Any')),
+                    DropdownMenuItem(value: 'private', child: Text('Private')),
+                    DropdownMenuItem(value: 'public', child: Text('Public')),
+                    DropdownMenuItem(value: 'friends', child: Text('Friends')),
+                  ],
+                  onChanged: (val) {
+                    setModalState(() => _filterVisibility = val);
+                  },
+                ),
+                const SizedBox(height: 12),
+                // Opens in status
+                DropdownButtonFormField<String>(
+                  value: _filterOpensIn,
+                  decoration: InputDecoration(
+                    labelText: 'Opens status',
+                    labelStyle: const TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Color.fromARGB(255, 86, 201, 46),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                  dropdownColor: Colors.white,
+                  iconEnabledColor: Color.fromARGB(190, 0, 0, 0),
+                  borderRadius: const BorderRadius.all(Radius.circular(25)),
+                  items: const [
+                    DropdownMenuItem(value: null, child: Text('Any')),
+                    DropdownMenuItem(
+                      value: 'opened',
+                      child: Text('Already opened'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'future',
+                      child: Text('Opens in future'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'not_scheduled',
+                      child: Text('Not scheduled'),
+                    ),
+                  ],
+                  onChanged: (val) {
+                    setModalState(() => _filterOpensIn = val);
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {}); // Apply filter
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Apply'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          setModalState(() {
+                            // _filterPlace = null; // removed
+                            _filterColor = null;
+                            _filterVisibility = null;
+                            _filterOpensIn = null;
+                          });
+                          setState(() {});
+                        },
+                        child: const Text('Clear'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -205,7 +465,11 @@ class _HistoryPageState extends State<HistoryPage> {
     return ListTile(
       title: Text(title),
       trailing: _sortBy == value
-          ? const Icon(Icons.check, color: Colors.blue)
+          ? Image.asset(
+              'assets/images/icons/friends_page/done.png',
+              width: 24,
+              height: 24,
+            )
           : null,
       onTap: () {
         setState(() {

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 
 class CapsuleCard extends StatelessWidget {
   final String capsuleId;
@@ -10,6 +11,7 @@ class CapsuleCard extends StatelessWidget {
   final bool isSelectMode;
   final VoidCallback? onSelectToggle;
   final VoidCallback? onTap;
+  final Position? userPosition;
 
   const CapsuleCard({
     super.key,
@@ -19,6 +21,7 @@ class CapsuleCard extends StatelessWidget {
     this.isSelectMode = false,
     this.onSelectToggle,
     this.onTap,
+    this.userPosition,
   });
 
   @override
@@ -30,7 +33,6 @@ class CapsuleCard extends StatelessWidget {
     final imageUrl = data['imageUrl'] ?? '';
     final opensIn = _calculateOpensIn(openAt);
     final createdAt = data['createdAt'] as Timestamp?;
-    final distanceKm = data['distanceKm'] ?? 500;
     final pinColorString = (data['color'] ?? 'green').toString().toLowerCase();
 
     // Map color string to asset
@@ -156,6 +158,35 @@ class CapsuleCard extends StatelessWidget {
         ),
       ],
     );
+    double? distanceKm;
+if (userPosition != null && location != null) {
+  distanceKm = Geolocator.distanceBetween(
+    userPosition!.latitude,
+    userPosition!.longitude,
+    location.latitude,
+    location.longitude,
+  ) / 1000;
+}
+Widget distanceRow = Row(
+  children: [
+    Image.asset(
+      'assets/images/icons/capsule_creation/location_icon.png',
+      width: 24,
+      height: 24,
+      color: Colors.black,
+    ),
+    const SizedBox(width: 7),
+    const Text(
+      'Distance:',
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+    ),
+    const SizedBox(width: 2),
+    Text(
+      distanceKm != null ? '${distanceKm.toStringAsFixed(1)}km' : '...',
+      style: const TextStyle(fontSize: 22),
+    ),
+  ],
+);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -179,7 +210,7 @@ class CapsuleCard extends StatelessWidget {
               children: [
                 // Title, date, location in one row
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 2, top: 2),
+                  padding: const EdgeInsets.only(left: 16, right: 2, top: 2),
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
@@ -197,7 +228,7 @@ class CapsuleCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 // Date, location, and pin in one row
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, bottom: 8),
+                  padding: const EdgeInsets.only(left: 16, bottom: 8),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -207,7 +238,7 @@ class CapsuleCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
+                          horizontal: 10,
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
@@ -222,7 +253,7 @@ class CapsuleCard extends StatelessWidget {
                               'Color',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20,
+                                fontSize: 18,
                                 color: Colors.black,
                               ),
                             ),
@@ -280,29 +311,7 @@ class CapsuleCard extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/images/icons/capsule_creation/location_icon.png',
-                                width: 24,
-                                height: 24,
-                                color: Colors.black,
-                              ),
-                              const SizedBox(width: 7),
-                              const Text(
-                                'Destination:',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 22,
-                                ),
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                '${distanceKm}km',
-                                style: const TextStyle(fontSize: 22),
-                              ),
-                            ],
-                          ),
+                          distanceRow,
                           const SizedBox(height: 4),
                           Row(
                             children: [
