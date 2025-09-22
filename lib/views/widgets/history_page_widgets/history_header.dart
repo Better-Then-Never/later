@@ -9,6 +9,10 @@ class HistoryHeader extends StatelessWidget {
   final VoidCallback onFilterTap;
   final bool isFilterActive;
   final VoidCallback onDeletePressed;
+  final VoidCallback onFavoritesTap;
+  final VoidCallback onLikePressed;
+  final bool isLikeMode;
+  final bool isFavoritesActive;
 
   const HistoryHeader({
     super.key,
@@ -20,6 +24,10 @@ class HistoryHeader extends StatelessWidget {
     required this.onFilterTap,
     required this.isFilterActive,
     required this.onDeletePressed,
+    required this.onFavoritesTap,
+    required this.onLikePressed,
+    required this.isLikeMode,
+    required this.isFavoritesActive,
   });
 
   @override
@@ -56,6 +64,33 @@ class HistoryHeader extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
+                            // Favorites button
+                            GestureDetector(
+                              onTap: onFavoritesTap,
+                              child: Container(
+                                width: screenWidth * 0.11,
+                                height: screenWidth * 0.11,
+                                decoration: BoxDecoration(
+                                  color: isFavoritesActive
+                                      ? const Color(
+                                          0xFFD0D0D0,
+                                        ) // Darker when active
+                                      : const Color(
+                                          0xFFEAEAEA,
+                                        ), // Default color
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    'assets/images/icons/history_page/favorites.png',
+                                    width: screenWidth * 0.06,
+                                    height: screenWidth * 0.06,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: screenWidth * 0.10),
                             Expanded(
                               child: Text(
                                 'My capsules',
@@ -65,7 +100,6 @@ class HistoryHeader extends StatelessWidget {
                                   fontFamily: 'Irina',
                                   color: Colors.black,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
                             ),
                           ],
@@ -77,7 +111,6 @@ class HistoryHeader extends StatelessWidget {
                         padding: EdgeInsets.only(
                           left: screenWidth * 0.05,
                           right: screenWidth * 0.05,
-                          top: 0,
                           bottom: screenHeight * 0.01,
                         ),
                         child: Container(
@@ -210,30 +243,32 @@ class HistoryHeader extends StatelessWidget {
               ] else ...[
                 // Like
                 GestureDetector(
-                  onTap: () {
-                    // TODO: Implement your Like action callback
-                  },
+                  onTap: onLikePressed,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 86, 201, 46),
+                      color: isLikeMode
+                          ? const Color.fromARGB(255, 86, 201, 46)
+                          : Colors.orange, // or any color for Unlike
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Row(
                       children: [
                         Image.asset(
-                          'assets/images/icons/history_page/like.png',
+                          isLikeMode
+                              ? 'assets/images/icons/history_page/like.png'
+                              : 'assets/images/icons/history_page/unlike.png', // <-- add this asset
                           width: 24,
                           height: 24,
                           color: Colors.white,
                         ),
                         const SizedBox(width: 6),
-                        const Text(
-                          'Like',
-                          style: TextStyle(
+                        Text(
+                          isLikeMode ? 'Like' : 'Unlike',
+                          style: const TextStyle(
                             fontFamily: 'Irina',
                             fontSize: 19,
                             color: Colors.white,

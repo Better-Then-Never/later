@@ -6,6 +6,7 @@ import 'package:later/services/auth/auth_services.dart';
 import 'package:later/views/widgets/history_page_widgets/history_header.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:later/views/widgets/history_page_widgets/confirm_delete_modal.dart';
+import 'package:later/views/widgets/history_page_widgets/confirm_like_modal.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -16,20 +17,26 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   final TextEditingController _searchController = TextEditingController();
+  final ValueNotifier<Set<String>> _selectedCapsulesNotifier = ValueNotifier({});
+  final ValueNotifier<bool> _isSelectModeNotifier = ValueNotifier(false);
+
   String _searchQuery = '';
   String _sortBy = 'date_newest';
-  bool _isSelectMode = false;
   Set<String> _selectedCapsules = {};
   Position? _userPosition;
-  bool get _isAnyFilterActive =>
-      (_filterColor != null && _filterColor!.isNotEmpty) ||
-      (_filterVisibility != null && _filterVisibility!.isNotEmpty) ||
-      (_filterOpensIn != null && _filterOpensIn!.isNotEmpty);
+  bool _showFavoritesOnly = false;
+  Set<String> _favoriteCapsuleIds = {};
+  String? _currentUserId;
 
   // Filter fields
   String? _filterColor;
   String? _filterVisibility;
   String? _filterOpensIn;
+
+  bool get _isAnyFilterActive =>
+      (_filterColor != null && _filterColor!.isNotEmpty) ||
+      (_filterVisibility != null && _filterVisibility!.isNotEmpty) ||
+      (_filterOpensIn != null && _filterOpensIn!.isNotEmpty);
 
   @override
   void initState() {
@@ -39,6 +46,112 @@ class _HistoryPageState extends State<HistoryPage> {
         _userPosition = pos;
       });
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadFavorites();
+    });
+  }
+
+  Future<void> _loadFavorites() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.currentUser;
+    if (user == null) return;
+    _currentUserId = user.uid;
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    final favs = (doc.data()?['favorites'] as List?)?.cast<String>() ?? [];
+    setState(() {
+      _favoriteCapsuleIds = favs.toSet();
+    });
+  }
+
+  Future<void> _likeSelectedCapsules() async {
+    if (_selectedCapsules.isEmpty) return;
+
+    final confirm = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withAlpha(128),
+      builder: (context) => const ConfirmLikeModal(),
+    );
+
+    if (confirm == true) {
+      await _addToFavorites(_selectedCapsules.toList());
+    }
+  }
+
+  Future<void> _unlikeSelectedCapsules() async {
+    if (_selectedCapsules.isEmpty) return;
+
+    final confirm = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withAlpha(128),
+      builder: (context) => const ConfirmLikeModal(isUnlike: true),
+    );
+
+    if (confirm == true) {
+      await _removeFromFavorites(_selectedCapsules.toList());
+    }
+  }
+
+  Future<void> _addToFavorites(List<String> capsuleIds) async {
+    if (_currentUserId == null) {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final user = authService.currentUser;
+      if (user == null) return;
+      _currentUserId = user.uid;
+    }
+
+    final userDoc = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_currentUserId);
+
+    final docSnap = await userDoc.get();
+    final List<dynamic> currentFavs =
+        (docSnap.data()?['favorites'] ?? []) as List<dynamic>;
+    final Set<String> newFavs = {
+      ...currentFavs.map((e) => e.toString()),
+      ...capsuleIds,
+    };
+
+    await userDoc.set({'favorites': newFavs.toList()}, SetOptions(merge: true));
+
+    _favoriteCapsuleIds = newFavs;
+    _isSelectModeNotifier.value = false;
+    _selectedCapsules.clear();
+    _selectedCapsulesNotifier.value = {};
+    setState(() {});
+  }
+
+  Future<void> _removeFromFavorites(List<String> capsuleIds) async {
+    if (_currentUserId == null) {
+      final authService = Provider.of<AuthService>(context, listen: false);
+      final user = authService.currentUser;
+      if (user == null) return;
+      _currentUserId = user.uid;
+    }
+
+    final userDoc = FirebaseFirestore.instance
+        .collection('users')
+        .doc(_currentUserId);
+
+    final docSnap = await userDoc.get();
+    final List<dynamic> currentFavs =
+        (docSnap.data()?['favorites'] ?? []) as List<dynamic>;
+    final Set<String> newFavs = {...currentFavs.map((e) => e.toString())};
+    newFavs.removeAll(capsuleIds);
+
+    await userDoc.set({'favorites': newFavs.toList()}, SetOptions(merge: true));
+
+    _favoriteCapsuleIds = newFavs;
+    _isSelectModeNotifier.value = false;
+    _selectedCapsules.clear();
+    _selectedCapsulesNotifier.value = {};
+    setState(() {});
   }
 
   @override
@@ -47,27 +160,59 @@ class _HistoryPageState extends State<HistoryPage> {
       backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
-          HistoryHeader(
-            searchController: _searchController,
-            isSelectMode: _isSelectMode,
-            onSortTap: _showSortOptions,
-            onSelectToggle: _toggleSelectMode,
-            onSearchChanged: (value) {
-              setState(() {
-                _searchQuery = value.toLowerCase();
-              });
+          ValueListenableBuilder<Set<String>>(
+            valueListenable: _selectedCapsulesNotifier,
+            builder: (context, selectedCapsules, _) {
+              final areAllSelectedFavorites =
+                  selectedCapsules.isNotEmpty &&
+                  selectedCapsules.every(
+                    (id) => _favoriteCapsuleIds.contains(id),
+                  );
+              return ValueListenableBuilder<bool>(
+                valueListenable: _isSelectModeNotifier,
+                builder: (context, isSelectMode, _) {
+                  return HistoryHeader(
+                    searchController: _searchController,
+                    isSelectMode: isSelectMode,
+                    onSortTap: _showSortOptions,
+                    onSelectToggle: _toggleSelectMode,
+                    onSearchChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
+                    onFilterTap: _showFilterOptions,
+                    isFilterActive: _isAnyFilterActive,
+                    onDeletePressed: _deleteSelectedCapsules,
+                    onFavoritesTap: () {
+                      setState(() {
+                        _showFavoritesOnly = !_showFavoritesOnly;
+                      });
+                    },
+                    onLikePressed: areAllSelectedFavorites
+                        ? _unlikeSelectedCapsules
+                        : _likeSelectedCapsules,
+                    isLikeMode: !areAllSelectedFavorites,
+                    isFavoritesActive: _showFavoritesOnly,
+                  );
+                },
+              );
             },
-            onFilterTap: _showFilterOptions,
-            isFilterActive: _isAnyFilterActive,
-            onDeletePressed: _deleteSelectedCapsules, // Pass delete callback
           ),
-          Expanded(child: _buildCapsulesList()),
+          Expanded(
+            child: ValueListenableBuilder<bool>(
+              valueListenable: _isSelectModeNotifier,
+              builder: (context, isSelectMode, _) {
+                return _buildCapsulesList(isSelectMode);
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildCapsulesList() {
+  Widget _buildCapsulesList(bool isSelectMode) {
     return Consumer<AuthService>(
       builder: (context, authService, child) {
         final currentUser = authService.currentUser;
@@ -109,7 +254,12 @@ class _HistoryPageState extends State<HistoryPage> {
             }
 
             final capsules = snapshot.data?.docs ?? [];
-            final filteredCapsules = _filterAndSortCapsules(capsules);
+            var filteredCapsules = _filterAndSortCapsules(capsules);
+            if (_showFavoritesOnly) {
+              filteredCapsules = filteredCapsules
+                  .where((doc) => _favoriteCapsuleIds.contains(doc.id))
+                  .toList();
+            }
 
             if (filteredCapsules.isEmpty) {
               return const Center(
@@ -117,15 +267,9 @@ class _HistoryPageState extends State<HistoryPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
-                    SizedBox(height: 16),
                     Text(
                       'No capsules found',
                       style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Create your first time capsule!',
-                      style: TextStyle(color: Colors.grey),
                     ),
                   ],
                 ),
@@ -144,7 +288,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       capsuleId: capsule.id,
                       data: data,
                       isSelected: _selectedCapsules.contains(capsule.id),
-                      isSelectMode: _isSelectMode,
+                      isSelectMode: isSelectMode,
                       onSelectToggle: () {
                         setLocalState(() {
                           if (_selectedCapsules.contains(capsule.id)) {
@@ -152,24 +296,27 @@ class _HistoryPageState extends State<HistoryPage> {
                           } else {
                             _selectedCapsules.add(capsule.id);
                           }
+                          _selectedCapsulesNotifier.value = Set.from(
+                            _selectedCapsules,
+                          );
                           if (_selectedCapsules.isEmpty) {
-                            setState(() {
-                              _isSelectMode = false;
-                            });
+                            _isSelectModeNotifier.value = false;
                           }
                         });
                       },
                       userPosition: _userPosition,
                       onLongPress: () {
-                        if (!_isSelectMode) {
-                          setState(() {
-                            _isSelectMode = true;
-                          });
+                        if (!isSelectMode) {
+                          _isSelectModeNotifier.value = true;
                           setLocalState(() {
                             _selectedCapsules.add(capsule.id);
+                            _selectedCapsulesNotifier.value = Set.from(
+                              _selectedCapsules,
+                            );
                           });
                         }
                       },
+                      isFavorite: _favoriteCapsuleIds.contains(capsule.id),
                     );
                   },
                 );
@@ -182,33 +329,32 @@ class _HistoryPageState extends State<HistoryPage> {
   }
 
   void _toggleSelectMode() {
-    setState(() {
-      _isSelectMode = !_isSelectMode;
-      if (!_isSelectMode) {
-        _selectedCapsules.clear();
-      }
-    });
+    _isSelectModeNotifier.value = !_isSelectModeNotifier.value;
+    if (!_isSelectModeNotifier.value) {
+      _selectedCapsules.clear();
+      _selectedCapsulesNotifier.value = {};
+    }
   }
 
-Future<void> _deleteSelectedCapsules() async {
-  if (_selectedCapsules.isEmpty) return;
-  final confirm = await showModalBottomSheet<bool>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    barrierColor: Colors.black.withAlpha(128),
-    builder: (context) => const ConfirmDeleteModal(),
-  );
-  if (confirm != true) return;
+  Future<void> _deleteSelectedCapsules() async {
+    if (_selectedCapsules.isEmpty) return;
+    final confirm = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withAlpha(128),
+      builder: (context) => const ConfirmDeleteModal(),
+    );
+    if (confirm != true) return;
 
-  for (final id in _selectedCapsules) {
-    await FirebaseFirestore.instance.collection('capsules').doc(id).delete();
-  }
-  setState(() {
+    for (final id in _selectedCapsules) {
+      await FirebaseFirestore.instance.collection('capsules').doc(id).delete();
+    }
     _selectedCapsules.clear();
-    _isSelectMode = false;
-  });
-}
+    _isSelectModeNotifier.value = false;
+    _selectedCapsulesNotifier.value = {};
+    setState(() {});
+  }
 
   List<QueryDocumentSnapshot> _filterAndSortCapsules(
     List<QueryDocumentSnapshot> capsules,

@@ -13,6 +13,7 @@ class CapsuleCard extends StatelessWidget {
   final VoidCallback? onTap;
   final Position? userPosition;
   final VoidCallback? onLongPress;
+  final bool isFavorite;
 
   const CapsuleCard({
     super.key,
@@ -24,6 +25,7 @@ class CapsuleCard extends StatelessWidget {
     this.onTap,
     this.userPosition,
     this.onLongPress,
+    this.isFavorite = false,
   });
 
   @override
@@ -351,6 +353,17 @@ class CapsuleCard extends StatelessWidget {
                 ],
               ),
             ),
+            if (isFavorite)
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: Image.asset(
+                  'assets/images/icons/history_page/favorites.png',
+                  width: 24,
+                  height: 24,
+                  color: Colors.redAccent,
+                ),
+              ),
             if (isSelectMode)
               Positioned.fill(
                 child: GestureDetector(
