@@ -13,7 +13,9 @@ import 'package:later/views/pages/options_settings_page/profile_custom.dart';
 import 'package:later/views/pages/options_settings_page/app_theme.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/views/pages/options_settings_page/permissions_settings.dart';
+import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/widgets/common/page_header.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -31,50 +33,9 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: screenWidth,
-              height: screenHeight * 0.12,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25),
-                ),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    bottom: 5,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Text(
-                        'Settings',
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.10,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Irina',
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset(
-                        'assets/images/icons/prof_page/go_back.png',
-                        width: screenWidth * 0.11,
-                        height: screenWidth * 0.11,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            PageHeader(
+              mainText: 'Settings',
+              leadingButton: GoBackButton(context: context),
             ),
             SizedBox(height: screenHeight * 0.015),
             Padding(

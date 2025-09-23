@@ -7,6 +7,7 @@ import 'package:later/services/appearance/widget_factory.dart';
 import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:later/views/widgets/common/default_search_bar.dart';
 
 class RandomFriendsRow extends StatefulWidget {
   final String currentUserUid;
@@ -44,12 +45,12 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
   Future<void> _loadPinnedFriends() async {
     final prefs = await SharedPreferences.getInstance();
     final uids = prefs.getStringList('pinned_friend_uids') ?? [];
-    
+
     Map<String, String?> images = {};
     for (final uid in uids) {
       images[uid] = await FirebaseStorageService.getProfileImageUrl(uid);
     }
-    
+
     if (mounted) {
       setState(() {
         _pinnedFriendUids = uids;
@@ -81,7 +82,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
         _pinnedFriendImages = images;
       });
     }
-    
+
     widget.onPinnedFriends?.call(filteredUids);
   }
 
@@ -98,7 +99,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
 
     final friendsDocs = await UserDataService.getUserDocuments(friendsList);
     Map<String, Map<String, String>> infoMap = {};
-    
+
     for (var doc in friendsDocs) {
       if (doc.exists) {
         final friendData = doc.data() as Map<String, dynamic>? ?? {};
@@ -109,7 +110,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
         };
       }
     }
-    
+
     if (mounted) {
       setState(() {
         _friendsList = friendsList;
@@ -125,13 +126,13 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     final limitedList = List<String>.from(friendsList);
     limitedList.shuffle();
     final selectedUids = limitedList.take(max).toList();
-    
+
     List<Map<String, String>> fetchedFriends = [];
     for (final uid in selectedUids) {
       final imageUrl = await FirebaseStorageService.getProfileImageUrl(uid);
       fetchedFriends.add({'uid': uid, 'imageUrl': imageUrl ?? ''});
     }
-    
+
     return fetchedFriends;
   }
 
@@ -181,7 +182,11 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                         searchQuery = query.trim().toLowerCase();
                       });
                     }),
-                    _buildFriendsList(filteredFriends, tempPinned, setModalState),
+                    _buildFriendsList(
+                      filteredFriends,
+                      tempPinned,
+                      setModalState,
+                    ),
                     _buildSaveButton(context, tempPinned),
                   ],
                 ),
@@ -195,7 +200,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     });
   }
 
-  Widget _buildModalHeader(TextEditingController searchController, Function(String) onSearchChanged) {
+  Widget _buildModalHeader(
+    TextEditingController searchController,
+    Function(String) onSearchChanged,
+  ) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -221,50 +229,21 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
-          _buildSearchBar(searchController, onSearchChanged),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildSearchBar(TextEditingController controller, Function(String) onChanged) {
-    return Container(
-      height: 45,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEAEAEA),
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: Image.asset(
-              'assets/images/icons/friends_page/look_for.png',
-              width: 28,
-              height: 28,
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: "Search...",
-                border: InputBorder.none,
-                isDense: true,
-              ),
-              style: const TextStyle(
-                fontFamily: 'Irina',
-                fontSize: 22,
-              ),
-              onChanged: onChanged,
-            ),
+          DefaultSearchBar(
+            controller: searchController,
+            onChanged: onSearchChanged,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFriendsList(List<String> filteredFriends, List<String> tempPinned, StateSetter setModalState) {
+  Widget _buildFriendsList(
+    List<String> filteredFriends,
+    List<String> tempPinned,
+    StateSetter setModalState,
+  ) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -308,7 +287,13 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    onChanged: (val) => _handleCheckboxChange(val, uid, tempPinned, setModalState, context),
+                    onChanged: (val) => _handleCheckboxChange(
+                      val,
+                      uid,
+                      tempPinned,
+                      setModalState,
+                      context,
+                    ),
                   ),
                 );
               },
@@ -319,7 +304,13 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     );
   }
 
-  void _handleCheckboxChange(bool? val, String uid, List<String> tempPinned, StateSetter setModalState, BuildContext context) {
+  void _handleCheckboxChange(
+    bool? val,
+    String uid,
+    List<String> tempPinned,
+    StateSetter setModalState,
+    BuildContext context,
+  ) {
     if (val == true) {
       if (tempPinned.length >= 3) {
         UnifiedNotification.showError(
@@ -428,7 +419,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     );
   }
 
-  Future<void> _showFriendOptionsModal(BuildContext context, String friendUid) async {
+  Future<void> _showFriendOptionsModal(
+    BuildContext context,
+    String friendUid,
+  ) async {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -478,7 +472,8 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => YourFriendProfilePage(friendUid: friendUid),
+                            builder: (context) =>
+                                YourFriendProfilePage(friendUid: friendUid),
                           ),
                         );
                       },
@@ -505,7 +500,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     );
   }
 
-  Widget _buildModalOption({required String text, required VoidCallback onPressed}) {
+  Widget _buildModalOption({
+    required String text,
+    required VoidCallback onPressed,
+  }) {
     return SizedBox(
       height: 37,
       width: 264,
@@ -518,9 +516,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
             fontWeight: FontWeight.bold,
             fontFamily: 'Irina',
           ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
         ),
         child: Center(child: Text(text)),
       ),
@@ -601,10 +597,13 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
               if (friendSnapshot.connectionState == ConnectionState.waiting) {
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (index) => _buildLoadingWidget(size)),
+                  children: List.generate(
+                    3,
+                    (index) => _buildLoadingWidget(size),
+                  ),
                 );
               }
-              
+
               if (friendSnapshot.hasData) {
                 final friendsData = friendSnapshot.data!;
                 final widgets = friendsData.map((friend) {
@@ -614,16 +613,19 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                     imageUrl: friend['imageUrl'],
                   );
                 }).toList();
-                
+
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: widgets,
                 );
               }
-              
+
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(3, (index) => _buildLoadingWidget(size)),
+                children: List.generate(
+                  3,
+                  (index) => _buildLoadingWidget(size),
+                ),
               );
             },
           );
@@ -648,7 +650,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                 }
               } else {
                 currentWidgets.addAll(
-                  List.generate(slotsLeft, (index) => _buildLoadingWidget(size)),
+                  List.generate(
+                    slotsLeft,
+                    (index) => _buildLoadingWidget(size),
+                  ),
                 );
               }
 

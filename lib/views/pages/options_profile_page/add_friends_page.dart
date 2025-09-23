@@ -10,6 +10,11 @@ import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/cache_firebase/qr_code_scanner.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
 import 'package:later/views/widgets/friends_logic_pages/invite_friends_page.dart';
+import 'package:later/views/widgets/common/page_header.dart';
+import 'package:later/views/widgets/common/default_search_bar.dart';
+import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
+import 'package:later/views/widgets/common/premade_buttons/refresh_button.dart';
+import 'package:later/views/widgets/common/default_icon_button.dart';
 
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
@@ -125,149 +130,25 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
         backgroundColor: const Color(0xFFF6F6F6),
         body: Column(
           children: [
-            Container(
-              width: screenWidth,
-              height: screenHeight * 0.18,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25),
+            PageHeader(
+              mainText: 'Add Friends',
+              leadingButton: GoBackButton(context: context),
+              trailingButton: RefreshButton(
+                size: 40,
+                isRefreshing: _isRefreshing,
+                onTap: _refreshPage,
+              ),
+              searchBar: DefaultSearchBar(
+                controller: _searchController,
+                hintText: 'Search by nickname...',
+                trailingButton: DefaultIconButton(
+                  onTap: _openQRScanner,
+                  assetPath: 'assets/images/icons/friends_page/qr_scan.png',
+                  size: screenWidth * 0.09,
                 ),
               ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    bottom: 4,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Add friends',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.10,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Irina',
-                                  color: Colors.black,
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              GestureDetector(
-                                onTap: _isRefreshing ? null : _refreshPage,
-                                child: Container(
-                                  padding: EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                      255,
-                                      33,
-                                      150,
-                                      243,
-                                    ),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: _isRefreshing
-                                      ? SizedBox(
-                                          width: 16,
-                                          height: 16,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2,
-                                          ),
-                                        )
-                                      : Icon(
-                                          Icons.refresh,
-                                          color: Colors.white,
-                                          size: 20,
-                                        ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 1),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: screenWidth * 0.05,
-                              right: screenWidth * 0.05,
-                              top: 0,
-                              bottom: screenHeight * 0.01,
-                            ),
-                            child: Container(
-                              height: 45,
-                              decoration: BoxDecoration(
-                                color: Color(0xFFEAEAEA),
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0,
-                                    ),
-                                    child: Image.asset(
-                                      'assets/images/icons/friends_page/look_for.png',
-                                      width: screenWidth * 0.07,
-                                      height: screenWidth * 0.07,
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _searchController,
-                                      decoration: InputDecoration(
-                                        hintText: "Search by nickname...",
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                      ),
-                                      style: TextStyle(
-                                        fontFamily: 'Irina',
-                                        fontSize: 22,
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: _openQRScanner,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12.0,
-                                      ),
-                                      child: Image.asset(
-                                        'assets/images/icons/friends_page/qr_scan.png',
-                                        width: screenWidth * 0.08,
-                                        height: screenWidth * 0.08,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 65,
-                    left: 8,
-                    child: GestureDetector(
-                      onTap: () {
-                        _hiddenUserIds.clear();
-                        _sentRequestIds.clear();
-                        Navigator.pop(context);
-                      },
-                      child: Image.asset(
-                        'assets/images/icons/prof_page/go_back.png',
-                        width: screenWidth * 0.11,
-                        height: screenWidth * 0.11,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ),
+
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: screenWidth * 0.05,
