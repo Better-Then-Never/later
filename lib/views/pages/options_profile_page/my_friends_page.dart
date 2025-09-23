@@ -13,6 +13,8 @@ import 'package:later/services/cache_firebase/qr_code_scanner.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
 import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 
+//TODO: Refactor
+
 class MyFriendsPage extends StatefulWidget {
   const MyFriendsPage({super.key});
 

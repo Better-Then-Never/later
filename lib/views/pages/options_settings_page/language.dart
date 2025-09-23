@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LanguagePage extends StatelessWidget {
-  const LanguagePage({super.key});
+class LanguageChangingPage extends StatelessWidget {
+  const LanguageChangingPage({super.key});
 
   @override
   Widget build(BuildContext context) {

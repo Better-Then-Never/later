@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:later/services/cache_firebase/cache_services.dart';
 
+// TODO: user_services + user_data_services
+
 class UserDataService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   

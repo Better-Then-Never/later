@@ -16,6 +16,8 @@ import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/common/premade_buttons/refresh_button.dart';
 import 'package:later/views/widgets/common/default_icon_button.dart';
 
+// TODO: Refactor
+
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
 
