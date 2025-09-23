@@ -9,6 +9,8 @@ import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/services/appearance/widget_factory.dart';
 import 'package:share_plus/share_plus.dart';
 
+// TODO: Refactor
+
 class AddFriendProfilePage extends StatefulWidget {
   final String userId;
   final VoidCallback? onStateChanged;

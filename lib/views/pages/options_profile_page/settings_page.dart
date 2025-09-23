@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/profile_friends/background_picture.dart';
+import 'package:later/services/profile_friends/prof_picture.dart';
 import 'package:later/views/pages/options_settings_page/email_changing.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/services/profile_friends/name_getting.dart';
-import 'package:later/services/profile_friends/prof_picture.dart';
-import 'package:later/services/profile_friends/background_picture.dart';
+import 'package:later/services/auth/auth_services.dart';
 import 'package:later/services/profile_friends/username_getting.dart';
 import 'package:later/views/pages/options_settings_page/username_changing.dart';
 import 'package:later/services/profile_friends/email_getting.dart';
@@ -13,6 +14,9 @@ import 'package:later/views/pages/options_settings_page/profile_custom.dart';
 import 'package:later/views/pages/options_settings_page/app_theme.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/views/pages/options_settings_page/permissions_settings.dart';
+import 'package:later/views/widgets/common/confirm_dialog.dart';
+import 'package:later/views/widgets/common/default_text.dart';
+import 'package:later/views/widgets/common/options_elements/options_settings_row.dart';
 import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/common/page_header.dart';
@@ -24,311 +28,140 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userService = Provider.of<UserService>(context, listen: false);
     final String uid = userService.uid ?? 'null';
-    final screenWidth = MediaQuery.of(context).size.width;
+    
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: SingleChildScrollView(
+      body: SafeArea(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PageHeader(
               mainText: 'Settings',
               leadingButton: GoBackButton(context: context),
             ),
             SizedBox(height: screenHeight * 0.015),
-            Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.09),
-              child: Text(
-                'MY ACCOUNT',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.045,
+            Row(
+              children: [
+                DefaultText(
+                  "MY ACCOUNT",
+                  padding: EdgeInsets.only(left: screenWidth * 0.09),
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                  color: Colors.black,
+                  fontSize: screenWidth * 0.045,
                 ),
-              ),
+              ],
             ),
             SizedBox(height: screenHeight * 0.005),
-            Center(
-              child: Container(
-                width: screenWidth * 0.92,
-                height: screenHeight * 0.52,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black12,
-                      spreadRadius: 1,
-                      blurRadius: 9,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
+            Column(
+              children: [
+                Container(
+                  width: screenWidth * 0.92,
+                  height: screenHeight * 0.52,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        spreadRadius: 1,
+                        blurRadius: 9,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      OptionsSettingsRow(
+                        title: 'Name',
+                        subtitle: NameGettingWidget(
+                          uid: uid,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.045,
+                            fontFamily: 'Irina',
+                            color: Color.fromARGB(255, 94, 94, 94),
+                          ),
+                        ),
+                        navigateTo: NameChangingPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'Username',
+                        subtitle: UsernameGettingWidget(
+                          uid: uid,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.045,
+                            fontFamily: 'Irina',
+                            color: Color.fromARGB(255, 94, 94, 94),
+                          ),
+                        ),
+                        navigateTo: UsernameChangingPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'Email',
+                        subtitle: EmailGettingWidget(
+                          uid: uid,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.045,
+                            fontFamily: 'Irina',
+                            color: Color.fromARGB(255, 94, 94, 94),
+                          ),
+                        ),
+                        navigateTo: EmailChangingPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'Password',
+                        navigateTo: PasswordChangingPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'Language',
+                        navigateTo: LanguageChangingPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'App apperance',
+                        navigateTo: AppThemePage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'Customize profile',
+                        navigateTo: ProfileCustomizationPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'App permissions',
+                        navigateTo: PermissionsSettingsPage(),
+                      ),
+
+                      OptionsSettingsRow(
+                        title: 'Log Out',
+                        isLast: true,
+                        onTap: () {
+                          ConfirmDialog.show(
+                            context: context,
+                            title: 'Sosal?',
+                            onConfirm: () async {
+                              AuthService().signOut();
+                              Navigator.of(context).pop();
+                              await clearProfileImageCache();
+                              await clearBackgroundImageCache();
+                              if (!context.mounted) return;
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                '/loginPage',
+                                (route) => false,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    _settingsRow(
-                      context,
-                      'Name',
-                      null,
-                      customSubtitle: NameGettingWidget(
-                        uid: uid,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.045,
-                          fontFamily: 'Irina',
-                          color: Color.fromARGB(255, 94, 94, 94),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const NameChangingWidget(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'Username',
-                      null,
-                      customSubtitle: UsernameGettingWidget(
-                        uid: uid,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.045,
-                          fontFamily: 'Irina',
-                          color: Color.fromARGB(255, 94, 94, 94),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const UsernameChangingWidget(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'Email',
-                      null,
-                      customSubtitle: EmailGettingWidget(
-                        uid: uid,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.045,
-                          fontFamily: 'Irina',
-                          color: Color.fromARGB(255, 94, 94, 94),
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EmailChangingWidget(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'Password',
-                      null,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PasswordChangingPage(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'Language',
-                      null,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LanguagePage(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'App appearance',
-                      null,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AppThemePage(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'Customize profile',
-                      null,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const ProfileCustomizationPage(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'App permissions',
-                      null,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const PermissionsSettingsPage(),
-                          ),
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                    _settingsRow(
-                      context,
-                      'Log Out',
-                      null,
-                      isLogout: true,
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.transparent,
-                          isScrollControlled: true,
-                          barrierColor: Colors.black.withAlpha(128),
-                          builder: (BuildContext context) {
-                            return GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    width: 264,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                      horizontal: 0,
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                          ),
-                                          child: Text(
-                                            'Are you sure you want to log out?',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        SizedBox(
-                                          width: 160,
-                                          height: 40,
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: Color.fromARGB(
-                                                255,
-                                                253,
-                                                65,
-                                                64,
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
-                                              ),
-                                              elevation: 0,
-                                              padding: EdgeInsets.zero,
-                                            ),
-                                            onPressed: () async {
-                                              Navigator.of(context).pop();
-                                              await clearProfileImageCache();
-                                              await clearBackgroundImageCache();
-                                              if (!context.mounted) return;
-                                              Navigator.pushNamedAndRemoveUntil(
-                                                context,
-                                                '/welcome',
-                                                (route) => false,
-                                              );
-                                            },
-                                            child: const Text(
-                                              'Log Out',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 0),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          style: TextButton.styleFrom(
-                                            foregroundColor: Color.fromARGB(
-                                              255,
-                                              95,
-                                              95,
-                                              95,
-                                            ),
-                                            textStyle: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            padding: EdgeInsets.zero,
-                                          ),
-                                          child: const Text('Cancel'),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      screenWidth: screenWidth,
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ),
             SizedBox(height: screenHeight * 0.03),
           ],
@@ -336,75 +169,4 @@ class SettingsPage extends StatelessWidget {
       ),
     );
   }
-}
-
-Widget _settingsRow(
-  BuildContext context,
-  String title,
-  String? subtitle, {
-  bool isLogout = false,
-  VoidCallback? onTap,
-  Widget? customSubtitle,
-  required double screenWidth,
-}) {
-  return Column(
-    children: [
-      Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-        ),
-        child: ListTile(
-          dense: true,
-          minVerticalPadding: 6,
-          visualDensity: VisualDensity(vertical: -3),
-          title: Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.045,
-              fontFamily: 'Irina',
-              color: isLogout ? Color.fromARGB(255, 253, 65, 64) : Colors.black,
-            ),
-          ),
-          subtitle:
-              customSubtitle ??
-              (subtitle != null
-                  ? Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.045,
-                        fontFamily: 'Irina',
-                        color: Color.fromARGB(255, 94, 94, 94),
-                      ),
-                    )
-                  : null),
-          trailing: isLogout
-              ? null
-              : Opacity(
-                  opacity: 0.65,
-                  child: Image.asset(
-                    'assets/images/icons/prof_page/go_here.png',
-                    width: screenWidth * 0.09,
-                    height: screenWidth * 0.09,
-                  ),
-                ),
-          contentPadding: EdgeInsets.only(
-            left: screenWidth * 0.05,
-            right: screenWidth * 0.03,
-          ),
-          onTap: onTap,
-        ),
-      ),
-      if (!isLogout)
-        const Divider(
-          height: 1,
-          thickness: 1,
-          indent: 0,
-          endIndent: 0,
-          color: Color.fromARGB(255, 211, 211, 211),
-        ),
-    ],
-  );
 }

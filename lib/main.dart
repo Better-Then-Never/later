@@ -115,7 +115,7 @@ class _ApplicationState extends State<Application> {
         '/notificationsPage': (context) => const NotificationsPage(),
         '/sharePage': (context) => const SharePage(),
         '/profile_page': (context) => const ProfilePage(),
-        '/nameChangingWidget': (context) => const NameChangingWidget(),
+        '/nameChangingWidget': (context) => const NameChangingPage(),
         '/addFriendsPage': (context) => const AddFriendsPage(),
         '/myFriendsPage': (context) => const MyFriendsPage(),
       },

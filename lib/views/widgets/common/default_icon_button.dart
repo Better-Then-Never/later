@@ -5,6 +5,8 @@ class DefaultIconButton extends StatelessWidget {
   final VoidCallback onTap;
   final String? assetPath;
   final Widget? child;
+  final double? opacity;
+  final EdgeInsetsGeometry? contentPadding;
 
   const DefaultIconButton({
     super.key,
@@ -12,6 +14,8 @@ class DefaultIconButton extends StatelessWidget {
     this.size,
     this.assetPath,
     this.child,
+    this.opacity,
+    this.contentPadding,
   });
 
   @override
@@ -20,13 +24,16 @@ class DefaultIconButton extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child:
-          child ??
-          Image.asset(
-            assetPath!,
-            width: size ?? screenWidth * 0.11,
-            height: size ?? screenWidth * 0.11,
-          ),
+      child: Opacity(
+        opacity: opacity ?? 1,
+        child:
+            child ??
+            Image.asset(
+              assetPath!,
+              width: size ?? screenWidth * 0.11,
+              height: size ?? screenWidth * 0.11,
+            ),
+      ),
     );
   }
 }

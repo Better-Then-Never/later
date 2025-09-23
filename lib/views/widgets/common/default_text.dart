@@ -6,6 +6,7 @@ class DefaultText extends StatelessWidget {
   final FontWeight? fontWeight;
   final double? fontSize;
   final TextAlign? textAlign;
+  final EdgeInsetsGeometry? padding;
 
   const DefaultText(
     this.text, {
@@ -14,18 +15,22 @@ class DefaultText extends StatelessWidget {
     this.fontWeight,
     this.fontSize,
     this.textAlign,
+    this.padding,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      textAlign: textAlign ?? TextAlign.center,
-      style: TextStyle(
-        fontFamily: 'Irina',
-        fontWeight: fontWeight ?? FontWeight.normal,
-        fontSize: fontSize ?? 14,
-        color: color ?? Colors.black,
+    return Padding(
+      padding: padding ?? EdgeInsets.zero,
+      child: Text(
+        text,
+        textAlign: textAlign ?? TextAlign.center,
+        style: TextStyle(
+          fontFamily: 'Irina',
+          fontWeight: fontWeight ?? FontWeight.normal,
+          fontSize: fontSize ?? 14,
+          color: color ?? Colors.black,
+        ),
       ),
     );
   }

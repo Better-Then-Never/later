@@ -8,14 +8,14 @@ import 'package:later/views/widgets/common/page_header.dart';
 import 'package:later/views/widgets/common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/common/default_green_button.dart';
 
-class NameChangingWidget extends StatefulWidget {
-  const NameChangingWidget({super.key});
+class NameChangingPage extends StatefulWidget {
+  const NameChangingPage({super.key});
 
   @override
-  State<NameChangingWidget> createState() => _NameChangingWidgetState();
+  State<NameChangingPage> createState() => _NameChangingPageState();
 }
 
-class _NameChangingWidgetState extends State<NameChangingWidget> {
+class _NameChangingPageState extends State<NameChangingPage> {
   final TextEditingController _nameController = TextEditingController();
   bool _isSaving = false;
 
@@ -88,11 +88,10 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: screenHeight * 0.68),
-            child: Column(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Column(
               children: [
                 PageHeader(
                   mainText: 'Name',
@@ -109,19 +108,19 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
                 ),
               ],
             ),
-          ),
-          Positioned(
-            left: screenWidth * 0.15,
-            right: screenWidth * 0.15,
-            bottom: screenHeight * 0.03,
+            Positioned(
+              left: screenWidth * 0.15,
+              right: screenWidth * 0.15,
+              bottom: screenHeight * 0.03,
 
-            child: DefaultGreenButton(
-              isLoading: _isSaving,
-              onTap: _saveName,
-              text: 'Save',
+              child: DefaultGreenButton(
+                isLoading: _isSaving,
+                onTap: _saveName,
+                text: 'Save',
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

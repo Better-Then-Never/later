@@ -8,14 +8,14 @@ import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/common/default_green_button.dart';
 
-class UsernameChangingWidget extends StatefulWidget {
-  const UsernameChangingWidget({super.key});
+class UsernameChangingPage extends StatefulWidget {
+  const UsernameChangingPage({super.key});
 
   @override
-  State<UsernameChangingWidget> createState() => _UsernameChangingWidgetState();
+  State<UsernameChangingPage> createState() => _UsernameChangingPageState();
 }
 
-class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
+class _UsernameChangingPageState extends State<UsernameChangingPage> {
   final TextEditingController _usernameController = TextEditingController();
   bool _isSaving = false;
 
