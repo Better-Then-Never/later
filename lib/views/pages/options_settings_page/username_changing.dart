@@ -5,6 +5,8 @@ import 'package:later/services/appearance/notification_system.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/common/page_header.dart';
 import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
+import 'package:later/views/widgets/common/options_elements/options_input_field.dart';
+import 'package:later/views/widgets/common/default_green_button.dart';
 
 class UsernameChangingWidget extends StatefulWidget {
   const UsernameChangingWidget({super.key});
@@ -16,7 +18,6 @@ class UsernameChangingWidget extends StatefulWidget {
 class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
   final TextEditingController _usernameController = TextEditingController();
   bool _isSaving = false;
-  String? _error;
 
   @override
   void dispose() {
@@ -42,7 +43,6 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
 
     setState(() {
       _isSaving = true;
-      _error = null;
     });
 
     final userService = Provider.of<UserService>(context, listen: false);
@@ -124,41 +124,9 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
 
                 SizedBox(height: screenHeight * 0.02),
                 Center(
-                  child: Container(
-                    width: screenWidth * 0.92,
-                    height: 50,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.01,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          spreadRadius: 1,
-                          blurRadius: 9,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        hintText: "Enter new username",
-                        errorText: _error,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.04,
-                          vertical: screenHeight * 0.001,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(24),
-                          borderSide: BorderSide.none,
-                        ),
-                        filled: true,
-                        fillColor: Colors.white,
-                      ),
-                    ),
+                  child: OptionsInputField(
+                    controller: _usernameController,
+                    hintText: 'Enter new username',
                   ),
                 ),
               ],
@@ -167,51 +135,11 @@ class _UsernameChangingWidgetState extends State<UsernameChangingWidget> {
           Positioned(
             left: screenWidth * 0.15,
             right: screenWidth * 0.15,
-            bottom: screenHeight * 0.025,
-            child: Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    spreadRadius: 1,
-                    blurRadius: 9,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: SizedBox(
-                width: screenWidth * 0.45,
-                height: screenHeight * 0.06,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 86, 201, 46),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: _isSaving ? null : _saveUsername,
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          "Save",
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.065,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Irina',
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
-              ),
+            bottom: screenHeight * 0.03,
+            child: DefaultGreenButton(
+              onTap: _saveUsername,
+              text: 'Save',
+              isLoading: _isSaving,
             ),
           ),
         ],
