@@ -7,19 +7,20 @@ import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/views/pages/map_page.dart' as map;
 import 'package:later/views/widgets/capsule_creation/capsule_image_preview.dart';
-import 'package:later/views/widgets/capsule_creation/capsule_creation_top_bar.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_description_input.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_title_input.dart';
 import 'package:intl/intl.dart';
+import 'package:later/views/widgets/common/default_icon_button.dart';
+import 'package:later/views/widgets/common/page_header.dart';
 
 class CapsuleCreationPage extends StatefulWidget {
   final String imagePath;
   final String? initialPrivacy;
 
   const CapsuleCreationPage({
-    super.key, 
+    super.key,
     required this.imagePath,
     this.initialPrivacy,
   });
@@ -45,7 +46,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
     super.initState();
     uid = FirebaseAuth.instance.currentUser?.uid;
     _pickedLocation = map.MapPage.currentPositionStatic;
-    
+
     // Set initial privacy based on arguments
     if (widget.initialPrivacy == 'friends') {
       _privacy = CapsulePrivacy.friends;
@@ -110,11 +111,18 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CapsuleCreationTopBar(
-              screenWidth: MediaQuery.of(context).size.width,
-              screenHeight: MediaQuery.of(context).size.height,
-              onBack: () => Navigator.pushReplacementNamed(context, '/camera'),
+            PageHeader(
+              mainText: 'Create Capsule',
+              leadingButton: DefaultIconButton(
+                onTap: () => Navigator.pushReplacementNamed(context, '/camera'),
+                assetPath: 'assets/images/icons/prof_page/go_back.png',
+              ),
+              trailingButton: DefaultIconButton(
+                onTap: () => Navigator.pop(context),
+                assetPath: 'assets/images/icons/capsule_creation/cross.png',
+              ),
             ),
+
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -327,7 +335,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
         color: _color.label.toLowerCase(),
       );
       final capsuleMap = capsule.toMap();
-      capsuleMap['privacy'] = _privacy.name; 
+      capsuleMap['privacy'] = _privacy.name;
 
       await FirebaseFirestore.instance
           .collection('capsules')

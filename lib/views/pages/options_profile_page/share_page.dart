@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/views/widgets/common/page_header.dart';
 
 class SharePage extends StatelessWidget {
   const SharePage({super.key});
@@ -19,49 +21,9 @@ class SharePage extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
-          // Header section
-          Container(
-            width: screenWidth,
-            height: screenHeight * 0.12,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(25),
-                bottomRight: Radius.circular(25),
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: 5,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Text(
-                      'Share profile',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.10,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Irina',
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  left: 8,
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Image.asset(
-                      'assets/images/icons/prof_page/go_back.png',
-                      width: screenWidth * 0.11,
-                      height: screenWidth * 0.11,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          PageHeader(
+            mainText: 'ShareProfile',
+            leadingButton: GoBackButton(context: context),
           ),
 
           // QR Code Widget
@@ -234,7 +196,6 @@ class QRShareWidget extends StatelessWidget {
           ),
         ),
 
-
         SizedBox(height: screenHeight * 0.02),
 
         // User info below QR code
@@ -379,7 +340,10 @@ class QRShareWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.blue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.blue.withValues(alpha: 0.3), width: 1),
+            border: Border.all(
+              color: Colors.blue.withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
           child: Row(
             children: [

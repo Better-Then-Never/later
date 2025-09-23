@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:later/services/cache_firebase/user_services.dart';
-import 'package:later/services/appearance/notification_system.dart'; 
+import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
+import 'package:later/views/widgets/common/page_header.dart';
 
 class NameChangingWidget extends StatefulWidget {
   const NameChangingWidget({super.key});
@@ -18,7 +20,7 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide(); 
+    UnifiedNotification.hide();
     super.dispose();
   }
 
@@ -92,71 +94,11 @@ class _NameChangingWidgetState extends State<NameChangingWidget> {
             padding: EdgeInsets.only(bottom: screenHeight * 0.68),
             child: Column(
               children: [
-                Container(
-                  width: screenWidth,
-                  height: screenHeight * 0.18,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(25),
-                      bottomRight: Radius.circular(25),
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        bottom: 4,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                'Name',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.10,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Irina',
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: screenWidth * 0.05,
-                                  vertical: 0,
-                                ),
-                                child: Text(
-                                  'This is how you will be shown on Later, pick a name wisely so your friends know you by',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    fontFamily: 'Irina',
-                                    color: Color.fromARGB(255, 94, 94, 94),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 10),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 60,
-                        left: 8,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: Image.asset(
-                            'assets/images/icons/prof_page/go_back.png',
-                            width: screenWidth * 0.11,
-                            height: screenWidth * 0.11,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                PageHeader(
+                  mainText: 'Name',
+                  description:
+                      'This is how you will be shown on Later, pick a name wisely, so your friends know you by',
+                  leadingButton: GoBackButton(context: context),
                 ),
                 SizedBox(height: screenHeight * 0.02),
                 Center(
