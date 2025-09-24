@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/common/page_header.dart';
 import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/common/default_green_button.dart';
+import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 
 class UsernameChangingPage extends StatefulWidget {
   const UsernameChangingPage({super.key});
@@ -27,12 +27,7 @@ class _UsernameChangingPageState extends State<UsernameChangingPage> {
 
   Future<void> _saveUsername() async {
     final newUsername = _usernameController.text.trim();
-    final normalizedUsername = newUsername.toLowerCase();
-
     if (newUsername.isEmpty) {
-      setState(() {
-        _isSaving = false;
-      });
       UnifiedNotification.showError(
         context: context,
         message: 'Please enter a new username!',
@@ -41,16 +36,8 @@ class _UsernameChangingPageState extends State<UsernameChangingPage> {
       return;
     }
 
-    setState(() {
-      _isSaving = true;
-    });
-
-    final userService = Provider.of<UserService>(context, listen: false);
-    final uid = userService.uid;
+    final uid = Provider.of<FirebaseUserService>(context, listen: false).uid;
     if (uid == null) {
-      setState(() {
-        _isSaving = false;
-      });
       UnifiedNotification.showError(
         context: context,
         message: 'User not logged in.',
@@ -59,44 +46,29 @@ class _UsernameChangingPageState extends State<UsernameChangingPage> {
       return;
     }
 
-    try {
-      final query = await FirebaseFirestore.instance
-          .collection('users')
-          .where('username', isEqualTo: normalizedUsername)
-          .get();
+    setState(() => _isSaving = true);
 
-      if (query.docs.isNotEmpty && query.docs.first.id != uid) {
-        if (!mounted) return;
-        setState(() {
-          _isSaving = false;
-        });
-        UnifiedNotification.showError(
-          context: context,
-          message: 'Username already taken.',
-          position: NotificationPosition.center,
-        );
-        return;
-      }
+    final profileService = Provider.of<UserProfileService>(
+      context,
+      listen: false,
+    );
 
-      await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'username': newUsername,
-      });
-      if (!mounted) return;
-      setState(() {
-        _isSaving = false;
-      });
+    final success = await profileService.updateUsername(uid, newUsername);
+
+    if (!mounted) return;
+
+    setState(() => _isSaving = false);
+
+    if (success) {
       UnifiedNotification.showSuccess(
         context: context,
         message: 'Username updated successfully!',
         position: NotificationPosition.center,
       );
-    } catch (e) {
-      setState(() {
-        _isSaving = false;
-      });
+    } else {
       UnifiedNotification.showError(
         context: context,
-        message: 'Failed to update username.',
+        message: 'Failed to update username!',
         position: NotificationPosition.center,
       );
     }
@@ -104,45 +76,32 @@ class _UsernameChangingPageState extends State<UsernameChangingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: Stack(
+      body: Column(
         children: [
-          SingleChildScrollView(
-            padding: EdgeInsets.only(bottom: screenHeight * 0.68),
-            child: Column(
-              children: [
-                PageHeader(
-                  mainText: 'Username',
-                  description:
-                      'This is how your friends find and add you on Later',
-                  leadingButton: GoBackButton(context: context),
-                ),
-
-                SizedBox(height: screenHeight * 0.02),
-                Center(
-                  child: OptionsInputField(
-                    controller: _usernameController,
-                    hintText: 'Enter new username',
-                  ),
-                ),
-              ],
-            ),
+          PageHeader(
+            mainText: 'Username',
+            description: 'This is how your friends find and add you on Later',
+            leadingButton: GoBackButton(context: context),
           ),
-          Positioned(
-            left: screenWidth * 0.15,
-            right: screenWidth * 0.15,
-            bottom: screenHeight * 0.03,
-            child: DefaultGreenButton(
-              onTap: _saveUsername,
-              text: 'Save',
-              isLoading: _isSaving,
-            ),
+          SizedBox(height: screenHeight * 0.02),
+          OptionsInputField(
+            controller: _usernameController,
+            hintText: 'Enter new username',
           ),
         ],
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: EdgeInsets.all(screenWidth * 0.15),
+        child: DefaultGreenButton(
+          onTap: _saveUsername,
+          text: 'Save',
+          isLoading: _isSaving,
+        ),
       ),
     );
   }

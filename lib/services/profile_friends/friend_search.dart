@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
 import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 
@@ -53,7 +53,7 @@ class FriendsSearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userService = Provider.of<UserService>(context);
+    final userService = Provider.of<FirebaseUserService>(context);
     final currentUid = userService.uid;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -127,7 +127,7 @@ class FriendsSearchWidget extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => AddFriendProfilePage(
                           userId: users[i].id,
-                          onStateChanged: onStateChanged, 
+                          onStateChanged: onStateChanged,
                         ),
                       ),
                     );
@@ -138,7 +138,7 @@ class FriendsSearchWidget extends StatelessWidget {
                   screenWidth: screenWidth,
                   requestService: _requestService,
                   currentUid: currentUid!,
-                  onStateChanged: onStateChanged, 
+                  onStateChanged: onStateChanged,
                 ),
                 if (i < users.length - 1)
                   const Divider(
@@ -212,7 +212,7 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
 
   Future<void> _checkRequestStatus() async {
     if (!mounted) return;
-    
+
     setState(() {
       isLoading = true;
     });
@@ -224,14 +224,14 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
       );
 
       if (!mounted) return;
-      
+
       setState(() {
         requestStatus = status;
         isLoading = false;
       });
     } catch (e) {
       if (!mounted) return;
-      
+
       setState(() {
         isLoading = false;
       });
@@ -278,7 +278,7 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'This user will be removed from your search suggestions until the app restarts.', 
+                      'This user will be removed from your search suggestions until the app restarts.',
                       //TODO: change the text until the app restarts for forever
                       style: TextStyle(
                         color: Colors.grey[600],
@@ -368,15 +368,15 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
     );
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     return PopScope(
       onPopInvokedWithResult: (bool didPop, Object? result) async {
         if (didPop) {
           if (!mounted) return;
-          
+
           await _checkRequestStatus();
-          
+
           if (!mounted) return;
           widget.onStateChanged?.call();
         }

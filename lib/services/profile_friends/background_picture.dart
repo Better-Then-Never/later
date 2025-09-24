@@ -1,7 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/views/widgets/loading/later_loading_bar.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +37,10 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
   @override
   void initState() {
     super.initState();
-    final userService = Provider.of<UserService>(context, listen: false);
+    final userService = Provider.of<FirebaseUserService>(
+      context,
+      listen: false,
+    );
     uid = userService.uid;
     loadCachedImage();
   }
@@ -108,7 +111,7 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('background_image', base64Encode(imageBytes));
       setState(() => pickedImage = imageBytes);
-      
+
       if (mounted) {
         UnifiedNotification.showSuccess(
           context: context,
@@ -130,7 +133,6 @@ class _BackgroundPictureState extends State<BackgroundPicture> {
       setState(() => isUploading = false);
     }
   }
-
 
   Future<void> getBackgroundPicture() async {
     try {

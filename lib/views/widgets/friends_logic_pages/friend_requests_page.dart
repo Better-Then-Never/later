@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/profile_friends/user_data_services.dart';
 import 'package:later/services/cache_firebase/firebase_storage_services.dart';
 import 'package:later/services/appearance/widget_factory.dart';
@@ -32,7 +32,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
   }
 
   Widget _buildReceivedRequestsWidget(
-    UserService userService,
+    FirebaseUserService userService,
     double screenWidth,
   ) {
     return StreamBuilder<QuerySnapshot>(
@@ -53,7 +53,10 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     );
   }
 
-  Widget _buildSentRequestsWidget(UserService userService, double screenWidth) {
+  Widget _buildSentRequestsWidget(
+    FirebaseUserService userService,
+    double screenWidth,
+  ) {
     return StreamBuilder<QuerySnapshot>(
       stream: FriendRequestHelper.getSentRequests(userService.uid!),
       builder: (context, snapshot) {
@@ -200,7 +203,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   Widget _buildReceivedRequestItem(
     QueryDocumentSnapshot request,
-    UserService userService,
+    FirebaseUserService userService,
     double screenWidth,
   ) {
     final fromUserId = request['fromUserId'];
@@ -311,7 +314,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   Widget _buildSentRequestItem(
     QueryDocumentSnapshot request,
-    UserService userService,
+    FirebaseUserService userService,
     double screenWidth,
   ) {
     final toUserId = request['toUserId'];
@@ -426,7 +429,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
   Future<void> _acceptRequest(
     QueryDocumentSnapshot request,
     String fromUserId,
-    UserService userService,
+    FirebaseUserService userService,
   ) async {
     try {
       await _requestService.acceptFriendRequest(
@@ -549,7 +552,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userService = Provider.of<UserService>(context);
+    final userService = Provider.of<FirebaseUserService>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 

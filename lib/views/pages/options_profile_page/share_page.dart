@@ -5,7 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/views/widgets/common/page_header.dart';
 
@@ -108,7 +108,7 @@ class QRShareWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final userService = Provider.of<UserService>(context);
+    final userService = Provider.of<FirebaseUserService>(context);
     final userId = userService.uid;
 
     if (userId == null) {

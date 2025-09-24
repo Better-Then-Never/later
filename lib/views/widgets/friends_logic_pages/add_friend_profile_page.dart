@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
 import 'package:later/services/profile_friends/user_data_services.dart';
 import 'package:later/services/cache_firebase/firebase_storage_services.dart';
@@ -71,7 +71,10 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   Future<void> _checkRelationshipStatus() async {
     try {
-      final userService = Provider.of<UserService>(context, listen: false);
+      final userService = Provider.of<FirebaseUserService>(
+        context,
+        listen: false,
+      );
       final currentUserUid = userService.uid;
 
       if (currentUserUid != null) {
@@ -140,7 +143,10 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-      final userService = Provider.of<UserService>(context, listen: false);
+      final userService = Provider.of<FirebaseUserService>(
+        context,
+        listen: false,
+      );
 
       final requestExists = await _requestService.requestExists(
         userService.uid!,
@@ -196,7 +202,10 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     setState(() => _isCancelling = true);
 
     try {
-      final userService = Provider.of<UserService>(context, listen: false);
+      final userService = Provider.of<FirebaseUserService>(
+        context,
+        listen: false,
+      );
 
       await _requestService.cancelFriendRequest(
         userService.uid!,

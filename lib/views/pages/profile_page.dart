@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/profile_friends/friend_request_helper.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
 import 'package:later/services/profile_friends/background_picture.dart';
-import 'package:later/services/profile_friends/name_getting.dart';
 import 'package:later/services/profile_friends/prof_picture.dart';
-import 'package:later/services/profile_friends/username_getting.dart';
+import 'package:later/views/widgets/common/default_text.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/friends_logic_pages/friends_row_profile.dart';
+import 'package:later/services/user_profile_data_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,7 +14,8 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClientMixin {
+class _ProfilePageState extends State<ProfilePage>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -23,8 +23,9 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
-    final userService = Provider.of<UserService>(context, listen: false);
-    final uid = userService.uid ?? 'null';
+
+    final userProfileService = context.watch<UserProfileService>();
+    final uid = userProfileService.currentLoggedInUid;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
@@ -110,8 +111,18 @@ class _ProfilePageState extends State<ProfilePage> with AutomaticKeepAliveClient
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          NameGettingWidget(uid: uid),
-                          UsernameGettingWidget(uid: uid),
+                          DefaultText(
+                            userProfileService.name,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          DefaultText(
+                            '@' + userProfileService.username,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ],
                       ),
                     ],

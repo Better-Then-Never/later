@@ -3,7 +3,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 
 class ContactsListWidget extends StatelessWidget {
   final List<Contact> contacts;
@@ -33,7 +33,10 @@ class ContactsListWidget extends StatelessWidget {
   Future<void> _sendInvite(BuildContext context, Contact contact) async {
     if (contact.phones.isEmpty) return;
 
-    final userService = Provider.of<UserService>(context, listen: false);
+    final userService = Provider.of<FirebaseUserService>(
+      context,
+      listen: false,
+    );
     final userId = userService.uid;
 
     if (userId == null) {

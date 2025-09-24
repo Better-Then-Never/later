@@ -17,9 +17,10 @@ import 'package:later/views/pages/options_profile_page/share_page.dart';
 import 'package:later/views/pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_page/name_changing.dart';
 import 'package:later/views/widget_tree_wrapper.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
 import 'package:later/views/pages/permission_gate_page/permission_gate.dart';
+import 'package:later/services/user_profile_data_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -33,7 +34,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AuthService()),
-        ChangeNotifierProvider(create: (context) => UserService()),
+        ChangeNotifierProvider(create: (context) => FirebaseUserService()),
+        ChangeNotifierProvider(create: (_) => UserProfileService()),
       ],
       child: const Application(),
     ),

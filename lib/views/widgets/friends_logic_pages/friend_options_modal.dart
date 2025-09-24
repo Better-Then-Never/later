@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
 import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:provider/provider.dart';
 
 class FriendOptionsModal extends StatelessWidget {
@@ -191,7 +191,10 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
     });
 
     try {
-      final userService = Provider.of<UserService>(context, listen: false);
+      final userService = Provider.of<FirebaseUserService>(
+        context,
+        listen: false,
+      );
       final currentUserUid = userService.uid;
 
       if (currentUserUid == null) {
@@ -258,7 +261,6 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
     );
   }
 }
-
 
 class _ModalContainer extends StatelessWidget {
   final Widget child;

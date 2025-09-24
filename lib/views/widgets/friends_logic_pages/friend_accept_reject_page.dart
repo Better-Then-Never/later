@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
 import 'package:later/services/profile_friends/user_data_services.dart';
 import 'package:later/services/cache_firebase/firebase_storage_services.dart';
@@ -58,7 +58,10 @@ class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
     });
 
     try {
-      final userService = Provider.of<UserService>(context, listen: false);
+      final userService = Provider.of<FirebaseUserService>(
+        context,
+        listen: false,
+      );
 
       await _requestService.acceptFriendRequest(
         widget.requestId,

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/profile_friends/name_getting.dart';
 import 'package:later/services/profile_friends/user_data_services.dart';
 import 'package:later/services/cache_firebase/firebase_storage_services.dart';
 import 'package:later/services/appearance/widget_factory.dart';
+import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/views/widgets/common/default_text.dart';
 import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:later/views/widgets/common/default_search_bar.dart';
+import 'package:provider/provider.dart';
 
 class RandomFriendsRow extends StatefulWidget {
   final String currentUserUid;
@@ -423,6 +425,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     BuildContext context,
     String friendUid,
   ) async {
+    final userProfileService = Provider.of<UserProfileService>(
+      context,
+      listen: false,
+    );
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -448,15 +454,19 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                       height: 37,
                       width: 264,
                       child: Center(
-                        child: NameGettingWidget(
-                          uid: friendUid,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Color.fromARGB(255, 86, 201, 46),
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Irina',
-                          ),
+                        child: FutureBuilder<Map<String, String>>(
+                          future: userProfileService.fetchUserData(friendUid),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            } else if (snapshot.hasError || !snapshot.hasData) {
+                              return const DefaultText('Unknown');
+                            } else {
+                              final name = snapshot.data!['name'] ?? 'Unknown';
+                              return DefaultText(name);
+                            }
+                          },
                         ),
                       ),
                     ),
