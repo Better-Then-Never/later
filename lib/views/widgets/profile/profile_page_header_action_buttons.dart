@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/common/default_icon_button.dart ';
+import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart ';
 
 class ProfilePageHeaderActionButtons extends StatelessWidget {
   const ProfilePageHeaderActionButtons({super.key});
