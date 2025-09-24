@@ -15,4 +15,19 @@ class BoxDecorations {
       ],
     );
   }
+
+  static BoxDecoration blackShadow() {
+    return BoxDecoration(
+      color: const Color.fromARGB(255, 0, 0, 0),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withAlpha(120),
+          spreadRadius: 60,
+          blurRadius: 20,
+          offset: Offset(0, 6),
+        ),
+      ],
+    );
+  }
 }
