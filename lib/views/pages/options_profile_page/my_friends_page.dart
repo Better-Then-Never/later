@@ -7,7 +7,7 @@ import 'package:later/views/widgets/common/default_search_bar.dart';
 import 'package:later/views/widgets/common/page_header.dart';
 import 'package:later/views/widgets/common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/views/widgets/friends_logic_pages/your_friend_profile_page.dart';
 import 'package:later/services/cache_firebase/qr_code_scanner.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
@@ -65,7 +65,10 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   }
 
   Future<void> _fetchFriends() async {
-    final userService = Provider.of<UserService>(context, listen: false);
+    final userService = Provider.of<FirebaseUserService>(
+      context,
+      listen: false,
+    );
     final currentUid = userService.uid;
     if (currentUid == null) {
       setState(() {

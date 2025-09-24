@@ -2,7 +2,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/views/widgets/loading/later_loading_bar.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +34,10 @@ class _ProfilePictureState extends State<ProfilePicture> {
   @override
   void initState() {
     super.initState();
-    final userService = Provider.of<UserService>(context, listen: false);
+    final userService = Provider.of<FirebaseUserService>(
+      context,
+      listen: false,
+    );
     uid = userService.uid;
     loadCachedImage();
   }
@@ -98,7 +101,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
     return Uint8List.fromList(img.encodeJpg(resized, quality: 80));
   }
 
-Future<void> saveProfileImage(Uint8List imageBytes) async {
+  Future<void> saveProfileImage(Uint8List imageBytes) async {
     setState(() => isUploading = true);
 
     if (uid == null) {
@@ -137,7 +140,7 @@ Future<void> saveProfileImage(Uint8List imageBytes) async {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('profile_image', base64Encode(imageBytes));
       setState(() => pickedImage = imageBytes);
-      
+
       if (mounted) {
         UnifiedNotification.showSuccess(
           context: context,
@@ -148,7 +151,7 @@ Future<void> saveProfileImage(Uint8List imageBytes) async {
       }
     } catch (e) {
       developer.log('Error uploading image: $e', name: 'ProfilePicture');
-      
+
       if (mounted) {
         UnifiedNotification.showError(
           context: context,

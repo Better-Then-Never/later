@@ -2,15 +2,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 
-class UserService extends ChangeNotifier {
-  final List<String> _friends = [];
+class FirebaseUserService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final List<String> _friends = [];
 
+  List<String> get friends => _friends;
   User? get currentUser => _auth.currentUser;
   String? get uid => _auth.currentUser?.uid;
-  List<String> get friends => _friends;
-
   Stream<User?> get userStream => _auth.authStateChanges();
+
+  Stream<String?> get nameStream {
+    if (uid == null) return const Stream.empty();
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((doc) => doc.data()?['name'] as String?);
+  }
 
   Future<void> refreshFriends() async {
     _friends.clear();

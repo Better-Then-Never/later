@@ -6,7 +6,7 @@ import 'package:later/services/appearance/notification_system.dart';
 import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
 import 'package:later/views/widgets/friends_logic_pages/friend_requests_page.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
+import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/cache_firebase/qr_code_scanner.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
 import 'package:later/views/widgets/friends_logic_pages/invite_friends_page.dart';
@@ -85,7 +85,10 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       _sentRequestIds.clear();
       _searchController.clear();
 
-      final userService = Provider.of<UserService>(context, listen: false);
+      final userService = Provider.of<FirebaseUserService>(
+        context,
+        listen: false,
+      );
       await userService.refreshFriends();
 
       await Future.delayed(const Duration(milliseconds: 300));
@@ -215,10 +218,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                     _sentRequestIds.clear();
                                   });
 
-                                  final userService = Provider.of<UserService>(
-                                    context,
-                                    listen: false,
-                                  );
+                                  final userService =
+                                      Provider.of<FirebaseUserService>(
+                                        context,
+                                        listen: false,
+                                      );
                                   userService.refreshFriends();
                                 }
                               },
@@ -275,7 +279,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             StreamBuilder<int>(
                               stream:
                                   FriendRequestHelper.getReceivedRequestsCount(
-                                    Provider.of<UserService>(
+                                    Provider.of<FirebaseUserService>(
                                       context,
                                       listen: false,
                                     ).uid!,
@@ -352,7 +356,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                         onSendRequest: (userId) async {
                           if (!mounted) return;
 
-                          final userService = Provider.of<UserService>(
+                          final userService = Provider.of<FirebaseUserService>(
                             context,
                             listen: false,
                           );
