@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/views/widgets/friends_logic_pages/add_friend_profile_page.dart';
+import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 
 class FriendsSearchWidget extends StatelessWidget {
   final Function(String userId) onSendRequest;
