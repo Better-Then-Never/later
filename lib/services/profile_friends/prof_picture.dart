@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/views/widgets/loading/later_loading_bar.dart';
+import 'package:later/views/widgets/_common/default_elements/later_loading_bar.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';

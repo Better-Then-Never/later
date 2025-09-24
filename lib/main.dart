@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/auth/auth_services.dart';
-import 'package:later/views/pages/login_page.dart';
-import 'package:later/views/pages/options_profile_page/add_friends_page.dart';
-import 'package:later/views/pages/options_profile_page/my_friends_page.dart';
-import 'package:later/views/pages/welcome_page.dart';
-import 'package:later/views/pages/camera_page.dart';
-import 'package:later/views/pages/signup_page.dart';
+import 'package:later/views/pages/auth_pages/login_page.dart';
+import 'package:later/views/pages/friends_pages/add_friends_page.dart';
+import 'package:later/views/pages/friends_pages/my_friends_page.dart';
+import 'package:later/views/pages/auth_pages/welcome_page.dart';
+import 'package:later/views/pages/tree_pages/camera_page.dart';
+import 'package:later/views/pages/auth_pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:later/views/pages/options_profile_page/settings_page.dart';
-import 'package:later/views/pages/options_profile_page/notifications_page.dart';
-import 'package:later/views/pages/options_profile_page/share_page.dart';
-import 'package:later/views/pages/profile_page.dart';
-import 'package:later/views/pages/options_settings_page/name_changing.dart';
-import 'package:later/views/widget_tree_wrapper.dart';
+import 'package:later/views/pages/core_pages/settings_page.dart';
+import 'package:later/views/pages/core_pages/notifications_page.dart';
+import 'package:later/views/pages/core_pages/share_profile_page.dart';
+import 'package:later/views/pages/tree_pages/profile_page.dart';
+import 'package:later/views/pages/options_settings_pages/name_changing_page.dart';
+import 'package:later/views/pages/core_pages/widget_tree_wrapper_page.dart';
 import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/services/cache_firebase/deep_link_handler.dart';
-import 'package:later/views/pages/permission_gate_page/permission_gate.dart';
+import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
 import 'package:later/services/user_profile_data_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -115,9 +115,9 @@ class _ApplicationState extends State<Application> {
         '/signupPage': (context) => const SignupPage(),
         '/settingsPage': (context) => const SettingsPage(),
         '/notificationsPage': (context) => const NotificationsPage(),
-        '/sharePage': (context) => const SharePage(),
+        '/sharePage': (context) => const ShareProfilePage(),
         '/profile_page': (context) => const ProfilePage(),
-        '/nameChangingWidget': (context) => const NameChangingPage(),
+        '/nameChangingWidget': (context) => const NameSettingsPage(),
         '/addFriendsPage': (context) => const AddFriendsPage(),
         '/myFriendsPage': (context) => const MyFriendsPage(),
       },
