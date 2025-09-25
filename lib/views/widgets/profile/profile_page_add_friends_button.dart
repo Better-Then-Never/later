@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/user_friends_service.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
-import 'package:later/services/profile_friends/friend_request_helper.dart';
 
 class ProfilePageAddFriendsButton extends StatelessWidget {
   final String currentUserUid;
@@ -47,7 +47,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
               ),
             ),
             StreamBuilder<int>(
-              stream: FriendRequestHelper.getReceivedRequestsCount(
+              stream: UserFriendsService.getReceivedRequestsCount(
                 currentUserUid,
               ),
               builder: (context, snapshot) {

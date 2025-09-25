@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:later/services/location/location_service.dart';
-import 'package:later/services/map/marker_icon.dart';
+import 'package:later/services/location_service.dart';
+import 'package:later/services/map_marker_service.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:later/views/widgets/map/capsule_info_widget.dart';
 import 'package:intl/intl.dart';
@@ -112,7 +112,7 @@ class _MapPageState extends State<MapPage> {
 
   Future<void> _initIcons() async {
     for (final entry in _iconPaths.entries) {
-      _capsuleIcons[entry.key] = await MarkerIcon.loadIcon(
+      _capsuleIcons[entry.key] = await MapMarkerService.loadIcon(
         entry.value,
         size: entry.key == 'user' ? const Size(64, 64) : const Size(48, 48),
       );

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/profile_friends/background_picture.dart';
-import 'package:later/services/profile_friends/prof_picture.dart';
 import 'package:later/views/pages/options_settings_pages/name_changing_page.dart';
-import 'package:later/services/auth/auth_services.dart';
+import 'package:later/services/firebase_auth_service.dart';
 import 'package:later/views/pages/options_settings_pages/password_changing_page.dart';
 import 'package:later/views/pages/options_settings_pages/language_settings_page.dart';
 import 'package:later/views/pages/options_settings_pages/profile_customization_settings_page.dart';
@@ -15,15 +13,17 @@ import 'package:later/views/widgets/_common/options_elements/options_settings_ro
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
-import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
+import 'package:later/services/image_assets_service.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final userProfileService = context.watch<UserProfileService>();
+    final userProfileService = context.watch<UserDataService>();
+    final assetService = AssetImageService();
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -119,10 +119,9 @@ class SettingsPage extends StatelessWidget {
                                 context: context,
                                 title: 'Sosal?',
                                 onConfirm: () async {
-                                  AuthService().signOut();
+                                  FirebaseAuthService().signOut();
                                   Navigator.of(context).pop();
-                                  await clearProfileImageCache();
-                                  await clearBackgroundImageCache();
+                                  await assetService.clearLocalCache();
                                   if (!context.mounted) return;
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,

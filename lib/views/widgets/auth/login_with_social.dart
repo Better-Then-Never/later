@@ -2,7 +2,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:later/services/auth/auth_services.dart';
+import 'package:later/services/firebase_auth_service.dart';
 import 'package:provider/provider.dart';
 
 class LoginWithSocial extends StatefulWidget {
@@ -70,7 +70,7 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   await googleSignIn.initialize();
 
   if (!context.mounted) return null;
-  final authService = Provider.of<AuthService>(context, listen: false);
+  final authService = Provider.of<FirebaseAuthService>(context, listen: false);
 
   try {
     await googleSignIn.signOut();

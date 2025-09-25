@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/cache_firebase/firebase_storage_services.dart';
-import 'package:later/services/profile_friends/user_data_services.dart';
-import 'package:later/services/appearance/widget_factory.dart';
+import 'package:later/services/firebase_storage_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
+import 'package:later/views/widgets/user/user_list_tile.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
-import 'package:later/services/cache_firebase/qr_code_scanner.dart';
-import 'package:later/services/cache_firebase/deep_link_handler.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:later/views/pages/core_pages/qr_code_scanner_page.dart';
 
 //TODO: Refactor
 
@@ -43,34 +40,11 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     _fetchFriends();
   }
 
-  Future<void> _openQRScanner() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => QRScannerPage()),
-    );
-
-    if (result != null && result is String) {
-      if (DeepLinkHandler.isLaterDeepLink(result)) {
-        final userId = DeepLinkHandler.extractUserIdFromLink(result);
-        if (userId != null && mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddFriendProfilePage(userId: userId),
-            ),
-          );
-        }
-      }
-    }
-  }
-
   Future<void> _fetchFriends() async {
-    final userService = Provider.of<FirebaseUserService>(
-      context,
-      listen: false,
-    );
-    final currentUid = userService.uid;
-    if (currentUid == null) {
+    final profileService = Provider.of<UserDataService>(context, listen: false);
+
+    final currentUid = profileService.currentLoggedInUid;
+    if (currentUid == 'No User') {
       setState(() {
         _allFriends = [];
         _isLoadingFriends = false;
@@ -79,7 +53,8 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     }
 
     try {
-      final friendsList = await UserDataService.getUserFriends(currentUid);
+      final friendsList = await profileService.getUserFriends(currentUid);
+
       if (friendsList.isEmpty) {
         setState(() {
           _allFriends = [];
@@ -88,23 +63,21 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
         return;
       }
 
-      final friendsDocs = await UserDataService.getUserDocuments(friendsList);
-      final friends = <Map<String, dynamic>>[];
-
-      for (var doc in friendsDocs) {
-        if (doc.exists) {
-          final data = doc.data() as Map<String, dynamic>? ?? {};
+      final friends = await Future.wait(
+        friendsList.map((friendUid) async {
+          final data = await profileService.getUserData(friendUid);
           final imageUrl = await FirebaseStorageService.getProfileImageUrl(
-            doc.id,
+            friendUid,
           );
-          friends.add({
-            'id': doc.id,
+
+          return {
+            'id': friendUid,
             'name': data['name'] ?? '',
             'username': data['username'] ?? '',
             'imageUrl': imageUrl,
-          });
-        }
-      }
+          };
+        }),
+      );
 
       setState(() {
         _allFriends = friends;
@@ -133,7 +106,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
               controller: _searchController,
               hintText: 'Find my friends',
               trailingButton: DefaultIconButton(
-                onTap: _openQRScanner,
+                onTap: () => QRScannerPage.open(context),
                 assetPath: 'assets/images/icons/friends_page/qr_scan.png',
                 size: screenWidth * 0.09,
               ),
@@ -316,14 +289,13 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                                               }
                                             });
                                           },
-                                          child:
-                                              WidgetFactory.buildUserListTile(
-                                                name: group[i]['name'] ?? '',
-                                                username:
-                                                    group[i]['username'] ?? '',
-                                                imageUrl: group[i]['imageUrl'],
-                                                screenWidth: screenWidth,
-                                              ),
+                                          child: UserListTile(
+                                            name: group[i]['name'] ?? '',
+                                            username:
+                                                group[i]['username'] ?? '',
+                                            imageUrl: group[i]['imageUrl'],
+                                            screenWidth: screenWidth,
+                                          ),
                                         ),
                                       ),
                                       if (i < group.length - 1)

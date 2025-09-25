@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
+import 'package:later/views/widgets/_common/default_elements/default_loading_container.dart';
+import 'package:later/views/widgets/user/user_avatar.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/profile_friends/user_data_services.dart';
-import 'package:later/services/cache_firebase/firebase_storage_services.dart';
-import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/services/appearance/widget_factory.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/firebase_storage_service.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:later/services/user_data_service.dart';
 
 // TODO: Refactor
 
@@ -29,7 +29,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   bool _isLoading = false;
   bool _isCancelling = false;
   String _buttonState = 'add';
-  final FriendRequestService _requestService = FriendRequestService();
+  final UserFriendsService _requestService = UserFriendsService();
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     super.dispose();
   }
 
@@ -51,7 +51,11 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     try {
       final link = _generateProfileLink(userId);
 
-      final userData = await UserDataService.getUserNameAndUsername(userId);
+      final userProfileService = Provider.of<UserDataService>(
+        context,
+        listen: false,
+      );
+      final userData = await userProfileService.getUserData(userId);
       final friendName = userData['name'] ?? 'Unknown User';
 
       await Share.share(
@@ -60,7 +64,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       );
     } catch (e) {
       if (context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to share profile',
           position: NotificationPosition.bottom,
@@ -71,34 +75,28 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   Future<void> _checkRelationshipStatus() async {
     try {
-      final userService = Provider.of<FirebaseUserService>(
-        context,
-        listen: false,
-      );
-      final currentUserUid = userService.uid;
+      final userService = Provider.of<UserDataService>(context, listen: false);
+      final currentUserUid = userService.currentLoggedInUid;
 
-      if (currentUserUid != null) {
-        // Check if user is viewing their own profile
-        if (currentUserUid == widget.userId) {
-          setState(() => _buttonState = 'own_profile');
-          return;
-        }
-
-        final areFriends = await _requestService.areFriends(
-          currentUserUid,
-          widget.userId,
-        );
-        if (areFriends) {
-          setState(() => _buttonState = 'friends');
-          return;
-        }
-
-        final requestExists = await _requestService.requestExists(
-          currentUserUid,
-          widget.userId,
-        );
-        setState(() => _buttonState = requestExists ? 'pending' : 'add');
+      if (currentUserUid == widget.userId) {
+        setState(() => _buttonState = 'own_profile');
+        return;
       }
+
+      final areFriends = await _requestService.areFriends(
+        currentUserUid,
+        widget.userId,
+      );
+      if (areFriends) {
+        setState(() => _buttonState = 'friends');
+        return;
+      }
+
+      final requestExists = await _requestService.requestExists(
+        currentUserUid,
+        widget.userId,
+      );
+      setState(() => _buttonState = requestExists ? 'pending' : 'add');
     } catch (e) {
       setState(() => _buttonState = 'add');
     }
@@ -107,7 +105,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
   Future<void> _handleButtonPress() async {
     if (_buttonState == 'own_profile') {
       if (context.mounted) {
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'This is your account',
           position: NotificationPosition.center,
@@ -131,7 +129,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
     if (_buttonState == 'pending') {
       if (context.mounted) {
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'Friend request is pending',
           position: NotificationPosition.center,
@@ -143,13 +141,10 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     setState(() => _isLoading = true);
 
     try {
-      final userService = Provider.of<FirebaseUserService>(
-        context,
-        listen: false,
-      );
+      final userService = Provider.of<UserDataService>(context, listen: false);
 
       final requestExists = await _requestService.requestExists(
-        userService.uid!,
+        userService.currentLoggedInUid,
         widget.userId,
       );
 
@@ -159,7 +154,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
           widget.onStateChanged?.call();
 
           if (context.mounted) {
-            UnifiedNotification.showInfo(
+            PopupNotificationService.showInfo(
               context: context,
               message: 'Friend request already exists',
               position: NotificationPosition.center,
@@ -169,14 +164,17 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
         return;
       }
 
-      await _requestService.sendFriendRequest(userService.uid!, widget.userId);
+      await _requestService.sendFriendRequest(
+        userService.currentLoggedInUid,
+        widget.userId,
+      );
 
       if (mounted) {
         setState(() => _buttonState = 'pending');
         widget.onStateChanged?.call();
 
         if (context.mounted) {
-          UnifiedNotification.showSuccess(
+          PopupNotificationService.showSuccess(
             context: context,
             message: 'Friend request sent!',
             position: NotificationPosition.center,
@@ -185,7 +183,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       }
     } catch (e) {
       if (mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to send friend request',
           position: NotificationPosition.center,
@@ -202,20 +200,17 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     setState(() => _isCancelling = true);
 
     try {
-      final userService = Provider.of<FirebaseUserService>(
-        context,
-        listen: false,
-      );
+      final userService = Provider.of<UserDataService>(context, listen: false);
 
       await _requestService.cancelFriendRequest(
-        userService.uid!,
+        userService.currentLoggedInUid,
         widget.userId,
       );
 
       if (mounted) {
         setState(() => _buttonState = 'add');
         widget.onStateChanged?.call();
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'Friend request cancelled',
           position: NotificationPosition.center,
@@ -223,7 +218,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       }
     } catch (e) {
       if (mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to cancel request',
           position: NotificationPosition.center,
@@ -318,7 +313,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
           future: FirebaseStorageService.getBackgroundImageUrl(widget.userId),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return WidgetFactory.buildLoadingContainer(
+              return DefaultLoadingContainer(
                 width: screenWidth,
                 height: bgHeight,
                 borderRadius: const BorderRadius.only(
@@ -336,7 +331,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
-                  return WidgetFactory.buildLoadingContainer(
+                  return DefaultLoadingContainer(
                     width: screenWidth,
                     height: bgHeight,
                     borderRadius: const BorderRadius.only(
@@ -449,17 +444,14 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
           ),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return WidgetFactory.buildLoadingContainer(
+              return DefaultLoadingContainer(
                 width: avatarRadius * 2,
                 height: avatarRadius * 2,
                 borderRadius: BorderRadius.circular(avatarRadius),
               );
             }
 
-            return WidgetFactory.buildUserAvatar(
-              imageUrl: snapshot.data,
-              radius: avatarRadius,
-            );
+            return UserAvatar(imageUrl: snapshot.data, radius: avatarRadius);
           },
         ),
       ),
@@ -468,18 +460,21 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
 
   Widget _buildUserInfo() {
     return FutureBuilder<Map<String, String>>(
-      future: UserDataService.getUserNameAndUsername(widget.userId),
+      future: Provider.of<UserDataService>(
+        context,
+        listen: false,
+      ).getUserData(widget.userId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Column(
             children: [
-              WidgetFactory.buildLoadingContainer(
+              DefaultLoadingContainer(
                 width: 120,
                 height: 32,
                 borderRadius: BorderRadius.circular(16),
               ),
               SizedBox(height: 8),
-              WidgetFactory.buildLoadingContainer(
+              DefaultLoadingContainer(
                 width: 80,
                 height: 22,
                 borderRadius: BorderRadius.circular(11),

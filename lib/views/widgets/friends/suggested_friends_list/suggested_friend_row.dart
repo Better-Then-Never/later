@@ -1,163 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:later/services/user_friends_service.dart';
 
-class FriendsSearchWidget extends StatelessWidget {
-  final Function(String userId) onSendRequest;
-  final Function(String userId) onRemoveFriend;
-  final Set<String> hiddenUserIds;
-  final Set<String> sentRequestIds;
-  final String searchQuery;
-  final VoidCallback? onStateChanged;
-
-  static final Map<String, String?> _imageUrlCache = {};
-  final FriendRequestService _requestService = FriendRequestService();
-
-  FriendsSearchWidget({
-    super.key,
-    required this.onSendRequest,
-    required this.onRemoveFriend,
-    required this.hiddenUserIds,
-    required this.sentRequestIds,
-    required this.searchQuery,
-    this.onStateChanged,
-  });
-
-  Future<String?> _getImageUrl(String userId) async {
-    if (_imageUrlCache.containsKey(userId)) {
-      return _imageUrlCache[userId];
-    }
-    final optimizedPath = 'userdata/$userId/assets/images/profile_image_small';
-    final originalPath = 'userdata/$userId/assets/images/profile_image';
-    try {
-      final ref = FirebaseStorage.instance.ref().child(optimizedPath);
-      final url = await ref.getDownloadURL();
-      _imageUrlCache[userId] = url;
-      return url;
-    } catch (e) {
-      try {
-        final ref = FirebaseStorage.instance.ref().child(originalPath);
-        final url = await ref.getDownloadURL();
-        _imageUrlCache[userId] = url;
-        return url;
-      } catch (e) {
-        _imageUrlCache[userId] = null;
-        return null;
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final userService = Provider.of<FirebaseUserService>(context);
-    final currentUid = userService.uid;
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
-
-        final users = snapshot.data!.docs
-            .where((user) => user.id != currentUid)
-            .where((user) => !userService.friends.contains(user.id))
-            .where((user) => !hiddenUserIds.contains(user.id))
-            .where((user) {
-              if (searchQuery.isEmpty) return true;
-              final data = user.data() as Map<String, dynamic>;
-              final username = (data['username'] ?? '')
-                  .toString()
-                  .toLowerCase();
-              return username.contains(searchQuery.toLowerCase());
-            })
-            .toList();
-
-        if (users.isEmpty) {
-          return Padding(
-            padding: EdgeInsets.only(top: 180),
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'No more suggested friends',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.045,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          );
-        }
-
-        return Container(
-          width: screenWidth * 0.92,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(25),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                spreadRadius: 0,
-                blurRadius: 9,
-                offset: Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (int i = 0; i < users.length; i++) ...[
-                FriendSuggestionRow(
-                  userId: users[i].id,
-                  name: (users[i].data() as Map<String, dynamic>)['name'] ?? '',
-                  username:
-                      (users[i].data() as Map<String, dynamic>)['username'] ??
-                      '',
-                  avatarFuture: _getImageUrl(users[i].id),
-                  onTapProfile: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddFriendProfilePage(
-                          userId: users[i].id,
-                          onStateChanged: onStateChanged,
-                        ),
-                      ),
-                    );
-                  },
-                  onSendRequest: () => onSendRequest(users[i].id),
-                  onRemove: () => onRemoveFriend(users[i].id),
-                  isSent: sentRequestIds.contains(users[i].id),
-                  screenWidth: screenWidth,
-                  requestService: _requestService,
-                  currentUid: currentUid!,
-                  onStateChanged: onStateChanged,
-                ),
-                if (i < users.length - 1)
-                  const Divider(
-                    height: 1,
-                    thickness: 1,
-                    indent: 0,
-                    endIndent: 0,
-                    color: Color.fromARGB(255, 211, 211, 211),
-                  ),
-              ],
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
-
-class FriendSuggestionRow extends StatefulWidget {
+class SuggestedFriendRow extends StatefulWidget {
   final String userId;
   final String name;
   final String username;
@@ -167,11 +11,11 @@ class FriendSuggestionRow extends StatefulWidget {
   final VoidCallback onRemove;
   final bool isSent;
   final double screenWidth;
-  final FriendRequestService requestService;
+  final UserFriendsService requestService;
   final String currentUid;
   final VoidCallback? onStateChanged;
 
-  const FriendSuggestionRow({
+  const SuggestedFriendRow({
     super.key,
     required this.userId,
     required this.name,
@@ -188,10 +32,10 @@ class FriendSuggestionRow extends StatefulWidget {
   });
 
   @override
-  State<FriendSuggestionRow> createState() => _FriendSuggestionRowState();
+  State<SuggestedFriendRow> createState() => _SuggestedFriendRowState();
 }
 
-class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
+class _SuggestedFriendRowState extends State<SuggestedFriendRow> {
   String? requestStatus;
   bool isLoading = true;
 
@@ -202,7 +46,7 @@ class _FriendSuggestionRowState extends State<FriendSuggestionRow> {
   }
 
   @override
-  void didUpdateWidget(FriendSuggestionRow oldWidget) {
+  void didUpdateWidget(SuggestedFriendRow oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.userId != widget.userId ||
         oldWidget.currentUid != widget.currentUid) {

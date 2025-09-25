@@ -3,7 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:later/views/widgets/friends/friend_options_modal.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
@@ -34,7 +34,7 @@ class YourFriendProfilePage extends StatelessWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to share profile',
           position: NotificationPosition.bottom,

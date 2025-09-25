@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/auth/auth_services.dart';
+import 'package:later/services/firebase_auth_service.dart';
+import 'package:later/services/image_assets_service.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/profile_friends/prof_picture.dart';
-import 'package:later/services/profile_friends/background_picture.dart';
 
 class LogOutButton extends StatefulWidget {
   final String buttonText;
@@ -25,12 +24,15 @@ class _LogOutButtonState extends State<LogOutButton> {
       _isLoading = true;
     });
 
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final authService = Provider.of<FirebaseAuthService>(
+      context,
+      listen: false,
+    );
+    final AssetImageService assetService = AssetImageService();
 
     try {
       await authService.signOut();
-      await clearProfileImageCache();
-      await clearBackgroundImageCache();
+      await assetService.clearLocalCache();
       if (widget.onSignedOut != null) {
         widget.onSignedOut!();
       }

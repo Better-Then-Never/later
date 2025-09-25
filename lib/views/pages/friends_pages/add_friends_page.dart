@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/profile_friends/friend_request_helper.dart';
-import 'package:later/services/profile_friends/friend_search.dart';
-import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/popup_notification_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/pages/friends_pages/friend_requests_page.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/cache_firebase/qr_code_scanner.dart';
-import 'package:later/services/cache_firebase/deep_link_handler.dart';
+import 'package:later/views/pages/core_pages/qr_code_scanner_page.dart';
 import 'package:later/views/pages/friends_pages/invite_friends_page.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/_common/premade_buttons/refresh_button.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
+import 'package:later/views/widgets/friends/suggested_friends_list.dart';
 
 // TODO: Refactor
 
@@ -28,7 +25,7 @@ class AddFriendsPage extends StatefulWidget {
 class _AddFriendsPageState extends State<AddFriendsPage> {
   static final Set<String> _hiddenUserIds = {};
   static final Set<String> _sentRequestIds = {};
-  final FriendRequestService _requestService = FriendRequestService();
+  final UserFriendsService _requestService = UserFriendsService();
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isRefreshing = false;
@@ -46,32 +43,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     _searchController.dispose();
     _hiddenUserIds.clear();
     _sentRequestIds.clear();
     super.dispose();
-  }
-
-  Future<void> _openQRScanner() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => QRScannerPage()),
-    );
-
-    if (result != null && result is String) {
-      if (DeepLinkHandler.isLaterDeepLink(result)) {
-        final userId = DeepLinkHandler.extractUserIdFromLink(result);
-        if (userId != null && mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddFriendProfilePage(userId: userId),
-            ),
-          );
-        }
-      }
-    }
   }
 
   Future<void> _refreshPage() async {
@@ -85,11 +61,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
       _sentRequestIds.clear();
       _searchController.clear();
 
-      final userService = Provider.of<FirebaseUserService>(
+      final userFriendsService = Provider.of<UserFriendsService>(
         context,
         listen: false,
       );
-      await userService.refreshFriends();
+      await userFriendsService.refreshFriends();
 
       await Future.delayed(const Duration(milliseconds: 300));
 
@@ -100,7 +76,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
           _refreshKey++;
         });
 
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'Friends list refreshed!',
           position: NotificationPosition.bottom,
@@ -112,7 +88,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
           _isRefreshing = false;
         });
 
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to refresh friends list',
           position: NotificationPosition.bottom,
@@ -147,7 +123,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                 controller: _searchController,
                 hintText: 'Search by nickname...',
                 trailingButton: DefaultIconButton(
-                  onTap: _openQRScanner,
+                  onTap: () => QRScannerPage.open(context),
                   assetPath: 'assets/images/icons/friends_page/qr_scan.png',
                   size: screenWidth * 0.09,
                 ),
@@ -218,12 +194,13 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                                     _sentRequestIds.clear();
                                   });
 
-                                  final userService =
-                                      Provider.of<FirebaseUserService>(
+                                  final userFriendsService =
+                                      Provider.of<UserFriendsService>(
                                         context,
                                         listen: false,
                                       );
-                                  userService.refreshFriends();
+
+                                  userFriendsService.refreshFriends();
                                 }
                               },
                             ),
@@ -237,7 +214,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                           });
 
                           if (context.mounted) {
-                            UnifiedNotification.showSuccess(
+                            PopupNotificationService.showSuccess(
                               context: context,
                               message: 'Friends list updated!',
                               position: NotificationPosition.bottom,
@@ -278,11 +255,11 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             ),
                             StreamBuilder<int>(
                               stream:
-                                  FriendRequestHelper.getReceivedRequestsCount(
-                                    Provider.of<FirebaseUserService>(
+                                  UserFriendsService.getReceivedRequestsCount(
+                                    Provider.of<UserDataService>(
                                       context,
                                       listen: false,
-                                    ).uid!,
+                                    ).currentLoggedInUid,
                                   ),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData || snapshot.data == 0) {
@@ -351,26 +328,29 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                   padding: EdgeInsets.only(top: screenHeight * 0.01),
                   child: Column(
                     children: [
-                      FriendsSearchWidget(
+                      SuggestedFriendsList(
                         key: ValueKey(_refreshKey),
                         onSendRequest: (userId) async {
                           if (!mounted) return;
 
-                          final userService = Provider.of<FirebaseUserService>(
+                          final userService = Provider.of<UserDataService>(
                             context,
                             listen: false,
                           );
 
                           try {
                             final requestExists = await _requestService
-                                .requestExists(userService.uid!, userId);
+                                .requestExists(
+                                  userService.currentLoggedInUid,
+                                  userId,
+                                );
 
                             if (!mounted) {
                               return;
                             }
                             if (requestExists) {
                               if (context.mounted) {
-                                UnifiedNotification.showInfo(
+                                PopupNotificationService.showInfo(
                                   context: context,
                                   message: 'Friend request already exists',
                                   position: NotificationPosition.bottom,
@@ -380,7 +360,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             }
 
                             await _requestService.sendFriendRequest(
-                              userService.uid!,
+                              userService.currentLoggedInUid,
                               userId,
                             );
 
@@ -392,7 +372,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             });
 
                             if (context.mounted) {
-                              UnifiedNotification.showSuccess(
+                              PopupNotificationService.showSuccess(
                                 context: context,
                                 message: 'Friend request sent!',
                                 position: NotificationPosition.bottom,
@@ -403,7 +383,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                               return;
                             }
                             if (context.mounted) {
-                              UnifiedNotification.showError(
+                              PopupNotificationService.showError(
                                 context: context,
                                 message: 'Failed to send friend request',
                                 position: NotificationPosition.bottom,
@@ -417,7 +397,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
                             _hiddenUserIds.add(userId);
                           });
                           if (context.mounted) {
-                            UnifiedNotification.showInfo(
+                            PopupNotificationService.showInfo(
                               context: context,
                               message:
                                   'Suggested friend removed from the list!',

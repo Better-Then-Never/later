@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/auth/auth_services.dart';
+import 'package:later/services/firebase_auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
 import 'package:later/views/pages/core_pages/widget_tree_wrapper_page.dart';
@@ -42,7 +42,10 @@ class _SubmitButtonState extends State<SubmitButton> {
       return;
     }
     setState(() => _isLoading = true);
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final authService = Provider.of<FirebaseAuthService>(
+      context,
+      listen: false,
+    );
     try {
       if (widget.isSignUp) {
         await authService.createUserWithEmailAndPassword(

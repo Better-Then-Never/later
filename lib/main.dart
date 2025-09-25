@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
-import 'package:later/services/auth/auth_services.dart';
+import 'package:later/services/firebase_auth_service.dart';
+import 'package:later/services/user_friends_service.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:later/views/pages/friends_pages/add_friends_page.dart';
 import 'package:later/views/pages/friends_pages/my_friends_page.dart';
@@ -17,10 +18,9 @@ import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/pages/tree_pages/profile_page.dart';
 import 'package:later/views/pages/options_settings_pages/name_changing_page.dart';
 import 'package:later/views/pages/core_pages/widget_tree_wrapper_page.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/cache_firebase/deep_link_handler.dart';
+import 'package:later/services/deep_link_service.dart';
 import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
-import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/user_data_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -33,9 +33,9 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthService()),
-        ChangeNotifierProvider(create: (context) => FirebaseUserService()),
-        ChangeNotifierProvider(create: (_) => UserProfileService()),
+        ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
+        ChangeNotifierProvider(create: (_) => UserDataService()),
+        ChangeNotifierProvider(create: (_) => UserFriendsService()),
       ],
       child: const Application(),
     ),
@@ -87,11 +87,11 @@ class _ApplicationState extends State<Application> {
 
   void _handleIncomingLink(String link) {
     if (navigatorKey.currentContext != null) {
-      DeepLinkHandler.handleDeepLink(navigatorKey.currentContext!, link);
+      DeepLinkService.handleDeepLink(navigatorKey.currentContext!, link);
     } else {
       Future.delayed(Duration(milliseconds: 500), () {
         if (navigatorKey.currentContext != null) {
-          DeepLinkHandler.handleDeepLink(navigatorKey.currentContext!, link);
+          DeepLinkService.handleDeepLink(navigatorKey.currentContext!, link);
         }
       });
     }

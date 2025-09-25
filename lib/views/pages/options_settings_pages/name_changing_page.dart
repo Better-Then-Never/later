@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
-import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/user_data_service.dart';
 
 class NameSettingsPage extends StatefulWidget {
   const NameSettingsPage({super.key});
@@ -26,13 +25,12 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
   }
 
   Future<void> _saveName() async {
-    final userProfile = context.read<UserProfileService>();
-    final uid = context.read<FirebaseUserService>().uid;
+    final userProfile = context.read<UserDataService>();
+    final uid = userProfile.currentLoggedInUid;
     final newName = _nameController.text.trim();
 
-    if (uid == null) return;
     if (newName.isEmpty) {
-      UnifiedNotification.showError(
+      PopupNotificationService.showError(
         context: context,
         message: 'Please enter a new name!',
         position: NotificationPosition.center,
@@ -45,13 +43,13 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
     setState(() => _isSaving = false);
 
     if (success) {
-      UnifiedNotification.showSuccess(
+      PopupNotificationService.showSuccess(
         context: context,
         message: 'Name updated successfully!',
         position: NotificationPosition.center,
       );
     } else {
-      UnifiedNotification.showError(
+      PopupNotificationService.showError(
         context: context,
         message: 'Failed to update name!',
         position: NotificationPosition.center,

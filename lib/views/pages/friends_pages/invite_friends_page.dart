@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/views/widgets/friends/contacts_list_widget.dart';
+import 'package:later/services/popup_notification_service.dart';
+import 'package:later/views/widgets/friends/contacts_list.dart';
 
 class InviteFriendsPage extends StatefulWidget {
   const InviteFriendsPage({super.key});
@@ -93,7 +93,7 @@ class _InviteFriendsPageState extends State<InviteFriendsPage> {
           _isLoading = false;
         });
 
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to load contacts',
           position: NotificationPosition.bottom,
@@ -367,7 +367,7 @@ class _InviteFriendsPageState extends State<InviteFriendsPage> {
                         ),
                       ),
                       Expanded(
-                        child: ContactsListWidget(
+                        child: ContactsList(
                           contacts: _contacts,
                           searchQuery: _searchQuery,
                           isLoading: _isLoading,
