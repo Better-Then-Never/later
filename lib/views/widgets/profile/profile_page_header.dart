@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/profile_friends/background_picture.dart';
-import 'package:later/services/profile_friends/prof_picture.dart';
+import 'package:later/views/widgets/profile/profile_background_picture.dart';
+import 'package:later/views/widgets/profile/profile_picture.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/profile/profile_page_header_action_buttons.dart';
 
 class ProfilePageHeader extends StatelessWidget {
@@ -14,11 +14,11 @@ class ProfilePageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProfileService = Provider.of<UserProfileService>(context);
+    final userProfileService = Provider.of<UserDataService>(context);
 
     return Stack(
       children: [
-        BackgroundPicture(
+        ProfileBackgroundPicture(
           allignment: Alignment.topLeft,
           pictureHeight: 230,
           pictureWidth: screenWidth,

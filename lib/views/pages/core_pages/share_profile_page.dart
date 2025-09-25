@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 
 //TODO: Refactor
@@ -60,7 +60,7 @@ class QRShareWidget extends StatelessWidget {
       );
     } catch (e) {
       if (context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to share profile',
           position: NotificationPosition.bottom,
@@ -75,7 +75,7 @@ class QRShareWidget extends StatelessWidget {
       await Clipboard.setData(ClipboardData(text: link));
 
       if (context.mounted) {
-        UnifiedNotification.showSuccess(
+        PopupNotificationService.showSuccess(
           context: context,
           message: 'Link copied to clipboard!',
           position: NotificationPosition.bottom,
@@ -83,7 +83,7 @@ class QRShareWidget extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to copy link',
           position: NotificationPosition.bottom,
@@ -108,21 +108,8 @@ class QRShareWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final userService = Provider.of<FirebaseUserService>(context);
-    final userId = userService.uid;
-
-    if (userId == null) {
-      return Center(
-        child: Text(
-          'Unable to load user profile',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.grey[600],
-            fontFamily: 'Irina',
-          ),
-        ),
-      );
-    }
+    final userService = Provider.of<UserDataService>(context);
+    final userId = userService.currentLoggedInUid;
 
     final profileLink = _generateProfileLink(userId);
 

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
 
-class ContactsListWidget extends StatelessWidget {
+class ContactsList extends StatelessWidget {
   final List<Contact> contacts;
   final String searchQuery;
   final bool isLoading;
 
-  const ContactsListWidget({
+  const ContactsList({
     super.key,
     required this.contacts,
     required this.searchQuery,
@@ -33,20 +33,8 @@ class ContactsListWidget extends StatelessWidget {
   Future<void> _sendInvite(BuildContext context, Contact contact) async {
     if (contact.phones.isEmpty) return;
 
-    final userService = Provider.of<FirebaseUserService>(
-      context,
-      listen: false,
-    );
-    final userId = userService.uid;
-
-    if (userId == null) {
-      UnifiedNotification.showError(
-        context: context,
-        message: 'Unable to get user information',
-        position: NotificationPosition.bottom,
-      );
-      return;
-    }
+    final userService = Provider.of<UserDataService>(context, listen: false);
+    final userId = userService.currentLoggedInUid;
 
     String phoneNumber = contact.phones.first.number;
     phoneNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
@@ -67,7 +55,7 @@ class ContactsListWidget extends StatelessWidget {
         await launchUrl(smsUrl);
 
         if (context.mounted) {
-          UnifiedNotification.showSuccess(
+          PopupNotificationService.showSuccess(
             context: context,
             message: 'Invite sent to ${contact.displayName}!',
             position: NotificationPosition.bottom,
@@ -75,7 +63,7 @@ class ContactsListWidget extends StatelessWidget {
         }
       } else {
         if (context.mounted) {
-          UnifiedNotification.showError(
+          PopupNotificationService.showError(
             context: context,
             message: 'Unable to open messaging app',
             position: NotificationPosition.bottom,
@@ -85,7 +73,7 @@ class ContactsListWidget extends StatelessWidget {
     } catch (e) {
       print('Error sending invite: $e');
       if (context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to send invite',
           position: NotificationPosition.bottom,

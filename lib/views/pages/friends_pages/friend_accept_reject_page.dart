@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/profile_friends/user_data_services.dart';
-import 'package:later/services/cache_firebase/firebase_storage_services.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/firebase_storage_service.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'dart:async';
 
 class FriendAcceptRejectPage extends StatefulWidget {
@@ -24,7 +23,7 @@ class FriendAcceptRejectPage extends StatefulWidget {
 class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
   bool _isAccepting = false;
   bool _isRejecting = false;
-  final FriendRequestService _requestService = FriendRequestService();
+  final UserFriendsService _requestService = UserFriendsService();
 
   late final Future<String?> _profileImageFuture;
   late final Future<String?> _backgroundImageFuture;
@@ -43,12 +42,11 @@ class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
     _backgroundImageFuture = FirebaseStorageService.getBackgroundImageUrl(
       widget.userId,
     );
-    _userInfoFuture = UserDataService.getUserNameAndUsername(widget.userId);
   }
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     super.dispose();
   }
 
@@ -58,21 +56,21 @@ class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
     });
 
     try {
-      final userService = Provider.of<FirebaseUserService>(
+      final userService = Provider.of<UserDataService>(context, listen: false);
+      final userFriendsService = Provider.of<UserFriendsService>(
         context,
         listen: false,
       );
-
       await _requestService.acceptFriendRequest(
         widget.requestId,
         widget.userId,
-        userService.uid!,
+        userService.currentLoggedInUid,
       );
 
-      await userService.refreshFriends();
+      await userFriendsService.refreshFriends();
 
       if (mounted && context.mounted) {
-        UnifiedNotification.showSuccess(
+        PopupNotificationService.showSuccess(
           context: context,
           message: 'Friend request accepted!',
           position: NotificationPosition.center,
@@ -86,7 +84,7 @@ class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
       }
     } catch (e) {
       if (mounted && context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to accept request',
           position: NotificationPosition.center,
@@ -110,7 +108,7 @@ class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
       await _requestService.rejectFriendRequest(widget.requestId);
 
       if (mounted && context.mounted) {
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'Friend request rejected',
           position: NotificationPosition.center,
@@ -124,7 +122,7 @@ class _FriendAcceptRejectPageState extends State<FriendAcceptRejectPage> {
       }
     } catch (e) {
       if (mounted && context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to reject request',
           position: NotificationPosition.center,

@@ -1,5 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:later/services/cache_firebase/cache_services.dart';
+import 'package:later/services/cache_service.dart';
 
 class FirebaseStorageService {
   static final FirebaseStorage _storage = FirebaseStorage.instance;

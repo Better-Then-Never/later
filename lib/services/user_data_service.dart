@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserProfileService extends ChangeNotifier {
+class UserDataService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final Map<String, Map<String, String>> _userCache = {};
@@ -15,15 +15,15 @@ class UserProfileService extends ChangeNotifier {
   String get currentLoggedInUid => _currentUid ?? 'No User';
   bool get isFetched => _isFetched;
 
-  Future<void> fetchCurrentUserProfile(String uid) async {
+  Future<void> getCurrentUserProfile(String uid) async {
     _currentUid = uid;
     if (_isFetched) return;
-    await fetchUserData(uid);
+    await getUserData(uid);
     _isFetched = true;
     notifyListeners();
   }
 
-  Future<Map<String, String>> fetchUserData(String uid) async {
+  Future<Map<String, String>> getUserData(String uid) async {
     if (_userCache.containsKey(uid)) return _userCache[uid]!;
 
     try {
@@ -46,6 +46,16 @@ class UserProfileService extends ChangeNotifier {
       };
       _userCache[uid] = fallback;
       return fallback;
+    }
+  }
+
+  Future<List<String>> getUserFriends(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      final data = doc.data() ?? {};
+      return List<String>.from(data['friends'] ?? []);
+    } catch (e) {
+      return [];
     }
   }
 

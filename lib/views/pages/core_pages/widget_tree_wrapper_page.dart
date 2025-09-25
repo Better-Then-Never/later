@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/views/pages/core_pages/widget_tree.dart';
-import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -13,17 +13,17 @@ class WidgetTreeWrapper extends StatefulWidget {
 }
 
 class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
-  final userProfileService = UserProfileService();
+  final userProfileService = UserDataService();
 
   @override
   void initState() {
     super.initState();
     selectedPageNotifier.value = 0;
 
-    final userProfileService = context.read<UserProfileService>();
+    final userProfileService = context.read<UserDataService>();
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid != null) {
-      userProfileService.fetchCurrentUserProfile(uid);
+      userProfileService.getCurrentUserProfile(uid);
     }
   }
 

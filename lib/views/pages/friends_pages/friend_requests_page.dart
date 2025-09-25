@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:later/views/widgets/_common/default_elements/default_loading_container.dart';
+import 'package:later/views/widgets/user/user_avatar.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
-import 'package:later/services/profile_friends/user_data_services.dart';
-import 'package:later/services/cache_firebase/firebase_storage_services.dart';
-import 'package:later/services/appearance/widget_factory.dart';
-import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/services/profile_friends/friend_request_helper.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/firebase_storage_service.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:later/views/pages/friends_pages/friend_accept_reject_page.dart';
+import 'package:later/services/user_data_service.dart';
 
 class FriendRequestsPage extends StatefulWidget {
   final VoidCallback? onFriendListChanged;
@@ -20,23 +19,26 @@ class FriendRequestsPage extends StatefulWidget {
 }
 
 class _FriendRequestsPageState extends State<FriendRequestsPage> {
-  final FriendRequestService _requestService = FriendRequestService();
+  final UserFriendsService _requestService = UserFriendsService();
   bool _showReceived = true;
   bool _hasAcceptedRequest = false;
   bool _hasCancelledRequest = false;
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     super.dispose();
   }
 
   Widget _buildReceivedRequestsWidget(
-    FirebaseUserService userService,
+    UserDataService userService,
+    UserFriendsService userFriendsService,
     double screenWidth,
   ) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FriendRequestHelper.getReceivedRequests(userService.uid!),
+      stream: UserFriendsService.getReceivedRequests(
+        userService.currentLoggedInUid,
+      ),
       builder: (context, snapshot) {
         return _buildStreamContent(
           snapshot: snapshot,
@@ -46,19 +48,25 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
               'When someone sends you a friend request,\nit will appear here',
           loadingMessage: 'Loading friend requests...',
           errorMessage: 'Error loading friend requests',
-          itemBuilder: (request) =>
-              _buildReceivedRequestItem(request, userService, screenWidth),
+          itemBuilder: (request) => _buildReceivedRequestItem(
+            request,
+            screenWidth,
+            userService,
+            userFriendsService,
+          ),
         );
       },
     );
   }
 
   Widget _buildSentRequestsWidget(
-    FirebaseUserService userService,
+    UserDataService userService,
     double screenWidth,
   ) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FriendRequestHelper.getSentRequests(userService.uid!),
+      stream: UserFriendsService.getSentRequests(
+        userService.currentLoggedInUid,
+      ),
       builder: (context, snapshot) {
         return _buildStreamContent(
           snapshot: snapshot,
@@ -68,7 +76,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
           loadingMessage: 'Loading sent requests...',
           errorMessage: 'Error loading sent requests',
           itemBuilder: (request) =>
-              _buildSentRequestItem(request, userService, screenWidth),
+              _buildSentRequestItem(request, screenWidth, userService),
         );
       },
     );
@@ -203,16 +211,18 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   Widget _buildReceivedRequestItem(
     QueryDocumentSnapshot request,
-    FirebaseUserService userService,
     double screenWidth,
+    UserDataService profileService,
+    UserFriendsService userFriendsService,
   ) {
     final fromUserId = request['fromUserId'];
 
     return FutureBuilder<Map<String, String>>(
-      future: UserDataService.getUserNameAndUsername(fromUserId),
+      future: profileService.getUserData(fromUserId),
+
       builder: (context, userSnapshot) {
         if (!userSnapshot.hasData) {
-          return WidgetFactory.buildLoadingContainer(
+          return DefaultLoadingContainer(
             width: double.infinity,
             height: 90,
             borderRadius: BorderRadius.circular(25),
@@ -257,7 +267,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                       fromUserId,
                     ),
                     builder: (context, imageSnapshot) {
-                      return WidgetFactory.buildUserAvatar(
+                      return UserAvatar(
                         imageUrl: imageSnapshot.data,
                         radius: screenWidth * 0.07,
                       );
@@ -294,8 +304,12 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                   _buildActionButton(
                     text: 'Accept',
                     color: Color.fromARGB(255, 86, 201, 46),
-                    onTap: () =>
-                        _acceptRequest(request, fromUserId, userService),
+                    onTap: () => _acceptRequest(
+                      request,
+                      fromUserId,
+                      profileService,
+                      userFriendsService,
+                    ),
                   ),
                   SizedBox(width: 8),
                   _buildActionButton(
@@ -314,16 +328,16 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   Widget _buildSentRequestItem(
     QueryDocumentSnapshot request,
-    FirebaseUserService userService,
     double screenWidth,
+    UserDataService profileService,
   ) {
     final toUserId = request['toUserId'];
 
     return FutureBuilder<Map<String, String>>(
-      future: UserDataService.getUserNameAndUsername(toUserId),
+      future: profileService.getUserData(toUserId),
       builder: (context, userSnapshot) {
         if (!userSnapshot.hasData) {
-          return WidgetFactory.buildLoadingContainer(
+          return DefaultLoadingContainer(
             width: double.infinity,
             height: 90,
             borderRadius: BorderRadius.circular(25),
@@ -354,7 +368,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                 FutureBuilder<String?>(
                   future: FirebaseStorageService.getProfileImageUrl(toUserId),
                   builder: (context, imageSnapshot) {
-                    return WidgetFactory.buildUserAvatar(
+                    return UserAvatar(
                       imageUrl: imageSnapshot.data,
                       radius: screenWidth * 0.07,
                     );
@@ -391,7 +405,10 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
                 _buildActionButton(
                   text: 'Cancel',
                   color: Color.fromARGB(255, 253, 65, 64),
-                  onTap: () => _cancelRequest(userService.uid!, toUserId),
+                  onTap: () => _cancelRequest(
+                    profileService.currentLoggedInUid,
+                    toUserId,
+                  ),
                 ),
               ],
             ),
@@ -429,15 +446,16 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
   Future<void> _acceptRequest(
     QueryDocumentSnapshot request,
     String fromUserId,
-    FirebaseUserService userService,
+    UserDataService userService,
+    UserFriendsService userFriendsService,
   ) async {
     try {
       await _requestService.acceptFriendRequest(
         request.id,
         fromUserId,
-        userService.uid!,
+        userService.currentLoggedInUid,
       );
-      await userService.refreshFriends();
+      await userFriendsService.refreshFriends();
 
       _hasAcceptedRequest = true;
 
@@ -446,7 +464,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       }
 
       if (mounted && context.mounted) {
-        UnifiedNotification.showSuccess(
+        PopupNotificationService.showSuccess(
           context: context,
           message: 'Friend request accepted!',
           position: NotificationPosition.bottom,
@@ -454,7 +472,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       }
     } catch (e) {
       if (mounted && context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to accept request',
           position: NotificationPosition.bottom,
@@ -468,7 +486,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       await _requestService.rejectFriendRequest(request.id);
 
       if (mounted && context.mounted) {
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'Friend request rejected',
           position: NotificationPosition.bottom,
@@ -476,7 +494,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       }
     } catch (e) {
       if (mounted && context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to reject request',
           position: NotificationPosition.bottom,
@@ -496,7 +514,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       }
 
       if (mounted && context.mounted) {
-        UnifiedNotification.showInfo(
+        PopupNotificationService.showInfo(
           context: context,
           message: 'Friend request cancelled',
           position: NotificationPosition.bottom,
@@ -504,7 +522,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       }
     } catch (e) {
       if (mounted && context.mounted) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to cancel request',
           position: NotificationPosition.bottom,
@@ -552,7 +570,8 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userService = Provider.of<FirebaseUserService>(context);
+    final userProfileService = Provider.of<UserDataService>(context);
+    final userFriendsService = Provider.of<UserFriendsService>(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -637,8 +656,12 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
             ),
             Expanded(
               child: _showReceived
-                  ? _buildReceivedRequestsWidget(userService, screenWidth)
-                  : _buildSentRequestsWidget(userService, screenWidth),
+                  ? _buildReceivedRequestsWidget(
+                      userProfileService,
+                      userFriendsService,
+                      screenWidth,
+                    )
+                  : _buildSentRequestsWidget(userProfileService, screenWidth),
             ),
           ],
         ),

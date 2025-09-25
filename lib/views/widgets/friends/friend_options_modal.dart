@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/profile_friends/friend_request.dart';
-import 'package:later/services/appearance/notification_system.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/popup_notification_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:provider/provider.dart';
 
 class FriendOptionsModal extends StatelessWidget {
@@ -175,11 +175,11 @@ class RemoveFriendConfirmModal extends StatefulWidget {
 
 class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
   bool _isRemoving = false;
-  final FriendRequestService _requestService = FriendRequestService();
+  final UserFriendsService _requestService = UserFriendsService();
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     super.dispose();
   }
 
@@ -191,18 +191,15 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
     });
 
     try {
-      final userService = Provider.of<FirebaseUserService>(
+      final userService = Provider.of<UserDataService>(context, listen: false);
+      final userFriendsService = Provider.of<UserFriendsService>(
         context,
         listen: false,
       );
-      final currentUserUid = userService.uid;
-
-      if (currentUserUid == null) {
-        throw Exception('User not authenticated');
-      }
+      final currentUserUid = userService.currentLoggedInUid;
 
       await _requestService.removeFriend(currentUserUid, widget.friendUid);
-      await userService.refreshFriends();
+      await userFriendsService.refreshFriends();
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -214,7 +211,7 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
           _isRemoving = false;
         });
 
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'Failed to remove friend',
           position: NotificationPosition.bottom,

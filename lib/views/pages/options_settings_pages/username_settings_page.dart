@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/_common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
-import 'package:later/services/user_profile_data_service.dart';
-import 'package:later/services/cache_firebase/firebase_user_services.dart';
+import 'package:later/services/user_data_service.dart';
 
 class UsernameSettingsPage extends StatefulWidget {
   const UsernameSettingsPage({super.key});
@@ -21,14 +20,14 @@ class _UsernameSettingsPageState extends State<UsernameSettingsPage> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     super.dispose();
   }
 
   Future<void> _saveUsername() async {
     final newUsername = _usernameController.text.trim();
     if (newUsername.isEmpty) {
-      UnifiedNotification.showError(
+      PopupNotificationService.showError(
         context: context,
         message: 'Please enter a new username!',
         position: NotificationPosition.center,
@@ -36,22 +35,14 @@ class _UsernameSettingsPageState extends State<UsernameSettingsPage> {
       return;
     }
 
-    final uid = Provider.of<FirebaseUserService>(context, listen: false).uid;
-    if (uid == null) {
-      UnifiedNotification.showError(
-        context: context,
-        message: 'User not logged in.',
-        position: NotificationPosition.center,
-      );
-      return;
-    }
+    final uid = Provider.of<UserDataService>(
+      context,
+      listen: false,
+    ).currentLoggedInUid;
 
     setState(() => _isSaving = true);
 
-    final profileService = Provider.of<UserProfileService>(
-      context,
-      listen: false,
-    );
+    final profileService = Provider.of<UserDataService>(context, listen: false);
 
     final success = await profileService.updateUsername(uid, newUsername);
 
@@ -60,13 +51,13 @@ class _UsernameSettingsPageState extends State<UsernameSettingsPage> {
     setState(() => _isSaving = false);
 
     if (success) {
-      UnifiedNotification.showSuccess(
+      PopupNotificationService.showSuccess(
         context: context,
         message: 'Username updated successfully!',
         position: NotificationPosition.center,
       );
     } else {
-      UnifiedNotification.showError(
+      PopupNotificationService.showError(
         context: context,
         message: 'Failed to update username!',
         position: NotificationPosition.center,

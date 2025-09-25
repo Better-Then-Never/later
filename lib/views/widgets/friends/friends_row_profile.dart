@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/profile_friends/user_data_services.dart';
-import 'package:later/services/cache_firebase/firebase_storage_services.dart';
-import 'package:later/services/appearance/widget_factory.dart';
-import 'package:later/services/user_profile_data_service.dart';
+import 'package:later/services/firebase_storage_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
-import 'package:later/services/appearance/notification_system.dart';
+import 'package:later/services/popup_notification_service.dart';
+import 'package:later/views/widgets/user/user_avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:provider/provider.dart';
@@ -40,7 +39,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
 
   @override
   void dispose() {
-    UnifiedNotification.hide();
+    PopupNotificationService.hide();
     super.dispose();
   }
 
@@ -99,18 +98,21 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
       return;
     }
 
-    final friendsDocs = await UserDataService.getUserDocuments(friendsList);
+    final profileService = Provider.of<UserDataService>(context, listen: false);
+
     Map<String, Map<String, String>> infoMap = {};
 
-    for (var doc in friendsDocs) {
-      if (doc.exists) {
-        final friendData = doc.data() as Map<String, dynamic>? ?? {};
-        final uid = doc.id;
-        infoMap[uid] = {
-          'name': friendData['name'] ?? '',
-          'username': friendData['username'] ?? '',
+    final results = await Future.wait(
+      friendsList.map((uid) async {
+        final data = await profileService.getUserData(uid);
+        return {
+          uid: {'name': data['name'] ?? '', 'username': data['username'] ?? ''},
         };
-      }
+      }),
+    );
+
+    for (var map in results) {
+      infoMap.addAll(map);
     }
 
     if (mounted) {
@@ -198,7 +200,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
         );
       },
     ).whenComplete(() {
-      UnifiedNotification.hide();
+      PopupNotificationService.hide();
     });
   }
 
@@ -262,7 +264,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
               future: FirebaseStorageService.getProfileImageUrl(uid),
               builder: (context, snapshot) {
                 return ListTile(
-                  leading: WidgetFactory.buildUserAvatar(
+                  leading: UserAvatar(
                     imageUrl: snapshot.data,
                     radius: 24,
                     fallbackAsset: 'assets/images/icons/prof_page/no_photo.png',
@@ -315,7 +317,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
   ) {
     if (val == true) {
       if (tempPinned.length >= 3) {
-        UnifiedNotification.showError(
+        PopupNotificationService.showError(
           context: context,
           message: 'You can only pin up to 3 friends',
           position: NotificationPosition.top,
@@ -353,7 +355,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
             _setPinnedFriends(tempPinned);
             await Future.delayed(const Duration(milliseconds: 300));
             if (mounted) {
-              UnifiedNotification.showSuccess(
+              PopupNotificationService.showSuccess(
                 context: this.context,
                 message: 'Pinned friends updated successfully!',
                 position: NotificationPosition.top,
@@ -425,7 +427,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
     BuildContext context,
     String friendUid,
   ) async {
-    final userProfileService = Provider.of<UserProfileService>(
+    final userProfileService = Provider.of<UserDataService>(
       context,
       listen: false,
     );
@@ -455,7 +457,7 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
                       width: 264,
                       child: Center(
                         child: FutureBuilder<Map<String, String>>(
-                          future: userProfileService.fetchUserData(friendUid),
+                          future: userProfileService.getUserData(friendUid),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
