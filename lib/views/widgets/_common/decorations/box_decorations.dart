@@ -31,6 +31,20 @@ class BoxDecorations {
     );
   }
 
+  static BoxDecoration softBlackShadow() {
+    return BoxDecoration(
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black12,
+          spreadRadius: 1,
+          blurRadius: 16,
+          offset: Offset(0, 6),
+        ),
+      ],
+      borderRadius: BorderRadius.circular(25),
+    );
+  }
+
   static BoxDecoration redCircle() {
     return BoxDecoration(
       color: Colors.red,

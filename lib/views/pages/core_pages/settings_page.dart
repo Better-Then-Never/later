@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/pages/options_settings_pages/name_changing_page.dart';
+import 'package:later/views/pages/options_settings_pages/name_settings_page.dart';
 import 'package:later/services/firebase_auth_service.dart';
-import 'package:later/views/pages/options_settings_pages/password_changing_page.dart';
+import 'package:later/views/pages/options_settings_pages/password_settings_page.dart';
 import 'package:later/views/pages/options_settings_pages/language_settings_page.dart';
 import 'package:later/views/pages/options_settings_pages/profile_customization_settings_page.dart';
 import 'package:later/views/pages/options_settings_pages/app_theme_settings_page.dart';
