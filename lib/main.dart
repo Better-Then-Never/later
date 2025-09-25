@@ -16,7 +16,7 @@ import 'package:later/views/pages/core_pages/settings_page.dart';
 import 'package:later/views/pages/core_pages/notifications_page.dart';
 import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/pages/tree_pages/profile_page.dart';
-import 'package:later/views/pages/options_settings_pages/name_changing_page.dart';
+import 'package:later/views/pages/options_settings_pages/name_settings_page.dart';
 import 'package:later/views/pages/core_pages/widget_tree_wrapper_page.dart';
 import 'package:later/services/deep_link_service.dart';
 import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
