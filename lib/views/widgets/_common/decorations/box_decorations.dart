@@ -16,6 +16,13 @@ class BoxDecorations {
     );
   }
 
+  static BoxDecoration greyCard({double borderRadius = 25}) {
+    return BoxDecoration(
+      color: Color(0xFFEAEAEA),
+      borderRadius: BorderRadius.circular(borderRadius),
+    );
+  }
+
   static BoxDecoration blackShadow() {
     return BoxDecoration(
       color: const Color.fromARGB(255, 0, 0, 0),
@@ -23,7 +30,7 @@ class BoxDecorations {
       boxShadow: [
         BoxShadow(
           color: Colors.black.withAlpha(120),
-          spreadRadius: 60,
+          spreadRadius: 15,
           blurRadius: 20,
           offset: Offset(0, 6),
         ),

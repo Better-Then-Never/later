@@ -36,7 +36,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     return ChangeNotifierProvider(
       create: (_) => AddFriendProfileController(
         userId: widget.userId,
-        requestService: UserFriendsService(),
+        requestService: Provider.of<UserFriendsService>(context, listen: false),
         userService: Provider.of<UserDataService>(context, listen: false),
         onNavigateToFriendProfile: () {
           Navigator.push(

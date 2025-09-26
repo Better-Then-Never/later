@@ -5,8 +5,8 @@ import 'package:later/services/popup_notification_service.dart';
 
 class AddFriendProfileController extends ChangeNotifier {
   final String userId;
-  final UserFriendsService _requestService;
-  final UserDataService _userService;
+  late final UserFriendsService _requestService;
+  late final UserDataService _userService;
 
   bool isLoading = false;
   bool isCancelling = false;
