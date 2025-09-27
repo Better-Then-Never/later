@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
-import 'package:later/views/widgets/my_profile_page/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_header.dart';
+import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_dialog_header.dart';
 import 'package:later/views/widgets/user/user_round_avatar.dart';
 import 'package:later/services/popup_notification_service.dart';
 
-class ChoosePinnedFriendsDialog extends StatefulWidget {
+class PinnedFriendsSelectionDialog extends StatefulWidget {
   final List<String> pinnedUids;
   final List<String> allFriends;
   final Map<String, Map<String, String>> friendInfoMap;
   final Future<void> Function(List<String> newPinned) onSave;
 
-  const ChoosePinnedFriendsDialog({
+  const PinnedFriendsSelectionDialog({
     super.key,
     required this.pinnedUids,
     required this.allFriends,
@@ -20,11 +20,12 @@ class ChoosePinnedFriendsDialog extends StatefulWidget {
   });
 
   @override
-  State<ChoosePinnedFriendsDialog> createState() =>
-      _ChoosePinnedFriendsDialogState();
+  State<PinnedFriendsSelectionDialog> createState() =>
+      _PinnedFriendsSelectionDialogState();
 }
 
-class _ChoosePinnedFriendsDialogState extends State<ChoosePinnedFriendsDialog> {
+class _PinnedFriendsSelectionDialogState
+    extends State<PinnedFriendsSelectionDialog> {
   late List<String> tempPinned;
   String searchQuery = '';
   final TextEditingController searchController = TextEditingController();
@@ -61,7 +62,7 @@ class _ChoosePinnedFriendsDialogState extends State<ChoosePinnedFriendsDialog> {
         top: false,
         child: Column(
           children: [
-            PinnedFriendSelectionHeader(
+            PinnedFriendSelectionDialogHeader(
               searchController: searchController,
               onSearchControllerChanged: (query) {
                 setState(() {
