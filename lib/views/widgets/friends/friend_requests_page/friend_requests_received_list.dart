@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:later/controllers/page_controllers/friends/friend_requests_page_controller.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:provider/provider.dart';
 import 'friend_requests_received_row.dart';
-import 'package:later/controllers/friend_requests_page_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/_common/default_elements/default_empty_inbox_info.dart';
 

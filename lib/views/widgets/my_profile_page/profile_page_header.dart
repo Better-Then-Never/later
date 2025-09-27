@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/profile/profile_background_picture.dart';
-import 'package:later/views/widgets/profile/profile_picture.dart';
+import 'package:later/views/widgets/my_profile_page/profile_background_picture.dart';
+import 'package:later/views/widgets/my_profile_page/profile_picture.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/views/widgets/profile/profile_page_header_action_buttons.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_header_action_buttons.dart';
 
 class ProfilePageHeader extends StatelessWidget {
   final double screenWidth;
