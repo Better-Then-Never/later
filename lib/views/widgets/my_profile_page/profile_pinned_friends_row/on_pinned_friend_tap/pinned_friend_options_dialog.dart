@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
-import 'package:later/views/widgets/profile/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_option_tile.dart';
+import 'package:later/views/widgets/my_profile_page/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_option_tile.dart';
 
 class PinnedFriendOptionsDialog extends StatelessWidget {
   final String friendUid;

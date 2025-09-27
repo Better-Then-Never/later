@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
-import 'package:later/views/widgets/profile/profile_pinned_friends_row/on_pinned_friend_tap/choose_pinned_friends_dialog.dart';
+import 'package:later/views/widgets/my_profile_page/profile_pinned_friends_row/on_pinned_friend_tap/choose_pinned_friends_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:later/services/firebase_storage_service.dart';
 import 'package:later/services/user_data_service.dart';
