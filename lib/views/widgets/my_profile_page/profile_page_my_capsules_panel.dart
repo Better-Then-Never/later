@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_text_button.dart';
-import 'package:later/views/widgets/profile/profile_page_divider.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
 
 class ProfilePageMyCapsulesPanel extends StatelessWidget {
   const ProfilePageMyCapsulesPanel({super.key});

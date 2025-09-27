@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/add_friends_page_controller.dart';
+import 'package:later/controllers/page_controllers/add_friends_page_controller.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_data_service.dart';

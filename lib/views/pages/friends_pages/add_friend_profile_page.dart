@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/add_friend_profile_controller.dart';
+import 'package:later/controllers/page_controllers/friends/add_friend_profile_controller.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_action_button.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_header.dart';

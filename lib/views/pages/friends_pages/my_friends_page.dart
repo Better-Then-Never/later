@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/my_friends_page_controller.dart';
+import 'package:later/controllers/page_controllers/friends/my_friends_page_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';

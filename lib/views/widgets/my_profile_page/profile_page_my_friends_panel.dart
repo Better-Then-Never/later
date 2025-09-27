@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:later/controllers/widget_controllers/profile_page/pinned_friends_controller.dart';
+import 'package:later/services/user_data_service.dart';
+import 'package:later/services/user_friends_service.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_text_button.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
-import 'package:later/views/widgets/friends/friends_row_profile.dart';
-import 'package:later/views/widgets/profile/profile_page_divider.dart';
+import 'package:later/views/widgets/my_profile_page/my_friends_panel/pinned_friends_row.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePageMyFriendsPanel extends StatelessWidget {
   final String currentUserUid;
@@ -16,6 +20,16 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userFriendsService = Provider.of<UserFriendsService>(
+      context,
+      listen: false,
+    );
+
+    final userDataService = Provider.of<UserDataService>(
+      context,
+      listen: false,
+    );
+
     return Stack(
       children: [
         Container(
@@ -24,18 +38,18 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
           decoration: BoxDecorations.whiteCard(),
         ),
 
-        /* Positioned(
-          top: 20,
-          left: 0,
-          right: 0,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 21),
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: RandomFriendsRow(currentUserUid: currentUserUid),
+        Positioned(
+          bottom: 20,
+          left: 60,
+          child: ChangeNotifierProvider(
+            create: (context) => PinnedFriendsController(
+              friendsService: userFriendsService,
+              userDataService: userDataService,
             ),
+            child: PinnedFriendsRow(),
           ),
-        ),*/
+        ),
+
         Positioned(
           bottom: 0,
           left: 0,

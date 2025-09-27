@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/profile/profile_page_add_friends_button.dart';
-import 'package:later/views/widgets/profile/profile_page_header.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_add_friends_button.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_header.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_my_capsules_panel.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_my_friends_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/views/widgets/profile/profile_page_my_friends_panel.dart';
-import 'package:later/views/widgets/profile/profile_page_my_capsules_panel.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

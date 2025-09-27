@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/friend_requests_page_controller.dart';
+import 'package:later/controllers/page_controllers/friends/friend_requests_page_controller.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/friends/friend_requests_page/friend_requests_received_list.dart';
