@@ -24,7 +24,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
           decoration: BoxDecorations.whiteCard(),
         ),
 
-        Positioned(
+        /* Positioned(
           top: 20,
           left: 0,
           right: 0,
@@ -35,8 +35,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
               child: RandomFriendsRow(currentUserUid: currentUserUid),
             ),
           ),
-        ),
-
+        ),*/
         Positioned(
           bottom: 0,
           left: 0,

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'user_avatar.dart';
+import 'user_round_avatar.dart';
 
 class UserListTile extends StatelessWidget {
+  final String uid;
   final String name;
   final String username;
-  final String? imageUrl;
   final double screenWidth;
   final VoidCallback? onTap;
   final Widget? trailing;
 
   const UserListTile({
     super.key,
+    required this.uid,
     required this.name,
     required this.username,
-    required this.imageUrl,
     required this.screenWidth,
     this.onTap,
     this.trailing,
@@ -23,7 +23,7 @@ class UserListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
-      leading: UserAvatar(imageUrl: imageUrl, radius: screenWidth * 0.07),
+      leading: UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
       title: Text(
         name,
         style: TextStyle(

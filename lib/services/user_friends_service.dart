@@ -9,15 +9,17 @@ class UserFriendsService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final List<String> _friends = [];
-
   final Set<String> _sentRequests = {};
+  final Set<String> _receivedRequests = {};
   final Set<String> _removedFromSuggested = {};
 
   List<String> get friends => _friends;
   Set<String> get sentRequests => _sentRequests;
+  Set<String> get receivedRequests => _receivedRequests;
   Set<String> get removedFromSuggested => _removedFromSuggested;
 
   StreamSubscription<QuerySnapshot>? _sentRequestsSub;
+  StreamSubscription<QuerySnapshot>? _receivedRequestsSub;
 
   UserFriendsService() {
     _init();
@@ -26,6 +28,24 @@ class UserFriendsService extends ChangeNotifier {
   Future<void> _init() async {
     await refreshFriends();
     _listenSentRequests();
+    _listenReceivedRequests();
+  }
+
+  Future<bool> areFriends(String userId) async {
+    return _friends.contains(userId);
+  }
+
+  bool requestExists(String fromUserId, String toUserId) {
+    return _sentRequests.contains(toUserId) ||
+        _receivedRequests.contains(fromUserId);
+  }
+
+  int receivedRequestsCount() {
+    return _receivedRequests.length;
+  }
+
+  List<String> getSentRequestsList() {
+    return _sentRequests.toList();
   }
 
   void _listenSentRequests() {
@@ -43,6 +63,26 @@ class UserFriendsService extends ChangeNotifier {
           _sentRequests.clear();
           for (var doc in snapshot.docs) {
             _sentRequests.add(doc['toUserId']);
+          }
+          notifyListeners();
+        });
+  }
+
+  void _listenReceivedRequests() {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) return;
+
+    _receivedRequestsSub?.cancel();
+
+    _receivedRequestsSub = _firestore
+        .collection('friend_requests')
+        .where('toUserId', isEqualTo: currentUserId)
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .listen((snapshot) {
+          _receivedRequests.clear();
+          for (var doc in snapshot.docs) {
+            _receivedRequests.add(doc['fromUserId']);
           }
           notifyListeners();
         });
@@ -67,6 +107,7 @@ class UserFriendsService extends ChangeNotifier {
     String toUserId,
   ) async {
     final batch = _firestore.batch();
+
     batch.update(_firestore.collection('friend_requests').doc(requestId), {
       'status': 'accepted',
       'acceptedAt': FieldValue.serverTimestamp(),
@@ -77,20 +118,20 @@ class UserFriendsService extends ChangeNotifier {
     batch.update(_firestore.collection('users').doc(toUserId), {
       'friends': FieldValue.arrayUnion([fromUserId]),
     });
+
     await batch.commit();
+
+    _friends.add(toUserId);
+    _sentRequests.remove(toUserId);
+    _receivedRequests.remove(fromUserId);
+    notifyListeners();
   }
 
-  Future<void> rejectFriendRequest(String requestId) async {
+  Future<void> rejectFriendRequest(String requestId, String fromUserId) async {
     try {
-      final doc = await _firestore
-          .collection('friend_requests')
-          .doc(requestId)
-          .get();
-      if (!doc.exists) {
-        throw Exception('Friend request not found');
-      }
-
       await _firestore.collection('friend_requests').doc(requestId).delete();
+      _receivedRequests.remove(fromUserId);
+      notifyListeners();
     } catch (e) {
       rethrow;
     }
@@ -118,6 +159,7 @@ class UserFriendsService extends ChangeNotifier {
     batch.update(_firestore.collection('users').doc(friendUserId), {
       'friends': FieldValue.arrayRemove([currentUserId]),
     });
+
     final requestId1 = '${currentUserId}_$friendUserId';
     final requestId2 = '${friendUserId}_$currentUserId';
 
@@ -125,153 +167,40 @@ class UserFriendsService extends ChangeNotifier {
         .collection('friend_requests')
         .doc(requestId1)
         .get();
-    if (doc1.exists) {
+    if (doc1.exists)
       batch.delete(_firestore.collection('friend_requests').doc(requestId1));
-    }
 
     final doc2 = await _firestore
         .collection('friend_requests')
         .doc(requestId2)
         .get();
-    if (doc2.exists) {
+    if (doc2.exists)
       batch.delete(_firestore.collection('friend_requests').doc(requestId2));
-    }
 
     await batch.commit();
-  }
 
-  Stream<QuerySnapshot> getPendingRequests(String userId) {
-    return _firestore
-        .collection('friend_requests')
-        .where('toUserId', isEqualTo: userId)
-        .where('status', isEqualTo: 'pending')
-        .snapshots();
-  }
-
-  Future<bool> requestExists(String fromUserId, String toUserId) async {
-    final requestId = '${fromUserId}_$toUserId';
-    final reverseRequestId = '${toUserId}_$fromUserId';
-
-    final doc1 = await _firestore
-        .collection('friend_requests')
-        .doc(requestId)
-        .get();
-    final doc2 = await _firestore
-        .collection('friend_requests')
-        .doc(reverseRequestId)
-        .get();
-
-    bool doc1Pending = doc1.exists && doc1.data()?['status'] == 'pending';
-    bool doc2Pending = doc2.exists && doc2.data()?['status'] == 'pending';
-
-    return doc1Pending || doc2Pending;
-  }
-
-  Future<String?> getRequestStatus(String fromUserId, String toUserId) async {
-    final requestId = '${fromUserId}_$toUserId';
-    final reverseRequestId = '${toUserId}_$fromUserId';
-
-    final doc1 = await _firestore
-        .collection('friend_requests')
-        .doc(requestId)
-        .get();
-    if (doc1.exists) {
-      final status = doc1.data()?['status'];
-      if (status == 'pending') {
-        return status;
-      }
-    }
-
-    final doc2 = await _firestore
-        .collection('friend_requests')
-        .doc(reverseRequestId)
-        .get();
-    if (doc2.exists) {
-      final status = doc2.data()?['status'];
-      if (status == 'pending') {
-        return status;
-      }
-    }
-
-    return null;
-  }
-
-  Future<bool> areFriends(String userId1, String userId2) async {
-    try {
-      final userDoc = await _firestore.collection('users').doc(userId1).get();
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-        final friends = List<String>.from(userData?['friends'] ?? []);
-        return friends.contains(userId2);
-      }
-      return false;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  static Stream<int> getReceivedRequestsCount(String uid) {
-    return FirebaseFirestore.instance
-        .collection('friend_requests')
-        .where('toUserId', isEqualTo: uid)
-        .where('status', isEqualTo: 'pending')
-        .snapshots()
-        .map((snapshot) => snapshot.docs.length);
-  }
-
-  static Stream<QuerySnapshot> getSentRequests(String uid) {
-    return FirebaseFirestore.instance
-        .collection('friend_requests')
-        .where('fromUserId', isEqualTo: uid)
-        .where('status', isEqualTo: 'pending')
-        .snapshots();
-  }
-
-  static Stream<QuerySnapshot> getReceivedRequests(String uid) {
-    return FirebaseFirestore.instance
-        .collection('friend_requests')
-        .where('toUserId', isEqualTo: uid)
-        .where('status', isEqualTo: 'pending')
-        .snapshots();
-  }
-
-  Future<void> refreshFriends() async {
-    _friends.clear();
-    if (_auth.currentUser?.uid == null) return;
-    final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(_auth.currentUser?.uid)
-        .get();
-    final data = doc.data();
-    if (data != null && data['friends'] != null) {
-      _friends.addAll(List<String>.from(data['friends']));
-    }
+    _friends.remove(friendUserId);
+    _sentRequests.remove(friendUserId);
+    _receivedRequests.remove(friendUserId);
+    _removedFromSuggested.add(friendUserId);
     notifyListeners();
-  }
-
-  Future<void> addFriend(String friendUserId) async {
-    final currentUserId = _auth.currentUser?.uid;
-    if (currentUserId == null) return;
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUserId)
-        .update({
-          'friends': FieldValue.arrayUnion([friendUserId]),
-        });
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(friendUserId)
-        .update({
-          'friends': FieldValue.arrayUnion([currentUserId]),
-        });
-
-    await refreshFriends();
   }
 
   void removeSuggestedFriend(String userId) {
     _removedFromSuggested.add(userId);
+    notifyListeners();
+  }
+
+  Future<void> refreshFriends() async {
+    _friends.clear();
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) return;
+
+    final doc = await _firestore.collection('users').doc(currentUserId).get();
+    final data = doc.data();
+    if (data != null && data['friends'] != null) {
+      _friends.addAll(List<String>.from(data['friends']));
+    }
     notifyListeners();
   }
 
@@ -305,6 +234,7 @@ class UserFriendsService extends ChangeNotifier {
   @override
   void dispose() {
     _sentRequestsSub?.cancel();
+    _receivedRequestsSub?.cancel();
     super.dispose();
   }
 }

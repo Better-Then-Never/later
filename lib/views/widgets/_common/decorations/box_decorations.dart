@@ -52,10 +52,16 @@ class BoxDecorations {
     );
   }
 
-  static BoxDecoration redCircle() {
+  static BoxDecoration redWithBorderRadius({double borderRadius = 10}) {
     return BoxDecoration(
       color: Colors.red,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(borderRadius),
     );
+  }
+
+  static BoxDecoration defaultBorderRadius({
+    Color color = const Color(0xFF56C92E),
+  }) {
+    return BoxDecoration(color: color, borderRadius: BorderRadius.circular(25));
   }
 }

@@ -8,6 +8,7 @@ class PageHeader extends StatelessWidget {
   final Widget? leadingButton;
   final Widget? trailingButton;
   final DefaultSearchBar? searchBar;
+  final Widget? actionButtonsRow;
 
   const PageHeader({
     super.key,
@@ -16,6 +17,7 @@ class PageHeader extends StatelessWidget {
     this.leadingButton,
     this.trailingButton,
     this.searchBar,
+    this.actionButtonsRow,
   });
 
   @override
@@ -86,6 +88,16 @@ class PageHeader extends StatelessWidget {
                   top: screenHeight * 0.01,
                 ),
                 child: searchBar!,
+              ),
+
+            if (actionButtonsRow != null)
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.04,
+                  right: screenWidth * 0.04,
+                  top: screenHeight * 0.01,
+                ),
+                child: actionButtonsRow!,
               ),
           ],
         ),

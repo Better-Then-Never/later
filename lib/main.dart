@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/firebase_auth_service.dart';
 import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:later/views/pages/friends_pages/add_friends_page.dart';
 import 'package:later/views/pages/friends_pages/my_friends_page.dart';
@@ -36,6 +37,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
         ChangeNotifierProvider(create: (_) => UserDataService()),
         ChangeNotifierProvider(create: (_) => UserFriendsService()),
+        ChangeNotifierProvider(create: (_) => UserImageService()),
       ],
       child: const Application(),
     ),

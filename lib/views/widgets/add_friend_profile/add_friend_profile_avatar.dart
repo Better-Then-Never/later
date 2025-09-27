@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/firebase_storage_service.dart';
-import 'package:later/views/widgets/_common/default_elements/default_loading_container.dart';
-import 'package:later/views/widgets/user/user_avatar.dart';
+import 'package:later/views/widgets/user/user_round_avatar.dart';
 
 class AddFriendProfileAvatar extends StatelessWidget {
   final String userId;
@@ -25,20 +23,7 @@ class AddFriendProfileAvatar extends StatelessWidget {
       child: Material(
         elevation: 8,
         shape: const CircleBorder(),
-        child: FutureBuilder<String?>(
-          future: FirebaseStorageService.getOriginalProfileImageUrl(userId),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return DefaultLoadingContainer(
-                width: avatarRadius * 2,
-                height: avatarRadius * 2,
-                borderRadius: BorderRadius.circular(avatarRadius),
-              );
-            }
-
-            return UserAvatar(imageUrl: snapshot.data, radius: avatarRadius);
-          },
-        ),
+        child: UserRoundAvatar(userId: userId, radius: avatarRadius),
       ),
     );
   }

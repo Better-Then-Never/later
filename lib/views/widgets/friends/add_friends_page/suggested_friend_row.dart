@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/widgets/user/user_round_avatar.dart';
 
 class SuggestedFriendRow extends StatelessWidget {
   final String userId;
   final String name;
   final String username;
-  final Future<String?> avatarFuture;
   final VoidCallback onTapProfile;
   final VoidCallback onSendRequest;
   final VoidCallback onRemove;
@@ -16,7 +16,6 @@ class SuggestedFriendRow extends StatelessWidget {
     required this.userId,
     required this.name,
     required this.username,
-    required this.avatarFuture,
     required this.onTapProfile,
     required this.onSendRequest,
     required this.onRemove,
@@ -33,24 +32,7 @@ class SuggestedFriendRow extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 0),
-          leading: FutureBuilder<String?>(
-            future: avatarFuture,
-            builder: (context, snapshot) {
-              final avatar =
-                  (snapshot.hasData &&
-                      snapshot.data != null &&
-                      snapshot.data!.isNotEmpty)
-                  ? NetworkImage(snapshot.data!)
-                  : const AssetImage(
-                      'assets/images/icons/navbar/icon-profile.png',
-                    );
-              return CircleAvatar(
-                radius: screenWidth * 0.07,
-                backgroundImage: avatar as ImageProvider,
-                backgroundColor: Colors.grey[200],
-              );
-            },
-          ),
+          leading: UserRoundAvatar(userId: userId, radius: screenWidth * 0.07),
           title: Text(
             name,
             style: TextStyle(
