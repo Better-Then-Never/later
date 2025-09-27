@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/views/widgets/friends/suggested_friends_list/suggested_friend_row.dart';
+import 'package:later/views/widgets/friends/add_friends_page/suggested_friend_row.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_friends_service.dart';
-import 'package:later/services/image_assets_service.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 
 class SuggestedFriendsList extends StatelessWidget {
@@ -22,7 +21,6 @@ class SuggestedFriendsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final userService = Provider.of<UserDataService>(context);
     final userFriendsService = Provider.of<UserFriendsService>(context);
-    final assetImageService = AssetImageService();
     final currentUid = userService.currentLoggedInUid;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -64,9 +62,6 @@ class SuggestedFriendsList extends StatelessWidget {
                   userId: user['id'],
                   name: user['name'],
                   username: user['username'],
-                  avatarFuture: assetImageService.getProfileImageUrl(
-                    user['id'],
-                  ),
                   onTapProfile: () {
                     Navigator.push(
                       context,

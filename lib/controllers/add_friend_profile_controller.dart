@@ -28,7 +28,7 @@ class AddFriendProfileController extends ChangeNotifier {
     final currentUserUid = _userService.currentLoggedInUid;
     if (currentUserUid == userId) {
       buttonState = 'own_profile';
-    } else if (await _requestService.areFriends(currentUserUid, userId)) {
+    } else if (await _requestService.areFriends(userId)) {
       buttonState = 'friends';
     } else if (await _requestService.requestExists(currentUserUid, userId)) {
       buttonState = 'pending';

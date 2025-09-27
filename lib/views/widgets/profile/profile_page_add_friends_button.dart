@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/user_friends_service.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
+import 'package:later/views/widgets/friends/friend_requests_count.dart';
 
 class ProfilePageAddFriendsButton extends StatelessWidget {
   final String currentUserUid;
@@ -46,38 +46,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
                 ],
               ),
             ),
-            StreamBuilder<int>(
-              stream: UserFriendsService.getReceivedRequestsCount(
-                currentUserUid,
-              ),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data == 0) {
-                  return const SizedBox.shrink();
-                }
-
-                final count = snapshot.data!;
-                final displayCount = count > 99 ? '99+' : count.toString();
-
-                return Positioned(
-                  top: 13,
-                  right: 16,
-                  child: Container(
-                    constraints: const BoxConstraints(minWidth: 20),
-                    height: 20,
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                    decoration: BoxDecorations.redCircle(),
-                    child: Center(
-                      child: DefaultText(
-                        displayCount,
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+            FriendRequestCountBadge(),
           ],
         ),
       ),

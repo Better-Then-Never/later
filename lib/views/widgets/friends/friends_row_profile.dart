@@ -5,7 +5,7 @@ import 'package:later/services/user_data_service.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/services/popup_notification_service.dart';
-import 'package:later/views/widgets/user/user_avatar.dart';
+import 'package:later/views/widgets/user/user_round_avatar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:provider/provider.dart';
@@ -264,10 +264,10 @@ class _RandomFriendsRowState extends State<RandomFriendsRow> {
               future: FirebaseStorageService.getProfileImageUrl(uid),
               builder: (context, snapshot) {
                 return ListTile(
-                  leading: UserAvatar(
-                    imageUrl: snapshot.data,
+                  leading: UserRoundAvatar(
+                    userId: uid,
                     radius: 24,
-                    fallbackAsset: 'assets/images/icons/prof_page/no_photo.png',
+                    //  fallbackAsset: 'assets/images/icons/prof_page/no_photo.png',
                   ),
                   title: Text(
                     name,

@@ -3,6 +3,7 @@ import 'package:later/controllers/add_friends_page_controller.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_data_service.dart';
+import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/friends/add_friends_page/add_friends_action_buttons_row.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/pages/core_pages/qr_code_scanner_page.dart';
@@ -86,30 +87,33 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             alignment: Alignment.centerLeft,
             child: Padding(
               padding: EdgeInsets.only(left: screenWidth * 0.07),
-              child: Text(
+              child: DefaultText(
                 'Make friends',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.045,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                  color: Colors.black,
-                ),
+                fontSize: screenWidth * 0.045,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
 
-          SingleChildScrollView(
-            child: SuggestedFriendsList(
-              onSendRequest: (userId) {
-                _controller.sendFriendRequest(userId: userId, context: context);
-              },
-              onRemoveFriend: (userId) {
-                _controller.removeSuggestedFriend(
-                  userId: userId,
-                  context: context,
-                );
-              },
-              searchQuery: _searchQuery,
+          Expanded(
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: SuggestedFriendsList(
+                  onSendRequest: (userId) {
+                    _controller.sendFriendRequest(
+                      userId: userId,
+                      context: context,
+                    );
+                  },
+                  onRemoveFriend: (userId) {
+                    _controller.removeSuggestedFriend(
+                      userId: userId,
+                      context: context,
+                    );
+                  },
+                  searchQuery: _searchQuery,
+                ),
+              ),
             ),
           ),
         ],

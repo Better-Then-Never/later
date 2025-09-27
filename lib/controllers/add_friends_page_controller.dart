@@ -8,35 +8,23 @@ class AddFriendsPageController extends ChangeNotifier {
   final UserFriendsService _friendsService;
   final UserDataService _userService;
 
-  int _receivedRequestsCount = 0;
-  int get receivedRequestsCount => _receivedRequestsCount;
-
-  late final StreamSubscription _requestsSub;
-
   AddFriendsPageController({
     required UserFriendsService friendsService,
     required UserDataService userService,
   }) : _friendsService = friendsService,
        _userService = userService {
     _friendsService.addListener(_onServiceUpdate);
-
-    _requestsSub =
-        UserFriendsService.getReceivedRequestsCount(
-          _userService.currentLoggedInUid,
-        ).listen((count) {
-          _receivedRequestsCount = count;
-          notifyListeners();
-        });
   }
 
   void _onServiceUpdate() {
     notifyListeners();
   }
 
+  int get receivedRequestsCount => _friendsService.receivedRequests.length;
+
   @override
   void dispose() {
     _friendsService.removeListener(_onServiceUpdate);
-    _requestsSub.cancel();
     super.dispose();
   }
 
@@ -46,17 +34,16 @@ class AddFriendsPageController extends ChangeNotifier {
   }) async {
     final currentUserId = _userService.currentLoggedInUid;
 
-    try {
-      final exists = await _friendsService.requestExists(currentUserId, userId);
-      if (exists) {
-        PopupNotificationService.showInfo(
-          context: context,
-          message: 'Friend request already exists',
-          position: NotificationPosition.bottom,
-        );
-        return;
-      }
+    if (_friendsService.sentRequests.contains(userId)) {
+      PopupNotificationService.showInfo(
+        context: context,
+        message: 'Friend request already exists',
+        position: NotificationPosition.bottom,
+      );
+      return;
+    }
 
+    try {
       await _friendsService.sendFriendRequest(currentUserId, userId);
 
       PopupNotificationService.showSuccess(
@@ -81,6 +68,7 @@ class AddFriendsPageController extends ChangeNotifier {
 
     try {
       await _friendsService.cancelFriendRequest(currentUserId, userId);
+
       PopupNotificationService.showInfo(
         context: context,
         message: 'Friend request cancelled',
