@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
-import 'package:later/views/widgets/profile/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_header.dart';
+import 'package:later/views/widgets/my_profile_page/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_header.dart';
 import 'package:later/views/widgets/user/user_round_avatar.dart';
 import 'package:later/services/popup_notification_service.dart';
 

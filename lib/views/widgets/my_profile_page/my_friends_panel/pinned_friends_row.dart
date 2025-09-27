@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/controllers/widget_controllers/profile_page/pinned_friends_controller.dart';
-import 'package:later/views/widgets/profile/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_options_dialog.dart';
+import 'package:later/views/widgets/my_profile_page/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_options_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/my_profile_page/my_friends_panel/pinned_friend_avatar.dart';
 
