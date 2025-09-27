@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 
-class PinnedFriendSelectionHeader extends StatelessWidget {
+class PinnedFriendSelectionDialogHeader extends StatelessWidget {
   final TextEditingController searchController;
   final void Function(String value)? onSearchControllerChanged;
 
-  const PinnedFriendSelectionHeader({
+  const PinnedFriendSelectionDialogHeader({
     super.key,
     required this.onSearchControllerChanged,
     required this.searchController,

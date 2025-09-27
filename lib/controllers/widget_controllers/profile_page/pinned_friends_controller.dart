@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
-import 'package:later/views/widgets/my_profile_page/profile_pinned_friends_row/on_pinned_friend_tap/choose_pinned_friends_dialog.dart';
+import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:later/services/firebase_storage_service.dart';
 import 'package:later/services/user_data_service.dart';
@@ -101,7 +101,7 @@ class PinnedFriendsController extends ChangeNotifier {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       barrierColor: Colors.black.withAlpha(128),
-      builder: (_) => ChoosePinnedFriendsDialog(
+      builder: (_) => PinnedFriendsSelectionDialog(
         pinnedUids: pinnedUids,
         allFriends: allFriends,
         friendInfoMap: friendInfoMap,
