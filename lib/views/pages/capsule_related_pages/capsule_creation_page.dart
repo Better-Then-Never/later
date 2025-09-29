@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:later/views/pages/tree_pages/map_page.dart' as map;
+import 'package:later/views/pages/navbar_pages/map_page.dart' as map;
 import 'package:later/views/widgets/capsule_creation/capsule_image_preview.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';

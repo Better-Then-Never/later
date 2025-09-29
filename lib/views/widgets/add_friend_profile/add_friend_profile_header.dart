@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/shadow_top_overlay.dart';
-import 'package:later/views/widgets/add_friend_profile/add_friend_profile_action_buttons_row.dart';
+import 'package:later/views/widgets/add_friend_profile/friend_profile_action_buttons_row.dart';
 import 'add_friend_profile_background_image.dart';
 import 'add_friend_profile_avatar.dart';
 
@@ -33,7 +33,7 @@ class AddFriendProfileHeader extends StatelessWidget {
           height: bgHeight,
         ),
         ShadowTopOverlay(width: screenWidth),
-        AddFriendProfileActionButtons(onBack: onBack, onShare: onShare),
+        ProfileActionButtonsRow(onBack: onBack, onShare: onShare),
         AddFriendProfileAvatar(
           userId: userId,
           screenWidth: screenWidth,
