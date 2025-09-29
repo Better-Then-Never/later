@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/pages/options_settings_pages/name_settings_page.dart';
+import 'package:later/views/pages/settings_pages/name_settings_page.dart';
 import 'package:later/services/firebase_auth_service.dart';
-import 'package:later/views/pages/options_settings_pages/password_settings_page.dart';
-import 'package:later/views/pages/options_settings_pages/language_settings_page.dart';
-import 'package:later/views/pages/options_settings_pages/profile_customization_settings_page.dart';
-import 'package:later/views/pages/options_settings_pages/app_theme_settings_page.dart';
-import 'package:later/views/pages/options_settings_pages/permissions_settings_page.dart';
-import 'package:later/views/pages/options_settings_pages/username_settings_page.dart';
+import 'package:later/views/pages/settings_pages/password_settings_page.dart';
+import 'package:later/views/pages/settings_pages/language_settings_page.dart';
+import 'package:later/views/pages/settings_pages/profile_customization_settings_page.dart';
+import 'package:later/views/pages/settings_pages/app_theme_settings_page.dart';
+import 'package:later/views/pages/settings_pages/permissions_settings_page.dart';
+import 'package:later/views/pages/settings_pages/username_settings_page.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/options_elements/options_settings_row.dart';
@@ -97,7 +97,7 @@ class SettingsPage extends StatelessWidget {
                           ),
 
                           OptionsSettingsRow(
-                            title: 'App apperance',
+                            title: 'App appearance',
                             navigateTo: AppThemeSettingsPage(),
                           ),
 

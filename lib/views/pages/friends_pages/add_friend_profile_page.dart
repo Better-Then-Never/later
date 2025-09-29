@@ -3,7 +3,7 @@ import 'package:later/controllers/page_controllers/friends/add_friend_profile_co
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_action_button.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_header.dart';
-import 'package:later/views/widgets/add_friend_profile/add_friend_profile_user_info.dart';
+import 'package:later/views/widgets/user/user_name_and_username.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/popup_notification_service.dart';
@@ -71,7 +71,10 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                         ),
                       ),
                       SizedBox(height: 110),
-                      AddFriendProfileUserInfo(userId: widget.userId),
+                      UserNameAndUsername(
+                        userId: widget.userId,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                      ),
                     ],
                   ),
                 ),

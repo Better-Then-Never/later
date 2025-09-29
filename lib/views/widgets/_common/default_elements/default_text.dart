@@ -7,6 +7,7 @@ class DefaultText extends StatelessWidget {
   final double? fontSize;
   final TextAlign? textAlign;
   final EdgeInsetsGeometry? padding;
+  final double? height;
 
   const DefaultText(
     this.text, {
@@ -16,6 +17,7 @@ class DefaultText extends StatelessWidget {
     this.fontSize,
     this.textAlign,
     this.padding,
+    this.height,
   });
 
   @override
@@ -30,6 +32,7 @@ class DefaultText extends StatelessWidget {
           fontWeight: fontWeight ?? FontWeight.normal,
           fontSize: fontSize ?? 14,
           color: color ?? Colors.black,
+          height: height,
         ),
       ),
     );

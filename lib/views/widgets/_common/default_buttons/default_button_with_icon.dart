@@ -9,6 +9,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
   final VoidCallback onTap;
   final String text;
   final double? textFontSize;
+  final FontWeight? textFontWeight;
   final Decoration? decoration;
 
   const DefaultButtonWithIcon({
@@ -20,6 +21,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
     required this.text,
     this.textFontSize,
     this.decoration,
+    this.textFontWeight,
   });
 
   @override
@@ -34,7 +36,12 @@ class DefaultButtonWithIcon extends StatelessWidget {
           children: [
             Image.asset(assetPath, width: 32, height: 32),
             const SizedBox(width: 6),
-            DefaultText('Invite friends', fontSize: 19, color: Colors.black),
+            DefaultText(
+              text,
+              fontSize: textFontSize,
+              color: Colors.black,
+              fontWeight: textFontWeight,
+            ),
           ],
         ),
       ),
