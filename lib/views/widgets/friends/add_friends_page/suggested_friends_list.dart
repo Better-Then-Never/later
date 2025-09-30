@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/user_data_service.dart';
+import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/friends/add_friends_page/suggested_friend_row.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_friends_service.dart';
@@ -38,17 +39,7 @@ class SuggestedFriendsList extends StatelessWidget {
         if (users.isEmpty) {
           return Padding(
             padding: const EdgeInsets.only(top: 180),
-            child: Center(
-              child: Text(
-                'No more suggested friends',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.045,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Irina',
-                  color: Colors.black,
-                ),
-              ),
-            ),
+            child: Center(child: DefaultText('No more suggested friends')),
           );
         }
 

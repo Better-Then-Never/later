@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/pages/friends_pages/friend_requests_page.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
 import 'package:later/views/widgets/friends/friend_requests_count.dart';
-import 'package:later/views/pages/friends_pages/invite_friends_page.dart';
 
 class AddFriendsActionButtonsRow extends StatelessWidget {
   const AddFriendsActionButtonsRow({super.key});
@@ -22,11 +22,11 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => InviteFriendsPage()),
+                  MaterialPageRoute(builder: (context) => ShareProfilePage()),
                 );
               },
-              assetPath: 'assets/images/icons/friends_page/friend_book.png',
-              text: 'Invite friends',
+              assetPath: 'assets/images/icons/prof_page/share_button_black.png',
+              text: 'Share Profile',
             ),
           ),
           SizedBox(width: 16),

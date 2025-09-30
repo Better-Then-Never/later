@@ -7,14 +7,12 @@ class AppPermission {
   final String description;
   final String iconAsset;
   final Permission permission;
-  final bool isOptional;
 
   AppPermission({
     required this.name,
     required this.description,
     required this.permission,
     required this.iconAsset,
-    this.isOptional = false,
   });
 }
 
@@ -35,13 +33,6 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
   int _currentPage = 0;
 
   final List<AppPermission> _permissionsList = [
-    AppPermission(
-      name: "Access your contacts",
-      description: "To invite friends and find people you know on Later!",
-      permission: Permission.contacts,
-      iconAsset: "assets/images/icons/friends_page/friend_book.png",
-      isOptional: true,
-    ),
     AppPermission(
       name: "Share Camera acess with Later",
       description: "And you will be able to create time capsules!",
@@ -76,9 +67,7 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
 
     if (!mounted) return;
 
-    // Check if all required permissions are granted
-    final requiredPermissions = _permissionsList.where((p) => !p.isOptional);
-    final allRequiredGranted = requiredPermissions.every(
+    final allRequiredGranted = _permissionsList.every(
       (p) => _statuses[p.permission]?.isGranted ?? false,
     );
 
@@ -106,8 +95,7 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
     if (_statuses.length != _permissionsList.length) return;
 
     // Check if all required permissions are granted
-    final requiredPermissions = _permissionsList.where((p) => !p.isOptional);
-    final allRequiredGranted = requiredPermissions.every(
+    final allRequiredGranted = _permissionsList.every(
       (p) => _statuses[p.permission]?.isGranted ?? false,
     );
 
@@ -116,18 +104,6 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) widget.onAllGranted();
       });
-    }
-  }
-
-  void _skipOptionalPermission() {
-    // Skip to next page or finish if this is the last one
-    if (_currentPage < _permissionsList.length - 1) {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _checkIfAllGranted();
     }
   }
 
@@ -224,21 +200,6 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
                                 ),
                               ),
                             ),
-                            if (item.isOptional == true && !granted) ...[
-                              const SizedBox(height: 15),
-                              TextButton(
-                                onPressed: _skipOptionalPermission,
-                                child: const Text(
-                                  'Maybe later',
-                                  style: TextStyle(
-                                    fontFamily: 'Irina',
-                                    fontSize: 16,
-                                    color: Colors.grey,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                       ),
