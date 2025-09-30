@@ -95,8 +95,9 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             ),
           ),
 
-          Expanded(
+          Flexible(
             child: SafeArea(
+              top: false,
               child: SingleChildScrollView(
                 child: SuggestedFriendsList(
                   onSendRequest: (userId) {
