@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/views/widgets/_common/default_elements/default_loading_container.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:provider/provider.dart';
 

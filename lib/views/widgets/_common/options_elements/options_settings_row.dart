@@ -4,9 +4,13 @@ import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 class OptionsSettingsRow extends StatelessWidget {
   final String title;
   final Widget? subtitle;
+  final Widget? trailing;
+  final String? leadingIconPath;
   final bool isLast;
+  final bool withDivider;
   final VoidCallback? onTap;
   final Widget? navigateTo;
+  final double minVerticalPadding;
 
   const OptionsSettingsRow({
     super.key,
@@ -15,6 +19,10 @@ class OptionsSettingsRow extends StatelessWidget {
     this.isLast = false,
     this.onTap = null,
     this.navigateTo,
+    this.trailing,
+    this.leadingIconPath,
+    this.minVerticalPadding = 6,
+    this.withDivider = true,
   });
 
   @override
@@ -30,7 +38,7 @@ class OptionsSettingsRow extends StatelessWidget {
           ),
           child: ListTile(
             dense: true,
-            minVerticalPadding: 6,
+            minVerticalPadding: minVerticalPadding,
             visualDensity: VisualDensity(vertical: -3),
 
             title: DefaultText(
@@ -41,16 +49,25 @@ class OptionsSettingsRow extends StatelessWidget {
               color: isLast ? Color.fromARGB(255, 253, 65, 64) : Colors.black,
             ),
             subtitle: subtitle ?? null,
+            leading: leadingIconPath != null
+                ? Image.asset(
+                    leadingIconPath!,
+                    width: screenWidth * 0.09,
+                    height: screenWidth * 0.09,
+                  )
+                : null,
             trailing: isLast
                 ? null
-                : Opacity(
+                : trailing == null
+                ? (Opacity(
                     opacity: 0.3,
                     child: Image.asset(
                       'assets/images/icons/prof_page/go_here.png',
                       width: screenWidth * 0.09,
                       height: screenWidth * 0.09,
                     ),
-                  ),
+                  ))
+                : trailing,
             contentPadding: EdgeInsets.only(
               left: screenWidth * 0.05,
               right: screenWidth * 0.03,
@@ -65,7 +82,7 @@ class OptionsSettingsRow extends StatelessWidget {
                 : onTap,
           ),
         ),
-        if (!isLast)
+        if (!isLast && withDivider)
           const Divider(
             height: 1,
             thickness: 1,

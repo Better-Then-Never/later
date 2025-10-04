@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:later/services/deep_link_service.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
@@ -34,6 +36,7 @@ class QRScannerPage extends StatefulWidget {
 class _QRScannerPageState extends State<QRScannerPage> {
   MobileScannerController cameraController = MobileScannerController();
   bool _isScanning = true;
+  bool _isTorchEnabled = false;
 
   @override
   void dispose() {
@@ -48,14 +51,14 @@ class _QRScannerPageState extends State<QRScannerPage> {
       if (scannedData != null) {
         _isScanning = false;
 
-        // Check if Later deep link
         if (DeepLinkService.isLaterDeepLink(scannedData)) {
           Navigator.pop(context, scannedData);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
+              content: DefaultText(
                 'Invalid QR code. Please scan a Later profile QR code.',
+                color: Colors.white,
               ),
               backgroundColor: Colors.red,
             ),
@@ -73,105 +76,69 @@ class _QRScannerPageState extends State<QRScannerPage> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.black,
+
       body: Stack(
         children: [
-          // QR Scanner view
           MobileScanner(controller: cameraController, onDetect: _onDetect),
 
-          // Overlay with scanning frame
-          Container(
-            decoration: ShapeDecoration(
-              shape: QRScannerOverlayShape(
-                borderColor: Colors.white,
-                borderRadius: 20,
-                borderLength: 30,
-                borderWidth: 8,
-                cutOutSize: screenWidth * 0.7,
-              ),
-            ),
-          ),
+          _cameraBorderWithCutout(screenWidth),
 
-          // Header with back button and title
           SafeArea(
             child: Container(
               height: 100,
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ),
+                  GoBackButton(context: context, isBlack: false),
                   SizedBox(width: 16),
-                  Text(
+                  DefaultText(
                     'Scan QR Code',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Irina',
-                    ),
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
                 ],
               ),
             ),
           ),
 
-          // Instructions at the bottom
           Positioned(
             bottom: 100,
             left: 20,
             right: 20,
             child: Container(
               padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Text(
+              child: DefaultText(
                 'Point your camera at the QR code to add a friend',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontFamily: 'Irina',
-                ),
-                textAlign: TextAlign.center,
+                color: Colors.white,
+                fontSize: 16,
               ),
             ),
           ),
 
-          // Flashlight toggle button
           Positioned(
             bottom: 200,
             right: 20,
             child: GestureDetector(
-              onTap: () => cameraController.toggleTorch(),
+              onTap: () {
+                cameraController.toggleTorch();
+                setState(() {
+                  _isTorchEnabled = !_isTorchEnabled;
+                });
+              },
               child: Container(
                 width: 56,
                 height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
+                child: Icon(
+                  _isTorchEnabled ? Icons.flash_on : Icons.flash_off,
+                  color: Colors.white,
+                  size: 24,
                 ),
-                child: Icon(Icons.flash_on, color: Colors.white, size: 24),
               ),
             ),
           ),
@@ -181,7 +148,20 @@ class _QRScannerPageState extends State<QRScannerPage> {
   }
 }
 
-// Custom overlay shape for the scanner
+Widget _cameraBorderWithCutout(final double screenWidth) {
+  return Container(
+    decoration: ShapeDecoration(
+      shape: QRScannerOverlayShape(
+        borderColor: Colors.white,
+        borderRadius: 20,
+        borderLength: 30,
+        borderWidth: 8,
+        cutOutSize: screenWidth * 0.7,
+      ),
+    ),
+  );
+}
+
 class QRScannerOverlayShape extends ShapeBorder {
   final Color borderColor;
   final double borderWidth;
@@ -276,7 +256,6 @@ class QRScannerOverlayShape extends ShapeBorder {
       )
       ..restore();
 
-    // Draw the border lines
     final path = Path()
       ..moveTo(cutOutRect.left - borderOffset, cutOutRect.top + mBorderLength)
       ..lineTo(cutOutRect.left - borderOffset, cutOutRect.top + borderRadius)
@@ -290,7 +269,6 @@ class QRScannerOverlayShape extends ShapeBorder {
 
     canvas.drawPath(path, borderPaint);
 
-    // Top right corner
     final path2 = Path()
       ..moveTo(cutOutRect.right - mBorderLength, cutOutRect.top - borderOffset)
       ..lineTo(cutOutRect.right - borderRadius, cutOutRect.top - borderOffset)
@@ -304,7 +282,6 @@ class QRScannerOverlayShape extends ShapeBorder {
 
     canvas.drawPath(path2, borderPaint);
 
-    // Bottom right corner
     final path3 = Path()
       ..moveTo(
         cutOutRect.right + borderOffset,
@@ -327,7 +304,6 @@ class QRScannerOverlayShape extends ShapeBorder {
 
     canvas.drawPath(path3, borderPaint);
 
-    // Bottom left corner
     final path4 = Path()
       ..moveTo(
         cutOutRect.left + mBorderLength,

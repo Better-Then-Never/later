@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/settings_pages/email_settings_page.dart';
 import 'package:later/views/pages/settings_pages/name_settings_page.dart';
 import 'package:later/services/firebase_auth_service.dart';
 import 'package:later/views/pages/settings_pages/password_settings_page.dart';
@@ -83,7 +84,7 @@ class SettingsPage extends StatelessWidget {
                               userProfileService.email,
                               textAlign: TextAlign.left,
                             ),
-                            navigateTo: NameSettingsPage(),
+                            navigateTo: EmailSettingsPage(),
                           ),
 
                           OptionsSettingsRow(

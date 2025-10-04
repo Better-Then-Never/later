@@ -1,11 +1,14 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:later/controllers/page_controllers/capsule_creation/capsule_creation_page_controller.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/views/pages/navbar_pages/map_page.dart' as map;
+import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
+import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
+import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/views/widgets/_common/options_elements/options_settings_row.dart';
+import 'package:later/views/widgets/capsule_creation/capsule_creation_cycled_info.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_image_preview.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
@@ -14,6 +17,8 @@ import 'package:later/views/widgets/capsule_creation/capsule_creation_title_inpu
 import 'package:intl/intl.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
+import 'package:provider/provider.dart';
 
 class CapsuleCreationPage extends StatefulWidget {
   final String imagePath;
@@ -30,73 +35,30 @@ class CapsuleCreationPage extends StatefulWidget {
 }
 
 class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _titleController = TextEditingController();
-
-  CapsulePrivacy _privacy = CapsulePrivacy.public;
-  CapsuleColor _color = CapsuleColor.red;
-  Timestamp? _openAt;
+  late final UserDataService _userDataService;
+  late final CapsuleCreationPageController _controller;
 
   LatLng? _pickedLocation;
-  String? uid;
-  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    uid = FirebaseAuth.instance.currentUser?.uid;
+    _userDataService = Provider.of<UserDataService>(context, listen: false);
     _pickedLocation = map.MapPage.currentPositionStatic;
 
-    // Set initial privacy based on arguments
+    CapsulePrivacy? initialPrivacy;
     if (widget.initialPrivacy == 'friends') {
-      _privacy = CapsulePrivacy.friends;
+      initialPrivacy = CapsulePrivacy.friends;
     } else if (widget.initialPrivacy == 'public') {
-      _privacy = CapsulePrivacy.public;
+      initialPrivacy = CapsulePrivacy.public;
     }
-  }
 
-  void _cyclePrivacy() {
-    final values = CapsulePrivacy.values;
-    final currentIndex = values.indexOf(_privacy);
-    final nextIndex = (currentIndex + 1) % values.length;
-    setState(() {
-      _privacy = values[nextIndex];
-    });
-  }
-
-  void _cycleColor() {
-    final values = CapsuleColor.values;
-    final currentIndex = values.indexOf(_color);
-    final nextIndex = (currentIndex + 1) % values.length;
-    setState(() {
-      _color = values[nextIndex];
-    });
-  }
-
-  Future<void> _pickOpenDate(BuildContext context) async {
-    final now = DateTime.now();
-
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: now.add(const Duration(days: 1)),
-      firstDate: now.add(const Duration(days: 1)),
-      lastDate: DateTime(now.year + 5),
+    _controller = CapsuleCreationPageController(
+      uid: _userDataService.currentLoggedInUid,
+      imagePath: widget.imagePath,
+      initialLocation: _pickedLocation,
+      initialPrivacy: initialPrivacy ?? null,
     );
-
-    if (picked != null) {
-      final chosenDateTime = DateTime(
-        picked.year,
-        picked.month,
-        picked.day,
-        now.hour,
-        now.minute,
-        now.second,
-      );
-
-      setState(() {
-        _openAt = Timestamp.fromDate(chosenDateTime);
-      });
-    }
   }
 
   @override
@@ -106,58 +68,42 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            PageHeader(
-              mainText: 'Create Capsule',
-              leadingButton: DefaultIconButton(
-                onTap: () => Navigator.pushReplacementNamed(context, '/camera'),
-                assetPath: 'assets/images/icons/prof_page/go_back.png',
-              ),
-              trailingButton: DefaultIconButton(
-                onTap: () => Navigator.pop(context),
-                assetPath: 'assets/images/icons/capsule_creation/cross.png',
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          PageHeader(
+            mainText: 'Create Capsule',
+            leadingButton: DefaultIconButton(
+              onTap: () => Navigator.pushReplacementNamed(context, '/camera'),
+              assetPath: 'assets/images/icons/prof_page/go_back.png',
             ),
+            trailingButton: DefaultIconButton(
+              onTap: () => Navigator.pop(context),
+              assetPath: 'assets/images/icons/capsule_creation/cross.png',
+            ),
+          ),
 
-            Padding(
-              padding: const EdgeInsets.all(12.0),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Text(
-                      'Capsule Preview',
-                      style: TextStyle(
-                        fontSize: MediaQuery.of(context).size.width * 0.05,
-                        fontFamily: 'Irina',
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  DefaultText(
+                    'Capsule Preview',
+                    fontSize: screenWidth * 0.05,
+                    fontWeight: FontWeight.bold,
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(25)),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
+                    width: screenWidth,
+                    height: screenHeight * 0.4,
+                    decoration: BoxDecorations.whiteCard(),
                     padding: const EdgeInsets.all(8),
                     child: Row(
                       children: [
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.45,
+                          width: screenWidth * 0.45,
                           height: double.infinity,
                           child: CapsuleImagePreview(
                             imagePath: widget.imagePath,
@@ -169,11 +115,11 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               CapsuleCreationTitleInput(
-                                controller: _titleController,
+                                controller: _controller.titleController,
                               ),
-
+                              ProfilePageDivider(width: screenWidth * 0.5),
                               CapsuleCreationDescriptionInputField(
-                                controller: _descriptionController,
+                                controller: _controller.descriptionController,
                               ),
 
                               CapsuleCreationDateStamp(
@@ -195,66 +141,64 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                   ),
                   SizedBox(height: 8),
 
-                  Text(
+                  DefaultText(
                     'Capsule Settings',
-                    style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.05,
-                      fontFamily: 'Irina',
-                      fontWeight: FontWeight.bold,
-                    ),
+                    fontSize: screenWidth * 0.05,
+                    fontWeight: FontWeight.bold,
                   ),
                   SizedBox(height: 8),
                   Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.185,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.all(Radius.circular(25)),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
+                    width: screenWidth,
+                    decoration: BoxDecorations.whiteCard(),
                     child: Column(
                       children: [
-                        _settingsRow(
-                          context,
-                          true,
-                          'Privacy',
-                          infoText: _privacy.label,
-                          onTap: _cyclePrivacy,
+                        OptionsSettingsRow(
+                          minVerticalPadding: 10,
+                          title: 'Privacy',
                           leadingIconPath:
                               'assets/images/icons/capsule_creation/privacy_icon.png',
-                          screenWidth: screenWidth,
+                          trailing: CapsuleCreationCycledInfo(
+                            infoText: _controller.privacy.label,
+                          ),
+                          onTap: () {
+                            _controller.cyclePrivacy();
+                            setState(() {});
+                          },
                         ),
-                        _settingsRow(
-                          context,
-                          true,
-                          'Open At',
-                          infoText: _openAt != null
-                              ? DateFormat(
-                                  'yyyy-MM-dd',
-                                ).format(_openAt!.toDate())
-                              : "Select date",
+
+                        OptionsSettingsRow(
+                          minVerticalPadding: 10,
+                          title: 'Open At',
+                          trailing: CapsuleCreationCycledInfo(
+                            infoText: _controller.openAt != null
+                                ? DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(_controller.openAt!.toDate())
+                                : "Select date",
+                          ),
                           leadingIconPath:
                               'assets/images/icons/capsule_creation/timer_icon.png',
-                          onTap: () => _pickOpenDate(context),
-                          screenWidth: screenWidth,
+                          onTap: () async {
+                            await _controller.pickOpenDate(context);
+                            setState(() {});
+                          },
                         ),
-                        _settingsRow(
-                          context,
-                          false,
-                          'Color',
-                          infoText: _color.label,
-                          infoLeadingIconPath:
-                              'assets/images/icons/capsule_creation/pin_${_color.label.toLowerCase()}_icon.png',
+
+                        OptionsSettingsRow(
+                          minVerticalPadding: 10,
+                          title: 'Color',
+                          trailing: CapsuleCreationCycledInfo(
+                            infoText: _controller.color.label,
+                            trailingLeadingIconPath:
+                                'assets/images/icons/capsule_creation/pin_${_controller.color.label.toLowerCase()}_icon.png',
+                          ),
                           leadingIconPath:
                               'assets/images/icons/capsule_creation/pin_color_icon.png',
-                          onTap: _cycleColor,
-                          screenWidth: screenWidth,
+                          onTap: () {
+                            _controller.cycleColor();
+                            setState(() {});
+                          },
+                          withDivider: false,
                         ),
                       ],
                     ),
@@ -262,193 +206,27 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
 
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
-        child: SizedBox(
-          height: 55,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 86, 201, 46),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              elevation: 0,
-            ),
-            onPressed: () async {
-              await _saveCapsule();
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return DefaultGreenButton(
+                onTap: () async {
+                  await _controller.saveCapsule(context);
+                },
+                text: 'Create Capsule',
+                isLoading: _controller.isSaving,
+              );
             },
-            child: _isSaving
-                ? const CircularProgressIndicator(color: Colors.white)
-                : const Text(
-                    "Create Capsule",
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Irina',
-                      color: Colors.white,
-                    ),
-                  ),
           ),
         ),
       ),
     );
   }
-
-  Future<void> _saveCapsule() async {
-    if (_pickedLocation == null) return;
-
-    setState(() => _isSaving = true);
-    try {
-      final capsuleId = FirebaseFirestore.instance
-          .collection('capsules')
-          .doc()
-          .id;
-
-      final ref = FirebaseStorage.instance.ref().child(
-        'userdata/$uid/capsules/$capsuleId/image.jpg',
-      );
-      await ref.putFile(File(widget.imagePath));
-      final imageUrl = await ref.getDownloadURL();
-
-      final capsule = TimeCapsule(
-        id: capsuleId,
-        ownerId: uid!,
-        imageUrl: imageUrl,
-        title: _titleController.text.isEmpty
-            ? 'Capsule'
-            : _titleController.text,
-        createdAt: Timestamp.now(),
-        isScheduled: true,
-        openAt: _openAt,
-        description: _descriptionController.text.isEmpty
-            ? null
-            : _descriptionController.text,
-        location: GeoPoint(
-          _pickedLocation!.latitude,
-          _pickedLocation!.longitude,
-        ),
-        privacy: _privacy,
-        color: _color.label.toLowerCase(),
-      );
-      final capsuleMap = capsule.toMap();
-      capsuleMap['privacy'] = _privacy.name;
-
-      await FirebaseFirestore.instance
-          .collection('capsules')
-          .doc(capsuleId)
-          .set(capsuleMap);
-
-      if (mounted) Navigator.pop(context);
-    } catch (e) {
-      // Handle error
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Failed to save capsule: $e")));
-      }
-    } finally {
-      setState(() => _isSaving = false);
-    }
-  }
-}
-
-Widget _settingsRow(
-  BuildContext context,
-  bool withDivider,
-  String title, {
-  VoidCallback? onTap,
-  required double screenWidth,
-  String? leadingIconPath,
-  required String infoText,
-  String? infoLeadingIconPath,
-}) {
-  return Column(
-    children: [
-      Theme(
-        data: Theme.of(context).copyWith(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-        ),
-        child: ListTile(
-          dense: true,
-          minVerticalPadding: 12,
-          visualDensity: const VisualDensity(vertical: -3),
-          leading: leadingIconPath != null
-              ? Image.asset(
-                  leadingIconPath,
-                  width: screenWidth * 0.07,
-                  height: screenWidth * 0.07,
-                )
-              : null,
-          title: Text(
-            title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.045,
-              fontFamily: 'Irina',
-              color: Colors.black,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(25)),
-                  color: Color.fromARGB(217, 217, 217, 217),
-                ),
-                width: screenWidth * 0.3,
-                alignment: Alignment.centerRight,
-                child: Center(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            infoText,
-                            style: const TextStyle(
-                              fontSize: 35,
-                              fontFamily: 'Irina',
-                              color: Color.fromARGB(255, 106, 106, 106),
-                            ),
-                          ),
-                          if (infoLeadingIconPath != null) SizedBox(width: 8),
-                          if (infoLeadingIconPath != null)
-                            Image.asset(
-                              infoLeadingIconPath,
-                              width: screenWidth * 0.1,
-                              height: screenWidth * 0.1,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          contentPadding: EdgeInsets.only(
-            left: screenWidth * 0.05,
-            right: screenWidth * 0.03,
-          ),
-          onTap: onTap,
-        ),
-      ),
-      if (withDivider)
-        const Divider(
-          height: 1,
-          thickness: 1,
-          indent: 0,
-          endIndent: 0,
-          color: Color.fromARGB(255, 211, 211, 211),
-        ),
-    ],
-  );
 }
