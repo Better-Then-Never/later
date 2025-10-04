@@ -59,6 +59,14 @@ class BoxDecorations {
     );
   }
 
+  static BoxDecoration lightBlueInfo() {
+    return BoxDecoration(
+      color: Colors.blue.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.blue.withValues(alpha: 0.3), width: 1),
+    );
+  }
+
   static BoxDecoration defaultBorderRadius({
     Color color = const Color(0xFF56C92E),
   }) {

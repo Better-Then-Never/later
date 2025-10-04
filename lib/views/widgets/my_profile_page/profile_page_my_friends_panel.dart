@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/widget_controllers/profile_page/pinned_friends_controller.dart';
+import 'package:later/controllers/widget_controllers/profile/pinned_friends_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_text_button.dart';
@@ -40,7 +40,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
 
         Positioned(
           bottom: 35,
-          left: 70,
+          left: 15,
           child: ChangeNotifierProvider(
             create: (context) => PinnedFriendsController(
               friendsService: userFriendsService,

@@ -45,13 +45,7 @@ class UserNameAndUsername extends StatelessWidget {
           crossAxisAlignment: crossAxisAlignment,
           children: [
             isLoading
-                ? DefaultLoadingContainer(
-                    width: nameFontSize * 4,
-                    height: nameFontSize,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(nameFontSize / 2),
-                    ),
-                  )
+                ? Center()
                 : DefaultText(
                     name,
                     fontSize: nameFontSize,
@@ -61,13 +55,7 @@ class UserNameAndUsername extends StatelessWidget {
                     height: 1.0,
                   ),
             isLoading
-                ? DefaultLoadingContainer(
-                    width: usernameFontSize * 3,
-                    height: usernameFontSize,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(usernameFontSize / 2),
-                    ),
-                  )
+                ? Center()
                 : DefaultText(
                     '@$username',
                     fontSize: usernameFontSize,
