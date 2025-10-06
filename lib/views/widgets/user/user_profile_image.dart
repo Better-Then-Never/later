@@ -4,15 +4,18 @@ import 'package:later/services/user_image_service.dart';
 
 class UserProfileImage extends StatelessWidget {
   final String userId;
-
   const UserProfileImage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserImageService>(
-      builder: (context, imageService, child) {
-        final imageProvider = imageService.getProfileImage(userId);
-        return Image(image: imageProvider, fit: BoxFit.cover);
+    final notifier = context.read<UserImageService>().getProfileNotifier(
+      userId,
+    );
+
+    return ValueListenableBuilder<ImageProvider>(
+      valueListenable: notifier,
+      builder: (_, image, __) {
+        return Image(image: image, fit: BoxFit.cover);
       },
     );
   }

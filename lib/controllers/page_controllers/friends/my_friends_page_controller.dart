@@ -56,11 +56,13 @@ class MyFriendsPageController extends ChangeNotifier {
   }
 
   Map<String, List<Map<String, dynamic>>> get groupedFilteredFriends {
-    final Map<String, List<Map<String, dynamic>>> grouped = {};
+    Map<String, List<Map<String, dynamic>>> grouped = {};
+    final seen = <String>{};
     for (var friend in filteredFriends) {
-      final name = friend['name'] ?? '';
-      if (name.isEmpty) continue;
-      final letter = name[0].toUpperCase();
+      if (seen.contains(friend['uid'])) continue;
+      seen.add(friend['uid']);
+
+      final letter = friend['name'][0].toUpperCase();
       grouped.putIfAbsent(letter, () => []).add(friend);
     }
     final sorted = Map.fromEntries(

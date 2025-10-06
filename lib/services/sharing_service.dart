@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/popup_notification_service.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SharingService {
@@ -14,7 +15,7 @@ class SharingService {
     required String userId,
   }) async {
     try {
-      final userService = UserDataService();
+      final userService = Provider.of<UserDataService>(context, listen: false);
       final userData = await userService.getUserData(userId);
       final friendName = userData['name'] ?? 'Unknown User';
       final link = generateProfileLink(userId);

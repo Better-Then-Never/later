@@ -44,10 +44,7 @@ class FriendRequestsReceivedList extends StatelessWidget {
               future: userDataService.getUserData(fromUserId),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return const SizedBox(
-                    height: 80,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
+                  return const SizedBox(height: 80, child: Center());
                 }
 
                 final userData = snapshot.data!;

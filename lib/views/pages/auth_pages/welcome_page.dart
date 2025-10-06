@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 List<Widget> pages = [const LoginPage()];
 
@@ -70,7 +71,17 @@ class WelcomePage extends StatelessWidget {
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/loginPage');
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                type: PageTransitionType.fade,
+                                duration: const Duration(milliseconds: 10),
+                                reverseDuration: const Duration(
+                                  milliseconds: 10,
+                                ),
+                                child: LoginPage(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFF56C92E),

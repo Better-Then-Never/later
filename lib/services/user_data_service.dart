@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:later/services/user_image_service.dart';
 
 class UserDataService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserImageService _userImageService;
+
+  UserDataService(this._userImageService);
 
   final Map<String, Map<String, String>> _userCache = {};
 
@@ -31,20 +35,28 @@ class UserDataService extends ChangeNotifier {
       final data = doc.data() ?? {};
 
       final result = {
+        'id': uid,
         'name': (data['name'] ?? 'Unknown').toString(),
         'username': (data['username'] ?? 'unknown').toString(),
         'email': (data['email'] ?? 'unknown@example.com').toString(),
       };
 
       _userCache[uid] = result;
+
+      // _userImageService.preloadProfileImageForUser(uid);
+
       return result;
     } catch (e) {
       final fallback = {
+        'id': uid,
         'name': 'Unknown',
         'username': 'unknown',
         'email': 'unknown@example.com',
       };
       _userCache[uid] = fallback;
+
+      // _userImageService.preloadBackgroundImageForUser(uid);
+
       return fallback;
     }
   }
@@ -85,5 +97,12 @@ class UserDataService extends ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
+
+  void onLogout() {
+    _userCache.clear();
+    _currentUid = null;
+    _isFetched = false;
+    notifyListeners();
   }
 }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class UserImageService extends ChangeNotifier {
-  final Map<String, ImageProvider> _profileCache = {};
-  final Map<String, ImageProvider> _backgroundCache = {};
-
+  final Map<String, ValueNotifier<ImageProvider>> _profileNotifiers = {};
   final Map<String, bool> _profileLoading = {};
+
+  final Map<String, ValueNotifier<ImageProvider>> _backgroundNotifiers = {};
   final Map<String, bool> _backgroundLoading = {};
 
   final ImageProvider profilePlaceholder = const AssetImage(
@@ -13,64 +13,126 @@ class UserImageService extends ChangeNotifier {
   );
 
   final ImageProvider backgroundPlaceholder = const AssetImage(
-    'assets/images/icons/navbar/icon-profile.png',
+    'assets/images/icons/prof_page/background_image_placeholder.png',
   );
 
-  ImageProvider getProfileImage(String userId) {
-    if (_profileCache.containsKey(userId)) {
-      return _profileCache[userId]!;
+  ValueNotifier<ImageProvider> getProfileNotifier(String userId) {
+    if (_profileNotifiers.containsKey(userId)) {
+      return _profileNotifiers[userId]!;
     }
+
+    final notifier = ValueNotifier<ImageProvider>(profilePlaceholder);
+    _profileNotifiers[userId] = notifier;
 
     if (!(_profileLoading[userId] ?? false)) {
       _profileLoading[userId] = true;
-      _loadProfileImage(userId);
+      _loadProfileImage(userId, notifier);
     }
 
-    return profilePlaceholder;
+    return notifier;
   }
 
-  Future<void> _loadProfileImage(String userId) async {
+  ValueNotifier<bool> getProfileLoadedNotifier(String userId) {
+    final notifier = ValueNotifier<bool>(false);
+
+    final profileNotifier = getProfileNotifier(userId);
+    void listener() {
+      if (profileNotifier.value is NetworkImage) {
+        notifier.value = true;
+        profileNotifier.removeListener(listener);
+      }
+    }
+
+    profileNotifier.addListener(listener);
+
+    listener();
+
+    return notifier;
+  }
+
+  Future<void> _loadProfileImage(
+    String userId,
+    ValueNotifier<ImageProvider> notifier,
+  ) async {
     try {
       final ref = FirebaseStorage.instance.ref(
         'userdata/$userId/assets/images/profile_image',
       );
       final url = await ref.getDownloadURL();
-
-      _profileCache[userId] = NetworkImage(url);
+      notifier.value = NetworkImage(url);
     } catch (e) {
-      _profileCache[userId] = profilePlaceholder;
+      notifier.value = profilePlaceholder;
     } finally {
       _profileLoading[userId] = false;
-      notifyListeners();
     }
   }
 
-  ImageProvider getBackgroundImage(String userId) {
-    if (_backgroundCache.containsKey(userId)) {
-      return _backgroundCache[userId]!;
+  ValueNotifier<ImageProvider> getBackgroundNotifier(String userId) {
+    if (_backgroundNotifiers.containsKey(userId)) {
+      return _backgroundNotifiers[userId]!;
     }
+
+    final notifier = ValueNotifier<ImageProvider>(backgroundPlaceholder);
+    _backgroundNotifiers[userId] = notifier;
 
     if (!(_backgroundLoading[userId] ?? false)) {
       _backgroundLoading[userId] = true;
-      _loadBackgroundImage(userId);
+      _loadBackgroundImage(userId, notifier);
     }
 
-    return backgroundPlaceholder;
+    return notifier;
   }
 
-  Future<void> _loadBackgroundImage(String userId) async {
+  Future<void> _loadBackgroundImage(
+    String userId,
+    ValueNotifier<ImageProvider> notifier,
+  ) async {
     try {
       final ref = FirebaseStorage.instance.ref(
         'userdata/$userId/assets/images/background_image',
       );
       final url = await ref.getDownloadURL();
-
-      _backgroundCache[userId] = NetworkImage(url);
+      notifier.value = NetworkImage(url);
     } catch (e) {
-      _backgroundCache[userId] = backgroundPlaceholder;
+      notifier.value = backgroundPlaceholder;
     } finally {
       _backgroundLoading[userId] = false;
-      notifyListeners();
     }
+  }
+
+  Future<void> preloadProfileImageForUser(
+    String userId,
+    BuildContext context,
+  ) async {
+    final notifier = getProfileNotifier(userId);
+    if (!(notifier.value is NetworkImage)) {
+      await precacheImage(notifier.value, context);
+    }
+  }
+
+  Future<void> preloadBackgroundImageForUser(
+    String userId,
+    BuildContext context,
+  ) async {
+    final notifier = getBackgroundNotifier(userId);
+    if (!(notifier.value is NetworkImage)) {
+      await precacheImage(notifier.value, context);
+    }
+  }
+
+  void onLogout() {
+    for (final notifier in _profileNotifiers.values) {
+      notifier.dispose();
+    }
+    for (final notifier in _backgroundNotifiers.values) {
+      notifier.dispose();
+    }
+
+    _profileNotifiers.clear();
+    _backgroundNotifiers.clear();
+    _profileLoading.clear();
+    _backgroundLoading.clear();
+
+    notifyListeners();
   }
 }

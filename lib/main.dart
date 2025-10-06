@@ -31,13 +31,18 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final userImageService = UserImageService();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
-        ChangeNotifierProvider(create: (_) => UserDataService()),
+        ChangeNotifierProvider(
+          create: (_) => UserDataService(userImageService),
+        ),
         ChangeNotifierProvider(create: (_) => UserFriendsService()),
-        ChangeNotifierProvider(create: (_) => UserImageService()),
+        ChangeNotifierProvider.value(value: userImageService),
       ],
       child: const Application(),
     ),

@@ -4,6 +4,7 @@ import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart'
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:later/services/deep_link_service.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class QRScannerPage extends StatefulWidget {
   const QRScannerPage({super.key});
@@ -11,7 +12,12 @@ class QRScannerPage extends StatefulWidget {
   static Future<void> open(BuildContext context) async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => QRScannerPage()),
+      PageTransition(
+        type: PageTransitionType.fade,
+        duration: const Duration(milliseconds: 10),
+        reverseDuration: const Duration(milliseconds: 10),
+        child: QRScannerPage(),
+      ),
     );
 
     if (result != null && result is String) {
@@ -20,8 +26,11 @@ class QRScannerPage extends StatefulWidget {
         if (userId != null && context.mounted) {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => AddFriendProfilePage(userId: userId),
+            PageTransition(
+              type: PageTransitionType.fade,
+              duration: const Duration(milliseconds: 10),
+              reverseDuration: const Duration(milliseconds: 10),
+              child: AddFriendProfilePage(userId: userId),
             ),
           );
         }

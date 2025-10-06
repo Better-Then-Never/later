@@ -4,6 +4,7 @@ import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_action_button.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_header.dart';
 import 'package:later/views/widgets/user/user_name_and_username.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/popup_notification_service.dart';
@@ -41,9 +42,11 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
         onNavigateToFriendProfile: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  YourFriendProfilePage(friendUid: widget.userId),
+            PageTransition(
+              type: PageTransitionType.fade,
+              duration: const Duration(milliseconds: 10),
+              reverseDuration: const Duration(milliseconds: 10),
+              child: YourFriendProfilePage(friendUid: widget.userId),
             ),
           );
         },

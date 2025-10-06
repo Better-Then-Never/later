@@ -23,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage>
     super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final userProfileService = context.watch<UserDataService>();
+    final userProfileService = context.read<UserDataService>();
     final uid = userProfileService.currentLoggedInUid;
 
     return Scaffold(
@@ -36,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage>
             child: Column(
               children: [
                 const SizedBox(height: 16),
-                ProfilePageMyCapsulesPanel(),
+                const ProfilePageMyCapsulesPanel(),
                 const SizedBox(height: 16),
                 ProfilePageAddFriendsButton(currentUserUid: uid),
                 const SizedBox(height: 8),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:later/views/pages/capsule_related_pages/capsule_creation_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class CameraPage extends StatefulWidget {
   final Map<String, dynamic>? arguments;
@@ -99,8 +100,11 @@ class _CameraPageState extends State<CameraPage> {
 
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => CapsuleCreationPage(
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          duration: const Duration(milliseconds: 10),
+                          reverseDuration: const Duration(milliseconds: 10),
+                          child: CapsuleCreationPage(
                             imagePath: picture.path,
                             initialPrivacy: widget.arguments?['privacy'],
                           ),

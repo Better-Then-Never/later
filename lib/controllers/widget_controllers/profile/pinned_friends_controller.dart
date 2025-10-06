@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_dialog.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:later/services/firebase_storage_service.dart';
 import 'package:later/services/user_data_service.dart';
@@ -115,8 +117,11 @@ class PinnedFriendsController extends ChangeNotifier {
   void openFriendPage(BuildContext context, String friendUid) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => YourFriendProfilePage(friendUid: friendUid),
+      PageTransition(
+        type: PageTransitionType.fade,
+        duration: const Duration(milliseconds: 10),
+        reverseDuration: const Duration(milliseconds: 10),
+        child: YourFriendProfilePage(friendUid: friendUid),
       ),
     );
   }

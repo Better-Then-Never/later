@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/user_data_service.dart';
+import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/views/widgets/friends/add_friends_page/suggested_friend_placeholder_row.dart';
 import 'package:later/views/widgets/friends/add_friends_page/suggested_friend_row.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/user_friends_service.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:later/services/user_image_service.dart';
 
-class SuggestedFriendsList extends StatelessWidget {
+class SuggestedFriendsList extends StatefulWidget {
   final Function(String userId) onSendRequest;
   final Function(String userId) onRemoveFriend;
   final String searchQuery;
@@ -19,64 +22,141 @@ class SuggestedFriendsList extends StatelessWidget {
   });
 
   @override
+  State<SuggestedFriendsList> createState() => _SuggestedFriendsListState();
+}
+
+class _SuggestedFriendsListState extends State<SuggestedFriendsList>
+    with AutomaticKeepAliveClientMixin<SuggestedFriendsList> {
+  /// Users that are fully loaded and ready to display
+  final Map<String, Map<String, dynamic>> _readyUsers = {};
+
+  /// Users still loading (either data or avatar)
+  final Set<String> _loadingUserIds = {};
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    final userService = Provider.of<UserDataService>(context);
-    final userFriendsService = Provider.of<UserFriendsService>(context);
+    super.build(context);
+
+    final userService = context.read<UserDataService>();
+    final userFriendsService = context.watch<UserFriendsService>();
+    final imageService = context.read<UserImageService>();
     final currentUid = userService.currentLoggedInUid;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     return StreamBuilder<List<Map<String, dynamic>>>(
       stream: userFriendsService.getSuggestedFriends(
         currentUserId: currentUid,
-        searchQuery: searchQuery,
+        searchQuery: widget.searchQuery,
       ),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
+        if (!snapshot.hasData) return const Center();
 
         final users = snapshot.data!;
         if (users.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 180),
-            child: Center(child: DefaultText('No more suggested friends')),
-          );
+          return const Center(child: DefaultText('No more suggested friends'));
         }
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: users.map((user) {
-            final isSent = userFriendsService.sentRequests.contains(user['id']);
-            return Column(
-              children: [
-                SuggestedFriendRow(
-                  userId: user['id'],
-                  name: user['name'],
-                  username: user['username'],
-                  onTapProfile: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            AddFriendProfilePage(userId: user['id']),
-                      ),
-                    );
-                  },
-                  onSendRequest: () => onSendRequest(user['id']),
-                  onRemove: () => onRemoveFriend(user['id']),
-                  isSent: isSent,
-                  screenWidth: screenWidth,
+        for (var user in users) {
+          final userId = user['id'] ?? '';
+          if (!_readyUsers.containsKey(userId) &&
+              !_loadingUserIds.contains(userId)) {
+            _loadUser(userId, userService, imageService);
+          }
+        }
+
+        return ListView(
+          children: [
+            for (var userData in _readyUsers.values)
+              _buildUserRow(context, userData, userFriendsService),
+            for (var user in users)
+              if (!_readyUsers.containsKey(user['id']))
+                SuggestedFriendPlaceholderRow(
+                  screenWidth: MediaQuery.of(context).size.width,
                 ),
-                const Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: Color(0xFFD3D3D3),
-                ),
-              ],
-            );
-          }).toList(),
+          ],
         );
       },
+    );
+  }
+
+  /// Load user data and profile image, then mark as ready
+  void _loadUser(
+    String userId,
+    UserDataService userService,
+    UserImageService imageService,
+  ) async {
+    if (_loadingUserIds.contains(userId)) return;
+    _loadingUserIds.add(userId);
+
+    try {
+      final userData = await userService.getUserData(userId);
+      final profileNotifier = imageService.getProfileNotifier(userId);
+
+      // Helper to mark the user as ready
+      Future<void> markUserReady() async {
+        final imageProvider = profileNotifier.value;
+
+        if (imageProvider is NetworkImage) {
+          await precacheImage(imageProvider, context);
+
+          if (mounted) {
+            setState(() {
+              _readyUsers[userId] = userData;
+              _loadingUserIds.remove(userId);
+            });
+          }
+        }
+      }
+
+      if (profileNotifier.value is NetworkImage) {
+        // Image already loaded, mark user immediately
+        await markUserReady();
+      } else {
+        // Wait for image to load
+        void listener() async {
+          await markUserReady();
+          profileNotifier.removeListener(listener);
+        }
+
+        profileNotifier.addListener(listener);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _loadingUserIds.remove(userId);
+        });
+      }
+    }
+  }
+
+  Widget _buildUserRow(
+    BuildContext context,
+    Map<String, dynamic> userData,
+    UserFriendsService userFriendsService,
+  ) {
+    final userId = userData['id'] ?? '';
+    final isSent = userFriendsService.sentRequests.contains(userId);
+
+    return SuggestedFriendRow(
+      userId: userId,
+      name: userData['name'] ?? '',
+      username: userData['username'] ?? '',
+      onTapProfile: () {
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            duration: const Duration(milliseconds: 10),
+            reverseDuration: const Duration(milliseconds: 10),
+            child: AddFriendProfilePage(userId: userId),
+          ),
+        );
+      },
+      onSendRequest: () => widget.onSendRequest(userId),
+      onRemove: () => widget.onRemoveFriend(userId),
+      isSent: isSent,
+      screenWidth: MediaQuery.of(context).size.width,
     );
   }
 }

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:later/controllers/widget_controllers/profile/pinned_friends_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_friends_service.dart';
+import 'package:later/views/pages/friends_pages/my_friends_page.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_text_button.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/my_profile_page/my_friends_panel/pinned_friends_row.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePageMyFriendsPanel extends StatelessWidget {
@@ -49,7 +51,6 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
             child: PinnedFriendsRow(),
           ),
         ),
-
         Positioned(
           bottom: 0,
           left: 0,
@@ -87,7 +88,15 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
                 height: 40,
                 child: DefaultTextButton(
                   onTap: () {
-                    Navigator.pushNamed(context, '/myFriendsPage');
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.fade,
+                        duration: const Duration(milliseconds: 10),
+                        reverseDuration: const Duration(milliseconds: 10),
+                        child: MyFriendsPage(),
+                      ),
+                    );
                   },
                   text: 'My friends',
                 ),

@@ -32,13 +32,14 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20),
-                  child: SizedBox(
+                  child: Container(
                     width: 40,
                     height: 40,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Image.asset(
-                        'assets/images/icons/prof_page/my_capsules.png',
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                          'assets/images/icons/prof_page/my_capsules.png',
+                        ),
                       ),
                     ),
                   ),

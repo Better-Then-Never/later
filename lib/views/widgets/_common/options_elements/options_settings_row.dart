@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:page_transition/page_transition.dart';
 
 class OptionsSettingsRow extends StatelessWidget {
   final String title;
@@ -76,7 +77,12 @@ class OptionsSettingsRow extends StatelessWidget {
                 ? () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => navigateTo!),
+                      PageTransition(
+                        type: PageTransitionType.fade,
+                        duration: const Duration(milliseconds: 10),
+                        reverseDuration: const Duration(milliseconds: 10),
+                        child: navigateTo,
+                      ),
                     );
                   }
                 : onTap,

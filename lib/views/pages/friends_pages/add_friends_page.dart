@@ -98,22 +98,20 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
           Flexible(
             child: SafeArea(
               top: false,
-              child: SingleChildScrollView(
-                child: SuggestedFriendsList(
-                  onSendRequest: (userId) {
-                    _controller.sendFriendRequest(
-                      userId: userId,
-                      context: context,
-                    );
-                  },
-                  onRemoveFriend: (userId) {
-                    _controller.removeSuggestedFriend(
-                      userId: userId,
-                      context: context,
-                    );
-                  },
-                  searchQuery: _searchQuery,
-                ),
+              child: SuggestedFriendsList(
+                onSendRequest: (userId) {
+                  _controller.sendFriendRequest(
+                    userId: userId,
+                    context: context,
+                  );
+                },
+                onRemoveFriend: (userId) {
+                  _controller.removeSuggestedFriend(
+                    userId: userId,
+                    context: context,
+                  );
+                },
+                searchQuery: _searchQuery,
               ),
             ),
           ),

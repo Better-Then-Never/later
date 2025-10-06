@@ -4,20 +4,18 @@ import 'package:later/services/user_image_service.dart';
 
 class UserBackgroundImage extends StatelessWidget {
   final String userId;
-  final BoxFit fit;
-
-  const UserBackgroundImage({
-    super.key,
-    required this.userId,
-    this.fit = BoxFit.cover,
-  });
+  const UserBackgroundImage({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserImageService>(
-      builder: (context, imageService, child) {
-        final imageProvider = imageService.getBackgroundImage(userId);
-        return Image(image: imageProvider, fit: fit);
+    final notifier = context.read<UserImageService>().getBackgroundNotifier(
+      userId,
+    );
+
+    return ValueListenableBuilder<ImageProvider>(
+      valueListenable: notifier,
+      builder: (_, image, __) {
+        return Image(image: image, fit: BoxFit.cover);
       },
     );
   }

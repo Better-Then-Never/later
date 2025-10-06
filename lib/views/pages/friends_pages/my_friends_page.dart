@@ -77,10 +77,10 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
               animation: _controller,
               builder: (context, _) {
                 if (_controller.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center();
                 }
 
-                final friends = _controller.filteredFriends;
+                final friends = _controller.filteredFriends.toSet();
 
                 if (friends.isEmpty) {
                   return DefaultEmptyInboxInfo(

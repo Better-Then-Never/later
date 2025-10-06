@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/notifiers.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/core_pages/widget_tree.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:provider/provider.dart';
@@ -13,7 +15,7 @@ class WidgetTreeWrapper extends StatefulWidget {
 }
 
 class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
-  final userProfileService = UserDataService();
+  bool _preloaded = false;
 
   @override
   void initState() {
@@ -21,9 +23,25 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
     selectedPageNotifier.value = 0;
 
     final userProfileService = context.read<UserDataService>();
+    final userFriendsService = context.read<UserFriendsService>();
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid != null) {
-      userProfileService.getCurrentUserProfile(uid);
+
+    userProfileService.getCurrentUserProfile(uid!);
+    userFriendsService.init();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_preloaded) {
+      _preloaded = true;
+
+      final userImageService = context.read<UserImageService>();
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+
+      userImageService.preloadBackgroundImageForUser(uid, context);
+      userImageService.preloadProfileImageForUser(uid, context);
     }
   }
 

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/user_image_service.dart';
+import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:later/views/pages/settings_pages/email_settings_page.dart';
 import 'package:later/views/pages/settings_pages/name_settings_page.dart';
 import 'package:later/services/firebase_auth_service.dart';
@@ -12,6 +15,7 @@ import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/options_elements/options_settings_row.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/services/user_data_service.dart';
@@ -24,6 +28,8 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProfileService = context.watch<UserDataService>();
+    final userFriendsService = context.watch<UserFriendsService>();
+    final userImageService = context.watch<UserImageService>();
     final assetService = AssetImageService();
 
     final screenHeight = MediaQuery.of(context).size.height;
@@ -118,17 +124,29 @@ class SettingsPage extends StatelessWidget {
                             onTap: () {
                               ConfirmDialog.show(
                                 context: context,
-                                title: 'Sosal?',
+                                title: 'Are you sure you want to log out?',
                                 onConfirm: () async {
                                   FirebaseAuthService().signOut();
                                   Navigator.of(context).pop();
                                   await assetService.clearLocalCache();
                                   if (!context.mounted) return;
-                                  Navigator.pushNamedAndRemoveUntil(
+                                  Navigator.pushAndRemoveUntil(
                                     context,
-                                    '/loginPage',
+                                    PageTransition(
+                                      type: PageTransitionType.fade,
+                                      duration: const Duration(
+                                        milliseconds: 10,
+                                      ),
+                                      reverseDuration: const Duration(
+                                        milliseconds: 10,
+                                      ),
+                                      child: LoginPage(),
+                                    ),
                                     (route) => false,
                                   );
+                                  userProfileService.onLogout();
+                                  userFriendsService.onLogout();
+                                  userImageService.onLogout();
                                 },
                               );
                             },

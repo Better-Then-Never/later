@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class DeepLinkService {
   static void handleDeepLink(BuildContext context, String link) {
@@ -18,11 +19,11 @@ class DeepLinkService {
       }
 
       if (userId != null && userId.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddFriendProfilePage(userId: userId!),
-          ),
+        PageTransition(
+          type: PageTransitionType.fade,
+          duration: const Duration(milliseconds: 10),
+          reverseDuration: const Duration(milliseconds: 10),
+          child: AddFriendProfilePage(userId: userId),
         );
       } else {}
     } catch (e) {}

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:later/views/widgets/auth/login_with_social.dart';
 import 'package:later/views/widgets/auth/main_text_and_logo.dart';
 import 'package:later/views/widgets/auth/registration_input_field.dart';
 import 'package:later/views/widgets/auth/submit_button.dart';
+import 'package:page_transition/page_transition.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -89,7 +91,19 @@ class _SignupPageState extends State<SignupPage> {
                                   overlayColor: Colors.transparent,
                                 ),
                                 onPressed: () {
-                                  Navigator.pushNamed(context, '/loginPage');
+                                  Navigator.push(
+                                    context,
+                                    PageTransition(
+                                      type: PageTransitionType.fade,
+                                      duration: const Duration(
+                                        milliseconds: 10,
+                                      ),
+                                      reverseDuration: const Duration(
+                                        milliseconds: 10,
+                                      ),
+                                      child: LoginPage(),
+                                    ),
+                                  );
                                 },
                                 child: const Text(
                                   "Log In",

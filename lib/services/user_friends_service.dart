@@ -22,10 +22,10 @@ class UserFriendsService extends ChangeNotifier {
   StreamSubscription<QuerySnapshot>? _receivedRequestsSub;
 
   UserFriendsService() {
-    _init();
+    init();
   }
 
-  Future<void> _init() async {
+  Future<void> init() async {
     await refreshFriends();
     _listenSentRequests();
     _listenReceivedRequests();
@@ -208,27 +208,42 @@ class UserFriendsService extends ChangeNotifier {
     required String currentUserId,
     String searchQuery = '',
   }) {
-    return _firestore.collection('users').snapshots().map((snapshot) {
+    Query query = _firestore
+        .collection('users')
+        .where(FieldPath.documentId, isNotEqualTo: currentUserId);
+
+    if (searchQuery.isNotEmpty) {
+      query = query
+          .where('username', isGreaterThanOrEqualTo: searchQuery)
+          .where('username', isLessThanOrEqualTo: searchQuery + '\uf8ff');
+    }
+
+    return query.snapshots().map((snapshot) {
       return snapshot.docs
-          .where((doc) => doc.id != currentUserId)
           .where((doc) => !_friends.contains(doc.id))
           .where((doc) => !_removedFromSuggested.contains(doc.id))
-          .where((doc) {
-            if (searchQuery.isEmpty) return true;
-            final username = (doc.data()['username'] ?? '')
-                .toString()
-                .toLowerCase();
-            return username.contains(searchQuery.toLowerCase());
-          })
-          .map(
-            (doc) => {
+          .map((doc) {
+            final data = doc.data() as Map<String, dynamic>? ?? {};
+            return {
               'id': doc.id,
-              'name': doc.data()['name'] ?? '',
-              'username': doc.data()['username'] ?? '',
-            },
-          )
+              'name': data['name'] ?? '',
+              'username': data['username'] ?? '',
+            };
+          })
           .toList();
     });
+  }
+
+  void onLogout() {
+    _sentRequestsSub?.cancel();
+    _receivedRequestsSub?.cancel();
+
+    _friends.clear();
+    _sentRequests.clear();
+    _receivedRequests.clear();
+    _removedFromSuggested.clear();
+
+    notifyListeners();
   }
 
   @override

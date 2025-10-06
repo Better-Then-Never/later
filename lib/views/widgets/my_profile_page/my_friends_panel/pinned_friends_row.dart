@@ -14,10 +14,7 @@ class PinnedFriendsRow extends StatelessWidget {
     final size = screenWidth / 3.8;
 
     if (controller.isLoading) {
-      return SizedBox(
-        height: 80,
-        child: Center(child: CircularProgressIndicator()),
-      );
+      return SizedBox(height: 80, child: Center());
     }
 
     if (controller.allFriends.isEmpty) {
