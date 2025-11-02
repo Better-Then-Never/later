@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/user_image_service.dart';
 import 'package:later/views/widgets/user/user_profile_image.dart';
 
 class PinnedFriendAvatar extends StatelessWidget {
@@ -23,7 +24,10 @@ class PinnedFriendAvatar extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
         clipBehavior: Clip.hardEdge,
-        child: UserProfileImage(userId: uid),
+        child: UserProfileImage(
+          userId: uid,
+          placeholderType: ProfilePlaceholderType.pinnedFriend,
+        ),
       ),
     );
   }

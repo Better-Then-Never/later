@@ -33,17 +33,7 @@ class PinnedFriendsRow extends StatelessWidget {
       future: controller.getDisplayFriends(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(
-              3,
-              (index) => SizedBox(
-                width: size,
-                height: size,
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          );
+          return Center();
         }
 
         final friendsData = snapshot.data!;

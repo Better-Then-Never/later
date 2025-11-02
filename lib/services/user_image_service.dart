@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+enum ProfilePlaceholderType { friendsList, pinnedFriend }
+
 class UserImageService extends ChangeNotifier {
   final Map<String, ValueNotifier<ImageProvider>> _profileNotifiers = {};
   final Map<String, bool> _profileLoading = {};
@@ -8,25 +10,35 @@ class UserImageService extends ChangeNotifier {
   final Map<String, ValueNotifier<ImageProvider>> _backgroundNotifiers = {};
   final Map<String, bool> _backgroundLoading = {};
 
-  final ImageProvider profilePlaceholder = const AssetImage(
-    'assets/images/icons/navbar/icon-profile.png',
-  );
+  final Map<ProfilePlaceholderType, ImageProvider> _profilePlaceholders = {
+    ProfilePlaceholderType.friendsList: const AssetImage(
+      'assets/images/icons/prof_page/no_photo.png',
+    ),
+    ProfilePlaceholderType.pinnedFriend: const AssetImage(
+      'assets/images/icons/prof_page/no_photo.png',
+    ),
+  };
 
   final ImageProvider backgroundPlaceholder = const AssetImage(
     'assets/images/icons/prof_page/background_image_placeholder.png',
   );
 
-  ValueNotifier<ImageProvider> getProfileNotifier(String userId) {
+  ValueNotifier<ImageProvider> getProfileNotifier(
+    String userId, {
+    ProfilePlaceholderType placeholderType = ProfilePlaceholderType.friendsList,
+  }) {
     if (_profileNotifiers.containsKey(userId)) {
       return _profileNotifiers[userId]!;
     }
 
-    final notifier = ValueNotifier<ImageProvider>(profilePlaceholder);
+    final notifier = ValueNotifier<ImageProvider>(
+      _profilePlaceholders[placeholderType]!,
+    );
     _profileNotifiers[userId] = notifier;
 
     if (!(_profileLoading[userId] ?? false)) {
       _profileLoading[userId] = true;
-      _loadProfileImage(userId, notifier);
+      _loadProfileImage(userId, notifier, placeholderType);
     }
 
     return notifier;
@@ -53,6 +65,7 @@ class UserImageService extends ChangeNotifier {
   Future<void> _loadProfileImage(
     String userId,
     ValueNotifier<ImageProvider> notifier,
+    ProfilePlaceholderType placeholderType,
   ) async {
     try {
       final ref = FirebaseStorage.instance.ref(
@@ -61,7 +74,7 @@ class UserImageService extends ChangeNotifier {
       final url = await ref.getDownloadURL();
       notifier.value = NetworkImage(url);
     } catch (e) {
-      notifier.value = profilePlaceholder;
+      notifier.value = _profilePlaceholders[placeholderType]!;
     } finally {
       _profileLoading[userId] = false;
     }

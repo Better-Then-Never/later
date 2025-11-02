@@ -40,7 +40,7 @@ class _CameraPageState extends State<CameraPage> {
   Widget _buildUI() {
     if (cameraController == null ||
         cameraController?.value.isInitialized == false) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center();
     }
 
     return SafeArea(

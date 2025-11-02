@@ -8,12 +8,12 @@ class UserFriendsService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final List<String> _friends = [];
+  final Set<String> _friends = {};
   final Set<String> _sentRequests = {};
   final Set<String> _receivedRequests = {};
   final Set<String> _removedFromSuggested = {};
 
-  List<String> get friends => _friends;
+  Set<String> get friends => _friends;
   Set<String> get sentRequests => _sentRequests;
   Set<String> get receivedRequests => _receivedRequests;
   Set<String> get removedFromSuggested => _removedFromSuggested;

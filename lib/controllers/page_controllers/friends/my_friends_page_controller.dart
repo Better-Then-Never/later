@@ -42,7 +42,7 @@ class MyFriendsPageController extends ChangeNotifier {
     });
   }
 
-  List<String> get friendUids => _friendsService.friends;
+  Set<String> get friendUids => _friendsService.friends;
 
   List<Map<String, dynamic>> get filteredFriends {
     if (_searchQuery.isEmpty) return List.unmodifiable(_friendsData);

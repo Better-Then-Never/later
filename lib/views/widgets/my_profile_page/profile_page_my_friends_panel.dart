@@ -42,7 +42,8 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
 
         Positioned(
           bottom: 35,
-          left: 15,
+          left: 0,
+          right: 0,
           child: ChangeNotifierProvider(
             create: (context) => PinnedFriendsController(
               friendsService: userFriendsService,

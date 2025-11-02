@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_dialog.dart';
 import 'package:page_transition/page_transition.dart';
@@ -12,8 +11,8 @@ class PinnedFriendsController extends ChangeNotifier {
   final UserFriendsService friendsService;
   final UserDataService userDataService;
 
-  List<String> pinnedUids = [];
-  List<String> allFriends = [];
+  Set<String> pinnedUids = {};
+  Set<String> allFriends = {};
   Map<String, Map<String, String>> friendInfoMap = {};
   Map<String, String?> pinnedImages = {};
   bool isLoading = true;
@@ -30,7 +29,7 @@ class PinnedFriendsController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    allFriends = List.from(friendsService.friends);
+    allFriends = friendsService.friends.toSet();
 
     Map<String, Map<String, String>> infoMap = {};
     for (var uid in allFriends) {
@@ -43,7 +42,8 @@ class PinnedFriendsController extends ChangeNotifier {
     friendInfoMap = infoMap;
 
     final prefs = await SharedPreferences.getInstance();
-    pinnedUids = prefs.getStringList('pinned_friend_uids') ?? [];
+    final pinnedList = prefs.getStringList('pinned_friend_uids') ?? [];
+    pinnedUids = pinnedList.toSet();
 
     Map<String, String?> images = {};
     for (var uid in pinnedUids) {
@@ -56,9 +56,9 @@ class PinnedFriendsController extends ChangeNotifier {
   }
 
   Future<void> setPinnedFriends(List<String> uids) async {
-    pinnedUids = uids.take(3).toList();
+    pinnedUids = uids.take(3).toSet();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('pinned_friend_uids', pinnedUids);
+    await prefs.setStringList('pinned_friend_uids', pinnedUids.toList());
 
     for (var uid in pinnedUids) {
       if (!pinnedImages.containsKey(uid)) {
@@ -82,15 +82,19 @@ class PinnedFriendsController extends ChangeNotifier {
     }
 
     final slotsLeft = 3 - widgets.length;
-    final nonPinned = allFriends
-        .where((uid) => !pinnedUids.contains(uid))
-        .toList();
-    nonPinned.shuffle();
+    if (slotsLeft > 0) {
+      final nonPinned = allFriends.difference(pinnedUids).toList();
+      nonPinned.shuffle();
 
-    for (var uid in nonPinned.take(slotsLeft)) {
-      final imageUrl = await FirebaseStorageService.getProfileImageUrl(uid);
-      widgets.add({'uid': uid, 'imageUrl': imageUrl ?? ''});
+      for (var uid in nonPinned.take(slotsLeft)) {
+        final imageUrl = await FirebaseStorageService.getProfileImageUrl(uid);
+        widgets.add({'uid': uid, 'imageUrl': imageUrl ?? ''});
+      }
     }
+
+    print('allFriends: $allFriends');
+    print('pinnedUids: $pinnedUids');
+    print('getDisplayFriends output: $widgets');
 
     return widgets;
   }
@@ -104,8 +108,8 @@ class PinnedFriendsController extends ChangeNotifier {
       isScrollControlled: true,
       barrierColor: Colors.black.withAlpha(128),
       builder: (_) => PinnedFriendsSelectionDialog(
-        pinnedUids: pinnedUids,
-        allFriends: allFriends,
+        pinnedUids: pinnedUids.toList(),
+        allFriends: allFriends.toList(),
         friendInfoMap: friendInfoMap,
         onSave: (newPinned) async {
           await setPinnedFriends(newPinned);
