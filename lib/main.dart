@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
-import 'package:later/services/auth/auth_services.dart';
-import 'package:later/views/pages/login_page.dart';
-import 'package:later/views/pages/options_profile_page/add_friends_page.dart';
-import 'package:later/views/pages/options_profile_page/my_friends_page.dart';
-import 'package:later/views/pages/welcome_page.dart';
-import 'package:later/views/pages/camera_page.dart';
-import 'package:later/views/pages/signup_page.dart';
+import 'package:later/services/firebase_auth_service.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/user_image_service.dart';
+import 'package:later/views/pages/auth_pages/login_page.dart';
+import 'package:later/views/pages/friends_pages/add_friends_page.dart';
+import 'package:later/views/pages/friends_pages/my_friends_page.dart';
+import 'package:later/views/pages/auth_pages/welcome_page.dart';
+import 'package:later/views/pages/navbar_pages/camera_page.dart';
+import 'package:later/views/pages/auth_pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:later/views/pages/options_profile_page/settings_page.dart';
-import 'package:later/views/pages/options_profile_page/notifications_page.dart';
-import 'package:later/views/pages/options_profile_page/share_page.dart';
-import 'package:later/views/pages/profile_page.dart';
-import 'package:later/views/pages/options_settings_page/name_changing.dart';
-import 'package:later/views/widget_tree_wrapper.dart';
-import 'package:later/services/cache_firebase/user_services.dart';
-import 'package:later/services/cache_firebase/deep_link_handler.dart';
-import 'package:later/views/pages/permission_gate_page/permission_gate.dart';
+import 'package:later/views/pages/core_pages/settings_page.dart';
+import 'package:later/views/pages/core_pages/notifications_page.dart';
+import 'package:later/views/pages/core_pages/share_profile_page.dart';
+import 'package:later/views/pages/navbar_pages/profile_page.dart';
+import 'package:later/views/pages/settings_pages/name_settings_page.dart';
+import 'package:later/views/pages/core_pages/widget_tree_wrapper_page.dart';
+import 'package:later/services/deep_link_service.dart';
+import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
+import 'package:later/services/user_data_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -29,11 +31,18 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  final userImageService = UserImageService();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthService()),
-        ChangeNotifierProvider(create: (context) => UserService()),
+        ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
+        ChangeNotifierProvider(
+          create: (_) => UserDataService(userImageService),
+        ),
+        ChangeNotifierProvider(create: (_) => UserFriendsService()),
+        ChangeNotifierProvider.value(value: userImageService),
       ],
       child: const Application(),
     ),
@@ -85,11 +94,11 @@ class _ApplicationState extends State<Application> {
 
   void _handleIncomingLink(String link) {
     if (navigatorKey.currentContext != null) {
-      DeepLinkHandler.handleDeepLink(navigatorKey.currentContext!, link);
+      DeepLinkService.handleDeepLink(navigatorKey.currentContext!, link);
     } else {
       Future.delayed(Duration(milliseconds: 500), () {
         if (navigatorKey.currentContext != null) {
-          DeepLinkHandler.handleDeepLink(navigatorKey.currentContext!, link);
+          DeepLinkService.handleDeepLink(navigatorKey.currentContext!, link);
         }
       });
     }
@@ -113,9 +122,9 @@ class _ApplicationState extends State<Application> {
         '/signupPage': (context) => const SignupPage(),
         '/settingsPage': (context) => const SettingsPage(),
         '/notificationsPage': (context) => const NotificationsPage(),
-        '/sharePage': (context) => const SharePage(),
+        '/sharePage': (context) => const ShareProfilePage(),
         '/profile_page': (context) => const ProfilePage(),
-        '/nameChangingWidget': (context) => const NameChangingWidget(),
+        '/nameChangingWidget': (context) => const NameSettingsPage(),
         '/addFriendsPage': (context) => const AddFriendsPage(),
         '/myFriendsPage': (context) => const MyFriendsPage(),
       },
