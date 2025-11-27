@@ -43,7 +43,8 @@ dependencies:
   geolocator: ^14.0.2
   auto_size_text: ^3.0.0
   provider: ^6.1.5
-  google_sign_in: ^7.1.1
+  # Downgrade to align iOS GoogleUtilities with MLKit from mobile_scanner
+  google_sign_in: ^6.1.5
   image_picker: ^1.1.2
   location: ^8.0.1
   camera: ^0.11.2
