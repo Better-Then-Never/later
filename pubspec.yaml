@@ -55,8 +55,8 @@ dependencies:
   collection: ^1.19.1
   qr_flutter: ^4.1.0
   share_plus: ^7.2.2
-  # Upgrade to resolve Cocoapods conflict (uses newer GoogleMLKit with GoogleUtilities 8.x)
-  mobile_scanner: ^5.0.0
+  # Upgrade to resolve CocoaPods conflict (aligns GoogleMLKit with GoogleUtilities 8.x)
+  mobile_scanner: ^6.0.0
   flutter_contacts: 1.1.9
   url_launcher: ^6.0.20
   page_transition: ^2.2.1
