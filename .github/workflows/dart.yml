@@ -12,20 +12,34 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: stable
           architecture: x64
-      - run: flutter pub get
-      
 
-      - run: pod repo update
-        working-directory: ios
+      - name: Flutter pub get
+        run: flutter pub get
 
-      - run: flutter build ios --release --no-codesign
+      # Clean Pods and resolve with our updated constraints
+      - name: Prepare CocoaPods
+        run: |
+          cd ios
+          pod deintegrate
+          rm -rf Pods Podfile.lock
+          pod install
+        shell: bash
 
-      - run: mkdir Payload
+      # Optional: remove this (Flutter will run pod install as needed)
+      # - run: pod repo update
+      #   working-directory: ios
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Create Payload
+        run: mkdir Payload
         working-directory: build/ios/iphoneos
 
-      - run: mv Runner.app/ Payload
+      - name: Move Runner.app
+        run: mv Runner.app/ Payload
         working-directory: build/ios/iphoneos
 
       - name: Zip output
