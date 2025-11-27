@@ -27,25 +27,13 @@ jobs:
           pod install
 
       - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+        run: flutter build ipa --release --export-method development --no-codesign
 
-      - name: Create Payload
-        run: mkdir Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Move Runner.app
-        run: mv Runner.app/ Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Zip output
-        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Upload binaries to release
+      - name: Upload IPA to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          file: build/ios/ipa/*.ipa
           tag: v1.0
           overwrite: true
           body: "This is first release"
