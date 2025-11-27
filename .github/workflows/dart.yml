@@ -15,19 +15,20 @@ jobs:
           channel: stable
           architecture: x64
 
-- name: Flutter pub get
-  run: flutter pub get
+      - name: Flutter pub get
+        run: flutter pub get
 
-- name: Prepare CocoaPods
-  run: |
-    cd ios
-    pod deintegrate
-    rm -rf Pods Podfile.lock
-    pod install
-  shell: bash
+      - name: Prepare CocoaPods
+        shell: bash
+        run: |
+          cd ios
+          pod deintegrate
+          rm -rf Pods Podfile.lock
+          pod install
 
-- name: Build iOS (no codesign)
-  run: flutter build ios --release --no-codesign
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
       - name: Create Payload
         run: mkdir Payload
         working-directory: build/ios/iphoneos
