@@ -26,23 +26,26 @@ jobs:
           rm -rf Pods Podfile.lock
           pod install
 
-      # 1. New Step: Force Xcode to ignore signing requirements
+      # --------------------------------------------------------
+      # FIX STARTS HERE: Disable Signing in Xcode Project
+      # --------------------------------------------------------
       - name: Disable Code Signing in Xcode Project
         run: |
           cd ios/Runner.xcodeproj
-          # Switch to Manual Signing
+          # 1. Switch from "Automatic" to "Manual" signing
           sed -i '' 's/ProvisioningStyle = Automatic;/ProvisioningStyle = Manual;/g' project.pbxproj
-          # Remove Development Team ID
+          # 2. Remove the Team ID if present
           sed -i '' 's/DevelopmentTeam = .*/DevelopmentTeam = "";/g' project.pbxproj
-          # Force Code Signing Identity to blank
+          # 3. Force Code Signing Identity to empty
           sed -i '' 's/CODE_SIGN_IDENTITY = .*/CODE_SIGN_IDENTITY = "";/g' project.pbxproj
           sed -i '' 's/CODE_SIGN_IDENTITY = "Apple Development";/CODE_SIGN_IDENTITY = "";/g' project.pbxproj
-          # Disable signing requirement flags
+          # 4. Explicitly tell Xcode not to require signing
           sed -i '' 's/CODE_SIGNING_REQUIRED = YES;/CODE_SIGNING_REQUIRED = NO;/g' project.pbxproj
           sed -i '' 's/CODE_SIGNING_ALLOWED = YES;/CODE_SIGNING_ALLOWED = NO;/g' project.pbxproj
 
-      # 2. Your existing Build step (unchanged)
       - name: Build iOS (no codesign)
+        # Note: Added "--export-options-plist=null" workaround is sometimes needed,
+        # but usually the sed commands above are enough.
         run: flutter build ipa --release --export-method development --no-codesign
 
       - name: Upload IPA to release
