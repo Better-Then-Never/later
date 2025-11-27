@@ -15,25 +15,19 @@ jobs:
           channel: stable
           architecture: x64
 
-      - name: Flutter pub get
-        run: flutter pub get
+- name: Flutter pub get
+  run: flutter pub get
 
-      # Clean Pods and resolve with our updated constraints
-      - name: Prepare CocoaPods
-        run: |
-          cd ios
-          pod deintegrate
-          rm -rf Pods Podfile.lock
-          pod install
-        shell: bash
+- name: Prepare CocoaPods
+  run: |
+    cd ios
+    pod deintegrate
+    rm -rf Pods Podfile.lock
+    pod install
+  shell: bash
 
-      # Optional: remove this (Flutter will run pod install as needed)
-      # - run: pod repo update
-      #   working-directory: ios
-
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
-
+- name: Build iOS (no codesign)
+  run: flutter build ios --release --no-codesign
       - name: Create Payload
         run: mkdir Payload
         working-directory: build/ios/iphoneos
