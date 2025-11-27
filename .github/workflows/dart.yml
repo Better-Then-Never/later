@@ -12,31 +12,36 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          channel: 'stable'
           architecture: x64
 
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Install xcodeproj gem (required by Podfile)
-        run: gem install xcodeproj
+      - name: Update CocoaPods repo
+        run: pod repo update
+        working-directory: ios
 
-      - name: Prepare CocoaPods
-        shell: bash
-        run: |
-          cd ios
-          pod deintegrate
-          rm -rf Pods Podfile.lock
-          pod install
+      - name: Build iOS without codesign
+        run: flutter build ios --release --no-codesign
 
-      - name: Build iOS (no codesign)
-        run: flutter build ipa --release --no-codesign
+      - name: Create Payload directory
+        run: mkdir Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Move Runner.app to Payload
+        run: mv Runner.app/ Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Create IPA file
+        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
+        working-directory: build/ios/iphoneos
 
       - name: Upload IPA to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/ipa/*.ipa
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
           body: "This is first release"
