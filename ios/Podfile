@@ -41,7 +41,31 @@ post_install do |installer|
     # Enforce iOS 16.0 on all Pods and the Runner target
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+      
+      # Disable code signing for all Pods (Firebase, GoogleMaps, etc.)
+      config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ""
+      config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
+      config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
+      config.build_settings['CODE_SIGN_IDENTITY'] = ""
     end
     flutter_additional_ios_build_settings(target)
+  end
+  
+  # Also force the Runner project to disable signing
+  begin
+    require 'xcodeproj'
+    project = Xcodeproj::Project.open("Runner.xcodeproj")
+    project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ""
+        config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
+        config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
+        config.build_settings['CODE_SIGN_IDENTITY'] = ""
+        config.build_settings['DEVELOPMENT_TEAM'] = ""
+      end
+    end
+    project.save
+  rescue => e
+    puts "Warning: Could not modify Runner project settings: #{e.message}"
   end
 end
