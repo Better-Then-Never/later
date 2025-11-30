@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
 // TODO: Refactor
 
@@ -31,7 +32,9 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
     AppPermissionSetting(
       name: "Location",
       description: "Find capsules nearby and location-based features",
-      permission: Permission.location,
+      permission: Platform.isIOS
+          ? Permission.locationWhenInUse
+          : Permission.location,
       iconAsset: "assets/images/icons/capsule_creation/location_icon.png",
     ),
     AppPermissionSetting(
