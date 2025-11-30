@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:later/views/widgets/_common/default_elements/later_loading_bar.dart';
+import 'dart:io';
 
 class AppPermission {
   final String name;
@@ -48,7 +49,9 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
     AppPermission(
       name: "Share geolocation with us",
       description: "And you will be able to find capsules nearby you!",
-      permission: Permission.location,
+      permission: Platform.isIOS
+          ? Permission.locationWhenInUse
+          : Permission.location,
       iconAsset: "assets/images/icons/capsule_creation/location_icon.png",
     ),
   ];
