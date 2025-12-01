@@ -29,25 +29,25 @@ jobs:
       - name: Build iOS with xcodebuild
         run: |
           cd ios
-          xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
 
       - name: Create Payload directory
         run: mkdir Payload
-        working-directory: build/ios/Release-iphoneos
+        working-directory: ios/build/Build/Products/Release-iphoneos
 
       - name: Move Runner.app to Payload
         run: mv Runner.app/ Payload
-        working-directory: build/ios/Release-iphoneos
+        working-directory: ios/build/Build/Products/Release-iphoneos
 
       - name: Create IPA file
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
-        working-directory: build/ios/Release-iphoneos
+        working-directory: ios/build/Build/Products/Release-iphoneos
 
       - name: Upload IPA to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/Release-iphoneos/FlutterIpaExport.ipa
+          file: ios/build/Build/Products/Release-iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
           body: "This is first release"
