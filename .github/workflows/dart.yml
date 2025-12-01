@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-ios:
-    name: 🎉 iOS Build
+    name: iOS Build
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,12 +18,10 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      - name: Update CocoaPods repo
-        run: pod repo update
-        working-directory: ios
-
-      - name: Build iOS without codesign
-        run: flutter build ios --release --no-codesign
+      - name: Build iOS with xcodebuild
+        run: |
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -sdk iphoneos -configuration Release CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
 
       - name: Create Payload directory
         run: mkdir Payload
