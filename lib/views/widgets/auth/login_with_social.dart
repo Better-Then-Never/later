@@ -66,8 +66,7 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
 }
 
 Future<UserCredential?> signInWithGoogle(BuildContext context) async {
-  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
-  await googleSignIn.initialize();
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   if (!context.mounted) return null;
   final authService = Provider.of<FirebaseAuthService>(context, listen: false);
@@ -75,47 +74,49 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
   try {
     await googleSignIn.signOut();
 
-    final GoogleSignInAccount googleUser = await GoogleSignIn.instance
-        .authenticate();
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     if (!context.mounted) return null;
+    if (googleUser != null) {
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
-    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
 
-    final credential = GoogleAuthProvider.credential(
-      idToken: googleAuth.idToken,
-    );
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
 
-    final userCredential = await FirebaseAuth.instance.signInWithCredential(
-      credential,
-    );
+      final user = userCredential.user;
+      if (user != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
 
-    final user = userCredential.user;
-    if (user != null) {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+        if (!userDoc.exists) {
+          final googleInfo = user.providerData.firstWhere(
+            (info) => info.providerId == 'google.com',
+            orElse: () => user.providerData.first,
+          );
 
-      if (!userDoc.exists) {
-        final googleInfo = user.providerData.firstWhere(
-          (info) => info.providerId == 'google.com',
-          orElse: () => user.providerData.first,
-        );
-
-        await authService.addUserToDatabase(
-          uid: user.uid,
-          email: googleInfo.email ?? user.email ?? '',
-          name: googleInfo.displayName ?? user.displayName ?? '',
-          username: (googleInfo.email ?? user.email ?? '')
-              .split('@')
-              .first
-              .toLowerCase(),
-        );
+          await authService.addUserToDatabase(
+            uid: user.uid,
+            email: googleInfo.email ?? user.email ?? '',
+            name: googleInfo.displayName ?? user.displayName ?? '',
+            username: (googleInfo.email ?? user.email ?? '')
+                .split('@')
+                .first
+                .toLowerCase(),
+          );
+        }
       }
-    }
 
-    return userCredential;
+      return userCredential;
+    }
+    return null;
   } on Exception catch (e) {
     if (!context.mounted) return null;
     ScaffoldMessenger.of(
