@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:later/services/firebase_auth_service.dart';
+import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
 import 'package:provider/provider.dart';
 
 class LoginWithSocial extends StatefulWidget {
@@ -27,10 +28,18 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
                 final googleSignInResult = await signInWithGoogle(context);
                 if (!context.mounted) return;
                 if (googleSignInResult != null) {
-                  Navigator.pushNamedAndRemoveUntil(
+                  Navigator.pushReplacement(
                     context,
-                    '/widgetTree',
-                    (route) => false,
+                    MaterialPageRoute(
+                      builder: (context) => PermissionGatePage(
+                        onAllGranted: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/widgetTree',
+                          );
+                        },
+                      ),
+                    ),
                   );
                 }
               },
