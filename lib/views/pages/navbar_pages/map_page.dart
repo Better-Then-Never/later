@@ -87,22 +87,18 @@ class _MapPageState extends State<MapPage> {
     final privacy = capsuleData['privacy'] as String? ?? 'public';
     final ownerId = capsuleData['ownerId'] as String?;
 
-    // User can always see their own capsules
     if (ownerId == uid) {
       return true;
     }
 
-    // Public capsules are visible to everyone
     if (privacy == 'public') {
       return true;
     }
 
-    // Friends-only capsules are visible only to friends
     if (privacy == 'friends') {
       return _userFriends.contains(ownerId);
     }
 
-    // Private capsules are visible only to owner (already handled above)
     if (privacy == 'private') {
       return false;
     }
@@ -230,7 +226,7 @@ class _MapPageState extends State<MapPage> {
               controller: _customInfoWindowController,
               height: 140,
               width: 230,
-              offset: 50,
+              offset: 60,
             ),
           ],
         );
