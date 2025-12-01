@@ -30,21 +30,21 @@ jobs:
 
       - name: Create Payload directory
         run: mkdir Payload
-        working-directory: build/ios/iphoneos
+        working-directory: build/ios/Release-iphoneos
 
       - name: Move Runner.app to Payload
         run: mv Runner.app/ Payload
-        working-directory: build/ios/iphoneos
+        working-directory: build/ios/Release-iphoneos
 
       - name: Create IPA file
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
-        working-directory: build/ios/iphoneos
+        working-directory: build/ios/Release-iphoneos
 
       - name: Upload IPA to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          file: build/ios/Release-iphoneos/FlutterIpaExport.ipa
           tag: v1.0
           overwrite: true
           body: "This is first release"
