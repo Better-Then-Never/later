@@ -56,9 +56,10 @@ post_install do |installer|
         ## dart: PermissionGroup.microphone
         'PERMISSION_MICROPHONE=1',
 
-        ## dart: PermissionGroup.location
-        ## The 'PERMISSION_LOCATION' macro enables the `locationWhenInUse` and `locationAlways` permission.
-        'PERMISSION_LOCATION=1',
+        ## dart: PermissionGroup.locationWhenInUse (iOS only)
+        ## Enable only WhenInUse to avoid Always permission requirements.
+        'PERMISSION_LOCATION=0',
+        'PERMISSION_LOCATION_WHENINUSE=1',
       ]
     end
   end
