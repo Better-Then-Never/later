@@ -78,12 +78,15 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            widget.title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Irina',
-              fontSize: 25,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              widget.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Irina',
+                fontSize: 25,
+              ),
             ),
           ),
           Text(
