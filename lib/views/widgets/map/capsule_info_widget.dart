@@ -68,33 +68,38 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.all(
+        8,
+      ),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 8)],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              widget.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Irina',
-                fontSize: 25,
-              ),
+          // Title
+          Text(
+            widget.title,
+            maxLines:
+                1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Irina',
+              fontSize: 25,
             ),
           ),
+
           Text(
             widget.dateStamp,
             style: const TextStyle(fontFamily: 'Irina', fontSize: 16),
           ),
 
-          const Spacer(),
+          const SizedBox(height: 8),
+
           if (!_isOpen) ...[
             Text(
               "Opens in ${_formatDuration(_remaining)}",
@@ -102,42 +107,42 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                 color: Colors.red,
                 fontFamily: 'Irina',
                 fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ] else ...[
             const Text(
-              "Check out what`s inside!",
+              "Check out what's inside!",
               style: TextStyle(
-                color: Colors.green,
+                color: Color(0xFF56C92E),
                 fontFamily: 'Irina',
                 fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _isOpen
-                      ? const Color.fromARGB(255, 86, 201, 46)
-                      : Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  elevation: 0,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _isOpen
+                    ? const Color(0xFF56C92E)
+                    : Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
                 ),
-                onPressed: _isOpen ? widget.onMoreInfo : null,
-                child: Text(
-                  _isOpen ? 'Open' : 'Locked',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Irina',
-                    color: Colors.white,
-                  ),
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 2),
+              ),
+              onPressed: _isOpen ? widget.onMoreInfo : null,
+              child: Text(
+                _isOpen ? 'Open' : 'Locked',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Irina',
+                  color: Colors.white,
                 ),
               ),
             ),
