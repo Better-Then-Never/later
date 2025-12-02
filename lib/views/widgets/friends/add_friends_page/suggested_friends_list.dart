@@ -75,13 +75,17 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
 
         return ListView(
           children: [
+            // Filter ready users by search query and removed IDs
             for (var userData in controller.readyUsers.values)
-              if (!controller.removedUserIds.contains(userData['id']))
+              if (!controller.removedUserIds.contains(userData['id']) &&
+                  _matchesSearch(userData))
                 _buildUserRow(context, userData, userFriendsService),
 
+            // Placeholders for users still loading and not removed
             for (var user in users)
               if (!controller.readyUsers.containsKey(user['id']) &&
-                  !controller.removedUserIds.contains(user['id']))
+                  !controller.removedUserIds.contains(user['id']) &&
+                  _matchesSearch(user))
                 SuggestedFriendPlaceholderRow(
                   screenWidth: MediaQuery.of(context).size.width,
                 ),
@@ -127,5 +131,15 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
       isSent: isSent,
       screenWidth: MediaQuery.of(context).size.width,
     );
+  }
+
+  bool _matchesSearch(Map<String, dynamic> user) {
+    final query = widget.searchQuery.toLowerCase().trim();
+
+    if (query.length < 2) return true;
+
+    final username = (user['username'] ?? '').toLowerCase();
+
+    return username.startsWith(query);
   }
 }
