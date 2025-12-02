@@ -63,6 +63,9 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
+
+	<key>GMSApiKey</key>
+	<string>AIzaSyDRp1jncWgcqDVJKz3w4LjIAVQjsNUCyAw</string>
 	<true/>
 </dict>
 </plist>
