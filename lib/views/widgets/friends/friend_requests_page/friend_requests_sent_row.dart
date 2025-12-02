@@ -10,6 +10,7 @@ class FriendRequestsSentRow extends StatelessWidget {
   final String uid;
   final double screenWidth;
   final VoidCallback onCancel;
+  final VoidCallback onTap;
 
   const FriendRequestsSentRow({
     super.key,
@@ -17,6 +18,7 @@ class FriendRequestsSentRow extends StatelessWidget {
     required this.username,
     required this.uid,
     required this.screenWidth,
+    required this.onTap,
     required this.onCancel,
   });
 
@@ -27,34 +29,37 @@ class FriendRequestsSentRow extends StatelessWidget {
       decoration: BoxDecorations.whiteCard(),
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  DefaultText(
-                    name,
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.045,
-                    color: Colors.black,
-                  ),
-                  DefaultText(
-                    '@$username',
-                    fontSize: screenWidth * 0.035,
-                    color: Colors.grey[600],
-                  ),
-                ],
+        child: InkWell(
+          onTap: onTap,
+          child: Row(
+            children: [
+              UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DefaultText(
+                      name,
+                      fontWeight: FontWeight.bold,
+                      fontSize: screenWidth * 0.045,
+                      color: Colors.black,
+                    ),
+                    DefaultText(
+                      '@$username',
+                      fontSize: screenWidth * 0.035,
+                      color: Colors.grey[600],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            FriendRequestsActionButton(
-              onTap: onCancel,
-              color: const Color.fromARGB(255, 253, 65, 64),
-              text: 'Cancel',
-            ),
-          ],
+              FriendRequestsActionButton(
+                onTap: onCancel,
+                color: const Color.fromARGB(255, 253, 65, 64),
+                text: 'Cancel',
+              ),
+            ],
+          ),
         ),
       ),
     );
