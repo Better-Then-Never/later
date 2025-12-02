@@ -2,14 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>We need camera access to create time capsules.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>We need microphone access to record audio for time capsules.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to find capsules nearby and enable location-based features.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>We need contacts access to invite friends and find people you know.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -53,7 +45,5 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>GMSApiKey</key>
-	<string>AIzaSyDRp1jncWgcqDVJKz3w4LjIAVQjsNUCyAw</string>
 </dict>
 </plist>
