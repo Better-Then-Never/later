@@ -1,12 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:later/services/user_image_service.dart';
 
 class UserDataService extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final UserImageService _userImageService;
 
-  UserDataService(this._userImageService);
+  UserDataService();
 
   final Map<String, Map<String, String>> _userCache = {};
 
