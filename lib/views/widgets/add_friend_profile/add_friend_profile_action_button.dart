@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/add_friend_profile/add_friend_profile_cancel_button.dart';
+import 'package:later/views/widgets/add_friend_profile/add_friend_profile_request_handle_button.dart';
 import 'package:later/views/widgets/add_friend_profile/add_friend_profile_main_button.dart';
 
-class AddFriendProfileActionButton extends StatefulWidget {
+class AddFriendProfileActionButton extends StatelessWidget {
   final bool isLoading;
   final bool isCancelling;
   final VoidCallback onCancel;
   final VoidCallback? onAction;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
   final String buttonState;
 
   const AddFriendProfileActionButton({
@@ -15,16 +17,11 @@ class AddFriendProfileActionButton extends StatefulWidget {
     required this.isCancelling,
     required this.onCancel,
     required this.onAction,
+    this.onAccept,
+    this.onReject,
     required this.buttonState,
   });
 
-  @override
-  State<AddFriendProfileActionButton> createState() =>
-      _AddFriendProfileActionButtonState();
-}
-
-class _AddFriendProfileActionButtonState
-    extends State<AddFriendProfileActionButton> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -33,7 +30,9 @@ class _AddFriendProfileActionButtonState
 
     return Stack(
       children: [
-        if (widget.buttonState != 'pending')
+        if (buttonState == 'add' ||
+            buttonState == 'own_profile' ||
+            buttonState == 'friends')
           Positioned(
             left: screenWidth * 0.15,
             right: screenWidth * 0.15,
@@ -41,23 +40,58 @@ class _AddFriendProfileActionButtonState
             child: AddProfileMainButton(
               width: screenWidth * 0.73,
               height: screenHeight * 0.06,
-              isLoading: widget.isLoading,
-              onPressed: widget.onAction,
-              buttonState: widget.buttonState,
+              isLoading: isLoading,
+              onPressed: onAction,
+              buttonState: buttonState,
               fontSize: fontSize,
             ),
           ),
-        if (widget.buttonState == 'pending')
+
+        if (buttonState == 'pending')
           Positioned(
             left: screenWidth * 0.25,
             right: screenWidth * 0.25,
             bottom: screenHeight * 0.1,
-            child: AddProfileCancelButton(
-              isCancelling: widget.isCancelling,
-              onPressed: widget.onCancel,
+            child: AddProfileRequestHandleButton(
+              text: 'Cancel',
+              isCancelling: isCancelling,
+              onPressed: onCancel,
               width: screenWidth * 0.5,
               height: screenHeight * 0.05,
               fontSize: fontSize,
+            ),
+          ),
+
+        if (buttonState == 'received')
+          Positioned(
+            left: screenWidth * 0.1,
+            right: screenWidth * 0.1,
+            bottom: screenHeight * 0.1,
+            child: Row(
+              children: [
+                Expanded(
+                  child: AddProfileRequestHandleButton(
+                    text: 'Accept',
+                    color: const Color.fromARGB(255, 86, 201, 46),
+                    isCancelling: isCancelling,
+                    onPressed: onAccept ?? () {},
+                    width: double.infinity,
+                    height: screenHeight * 0.06,
+                    fontSize: fontSize,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AddProfileRequestHandleButton(
+                    text: 'Reject',
+                    isCancelling: isCancelling,
+                    onPressed: onReject ?? () {},
+                    width: double.infinity,
+                    height: screenHeight * 0.06,
+                    fontSize: fontSize,
+                  ),
+                ),
+              ],
             ),
           ),
       ],

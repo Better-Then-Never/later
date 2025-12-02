@@ -9,6 +9,7 @@ class SuggestedFriendRow extends StatelessWidget {
   final VoidCallback onSendRequest;
   final VoidCallback onRemove;
   final bool isSent;
+  final bool isPending;
   final double screenWidth;
 
   const SuggestedFriendRow({
@@ -20,6 +21,7 @@ class SuggestedFriendRow extends StatelessWidget {
     required this.onSendRequest,
     required this.onRemove,
     required this.isSent,
+    required this.isPending,
     required this.screenWidth,
   });
 
@@ -53,7 +55,7 @@ class SuggestedFriendRow extends StatelessWidget {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              isSent
+              isSent || isPending
                   ? Image.asset(
                       'assets/images/icons/friends_page/pending.png',
                       width: screenWidth * 0.09,

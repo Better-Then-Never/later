@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 
@@ -20,6 +21,7 @@ class UserFriendsService extends ChangeNotifier {
 
   StreamSubscription<QuerySnapshot>? _sentRequestsSub;
   StreamSubscription<QuerySnapshot>? _receivedRequestsSub;
+  StreamSubscription<DocumentSnapshot>? _friendsSub;  
 
   UserFriendsService() {
     init();
@@ -29,6 +31,7 @@ class UserFriendsService extends ChangeNotifier {
     await refreshFriends();
     _listenSentRequests();
     _listenReceivedRequests();
+    _listenFriends();
   }
 
   Future<bool> areFriends(String userId) async {
@@ -47,6 +50,27 @@ class UserFriendsService extends ChangeNotifier {
   List<String> getSentRequestsList() {
     return _sentRequests.toList();
   }
+
+  void _listenFriends() {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) return;
+
+    _friendsSub?.cancel();
+
+    _friendsSub = _firestore.collection('users').doc(currentUserId).snapshots().listen((doc) {
+      final data = doc.data();
+      if (data == null) return;
+
+      final updatedFriends = Set<String>.from(data['friends'] ?? []);
+
+      if (!SetEquality().equals(_friends, updatedFriends)) {
+        _friends
+          ..clear()
+          ..addAll(updatedFriends);
+        notifyListeners();
+      }
+    });
+  }  
 
   void _listenSentRequests() {
     final currentUserId = _auth.currentUser?.uid;
@@ -121,7 +145,7 @@ class UserFriendsService extends ChangeNotifier {
 
     await batch.commit();
 
-    _friends.add(toUserId);
+    _friends.add(fromUserId);
     _sentRequests.remove(toUserId);
     _receivedRequests.remove(fromUserId);
     notifyListeners();

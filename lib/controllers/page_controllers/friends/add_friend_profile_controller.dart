@@ -26,15 +26,19 @@ class AddFriendProfileController extends ChangeNotifier {
 
   Future<void> _checkRelationshipStatus() async {
     final currentUserUid = _userService.currentLoggedInUid;
+
     if (currentUserUid == userId) {
       buttonState = 'own_profile';
     } else if (await _requestService.areFriends(userId)) {
       buttonState = 'friends';
     } else if (await _requestService.requestExists(currentUserUid, userId)) {
       buttonState = 'pending';
+    } else if (await _requestService.requestExists(userId, currentUserUid)) {
+      buttonState = 'received';
     } else {
       buttonState = 'add';
     }
+
     notifyListeners();
   }
 
@@ -103,6 +107,57 @@ class AddFriendProfileController extends ChangeNotifier {
     }
   }
 
+  Future<void> acceptFriendRequest(BuildContext context) async {
+    try {
+      final currentUserUid = _userService.currentLoggedInUid;
+      final requestId = '$userId\_$currentUserUid';
+      await _requestService.acceptFriendRequest(
+        requestId,
+        userId,
+        currentUserUid,
+      );
+
+      buttonState = 'friends';
+      notifyListeners();
+
+      PopupNotificationService.showSuccess(
+        context: context,
+        message: 'Friend request accepted!',
+        position: NotificationPosition.center,
+      );
+    } catch (_) {
+      PopupNotificationService.showError(
+        context: context,
+        message: 'Failed to accept request',
+        position: NotificationPosition.center,
+      );
+    }
+  }
+
+  Future<void> rejectFriendRequest(BuildContext context) async {
+    try {
+      final currentUserUid = _userService.currentLoggedInUid;
+      final requestId = '$userId\_$currentUserUid';
+      await _requestService.rejectFriendRequest(requestId, userId);
+      await _requestService.cancelFriendRequest(userId, currentUserUid);
+
+      buttonState = 'add';
+      notifyListeners();
+
+      PopupNotificationService.showInfo(
+        context: context,
+        message: 'Friend request rejected',
+        position: NotificationPosition.center,
+      );
+    } catch (_) {
+      PopupNotificationService.showError(
+        context: context,
+        message: 'Failed to reject request',
+        position: NotificationPosition.center,
+      );
+    }
+  }
+
   Future<void> handleButtonPress(BuildContext context) async {
     if (buttonState == 'own_profile') {
       PopupNotificationService.showInfo(
@@ -111,13 +166,17 @@ class AddFriendProfileController extends ChangeNotifier {
         position: NotificationPosition.center,
       );
     } else if (buttonState == 'friends') {
-      if (onNavigateToFriendProfile != null) {
-        onNavigateToFriendProfile!();
-      }
+      if (onNavigateToFriendProfile != null) onNavigateToFriendProfile!();
     } else if (buttonState == 'pending') {
       PopupNotificationService.showInfo(
         context: context,
         message: 'Friend request is pending',
+        position: NotificationPosition.center,
+      );
+    } else if (buttonState == 'received') {
+      PopupNotificationService.showInfo(
+        context: context,
+        message: 'This user sent you a friend request',
         position: NotificationPosition.center,
       );
     } else {
