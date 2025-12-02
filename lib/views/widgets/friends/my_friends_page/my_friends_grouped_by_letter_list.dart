@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
