@@ -72,7 +72,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             leadingButton: GoBackButton(context: context),
             searchBar: DefaultSearchBar(
               controller: _searchController,
-              hintText: 'Search by nickname...',
+              hintText: 'Search by tag',
               trailingButton: DefaultIconButton(
                 onTap: () => QRScannerPage.open(context),
                 assetPath: 'assets/images/icons/friends_page/qr_scan.png',

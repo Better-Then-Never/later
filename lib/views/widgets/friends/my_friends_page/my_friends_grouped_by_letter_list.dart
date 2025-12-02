@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:later/views/pages/friends_pages/your_friend_profile_page.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/user/user_list_tile.dart';
+import 'package:page_transition/page_transition.dart';
 
 class MyFriendsGroupedByLetterList extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> groupedFriends;
@@ -44,6 +46,17 @@ class MyFriendsGroupedByLetterList extends StatelessWidget {
                         username: friend['username']!,
                         uid: friend['uid']!,
                         screenWidth: screenWidth,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              type: PageTransitionType.fade,
+                              duration: const Duration(milliseconds: 10),
+                              reverseDuration: const Duration(milliseconds: 10),
+                              child: YourFriendProfilePage(friendUid: friend['uid']!),
+                            ),
+                          );
+                        },
                       ),
                   ],
                 ),

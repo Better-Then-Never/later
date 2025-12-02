@@ -19,9 +19,9 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
         Navigator.push(
           context,
           PageTransition(
-            type: PageTransitionType.fade,
-            duration: const Duration(milliseconds: 10),
-            reverseDuration: const Duration(milliseconds: 10),
+            type: PageTransitionType.bottomToTop,
+            duration: const Duration(milliseconds: 100),
+            reverseDuration: const Duration(milliseconds: 100),
             child: AddFriendsPage(),
           ),
         );

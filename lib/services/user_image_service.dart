@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 enum ProfilePlaceholderType { friendsList, pinnedFriend }
 
 class UserImageService extends ChangeNotifier {
+  final Map<String, bool> userHasAvatar = {};
+
   final Map<String, ValueNotifier<ImageProvider>> _profileNotifiers = {};
   final Map<String, bool> _profileLoading = {};
 
@@ -72,9 +74,15 @@ class UserImageService extends ChangeNotifier {
         'userdata/$userId/assets/images/profile_image',
       );
       final url = await ref.getDownloadURL();
+
+      userHasAvatar[userId] = true;
       notifier.value = NetworkImage(url);
     } catch (e) {
+      userHasAvatar[userId] = false;
+      userHasAvatar[userId] = false;
       notifier.value = _profilePlaceholders[placeholderType]!;
+
+      notifier.notifyListeners();
     } finally {
       _profileLoading[userId] = false;
     }
