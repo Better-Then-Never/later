@@ -16,6 +16,8 @@ class SuggestedFriendsListController {
   final Map<String, Map<String, dynamic>> readyUsers = {};
   final Set<String> loadingUserIds = {};
 
+  final Set<String> removedUserIds = {};
+
   Future<void> loadUser(String userId, VoidCallback onUpdate) async {
     if (loadingUserIds.contains(userId)) return;
     loadingUserIds.add(userId);
@@ -34,12 +36,10 @@ class SuggestedFriendsListController {
         onUpdate();
       }
 
-      // Always listen to the notifier
       void listener() async {
         final provider = profileNotifier.value;
         final avatarExists = imageService.userHasAvatar[userId];
 
-        // ✅ If network image loaded OR placeholder for no avatar → ready
         if (provider is NetworkImage || (avatarExists == false)) {
           profileNotifier.removeListener(listener);
           await markReady();
@@ -48,11 +48,16 @@ class SuggestedFriendsListController {
 
       profileNotifier.addListener(listener);
 
-      // Call listener immediately in case value was already updated
       listener();
     } catch (_) {
       loadingUserIds.remove(userId);
       onUpdate();
     }
   }
+
+  void removeUser(String userId, VoidCallback onUpdate) {
+    removedUserIds.add(userId);
+    readyUsers.remove(userId);
+    onUpdate();
+  }  
 }

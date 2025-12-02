@@ -63,7 +63,6 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
           return const Center(child: DefaultText('No more suggested friends'));
         }
 
-        // Load users via controller
         for (var user in users) {
           final userId = user['id'] ?? '';
           if (!controller.readyUsers.containsKey(userId) &&
@@ -77,9 +76,12 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
         return ListView(
           children: [
             for (var userData in controller.readyUsers.values)
-              _buildUserRow(context, userData, userFriendsService),
+              if (!controller.removedUserIds.contains(userData['id']))
+                _buildUserRow(context, userData, userFriendsService),
+
             for (var user in users)
-              if (!controller.readyUsers.containsKey(user['id']))
+              if (!controller.readyUsers.containsKey(user['id']) &&
+                  !controller.removedUserIds.contains(user['id']))
                 SuggestedFriendPlaceholderRow(
                   screenWidth: MediaQuery.of(context).size.width,
                 ),
@@ -116,10 +118,14 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
         );
       },
       onSendRequest: () => widget.onSendRequest(userId),
-      onRemove: () => widget.onRemoveFriend(userId),
+      onRemove: () {
+        widget.onRemoveFriend(userId);
+        controller.removeUser(userId, () {
+          if (mounted) setState(() {});
+        });
+      },
       isSent: isSent,
       screenWidth: MediaQuery.of(context).size.width,
     );
   }
 }
-
