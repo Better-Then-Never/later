@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/controllers/widget_controllers/friends/suggested_friends_list_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
@@ -27,22 +28,27 @@ class SuggestedFriendsList extends StatefulWidget {
 
 class _SuggestedFriendsListState extends State<SuggestedFriendsList>
     with AutomaticKeepAliveClientMixin<SuggestedFriendsList> {
-  /// Users that are fully loaded and ready to display
-  final Map<String, Map<String, dynamic>> _readyUsers = {};
+  late SuggestedFriendsListController controller;
 
-  /// Users still loading (either data or avatar)
-  final Set<String> _loadingUserIds = {};
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    super.initState();
+    final userService = context.read<UserDataService>();
+    final imageService = context.read<UserImageService>();
+
+    controller = SuggestedFriendsListController(
+      userService: userService,
+      imageService: imageService,
+      context: context,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
 
-    final userService = context.read<UserDataService>();
     final userFriendsService = context.watch<UserFriendsService>();
-    final imageService = context.read<UserImageService>();
-    final currentUid = userService.currentLoggedInUid;
+    final currentUid = context.read<UserDataService>().currentLoggedInUid;
 
     return StreamBuilder<List<Map<String, dynamic>>>(
       stream: userFriendsService.getSuggestedFriends(
@@ -57,20 +63,23 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
           return const Center(child: DefaultText('No more suggested friends'));
         }
 
+        // Load users via controller
         for (var user in users) {
           final userId = user['id'] ?? '';
-          if (!_readyUsers.containsKey(userId) &&
-              !_loadingUserIds.contains(userId)) {
-            _loadUser(userId, userService, imageService);
+          if (!controller.readyUsers.containsKey(userId) &&
+              !controller.loadingUserIds.contains(userId)) {
+            controller.loadUser(userId, () {
+              if (mounted) setState(() {});
+            });
           }
         }
 
         return ListView(
           children: [
-            for (var userData in _readyUsers.values)
+            for (var userData in controller.readyUsers.values)
               _buildUserRow(context, userData, userFriendsService),
             for (var user in users)
-              if (!_readyUsers.containsKey(user['id']))
+              if (!controller.readyUsers.containsKey(user['id']))
                 SuggestedFriendPlaceholderRow(
                   screenWidth: MediaQuery.of(context).size.width,
                 ),
@@ -80,55 +89,8 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
     );
   }
 
-  /// Load user data and profile image, then mark as ready
-  void _loadUser(
-    String userId,
-    UserDataService userService,
-    UserImageService imageService,
-  ) async {
-    if (_loadingUserIds.contains(userId)) return;
-    _loadingUserIds.add(userId);
-
-    try {
-      final userData = await userService.getUserData(userId);
-      final profileNotifier = imageService.getProfileNotifier(userId);
-
-      // Helper to mark the user as ready
-      Future<void> markUserReady() async {
-        final imageProvider = profileNotifier.value;
-
-        if (imageProvider is NetworkImage) {
-          await precacheImage(imageProvider, context);
-
-          if (mounted) {
-            setState(() {
-              _readyUsers[userId] = userData;
-              _loadingUserIds.remove(userId);
-            });
-          }
-        }
-      }
-
-      if (profileNotifier.value is NetworkImage) {
-        // Image already loaded, mark user immediately
-        await markUserReady();
-      } else {
-        // Wait for image to load
-        void listener() async {
-          await markUserReady();
-          profileNotifier.removeListener(listener);
-        }
-
-        profileNotifier.addListener(listener);
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _loadingUserIds.remove(userId);
-        });
-      }
-    }
-  }
+  @override
+  bool get wantKeepAlive => true;
 
   Widget _buildUserRow(
     BuildContext context,
@@ -160,3 +122,4 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
     );
   }
 }
+

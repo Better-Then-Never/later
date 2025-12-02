@@ -80,7 +80,6 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Title
           Text(
             widget.title,
             maxLines:
