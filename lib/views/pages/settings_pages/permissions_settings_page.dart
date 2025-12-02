@@ -375,7 +375,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                             value: status.isGranted,
                             onChanged: (_) =>
                                 _togglePermission(permission.permission),
-                            activeColor: Color.fromARGB(255, 86, 201, 46),
+                            activeThumbColor: Color.fromARGB(255, 86, 201, 46),
                             inactiveThumbColor: Colors.grey,
                             inactiveTrackColor: Colors.grey.withValues(
                               alpha: 0.3,
