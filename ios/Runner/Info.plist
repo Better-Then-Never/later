@@ -41,31 +41,23 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Location Always</string>
-
 	<key>NSLocationUsageDescription</key>
 	<string>Location</string>
-
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location when in use</string>
-
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone</string>
-
 	<key>NSCameraUsageDescription</key>
 	<string>Camera</string>
-
 	<key>NSContactsUsageDescription</key>
 	<string>Contacts</string>
-
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
-
+	<true/>
 	<key>GMSApiKey</key>
 	<string>AIzaSyDRp1jncWgcqDVJKz3w4LjIAVQjsNUCyAw</string>
-	<true/>
 </dict>
 </plist>
