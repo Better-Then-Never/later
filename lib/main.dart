@@ -39,7 +39,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
         ChangeNotifierProvider(
-          create: (_) => UserDataService(userImageService),
+          create: (_) => UserDataService(),
         ),
         ChangeNotifierProvider(create: (_) => UserFriendsService()),
         ChangeNotifierProvider.value(value: userImageService),
