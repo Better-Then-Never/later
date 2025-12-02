@@ -28,6 +28,8 @@ class SuggestedFriendsListController {
 
       Future<void> markReady() async {
         final provider = profileNotifier.value;
+        if(!context.mounted) return;
+
         if (provider is NetworkImage) {
           await precacheImage(provider, context);
         }
@@ -59,5 +61,5 @@ class SuggestedFriendsListController {
     removedUserIds.add(userId);
     readyUsers.remove(userId);
     onUpdate();
-  }  
+  }
 }
