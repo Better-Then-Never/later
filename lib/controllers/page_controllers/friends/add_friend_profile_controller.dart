@@ -5,8 +5,8 @@ import 'package:later/services/popup_notification_service.dart';
 
 class AddFriendProfileController extends ChangeNotifier {
   final String userId;
-  late final UserFriendsService _requestService;
-  late final UserDataService _userService;
+  final UserFriendsService _requestService;
+  final UserDataService _userService;
 
   bool isLoading = false;
   bool isCancelling = false;
@@ -14,26 +14,33 @@ class AddFriendProfileController extends ChangeNotifier {
 
   VoidCallback? onNavigateToFriendProfile;
 
+  late VoidCallback _serviceListener;
+
   AddFriendProfileController({
     required this.userId,
     required UserFriendsService requestService,
     required UserDataService userService,
     this.onNavigateToFriendProfile,
-  }) : _requestService = requestService,
-       _userService = userService {
-    _checkRelationshipStatus();
+  })  : _requestService = requestService,
+        _userService = userService {
+    _updateButtonState();
+
+    _serviceListener = () {
+      _updateButtonState();
+    };
+    _requestService.addListener(_serviceListener);
   }
 
-  Future<void> _checkRelationshipStatus() async {
+  void _updateButtonState() async {
     final currentUserUid = _userService.currentLoggedInUid;
 
     if (currentUserUid == userId) {
       buttonState = 'own_profile';
-    } else if (await _requestService.areFriends(userId)) {
+    } else if (_requestService.friends.contains(userId)) {
       buttonState = 'friends';
-    } else if (await _requestService.requestExists(currentUserUid, userId)) {
+    } else if (_requestService.sentRequests.contains(userId)) {
       buttonState = 'pending';
-    } else if (await _requestService.requestExists(userId, currentUserUid)) {
+    } else if (_requestService.receivedRequests.contains(userId)) {
       buttonState = 'received';
     } else {
       buttonState = 'add';
@@ -48,10 +55,7 @@ class AddFriendProfileController extends ChangeNotifier {
 
     try {
       final currentUserUid = _userService.currentLoggedInUid;
-      final exists = await _requestService.requestExists(
-        currentUserUid,
-        userId,
-      );
+      final exists = _requestService.requestExists(currentUserUid, userId);
 
       if (exists) {
         buttonState = 'pending';
@@ -108,18 +112,15 @@ class AddFriendProfileController extends ChangeNotifier {
   }
 
   Future<void> acceptFriendRequest(BuildContext context) async {
+    isLoading = true;
+    notifyListeners();
+
     try {
       final currentUserUid = _userService.currentLoggedInUid;
       final requestId = '$userId\_$currentUserUid';
-      await _requestService.acceptFriendRequest(
-        requestId,
-        userId,
-        currentUserUid,
-      );
+      await _requestService.acceptFriendRequest(requestId, userId, currentUserUid);
 
       buttonState = 'friends';
-      notifyListeners();
-
       PopupNotificationService.showSuccess(
         context: context,
         message: 'Friend request accepted!',
@@ -131,19 +132,22 @@ class AddFriendProfileController extends ChangeNotifier {
         message: 'Failed to accept request',
         position: NotificationPosition.center,
       );
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> rejectFriendRequest(BuildContext context) async {
+    isLoading = true;
+    notifyListeners();
+
     try {
       final currentUserUid = _userService.currentLoggedInUid;
       final requestId = '$userId\_$currentUserUid';
       await _requestService.rejectFriendRequest(requestId, userId);
-      await _requestService.cancelFriendRequest(userId, currentUserUid);
 
       buttonState = 'add';
-      notifyListeners();
-
       PopupNotificationService.showInfo(
         context: context,
         message: 'Friend request rejected',
@@ -155,6 +159,9 @@ class AddFriendProfileController extends ChangeNotifier {
         message: 'Failed to reject request',
         position: NotificationPosition.center,
       );
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -182,5 +189,11 @@ class AddFriendProfileController extends ChangeNotifier {
     } else {
       await sendFriendRequest(context);
     }
+  }
+
+  @override
+  void dispose() {
+    _requestService.removeListener(_serviceListener);
+    super.dispose();
   }
 }
