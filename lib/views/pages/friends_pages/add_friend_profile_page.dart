@@ -86,6 +86,8 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                   isCancelling: controller.isCancelling,
                   onCancel: () => controller.cancelFriendRequest(context),
                   onAction: () => controller.handleButtonPress(context),
+                  onAccept: () => controller.acceptFriendRequest(context), 
+                  onReject: () => controller.rejectFriendRequest(context),                  
                   buttonState: controller.buttonState,
                 ),
               ],

@@ -71,23 +71,38 @@ class MyFriendsPageController extends ChangeNotifier {
     return sorted;
   }
 
-  Future<void> _preloadFriendsData() async {
-    _isLoading = true;
-    notifyListeners();
+Future<void> _preloadFriendsData() async {
+  _isLoading = true;
+  notifyListeners();
 
-    _friendsData.clear();
-    for (var uid in _friendsService.friends) {
-      final data = await _userService.getUserData(uid);
-      _friendsData.add({
-        'uid': uid,
-        'name': data['name'] ?? '',
-        'username': data['username'] ?? '',
-      });
+  final updatedFriends = <Map<String, dynamic>>[];
+
+  for (var uid in _friendsService.friends) {
+    final existing = _friendsData.firstWhere(
+      (f) => f['uid'] == uid,
+      orElse: () => {},
+    );
+    if (existing.isNotEmpty) {
+      updatedFriends.add(existing);
+      continue;
     }
 
-    _isLoading = false;
-    notifyListeners();
+    final data = await _userService.getUserData(uid);
+    updatedFriends.add({
+      'uid': uid,
+      'name': data['name'] ?? '',
+      'username': data['username'] ?? '',
+    });
   }
+
+  _friendsData
+    ..clear()
+    ..addAll(updatedFriends);
+
+  _isLoading = false;
+  notifyListeners();
+}
+
 
   @override
   void dispose() {

@@ -50,46 +50,57 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
     final userFriendsService = context.watch<UserFriendsService>();
     final currentUid = context.read<UserDataService>().currentLoggedInUid;
 
-    return StreamBuilder<List<Map<String, dynamic>>>(
-      stream: userFriendsService.getSuggestedFriends(
-        currentUserId: currentUid,
-        searchQuery: widget.searchQuery,
-      ),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center();
+    return AnimatedBuilder(
+      animation: userFriendsService,
+      builder: (context, _) {
+        return StreamBuilder<List<Map<String, dynamic>>>(
+          stream: userFriendsService.getSuggestedFriends(
+            currentUserId: currentUid,
+            searchQuery: widget.searchQuery,
+          ),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return const Center();
 
-        final users = snapshot.data!;
-        if (users.isEmpty) {
-          return const Center(child: DefaultText('No more suggested friends'));
-        }
+            final users = snapshot.data!
+                .where(
+                  (user) => !userFriendsService.friends.contains(user['id']),
+                )
+                .toList();
 
-        for (var user in users) {
-          final userId = user['id'] ?? '';
-          if (!controller.readyUsers.containsKey(userId) &&
-              !controller.loadingUserIds.contains(userId)) {
-            controller.loadUser(userId, () {
-              if (mounted) setState(() {});
-            });
-          }
-        }
+            if (users.isEmpty) {
+              return const Center(
+                child: DefaultText('No more suggested friends'),
+              );
+            }
 
-        return ListView(
-          children: [
-            // Filter ready users by search query and removed IDs
-            for (var userData in controller.readyUsers.values)
-              if (!controller.removedUserIds.contains(userData['id']) &&
-                  _matchesSearch(userData))
-                _buildUserRow(context, userData, userFriendsService),
+            for (var user in users) {
+              final userId = user['id'] ?? '';
+              if (!controller.readyUsers.containsKey(userId) &&
+                  !controller.loadingUserIds.contains(userId)) {
+                controller.loadUser(userId, () {
+                  if (mounted) setState(() {});
+                });
+              }
+            }
 
-            // Placeholders for users still loading and not removed
-            for (var user in users)
-              if (!controller.readyUsers.containsKey(user['id']) &&
-                  !controller.removedUserIds.contains(user['id']) &&
-                  _matchesSearch(user))
-                SuggestedFriendPlaceholderRow(
-                  screenWidth: MediaQuery.of(context).size.width,
-                ),
-          ],
+            return ListView(
+              children: [
+                for (var userData in controller.readyUsers.values)
+                  if (!controller.removedUserIds.contains(userData['id']) &&
+                      !userFriendsService.friends.contains(userData['id']) &&
+                      _matchesSearch(userData))
+                    _buildUserRow(context, userData, userFriendsService),
+
+                for (var user in users)
+                  if (!controller.readyUsers.containsKey(user['id']) &&
+                      !controller.removedUserIds.contains(user['id']) &&
+                      _matchesSearch(user))
+                    SuggestedFriendPlaceholderRow(
+                      screenWidth: MediaQuery.of(context).size.width,
+                    ),
+              ],
+            );
+          },
         );
       },
     );
@@ -105,6 +116,7 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
   ) {
     final userId = userData['id'] ?? '';
     final isSent = userFriendsService.sentRequests.contains(userId);
+    final isPending = userFriendsService.receivedRequests.contains(userId);
 
     return SuggestedFriendRow(
       userId: userId,
@@ -129,6 +141,7 @@ class _SuggestedFriendsListState extends State<SuggestedFriendsList>
         });
       },
       isSent: isSent,
+      isPending: isPending,
       screenWidth: MediaQuery.of(context).size.width,
     );
   }
