@@ -474,35 +474,35 @@
         <entry key="google_sign_in">
           <value>
             <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in-7.1.1/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in-7.2.0/lib" />
             </list>
           </value>
         </entry>
         <entry key="google_sign_in_android">
           <value>
             <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_android-7.0.3/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_android-7.2.1/lib" />
             </list>
           </value>
         </entry>
         <entry key="google_sign_in_ios">
           <value>
             <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-6.1.0/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-6.2.1/lib" />
             </list>
           </value>
         </entry>
         <entry key="google_sign_in_platform_interface">
           <value>
             <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_platform_interface-3.0.0/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_platform_interface-3.1.0/lib" />
             </list>
           </value>
         </entry>
         <entry key="google_sign_in_web">
           <value>
             <list>
-              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_web-1.0.0/lib" />
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_web-1.1.0/lib" />
             </list>
           </value>
         </entry>
@@ -713,6 +713,13 @@
           <value>
             <list>
               <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus_platform_interface-3.2.1/lib" />
+            </list>
+          </value>
+        </entry>
+        <entry key="page_transition">
+          <value>
+            <list>
+              <option value="$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/page_transition-2.2.1/lib" />
             </list>
           </value>
         </entry>
@@ -1175,11 +1182,11 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_ios-2.15.5/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_platform_interface-2.13.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_maps_flutter_web-0.5.12+2/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in-7.1.1/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_android-7.0.3/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-6.1.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_platform_interface-3.0.0/lib" />
-      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_web-1.0.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in-7.2.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_android-7.2.1/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_ios-6.2.1/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_platform_interface-3.1.0/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/google_sign_in_web-1.1.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/gsettings-0.2.8/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/html-0.15.6/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/http-1.5.0/lib" />
@@ -1210,6 +1217,7 @@
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus-8.3.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus_platform_interface-3.2.1/lib" />
+      <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/page_transition-2.2.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider-2.1.5/lib" />
       <root url="file://$USER_HOME$/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_android-2.2.17/lib" />
