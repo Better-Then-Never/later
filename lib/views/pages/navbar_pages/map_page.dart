@@ -10,6 +10,7 @@ import 'package:later/views/widgets/map/capsule_info_widget.dart';
 import 'package:intl/intl.dart';
 import 'package:later/views/widgets/map/opened_capsule_widget.dart';
 import 'package:later/views/widgets/_common/default_elements/later_loading_bar.dart';
+import 'dart:io';
 
 class MapPage extends StatefulWidget {
   static LatLng? currentPositionStatic;
@@ -202,12 +203,21 @@ class _MapPageState extends State<MapPage> {
                 _mapController.complete(controller);
                 _customInfoWindowController.googleMapController = controller;
               },
-              cloudMapId: '1b016f650a3b702f3fd1d9e1',
+              cloudMapId: Platform.isAndroid
+                  ? '12b4f975aba292b65ac044ea'
+                  : '12b4f975aba292b627a4b587',
               initialCameraPosition: CameraPosition(
                 target: _currentPosition!,
                 zoom: 13,
               ),
-              markers: Set<Marker>.of(_markers.values),
+
+              markers: Set<Marker>.of(
+                _markers.values.where(
+                  (m) =>
+                      m.icon != BitmapDescriptor.defaultMarker ||
+                      _capsuleIcons.isNotEmpty,
+                ),
+              ),
               onTap: (_) {
                 _customInfoWindowController.hideInfoWindow!();
               },
@@ -220,7 +230,8 @@ class _MapPageState extends State<MapPage> {
                   });
                 }
               },
-              heatmaps: _heatmaps,
+
+              heatmaps: _heatmaps.isEmpty ? {} : _heatmaps,
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
