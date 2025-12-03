@@ -6,11 +6,6 @@ class MapMarkerService {
     String assetPath, {
     Size size = const Size(46, 46),
   }) async {
-    try {
-      final config = const ImageConfiguration();
-      return BitmapDescriptor.asset(config, assetPath);
-    } catch (_) {
-      return BitmapDescriptor.defaultMarker;
-    }
+    return BitmapDescriptor.asset(ImageConfiguration(size: size), assetPath);
   }
 }
