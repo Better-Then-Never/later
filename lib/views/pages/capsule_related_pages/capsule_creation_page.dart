@@ -66,166 +66,175 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            PageHeader(
-              mainText: 'Create Capsule',
-              leadingButton: DefaultIconButton(
-                onTap: () => Navigator.pushReplacementNamed(context, '/camera'),
-                assetPath: 'assets/images/icons/prof_page/go_back.png',
-              ),
-              trailingButton: DefaultIconButton(
-                onTap: () => Navigator.pop(context),
-                assetPath: 'assets/images/icons/capsule_creation/cross.png',
-              ),
-            ),
-
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DefaultText(
-                      'Capsule Preview',
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    Container(
-                      width: screenWidth,
-                      height: screenHeight * 0.4,
-                      decoration: BoxDecorations.whiteCard(),
-                      padding: const EdgeInsets.all(8),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: screenWidth * 0.45,
-                            height: double.infinity,
-                            child: CapsuleImagePreview(
-                              imagePath: widget.imagePath,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CapsuleCreationTitleInput(
-                                  controller: _controller.titleController,
-                                ),
-                                ProfilePageDivider(width: screenWidth * 0.5),
-                                CapsuleCreationDescriptionInputField(
-                                  controller: _controller.descriptionController,
-                                ),
-
-                                CapsuleCreationDateStamp(
-                                  height: screenHeight * 0.045,
-                                ),
-                                const SizedBox(height: 8),
-                                CapsuleCreationLocationLabel(
-                                  height: screenHeight * 0.05,
-                                  iconPath:
-                                      'assets/images/icons/capsule_creation/location_icon.png',
-                                  location: _pickedLocation,
-                                ),
-                                const SizedBox(height: 8),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 8),
-
-                    DefaultText(
-                      'Capsule Settings',
-                      fontSize: screenWidth * 0.05,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    SizedBox(height: 8),
-                    Container(
-                      width: screenWidth,
-                      decoration: BoxDecorations.whiteCard(),
-                      child: Column(
-                        children: [
-                          OptionsSettingsRow(
-                            minVerticalPadding: 10,
-                            title: 'Privacy',
-                            leadingIconPath:
-                                'assets/images/icons/capsule_creation/privacy_icon.png',
-                            trailing: CapsuleCreationCycledInfo(
-                              infoText: _controller.privacy.label,
-                            ),
-                            onTap: () {
-                              _controller.cyclePrivacy();
-                              setState(() {});
-                            },
-                          ),
-
-                          OptionsSettingsRow(
-                            minVerticalPadding: 10,
-                            title: 'Open At',
-                            trailing: CapsuleCreationCycledInfo(
-                              infoText: _controller.openAt != null
-                                  ? DateFormat(
-                                      'yyyy-MM-dd',
-                                    ).format(_controller.openAt!.toDate())
-                                  : "Select date",
-                            ),
-                            leadingIconPath:
-                                'assets/images/icons/capsule_creation/timer_icon.png',
-                            onTap: () async {
-                              await _controller.pickOpenDate(context);
-                              setState(() {});
-                            },
-                          ),
-
-                          OptionsSettingsRow(
-                            minVerticalPadding: 10,
-                            title: 'Color',
-                            trailing: CapsuleCreationCycledInfo(
-                              infoText: _controller.color.label,
-                              trailingLeadingIconPath:
-                                  'assets/images/icons/capsule_creation/pin_${_controller.color.label.toLowerCase()}_icon.png',
-                            ),
-                            leadingIconPath:
-                                'assets/images/icons/capsule_creation/pin_color_icon.png',
-                            onTap: () {
-                              _controller.cycleColor();
-                              setState(() {});
-                            },
-                            withDivider: false,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PageHeader(
+                mainText: 'Create Capsule',
+                leadingButton: DefaultIconButton(
+                  onTap: () =>
+                      Navigator.pushReplacementNamed(context, '/camera'),
+                  assetPath: 'assets/images/icons/prof_page/go_back.png',
+                ),
+                trailingButton: DefaultIconButton(
+                  onTap: () => Navigator.pop(context),
+                  assetPath: 'assets/images/icons/capsule_creation/cross.png',
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
 
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, _) {
-              return DefaultGreenButton(
-                onTap: () async {
-                  await _controller.saveCapsule(context);
-                },
-                text: 'Create Capsule',
-                isLoading: _controller.isSaving,
-              );
-            },
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DefaultText(
+                        'Capsule Preview',
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      Container(
+                        width: screenWidth,
+                        height: screenHeight * 0.4,
+                        decoration: BoxDecorations.whiteCard(),
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: screenWidth * 0.45,
+                              height: double.infinity,
+                              child: CapsuleImagePreview(
+                                imagePath: widget.imagePath,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CapsuleCreationTitleInput(
+                                    controller: _controller.titleController,
+                                  ),
+                                  ProfilePageDivider(width: screenWidth * 0.5),
+                                  CapsuleCreationDescriptionInputField(
+                                    controller:
+                                        _controller.descriptionController,
+                                  ),
+
+                                  CapsuleCreationDateStamp(
+                                    height: screenHeight * 0.045,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  CapsuleCreationLocationLabel(
+                                    height: screenHeight * 0.05,
+                                    iconPath:
+                                        'assets/images/icons/capsule_creation/location_icon.png',
+                                    location: _pickedLocation,
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 8),
+
+                      DefaultText(
+                        'Capsule Settings',
+                        fontSize: screenWidth * 0.05,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        width: screenWidth,
+                        decoration: BoxDecorations.whiteCard(),
+                        child: Column(
+                          children: [
+                            OptionsSettingsRow(
+                              minVerticalPadding: 10,
+                              title: 'Privacy',
+                              leadingIconPath:
+                                  'assets/images/icons/capsule_creation/privacy_icon.png',
+                              trailing: CapsuleCreationCycledInfo(
+                                infoText: _controller.privacy.label,
+                              ),
+                              onTap: () {
+                                _controller.cyclePrivacy();
+                                setState(() {});
+                              },
+                            ),
+
+                            OptionsSettingsRow(
+                              minVerticalPadding: 10,
+                              title: 'Open At',
+                              trailing: CapsuleCreationCycledInfo(
+                                infoText: _controller.openAt != null
+                                    ? DateFormat(
+                                        'yyyy-MM-dd',
+                                      ).format(_controller.openAt!.toDate())
+                                    : "Select date",
+                              ),
+                              leadingIconPath:
+                                  'assets/images/icons/capsule_creation/timer_icon.png',
+                              onTap: () async {
+                                await _controller.pickOpenDate(context);
+                                setState(() {});
+                              },
+                            ),
+
+                            OptionsSettingsRow(
+                              minVerticalPadding: 10,
+                              title: 'Color',
+                              trailing: CapsuleCreationCycledInfo(
+                                infoText: _controller.color.label,
+                                trailingLeadingIconPath:
+                                    'assets/images/icons/capsule_creation/pin_${_controller.color.label.toLowerCase()}_icon.png',
+                              ),
+                              leadingIconPath:
+                                  'assets/images/icons/capsule_creation/pin_color_icon.png',
+                              onTap: () {
+                                _controller.cycleColor();
+                                setState(() {});
+                              },
+                              withDivider: false,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) {
+                return DefaultGreenButton(
+                  onTap: () async {
+                    await _controller.saveCapsule(context);
+                  },
+                  text: 'Create Capsule',
+                  isLoading: _controller.isSaving,
+                );
+              },
+            ),
           ),
         ),
       ),
