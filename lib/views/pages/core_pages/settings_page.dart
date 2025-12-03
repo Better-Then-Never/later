@@ -127,9 +127,13 @@ class SettingsPage extends StatelessWidget {
                                 title: 'Are you sure you want to log out?',
                                 onConfirm: () async {
                                   FirebaseAuthService().signOut();
-                                  Navigator.of(context).pop();
                                   await assetService.clearLocalCache();
+                                  userProfileService.onLogout();
+                                  userFriendsService.onLogout();
+                                  userImageService.onLogout();
+
                                   if (!context.mounted) return;
+                                  
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     PageTransition(
@@ -144,9 +148,6 @@ class SettingsPage extends StatelessWidget {
                                     ),
                                     (route) => false,
                                   );
-                                  userProfileService.onLogout();
-                                  userFriendsService.onLogout();
-                                  userImageService.onLogout();
                                 },
                               );
                             },
