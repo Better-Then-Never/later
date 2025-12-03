@@ -202,13 +202,20 @@ class _MapPageState extends State<MapPage> {
                 _mapController.complete(controller);
                 _customInfoWindowController.googleMapController = controller;
               },
+              cloudMapId: '1b016f650a3b702f3fd1d9e1',
               // Remove cloudMapId to rule out API/Style linkage issues on iOS.
               initialCameraPosition: CameraPosition(
                 target: _currentPosition!,
                 zoom: 13,
               ),
-              // Safeguard: only show markers whose icons are loaded.
-              markers: Set<Marker>.of(_markers.values.where((m) => m.icon != BitmapDescriptor.defaultMarker || _capsuleIcons.isNotEmpty)),
+
+              markers: Set<Marker>.of(
+                _markers.values.where(
+                  (m) =>
+                      m.icon != BitmapDescriptor.defaultMarker ||
+                      _capsuleIcons.isNotEmpty,
+                ),
+              ),
               onTap: (_) {
                 _customInfoWindowController.hideInfoWindow!();
               },
@@ -221,7 +228,7 @@ class _MapPageState extends State<MapPage> {
                   });
                 }
               },
-              // Heatmaps can be problematic on some iOS setups; temporarily disable if empty.
+
               heatmaps: _heatmaps.isEmpty ? {} : _heatmaps,
             ),
             CustomInfoWindow(
