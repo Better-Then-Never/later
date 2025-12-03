@@ -220,7 +220,8 @@ class _MapPageState extends State<MapPage> {
                   });
                 }
               },
-              heatmaps: _heatmaps,
+              // Heatmap temporarily disabled for iOS testing
+              // heatmaps: _heatmaps,
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
