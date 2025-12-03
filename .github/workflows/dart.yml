@@ -3,6 +3,9 @@ name: iOS-ipa-build
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-ios:
     name: iOS Build
@@ -14,13 +17,14 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
-      - run: flutter pub get
       
-
+      - run: flutter pub get
+       
       - run: pod repo update
         working-directory: ios
 
-      - run: flutter build ios --release --no-codesign
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign --build-name=0.0.${{ github.run_number }} --build-number=${{ github.run_number }}
 
       - run: mkdir Payload
         working-directory: build/ios/iphoneos
@@ -37,6 +41,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
+          tag: v0.0.${{ github.run_number }}
+          release_name: "Release v0.0.${{ github.run_number }}"
           overwrite: true
-          body: "This is first release"
+          body: "Automatic build version 0.0.${{ github.run_number }}"
