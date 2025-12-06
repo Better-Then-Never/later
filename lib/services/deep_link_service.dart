@@ -17,13 +17,14 @@ class DeepLinkService {
       } else if (uri.scheme == 'https' && uri.host == 'later-da778.web.app') {
         userId = uri.queryParameters['userId'];
       }
-
       if (userId != null && userId.isNotEmpty) {
-        PageTransition(
-          type: PageTransitionType.fade,
-          duration: const Duration(milliseconds: 10),
-          reverseDuration: const Duration(milliseconds: 10),
-          child: AddFriendProfilePage(userId: userId),
+        Navigator.of(context).push(
+          PageTransition(
+            type: PageTransitionType.fade,
+            duration: const Duration(milliseconds: 10),
+            reverseDuration: const Duration(milliseconds: 10),
+            child: AddFriendProfilePage(userId: userId),
+          ),
         );
       } else {}
     } catch (e) {}
