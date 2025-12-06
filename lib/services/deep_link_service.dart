@@ -5,7 +5,6 @@ import 'package:page_transition/page_transition.dart';
 class DeepLinkService {
   static void handleDeepLink(BuildContext context, String link) {
     try {
-      print('DeepLinkService: Received link: $link');
       final uri = Uri.parse(link);
 
       String? userId;
@@ -18,9 +17,6 @@ class DeepLinkService {
       } else if (uri.scheme == 'https' && uri.host == 'later-da778.web.app') {
         userId = uri.queryParameters['userId'];
       }
-      print(
-        'DeepLinkService: Parsed URI Scheme: ${uri.scheme}, Host: ${uri.host}, Path Segments: ${uri.pathSegments}',
-      );
       if (userId != null && userId.isNotEmpty) {
         Navigator.of(context).push(
           PageTransition(
