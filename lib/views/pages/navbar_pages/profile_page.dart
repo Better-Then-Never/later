@@ -30,7 +30,7 @@ class _ProfilePageState extends State<ProfilePage>
       backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
-          ProfilePageHeader(screenWidth: screenWidth),
+          ProfilePageHeader(screenWidth: screenWidth, userId: uid),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
