@@ -13,7 +13,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
     return Row(
       children: [
         DefaultIconButton(
-          size: 45,
+          size: 44,
           assetPath: 'assets/images/icons/prof_page/notifications_button.png',
           onTap: () {
             Navigator.push(
@@ -27,6 +27,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
             );
           },
         ),
+        SizedBox(width: 4),
         DefaultIconButton(
           size: 41,
           assetPath: 'assets/images/icons/prof_page/share_button.png',
@@ -42,6 +43,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
             );
           },
         ),
+        SizedBox(width: 5),
         DefaultIconButton(
           size: 41,
           assetPath: 'assets/images/icons/prof_page/settings_button.png',
