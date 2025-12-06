@@ -39,27 +39,32 @@ class YourFriendProfilePage extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.only(
-                    left: screenWidth * 0.05,
-                    top: screenHeight * 0.13,
+                    left: screenWidth * 0.04,
+                    top: screenHeight * 0.108,
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      UserSquareAvatar(
-                        userId: friendUid,
-                        size: 110,
-                        borderRadius: 25,
-                      ),
-                      SizedBox(width: screenWidth * 0.04),
-                      UserNameAndUsername(
-                        userId: friendUid,
-                        nameFontSize: screenWidth * 0.07,
-                        usernameFontSize: screenWidth * 0.05,
-                        nameColor: Colors.white,
-                        usernameColor: Colors.white,
-                        textAlign: TextAlign.left,
-                      ),
-                    ],
+                  child: SizedBox(
+                    width: screenWidth - 32,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        UserSquareAvatar(
+                          userId: friendUid,
+                          size: 115,
+                          borderRadius: 25,
+                        ),
+                        SizedBox(width: screenWidth * 0.04),
+                        Expanded(
+                          child: UserNameAndUsername(
+                            userId: friendUid,
+                            nameFontSize: screenWidth * 0.07,
+                            usernameFontSize: screenWidth * 0.05,
+                            nameColor: Colors.white,
+                            usernameColor: Colors.white,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],

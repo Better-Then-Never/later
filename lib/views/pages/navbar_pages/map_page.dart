@@ -126,6 +126,8 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     if (_currentPosition == null) {
       return Center(child: LaterLoadingBar(width: 150, height: 150));
     }
@@ -235,8 +237,8 @@ class _MapPageState extends State<MapPage> {
             ),
             CustomInfoWindow(
               controller: _customInfoWindowController,
-              height: 140,
-              width: 230,
+              height: screenHeight * 0.171,
+              width: screenWidth * 0.58,
               offset: 60,
             ),
           ],

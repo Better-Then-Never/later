@@ -68,9 +68,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(
-        8,
-      ),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -82,8 +80,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         children: [
           Text(
             widget.title,
-            maxLines:
-                1,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -132,7 +129,10 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                   borderRadius: BorderRadius.circular(25),
                 ),
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
               ),
               onPressed: _isOpen ? widget.onMoreInfo : null,
               child: Text(
