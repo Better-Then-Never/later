@@ -52,6 +52,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
             child: PinnedFriendsRow(),
           ),
         ),
+        
         Positioned(
           bottom: 0,
           left: 0,

@@ -45,13 +45,19 @@ class UserNameAndUsername extends StatelessWidget {
           children: [
             isLoading
                 ? Center()
-                : DefaultText(
-                    name,
-                    fontSize: nameFontSize,
-                    fontWeight: nameFontWeight,
-                    color: nameColor,
-                    textAlign: textAlign,
-                    height: 1.0,
+                : FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: crossAxisAlignment == CrossAxisAlignment.start 
+                        ? Alignment.centerLeft 
+                        : Alignment.center,
+                    child: DefaultText(
+                      name,
+                      fontSize: nameFontSize,
+                      fontWeight: nameFontWeight,
+                      color: nameColor,
+                      textAlign: textAlign,
+                      height: 1.0,
+                    ),
                   ),
             isLoading
                 ? Center()
