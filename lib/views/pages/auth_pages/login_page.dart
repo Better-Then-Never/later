@@ -4,85 +4,10 @@ import 'package:later/views/widgets/auth/login_with_social.dart';
 import 'package:later/views/widgets/auth/main_text_and_logo.dart';
 import 'package:later/views/widgets/auth/registration_input_field.dart';
 import 'package:later/views/widgets/auth/submit_button.dart';
+import 'package:later/views/widgets/auth/password_reset_dialog.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
-
-  Future<void> _showPasswordResetDialog(
-    BuildContext context,
-    TextEditingController emailController,
-  ) async {
-    final resetEmailController = TextEditingController(
-      text: emailController.text,
-    );
-
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Reset Password'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Enter your email to receive a password reset link'),
-            SizedBox(height: 20),
-            TextField(
-              controller: resetEmailController,
-              decoration: InputDecoration(
-                hintText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final email = resetEmailController.text.trim();
-              if (email.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please enter your email')),
-                );
-                return;
-              }
-
-              try {
-                await FirebaseAuth.instance.sendPasswordResetEmail(
-                  email: email,
-                );
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Password reset email sent! Check your inbox.',
-                    ),
-                    backgroundColor: Color(0xFF56C92E),
-                  ),
-                );
-              } on FirebaseAuthException catch (e) {
-                String message;
-                if (e.code == 'user-not-found') {
-                  message = 'No account found with this email';
-                } else if (e.code == 'invalid-email') {
-                  message = 'Invalid email address';
-                } else {
-                  message = 'Error: ${e.message}';
-                }
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(message)));
-              }
-            },
-            child: Text('Send Reset Link'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +58,32 @@ class LoginPage extends StatelessWidget {
                                         MaterialTapTargetSize.shrinkWrap,
                                     overlayColor: Colors.transparent,
                                   ),
-                                  onPressed: () => _showPasswordResetDialog(
-                                    context,
-                                    emailController,
-                                  ),
+                                  onPressed: () {
+                                    showPasswordResetDialog(
+                                      context,
+                                      initialEmail: emailController.text,
+                                      onSubmit: (email) async {
+                                        try {
+                                          await FirebaseAuth.instance
+                                              .sendPasswordResetEmail(
+                                                email: email,
+                                              );
+                                        } on FirebaseAuthException catch (e) {
+                                          String message;
+                                          if (e.code == 'user-not-found') {
+                                            message =
+                                                'No account found with this email';
+                                          } else if (e.code ==
+                                              'invalid-email') {
+                                            message = 'Invalid email address';
+                                          } else {
+                                            message = 'Error: ${e.message}';
+                                          }
+                                          throw message;
+                                        }
+                                      },
+                                    );
+                                  },
                                   child: Text(
                                     "Forgot password?",
                                     style: TextStyle(
