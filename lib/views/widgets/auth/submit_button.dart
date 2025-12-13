@@ -49,14 +49,14 @@ class _SubmitButtonState extends State<SubmitButton> {
     try {
       if (widget.isSignUp) {
         await authService.createUserWithEmailAndPassword(
-          widget.email.text,
+          widget.email.text.trim(),
           widget.password.text,
-          name: widget.name!.text,
-          username: widget.username!.text,
+          name: widget.name!.text.trim(),
+          username: widget.username!.text.trim(),
         );
       } else {
         await authService.signInWithEmailAndPassword(
-          widget.email.text,
+          widget.email.text.trim(),
           widget.password.text,
         );
       }
