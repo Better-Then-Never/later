@@ -102,7 +102,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                             }
                             setState(() => _submitting = true);
                             try {
-                              await widget.onSubmit(email);
+                              await widget.onSubmit(email.trim());
                               if (!mounted) return;
                               Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
