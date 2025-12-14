@@ -62,7 +62,7 @@ class _HistoryPageState extends State<HistoryPage> {
               AnimatedBuilder(
                 animation: _controller,
                 builder: (_, __) => PageHeader(
-                  mainText: "Capsule History",
+                  mainText: "My Capsules",
                   searchBar: DefaultSearchBar(
                     controller: _searchController,
                     hintText: "Find Capsules...",
