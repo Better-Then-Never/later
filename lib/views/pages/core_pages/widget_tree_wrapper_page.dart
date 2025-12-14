@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/notifiers.dart';
+import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/core_pages/widget_tree.dart';
@@ -24,6 +25,9 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
 
     final userProfileService = context.read<UserDataService>();
     final userFriendsService = context.read<UserFriendsService>();
+    context.read<FavoriteCapsuleService>().loadFavorites(
+      FirebaseAuth.instance.currentUser!.uid,
+    );
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     userProfileService.getCurrentUserProfile(uid!);

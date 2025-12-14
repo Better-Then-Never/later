@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/services/location_service.dart';
+import 'package:later/services/map_capsule_jump_service.dart';
 import 'package:later/services/map_marker_service.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:later/views/widgets/map/capsule_info_widget.dart';
@@ -11,6 +12,8 @@ import 'package:intl/intl.dart';
 import 'package:later/views/widgets/map/opened_capsule_widget.dart';
 import 'package:later/views/widgets/_common/default_elements/later_loading_bar.dart';
 import 'dart:io';
+
+import 'package:provider/provider.dart';
 
 class MapPage extends StatefulWidget {
   static LatLng? currentPositionStatic;
@@ -45,9 +48,18 @@ class _MapPageState extends State<MapPage> {
     'user': 'assets/images/icons/map/pins/user_pin.png',
   };
 
+  late final CapsuleJumpService _jumpService;
+
   @override
   void initState() {
     super.initState();
+    _jumpService = context.read<CapsuleJumpService>();
+    _jumpService.addListener(() {
+      final capsule = _jumpService.capsule;
+      if (capsule != null) {
+        jumpToCapsule(capsule);
+      }
+    });
     uid = FirebaseAuth.instance.currentUser?.uid;
 
     _initIcons();
@@ -83,6 +95,32 @@ class _MapPageState extends State<MapPage> {
       print('Error loading user friends: $e');
     }
   }
+
+Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
+  final controller = await _mapController.future;
+   
+  _customInfoWindowController.hideInfoWindow!();
+  final geoPoint = capsule['location'];
+  if (geoPoint == null) return;
+
+  final capsulePosition = LatLng(geoPoint.latitude, geoPoint.longitude);
+
+  await controller.animateCamera(
+    CameraUpdate.newLatLngZoom(capsulePosition, 18),
+  );
+
+  _customInfoWindowController.addInfoWindow!(
+    CapsuleInfoPanel(
+      title: capsule['title'],
+      dateStamp: DateFormat('dd-MM-yyyy').format(capsule['createdAt'].toDate()),
+      openAt: capsule['openAt'] ?? Timestamp.now(),
+      onMoreInfo: () => _showCapsuleInfo(context, capsule),
+    ),
+    capsulePosition,
+  );  
+
+  _jumpService.clear();
+}
 
   bool _canViewCapsule(Map<String, dynamic> capsuleData) {
     final privacy = capsuleData['privacy'] as String? ?? 'public';

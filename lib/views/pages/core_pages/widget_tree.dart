@@ -29,12 +29,14 @@ class WidgetTree extends StatelessWidget {
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: 25,
-                child: NavbarWidget(
-                  selectedIndex: selectedPage,
-                  onItemTapped: (index) {
-                    selectedPageNotifier.value = index;
-                  },
+                bottom: 0,
+                child: SafeArea(
+                  child: NavbarWidget(
+                    selectedIndex: selectedPage,
+                    onItemTapped: (index) {
+                      selectedPageNotifier.value = index;
+                    },
+                  ),
                 ),
               ),
             ],
