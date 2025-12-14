@@ -14,6 +14,8 @@ class CapsuleListTile extends StatefulWidget {
   final bool isSelected;
   final bool selectionMode;
   final VoidCallback? onLongPress;
+  final bool isFavorite;
+  final VoidCallback onFavoriteTap;
 
   const CapsuleListTile({
     super.key,
@@ -22,6 +24,8 @@ class CapsuleListTile extends StatefulWidget {
     this.isSelected = false,
     this.selectionMode = false,
     this.onLongPress,
+    required this.isFavorite,
+    required this.onFavoriteTap,
   });
 
   @override
@@ -88,7 +92,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
         padding: const EdgeInsets.all(14),
         margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         decoration: BoxDecorations.whiteCard().copyWith(
-          color: widget.isSelected ? const Color.fromARGB(255, 255, 255, 255).withAlpha(50) : null,
+          color: widget.isSelected ? Colors.black.withAlpha(10) : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,10 +132,15 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                         width: screenHeight * 0.025,
                       ),
                       SizedBox(width: screenWidth * 0.01),
-                      Icon(
-                        Icons.favorite_border,
-                        size: screenHeight * 0.03,
-                        color: Colors.grey,
+                      GestureDetector(
+                        onTap: widget.onFavoriteTap,
+                        child: Icon(
+                          widget.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: screenHeight * 0.03,
+                          color: widget.isFavorite ? Colors.red : Colors.grey,
+                        ),
                       ),
                     ],
                   ),

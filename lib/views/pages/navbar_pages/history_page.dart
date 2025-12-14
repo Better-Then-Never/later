@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:later/controllers/page_controllers/history_page_controller.dart';
 import 'package:later/services/capsule_data_service.dart';
 import 'package:later/services/popup_notification_service.dart';
+import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
-import 'package:later/views/widgets/_common/default_elements/popup_notification.dart';
 import 'package:later/views/widgets/history_page/capsule_list_tile.dart';
 import 'package:later/views/widgets/history_page/capsule_selection_action_bar.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +43,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     final capsuleService = context.read<CapsuleDataService>();
+    final favoriteService = context.read<FavoriteCapsuleService>();
 
     return WillPopScope(
       onWillPop: () async {
@@ -84,7 +85,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                   context: context,
                                   message:
                                       "${_controller.selectedCount} capsule${_controller.selectedCount > 1 ? 's' : ''} deleted",
-                                  position: NotificationPosition.center
+                                  position: NotificationPosition.center,
                                 );
                                 _controller.clearSelection();
                               },
@@ -136,19 +137,36 @@ class _HistoryPageState extends State<HistoryPage> {
                           itemCount: filtered.length,
                           itemBuilder: (context, i) {
                             final c = filtered[i];
-                            return CapsuleListTile(
-                              capsule: c,
-                              isSelected: _controller.isSelected(c['id']),
-                              selectionMode: _controller.isSelectionMode,
-                              onTap: () {
-                                if (_controller.isSelectionMode) {
-                                  _controller.toggleSelection(c['id']);
-                                } else {
-                                  // open capsule
-                                }
-                              },
-                              onLongPress: () {
-                                _controller.toggleSelection(c['id']);
+                            final capsuleId = c['id'];
+                            final capsuleTitle = c['title'];
+                            return Selector<FavoriteCapsuleService, bool>(
+                              selector: (_, service) =>
+                                  service.isFavorite(capsuleId),
+                              builder: (_, isFavorite, __) {
+                                return CapsuleListTile(
+                                  key: ValueKey(capsuleId),
+                                  capsule: c,
+                                  isSelected: _controller.isSelected(capsuleId),
+                                  selectionMode: _controller.isSelectionMode,
+                                  isFavorite: isFavorite,
+                                  onFavoriteTap: () {
+                                    favoriteService.toggleFavorite(capsuleId);
+                                    PopupNotificationService.showInfo(
+                                      context: context,
+                                      message:
+                                          "${capsuleTitle} ${favoriteService.isFavorite(capsuleId) ? 'Added to' : 'Removed from'}  favorites",
+                                      position: NotificationPosition.bottom,
+                                    );
+                                  },
+                                  onTap: () {
+                                    if (_controller.isSelectionMode) {
+                                      _controller.toggleSelection(capsuleId);
+                                    }
+                                  },
+                                  onLongPress: () {
+                                    _controller.toggleSelection(capsuleId);
+                                  },
+                                );
                               },
                             );
                           },
