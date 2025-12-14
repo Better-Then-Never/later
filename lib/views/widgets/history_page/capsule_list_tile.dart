@@ -11,8 +11,18 @@ import 'package:geolocator/geolocator.dart';
 class CapsuleListTile extends StatefulWidget {
   final Map<String, dynamic> capsule;
   final VoidCallback? onTap;
+  final bool isSelected;
+  final bool selectionMode;
+  final VoidCallback? onLongPress;
 
-  const CapsuleListTile({super.key, required this.capsule, this.onTap});
+  const CapsuleListTile({
+    super.key,
+    required this.capsule,
+    this.onTap,
+    this.isSelected = false,
+    this.selectionMode = false,
+    this.onLongPress,
+  });
 
   @override
   State<CapsuleListTile> createState() => _CapsuleListTileState();
@@ -72,11 +82,14 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
 
     return InkWell(
       onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(14),
         margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-        decoration: BoxDecorations.whiteCard(),
+        decoration: BoxDecorations.whiteCard().copyWith(
+          color: widget.isSelected ? const Color.fromARGB(255, 255, 255, 255).withAlpha(50) : null,
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -95,16 +108,20 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                       child: const Icon(Icons.lock_clock, color: Colors.white),
                     ),
             ),
-        
+
             SizedBox(width: screenWidth * 0.04),
-        
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      DefaultText(title, fontWeight: FontWeight.w500, fontSize: screenWidth * 0.04),
+                      DefaultText(
+                        title,
+                        fontWeight: FontWeight.w500,
+                        fontSize: screenWidth * 0.04,
+                      ),
                       Spacer(),
                       Image.asset(
                         'assets/images/icons/capsule_creation/pin_${color.toLowerCase()}_icon.png',
@@ -121,7 +138,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                   SizedBox(height: screenHeight * 0.004),
                   ProfilePageDivider(width: double.infinity),
                   SizedBox(height: screenHeight * 0.016),
-        
+
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -167,9 +184,9 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                           ],
                         ),
                       ),
-        
+
                       const SizedBox(width: 12),
-        
+
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [

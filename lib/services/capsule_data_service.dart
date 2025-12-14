@@ -69,6 +69,19 @@ class CapsuleDataService extends ChangeNotifier {
     };
   }
 
+  Future<void> deleteCapsules(List<String> capsuleIds) async {
+    if (capsuleIds.isEmpty) return;
+
+    final batch = _firestore.batch();
+
+    for (final id in capsuleIds) {
+      final docRef = _firestore.collection('capsules').doc(id);
+      batch.delete(docRef);
+    }
+
+    await batch.commit();
+  }
+
   void onLogout() {
     _capsuleCache.clear();
     _isFetched = false;

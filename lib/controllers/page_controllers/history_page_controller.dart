@@ -5,9 +5,31 @@ class HistoryPageController extends ChangeNotifier {
   String _searchQuery = '';
   bool isLoading = true;
 
+  final Set<String> _selectedIds = {};
+  bool get isSelectionMode => _selectedIds.isNotEmpty;
+  int get selectedCount => _selectedIds.length;
+
+  bool isSelected(String id) => _selectedIds.contains(id);
+  List<String> get selectedIds => _selectedIds.toList();
+  String get searchQuery => _searchQuery;
+  
   set capsules(List<Map<String, dynamic>> capsules) {
     _allCapsules = capsules;
     isLoading = false;
+    notifyListeners();
+  }
+
+  void toggleSelection(String id) {
+    if (_selectedIds.contains(id)) {
+      _selectedIds.remove(id);
+    } else {
+      _selectedIds.add(id);
+    }
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    _selectedIds.clear();
     notifyListeners();
   }
 
@@ -15,8 +37,6 @@ class HistoryPageController extends ChangeNotifier {
     _searchQuery = query.toLowerCase();
     notifyListeners();
   }
-
-  String get searchQuery => _searchQuery;
 
   List<Map<String, dynamic>> get filteredCapsules {
     if (_searchQuery.isEmpty) return _allCapsules;
