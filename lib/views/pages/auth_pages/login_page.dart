@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:later/views/widgets/auth/login_with_social.dart';
 import 'package:later/views/widgets/auth/main_text_and_logo.dart';
 import 'package:later/views/widgets/auth/registration_input_field.dart';
 import 'package:later/views/widgets/auth/submit_button.dart';
+import 'package:later/views/widgets/auth/password_reset_dialog.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -57,7 +59,30 @@ class LoginPage extends StatelessWidget {
                                     overlayColor: Colors.transparent,
                                   ),
                                   onPressed: () {
-                                    // TODO: Password reset
+                                    showPasswordResetDialog(
+                                      context,
+                                      initialEmail: emailController.text,
+                                      onSubmit: (email) async {
+                                        try {
+                                          await FirebaseAuth.instance
+                                              .sendPasswordResetEmail(
+                                                email: email,
+                                              );
+                                        } on FirebaseAuthException catch (e) {
+                                          String message;
+                                          if (e.code == 'user-not-found') {
+                                            message =
+                                                'No account found with this email';
+                                          } else if (e.code ==
+                                              'invalid-email') {
+                                            message = 'Invalid email address';
+                                          } else {
+                                            message = 'Error: ${e.message}';
+                                          }
+                                          throw message;
+                                        }
+                                      },
+                                    );
                                   },
                                   child: Text(
                                     "Forgot password?",
