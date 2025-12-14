@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
@@ -30,6 +31,7 @@ class SettingsPage extends StatelessWidget {
     final userProfileService = context.watch<UserDataService>();
     final userFriendsService = context.watch<UserFriendsService>();
     final userImageService = context.watch<UserImageService>();
+    final favoriteCapsuleService = context.watch<FavoriteCapsuleService>();
     final assetService = AssetImageService();
 
     final screenHeight = MediaQuery.of(context).size.height;
@@ -131,6 +133,7 @@ class SettingsPage extends StatelessWidget {
                                   userProfileService.onLogout();
                                   userFriendsService.onLogout();
                                   userImageService.onLogout();
+                                  favoriteCapsuleService.onLogout();
 
                                   if (!context.mounted) return;
                                   

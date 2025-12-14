@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
+import 'package:later/services/capsule_data_service.dart';
 import 'package:later/services/firebase_auth_service.dart';
+import 'package:later/services/map_capsule_jump_service.dart';
+import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
@@ -38,10 +41,11 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
-        ChangeNotifierProvider(
-          create: (_) => UserDataService(),
-        ),
+        ChangeNotifierProvider(create: (_) => UserDataService()),
         ChangeNotifierProvider(create: (_) => UserFriendsService()),
+        ChangeNotifierProvider(create: (_) => CapsuleDataService()),
+        ChangeNotifierProvider(create: (_) => FavoriteCapsuleService()),
+         ChangeNotifierProvider(create: (_) => CapsuleJumpService()),
         ChangeNotifierProvider.value(value: userImageService),
       ],
       child: const Application(),
