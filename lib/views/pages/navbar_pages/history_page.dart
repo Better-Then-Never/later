@@ -2,9 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:later/controllers/page_controllers/history_page_controller.dart';
 import 'package:later/services/capsule_data_service.dart';
+import 'package:later/services/popup_notification_service.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
+import 'package:later/views/widgets/_common/default_elements/popup_notification.dart';
 import 'package:later/views/widgets/history_page/capsule_list_tile.dart';
 import 'package:later/views/widgets/history_page/capsule_selection_action_bar.dart';
 import 'package:provider/provider.dart';
@@ -76,17 +78,15 @@ class _HistoryPageState extends State<HistoryPage> {
                                   _controller.selectedIds,
                                 );
 
-                                _controller.clearSelection();
-
                                 if (!context.mounted) return;
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      '${_controller.selectedCount} capsule${_controller.selectedCount > 1 ? 's' : ''} deleted',
-                                    ),
-                                  ),
+                                PopupNotificationService.showInfo(
+                                  context: context,
+                                  message:
+                                      "${_controller.selectedCount} capsule${_controller.selectedCount > 1 ? 's' : ''} deleted",
+                                  position: NotificationPosition.center
                                 );
+                                _controller.clearSelection();
                               },
                             );
                           },
