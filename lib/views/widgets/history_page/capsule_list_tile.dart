@@ -92,7 +92,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
         padding: const EdgeInsets.all(14),
         margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         decoration: BoxDecorations.whiteCard().copyWith(
-          color: widget.isSelected ? Colors.black.withAlpha(10) : null,
+          color: widget.isSelected ? const Color.fromARGB(255, 103, 207, 255).withAlpha(100) : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,12 +121,16 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                 children: [
                   Row(
                     children: [
-                      DefaultText(
-                        title,
-                        fontWeight: FontWeight.w500,
-                        fontSize: screenWidth * 0.04,
+                      Expanded(
+                        child: DefaultText(
+                          title,
+                          fontWeight: FontWeight.w500,
+                          fontSize: screenWidth * 0.04,
+                          textAlign: TextAlign.start,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      Spacer(),
                       Image.asset(
                         'assets/images/icons/capsule_creation/pin_${color.toLowerCase()}_icon.png',
                         width: screenHeight * 0.025,

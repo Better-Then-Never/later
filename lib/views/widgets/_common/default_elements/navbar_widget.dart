@@ -13,8 +13,9 @@ class NavbarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32.0),
+      padding: EdgeInsets.only(bottom: screenHeight * 0.01),
       child: Container(
         height: 80,
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
