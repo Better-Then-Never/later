@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:later/controllers/page_controllers/history_page_controller.dart';
+import 'package:later/data/notifiers.dart';
 import 'package:later/services/capsule_data_service.dart';
+import 'package:later/services/map_capsule_jump_service.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
@@ -161,6 +163,12 @@ class _HistoryPageState extends State<HistoryPage> {
                                   onTap: () {
                                     if (_controller.isSelectionMode) {
                                       _controller.toggleSelection(capsuleId);
+                                    } else if (c['location'] != null) {
+                                      context.read<CapsuleJumpService>().jumpTo(
+                                        c,
+                                      );
+
+                                      selectedPageNotifier.value = 0;
                                     }
                                   },
                                   onLongPress: () {
