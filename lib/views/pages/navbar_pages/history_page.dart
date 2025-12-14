@@ -87,7 +87,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                   context: context,
                                   message:
                                       "${_controller.selectedCount} capsule${_controller.selectedCount > 1 ? 's' : ''} deleted",
-                                  position: NotificationPosition.center,
+                                  position: NotificationPosition.bottom,
                                 );
                                 _controller.clearSelection();
                               },
