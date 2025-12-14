@@ -8,6 +8,8 @@ class DefaultText extends StatelessWidget {
   final TextAlign? textAlign;
   final EdgeInsetsGeometry? padding;
   final double? height;
+  final int? maxLines;
+  final TextOverflow? overflow;
 
   const DefaultText(
     this.text, {
@@ -18,6 +20,8 @@ class DefaultText extends StatelessWidget {
     this.textAlign,
     this.padding,
     this.height,
+    this.maxLines,
+    this.overflow,
   });
 
   @override
@@ -27,6 +31,8 @@ class DefaultText extends StatelessWidget {
       child: Text(
         text,
         textAlign: textAlign ?? TextAlign.center,
+        maxLines: maxLines,
+        overflow: overflow,
         style: TextStyle(
           fontFamily: 'Irina',
           fontWeight: fontWeight ?? FontWeight.normal,
