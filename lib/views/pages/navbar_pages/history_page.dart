@@ -23,12 +23,15 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   final TextEditingController _searchController = TextEditingController();
   late final HistoryPageController _controller;
+  late final Stream<List<Map<String, dynamic>>> _capsulesStream;
 
   @override
   void initState() {
     super.initState();
     _controller = HistoryPageController();
-
+    _capsulesStream = context.read<CapsuleDataService>().subscribeToCapsules(
+      FirebaseAuth.instance.currentUser!.uid,
+    );
     _searchController.addListener(() {
       _controller.updateSearchQuery(_searchController.text.trim());
     });
@@ -99,9 +102,7 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
               Expanded(
                 child: StreamBuilder<List<Map<String, dynamic>>>(
-                  stream: capsuleService.subscribeToCapsules(
-                    FirebaseAuth.instance.currentUser!.uid,
-                  ),
+                  stream: _capsulesStream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
