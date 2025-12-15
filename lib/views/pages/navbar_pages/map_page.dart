@@ -45,6 +45,8 @@ class _MapPageState extends State<MapPage> {
     'blue': 'assets/images/icons/map/pins/blue_pin.png',
     'green': 'assets/images/icons/map/pins/green_pin.png',
     'yellow': 'assets/images/icons/map/pins/yellow_pin.png',
+    'purple': 'assets/images/icons/map/pins/purple_pin.png',
+    'orange': 'assets/images/icons/map/pins/orange_pin.png',
     'user': 'assets/images/icons/map/pins/user_pin.png',
   };
 
