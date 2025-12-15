@@ -92,13 +92,16 @@ class PageHeader extends StatelessWidget {
                   child: searchBar!,
                 ),
 
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 150),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: actionButtonsRow == null
-                    ? const SizedBox.shrink()
-                    : actionButtonsRow!,
+              Padding(
+                padding: EdgeInsets.only(left: screenWidth * 0.04, right: screenWidth * 0.04, bottom: screenHeight * 0.01),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 150),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  child: actionButtonsRow == null
+                      ? const SizedBox.shrink()
+                      : actionButtonsRow!,
+                ),
               ),
             ],
           ),

@@ -41,11 +41,21 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    DefaultText(
-                      name,
-                      fontWeight: FontWeight.bold,
-                      fontSize: screenWidth * 0.045,
-                      color: Colors.black,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        alignment: Alignment.centerLeft,
+                        child: DefaultText(
+                          name,
+                          fontWeight: FontWeight.bold,
+                          fontSize: screenWidth * 0.045,
+                          color: Colors.black,
+                          textAlign: TextAlign.start,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
                     DefaultText(
                       '@$username',
@@ -55,12 +65,13 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                   ],
                 ),
               ),
+              SizedBox(width: screenWidth * 0.02,),
               FriendRequestsActionButton(
                 onTap: onAccept,
                 color: const Color.fromARGB(255, 86, 201, 46),
                 text: 'Accept',
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: screenWidth * 0.01),
               FriendRequestsActionButton(
                 onTap: onReject,
                 color: const Color.fromARGB(255, 253, 65, 64),

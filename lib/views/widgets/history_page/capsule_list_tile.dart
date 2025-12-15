@@ -92,13 +92,15 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
         padding: const EdgeInsets.all(14),
         margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         decoration: BoxDecorations.whiteCard().copyWith(
-          color: widget.isSelected ? const Color.fromARGB(255, 103, 207, 255).withAlpha(100) : null,
+          color: widget.isSelected
+              ? const Color.fromARGB(255, 103, 207, 255).withAlpha(100)
+              : null,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(17),
               child: imageUrl != null
                   ? Image.network(
                       imageUrl,
@@ -180,7 +182,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                DefaultText(toCapitalCase(privacy)),
+                                DefaultText('${toCapitalCase(privacy)} visibility'),
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.008),
@@ -191,7 +193,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                DefaultText('${distanceInKm(location!)} km'),
+                                DefaultText('${distanceInKm(location!)} km from you'),
                               ],
                             ),
                           ],
@@ -203,6 +205,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          SizedBox(height: screenHeight * 0.005),
                           Container(
                             width: screenWidth * 0.23,
                             height: screenHeight * 0.035,
