@@ -36,11 +36,17 @@ class DefaultButtonWithIcon extends StatelessWidget {
           children: [
             Image.asset(assetPath, width: 32, height: 32),
             const SizedBox(width: 6),
-            DefaultText(
-              text,
-              fontSize: textFontSize,
-              color: Colors.black,
-              fontWeight: textFontWeight,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: DefaultText(
+                  text,
+                  fontSize: textFontSize,
+                  color: Colors.black,
+                  fontWeight: textFontWeight,
+                ),
+              ),
             ),
           ],
         ),
