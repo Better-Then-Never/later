@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/data/models/time_capsule.dart';
+import 'package:later/views/pages/navbar_pages/map_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum SortMode { none, relevance, distance }
 
@@ -133,13 +137,40 @@ class HistoryPageController extends ChangeNotifier {
     }
 
     if (sortMode == SortMode.distance) {
-      if (sortOrder == SortOrder.closest) {
-        // result.sort((a, b) => a['distance'].compareTo(b['distance']));
-      } else if (sortOrder == SortOrder.farthest) {
-        // result.sort((a, b) => b['distance'].compareTo(a['distance']));
+      final current = MapPage.currentPositionStatic;
+
+      if (current != null) {
+        result.sort((a, b) {
+          final geoA = a['location'] as GeoPoint?;
+          final geoB = b['location'] as GeoPoint?;
+
+          if (geoA == null && geoB == null) return 0;
+          if (geoA == null) return 1;
+          if (geoB == null) return -1;
+
+          final locA = LatLng(geoA.latitude, geoA.longitude);
+          final locB = LatLng(geoB.latitude, geoB.longitude);
+
+          double distA = Geolocator.distanceBetween(
+            current.latitude,
+            current.longitude,
+            locA.latitude,
+            locA.longitude,
+          );
+
+          double distB = Geolocator.distanceBetween(
+            current.latitude,
+            current.longitude,
+            locB.latitude,
+            locB.longitude,
+          );
+
+          return sortOrder == SortOrder.closest
+              ? distA.compareTo(distB)
+              : distB.compareTo(distA);
+        });
       }
     }
-
     return result;
   }
 }
