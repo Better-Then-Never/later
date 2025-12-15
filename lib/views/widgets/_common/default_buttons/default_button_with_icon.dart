@@ -31,24 +31,26 @@ class DefaultButtonWithIcon extends StatelessWidget {
       child: Container(
         height: height ?? 48,
         decoration: decoration ?? BoxDecorations.greyCard(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(assetPath, width: 32, height: 32),
-            const SizedBox(width: 6),
-            Flexible(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: DefaultText(
-                  text,
-                  fontSize: textFontSize,
-                  color: Colors.black,
-                  fontWeight: textFontWeight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Image.asset(assetPath, width: 32, height: 32),
+              SizedBox(width: 8.0),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: DefaultText(
+                    text,
+                    fontSize: textFontSize,
+                    color: Colors.black,
+                    fontWeight: textFontWeight,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
