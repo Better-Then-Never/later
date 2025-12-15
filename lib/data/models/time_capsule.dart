@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum CapsulePrivacy { private, friends, public }
 
-enum CapsuleColor { red, blue, green, yellow }
+enum CapsuleColor { red, blue, green, yellow, orange, purple}
 
 class TimeCapsule {
   final String id;
@@ -89,6 +89,10 @@ extension CapsuleColorX on CapsuleColor {
         return "Green";
       case CapsuleColor.yellow:
         return "Yellow";
+      case CapsuleColor.orange:
+        return "Orange";
+      case CapsuleColor.purple:
+        return "Purple";
     }
   }
 }

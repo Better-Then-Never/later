@@ -29,9 +29,12 @@ class _HistoryPageState extends State<HistoryPage> {
   late final HistoryPageController _controller;
   late final Stream<List<Map<String, dynamic>>> _capsulesStream;
 
+  final FocusNode _searchFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
+
     _controller = HistoryPageController();
     _capsulesStream = context.read<CapsuleDataService>().subscribeToCapsules(
       FirebaseAuth.instance.currentUser!.uid,
@@ -74,6 +77,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   mainText: "My Capsules",
                   searchBar: DefaultSearchBar(
                     controller: _searchController,
+                    searchFocusNode: _searchFocusNode,
                     hintText: "Find Capsules...",
                   ),
                   actionButtonsRow: Column(
@@ -103,7 +107,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           Expanded(
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
-                              onTap: () => _controller.resetSortAndFilter(),
+                              onTap: () => _controller.resetFilters(),
                               assetPath:
                                   'assets/images/icons/history_page/sort.png',
                               text: 'Reset',
@@ -160,7 +164,10 @@ class _HistoryPageState extends State<HistoryPage> {
                     return AnimatedBuilder(
                       animation: _controller,
                       builder: (context, _) {
-                        final filtered = _controller.filteredCapsules;
+                        final filtered = _controller.filteredCapsules(
+                          favoriteService,
+                        );
+                        ;
 
                         if (filtered.isEmpty) {
                           return Center(
@@ -236,7 +243,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _openFilterMenu(BuildContext context) {
     final controller = _controller;
-
+    _searchFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -244,7 +252,7 @@ class _HistoryPageState extends State<HistoryPage> {
         child: NestedMenu(
           title: 'Filter By',
           rootItems: [
-            MenuItemNode(label: 'None', onTap: controller.resetSortAndFilter),
+            MenuItemNode(label: 'Reset', onTap: controller.resetFilters),
 
             MenuItemNode(
               label: 'Color',
@@ -270,6 +278,20 @@ class _HistoryPageState extends State<HistoryPage> {
                 );
               }).toList(),
             ),
+
+            MenuItemNode(
+              label: 'Capsule',
+              children: [
+                MenuItemNode(
+                  label: 'Favorite',
+                  onTap: () => _controller.setFavoriteFilter(true),
+                ),
+                MenuItemNode(
+                  label: 'Any',
+                  onTap: () => _controller.setFavoriteFilter(false),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -278,7 +300,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _openSortMenu(BuildContext context) {
     final controller = _controller;
-
+    _searchFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -287,7 +310,7 @@ class _HistoryPageState extends State<HistoryPage> {
           title: 'Sort By',
           rootItems: [
             MenuItemNode(
-              label: 'None',
+              label: 'Reset',
               onTap: () => controller.setSort(SortMode.none, SortOrder.none),
             ),
 

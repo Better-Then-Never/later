@@ -7,6 +7,7 @@ class DefaultSearchBar extends StatelessWidget {
   final String hintText;
   final Color? color;
   final void Function(String value)? onChanged;
+  final FocusNode? searchFocusNode;
 
   const DefaultSearchBar({
     super.key,
@@ -14,6 +15,7 @@ class DefaultSearchBar extends StatelessWidget {
     this.trailingButton,
     this.hintText = "Search...",
     this.color,
+    this.searchFocusNode,
     this.onChanged,
   });
 
@@ -41,6 +43,7 @@ class DefaultSearchBar extends StatelessWidget {
             ),
             Expanded(
               child: TextField(
+                focusNode: searchFocusNode ?? null,
                 controller: controller,
                 decoration: InputDecoration(
                   hintText: hintText,
