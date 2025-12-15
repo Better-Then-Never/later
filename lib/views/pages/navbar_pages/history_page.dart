@@ -1,16 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:later/controllers/page_controllers/history_page_controller.dart';
+import 'package:later/data/models/time_capsule.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/services/capsule_data_service.dart';
 import 'package:later/services/map_capsule_jump_service.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
+import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/history_page/capsule_list_tile.dart';
 import 'package:later/views/widgets/history_page/capsule_selection_action_bar.dart';
+import 'package:later/views/widgets/history_page/menu_item_node.dart';
+import 'package:later/views/widgets/history_page/nested_menu.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -23,12 +27,18 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   final TextEditingController _searchController = TextEditingController();
   late final HistoryPageController _controller;
+  late final Stream<List<Map<String, dynamic>>> _capsulesStream;
+
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _controller = HistoryPageController();
 
+    _controller = HistoryPageController();
+    _capsulesStream = context.read<CapsuleDataService>().subscribeToCapsules(
+      FirebaseAuth.instance.currentUser!.uid,
+    );
     _searchController.addListener(() {
       _controller.updateSearchQuery(_searchController.text.trim());
     });
@@ -44,6 +54,8 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.height;
+
     final capsuleService = context.read<CapsuleDataService>();
     final favoriteService = context.read<FavoriteCapsuleService>();
 
@@ -65,10 +77,46 @@ class _HistoryPageState extends State<HistoryPage> {
                   mainText: "My Capsules",
                   searchBar: DefaultSearchBar(
                     controller: _searchController,
+                    searchFocusNode: _searchFocusNode,
                     hintText: "Find Capsules...",
                   ),
-                  actionButtonsRow: _controller.isSelectionMode
-                      ? SelectionActionBar(
+                  actionButtonsRow: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DefaultButtonWithIcon(
+                              height: screenHeight * 0.05,
+                              onTap: () => _openSortMenu(context),
+                              assetPath:
+                                  'assets/images/icons/history_page/sort.png',
+                              text: _controller.activeSortLabel,
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Expanded(
+                            child: DefaultButtonWithIcon(
+                              height: screenHeight * 0.05,
+                              assetPath:
+                                  'assets/images/icons/history_page/filter.png',
+                              text: _controller.activeFilterLabel,
+                              onTap: () => _openFilterMenu(context),
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Expanded(
+                            child: DefaultButtonWithIcon(
+                              height: screenHeight * 0.05,
+                              onTap: () => _controller.resetAll(),
+                              assetPath:
+                                  'assets/images/icons/history_page/sort.png',
+                              text: 'Reset',
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_controller.isSelectionMode)
+                        SelectionActionBar(
                           count: _controller.selectedCount,
                           onCancel: _controller.clearSelection,
                           onDelete: () {
@@ -93,15 +141,14 @@ class _HistoryPageState extends State<HistoryPage> {
                               },
                             );
                           },
-                        )
-                      : null,
+                        ),
+                    ],
+                  ),
                 ),
               ),
               Expanded(
                 child: StreamBuilder<List<Map<String, dynamic>>>(
-                  stream: capsuleService.subscribeToCapsules(
-                    FirebaseAuth.instance.currentUser!.uid,
-                  ),
+                  stream: _capsulesStream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(child: CircularProgressIndicator());
@@ -117,7 +164,10 @@ class _HistoryPageState extends State<HistoryPage> {
                     return AnimatedBuilder(
                       animation: _controller,
                       builder: (context, _) {
-                        final filtered = _controller.filteredCapsules;
+                        final filtered = _controller.filteredCapsules(
+                          favoriteService,
+                        );
+                        ;
 
                         if (filtered.isEmpty) {
                           return Center(
@@ -187,6 +237,116 @@ class _HistoryPageState extends State<HistoryPage> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _openFilterMenu(BuildContext context) {
+    final controller = _controller;
+    _searchFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: NestedMenu(
+          title: 'Filter By',
+          rootItems: [
+            MenuItemNode(label: 'Reset', onTap: controller.resetFilters),
+
+            MenuItemNode(
+              label: 'Color',
+              children: CapsuleColor.values.map((color) {
+                return MenuItemNode(
+                  label: color.label,
+                  onTap: () {
+                    controller.setColorFilter(color);
+                  },
+                );
+              }).toList(),
+            ),
+
+            MenuItemNode(
+              label: 'Visibility',
+              children: CapsulePrivacy.values.map((privacy) {
+                return MenuItemNode(
+                  label: privacy.label,
+                  onTap: () {
+                    controller.setPrivacyFilter(privacy);
+                    controller.filterMode = FilterMode.visibility;
+                  },
+                );
+              }).toList(),
+            ),
+
+            MenuItemNode(
+              label: 'Capsule',
+              children: [
+                MenuItemNode(
+                  label: 'Favorite',
+                  onTap: () => _controller.setFavoriteFilter(true),
+                ),
+                MenuItemNode(
+                  label: 'Any',
+                  onTap: () => _controller.setFavoriteFilter(false),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openSortMenu(BuildContext context) {
+    final controller = _controller;
+    _searchFocusNode.unfocus();
+    FocusScope.of(context).unfocus();
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: NestedMenu(
+          title: 'Sort By',
+          rootItems: [
+            MenuItemNode(
+              label: 'Reset',
+              onTap: () => controller.resetSort(),
+            ),
+
+            MenuItemNode(
+              label: 'Relevance',
+              children: [
+                MenuItemNode(
+                  label: 'From Oldest',
+                  onTap: () =>
+                      controller.setSort(SortMode.relevance, SortOrder.oldest),
+                ),
+                MenuItemNode(
+                  label: 'From Newest',
+                  onTap: () =>
+                      controller.setSort(SortMode.relevance, SortOrder.newest),
+                ),
+              ],
+            ),
+
+            MenuItemNode(
+              label: 'Distance',
+              children: [
+                MenuItemNode(
+                  label: 'From Closest',
+                  onTap: () =>
+                      controller.setSort(SortMode.distance, SortOrder.closest),
+                ),
+                MenuItemNode(
+                  label: 'From Farthest',
+                  onTap: () =>
+                      controller.setSort(SortMode.distance, SortOrder.farthest),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

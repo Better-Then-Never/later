@@ -26,23 +26,36 @@ class DefaultButtonWithIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: height ?? 48,
+    return Material(
+      color: Colors.transparent,
+      child: Ink(
         decoration: decoration ?? BoxDecorations.greyCard(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(assetPath, width: 32, height: 32),
-            const SizedBox(width: 6),
-            DefaultText(
-              text,
-              fontSize: textFontSize,
-              color: Colors.black,
-              fontWeight: textFontWeight,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(25),
+          splashColor: Colors.black.withAlpha(20),
+          child: Container(
+            width: width,
+            height: height ?? 48,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              children: [
+                Image.asset(assetPath, width: 32, height: 32),
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: DefaultText(
+                      text,
+                      fontSize: textFontSize,
+                      textAlign: TextAlign.center,
+                      color: Colors.black,
+                      fontWeight: textFontWeight,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

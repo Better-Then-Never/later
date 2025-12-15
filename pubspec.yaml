@@ -99,6 +99,7 @@ flutter:
     - assets/images/icons/camera/
     - assets/images/icons/map/pins/
     - assets/images/icons/capsule_creation/
+    - assets/images/icons/history_page/
     - assets/images/icons/friends_page/
     - assets/gifs/loading/
   #   - images/a_dot_ham.jpeg
