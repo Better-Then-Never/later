@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/data/models/time_capsule.dart';
+import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/views/pages/navbar_pages/map_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -27,6 +28,9 @@ class HistoryPageController extends ChangeNotifier {
   CapsuleColor? colorFilter;
   CapsulePrivacy? privacyFilter;
 
+  bool favoriteFilter = false;
+
+
   bool isSelected(String id) => _selectedIds.contains(id);
   List<String> get selectedIds => _selectedIds.toList();
   String get searchQuery => _searchQuery;
@@ -39,6 +43,11 @@ class HistoryPageController extends ChangeNotifier {
 
   void toggleSelection(String id) {
     _selectedIds.contains(id) ? _selectedIds.remove(id) : _selectedIds.add(id);
+    notifyListeners();
+  }
+
+  void setFavoriteFilter(bool enabled) {
+    favoriteFilter = enabled;
     notifyListeners();
   }
 
@@ -65,10 +74,11 @@ class HistoryPageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetSortAndFilter() {
+  void resetFilters() {
     sortMode = SortMode.none;
     sortOrder = SortOrder.none;
     filterMode = FilterMode.none;
+    favoriteFilter = false;
     colorFilter = null;
     privacyFilter = null;
     notifyListeners();
@@ -95,6 +105,7 @@ class HistoryPageController extends ChangeNotifier {
     final parts = <String>[];
     if (colorFilter != null) parts.add(colorFilter!.label);
     if (privacyFilter != null) parts.add(privacyFilter!.label);
+    if(favoriteFilter) parts.add('Favorite');
     if (parts.isEmpty) return 'Filter By';
     return parts.join(' · ');
   }
@@ -104,7 +115,7 @@ class HistoryPageController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<String, dynamic>> get filteredCapsules {
+  List<Map<String, dynamic>> filteredCapsules (FavoriteCapsuleService favoriteService) {
     List<Map<String, dynamic>> result = [..._allCapsules];
 
     // SEARCH
@@ -119,7 +130,12 @@ class HistoryPageController extends ChangeNotifier {
     if (colorFilter != null) {
       result = result.where((c) => c['color'] == colorFilter!.name).toList();
     }
-
+    // FAVORITE FILTER
+    if (favoriteFilter) {
+      result = result
+          .where((c) => favoriteService.isFavorite(c['id']))
+          .toList();
+    }
     // VISIBILITY FILTER
     if (privacyFilter != null) {
       result = result
