@@ -89,6 +89,19 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
     if (status.isPermanentlyDenied) {
       await openAppSettings();
     }
+
+    if (status.isGranted) {
+      final nextPage = _currentPage + 1;
+
+      if (nextPage < _permissionsList.length) {
+        _pageController.animateToPage(
+          nextPage,
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOut,
+        );
+      }
+    }
+
     _checkIfAllGranted();
   }
 
@@ -97,7 +110,6 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
 
     if (_statuses.length != _permissionsList.length) return;
 
-    // Check if all required permissions are granted
     final allRequiredGranted = _permissionsList.every(
       (p) => _statuses[p.permission]?.isGranted ?? false,
     );
