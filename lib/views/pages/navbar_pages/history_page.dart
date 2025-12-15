@@ -107,7 +107,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           Expanded(
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
-                              onTap: () => _controller.resetFilters(),
+                              onTap: () => _controller.resetAll(),
                               assetPath:
                                   'assets/images/icons/history_page/sort.png',
                               text: 'Reset',
@@ -311,7 +311,7 @@ class _HistoryPageState extends State<HistoryPage> {
           rootItems: [
             MenuItemNode(
               label: 'Reset',
-              onTap: () => controller.setSort(SortMode.none, SortOrder.none),
+              onTap: () => controller.resetSort(),
             ),
 
             MenuItemNode(
