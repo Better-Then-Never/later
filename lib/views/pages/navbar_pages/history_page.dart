@@ -6,6 +6,7 @@ import 'package:later/services/capsule_data_service.dart';
 import 'package:later/services/map_capsule_jump_service.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
+import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
@@ -47,6 +48,8 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.height;
+
     final capsuleService = context.read<CapsuleDataService>();
     final favoriteService = context.read<FavoriteCapsuleService>();
 
@@ -70,8 +73,43 @@ class _HistoryPageState extends State<HistoryPage> {
                     controller: _searchController,
                     hintText: "Find Capsules...",
                   ),
-                  actionButtonsRow: _controller.isSelectionMode
-                      ? SelectionActionBar(
+                  actionButtonsRow: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DefaultButtonWithIcon(
+                              height: screenHeight * 0.05,
+                              onTap: () {},
+                              assetPath:
+                                  'assets/images/icons/history_page/sort.png',
+                              text: 'Sort By',
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Expanded(
+                            child: DefaultButtonWithIcon(
+                              height: screenHeight * 0.05,
+                              onTap: () {},
+                              assetPath:
+                                  'assets/images/icons/history_page/filter.png',
+                              text: 'Filter By',
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.01),
+                          Expanded(
+                            child: DefaultButtonWithIcon(
+                              height: screenHeight * 0.05,
+                              onTap: () {},
+                              assetPath:
+                                  'assets/images/icons/history_page/sort.png',
+                              text: 'Reset',
+                            ),
+                          ),                          
+                        ],
+                      ),
+                      if (_controller.isSelectionMode)
+                        SelectionActionBar(
                           count: _controller.selectedCount,
                           onCancel: _controller.clearSelection,
                           onDelete: () {
@@ -96,8 +134,9 @@ class _HistoryPageState extends State<HistoryPage> {
                               },
                             );
                           },
-                        )
-                      : null,
+                        ),
+                    ],
+                  ),
                 ),
               ),
               Expanded(
