@@ -112,7 +112,7 @@ class CapsuleCreationPageController extends ChangeNotifier {
             : descriptionController.text,
         location: GeoPoint(pickedLocation!.latitude, pickedLocation!.longitude),
         privacy: privacy,
-        color: color.label.toLowerCase(),
+        color: color,
       );
 
       final capsuleMap = capsule.toMap();

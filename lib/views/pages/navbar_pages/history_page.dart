@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:later/controllers/page_controllers/history_page_controller.dart';
+import 'package:later/data/models/time_capsule.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/services/capsule_data_service.dart';
 import 'package:later/services/map_capsule_jump_service.dart';
@@ -12,6 +13,8 @@ import 'package:later/views/widgets/_common/default_elements/default_search_bar.
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/history_page/capsule_list_tile.dart';
 import 'package:later/views/widgets/history_page/capsule_selection_action_bar.dart';
+import 'package:later/views/widgets/history_page/menu_item_node.dart';
+import 'package:later/views/widgets/history_page/nested_menu.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -80,32 +83,32 @@ class _HistoryPageState extends State<HistoryPage> {
                           Expanded(
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
-                              onTap: () {},
+                              onTap: () => _openSortMenu(context),
                               assetPath:
                                   'assets/images/icons/history_page/sort.png',
-                              text: 'Sort By',
+                              text: _controller.activeSortLabel,
                             ),
                           ),
                           SizedBox(width: screenWidth * 0.01),
                           Expanded(
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
-                              onTap: () {},
                               assetPath:
                                   'assets/images/icons/history_page/filter.png',
-                              text: 'Filter By',
+                              text: _controller.activeFilterLabel,
+                              onTap: () => _openFilterMenu(context),
                             ),
                           ),
                           SizedBox(width: screenWidth * 0.01),
                           Expanded(
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
-                              onTap: () {},
+                              onTap: () => _controller.resetSortAndFilter(),
                               assetPath:
                                   'assets/images/icons/history_page/sort.png',
                               text: 'Reset',
                             ),
-                          ),                          
+                          ),
                         ],
                       ),
                       if (_controller.isSelectionMode)
@@ -227,6 +230,100 @@ class _HistoryPageState extends State<HistoryPage> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _openFilterMenu(BuildContext context) {
+    final controller = _controller;
+
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: NestedMenu(
+          title: 'Filter By',
+          rootItems: [
+            MenuItemNode(label: 'None', onTap: controller.resetSortAndFilter),
+
+            MenuItemNode(
+              label: 'Color',
+              children: CapsuleColor.values.map((color) {
+                return MenuItemNode(
+                  label: color.label,
+                  onTap: () {
+                    controller.setColorFilter(color);
+                  },
+                );
+              }).toList(),
+            ),
+
+            MenuItemNode(
+              label: 'Visibility',
+              children: CapsulePrivacy.values.map((privacy) {
+                return MenuItemNode(
+                  label: privacy.label,
+                  onTap: () {
+                    controller.setPrivacyFilter(privacy);
+                    controller.filterMode = FilterMode.visibility;
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openSortMenu(BuildContext context) {
+    final controller = _controller;
+
+    showDialog(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: NestedMenu(
+          title: 'Sort By',
+          rootItems: [
+            MenuItemNode(
+              label: 'None',
+              onTap: () => controller.setSort(SortMode.none, SortOrder.none),
+            ),
+
+            MenuItemNode(
+              label: 'Relevance',
+              children: [
+                MenuItemNode(
+                  label: 'From Oldest',
+                  onTap: () =>
+                      controller.setSort(SortMode.relevance, SortOrder.oldest),
+                ),
+                MenuItemNode(
+                  label: 'From Newest',
+                  onTap: () =>
+                      controller.setSort(SortMode.relevance, SortOrder.newest),
+                ),
+              ],
+            ),
+
+            MenuItemNode(
+              label: 'Distance',
+              children: [
+                MenuItemNode(
+                  label: 'From Closest',
+                  onTap: () =>
+                      controller.setSort(SortMode.distance, SortOrder.closest),
+                ),
+                MenuItemNode(
+                  label: 'From Farthest',
+                  onTap: () =>
+                      controller.setSort(SortMode.distance, SortOrder.farthest),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

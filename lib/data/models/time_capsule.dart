@@ -16,7 +16,7 @@ class TimeCapsule {
   final Timestamp createdAt;
   final bool isScheduled;
   final Timestamp? openAt;
-  final String color;
+  final CapsuleColor color;
 
   TimeCapsule({
     required this.id,
@@ -42,7 +42,7 @@ class TimeCapsule {
     'createdAt': createdAt,
     'isScheduled': isScheduled,
     'openAt': openAt,
-    'color': color,
+    'color': color.name,
   };
 
   static TimeCapsule fromMap(String id, Map<String, dynamic> map) =>
@@ -59,7 +59,9 @@ class TimeCapsule {
         createdAt: map['createdAt'] as Timestamp,
         isScheduled: map['isScheduled'] ?? false,
         openAt: map['openAt'],
-        color: map['color'] ?? 'red', 
+        color: CapsuleColor.values.firstWhere(
+          (c) => c.name == (map['color'] ?? 'red'),
+        ),
       );
 }
 
