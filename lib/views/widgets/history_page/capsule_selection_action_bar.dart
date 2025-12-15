@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
 
 class SelectionActionBar extends StatelessWidget {
   final int count;
@@ -14,10 +15,13 @@ class SelectionActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal:  8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
+          SizedBox(height: screenHeight * 0.01),
+          ProfilePageDivider(width: double.infinity),
           Row(
             children: [
               DefaultText(
@@ -42,6 +46,8 @@ class SelectionActionBar extends StatelessWidget {
               ),
             ],
           ),
+
+          ProfilePageDivider(width: double.infinity),
         ],
       ),
     );
