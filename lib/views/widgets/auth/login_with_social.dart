@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -63,8 +64,28 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
               ),
             ),
             IconButton(
-              onPressed: () {
-                // TODO: Facebook LogIn
+              onPressed: () async {
+                final facebookSignInResult = await signInWithFacebook(context);
+                if (!context.mounted) return;
+                if (facebookSignInResult != null) {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PermissionGatePage(
+                        onAllGranted: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => WidgetTreeWrapper(),
+                            ),
+                            (route) => false,
+                          );
+                        },
+                      ),
+                    ),
+                    (route) => false,
+                  );
+                }
               },
               icon: Image.asset(
                 'assets/images/icons/login_signup_pages/facebook.png',
@@ -121,6 +142,59 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
             email: googleInfo.email ?? user.email ?? '',
             name: googleInfo.displayName ?? user.displayName ?? '',
             username: (googleInfo.email ?? user.email ?? '')
+                .split('@')
+                .first
+                .toLowerCase(),
+          );
+        }
+      }
+
+      return userCredential;
+    }
+    return null;
+  } on Exception catch (e) {
+    if (!context.mounted) return null;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(e.toString())));
+    // TODO: Proper error codes
+    return null;
+  }
+}
+
+Future<UserCredential?> signInWithFacebook(BuildContext context) async {
+  if (!context.mounted) return null;
+  final authService = Provider.of<FirebaseAuthService>(context, listen: false);
+
+  try {
+    final LoginResult result = await FacebookAuth.instance.login();
+
+    if (result.status == LoginStatus.success) {
+      final AccessToken accessToken = result.accessToken!;
+      final credential = FacebookAuthProvider.credential(accessToken.tokenString);
+
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(
+        credential,
+      );
+
+      final user = userCredential.user;
+      if (user != null) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (!userDoc.exists) {
+          final facebookInfo = user.providerData.firstWhere(
+            (info) => info.providerId == 'facebook.com',
+            orElse: () => user.providerData.first,
+          );
+
+          await authService.addUserToDatabase(
+            uid: user.uid,
+            email: facebookInfo.email ?? user.email ?? '',
+            name: facebookInfo.displayName ?? user.displayName ?? '',
+            username: (facebookInfo.email ?? user.email ?? '')
                 .split('@')
                 .first
                 .toLowerCase(),

@@ -61,6 +61,7 @@ dependencies:
   url_launcher: ^6.0.20
   page_transition: ^2.2.1
   google_maps_flutter_ios: ^2.15.7
+  flutter_facebook_auth: ^7.1.2
 
 dev_dependencies:
   flutter_test:
