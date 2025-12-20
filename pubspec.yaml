@@ -28,37 +28,37 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  image:
-  cupertino_icons:
-  firebase_core:
-  firebase_storage:
-  firebase_auth:
-  cloud_firestore:
-  shared_preferences:
-  flutter_launcher_icons:
-  http:
-  google_maps:
-  google_maps_flutter:
-  permission_handler:
-  geolocator:
-  auto_size_text:
-  provider:
-  google_sign_in:
-  image_picker:
-  location:
-  camera:
-  custom_info_window:
-  intl:
-  geocoding:
-  path_provider:
-  collection:
-  qr_flutter:
-  share_plus:
-  mobile_scanner:
-  flutter_contacts:
-  url_launcher:
-  page_transition:
-  google_maps_flutter_ios:
+  image: ^4.7.1
+  cupertino_icons: ^1.0.8
+  firebase_core: ^4.3.0
+  firebase_storage: ^13.0.5
+  firebase_auth: ^6.1.3
+  cloud_firestore: ^6.1.1
+  shared_preferences: ^2.5.4
+  flutter_launcher_icons: ^0.14.4
+  http: ^1.6.0
+  google_maps: ^8.2.0
+  google_maps_flutter: ^2.14.0
+  permission_handler: ^12.0.1
+  geolocator: ^14.0.2
+  auto_size_text: ^3.0.0
+  provider: ^6.1.5
+  google_sign_in: ^7.2.0
+  image_picker: ^1.2.1
+  location: ^8.0.1
+  camera: ^0.11.3
+  custom_info_window: ^1.0.1
+  intl: ^0.20.2
+  geocoding: ^4.0.0
+  path_provider: ^2.1.5
+  collection: ^1.19.1
+  qr_flutter: ^4.1.0
+  share_plus: ^12.0.1
+  mobile_scanner: ^7.1.4
+  flutter_contacts: ^1.1.9
+  url_launcher: ^6.3.2
+  page_transition: ^2.2.1
+  google_maps_flutter_ios: ^2.15.7
 
 dev_dependencies:
   flutter_test:
