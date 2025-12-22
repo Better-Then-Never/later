@@ -39,12 +39,12 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
                             MaterialPageRoute(
                               builder: (context) => WidgetTreeWrapper(),
                             ),
-                            (route) => false, 
+                            (route) => false,
                           );
                         },
                       ),
                     ),
-                    (route) => false, 
+                    (route) => false,
                   );
                 }
               },
@@ -80,63 +80,90 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
 }
 
 Future<UserCredential?> signInWithGoogle(BuildContext context) async {
-  final GoogleSignIn googleSignIn = GoogleSignIn();
+  // Use GoogleSignIn.instance instead of GoogleSignIn()
+  final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
   if (!context.mounted) return null;
   final authService = Provider.of<FirebaseAuthService>(context, listen: false);
 
   try {
+    // Initialize GoogleSignIn (required in v7+)
+    await googleSignIn.initialize();
+
+    // Sign out first to ensure fresh login
     await googleSignIn.signOut();
 
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
+    // Use authenticate() instead of signIn()
     if (!context.mounted) return null;
-    if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+    final GoogleSignInAccount googleUser = await googleSignIn.authenticate(
+      scopeHint: ['email'], // Specify required scopes
+    );
 
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
+    // Get authentication - now synchronous in v7+
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(
-        credential,
-      );
+    // For Firebase, we only need the idToken
+    // If you need accessToken for Google APIs, use authorizationClient
+    final credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
 
-      final user = userCredential.user;
-      if (user != null) {
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
+    final userCredential = await FirebaseAuth.instance.signInWithCredential(
+      credential,
+    );
 
-        if (!userDoc.exists) {
-          final googleInfo = user.providerData.firstWhere(
-            (info) => info.providerId == 'google.com',
-            orElse: () => user.providerData.first,
-          );
+    final user = userCredential.user;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
-          await authService.addUserToDatabase(
-            uid: user.uid,
-            email: googleInfo.email ?? user.email ?? '',
-            name: googleInfo.displayName ?? user.displayName ?? '',
-            username: (googleInfo.email ?? user.email ?? '')
-                .split('@')
-                .first
-                .toLowerCase(),
-          );
-        }
+      if (!userDoc.exists) {
+        final googleInfo = user.providerData.firstWhere(
+          (info) => info.providerId == 'google.com',
+          orElse: () => user.providerData.first,
+        );
+
+        await authService.addUserToDatabase(
+          uid: user.uid,
+          email: googleInfo.email ?? user.email ?? '',
+          name: googleInfo.displayName ?? user.displayName ?? '',
+          username: (googleInfo.email ?? user.email ?? '')
+              .split('@')
+              .first
+              .toLowerCase(),
+        );
       }
-
-      return userCredential;
     }
+
+    return userCredential;
+  } on GoogleSignInException catch (e) {
+    // Handle specific GoogleSignIn errors
+    if (!context.mounted) return null;
+    String errorMessage;
+    switch (e.code.name) {
+      case 'canceled':
+        errorMessage = 'Sign-in was cancelled';
+        break;
+      case 'interrupted':
+        errorMessage = 'Sign-in was interrupted';
+        break;
+      case 'clientConfigurationError':
+        errorMessage = 'Configuration error. Please contact support';
+        break;
+      default:
+        errorMessage = 'Sign-in failed: ${e.description ?? e.code.name}';
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(errorMessage)));
     return null;
   } on Exception catch (e) {
     if (!context.mounted) return null;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(e.toString())));
-    // TODO: Proper error codes
     return null;
   }
 }
