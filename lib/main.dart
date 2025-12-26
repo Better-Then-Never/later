@@ -25,6 +25,7 @@ import 'package:later/views/pages/core_pages/widget_tree_wrapper_page.dart';
 import 'package:later/services/deep_link_service.dart';
 import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
 import 'package:later/services/user_data_service.dart';
+import 'package:snow_fall_animation/snow_fall_animation.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -45,7 +46,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => UserFriendsService()),
         ChangeNotifierProvider(create: (_) => CapsuleDataService()),
         ChangeNotifierProvider(create: (_) => FavoriteCapsuleService()),
-         ChangeNotifierProvider(create: (_) => CapsuleJumpService()),
+        ChangeNotifierProvider(create: (_) => CapsuleJumpService()),
         ChangeNotifierProvider.value(value: userImageService),
       ],
       child: const Application(),
@@ -113,6 +114,23 @@ class _ApplicationState extends State<Application> {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return Stack(
+          children: [
+            child ?? const SizedBox(),
+            IgnorePointer(
+              child: SnowFallAnimation(
+                config: SnowfallConfig(
+                  numberOfSnowflakes: 200,
+                  speed: 1.0,
+                  useEmoji: true,
+                  customEmojis: ['❄️', '❅', '❆'],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
       routes: {
         '/widgetTree': (context) => const WidgetTreeWrapper(),
         '/welcome': (context) => const WelcomePage(),
