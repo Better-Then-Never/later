@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e8990efb-b338-47f3-83da-fa7b7a8826b7" name="Changes" comment="" />
+    <list default="true" id="e8990efb-b338-47f3-83da-fa7b7a8826b7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/images/placeholder.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/later.iml" beforeDir="false" afterPath="$PROJECT_DIR$/later.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/views/pages/navbar_pages/messages_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/views/pages/navbar_pages/messages_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -68,7 +75,7 @@
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature/messenger",
     "io.flutter.reload.alreadyRun": "true",
     "settings.editor.selected.configurable": "preferences.pluginManager",
     "show.migrate.to.gradle.popup": "false"
