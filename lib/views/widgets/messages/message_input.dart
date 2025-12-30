@@ -86,13 +86,13 @@ class _MessageInputState extends State<MessageInput> {
                 shape: BoxShape.circle,
               ),
               child: IconButton(
-                icon: Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: screenHeight * 0.028,
+                icon: Image.asset(
+                  'assets/images/icons/private_message_page/send_message/send_message.png',
+                  width: screenHeight * 0.06,
+                  height: screenHeight * 0.06,
                 ),
                 onPressed: _handleSend,
-                padding: EdgeInsets.all(screenHeight * 0.012),
+                padding: EdgeInsets.all(0),
               ),
             ),
           ],
