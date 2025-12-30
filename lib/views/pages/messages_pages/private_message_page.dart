@@ -27,6 +27,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F6F6),
       body: Column(
         children: [
           Container(

@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class MessageInput extends StatefulWidget {
   final Function(String) onSendMessage;
 
-  const MessageInput({
-    super.key,
-    required this.onSendMessage,
-  });
+  const MessageInput({super.key, required this.onSendMessage});
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -37,16 +34,6 @@ class _MessageInputState extends State<MessageInput> {
       padding: EdgeInsets.symmetric(
         horizontal: screenWidth * 0.04,
         vertical: screenHeight * 0.01,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
       ),
       child: SafeArea(
         top: false,
