@@ -24,19 +24,17 @@ class MessageBubble extends StatelessWidget {
         ),
         padding: EdgeInsets.symmetric(
           horizontal: screenWidth * 0.04,
-          vertical: screenHeight * 0.012,
+          vertical: screenHeight * 0.010,
         ),
-        constraints: BoxConstraints(
-          maxWidth: screenWidth * 0.7,
-        ),
+        constraints: BoxConstraints(maxWidth: screenWidth * 0.7),
         decoration: BoxDecoration(
-          color: isSentByMe ? const Color(0xFF6FCF47) : const Color(0xFFF0F0F0),
-          borderRadius: BorderRadius.circular(20),
+          color: isSentByMe ? const Color(0xFF56C92E) : const Color(0xFFE4E4E4),
+          borderRadius: BorderRadius.circular(25),
         ),
         child: Text(
           message,
           style: TextStyle(
-            fontSize: screenHeight * 0.02,
+            fontSize: screenHeight * 0.025,
             color: isSentByMe ? Colors.white : Colors.black,
           ),
         ),
