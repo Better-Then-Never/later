@@ -105,6 +105,7 @@ flutter:
     - assets/gifs/loading/
     - assets/images/icons/private_message_page/header/
     - assets/images/icons/private_message_page/send_message/
+    - assets/images/icons/messages_page/header/write_new_message.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
