@@ -64,8 +64,6 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                     constraints: const BoxConstraints(),
                   ),
                   SizedBox(width: screenWidth * 0.04),
-
-                  // Profile Picture
                   CircleAvatar(
                     radius: screenHeight * 0.025,
                     backgroundImage: const AssetImage(
@@ -99,7 +97,6 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
             ),
           ),
 
-          // Messages List
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(vertical: screenHeight * 0.01),
@@ -114,7 +111,6 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
             ),
           ),
 
-          // Message Input
           MessageInput(onSendMessage: _handleSendMessage),
         ],
       ),
