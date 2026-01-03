@@ -121,8 +121,8 @@ class _ApplicationState extends State<Application> {
             IgnorePointer(
               child: SnowFallAnimation(
                 config: SnowfallConfig(
-                  numberOfSnowflakes: 200,
-                  speed: 1.0,
+                  numberOfSnowflakes: 15,
+                  speed: 0.5,
                   useEmoji: true,
                   customEmojis: ['❄️', '❅', '❆'],
                 ),
