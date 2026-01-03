@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/default_search_bar.dart';
+import 'package:later/views/widgets/messages/friends_picker.dart';
 
 class MessagesHeader extends StatelessWidget {
   final TextEditingController searchController;
@@ -63,7 +64,7 @@ class MessagesHeader extends StatelessWidget {
                       width: screenHeight * 0.05,
                     ),
                     onPressed: () {
-                      // TODO: Navigate to new message
+                      FriendsPicker.show(context);
                     },
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
