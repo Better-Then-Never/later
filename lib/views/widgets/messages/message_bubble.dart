@@ -6,6 +6,7 @@ class MessageBubble extends StatelessWidget {
   final bool isSentByMe;
   final DateTime? timestamp;
   final String? status;
+  final bool showTail;
 
   const MessageBubble({
     super.key,
@@ -13,6 +14,7 @@ class MessageBubble extends StatelessWidget {
     required this.isSentByMe,
     this.timestamp,
     this.status,
+    this.showTail = false,
   });
 
   @override
@@ -34,7 +36,12 @@ class MessageBubble extends StatelessWidget {
         constraints: BoxConstraints(maxWidth: screenWidth * 0.7),
         decoration: BoxDecoration(
           color: isSentByMe ? const Color(0xFF56C92E) : const Color(0xFFE4E4E4),
-          borderRadius: BorderRadius.circular(25),
+          borderRadius: BorderRadius.only(
+            topLeft: const Radius.circular(20),
+            topRight: const Radius.circular(20),
+            bottomLeft: Radius.circular(showTail && !isSentByMe ? 4 : 20),
+            bottomRight: Radius.circular(showTail && isSentByMe ? 4 : 20),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,

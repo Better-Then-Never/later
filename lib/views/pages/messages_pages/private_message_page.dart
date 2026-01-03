@@ -236,6 +236,14 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                           message.timestamp,
                         );
 
+                    final isLastInGroup =
+                        index == messages.length - 1 ||
+                        messages[index + 1].senderId != message.senderId ||
+                        !_isSameDay(
+                          message.timestamp,
+                          messages[index + 1].timestamp,
+                        );
+
                     return Column(
                       children: [
                         if (showDate) _buildDateSeparator(message.timestamp),
@@ -244,6 +252,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                           isSentByMe: isMe,
                           timestamp: message.timestamp,
                           status: message.status,
+                          showTail: isLastInGroup,
                         ),
                       ],
                     );
