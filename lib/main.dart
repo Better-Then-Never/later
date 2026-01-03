@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:later/firebase_options.dart';
 import 'package:later/services/capsule_data_service.dart';
+import 'package:later/services/chat_service.dart';
 import 'package:later/services/firebase_auth_service.dart';
 import 'package:later/services/map_capsule_jump_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
@@ -44,6 +45,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => FirebaseAuthService()),
         ChangeNotifierProvider(create: (_) => UserDataService()),
         ChangeNotifierProvider(create: (_) => UserFriendsService()),
+        ChangeNotifierProvider(create: (_) => ChatService()),
         ChangeNotifierProvider(create: (_) => CapsuleDataService()),
         ChangeNotifierProvider(create: (_) => FavoriteCapsuleService()),
         ChangeNotifierProvider(create: (_) => CapsuleJumpService()),
