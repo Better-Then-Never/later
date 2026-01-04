@@ -35,7 +35,7 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
 
   final List<AppPermission> _permissionsList = [
     AppPermission(
-      name: "Share Camera acess with Later",
+      name: "Share Camera access with Later",
       description: "And you will be able to create time capsules!",
       permission: Permission.camera,
       iconAsset: "assets/images/icons/camera/Camerafull.png",
@@ -53,6 +53,18 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
           ? Permission.locationWhenInUse
           : Permission.location,
       iconAsset: "assets/images/icons/capsule_creation/location_icon.png",
+    ),
+    AppPermission(
+      name: "Enable notifications",
+      description: "Stay updated with new followers and capsules!",
+      permission: Permission.notification,
+      iconAsset: "assets/images/icons/prof_page/notifications_button_black_full.png",
+    ),
+    AppPermission(
+      name: "Access contacts",
+      description: "Find and invite friends from your contacts!",
+      permission: Permission.contacts,
+      iconAsset: "assets/images/icons/friends_page/friend_book.png",
     ),
   ];
 

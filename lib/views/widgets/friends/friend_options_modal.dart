@@ -75,7 +75,7 @@ class FriendOptionsModal extends StatelessWidget {
   }
 }
 
-class ManageFriendshipModal extends StatelessWidget {
+class ManageFriendshipModal extends StatefulWidget {
   final String friendUid;
 
   const ManageFriendshipModal({super.key, required this.friendUid});
@@ -102,6 +102,96 @@ class ManageFriendshipModal extends StatelessWidget {
   }
 
   @override
+  State<ManageFriendshipModal> createState() => _ManageFriendshipModalState();
+}
+
+class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
+  bool _isFollowing = false;
+  bool _isLoading = true;
+  final UserFriendsService _friendsService = UserFriendsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFollowStatus();
+  }
+
+  Future<void> _checkFollowStatus() async {
+    try {
+      final userService = Provider.of<UserDataService>(context, listen: false);
+      final currentUserUid = userService.currentLoggedInUid;
+      
+      final isFollowing = await _friendsService.isFollowing(
+        currentUserUid,
+        widget.friendUid,
+      );
+
+      if (mounted) {
+        setState(() {
+          _isFollowing = isFollowing;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _toggleFollow() async {
+    try {
+      final userService = Provider.of<UserDataService>(context, listen: false);
+      final currentUserUid = userService.currentLoggedInUid;
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      if (_isFollowing) {
+        await _friendsService.unfollowUser(currentUserUid, widget.friendUid);
+        if (mounted) {
+          PopupNotificationService.showSuccess(
+            context: context,
+            message: 'Unfollowed successfully',
+            position: NotificationPosition.bottom,
+          );
+        }
+      } else {
+        await _friendsService.followUser(currentUserUid, widget.friendUid);
+        if (mounted) {
+          PopupNotificationService.showSuccess(
+            context: context,
+            message: 'Following! You\'ll get notifications about their capsules',
+            position: NotificationPosition.bottom,
+          );
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _isFollowing = !_isFollowing;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        PopupNotificationService.showError(
+          context: context,
+          message: 'Failed to ${_isFollowing ? 'unfollow' : 'follow'} user',
+          position: NotificationPosition.bottom,
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return _ModalContainer(
       child: Column(
@@ -109,6 +199,12 @@ class ManageFriendshipModal extends StatelessWidget {
         children: [
           _ModalHeader(text: 'Manage friendship'),
           _ModalDivider(color: Colors.black, thickness: 1),
+          _FollowButton(
+            isFollowing: _isFollowing,
+            isLoading: _isLoading,
+            onPressed: _isLoading ? null : _toggleFollow,
+          ),
+          _ModalDivider(),
           _ModalOption(
             text: 'Report',
             onPressed: () {
@@ -131,7 +227,7 @@ class ManageFriendshipModal extends StatelessWidget {
             text: 'Remove from friends',
             onPressed: () {
               Navigator.pop(context);
-              RemoveFriendConfirmModal.show(context, friendUid);
+              RemoveFriendConfirmModal.show(context, widget.friendUid);
             },
             textColor: Colors.red,
             isLast: true,
@@ -361,6 +457,68 @@ class _ModalOption extends StatelessWidget {
           overlayColor: Colors.transparent,
         ),
         child: Center(child: Text(text)),
+      ),
+    );
+  }
+}
+
+class _FollowButton extends StatelessWidget {
+  final bool isFollowing;
+  final bool isLoading;
+  final VoidCallback? onPressed;
+
+  const _FollowButton({
+    required this.isFollowing,
+    required this.isLoading,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 37,
+      width: 264,
+      child: TextButton(
+        onPressed: onPressed,
+        style: TextButton.styleFrom(
+          foregroundColor: Colors.black,
+          backgroundColor: isFollowing 
+              ? Colors.grey[300] 
+              : Colors.transparent,
+          textStyle: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Irina',
+          ),
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
+          splashFactory: NoSplash.splashFactory,
+          overlayColor: Colors.transparent,
+        ),
+        child: Center(
+          child: isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.black,
+                    strokeWidth: 2,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isFollowing ? Icons.notifications_active : Icons.notifications_outlined,
+                      size: 20,
+                      color: Colors.black,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(isFollowing ? 'Following' : 'Follow'),
+                  ],
+                ),
+        ),
       ),
     );
   }

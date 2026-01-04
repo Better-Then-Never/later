@@ -26,18 +26,18 @@ class DefaultButtonWithIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Ink(
-        decoration: decoration ?? BoxDecorations.greyCard(),
+    return Container(
+      decoration: decoration ?? BoxDecorations.greyCard(),
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(25),
-          splashColor: Colors.black.withAlpha(20),
+          splashColor: Colors.black.withAlpha(25),
           child: Container(
             width: width,
             height: height ?? 48,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
                 Image.asset(assetPath, width: 32, height: 32),

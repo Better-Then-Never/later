@@ -1,4 +1,4 @@
-const functions = require('firebase-functions/v2');
+const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin
@@ -49,6 +49,7 @@ exports.getUserData = functions.https.onRequest(async (req, res) => {
         // Try to find profile image in Firebase Storage
         const bucket = admin.storage().bucket();
         
+        // First, let's try to list files in the directory to see what's actually there
         try {
             const [files] = await bucket.getFiles({
                 prefix: `userdata/${userId}/assets/images/`
@@ -59,6 +60,7 @@ exports.getUserData = functions.https.onRequest(async (req, res) => {
                 console.log('- File name:', file.name);
             });
             
+            // Look for profile image file
             const profileImageFile = files.find(file => 
                 file.name.includes('profile_image') || 
                 file.name.includes('profile')
@@ -66,7 +68,11 @@ exports.getUserData = functions.https.onRequest(async (req, res) => {
             
             if (profileImageFile) {
                 console.log('Found profile image file:', profileImageFile.name);
+                
+                // Make the file publicly readable
                 await profileImageFile.makePublic();
+                
+                // Get the public URL
                 photoURL = `https://storage.googleapis.com/${bucket.name}/${profileImageFile.name}`;
                 console.log('Generated public URL:', photoURL);
             } else {
@@ -99,11 +105,11 @@ exports.getUserData = functions.https.onRequest(async (req, res) => {
 });
 
 // Send push notification when someone follows a user
-exports.sendFollowerNotification = functions.firestore.onDocumentCreated(
-    'users/{userId}/notifications/{notificationId}',
-    async (event) => {
-        const notification = event.data.data();
-        const userId = event.params.userId;
+exports.sendFollowerNotification = functions.firestore
+    .document('users/{userId}/notifications/{notificationId}')
+    .onCreate(async (snap, context) => {
+        const notification = snap.data();
+        const userId = context.params.userId;
 
         // Only send push for follow notifications
         if (notification.type !== 'follow') {
@@ -154,6 +160,8 @@ exports.sendFollowerNotification = functions.firestore.onDocumentCreated(
                     notification: {
                         channelId: 'high_importance_channel',
                         sound: 'default',
+                        icon: '@mipmap/ic_launcher',
+                        color: '#4CAF50',
                     },
                 },
                 apns: {
@@ -186,14 +194,13 @@ exports.sendFollowerNotification = functions.firestore.onDocumentCreated(
             
             return null;
         }
-    }
-);
+    });
 
-// Send notification when someone creates a capsule (for followers)
-exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
-    'capsules/{capsuleId}',
-    async (event) => {
-        const capsule = event.data.data();
+// Optional: Send notification when someone creates a capsule (for followers)
+exports.sendCapsuleNotification = functions.firestore
+    .document('capsules/{capsuleId}')
+    .onCreate(async (snap, context) => {
+        const capsule = snap.data();
         const creatorId = capsule.creatorId;
 
         if (!creatorId) {
@@ -218,7 +225,7 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
             const creatorData = creatorDoc.data();
             const creatorName = creatorData.username || creatorData.displayName || 'Someone';
 
-            // Get all followers
+            // Get all followers who have notifications enabled
             const followersSnapshot = await admin.firestore()
                 .collection('users')
                 .doc(creatorId)
@@ -230,12 +237,13 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
                 return null;
             }
 
+            // Get follower user data and FCM tokens
             const followerIds = followersSnapshot.docs.map(doc => doc.id);
             const tokens = [];
             const notificationPromises = [];
 
             for (const followerId of followerIds) {
-                // Check if notifications enabled
+                // Check if this follower has notifications enabled
                 const followingDoc = await admin.firestore()
                     .collection('users')
                     .doc(followerId)
@@ -256,7 +264,7 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
                 if (followerDoc.exists && followerDoc.data().fcmToken) {
                     tokens.push(followerDoc.data().fcmToken);
 
-                    // Create notification document
+                    // Create notification document for each follower
                     notificationPromises.push(
                         admin.firestore()
                             .collection('users')
@@ -268,7 +276,7 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
                                 fromUserName: creatorName,
                                 fromUserAvatar: creatorData.profilePicture || '',
                                 message: 'created a new capsule',
-                                capsuleId: event.params.capsuleId,
+                                capsuleId: context.params.capsuleId,
                                 timestamp: admin.firestore.FieldValue.serverTimestamp(),
                                 isRead: false,
                             })
@@ -276,16 +284,17 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
                 }
             }
 
+            // Create notification documents
             await Promise.all(notificationPromises);
 
             if (tokens.length === 0) {
-                console.log('No valid tokens');
+                console.log('No valid tokens to send notifications to');
                 return null;
             }
 
-            // Send notifications
-            const messages = tokens.map(token => ({
-                token: token,
+            // Send multicast notification
+            const message = {
+                tokens: tokens,
                 notification: {
                     title: 'New Capsule',
                     body: `${creatorName} created a new capsule`,
@@ -294,7 +303,7 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
                     type: 'capsule',
                     userName: creatorName,
                     userId: creatorId,
-                    capsuleId: event.params.capsuleId,
+                    capsuleId: context.params.capsuleId,
                     clickAction: 'FLUTTER_NOTIFICATION_CLICK',
                 },
                 android: {
@@ -302,17 +311,37 @@ exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
                     notification: {
                         channelId: 'high_importance_channel',
                         sound: 'default',
+                        icon: '@mipmap/ic_launcher',
+                        color: '#2196F3',
                     },
                 },
-            }));
+                apns: {
+                    payload: {
+                        aps: {
+                            sound: 'default',
+                            badge: 1,
+                        },
+                    },
+                },
+            };
 
-            const response = await admin.messaging().sendEach(messages);
-            console.log(`Capsule notifications: ${response.successCount} succeeded, ${response.failureCount} failed`);
+            const response = await admin.messaging().sendEachForMulticast(message);
+            console.log(`Capsule notifications sent: ${response.successCount} succeeded, ${response.failureCount} failed`);
+
+            // Clean up invalid tokens
+            if (response.failureCount > 0) {
+                const failedTokens = [];
+                response.responses.forEach((resp, idx) => {
+                    if (!resp.success) {
+                        failedTokens.push(tokens[idx]);
+                    }
+                });
+                console.log('Failed tokens:', failedTokens);
+            }
 
             return null;
         } catch (error) {
             console.error('Error sending capsule notification:', error);
             return null;
         }
-    }
-);
+    });

@@ -21,7 +21,7 @@ class UserFriendsService extends ChangeNotifier {
 
   StreamSubscription<QuerySnapshot>? _sentRequestsSub;
   StreamSubscription<QuerySnapshot>? _receivedRequestsSub;
-  StreamSubscription<DocumentSnapshot>? _friendsSub;  
+  StreamSubscription<DocumentSnapshot>? _friendsSub;
 
   UserFriendsService() {
     init();
@@ -57,20 +57,24 @@ class UserFriendsService extends ChangeNotifier {
 
     _friendsSub?.cancel();
 
-    _friendsSub = _firestore.collection('users').doc(currentUserId).snapshots().listen((doc) {
-      final data = doc.data();
-      if (data == null) return;
+    _friendsSub = _firestore
+        .collection('users')
+        .doc(currentUserId)
+        .snapshots()
+        .listen((doc) {
+          final data = doc.data();
+          if (data == null) return;
 
-      final updatedFriends = Set<String>.from(data['friends'] ?? []);
+          final updatedFriends = Set<String>.from(data['friends'] ?? []);
 
-      if (!SetEquality().equals(_friends, updatedFriends)) {
-        _friends
-          ..clear()
-          ..addAll(updatedFriends);
-        notifyListeners();
-      }
-    });
-  }  
+          if (!SetEquality().equals(_friends, updatedFriends)) {
+            _friends
+              ..clear()
+              ..addAll(updatedFriends);
+            notifyListeners();
+          }
+        });
+  }
 
   void _listenSentRequests() {
     final currentUserId = _auth.currentUser?.uid;
@@ -268,6 +272,147 @@ class UserFriendsService extends ChangeNotifier {
     _removedFromSuggested.clear();
 
     notifyListeners();
+  }
+
+  Future<bool> isFollowing(String currentUserUid, String targetUserUid) async {
+    try {
+      final doc = await _firestore
+          .collection('users')
+          .doc(currentUserUid)
+          .collection('following')
+          .doc(targetUserUid)
+          .get();
+
+      return doc.exists;
+    } catch (e) {
+      print('Error checking follow status: $e');
+      return false;
+    }
+  }
+
+  Future<void> followUser(String currentUserUid, String targetUserUid) async {
+    try {
+      final batch = _firestore.batch();
+
+      // Add to current user's following list
+      batch.set(
+        _firestore
+            .collection('users')
+            .doc(currentUserUid)
+            .collection('following')
+            .doc(targetUserUid),
+        {
+          'followedAt': FieldValue.serverTimestamp(),
+          'notificationsEnabled': true,
+        },
+      );
+
+      // Add to target user's followers list
+      batch.set(
+        _firestore
+            .collection('users')
+            .doc(targetUserUid)
+            .collection('followers')
+            .doc(currentUserUid),
+        {'followedAt': FieldValue.serverTimestamp()},
+      );
+
+      await batch.commit();
+      print('User followed successfully');
+
+      // Send notification to the followed user
+      await _sendFollowerNotification(currentUserUid, targetUserUid);
+    } catch (e) {
+      print('Error following user: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _sendFollowerNotification(
+    String followerUid,
+    String targetUserUid,
+  ) async {
+    try {
+      // Get follower's data
+      final followerDoc = await _firestore
+          .collection('users')
+          .doc(followerUid)
+          .get();
+
+      if (!followerDoc.exists) return;
+
+      final followerData = followerDoc.data()!;
+      final followerName = followerData['username'] ?? 'Someone';
+      final followerAvatar =
+          followerData['profilePicture'] ?? 'assets/images/default_avatar.png';
+
+      // Get target user's FCM token
+      final targetDoc = await _firestore
+          .collection('users')
+          .doc(targetUserUid)
+          .get();
+
+      if (!targetDoc.exists) return;
+
+      final targetData = targetDoc.data()!;
+      final fcmToken = targetData['fcmToken'];
+
+      if (fcmToken == null || fcmToken.isEmpty) {
+        print('Target user has no FCM token');
+        return;
+      }
+
+      // Create notification document
+      await _firestore
+          .collection('users')
+          .doc(targetUserUid)
+          .collection('notifications')
+          .add({
+            'type': 'follow',
+            'fromUserId': followerUid,
+            'fromUserName': followerName,
+            'fromUserAvatar': followerAvatar,
+            'message': 'started following you',
+            'timestamp': FieldValue.serverTimestamp(),
+            'isRead': false,
+          });
+
+      // Send push notification via Cloud Functions
+      // We'll trigger this through a Cloud Function
+      print('Notification created for new follower');
+    } catch (e) {
+      print('Error sending follower notification: $e');
+    }
+  }
+
+  Future<void> unfollowUser(String currentUserUid, String targetUserUid) async {
+    try {
+      final batch = _firestore.batch();
+
+      // Remove from current user's following list
+      batch.delete(
+        _firestore
+            .collection('users')
+            .doc(currentUserUid)
+            .collection('following')
+            .doc(targetUserUid),
+      );
+
+      // Remove from target user's followers list
+      batch.delete(
+        _firestore
+            .collection('users')
+            .doc(targetUserUid)
+            .collection('followers')
+            .doc(currentUserUid),
+      );
+
+      await batch.commit();
+      print('User unfollowed successfully');
+    } catch (e) {
+      print('Error unfollowing user: $e');
+      rethrow;
+    }
   }
 
   @override

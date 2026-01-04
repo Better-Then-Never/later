@@ -80,7 +80,7 @@ class YourFriendProfilePage extends StatelessWidget {
                       Expanded(
                         child: DefaultButtonWithIcon(
                           decoration: BoxDecorations.whiteCard(),
-                          textFontSize: 16,
+                          textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () {}, // TODO: Open chat with friend
                           assetPath:
@@ -92,7 +92,7 @@ class YourFriendProfilePage extends StatelessWidget {
                       Expanded(
                         child: DefaultButtonWithIcon(
                           decoration: BoxDecorations.whiteCard(),
-                          textFontSize: 16,
+                          textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () {}, // TODO: Send Capsule to friend
                           assetPath:

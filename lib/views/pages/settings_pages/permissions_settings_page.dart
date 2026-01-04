@@ -38,6 +38,12 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
       iconAsset: "assets/images/icons/capsule_creation/location_icon.png",
     ),
     AppPermissionSetting(
+      name: "Notifications",
+      description: "Receive updates about followers and capsules",
+      permission: Permission.notification,
+      iconAsset: "assets/images/icons/prof_page/notifications_button_black_full.png",
+    ),
+    AppPermissionSetting(
       name: "Contacts",
       description: "Invite friends and find people you know",
       permission: Permission.contacts,
