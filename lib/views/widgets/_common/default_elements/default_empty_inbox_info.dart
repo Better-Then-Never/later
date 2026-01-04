@@ -24,15 +24,15 @@ class DefaultEmptyInboxInfo extends StatelessWidget {
           SizedBox(height: 5),
           DefaultText(
             message,
-            fontSize: screenWidth * 0.045,
-            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.048,
+            fontWeight: FontWeight.w900,
           ),
-          SizedBox(height: 8),
+          SizedBox(height: 5),
           if (subtitle != null)
             DefaultText(
               subtitle!,
               textAlign: TextAlign.center,
-              fontSize: screenWidth * 0.035,
+              fontSize: screenWidth * 0.033,
               color: Colors.grey[600],
             ),
         ],
