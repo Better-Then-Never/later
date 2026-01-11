@@ -38,11 +38,8 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize push notifications
   final pushNotificationService = PushNotificationService();
   await pushNotificationService.initialize();
-  
-  // Register background message handler
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   final userImageService = UserImageService();
@@ -81,7 +78,6 @@ class _ApplicationState extends State<Application> {
   }
 
   void _setupDeepLinkHandling() {
-    // Set up method channel to receive deep links
     platform.setMethodCallHandler((call) async {
       if (call.method == 'handleDeepLink') {
         final String link = call.arguments as String;
@@ -89,7 +85,6 @@ class _ApplicationState extends State<Application> {
       }
     });
 
-    // Check for initial deep link
     _getInitialLink();
   }
 
@@ -97,7 +92,6 @@ class _ApplicationState extends State<Application> {
     try {
       final String? initialLink = await platform.invokeMethod('getInitialLink');
       if (initialLink != null) {
-        // Delay handling to ensure app is fully initialized
         Future.delayed(Duration(seconds: 2), () {
           _handleIncomingLink(initialLink);
         });

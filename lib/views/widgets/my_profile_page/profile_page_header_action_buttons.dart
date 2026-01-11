@@ -3,6 +3,7 @@ import 'package:later/views/pages/core_pages/notifications_page.dart';
 import 'package:later/views/pages/core_pages/settings_page.dart';
 import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
+import 'package:later/views/widgets/notifications/unread_notification_badge.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ProfilePageHeaderActionButtons extends StatelessWidget {
@@ -12,20 +13,30 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        DefaultIconButton(
-          size: 44,
-          assetPath: 'assets/images/icons/prof_page/notifications_button.png',
-          onTap: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.fade,
-                duration: const Duration(milliseconds: 10),
-                reverseDuration: const Duration(milliseconds: 10),
-                child: NotificationsPage(),
-              ),
-            );
-          },
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            DefaultIconButton(
+              size: 44,
+              assetPath: 'assets/images/icons/prof_page/notifications_button.png',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    type: PageTransitionType.fade,
+                    duration: const Duration(milliseconds: 10),
+                    reverseDuration: const Duration(milliseconds: 10),
+                    child: NotificationsPage(),
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              right: 2,
+              top: 2,
+              child: UnreadNotificationBadge(size: 18),
+            ),
+          ],
         ),
         SizedBox(width: 4),
         DefaultIconButton(

@@ -107,6 +107,9 @@ class PushNotificationService extends ChangeNotifier {
         _handleBackgroundMessage(initialMessage);
       }
 
+      // Load existing notifications from Firestore
+      await loadNotificationsFromFirestore();
+
       _isInitialized = true;
       print('Push notification service initialized successfully');
     } catch (e) {
@@ -137,36 +140,51 @@ class PushNotificationService extends ChangeNotifier {
   void _handleForegroundMessage(RemoteMessage message) {
     print('Foreground message received: ${message.notification?.title}');
     
-    // Add to local storage
-    _addNotification(message);
+    // Save to Firestore first
+    _saveNotificationToFirestore(message);
 
     // Show local notification
     _showLocalNotification(message);
     
-    // Notify listeners
-    notifyListeners();
+    // Reload from Firestore to get the saved notification with ID
+    loadNotificationsFromFirestore();
   }
 
   void _handleBackgroundMessage(RemoteMessage message) {
     print('Background message opened: ${message.notification?.title}');
-    _addNotification(message);
-    notifyListeners();
+    _saveNotificationToFirestore(message);
+    loadNotificationsFromFirestore();
   }
 
-  void _addNotification(RemoteMessage message) {
-    _notifications.insert(0, {
-      'id': null, 
-      'type': message.data['type'] ?? 'notification',
-      'userName': message.data['userName'] ?? 'System',
-      'userAvatar': message.data['userAvatar'], 
-      'message': message.notification?.body ?? '',
-      'thumbnailImage': message.data['thumbnailImage'],
-      'timestamp': DateTime.now(),
-      'isRead': false,
-      'title': message.notification?.title ?? 'Notification',
-      'userId': message.data['userId'], 
-      'capsuleId': message.data['capsuleId'], 
-    });
+  Future<void> _saveNotificationToFirestore(RemoteMessage message) async {
+    try {
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) {
+        print('No user logged in, cannot save notification');
+        return;
+      }
+
+      await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .add({
+        'type': message.data['type'] ?? 'notification',
+        'fromUserName': message.data['userName'] ?? 'System',
+        'fromUserAvatar': message.data['userAvatar'],
+        'message': message.notification?.body ?? '',
+        'thumbnailImage': message.data['thumbnailImage'],
+        'timestamp': FieldValue.serverTimestamp(),
+        'isRead': false,
+        'title': message.notification?.title ?? 'Notification',
+        'fromUserId': message.data['userId'],
+        'capsuleId': message.data['capsuleId'],
+      });
+
+      print('Notification saved to Firestore');
+    } catch (e) {
+      print('Error saving notification to Firestore: $e');
+    }
   }
 
   Future<void> _showLocalNotification(RemoteMessage message) async {
@@ -274,9 +292,33 @@ class PushNotificationService extends ChangeNotifier {
     }
   }
 
-  void clearAll() {
-    _notifications.clear();
-    notifyListeners();
+  Future<void> clearAll() async {
+    try {
+      final userId = _auth.currentUser?.uid;
+      if (userId == null) return;
+
+      // Clear local state
+      _notifications.clear();
+
+      // Delete all from Firestore
+      final batch = _firestore.batch();
+      final querySnapshot = await _firestore
+          .collection('users')
+          .doc(userId)
+          .collection('notifications')
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        batch.delete(doc.reference);
+      }
+
+      await batch.commit();
+      print('All notifications cleared from Firestore');
+      
+      notifyListeners();
+    } catch (e) {
+      print('Error clearing all notifications: $e');
+    }
   }
 
   Future<void> deleteNotification(int index) async {
@@ -307,6 +349,7 @@ class PushNotificationService extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error deleting notification: $e');
+      rethrow;
     }
   }
 
@@ -314,14 +357,17 @@ class PushNotificationService extends ChangeNotifier {
   Future<void> loadNotificationsFromFirestore() async {
     try {
       final userId = _auth.currentUser?.uid;
-      if (userId == null) return;
+      if (userId == null) {
+        print('No user logged in, cannot load notifications');
+        return;
+      }
 
       final querySnapshot = await _firestore
           .collection('users')
           .doc(userId)
           .collection('notifications')
           .orderBy('timestamp', descending: true)
-          .limit(50)
+          .limit(100)
           .get();
 
       _notifications.clear();
@@ -373,7 +419,6 @@ class PushNotificationService extends ChangeNotifier {
   }
 }
 
-// Background message handler (must be top-level function)
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Background message: ${message.notification?.title}');
