@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/push_notification_service.dart';
+import 'package:provider/provider.dart';
 
 class NotificationItem extends StatelessWidget {
   final String type;
@@ -10,7 +11,7 @@ class NotificationItem extends StatelessWidget {
   final DateTime timestamp;
   final bool isRead;
   final VoidCallback onTap;
-  final int index; // Add index parameter
+  final int index;
 
   const NotificationItem({
     super.key,
@@ -27,8 +28,10 @@ class NotificationItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final notificationService = Provider.of<PushNotificationService>(context, listen: false);
+    
     return Dismissible(
-      key: Key('notification_$index'),
+      key: ValueKey('notification_${index}_${timestamp.millisecondsSinceEpoch}'),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
@@ -73,6 +76,7 @@ class NotificationItem extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Irina',
                     color: Colors.red,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -81,7 +85,33 @@ class NotificationItem extends StatelessWidget {
         );
       },
       onDismissed: (direction) async {
-        await PushNotificationService().deleteNotification(index);
+        try {
+          await notificationService.deleteNotification(index);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Notification deleted',
+                  style: TextStyle(fontFamily: 'Irina'),
+                ),
+                duration: Duration(seconds: 2),
+                backgroundColor: Colors.black87,
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Error deleting notification: $e',
+                  style: const TextStyle(fontFamily: 'Irina'),
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -102,7 +132,13 @@ class NotificationItem extends StatelessWidget {
               // Avatar
               CircleAvatar(
                 radius: 24,
-                backgroundImage: AssetImage(userAvatar),
+                backgroundImage: userAvatar.startsWith('http')
+                    ? NetworkImage(userAvatar)
+                    : AssetImage(userAvatar) as ImageProvider,
+                backgroundColor: Colors.grey.shade300,
+                child: userAvatar.isEmpty
+                    ? const Icon(Icons.person, color: Colors.white)
+                    : null,
               ),
               const SizedBox(width: 12),
               // Content
@@ -137,6 +173,7 @@ class NotificationItem extends StatelessWidget {
                           Container(
                             width: 8,
                             height: 8,
+                            margin: const EdgeInsets.only(left: 8),
                             decoration: const BoxDecoration(
                               color: Colors.blue,
                               shape: BoxShape.circle,
@@ -157,16 +194,39 @@ class NotificationItem extends StatelessWidget {
                 ),
               ),
               // Thumbnail if available
-              if (thumbnailImage != null) ...[
+              if (thumbnailImage != null && thumbnailImage!.isNotEmpty) ...[
                 const SizedBox(width: 12),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    thumbnailImage!,
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                  ),
+                  child: thumbnailImage!.startsWith('http')
+                      ? Image.network(
+                          thumbnailImage!,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 50,
+                              height: 50,
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.image, color: Colors.grey),
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          thumbnailImage!,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 50,
+                              height: 50,
+                              color: Colors.grey.shade300,
+                              child: const Icon(Icons.image, color: Colors.grey),
+                            );
+                          },
+                        ),
                 ),
               ],
             ],

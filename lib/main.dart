@@ -7,6 +7,7 @@ import 'package:later/services/map_capsule_jump_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/user_image_service.dart';
+import 'package:later/services/push_notification_service.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:later/views/pages/friends_pages/add_friends_page.dart';
 import 'package:later/views/pages/friends_pages/my_friends_page.dart';
@@ -15,6 +16,7 @@ import 'package:later/views/pages/navbar_pages/camera_page.dart';
 import 'package:later/views/pages/auth_pages/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/pages/core_pages/settings_page.dart';
 import 'package:later/views/pages/core_pages/notifications_page.dart';
@@ -36,6 +38,13 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Initialize push notifications
+  final pushNotificationService = PushNotificationService();
+  await pushNotificationService.initialize();
+  
+  // Register background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   final userImageService = UserImageService();
 
   runApp(
@@ -48,6 +57,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => FavoriteCapsuleService()),
         ChangeNotifierProvider(create: (_) => CapsuleJumpService()),
         ChangeNotifierProvider.value(value: userImageService),
+        ChangeNotifierProvider.value(value: pushNotificationService),
       ],
       child: const Application(),
     ),
@@ -121,8 +131,8 @@ class _ApplicationState extends State<Application> {
             IgnorePointer(
               child: SnowFallAnimation(
                 config: SnowfallConfig(
-                  numberOfSnowflakes: 200,
-                  speed: 1.0,
+                  numberOfSnowflakes: 15,
+                  speed: 0.5,
                   useEmoji: true,
                   customEmojis: ['❄️', '❅', '❆'],
                 ),

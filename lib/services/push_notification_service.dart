@@ -2,8 +2,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter/foundation.dart';
 
-class PushNotificationService {
+class PushNotificationService extends ChangeNotifier {
   static final PushNotificationService _instance = PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
@@ -141,11 +142,15 @@ class PushNotificationService {
 
     // Show local notification
     _showLocalNotification(message);
+    
+    // Notify listeners
+    notifyListeners();
   }
 
   void _handleBackgroundMessage(RemoteMessage message) {
     print('Background message opened: ${message.notification?.title}');
     _addNotification(message);
+    notifyListeners();
   }
 
   void _addNotification(RemoteMessage message) {
@@ -228,6 +233,8 @@ class PushNotificationService {
         
         print('Notification marked as read in Firestore');
       }
+      
+      notifyListeners();
     } catch (e) {
       print('Error updating notification read status: $e');
     }
@@ -260,6 +267,8 @@ class PushNotificationService {
 
       await batch.commit();
       print('All notifications marked as read');
+      
+      notifyListeners();
     } catch (e) {
       print('Error marking all notifications as read: $e');
     }
@@ -267,6 +276,7 @@ class PushNotificationService {
 
   void clearAll() {
     _notifications.clear();
+    notifyListeners();
   }
 
   Future<void> deleteNotification(int index) async {
@@ -293,6 +303,8 @@ class PushNotificationService {
           print('Notification deleted from Firestore');
         }
       }
+      
+      notifyListeners();
     } catch (e) {
       print('Error deleting notification: $e');
     }
@@ -320,7 +332,7 @@ class PushNotificationService {
           'id': doc.id, // Store the document ID for updates
           'type': data['type'] ?? 'notification',
           'userName': data['fromUserName'] ?? 'System',
-          'userAvatar': data['fromUserAvatar'] ?? 'assets/images/default_avatar.png',
+          'userAvatar': data['fromUserAvatar'] ?? 'assets/images/icons/prof_page/no_photo.png',
           'message': data['message'] ?? '',
           'thumbnailImage': data['thumbnailImage'],
           'timestamp': (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -332,6 +344,7 @@ class PushNotificationService {
       }
 
       print('Loaded ${_notifications.length} notifications from Firestore');
+      notifyListeners();
     } catch (e) {
       print('Error loading notifications from Firestore: $e');
     }

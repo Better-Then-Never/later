@@ -2,53 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/default_empty_inbox_info.dart';
 import 'package:later/views/widgets/notifications/notification_item.dart';
 import 'package:later/services/push_notification_service.dart';
+import 'package:provider/provider.dart';
 
-class NotificationsList extends StatefulWidget {
+class NotificationsList extends StatelessWidget {
   final String filterType;
 
   const NotificationsList({super.key, required this.filterType});
 
   @override
-  State<NotificationsList> createState() => _NotificationsListState();
-}
-
-class _NotificationsListState extends State<NotificationsList> {
-  final PushNotificationService _notificationService =
-      PushNotificationService();
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadNotifications();
-  }
-
-  Future<void> _loadNotifications() async {
-    await _notificationService.loadNotificationsFromFirestore();
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Show loading indicator while loading
-    if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: Colors.black),
-      );
-    }
-
-    final allNotifications = _notificationService.notifications;
+    final notificationService = Provider.of<PushNotificationService>(context);
+    final allNotifications = notificationService.notifications;
 
     // Filter notifications based on type
-    final filteredNotifications = widget.filterType == 'All'
+    final filteredNotifications = filterType == 'All'
         ? allNotifications
         : allNotifications.where((n) {
-            if (widget.filterType == 'Replies') return n['type'] == 'reply';
-            if (widget.filterType == 'Comments') return n['type'] == 'comment';
+            if (filterType == 'Replies') return n['type'] == 'reply';
+            if (filterType == 'Comments') return n['type'] == 'comment';
             return true;
           }).toList();
 
@@ -58,27 +29,32 @@ class _NotificationsListState extends State<NotificationsList> {
 
     return RefreshIndicator(
       color: Colors.black,
-      onRefresh: _loadNotifications,
+      onRefresh: () async {
+        await notificationService.loadNotificationsFromFirestore();
+      },
       child: ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: filteredNotifications.length,
         itemBuilder: (context, index) {
           final notification = filteredNotifications[index];
+          final originalIndex = allNotifications.indexOf(notification);
+          
           return NotificationItem(
-            type: notification['type'],
-            userName: notification['userName'],
-            userAvatar: notification['userAvatar'],
-            message: notification['message'],
+            type: notification['type'] ?? 'default',
+            userName: notification['userName'] ?? 'Unknown User',
+            userAvatar: notification['userAvatar'] ?? 'assets/images/icons/prof_page/no_photo.png',
+            message: notification['message'] ?? '',
             thumbnailImage: notification['thumbnailImage'],
-            timestamp: notification['timestamp'],
-            isRead: notification['isRead'],
-            index: allNotifications.indexOf(notification), // Add this line
-            onTap: () {
-              setState(() {
-                _notificationService.markAsRead(
-                  allNotifications.indexOf(notification),
-                );
-              });
+            timestamp: notification['timestamp'] ?? DateTime.now(),
+            isRead: notification['isRead'] ?? false,
+            index: originalIndex,
+            onTap: () async {
+              await notificationService.markAsRead(originalIndex);
+              // Navigation logic based on notification type
+              if (notification['capsuleId'] != null) {
+                // TODO: Navigate to capsule detail page
+                // Navigator.push(context, MaterialPageRoute(builder: (_) => CapsuleDetailPage(capsuleId: notification['capsuleId'])));
+              }
             },
           );
         },
@@ -91,7 +67,7 @@ class _NotificationsListState extends State<NotificationsList> {
     String subtitle;
     String iconPath;
 
-    switch (widget.filterType) {
+    switch (filterType) {
       case 'All':
         title = 'Notifications';
         subtitle = 'Your notifications and activity will appear here';

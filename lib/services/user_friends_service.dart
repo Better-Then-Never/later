@@ -344,7 +344,7 @@ class UserFriendsService extends ChangeNotifier {
       final followerData = followerDoc.data()!;
       final followerName = followerData['username'] ?? 'Someone';
       final followerAvatar =
-          followerData['profilePicture'] ?? 'assets/images/default_avatar.png';
+          followerData['profilePicture'] ?? 'assets/images/icons/prof_page/no_photo.png';
 
       // Get target user's FCM token
       final targetDoc = await _firestore

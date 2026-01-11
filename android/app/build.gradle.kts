@@ -5,7 +5,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.9.1")
-        classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.google.gms:google-services:4.4.0")  // Updated version
     }
 }
 
@@ -56,6 +56,12 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    
+    // Firebase dependencies
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 }
 
 flutter {
