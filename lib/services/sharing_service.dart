@@ -20,9 +20,11 @@ class SharingService {
       final friendName = userData['name'] ?? 'Unknown User';
       final link = generateProfileLink(userId);
 
-      await Share.share(
-        'Check out $friendName on Later! \n$link',
-        subject: 'Connect with $friendName on Later',
+      await SharePlus.instance.share(
+        ShareParams(
+          text: 'Check out $friendName on Later! \n$link',
+          subject: 'Connect with $friendName on Later',
+        ),
       );
     } catch (e) {
       if (context.mounted) {
