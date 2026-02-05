@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/chat_service.dart';
 import 'package:later/services/sharing_service.dart';
+import 'package:later/views/pages/messages_pages/private_message_page.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
+import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/default_elements/shadow_top_overlay.dart';
@@ -82,7 +85,19 @@ class YourFriendProfilePage extends StatelessWidget {
                           decoration: BoxDecorations.whiteCard(),
                           textFontSize: 16,
                           textFontWeight: FontWeight.bold,
-                          onTap: () {}, // TODO: Open chat with friend
+                          onTap: () {
+                            final chatService = context.read<ChatService>();
+                            final chatId = chatService.getChatId(friendUid);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PrivateMessagePage(
+                                  chatId: chatId,
+                                  friendId: friendUid,
+                                ),
+                              ),
+                            );
+                          },
                           assetPath:
                               'assets/images/icons/prof_page/send_message.png',
                           text: 'Open chat',
