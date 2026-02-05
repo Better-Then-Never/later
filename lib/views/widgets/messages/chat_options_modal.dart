@@ -3,17 +3,20 @@ import 'package:flutter/material.dart';
 class ChatOptionsModal extends StatelessWidget {
   final String chatId;
   final String friendUid;
+  final VoidCallback? onSearch;
 
   const ChatOptionsModal({
     super.key,
     required this.chatId,
     required this.friendUid,
+    this.onSearch,
   });
 
   static void show(
     BuildContext context, {
     required String chatId,
     required String friendUid,
+    VoidCallback? onSearch,
   }) {
     showModalBottomSheet(
       context: context,
@@ -27,7 +30,11 @@ class ChatOptionsModal extends StatelessWidget {
           child: Center(
             child: GestureDetector(
               onTap: () {},
-              child: ChatOptionsModal(chatId: chatId, friendUid: friendUid),
+              child: ChatOptionsModal(
+                chatId: chatId,
+                friendUid: friendUid,
+                onSearch: onSearch,
+              ),
             ),
           ),
         );
@@ -50,7 +57,7 @@ class ChatOptionsModal extends StatelessWidget {
             text: 'Search',
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Handle search action
+              onSearch?.call();
             },
             isFirst: true,
           ),

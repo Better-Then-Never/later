@@ -27,7 +27,10 @@ class PrivateMessagePage extends StatefulWidget {
 
 class _PrivateMessagePageState extends State<PrivateMessagePage> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
   Map<String, String> _friendData = {};
+  bool _isSearching = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -39,7 +42,18 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchQuery = '';
+        _searchController.clear();
+      }
+    });
   }
 
   Future<void> _loadFriendData() async {
@@ -208,6 +222,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                         context,
                         chatId: widget.chatId,
                         friendUid: widget.friendId,
+                        onSearch: _toggleSearch,
                       );
                     },
                     padding: EdgeInsets.zero,
@@ -217,6 +232,66 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
               ),
             ),
           ),
+          if (_isSearching)
+            Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenWidth * 0.04,
+                vertical: 8,
+              ),
+              color: Colors.white,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      style: const TextStyle(fontSize: 15, fontFamily: 'Irina'),
+                      decoration: InputDecoration(
+                        hintText: 'Search messages...',
+                        hintStyle: TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'Irina',
+                          color: Colors.grey[400],
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey[400],
+                          size: 20,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFF6F6F6),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value.toLowerCase();
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: _toggleSearch,
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontFamily: 'Irina',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           Expanded(
             child: StreamBuilder<List<ChatMessage>>(
               stream: chatService.getMessagesStream(widget.chatId),
@@ -227,9 +302,16 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                   );
                 }
 
-                final messages = snapshot.data ?? [];
+                final allMessages = snapshot.data ?? [];
+                final messages = _searchQuery.isEmpty
+                    ? allMessages
+                    : allMessages
+                          .where(
+                            (m) => m.text.toLowerCase().contains(_searchQuery),
+                          )
+                          .toList();
 
-                if (messages.isEmpty) {
+                if (allMessages.isEmpty) {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(24),
