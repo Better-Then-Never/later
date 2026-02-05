@@ -109,7 +109,16 @@ class YourFriendProfilePage extends StatelessWidget {
                           decoration: BoxDecorations.whiteCard(),
                           textFontSize: 16,
                           textFontWeight: FontWeight.bold,
-                          onTap: () {}, // TODO: Send Capsule to friend
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/camera',
+                              arguments: {
+                                'privacy': 'private',
+                                'recipientId': friendUid,
+                              },
+                            );
+                          },
                           assetPath:
                               'assets/images/icons/prof_page/send_capsule.png',
                           text: 'Send Capsule',
