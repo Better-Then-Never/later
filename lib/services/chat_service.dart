@@ -214,4 +214,32 @@ class ChatService extends ChangeNotifier {
       debugPrint('Failed to mark messages as read: $e');
     }
   }
+
+  Future<void> clearChatHistory(String chatId) async {
+    final messagesRef = _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages');
+
+    const batchSize = 500;
+    QuerySnapshot snapshot;
+
+    do {
+      snapshot = await messagesRef.limit(batchSize).get();
+      if (snapshot.docs.isEmpty) break;
+
+      final batch = _firestore.batch();
+      for (final doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    } while (snapshot.docs.length == batchSize);
+
+    await _firestore.collection('chats').doc(chatId).update({
+      'lastMessage': '',
+      'lastUpdated': FieldValue.serverTimestamp(),
+    });
+
+    notifyListeners();
+  }
 }

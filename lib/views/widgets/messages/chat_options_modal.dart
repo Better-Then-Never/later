@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:later/services/chat_service.dart';
+import 'package:provider/provider.dart';
 
 class ChatOptionsModal extends StatelessWidget {
   final String chatId;
@@ -128,7 +130,8 @@ class _ClearHistoryConfirmModalState extends State<ClearHistoryConfirmModal> {
     });
 
     try {
-      // TODO: Implement clear history via ChatService
+      final chatService = context.read<ChatService>();
+      await chatService.clearChatHistory(widget.chatId);
       if (mounted) {
         Navigator.of(context).pop();
       }
