@@ -7,6 +7,7 @@ import 'package:later/services/user_image_service.dart';
 import 'package:later/data/models/chat_message.dart';
 import 'package:later/views/widgets/messages/message_bubble.dart';
 import 'package:later/views/widgets/messages/message_input.dart';
+import 'package:later/views/widgets/messages/chat_options_modal.dart';
 import 'package:later/views/widgets/map/opened_capsule_widget.dart';
 import 'package:intl/intl.dart';
 
@@ -202,7 +203,13 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                       height: screenHeight * 0.075,
                       width: screenHeight * 0.075,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      ChatOptionsModal.show(
+                        context,
+                        chatId: widget.chatId,
+                        friendUid: widget.friendId,
+                      );
+                    },
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
