@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class MessageInput extends StatefulWidget {
   final Function(String) onSendMessage;
+  final VoidCallback? onCapsuleTap;
 
-  const MessageInput({super.key, required this.onSendMessage});
+  const MessageInput({super.key, required this.onSendMessage, this.onCapsuleTap});
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -39,6 +40,24 @@ class _MessageInputState extends State<MessageInput> {
         top: false,
         child: Row(
           children: [
+            if (widget.onCapsuleTap != null)
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    Icons.camera_alt_rounded,
+                    size: screenHeight * 0.03,
+                    color: const Color(0xFF56C92E),
+                  ),
+                  onPressed: widget.onCapsuleTap,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            if (widget.onCapsuleTap != null)
+              SizedBox(width: screenWidth * 0.02),
             Expanded(
               child: TextField(
                 controller: _controller,

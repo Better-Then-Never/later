@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum MessageType { text, capsule }
+
 class ChatMessage {
   final String id;
   final String senderId;
   final String text;
   final DateTime? timestamp;
   final String status;
+  final MessageType type;
+  final String? imageUrl;
+  final String? capsuleId;
 
   ChatMessage({
     required this.id,
@@ -13,6 +18,9 @@ class ChatMessage {
     required this.text,
     this.timestamp,
     this.status = 'sent',
+    this.type = MessageType.text,
+    this.imageUrl,
+    this.capsuleId,
   });
 
   factory ChatMessage.fromFirestore(DocumentSnapshot doc) {
@@ -23,6 +31,9 @@ class ChatMessage {
       text: data['text'] ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate(),
       status: data['status'] ?? 'sent',
+      type: data['type'] == 'capsule' ? MessageType.capsule : MessageType.text,
+      imageUrl: data['imageUrl'],
+      capsuleId: data['capsuleId'],
     );
   }
 
@@ -34,6 +45,9 @@ class ChatMessage {
           ? Timestamp.fromDate(timestamp!)
           : FieldValue.serverTimestamp(),
       'status': status,
+      'type': type == MessageType.capsule ? 'capsule' : 'text',
+      if (imageUrl != null) 'imageUrl': imageUrl,
+      if (capsuleId != null) 'capsuleId': capsuleId,
     };
   }
 

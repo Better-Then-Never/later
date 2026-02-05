@@ -84,6 +84,17 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
     }
   }
 
+  void _sendCapsuleToFriend() {
+    Navigator.pushNamed(
+      context,
+      '/camera',
+      arguments: {
+        'privacy': 'private',
+        'recipientId': widget.friendId,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final chatService = context.read<ChatService>();
@@ -253,6 +264,8 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                           timestamp: message.timestamp,
                           status: message.status,
                           showTail: isLastInGroup,
+                          type: message.type,
+                          imageUrl: message.imageUrl,
                         ),
                       ],
                     );
@@ -262,7 +275,10 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
             ),
           ),
 
-          MessageInput(onSendMessage: _sendMessage),
+          MessageInput(
+            onSendMessage: _sendMessage,
+            onCapsuleTap: _sendCapsuleToFriend,
+          ),
         ],
       ),
     );

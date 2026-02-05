@@ -114,6 +114,54 @@ class ChatService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> sendCapsuleMessage({
+    required String chatId,
+    required String otherUserId,
+    required String capsuleId,
+    required String capsuleTitle,
+    required String capsuleImageUrl,
+  }) async {
+    final currentUid = currentUserId;
+    if (currentUid == null) {
+      throw StateError('User must be logged in to send messages');
+    }
+
+    final displayText = '$capsuleTitle';
+
+    final chatRef = _firestore.collection('chats').doc(chatId);
+    final messageRef = chatRef.collection('messages').doc();
+
+    await _firestore.runTransaction((transaction) async {
+      final chatDoc = await transaction.get(chatRef);
+
+      if (!chatDoc.exists) {
+        transaction.set(chatRef, {
+          'participants': [currentUid, otherUserId],
+          'lastMessage': displayText,
+          'lastUpdated': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        transaction.update(chatRef, {
+          'lastMessage': displayText,
+          'lastUpdated': FieldValue.serverTimestamp(),
+        });
+      }
+
+      transaction.set(messageRef, {
+        'senderId': currentUid,
+        'text': displayText,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'sent',
+        'type': 'capsule',
+        'capsuleId': capsuleId,
+        'imageUrl': capsuleImageUrl,
+      });
+    });
+
+    notifyListeners();
+  }
+
   Future<Chat?> getChat(String chatId) async {
     final doc = await _firestore.collection('chats').doc(chatId).get();
     if (doc.exists) {

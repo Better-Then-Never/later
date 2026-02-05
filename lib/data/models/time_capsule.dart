@@ -17,6 +17,7 @@ class TimeCapsule {
   final bool isScheduled;
   final Timestamp? openAt;
   final CapsuleColor color;
+  final List<String>? sharedWith;
 
   TimeCapsule({
     required this.id,
@@ -30,6 +31,7 @@ class TimeCapsule {
     required this.isScheduled,
     this.openAt,
     required this.color,
+    this.sharedWith,
   });
 
   Map<String, dynamic> toMap() => {
@@ -43,6 +45,7 @@ class TimeCapsule {
     'isScheduled': isScheduled,
     'openAt': openAt,
     'color': color.name,
+    if (sharedWith != null) 'sharedWith': sharedWith,
   };
 
   static TimeCapsule fromMap(String id, Map<String, dynamic> map) =>
@@ -62,6 +65,7 @@ class TimeCapsule {
         color: CapsuleColor.values.firstWhere(
           (c) => c.name == (map['color'] ?? 'red'),
         ),
+        sharedWith: (map['sharedWith'] as List<dynamic>?)?.cast<String>(),
       );
 }
 
