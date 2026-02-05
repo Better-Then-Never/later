@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:later/services/chat_service.dart';
 import 'package:later/services/user_data_service.dart';
@@ -6,6 +7,7 @@ import 'package:later/services/user_image_service.dart';
 import 'package:later/data/models/chat_message.dart';
 import 'package:later/views/widgets/messages/message_bubble.dart';
 import 'package:later/views/widgets/messages/message_input.dart';
+import 'package:later/views/widgets/map/opened_capsule_widget.dart';
 import 'package:intl/intl.dart';
 
 class PrivateMessagePage extends StatefulWidget {
@@ -88,11 +90,40 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
     Navigator.pushNamed(
       context,
       '/camera',
-      arguments: {
-        'privacy': 'private',
-        'recipientId': widget.friendId,
-      },
+      arguments: {'privacy': 'private', 'recipientId': widget.friendId},
     );
+  }
+
+  Future<void> _openCapsule(String capsuleId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('capsules')
+          .doc(capsuleId)
+          .get();
+
+      if (!doc.exists || !mounted) return;
+
+      final data = doc.data() as Map<String, dynamic>;
+      data['id'] = doc.id;
+
+      showDialog(
+        context: context,
+        builder: (_) => Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16),
+          child: CapsulePreviewCard(capsuleData: data),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to load capsule'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -266,6 +297,11 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                           showTail: isLastInGroup,
                           type: message.type,
                           imageUrl: message.imageUrl,
+                          onTap:
+                              message.type == MessageType.capsule &&
+                                  message.capsuleId != null
+                              ? () => _openCapsule(message.capsuleId!)
+                              : null,
                         ),
                       ],
                     );
