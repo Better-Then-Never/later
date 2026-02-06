@@ -34,10 +34,14 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   String _searchQuery = '';
   bool _isBlockedByFriend = false;
   bool _showScrollToBottom = false;
+  late final Stream<List<ChatMessage>> _messagesStream;
+  bool _hasMarkedAsRead = false;
 
   @override
   void initState() {
     super.initState();
+    final chatService = context.read<ChatService>();
+    _messagesStream = chatService.getMessagesStream(widget.chatId);
     _loadFriendData();
     _markMessagesAsRead();
     _checkBlockedByFriend();
@@ -340,9 +344,9 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
             child: Stack(
               children: [
                 StreamBuilder<List<ChatMessage>>(
-                  stream: chatService.getMessagesStream(widget.chatId),
+                  stream: _messagesStream,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (!snapshot.hasData) {
                       return const Center(
                         child: CircularProgressIndicator(
                           color: Color(0xFF56C92E),
@@ -395,12 +399,17 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                       );
                     }
 
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _markMessagesAsRead();
-                    });
+                    if (!_hasMarkedAsRead) {
+                      _hasMarkedAsRead = true;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _markMessagesAsRead();
+                      });
+                    }
 
                     return ListView.builder(
                       controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      cacheExtent: 500,
                       padding: EdgeInsets.symmetric(
                         horizontal: screenWidth * 0.04,
                         vertical: 16,
@@ -426,6 +435,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
                             );
 
                         return Column(
+                          key: ValueKey(message.id),
                           children: [
                             if (showDate)
                               _buildDateSeparator(message.timestamp),
