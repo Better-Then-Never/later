@@ -4,12 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/data/models/time_capsule.dart';
+import 'package:later/services/chat_service.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/views/pages/navbar_pages/map_page.dart' as map;
 
 class CapsuleCreationPageController extends ChangeNotifier {
   final String uid;
   final String imagePath;
+  final String? recipientId;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -21,13 +23,16 @@ class CapsuleCreationPageController extends ChangeNotifier {
 
   bool isSaving = false;
 
+  bool get isSendingToFriend => recipientId != null;
+
   CapsuleCreationPageController({
     required this.uid,
     required this.imagePath,
+    this.recipientId,
     CapsulePrivacy? initialPrivacy,
     CapsuleColor? initialColor,
     LatLng? initialLocation,
-  }) : privacy = initialPrivacy ?? CapsulePrivacy.public,
+  }) : privacy = initialPrivacy ?? (recipientId != null ? CapsulePrivacy.private : CapsulePrivacy.public),
        color = initialColor ?? CapsuleColor.red,
        pickedLocation = initialLocation ?? map.MapPage.currentPositionStatic;
 
@@ -113,6 +118,7 @@ class CapsuleCreationPageController extends ChangeNotifier {
         location: GeoPoint(pickedLocation!.latitude, pickedLocation!.longitude),
         privacy: privacy,
         color: color,
+        sharedWith: recipientId != null ? [uid, recipientId!] : null,
       );
 
       final capsuleMap = capsule.toMap();
@@ -122,6 +128,18 @@ class CapsuleCreationPageController extends ChangeNotifier {
           .collection('capsules')
           .doc(capsuleId)
           .set(capsuleMap);
+
+      if (recipientId != null) {
+        final chatService = ChatService();
+        final chatId = ChatService.makeChatId(uid, recipientId!);
+        await chatService.sendCapsuleMessage(
+          chatId: chatId,
+          otherUserId: recipientId!,
+          capsuleId: capsuleId,
+          capsuleTitle: capsule.title,
+          capsuleImageUrl: imageUrl,
+        );
+      }
 
       if (context.mounted) Navigator.pop(context);
     } catch (e) {

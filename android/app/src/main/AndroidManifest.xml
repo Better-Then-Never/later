@@ -46,7 +46,10 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDRp1jncWgcqDVJKz3w4LjIAVQjsNUCyAw"/>                       
+            android:value="AIzaSyDRp1jncWgcqDVJKz3w4LjIAVQjsNUCyAw"/>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

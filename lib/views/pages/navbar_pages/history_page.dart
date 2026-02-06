@@ -59,13 +59,15 @@ class _HistoryPageState extends State<HistoryPage> {
     final capsuleService = context.read<CapsuleDataService>();
     final favoriteService = context.read<FavoriteCapsuleService>();
 
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
         if (_controller.isSelectionMode) {
           _controller.clearSelection();
-          return false;
+        } else {
+          Navigator.of(context).maybePop();
         }
-        return true;
       },
       child: Stack(
         children: [

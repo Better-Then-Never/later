@@ -66,6 +66,7 @@ class CapsuleDataService extends ChangeNotifier {
       'privacy': data['privacy'] ?? 'friends',
       'ownerId': data['ownerId'],
       'location': data['location'],
+      'sharedWith': (data['sharedWith'] as List<dynamic>?)?.cast<String>(),
     };
   }
 

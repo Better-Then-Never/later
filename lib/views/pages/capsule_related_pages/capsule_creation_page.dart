@@ -23,11 +23,13 @@ import 'package:provider/provider.dart';
 class CapsuleCreationPage extends StatefulWidget {
   final String imagePath;
   final String? initialPrivacy;
+  final String? recipientId;
 
   const CapsuleCreationPage({
     super.key,
     required this.imagePath,
     this.initialPrivacy,
+    this.recipientId,
   });
 
   @override
@@ -58,6 +60,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
       imagePath: widget.imagePath,
       initialLocation: _pickedLocation,
       initialPrivacy: initialPrivacy ?? null,
+      recipientId: widget.recipientId,
     );
   }
 
