@@ -109,7 +109,7 @@ class _MessagesPageState extends State<MessagesPage> {
                 padding: const EdgeInsets.all(24),
                 child: Center(
                   child: Text(
-                    chats.isEmpty ? '' : 'No more chats',
+                    'No more chats',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

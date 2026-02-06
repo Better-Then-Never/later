@@ -47,7 +47,7 @@ class MessagesHeader extends StatelessWidget {
                       vertical: screenHeight * 0.01,
                     ),
                     child: Text(
-                      "My Latters",
+                      "My Laters",
                       style: TextStyle(
                         fontSize: screenHeight * 0.03,
                         fontWeight: FontWeight.bold,
