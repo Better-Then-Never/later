@@ -122,7 +122,7 @@ class ManageFriendshipModal extends StatelessWidget {
             text: 'Block',
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Handle block action
+              BlockFriendConfirmModal.show(context, friendUid);
             },
             textColor: const Color.fromARGB(255, 253, 65, 64),
           ),
@@ -135,6 +135,120 @@ class ManageFriendshipModal extends StatelessWidget {
             },
             textColor: Colors.red,
             isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BlockFriendConfirmModal extends StatefulWidget {
+  final String friendUid;
+
+  const BlockFriendConfirmModal({super.key, required this.friendUid});
+
+  static void show(BuildContext context, String friendUid) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withAlpha(128),
+      builder: (BuildContext context) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(context).pop(),
+          child: Center(
+            child: GestureDetector(
+              onTap: () {},
+              child: BlockFriendConfirmModal(friendUid: friendUid),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  State<BlockFriendConfirmModal> createState() =>
+      _BlockFriendConfirmModalState();
+}
+
+class _BlockFriendConfirmModalState extends State<BlockFriendConfirmModal> {
+  bool _isBlocking = false;
+
+  @override
+  void dispose() {
+    PopupNotificationService.hide();
+    super.dispose();
+  }
+
+  Future<void> _blockUser() async {
+    if (_isBlocking) return;
+
+    setState(() {
+      _isBlocking = true;
+    });
+
+    try {
+      final userService = Provider.of<UserDataService>(context, listen: false);
+      final userFriendsService = Provider.of<UserFriendsService>(
+        context,
+        listen: false,
+      );
+      final currentUserUid = userService.currentLoggedInUid;
+
+      await userFriendsService.blockUser(currentUserUid, widget.friendUid);
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isBlocking = false;
+        });
+
+        PopupNotificationService.showError(
+          context: context,
+          message: 'Failed to block user',
+          position: NotificationPosition.bottom,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 240,
+      padding: const EdgeInsets.only(top: 12, bottom: 1, left: 12, right: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Are you sure you want to block this user?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Irina',
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _ConfirmButton(
+            text: _isBlocking ? 'Blocking...' : 'Block',
+            onPressed: _isBlocking ? null : _blockUser,
+            backgroundColor: const Color.fromARGB(255, 253, 65, 64),
+            textColor: Colors.white,
+            isLoading: _isBlocking,
+          ),
+          _CancelButton(
+            onPressed: _isBlocking ? null : () => Navigator.pop(context),
           ),
         ],
       ),

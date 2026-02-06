@@ -13,15 +13,17 @@ class UserFriendsService extends ChangeNotifier {
   final Set<String> _sentRequests = {};
   final Set<String> _receivedRequests = {};
   final Set<String> _removedFromSuggested = {};
+  final Set<String> _blockedUsers = {};
 
   Set<String> get friends => _friends;
   Set<String> get sentRequests => _sentRequests;
   Set<String> get receivedRequests => _receivedRequests;
   Set<String> get removedFromSuggested => _removedFromSuggested;
+  Set<String> get blockedUsers => _blockedUsers;
 
   StreamSubscription<QuerySnapshot>? _sentRequestsSub;
   StreamSubscription<QuerySnapshot>? _receivedRequestsSub;
-  StreamSubscription<DocumentSnapshot>? _friendsSub;  
+  StreamSubscription<DocumentSnapshot>? _friendsSub;
 
   UserFriendsService() {
     init();
@@ -29,6 +31,7 @@ class UserFriendsService extends ChangeNotifier {
 
   Future<void> init() async {
     await refreshFriends();
+    await _loadBlockedUsers();
     _listenSentRequests();
     _listenReceivedRequests();
     _listenFriends();
@@ -57,20 +60,24 @@ class UserFriendsService extends ChangeNotifier {
 
     _friendsSub?.cancel();
 
-    _friendsSub = _firestore.collection('users').doc(currentUserId).snapshots().listen((doc) {
-      final data = doc.data();
-      if (data == null) return;
+    _friendsSub = _firestore
+        .collection('users')
+        .doc(currentUserId)
+        .snapshots()
+        .listen((doc) {
+          final data = doc.data();
+          if (data == null) return;
 
-      final updatedFriends = Set<String>.from(data['friends'] ?? []);
+          final updatedFriends = Set<String>.from(data['friends'] ?? []);
 
-      if (!SetEquality().equals(_friends, updatedFriends)) {
-        _friends
-          ..clear()
-          ..addAll(updatedFriends);
-        notifyListeners();
-      }
-    });
-  }  
+          if (!SetEquality().equals(_friends, updatedFriends)) {
+            _friends
+              ..clear()
+              ..addAll(updatedFriends);
+            notifyListeners();
+          }
+        });
+  }
 
   void _listenSentRequests() {
     final currentUserId = _auth.currentUser?.uid;
@@ -228,6 +235,48 @@ class UserFriendsService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _loadBlockedUsers() async {
+    final currentUserId = _auth.currentUser?.uid;
+    if (currentUserId == null) return;
+
+    final doc = await _firestore.collection('users').doc(currentUserId).get();
+    final data = doc.data();
+    if (data != null && data['blockedUsers'] != null) {
+      _blockedUsers.addAll(List<String>.from(data['blockedUsers']));
+    }
+  }
+
+  bool isBlocked(String userId) => _blockedUsers.contains(userId);
+
+  Future<void> blockUser(String currentUserId, String blockedUserId) async {
+    await _firestore.collection('users').doc(currentUserId).update({
+      'blockedUsers': FieldValue.arrayUnion([blockedUserId]),
+    });
+
+    _blockedUsers.add(blockedUserId);
+    notifyListeners();
+  }
+
+  Future<void> unblockUser(String currentUserId, String blockedUserId) async {
+    await _firestore.collection('users').doc(currentUserId).update({
+      'blockedUsers': FieldValue.arrayRemove([blockedUserId]),
+    });
+
+    _blockedUsers.remove(blockedUserId);
+    _removedFromSuggested.remove(blockedUserId);
+    notifyListeners();
+  }
+
+  /// Check if [otherUserId] has blocked the current user.
+  Future<bool> isBlockedByUser(String otherUserId) async {
+    final doc = await _firestore.collection('users').doc(otherUserId).get();
+    final data = doc.data();
+    if (data == null) return false;
+    final blocked = List<String>.from(data['blockedUsers'] ?? []);
+    final currentUid = _auth.currentUser?.uid;
+    return currentUid != null && blocked.contains(currentUid);
+  }
+
   Stream<List<Map<String, dynamic>>> getSuggestedFriends({
     required String currentUserId,
     String searchQuery = '',
@@ -266,6 +315,7 @@ class UserFriendsService extends ChangeNotifier {
     _sentRequests.clear();
     _receivedRequests.clear();
     _removedFromSuggested.clear();
+    _blockedUsers.clear();
 
     notifyListeners();
   }

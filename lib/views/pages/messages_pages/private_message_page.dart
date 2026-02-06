@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:later/services/chat_service.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_image_service.dart';
+import 'package:later/services/user_friends_service.dart';
 import 'package:later/data/models/chat_message.dart';
 import 'package:later/views/widgets/messages/message_bubble.dart';
 import 'package:later/views/widgets/messages/message_input.dart';
@@ -31,12 +32,14 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   Map<String, String> _friendData = {};
   bool _isSearching = false;
   String _searchQuery = '';
+  bool _isBlockedByFriend = false;
 
   @override
   void initState() {
     super.initState();
     _loadFriendData();
     _markMessagesAsRead();
+    _checkBlockedByFriend();
   }
 
   @override
@@ -66,6 +69,16 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
         });
       }
     } catch (e) {}
+  }
+
+  Future<void> _checkBlockedByFriend() async {
+    final userFriendsService = context.read<UserFriendsService>();
+    final blocked = await userFriendsService.isBlockedByUser(widget.friendId);
+    if (mounted) {
+      setState(() {
+        _isBlockedByFriend = blocked;
+      });
+    }
   }
 
   Future<void> _markMessagesAsRead() async {
@@ -145,10 +158,13 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   Widget build(BuildContext context) {
     final chatService = context.read<ChatService>();
     final userImageService = context.read<UserImageService>();
+    final userFriendsService = context.watch<UserFriendsService>();
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     final friendName = _friendData['name'] ?? 'Chat';
+    final iBlockedThem = userFriendsService.isBlocked(widget.friendId);
+    final isBlocked = iBlockedThem || _isBlockedByFriend;
     final profileNotifier = userImageService.getProfileNotifier(
       widget.friendId,
     );
@@ -400,10 +416,28 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
             ),
           ),
 
-          MessageInput(
-            onSendMessage: _sendMessage,
-            onCapsuleTap: _sendCapsuleToFriend,
-          ),
+          if (isBlocked)
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: Text(
+                  iBlockedThem
+                      ? 'You blocked this user'
+                      : "You can't send messages to this user",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Irina',
+                    color: Colors.grey[500],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            )
+          else
+            MessageInput(
+              onSendMessage: _sendMessage,
+              onCapsuleTap: _sendCapsuleToFriend,
+            ),
         ],
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/chat_service.dart';
+import 'package:later/services/user_friends_service.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:provider/provider.dart';
 
 class ChatOptionsModal extends StatelessWidget {
@@ -46,6 +48,9 @@ class ChatOptionsModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userFriendsService = context.watch<UserFriendsService>();
+    final isBlocked = userFriendsService.isBlocked(friendUid);
+
     return Container(
       width: 264,
       decoration: BoxDecoration(
@@ -73,18 +78,36 @@ class ChatOptionsModal extends StatelessWidget {
             textColor: const Color.fromARGB(255, 253, 65, 64),
           ),
           const _ChatModalDivider(),
-          _ChatModalOption(
-            text: 'Block user',
-            onPressed: () {
-              Navigator.pop(context);
-              BlockUserConfirmModal.show(context, friendUid: friendUid);
-            },
-            textColor: const Color.fromARGB(255, 253, 65, 64),
-            isLast: true,
-          ),
+          if (isBlocked)
+            _ChatModalOption(
+              text: 'Unblock user',
+              onPressed: () {
+                Navigator.pop(context);
+                _handleUnblock(context);
+              },
+              textColor: const Color(0xFF56C92E),
+              isLast: true,
+            )
+          else
+            _ChatModalOption(
+              text: 'Block user',
+              onPressed: () {
+                Navigator.pop(context);
+                BlockUserConfirmModal.show(context, friendUid: friendUid);
+              },
+              textColor: const Color.fromARGB(255, 253, 65, 64),
+              isLast: true,
+            ),
         ],
       ),
     );
+  }
+
+  void _handleUnblock(BuildContext context) async {
+    final userService = context.read<UserDataService>();
+    final userFriendsService = context.read<UserFriendsService>();
+    final currentUserUid = userService.currentLoggedInUid;
+    await userFriendsService.unblockUser(currentUserUid, friendUid);
   }
 }
 
@@ -230,7 +253,11 @@ class _BlockUserConfirmModalState extends State<BlockUserConfirmModal> {
     });
 
     try {
-      // TODO: Implement block user via UserFriendsService
+      final userService = context.read<UserDataService>();
+      final userFriendsService = context.read<UserFriendsService>();
+      final currentUserUid = userService.currentLoggedInUid;
+
+      await userFriendsService.blockUser(currentUserUid, widget.friendUid);
       if (mounted) {
         Navigator.of(context).pop();
       }
