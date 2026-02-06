@@ -107,6 +107,7 @@ class _CameraPageState extends State<CameraPage> {
                           child: CapsuleCreationPage(
                             imagePath: picture.path,
                             initialPrivacy: widget.arguments?['privacy'],
+                            recipientId: widget.arguments?['recipientId'],
                           ),
                         ),
                       );
