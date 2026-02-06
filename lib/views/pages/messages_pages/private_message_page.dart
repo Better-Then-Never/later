@@ -417,18 +417,21 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
           ),
 
           if (isBlocked)
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: Text(
-                  iBlockedThem
-                      ? 'You blocked this user'
-                      : "You can't send messages to this user",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontFamily: 'Irina',
-                    color: Colors.grey[500],
-                    fontWeight: FontWeight.w500,
+            SafeArea(
+              top: false,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: Text(
+                    iBlockedThem
+                        ? 'You blocked this user'
+                        : "You can't send messages to this user",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Irina',
+                      color: Colors.grey[500],
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
