@@ -33,6 +33,7 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
   bool _isSearching = false;
   String _searchQuery = '';
   bool _isBlockedByFriend = false;
+  bool _showScrollToBottom = false;
 
   @override
   void initState() {
@@ -40,6 +41,33 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
     _loadFriendData();
     _markMessagesAsRead();
     _checkBlockedByFriend();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    final threshold = 100.0;
+
+    final shouldShow = (maxScroll - currentScroll) > threshold;
+
+    if (shouldShow != _showScrollToBottom) {
+      setState(() {
+        _showScrollToBottom = shouldShow;
+      });
+    }
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   @override
@@ -309,110 +337,151 @@ class _PrivateMessagePageState extends State<PrivateMessagePage> {
               ),
             ),
           Expanded(
-            child: StreamBuilder<List<ChatMessage>>(
-              stream: chatService.getMessagesStream(widget.chatId),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF56C92E)),
-                  );
-                }
-
-                final allMessages = snapshot.data ?? [];
-                final messages = _searchQuery.isEmpty
-                    ? allMessages
-                    : allMessages
-                          .where(
-                            (m) => m.text.toLowerCase().contains(_searchQuery),
-                          )
-                          .toList();
-
-                if (allMessages.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.chat_bubble_outline,
-                            size: 64,
-                            color: Colors.grey[300],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No messages yet',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Say hello to $friendName!',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }
-
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _markMessagesAsRead();
-                });
-
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.04,
-                    vertical: 16,
-                  ),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    final isMe = message.senderId == chatService.currentUserId;
-                    final showDate =
-                        index == 0 ||
-                        !_isSameDay(
-                          messages[index - 1].timestamp,
-                          message.timestamp,
-                        );
-
-                    final isLastInGroup =
-                        index == messages.length - 1 ||
-                        messages[index + 1].senderId != message.senderId ||
-                        !_isSameDay(
-                          message.timestamp,
-                          messages[index + 1].timestamp,
-                        );
-
-                    return Column(
-                      children: [
-                        if (showDate) _buildDateSeparator(message.timestamp),
-                        MessageBubble(
-                          message: message.text,
-                          isSentByMe: isMe,
-                          timestamp: message.timestamp,
-                          status: message.status,
-                          showTail: isLastInGroup,
-                          type: message.type,
-                          imageUrl: message.imageUrl,
-                          onTap:
-                              message.type == MessageType.capsule &&
-                                  message.capsuleId != null
-                              ? () => _openCapsule(message.capsuleId!)
-                              : null,
+            child: Stack(
+              children: [
+                StreamBuilder<List<ChatMessage>>(
+                  stream: chatService.getMessagesStream(widget.chatId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFF56C92E),
                         ),
-                      ],
+                      );
+                    }
+
+                    final allMessages = snapshot.data ?? [];
+                    final messages = _searchQuery.isEmpty
+                        ? allMessages
+                        : allMessages
+                              .where(
+                                (m) =>
+                                    m.text.toLowerCase().contains(_searchQuery),
+                              )
+                              .toList();
+
+                    if (allMessages.isEmpty) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.chat_bubble_outline,
+                                size: 64,
+                                color: Colors.grey[300],
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No messages yet',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Say hello to $friendName!',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _markMessagesAsRead();
+                    });
+
+                    return ListView.builder(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.04,
+                        vertical: 16,
+                      ),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        final isMe =
+                            message.senderId == chatService.currentUserId;
+                        final showDate =
+                            index == 0 ||
+                            !_isSameDay(
+                              messages[index - 1].timestamp,
+                              message.timestamp,
+                            );
+
+                        final isLastInGroup =
+                            index == messages.length - 1 ||
+                            messages[index + 1].senderId != message.senderId ||
+                            !_isSameDay(
+                              message.timestamp,
+                              messages[index + 1].timestamp,
+                            );
+
+                        return Column(
+                          children: [
+                            if (showDate)
+                              _buildDateSeparator(message.timestamp),
+                            MessageBubble(
+                              message: message.text,
+                              isSentByMe: isMe,
+                              timestamp: message.timestamp,
+                              status: message.status,
+                              showTail: isLastInGroup,
+                              type: message.type,
+                              imageUrl: message.imageUrl,
+                              onTap:
+                                  message.type == MessageType.capsule &&
+                                      message.capsuleId != null
+                                  ? () => _openCapsule(message.capsuleId!)
+                                  : null,
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+                if (_showScrollToBottom)
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _scrollToBottom,
+                        borderRadius: BorderRadius.circular(28),
+                        child: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.15),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Color(0xFF56C92E),
+                            size: 28,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
 
