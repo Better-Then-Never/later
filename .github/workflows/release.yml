@@ -1,7 +1,9 @@
 name: Build & Release (iOS + Android)
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -35,7 +37,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: flutter build apk --release --build-name=0.0.${{ github.run_number }} --build-number=${{ github.run_number }}
+        run: flutter build apk --release
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
@@ -60,7 +62,7 @@ jobs:
         working-directory: ios
 
       - name: Build iOS
-        run: flutter build ios --release --no-codesign --build-name=0.0.${{ github.run_number }} --build-number=${{ github.run_number }}
+        run: flutter build ios --release --no-codesign
 
       - name: Create IPA
         working-directory: build/ios/iphoneos
@@ -80,6 +82,28 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-android, build-ios]
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get latest release version and increment
+        id: version
+        run: |
+          # Get the latest release tag
+          LATEST_TAG=$(git tag -l "v0.0.*" | sort -V | tail -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            # No tags found, start with v0.0.1
+            NEW_VERSION="0.0.1"
+          else
+            # Extract version number and increment
+            CURRENT_VERSION=${LATEST_TAG#v0.0.}
+            NEW_PATCH=$((CURRENT_VERSION + 1))
+            NEW_VERSION="0.0.$NEW_PATCH"
+          fi
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Next version: $NEW_VERSION"
+
       - name: Download Android APK
         uses: actions/download-artifact@v4
         with:
@@ -97,19 +121,21 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/android/app-release.apk
-          asset_name: app-release-v0.0.${{ github.run_number }}.apk
-          tag: v0.0.${{ github.run_number }}
-          release_name: "Release v0.0.${{ github.run_number }}"
+          asset_name: app-release-${{ steps.version.outputs.tag }}.apk
+          tag: ${{ steps.version.outputs.tag }}
+          release_name: "Release ${{ steps.version.outputs.tag }}"
+          make_latest: true
           overwrite: true
-          body: "Automatic build version 0.0.${{ github.run_number }}"
+          body: "Automatic build version ${{ steps.version.outputs.version }}"
 
       - name: Upload IPA to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/ios/FlutterIpaExport.ipa
-          asset_name: FlutterIpaExport-v0.0.${{ github.run_number }}.ipa
-          tag: v0.0.${{ github.run_number }}
-          release_name: "Release v0.0.${{ github.run_number }}"
+          asset_name: FlutterIpaExport-${{ steps.version.outputs.tag }}.ipa
+          tag: ${{ steps.version.outputs.tag }}
+          release_name: "Release ${{ steps.version.outputs.tag }}"
+          make_latest: true
           overwrite: true
-          body: "Automatic build version 0.0.${{ github.run_number }}"
+          body: "Automatic build version ${{ steps.version.outputs.version }}"
