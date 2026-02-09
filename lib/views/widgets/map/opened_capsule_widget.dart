@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
+import 'package:later/data/notifiers.dart';
+import 'package:later/services/map_capsule_jump_service.dart';
+import 'package:provider/provider.dart';
 
 class CapsulePreviewCard extends StatelessWidget {
   final Map<String, dynamic> capsuleData;
@@ -78,11 +81,25 @@ class CapsulePreviewCard extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 8),
-                CapsuleCreationLocationLabel(
-                  height: screenHeight * 0.05,
-                  iconPath:
-                      'assets/images/icons/capsule_creation/location_icon.png',
-                  location: location,
+                GestureDetector(
+                  onTap: location != null
+                      ? () {
+                          final jumpService = context
+                              .read<CapsuleJumpService>();
+                          Navigator.of(context).pop();
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                          selectedPageNotifier.value = 0;
+                          jumpService.jumpTo(capsuleData);
+                        }
+                      : null,
+                  child: CapsuleCreationLocationLabel(
+                    height: screenHeight * 0.05,
+                    iconPath:
+                        'assets/images/icons/capsule_creation/location_icon.png',
+                    location: location,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 CapsuleCreationDateStamp(
