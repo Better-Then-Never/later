@@ -27,11 +27,14 @@ import 'package:later/services/deep_link_service.dart';
 import 'package:later/views/pages/auth_pages/permission_gate_page.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:snow_fall_animation/snow_fall_animation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 

@@ -46,7 +46,7 @@
             android:value="2" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDRp1jncWgcqDVJKz3w4LjIAVQjsNUCyAw"/>
+            android:value="${MAPS_API_KEY}"/>
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
