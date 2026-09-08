@@ -96,6 +96,7 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
           await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
@@ -131,12 +132,12 @@ Future<UserCredential?> signInWithGoogle(BuildContext context) async {
       return userCredential;
     }
     return null;
-  } on Exception catch (e) {
+  } catch (e, stack) {
+    debugPrint('Google Sign-In Error: $e\n$stack');
     if (!context.mounted) return null;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(e.toString())));
-    // TODO: Proper error codes
     return null;
   }
 }

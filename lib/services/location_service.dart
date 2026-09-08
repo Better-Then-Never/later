@@ -12,7 +12,31 @@ class LocationService {
   Stream<LatLng> get locationStream => _locationStreamController.stream;
 
   Future<void> startLocationUpdates() async {
-    _locationController.changeSettings(interval: 5000, distanceFilter: 10);
+    try {
+      bool serviceEnabled = await _locationController.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await _locationController.requestService();
+      }
+
+      PermissionStatus permissionGranted =
+          await _locationController.hasPermission();
+      if (permissionGranted == PermissionStatus.denied) {
+        permissionGranted = await _locationController.requestPermission();
+      }
+
+      _locationController.changeSettings(interval: 5000, distanceFilter: 10);
+
+      final initialLocation = await _locationController.getLocation();
+      if (initialLocation.latitude != null &&
+          initialLocation.longitude != null) {
+        _locationStreamController.add(
+          LatLng(initialLocation.latitude!, initialLocation.longitude!),
+        );
+      }
+    } catch (e) {
+      // Fallback location for emulator / permission denied
+      _locationStreamController.add(const LatLng(37.422, -122.084));
+    }
 
     _locationSubscription = _locationController.onLocationChanged.listen((
       currentLocation,

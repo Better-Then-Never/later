@@ -114,15 +114,27 @@ class _ApplicationState extends State<Application> {
     }
   }
 
+  bool _isSnowSeason() {
+    final now = DateTime.now();
+    if (now.month == 12 && now.day >= 31) return true;
+    if (now.month == 1 || now.month == 2) return true;
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
+        final currentChild = child ?? const SizedBox();
+        if (!_isSnowSeason()) {
+          return currentChild;
+        }
+
         return Stack(
           children: [
-            child ?? const SizedBox(),
+            currentChild,
             IgnorePointer(
               child: SnowFallAnimation(
                 config: SnowfallConfig(

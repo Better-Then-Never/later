@@ -75,6 +75,15 @@ class _MapPageState extends State<MapPage> {
         MapPage.currentPositionStatic = pos;
       });
     });
+
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && _currentPosition == null) {
+        setState(() {
+          _currentPosition = const LatLng(37.422, -122.084);
+          MapPage.currentPositionStatic = _currentPosition;
+        });
+      }
+    });
   }
 
   Future<void> _loadUserFriends() async {
