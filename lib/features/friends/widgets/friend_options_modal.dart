@@ -418,7 +418,7 @@ class _CancelButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: const Color.fromARGB(255, 95, 95, 95),
+        foregroundColor: AppColors.textSecondary,
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,

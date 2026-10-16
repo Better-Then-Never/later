@@ -26,7 +26,7 @@ class BoxDecorations {
 
   static BoxDecoration blackShadow() {
     return BoxDecoration(
-      color: const Color.fromARGB(255, 0, 0, 0),
+      color: AppColors.black,
       borderRadius: BorderRadius.circular(16),
       boxShadow: const [
         BoxShadow(

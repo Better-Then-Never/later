@@ -25,6 +25,7 @@ class _Rule {
 
 final _rules = [
   _Rule('raw-hex', RegExp(r'Color\(0x[0-9A-Fa-f]{8}\)')),
+  _Rule('raw-argb', RegExp(r'Color\.from(?:ARGB|RGBO)\(')),
   _Rule(
     'raw-colour',
     RegExp(r'(?<![A-Za-z])Colors\.[a-zA-Z0-9]+'),

@@ -153,7 +153,8 @@ class QRScannerOverlayShape extends ShapeBorder {
   const QRScannerOverlayShape({
     this.borderColor = AppColors.white,
     this.borderWidth = 3.0,
-    this.overlayColor = const Color.fromRGBO(0, 0, 0, 80),
+    // fromRGBO(0, 0, 0, 80) before: an opacity above 1 is opaque black.
+    this.overlayColor = AppColors.black,
     this.borderRadius = 0,
     this.borderLength = 40,
     this.cutOutSize = 250,

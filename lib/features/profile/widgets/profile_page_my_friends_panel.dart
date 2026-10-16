@@ -6,6 +6,7 @@ import 'package:later/features/friends/friends_store.dart';
 import 'package:later/features/friends/pinned_friends_controller.dart';
 import 'package:later/shared/widgets/buttons/default_text_button.dart';
 import 'package:later/shared/styles/box_decorations.dart';
+import 'package:later/core/theme/app_colors.dart';
 import 'package:later/features/profile/widgets/pinned_friends/pinned_friends_row.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +51,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
             width: screenWidth - 32,
             height: 45,
             decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 255, 255, 255),
+              color: AppColors.white,
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(25),
                 bottomRight: Radius.circular(25),

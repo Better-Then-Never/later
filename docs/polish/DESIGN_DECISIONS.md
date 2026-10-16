@@ -70,3 +70,16 @@ timings.
   subtle character and removes the hard cut.
 - **D-04 Press feedback.** No consistent feedback existed (some buttons had an ink splash, menus had none). A 0.97
   scale in 100 ms on the shared buttons and the navbar matches the navbar's own scale animation.
+- **D-05 Near-duplicates snap to tokens.** `Color.fromARGB` / `fromRGBO` literals slipped past the first check
+  (it only matched `Color(0x…)`); a `raw-argb` rule now catches them. Values within 2/255 of a token became the
+  token: `#5F5F5F` dialog buttons → `textSecondary` (`#5E5E5E`), `#E2E2E2` QR frame → `grey300` (`#E0E0E0`), the
+  image menu's red at alpha 253 → `danger` (golden updated, 1 % of pixels by 1/255). The QR scanner overlay was
+  `fromRGBO(0, 0, 0, 80)`, which is opaque black (opacity is 0–1); kept as `black` so nothing changes.
+- **D-06 Settings components.** Settings pages share `SettingsScaffold` (PageHeader + list + optional green
+  button), `OptionsSection` (the existing label + white card of the Settings page), `OptionsSwitchRow` and
+  `AppSwitch` (brand green on, `grey400` off; the permissions page used a raw green thumb on a grey track), and
+  `SettingsChoiceRow` (the success toast's `check_circle` in brand green marks the chosen option). No new
+  colours, radii or shadows.
+- **D-07 No fake settings.** Language and App appearance were removed rather than kept as "coming soon": the
+  app has no translations and no dark palette (IDEAS_NOT_DONE.md). Rows for a support email, privacy policy and
+  terms appear only once the links exist (`lib/core/config/app_links.dart`, BLOCKERS.md B-01/B-02).

@@ -153,7 +153,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color.fromARGB(255, 95, 95, 95),
+                    foregroundColor: AppColors.textSecondary,
                     textStyle: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

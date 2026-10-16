@@ -234,7 +234,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                                     fontSize: 50,
                                     fontFamily: kAppFontFamily,
                                     fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
+                                    color: AppColors.black,
                                   ),
                                 ),
                               ),

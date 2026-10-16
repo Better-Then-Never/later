@@ -95,7 +95,7 @@ class ShareProfilePage extends StatelessWidget {
                         child: ElevatedButton.icon(
                           style: ElevatedButtonStyles.roundedButtonStyle(
                             borderRadius: 15,
-                            color: const Color.fromARGB(255, 226, 226, 226),
+                            color: AppColors.grey300,
                             foregroundColor: AppColors.black,
                           ),
                           onPressed: () => SharingService.copyProfileLink(
