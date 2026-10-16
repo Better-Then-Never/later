@@ -37,7 +37,7 @@ that are part of the original design (history hearts and selection bars, notific
 page, QR flash, follow bell, filter menu) are kept and listed in `tool/design_tokens_allowlist.txt`; new Material
 icons fail the check.
 
-## 6. Motion (`lib/core/theme/app_motion.dart`, `lib/shared/motion/`)
+## 5. Motion (`lib/core/theme/app_motion.dart`, `lib/shared/motion/`)
 Character of the original app: quick and subtle; ease-out to enter, ease-in to leave, ease-in-out for in-place
 changes, fast-out-slow-in for size changes. The tokens are exactly the values it already used:
 
@@ -59,14 +59,14 @@ page transitions are instant, `AppPressable` adds nothing, `AppEnter` shows at o
 returns zero for the in-place animations. `raw-duration` in the token check blocks new hard-coded animation
 timings.
 
-## 5. Decision log
+## 6. Decision log
 - **D-01 Tokens over raw values.** Every colour outside `core/theme` is a token; the check script keeps it that way.
   Material greys became tokens instead of being snapped to the nearest existing token, so nothing changes visually.
+- **D-02 Allow-listed debt.** Raw animation durations (until the motion tokens exist) and the chat port's Material
+  icons are allow-listed with TODO markers; the script reports stale entries, so removing the debt is enforced.
 - **D-03 One page transition.** Every push now fades in 150 ms (`AppMotion.fast`); "Add friends" keeps its
   slide-up with the same timing. Before: a 10 ms fade (an instant swap) for most pages, 100 ms slide-up for one,
   and the Android platform transition (about 300 ms zoom) for the camera and signup. The 150 ms fade keeps the quick,
   subtle character and removes the hard cut.
 - **D-04 Press feedback.** No consistent feedback existed (some buttons had an ink splash, menus had none). A 0.97
   scale in 100 ms on the shared buttons and the navbar matches the navbar's own scale animation.
-- **D-02 Allow-listed debt.** Raw animation durations (until the motion tokens exist) and the chat port's Material
-  icons are allow-listed with TODO markers; the script reports stale entries, so removing the debt is enforced.
