@@ -24,7 +24,7 @@ class UserNameAndUsername extends StatelessWidget {
     this.textAlign = TextAlign.center,
     this.nameFontSize = 32,
     this.usernameFontSize = 22,
-    this.nameColor = Colors.black,
+    this.nameColor = AppColors.black,
     this.usernameColor = AppColors.textSecondary,
     this.nameFontWeight = FontWeight.bold,
     this.usernameFontWeight = FontWeight.bold,

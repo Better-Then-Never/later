@@ -29,7 +29,7 @@ class AuthSubmitButton extends StatelessWidget {
           shape: const RoundedRectangleBorder(borderRadius: AppRadii.lCircular),
         ),
         child: isLoading
-            ? const CircularProgressIndicator(color: Colors.white)
+            ? const CircularProgressIndicator(color: AppColors.white)
             : Text(text, style: AppTextStyles.buttonLarge),
       ),
     );

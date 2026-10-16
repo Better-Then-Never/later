@@ -26,7 +26,7 @@ class ImageOptionsSheet extends StatelessWidget {
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: Colors.black.withAlpha(128),
+    barrierColor: AppColors.barrier,
     builder: (context) => GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(context).pop(),
@@ -48,7 +48,7 @@ class ImageOptionsSheet extends StatelessWidget {
     BuildContext context,
     String text,
     ImageOption value, {
-    Color foreground = Colors.black,
+    Color foreground = AppColors.black,
     BorderRadius borderRadius = BorderRadius.zero,
   }) => SizedBox(
     height: _rowHeight,
@@ -77,7 +77,7 @@ class ImageOptionsSheet extends StatelessWidget {
       width: _width,
       height: 153,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(

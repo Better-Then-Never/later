@@ -42,7 +42,7 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
               ),
               const ProfilePageDivider(
                 width: double.infinity,
-                color: Colors.black45,
+                color: AppColors.black45,
               ),
               PinnedFriendOptionTile(
                 onTap: onViewProfile,

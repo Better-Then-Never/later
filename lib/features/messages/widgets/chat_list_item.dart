@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../chat_time.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// A row of the chat list: the friend's photo and name, the last message and
 /// how long ago it was sent.
@@ -43,7 +44,7 @@ class ChatListItem extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                            color: AppColors.black,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -52,9 +53,9 @@ class ChatListItem extends StatelessWidget {
                       if (timestamp != null)
                         Text(
                           ChatTime.listLabel(timestamp, DateTime.now()),
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 13,
-                            color: Colors.grey[500],
+                            color: AppColors.grey500,
                           ),
                         ),
                     ],
@@ -62,7 +63,10 @@ class ChatListItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     message,
-                    style: TextStyle(fontSize: 15, color: Colors.grey[600]),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: AppColors.grey600,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

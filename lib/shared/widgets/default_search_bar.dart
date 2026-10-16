@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class DefaultSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -52,7 +53,10 @@ class DefaultSearchBar extends StatelessWidget {
                   border: InputBorder.none,
                   isDense: true,
                 ),
-                style: const TextStyle(fontFamily: 'Irina', fontSize: 22),
+                style: const TextStyle(
+                  fontFamily: kAppFontFamily,
+                  fontSize: 22,
+                ),
                 onChanged: (value) {
                   if (onChanged != null) {
                     onChanged!(value);

@@ -31,7 +31,7 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.grey100,
       body: SafeArea(
         child: Column(
           children: [
@@ -93,15 +93,15 @@ class _ChatList extends StatelessWidget {
       itemCount: chats.length + 1,
       itemBuilder: (context, index) {
         if (index == chats.length) {
-          return Padding(
-            padding: const EdgeInsets.all(24),
+          return const Padding(
+            padding: EdgeInsets.all(24),
             child: Center(
               child: Text(
                 'No more chats',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
+                  color: AppColors.grey800,
                 ),
               ),
             ),
@@ -145,14 +145,14 @@ class _Info extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 64, color: Colors.grey[300]),
+            Icon(icon, size: 64, color: AppColors.grey300),
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
+                color: AppColors.grey700,
               ),
             ),
             if (subtitle != null) ...[
@@ -160,7 +160,7 @@ class _Info extends StatelessWidget {
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                style: const TextStyle(fontSize: 16, color: AppColors.grey600),
               ),
             ],
             ?action,

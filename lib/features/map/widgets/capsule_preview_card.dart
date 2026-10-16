@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// Dialog content showing an opened capsule: photo, title, description,
 /// place and creation date. Tapping the place calls [onPlaceTap].
@@ -24,7 +25,7 @@ class CapsulePreviewCard extends StatelessWidget {
       width: screen.width,
       height: screen.height * 0.45,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: AppRadii.lCircular,
         boxShadow: AppShadows.raised,
       ),
@@ -72,7 +73,7 @@ class CapsulePreviewCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontFamily: kAppFontFamily,
-                        color: Colors.black54,
+                        color: AppColors.textFaint,
                       ),
                     ),
                   ),

@@ -87,7 +87,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: AppRadii.lCircular,
         boxShadow: AppShadows.mapInfo,
       ),
@@ -113,7 +113,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: isOpen ? AppColors.brandGreen : Colors.red,
+              color: isOpen ? AppColors.brandGreen : AppColors.materialRed,
               fontFamily: kAppFontFamily,
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -123,7 +123,9 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: isOpen ? AppColors.brandGreen : Colors.grey,
+                backgroundColor: isOpen
+                    ? AppColors.brandGreen
+                    : AppColors.grey500,
                 shape: const RoundedRectangleBorder(
                   borderRadius: AppRadii.lCircular,
                 ),
@@ -140,7 +142,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                   fontFamily: kAppFontFamily,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
               ),
             ),

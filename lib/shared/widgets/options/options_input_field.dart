@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class OptionsInputField extends StatelessWidget {
   final TextEditingController controller;
@@ -20,11 +21,11 @@ class OptionsInputField extends StatelessWidget {
       height: 50,
       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.01),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(25),
         boxShadow: const [
           BoxShadow(
-            color: Colors.black12,
+            color: AppColors.shadowCard,
             spreadRadius: 1,
             blurRadius: 9,
             offset: Offset(0, 4),
@@ -45,7 +46,7 @@ class OptionsInputField extends StatelessWidget {
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.white,
+          fillColor: AppColors.white,
         ),
       ),
     );

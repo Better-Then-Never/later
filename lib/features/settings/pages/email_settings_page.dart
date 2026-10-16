@@ -15,7 +15,7 @@ class EmailSettingsPage extends StatelessWidget {
             children: [
               const Text(
                 "You can't change your email right now. Sorry for the inconvenience. Skebob...",
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(fontSize: 16, color: AppColors.textFaint),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

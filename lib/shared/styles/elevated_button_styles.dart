@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class ElevatedButtonStyles {
   static ButtonStyle roundedButtonStyle({
@@ -18,7 +19,7 @@ class ElevatedButtonStyles {
 
   static ButtonStyle cancelButtonStyle() {
     return ElevatedButton.styleFrom(
-      backgroundColor: Colors.red,
+      backgroundColor: AppColors.materialRed,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       elevation: 0,
     );

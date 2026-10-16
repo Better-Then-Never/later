@@ -199,10 +199,10 @@ class _ChatViewState extends State<_ChatView> {
                     controller.iBlockedThem
                         ? 'You blocked this user'
                         : "You can't send messages to this user",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       fontFamily: kAppFontFamily,
-                      color: Colors.grey[500],
+                      color: AppColors.grey500,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -297,14 +297,14 @@ class _ChatHeader extends StatelessWidget {
         vertical: screen.height * 0.01,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -375,7 +375,7 @@ class _SearchBar extends StatelessWidget {
         horizontal: screenWidth * 0.04,
         vertical: 8,
       ),
-      color: Colors.white,
+      color: AppColors.white,
       child: Row(
         children: [
           Expanded(
@@ -385,14 +385,14 @@ class _SearchBar extends StatelessWidget {
               style: const TextStyle(fontSize: 15, fontFamily: kAppFontFamily),
               decoration: InputDecoration(
                 hintText: 'Search messages...',
-                hintStyle: TextStyle(
+                hintStyle: const TextStyle(
                   fontSize: 15,
                   fontFamily: kAppFontFamily,
-                  color: Colors.grey[400],
+                  color: AppColors.grey400,
                 ),
-                prefixIcon: Icon(
+                prefixIcon: const Icon(
                   Icons.search,
-                  color: Colors.grey[400],
+                  color: AppColors.grey400,
                   size: 20,
                 ),
                 filled: true,
@@ -412,13 +412,13 @@ class _SearchBar extends StatelessWidget {
           const SizedBox(width: 8),
           GestureDetector(
             onTap: onCancel,
-            child: Text(
+            child: const Text(
               'Cancel',
               style: TextStyle(
                 fontSize: 15,
                 fontFamily: kAppFontFamily,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[600],
+                color: AppColors.grey600,
               ),
             ),
           ),
@@ -441,12 +441,12 @@ class _DaySeparator extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: Colors.grey[200],
+            color: AppColors.grey200,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             label,
-            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            style: const TextStyle(fontSize: 12, color: AppColors.grey600),
           ),
         ),
       ),
@@ -470,11 +470,11 @@ class _ScrollToBottomButton extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.15),
+                color: AppColors.black.withValues(alpha: 0.15),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -506,13 +506,13 @@ class _Info extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 64, color: Colors.grey[300]),
+            Icon(icon, size: 64, color: AppColors.grey300),
             const SizedBox(height: 16),
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
-                color: Colors.grey[600],
+                color: AppColors.grey600,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -521,7 +521,7 @@ class _Info extends StatelessWidget {
               Text(
                 subtitle!,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                style: const TextStyle(fontSize: 14, color: AppColors.grey500),
               ),
             ],
           ],

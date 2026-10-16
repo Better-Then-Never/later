@@ -9,6 +9,7 @@ import '../notification_router.dart';
 import '../notifications_selection_controller.dart';
 import '../notifications_store.dart';
 import 'notification_item.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// The tabs of the notifications page. "Replies" and "Comments" exist in the
 /// design but no feature produces those types yet (see IDEAS_NOT_DONE.md).
@@ -45,7 +46,7 @@ class NotificationsList extends StatelessWidget {
       listenable: selection,
       builder: (context, _) {
         return RefreshIndicator(
-          color: Colors.black,
+          color: AppColors.black,
           // The list is live; the gesture is kept from the original design.
           onRefresh: () async {},
           child: ListView.builder(

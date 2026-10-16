@@ -3,13 +3,14 @@ import 'package:provider/provider.dart';
 
 import '../../../core/theme/app_text_styles.dart';
 import '../notifications_store.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class UnreadNotificationBadge extends StatelessWidget {
   const UnreadNotificationBadge({
     super.key,
     this.size = 20,
-    this.badgeColor = Colors.red,
-    this.textColor = Colors.white,
+    this.badgeColor = AppColors.materialRed,
+    this.textColor = AppColors.white,
     this.textStyle,
   });
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 const double navbarIconHeight = 46.0;
 
@@ -22,11 +23,11 @@ class NavbarWidget extends StatelessWidget {
         height: 80,
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.circular(30),
           boxShadow: const [
             BoxShadow(
-              color: Colors.black26,
+              color: AppColors.shadowRaised,
               blurRadius: 10,
               offset: Offset(0, 4),
             ),

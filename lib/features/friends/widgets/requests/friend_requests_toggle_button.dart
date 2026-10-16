@@ -25,7 +25,7 @@ class FriendRequestsToggleButton extends StatelessWidget {
         child: Container(
           height: 35,
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.brandGreen : Colors.white,
+            color: isSelected ? AppColors.brandGreen : AppColors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.brandGreen, width: 2),
           ),
@@ -34,7 +34,7 @@ class FriendRequestsToggleButton extends StatelessWidget {
               text,
               fontSize: screenWidth * 0.04,
               fontWeight: FontWeight.bold,
-              color: isSelected ? Colors.white : AppColors.brandGreen,
+              color: isSelected ? AppColors.white : AppColors.brandGreen,
             ),
           ),
         ),

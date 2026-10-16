@@ -48,7 +48,7 @@ class DefaultGreenButton extends StatelessWidget {
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: AppColors.white,
                   strokeWidth: 2,
                 ),
               )
@@ -56,7 +56,7 @@ class DefaultGreenButton extends StatelessWidget {
                 fit: BoxFit.scaleDown,
                 child: DefaultText(
                   text,
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: textFontSize,
                   textAlign: TextAlign.center,

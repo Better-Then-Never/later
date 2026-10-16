@@ -49,7 +49,7 @@ class OptionsSettingsRow extends StatelessWidget {
               textAlign: TextAlign.start,
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
-              color: isLast ? AppColors.danger : Colors.black,
+              color: isLast ? AppColors.danger : AppColors.black,
             ),
             subtitle: subtitle,
             leading: leadingIconPath != null

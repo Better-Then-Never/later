@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class DefaultEmptyInboxInfo extends StatelessWidget {
   final String message;
@@ -33,7 +34,7 @@ class DefaultEmptyInboxInfo extends StatelessWidget {
               subtitle!,
               textAlign: TextAlign.center,
               fontSize: screenWidth * 0.033,
-              color: Colors.grey[600],
+              color: AppColors.grey600,
             ),
         ],
       ),

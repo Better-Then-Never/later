@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class FriendRequestsActionButton extends StatelessWidget {
   final VoidCallback? onTap;
@@ -30,7 +31,7 @@ class FriendRequestsActionButton extends StatelessWidget {
         decoration: BoxDecorations.defaultBorderRadius(color: color),
         child: DefaultText(
           text,
-          color: Colors.white,
+          color: AppColors.white,
           fontWeight: FontWeight.bold,
         ),
       ),

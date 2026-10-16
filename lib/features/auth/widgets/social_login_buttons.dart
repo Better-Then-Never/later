@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// "Or connect with" + Google | Facebook icons.
 class SocialLoginButtons extends StatelessWidget {
@@ -25,7 +26,7 @@ class SocialLoginButtons extends StatelessWidget {
             const SizedBox(
               height: 40,
               child: VerticalDivider(
-                color: Colors.black,
+                color: AppColors.black,
                 width: 20,
                 thickness: 2,
               ),

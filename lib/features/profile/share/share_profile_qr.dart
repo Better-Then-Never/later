@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class ShareProfileQR extends StatelessWidget {
   final String profileLink;
@@ -25,17 +26,20 @@ class ShareProfileQR extends StatelessWidget {
           data: profileLink,
           version: QrVersions.auto,
           size: screenWidth * 0.55,
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.white,
           eyeStyle: const QrEyeStyle(
             eyeShape: QrEyeShape.square,
-            color: Colors.black,
+            color: AppColors.black,
           ),
           dataModuleStyle: const QrDataModuleStyle(
             dataModuleShape: QrDataModuleShape.square,
-            color: Colors.black,
+            color: AppColors.black,
           ),
           errorStateBuilder: (context, error) => const Center(
-            child: DefaultText('Something went wrong...', color: Colors.red),
+            child: DefaultText(
+              'Something went wrong...',
+              color: AppColors.materialRed,
+            ),
           ),
         ),
       ),

@@ -17,7 +17,7 @@ class NewChatSheet extends StatefulWidget {
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: Colors.black.withAlpha(128),
+    barrierColor: AppColors.barrier,
     builder: (_) => const NewChatSheet(),
   );
 
@@ -70,7 +70,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
     return Container(
       height: screen.height * 0.7,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),
@@ -83,7 +83,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: AppColors.grey300,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -128,7 +128,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Icon(
                       Icons.search,
-                      color: Colors.grey[600],
+                      color: AppColors.grey600,
                       size: screen.width * 0.06,
                     ),
                   ),
@@ -231,7 +231,7 @@ class _FriendRow extends StatelessWidget {
                       style: TextStyle(
                         fontSize: screenHeight * 0.02,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: AppColors.black,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -241,7 +241,7 @@ class _FriendRow extends StatelessWidget {
                         '@$username',
                         style: TextStyle(
                           fontSize: screenHeight * 0.016,
-                          color: Colors.grey[600],
+                          color: AppColors.grey600,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -249,7 +249,11 @@ class _FriendRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: Colors.grey[400], size: 24),
+              const Icon(
+                Icons.chevron_right,
+                color: AppColors.grey400,
+                size: 24,
+              ),
             ],
           ),
         ),
@@ -271,28 +275,32 @@ class _NoFriends extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
+            const Icon(
+              Icons.people_outline,
+              size: 64,
+              color: AppColors.grey400,
+            ),
             const SizedBox(height: 16),
-            Text(
+            const Text(
               'No friends yet',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
+                color: AppColors.grey700,
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            const Text(
               'Add some friends to start chatting!',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 16, color: AppColors.grey600),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: onFindFriends,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.brandGreen,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 32,
                   vertical: 12,
@@ -327,12 +335,12 @@ class _CenteredInfo extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 48, color: Colors.grey[400]),
+            Icon(icon, size: 48, color: AppColors.grey400),
             const SizedBox(height: 16),
             Text(
               text,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              style: const TextStyle(fontSize: 16, color: AppColors.grey600),
             ),
           ],
         ),

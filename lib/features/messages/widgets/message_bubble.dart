@@ -28,7 +28,7 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
-    final textColor = isMine ? Colors.white : Colors.black;
+    final textColor = isMine ? AppColors.white : AppColors.black;
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
 
@@ -95,7 +95,7 @@ class MessageBubble extends StatelessWidget {
                     ChatTime.messageTime(sentAt),
                     style: TextStyle(
                       fontSize: 11,
-                      color: isMine ? Colors.white70 : Colors.grey[500],
+                      color: isMine ? AppColors.white70 : AppColors.grey500,
                     ),
                   ),
                 if (isMine) ...[
@@ -103,7 +103,7 @@ class MessageBubble extends StatelessWidget {
                   Icon(
                     message.isRead ? Icons.done_all : Icons.done,
                     size: 14,
-                    color: message.isRead ? Colors.white : Colors.white70,
+                    color: message.isRead ? AppColors.white : AppColors.white70,
                   ),
                 ],
               ],
@@ -149,7 +149,7 @@ class _CapsulePhoto extends StatelessWidget {
                       ),
                     ),
               errorBuilder: (_, _, _) => const Center(
-                child: Icon(Icons.broken_image, color: Colors.grey),
+                child: Icon(Icons.broken_image, color: AppColors.grey500),
               ),
             ),
             Positioned(
@@ -158,7 +158,7 @@ class _CapsulePhoto extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.black54,
+                  color: AppColors.textFaint,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
@@ -166,14 +166,14 @@ class _CapsulePhoto extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.all_inbox_rounded,
-                      color: Colors.white,
+                      color: AppColors.white,
                       size: 14,
                     ),
                     SizedBox(width: 4),
                     Text(
                       'Capsule',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),

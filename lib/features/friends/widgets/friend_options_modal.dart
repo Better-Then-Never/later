@@ -8,6 +8,7 @@ import 'block_user.dart';
 import '../../profile/share/sharing_service.dart';
 import '../friends_store.dart';
 import '../../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class FriendOptionsModal extends StatelessWidget {
   final String friendUid;
@@ -139,7 +140,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
     return OptionsMenu(
       children: [
         const _ModalHeader(text: 'Manage friendship'),
-        const OptionsMenuDivider(color: Colors.black, thickness: 1),
+        const OptionsMenuDivider(color: AppColors.black, thickness: 1),
         _FollowButton(
           isFollowing: _isFollowing,
           isLoading: _isLoading,
@@ -170,7 +171,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
             Navigator.pop(context);
             RemoveFriendConfirmModal.show(context, widget.friendUid);
           },
-          textColor: Colors.red,
+          textColor: AppColors.materialRed,
           isLast: true,
         ),
       ],
@@ -230,7 +231,7 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
       width: 240,
       padding: const EdgeInsets.only(top: 12, bottom: 1, left: 12, right: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
@@ -242,8 +243,8 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Irina',
-              color: Colors.black,
+              fontFamily: kAppFontFamily,
+              color: AppColors.black,
             ),
           ),
           const SizedBox(height: 16),
@@ -251,7 +252,7 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
             text: _isRemoving ? 'Removing...' : 'Remove',
             onPressed: _isRemoving ? null : _removeFriend,
             backgroundColor: AppColors.danger,
-            textColor: Colors.white,
+            textColor: AppColors.white,
             isLoading: _isRemoving,
           ),
           _CancelButton(
@@ -286,8 +287,8 @@ class _ModalHeader extends StatelessWidget {
             style: const TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Irina',
-              color: Colors.black,
+              fontFamily: kAppFontFamily,
+              color: AppColors.black,
             ),
           ),
         ),
@@ -315,12 +316,12 @@ class _FollowButton extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          foregroundColor: Colors.black,
-          backgroundColor: isFollowing ? Colors.grey[300] : Colors.transparent,
+          foregroundColor: AppColors.black,
+          backgroundColor: isFollowing ? AppColors.grey300 : Colors.transparent,
           textStyle: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Irina',
+            fontFamily: kAppFontFamily,
           ),
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           splashFactory: NoSplash.splashFactory,
@@ -332,7 +333,7 @@ class _FollowButton extends StatelessWidget {
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
-                    color: Colors.black,
+                    color: AppColors.black,
                     strokeWidth: 2,
                   ),
                 )
@@ -344,7 +345,7 @@ class _FollowButton extends StatelessWidget {
                           ? Icons.notifications_active
                           : Icons.notifications_outlined,
                       size: 20,
-                      color: Colors.black,
+                      color: AppColors.black,
                     ),
                     const SizedBox(width: 8),
                     Text(isFollowing ? 'Following' : 'Follow'),
@@ -387,7 +388,7 @@ class _ConfirmButton extends StatelessWidget {
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Irina',
+            fontFamily: kAppFontFamily,
           ),
           splashFactory: NoSplash.splashFactory,
           overlayColor: Colors.transparent,
@@ -421,7 +422,7 @@ class _CancelButton extends StatelessWidget {
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Irina',
+          fontFamily: kAppFontFamily,
         ),
         splashFactory: NoSplash.splashFactory,
         overlayColor: Colors.transparent,

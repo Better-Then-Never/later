@@ -10,7 +10,7 @@ Future<T?> showCenteredSheet<T>(BuildContext context, Widget child) =>
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
+      barrierColor: AppColors.barrier,
       builder: (context) => GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => Navigator.of(context).pop(),
@@ -32,7 +32,7 @@ class OptionsMenu extends StatelessWidget {
     return Container(
       width: 264,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: children),
@@ -74,7 +74,7 @@ class OptionsMenuItem extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          foregroundColor: textColor ?? Colors.black,
+          foregroundColor: textColor ?? AppColors.black,
           textStyle: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,

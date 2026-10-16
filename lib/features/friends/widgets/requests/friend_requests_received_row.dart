@@ -53,7 +53,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                           name,
                           fontWeight: FontWeight.bold,
                           fontSize: screenWidth * 0.045,
-                          color: Colors.black,
+                          color: AppColors.black,
                           textAlign: TextAlign.start,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -63,7 +63,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                     DefaultText(
                       '@$username',
                       fontSize: screenWidth * 0.035,
-                      color: Colors.grey[600],
+                      color: AppColors.grey600,
                     ),
                   ],
                 ),

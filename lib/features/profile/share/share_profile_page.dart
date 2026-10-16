@@ -45,7 +45,7 @@ class ShareProfilePage extends StatelessWidget {
                 DefaultText(
                   'Let others scan this QR code to add you as a friend',
                   fontSize: screenWidth * 0.042,
-                  color: Colors.grey[600],
+                  color: AppColors.grey600,
                 ),
                 SizedBox(height: screenHeight * 0.03),
                 ShareProfileQR(
@@ -69,7 +69,7 @@ class ShareProfilePage extends StatelessWidget {
                         child: ElevatedButton.icon(
                           style: ElevatedButtonStyles.roundedButtonStyle(
                             borderRadius: 15,
-                            foregroundColor: Colors.white,
+                            foregroundColor: AppColors.white,
                             color: AppColors.brandGreen,
                           ),
                           onPressed: () => SharingService.shareUserProfile(
@@ -81,7 +81,7 @@ class ShareProfilePage extends StatelessWidget {
                             'Share',
                             fontSize: screenWidth * 0.045,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ),
@@ -96,7 +96,7 @@ class ShareProfilePage extends StatelessWidget {
                           style: ElevatedButtonStyles.roundedButtonStyle(
                             borderRadius: 15,
                             color: const Color.fromARGB(255, 226, 226, 226),
-                            foregroundColor: Colors.black,
+                            foregroundColor: AppColors.black,
                           ),
                           onPressed: () => SharingService.copyProfileLink(
                             context: context,
@@ -119,9 +119,9 @@ class ShareProfilePage extends StatelessWidget {
                   decoration: BoxDecorations.lightBlueInfo(),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.info_outline,
-                        color: Colors.blue[600],
+                        color: AppColors.infoBlue600,
                         size: 20,
                       ),
                       const SizedBox(width: 12),
@@ -129,7 +129,7 @@ class ShareProfilePage extends StatelessWidget {
                         child: DefaultText(
                           'Others can scan this code with their camera or the app to add you as a friend',
                           fontSize: screenWidth * 0.037,
-                          color: Colors.blue[700],
+                          color: AppColors.infoBlue700,
                         ),
                       ),
                     ],

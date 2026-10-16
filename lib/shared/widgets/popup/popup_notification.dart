@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/popup/popup_notification_service.dart';
+import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class PopupNotification extends StatefulWidget {
   final String message;
@@ -156,7 +158,7 @@ class PopupNotificationState extends State<PopupNotification>
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withAlpha((0.2 * 255).round()),
+                  color: AppColors.black.withAlpha((0.2 * 255).round()),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -205,7 +207,7 @@ class PopupNotificationState extends State<PopupNotification>
     return Text(
       widget.message,
       style: TextStyle(
-        fontFamily: 'Irina',
+        fontFamily: kAppFontFamily,
         fontSize: 16,
         fontWeight: FontWeight.bold,
         color: widget.textColor,

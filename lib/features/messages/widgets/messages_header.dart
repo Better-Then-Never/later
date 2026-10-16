@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../shared/widgets/default_search_bar.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// "My Laters" header of the chat list: new-chat button and chat search.
 class MessagesHeader extends StatelessWidget {
@@ -25,14 +26,14 @@ class MessagesHeader extends StatelessWidget {
         vertical: screen.height * 0.01,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

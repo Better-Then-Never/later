@@ -15,7 +15,7 @@ class PasswordSettingsPage extends StatelessWidget {
             children: [
               const Text(
                 'The feature will be added soon.',
-                style: TextStyle(fontSize: 16, color: Colors.black54),
+                style: TextStyle(fontSize: 16, color: AppColors.textFaint),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

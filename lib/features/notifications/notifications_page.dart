@@ -135,7 +135,7 @@ class _NotificationsPageState extends State<NotificationsPage>
           'Delete ${_controller.selectedCount} notification${_controller.selectedCount > 1 ? 's' : ''}?',
       confirmText: 'Delete',
       cancelText: 'Cancel',
-      confirmButtonColor: Colors.red,
+      confirmButtonColor: AppColors.materialRed,
       onConfirm: _performDelete,
     );
   }

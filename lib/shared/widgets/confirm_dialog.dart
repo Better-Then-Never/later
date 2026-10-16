@@ -32,7 +32,7 @@ class ConfirmDialog extends StatelessWidget {
           child: Container(
             width: 264,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(25),
             ),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
@@ -44,7 +44,7 @@ class ConfirmDialog extends StatelessWidget {
                   child: Text(
                     title,
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: AppColors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -71,7 +71,7 @@ class ConfirmDialog extends StatelessWidget {
                     child: Text(
                       confirmText,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -112,7 +112,7 @@ class ConfirmDialog extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
+      barrierColor: AppColors.barrier,
       builder: (BuildContext context) {
         return ConfirmDialog(
           title: title,

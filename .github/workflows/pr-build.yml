@@ -16,6 +16,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  checks:
+    name: Analyze, test, design tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          # Same version as release.yml.
+          flutter-version: '3.38.4'
+          architecture: x64
+
+      - run: flutter pub get
+
+      - name: Write Firebase config
+        env:
+          FIREBASE_OPTIONS_DART_BASE64: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: bash tools/ci/write-config.sh android
+
+      - run: dart format --output=none --set-exit-if-changed lib test tool
+      - run: flutter analyze
+      - run: flutter test
+      - name: Design tokens
+        run: dart run tool/check_design_tokens.dart
+
   build-android:
     name: Android Build
     runs-on: ubuntu-latest

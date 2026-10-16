@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class WhiteCircularProgressIndicator extends StatelessWidget {
   final double size;
@@ -16,7 +17,7 @@ class WhiteCircularProgressIndicator extends StatelessWidget {
       width: size,
       height: size,
       child: CircularProgressIndicator(
-        color: Colors.white,
+        color: AppColors.white,
         strokeWidth: strokeWidth,
       ),
     );

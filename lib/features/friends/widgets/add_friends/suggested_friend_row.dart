@@ -4,6 +4,7 @@ import '../../../../core/assets/app_assets.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/user/user_round_avatar.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 /// One suggestion: avatar, name, @username, add (or pending) and hide.
 ///
@@ -49,8 +50,8 @@ class SuggestedFriendRow extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
-              fontFamily: 'Irina',
-              color: Colors.black,
+              fontFamily: kAppFontFamily,
+              color: AppColors.black,
             ),
           ),
           subtitle: Text(
@@ -59,7 +60,7 @@ class SuggestedFriendRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: screenWidth * 0.04,
-              fontFamily: 'Irina',
+              fontFamily: kAppFontFamily,
               color: AppColors.textSecondary,
             ),
           ),

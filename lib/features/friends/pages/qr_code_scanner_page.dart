@@ -3,6 +3,7 @@ import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/buttons/go_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:later/app/router/app_link_handler.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class QRScannerPage extends StatefulWidget {
   const QRScannerPage({super.key});
@@ -36,9 +37,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
             const SnackBar(
               content: DefaultText(
                 'Invalid QR code. Please scan a Later profile QR code.',
-                color: Colors.white,
+                color: AppColors.white,
               ),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.materialRed,
             ),
           );
 
@@ -59,7 +60,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.black,
 
       body: Stack(
         children: [
@@ -77,7 +78,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                   const SizedBox(width: 16),
                   const DefaultText(
                     'Scan QR Code',
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -94,7 +95,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
               padding: const EdgeInsets.all(20),
               child: const DefaultText(
                 'Point your camera at the QR code to add a friend',
-                color: Colors.white,
+                color: AppColors.white,
                 fontSize: 16,
               ),
             ),
@@ -115,7 +116,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 height: 56,
                 child: Icon(
                   _isTorchEnabled ? Icons.flash_on : Icons.flash_off,
-                  color: Colors.white,
+                  color: AppColors.white,
                   size: 24,
                 ),
               ),
@@ -131,7 +132,7 @@ Widget _cameraBorderWithCutout(final double screenWidth) {
   return Container(
     decoration: ShapeDecoration(
       shape: QRScannerOverlayShape(
-        borderColor: Colors.white,
+        borderColor: AppColors.white,
         borderRadius: 20,
         borderLength: 30,
         borderWidth: 8,
@@ -150,7 +151,7 @@ class QRScannerOverlayShape extends ShapeBorder {
   final double cutOutSize;
 
   const QRScannerOverlayShape({
-    this.borderColor = Colors.white,
+    this.borderColor = AppColors.white,
     this.borderWidth = 3.0,
     this.overlayColor = const Color.fromRGBO(0, 0, 0, 80),
     this.borderRadius = 0,

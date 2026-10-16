@@ -65,8 +65,8 @@ class _MessageInputState extends State<MessageInput> {
           children: [
             if (onCapsuleTap != null) ...[
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
+                decoration: const BoxDecoration(
+                  color: AppColors.grey200,
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
@@ -94,18 +94,18 @@ class _MessageInputState extends State<MessageInput> {
                 decoration: InputDecoration(
                   hintText: 'Write a message...',
                   hintStyle: TextStyle(
-                    color: Colors.grey,
+                    color: AppColors.grey500,
                     fontSize: screen.height * 0.02,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.white,
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: screen.width * 0.04,
                     vertical: screen.height * 0.015,
                   ),
-                  border: _border(Colors.grey.shade300),
-                  enabledBorder: _border(Colors.grey.shade300),
-                  focusedBorder: _border(Colors.grey.shade400),
+                  border: _border(AppColors.grey300),
+                  enabledBorder: _border(AppColors.grey300),
+                  focusedBorder: _border(AppColors.grey400),
                 ),
                 onSubmitted: (_) => _send(),
               ),

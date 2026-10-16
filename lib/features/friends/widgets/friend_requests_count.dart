@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../friends_store.dart';
+import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 /// Red pill with the number of received friend requests (hidden at 0).
 ///
@@ -20,17 +22,17 @@ class FriendRequestCountBadge extends StatelessWidget {
       height: 20,
       padding: const EdgeInsets.symmetric(horizontal: 6),
       decoration: BoxDecoration(
-        color: Colors.red,
+        color: AppColors.materialRed,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Center(
         child: Text(
           count > 99 ? '99+' : '$count',
           style: const TextStyle(
-            color: Colors.white,
+            color: AppColors.white,
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            fontFamily: 'Irina',
+            fontFamily: kAppFontFamily,
           ),
         ),
       ),

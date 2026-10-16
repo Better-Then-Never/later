@@ -7,6 +7,7 @@ import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// Full-screen camera used to take the photo of a new capsule.
 ///
@@ -156,7 +157,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.black87, body: _buildBody());
+    return Scaffold(backgroundColor: AppColors.black87, body: _buildBody());
   }
 
   Widget _buildBody() {
@@ -286,7 +287,7 @@ class _ErrorView extends StatelessWidget {
               child: Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: AppColors.white, fontSize: 18),
               ),
             ),
           ),

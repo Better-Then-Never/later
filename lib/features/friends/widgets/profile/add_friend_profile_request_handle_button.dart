@@ -3,6 +3,7 @@ import 'package:later/shared/styles/elevated_button_styles.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/white_circular_progress_indicator.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class AddProfileRequestHandleButton extends StatelessWidget {
   final bool isCancelling;
@@ -33,7 +34,7 @@ class AddProfileRequestHandleButton extends StatelessWidget {
         height: height,
         child: ElevatedButton(
           style: ElevatedButtonStyles.roundedButtonStyle(
-            color: color ?? Colors.red,
+            color: color ?? AppColors.materialRed,
           ),
           onPressed: isCancelling ? null : onPressed,
           child: isCancelling
@@ -42,7 +43,7 @@ class AddProfileRequestHandleButton extends StatelessWidget {
                   text,
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
         ),
       ),
