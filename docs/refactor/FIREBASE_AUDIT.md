@@ -1,6 +1,6 @@
 # FIREBASE_AUDIT.md
 
-Project: `later-da778` (Firestore location `europe-central2`). Products used: **Auth** (email/password, Google), **Firestore**, **Storage**, **Cloud Messaging**, **Cloud Functions** (v2, Node 22), **Hosting** (`public/` landing page for profile links). Not used: Analytics (the Android Gradle file pulls `firebase-analytics` but nothing initialises or logs events), Crashlytics, App Check, Remote Config.
+Project: `later-da778` (Firestore location `eur3`, the Europe multi-region). Products used: **Auth** (email/password, Google), **Firestore**, **Storage**, **Cloud Messaging**, **Cloud Functions** (v2, Node 22), **Hosting** (`public/` landing page for profile links). Not used: Analytics (the Android Gradle file pulls `firebase-analytics` but nothing initialises or logs events), Crashlytics, App Check, Remote Config.
 
 16 Dart files touch Firebase directly (`grep FirebaseFirestore.instance|FirebaseStorage.instance|FirebaseAuth.instance|FirebaseMessaging`): 9 services, 1 page controller, 4 pages, 1 widget, `main.dart`. Target: only `lib/data/**` may import Firebase SDKs (plus bootstrap).
 
@@ -105,7 +105,7 @@ Full chain review — every break found:
 | `getUserData` (HTTPS, public, CORS `*`) | Returns **email** of any uid; calls `makePublic()` on the profile image; lists bucket prefix on every call; returns a `debug` object | Return only `displayName` (name/username) and a token download URL of the *small* image built from object metadata; validate `userId`; no `makePublic`, no email, no debug |
 | `sendFollowerNotification` | single token | multi-token + legacy, prune invalid |
 | `sendCapsuleNotification` | wrong field, no privacy check, sequential N+1 reads | `ownerId ?? creatorId`; skip `private`; for `friends` only notify followers who are friends; parallel reads; multi-token |
-Region: default `us-central1` while Firestore is in `europe-central2` — cross-region latency; changing the region of deployed functions is a deployment decision → documented, not changed. `index.js.backup` is a stale copy (removed). No lint/test setup.
+Region: default `us-central1` while Firestore is in `eur3` (Europe multi-region) — cross-region latency; changing the region of deployed functions is a deployment decision → documented, not changed. `index.js.backup` is a stale copy (removed). No lint/test setup.
 
 ### 2.7 Security rules review
 - `firestore.rules` (repo): test-mode rule expired 2025-09-03 → denies everything. Production must be running *different*, unknown rules (the app works in production). Given the client code, production rules are necessarily permissive: any signed-in user must be able to read every `users` doc (email, FCM token), read every capsule (private ones included, because the map downloads the whole collection), update other users' `friends` arrays and write into other users' `notifications`/`followers`.
