@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/permission_gate_page.dart';
 import '../../features/auth/welcome_page.dart';
+import '../../features/settings/pages/complete_profile_page.dart';
 import '../shell/widget_tree_wrapper_page.dart';
 import '../router/app_routes.dart';
 import 'session_controller.dart';
@@ -48,6 +49,9 @@ class _AuthGateState extends State<AuthGate> {
             : const WelcomePage();
       case SessionStatus.signedIn:
         final uid = session.uid!;
+        if (session.profileMissing) {
+          return CompleteProfilePage(key: ValueKey('complete-$uid'));
+        }
         if (_permissionsGrantedFor != uid) {
           return PermissionGatePage(
             key: ValueKey('gate-$uid'),

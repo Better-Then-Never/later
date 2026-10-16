@@ -72,6 +72,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
       buttonText: 'Delete my account',
       onButton: _confirm,
       busy: _deleting,
+      destructive: true,
       children: [
         const SettingsNote(
           'Deleting your account removes your profile, pictures, capsules, '

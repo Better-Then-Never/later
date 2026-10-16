@@ -7,6 +7,43 @@ import '../../data/repositories/repositories.dart';
 /// returns null on success, otherwise a failure with a message for the
 /// user.
 abstract final class AccountSettings {
+  /// Creates the missing profile of a signed-in account (POL-002) with the
+  /// same checks as signup.
+  static Future<AppFailure?> completeProfile(
+    UserRepository users,
+    AuthRepository auth,
+    String uid, {
+    required String name,
+    required String username,
+  }) async {
+    final trimmedName = name.trim();
+    if (trimmedName.isEmpty) {
+      return const ValidationFailure('Please enter your name.');
+    }
+    final normalized = Usernames.normalize(username);
+    final invalid = Usernames.validate(normalized);
+    if (invalid != null) return ValidationFailure(invalid);
+    try {
+      await users.createProfile(
+        uid: uid,
+        name: trimmedName,
+        username: normalized,
+      );
+      await auth.updateDisplayName(trimmedName);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning(
+        'Completing the profile failed',
+        error: e,
+        stackTrace: st,
+      );
+      return AppFailure.from(
+        e,
+        fallbackMessage: 'Could not save. Please try again.',
+      );
+    }
+  }
+
   static Future<AppFailure?> saveName(
     UserRepository users,
     String uid,

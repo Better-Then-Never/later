@@ -12,6 +12,10 @@ class DefaultGreenButton extends StatelessWidget {
   final VoidCallback onTap;
   final EdgeInsetsGeometry? padding;
 
+  /// Red (`AppColors.danger`, like the confirm dialogs) for an action that
+  /// destroys something.
+  final bool destructive;
+
   const DefaultGreenButton({
     super.key,
     required this.onTap,
@@ -21,6 +25,7 @@ class DefaultGreenButton extends StatelessWidget {
     this.height,
     this.textFontSize = 30,
     this.padding,
+    this.destructive = false,
   });
 
   @override
@@ -36,7 +41,9 @@ class DefaultGreenButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: loading ? null : onTap,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.brandGreen,
+            backgroundColor: destructive
+                ? AppColors.danger
+                : AppColors.brandGreen,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25.0),
             ),

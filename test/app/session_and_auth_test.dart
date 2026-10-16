@@ -7,6 +7,7 @@ import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/repositories/repositories.dart';
 import 'package:later/features/auth/auth_controller.dart';
+import 'package:later/features/settings/account_settings.dart';
 
 import '../fakes/fake_repositories.dart';
 
@@ -109,6 +110,72 @@ void main() {
         stuck.dispose();
       },
     );
+  });
+
+  group('Missing profile (POL-002)', () {
+    test(
+      'reported only after the grace period, cleared once created',
+      () async {
+        final auth = FakeAuthRepository();
+        final users = FakeUserRepository();
+        final session = SessionController(
+          auth: auth,
+          users: users,
+          missingProfileGrace: const Duration(milliseconds: 50),
+        )..start();
+        auth.emit('u1');
+        await pumpEventQueue();
+        expect(session.status, SessionStatus.signedIn);
+        expect(session.profileMissing, isFalse, reason: 'signup gap');
+
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+        expect(session.profileMissing, isTrue);
+
+        expect(
+          await AccountSettings.completeProfile(
+            users,
+            auth,
+            'u1',
+            name: ' ',
+            username: 'ann',
+          ),
+          isA<ValidationFailure>(),
+        );
+        expect(
+          await AccountSettings.completeProfile(
+            users,
+            auth,
+            'u1',
+            name: 'Ann',
+            username: ' Ann ',
+          ),
+          isNull,
+        );
+        await pumpEventQueue();
+        expect(session.profileMissing, isFalse);
+        expect(session.profile!.username, 'ann');
+        session.dispose();
+      },
+    );
+
+    test('a profile that arrives in time never counts as missing', () async {
+      final auth = FakeAuthRepository();
+      final users = FakeUserRepository();
+      final session = SessionController(
+        auth: auth,
+        users: users,
+        missingProfileGrace: const Duration(milliseconds: 50),
+      )..start();
+      auth.emit('u2');
+      await pumpEventQueue();
+      await users.createProfile(uid: 'u2', name: 'B', username: 'bee');
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      expect(session.profileMissing, isFalse);
+      auth.emit(null);
+      await pumpEventQueue();
+      expect(session.profileMissing, isFalse);
+      session.dispose();
+    });
   });
 
   group('AuthController', () {

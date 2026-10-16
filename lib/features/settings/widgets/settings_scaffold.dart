@@ -17,6 +17,7 @@ class SettingsScaffold extends StatelessWidget {
     this.buttonText,
     this.onButton,
     this.busy = false,
+    this.destructive = false,
   });
 
   final String title;
@@ -27,6 +28,9 @@ class SettingsScaffold extends StatelessWidget {
   final String? buttonText;
   final VoidCallback? onButton;
   final bool busy;
+
+  /// The bottom button deletes something (red).
+  final bool destructive;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +67,7 @@ class SettingsScaffold extends StatelessWidget {
                 onTap: onButton ?? () {},
                 text: buttonText!,
                 isLoading: busy,
+                destructive: destructive,
               ),
             ),
     );

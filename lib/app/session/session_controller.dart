@@ -18,6 +18,7 @@ class SessionController extends ChangeNotifier {
     required UserRepository users,
     List<SessionScoped> scoped = const [],
     this.cleanupTimeout = const Duration(seconds: 5),
+    this.missingProfileGrace = const Duration(seconds: 3),
   }) : _auth = auth,
        _users = users,
        _scoped = List.unmodifiable(scoped);
@@ -29,12 +30,18 @@ class SessionController extends ChangeNotifier {
   /// Longest wait for each part's sign-out cleanup.
   final Duration cleanupTimeout;
 
+  /// How long the profile may be missing before [profileMissing] says so.
+  /// Signup creates it right after the account, so a short gap is normal.
+  final Duration missingProfileGrace;
+
   StreamSubscription<String?>? _authSub;
   StreamSubscription<UserProfile?>? _profileSub;
 
   SessionStatus _status = SessionStatus.unknown;
   String? _uid;
   UserProfile? _profile;
+  bool _profileMissing = false;
+  Timer? _missingTimer;
   bool _signingOut = false;
   bool _signedOutByUser = false;
 
@@ -43,6 +50,11 @@ class SessionController extends ChangeNotifier {
 
   /// Live profile of the signed-in user; null until loaded or if missing.
   UserProfile? get profile => _profile;
+
+  /// Signed in, but `users/{uid}` does not exist (POL-002: a signup that
+  /// failed half-way, a profile removed elsewhere). The app asks for a name
+  /// and username instead of showing "Loading..." forever.
+  bool get profileMissing => _profileMissing;
 
   /// After an explicit "Log Out" the app shows the login page (not the
   /// welcome page), as it always did.
@@ -70,6 +82,18 @@ class SessionController extends ChangeNotifier {
       _profileSub = _users.watchProfile(uid).listen(
         (profile) {
           _profile = profile;
+          if (profile != null) {
+            _missingTimer?.cancel();
+            _missingTimer = null;
+            _profileMissing = false;
+          } else {
+            _missingTimer ??= Timer(missingProfileGrace, () {
+              _missingTimer = null;
+              if (_profile != null || _uid != uid) return;
+              _profileMissing = true;
+              notifyListeners();
+            });
+          }
           notifyListeners();
         },
         onError: (Object e, StackTrace st) => AppLogger.warning(
@@ -89,6 +113,9 @@ class SessionController extends ChangeNotifier {
     unawaited(_profileSub?.cancel());
     _profileSub = null;
     _profile = null;
+    _missingTimer?.cancel();
+    _missingTimer = null;
+    _profileMissing = false;
     if (_uid != null) {
       for (final s in _scoped.reversed) {
         s.detach();
