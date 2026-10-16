@@ -13,3 +13,10 @@ Branch: `feature/polish-motion-messages-settings` (from main 5b30770). Plan: POL
 
 ## Log
 - **Phase 1 (orientation)**: baseline gates clean (format, analyze 0, 108 tests). Plan written.
+- **Phase 1 (baseline)**: 35 screenshots + 3 recordings in `baseline/` (emulator, local Firebase, seeded data,
+  signed in as alice). Found on the way: POL-001 (startup ANR, fixed 5afdcc1), POL-002 (account without
+  profile document: "Unknown User"/"Loading..." forever, open), POL-003 (sign-out could hang forever, fixed
+  d589934). Design deviations noted for Phase 2: chat screens use Material icons (close, chevron, search,
+  camera), plain grey rows instead of the white-card user rows, raw greys; the permissions page has a
+  hand-built header unlike every other page; the five settings stubs have no header, a Material button and
+  placeholder copy; the capsule card shows a bare Material broken-image icon.
