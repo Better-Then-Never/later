@@ -14,8 +14,10 @@ import 'package:later/views/pages/friends_pages/my_friends_page.dart';
 import 'package:later/views/pages/auth_pages/welcome_page.dart';
 import 'package:later/views/pages/navbar_pages/camera_page.dart';
 import 'package:later/views/pages/auth_pages/signup_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/pages/core_pages/settings_page.dart';
@@ -31,12 +33,29 @@ import 'package:snow_fall_animation/snow_fall_animation.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+/// Opt-in local Firebase Emulator Suite, for development and testing only:
+/// `flutter run --dart-define=USE_FIREBASE_EMULATOR=true`.
+const _useFirebaseEmulator = bool.fromEnvironment('USE_FIREBASE_EMULATOR');
+const _firebaseEmulatorHost = String.fromEnvironment(
+  'FIREBASE_EMULATOR_HOST',
+  defaultValue: '10.0.2.2',
+);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  if (_useFirebaseEmulator) {
+    await FirebaseAuth.instance.useAuthEmulator(_firebaseEmulatorHost, 9099);
+    FirebaseFirestore.instance.useFirestoreEmulator(_firebaseEmulatorHost, 8080);
+    await FirebaseStorage.instance.useStorageEmulator(
+      _firebaseEmulatorHost,
+      9199,
+    );
+  }
 
   final pushNotificationService = PushNotificationService();
   await pushNotificationService.initialize();

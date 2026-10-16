@@ -1,0 +1,11 @@
+{
+  "name": "later-emulator-tools",
+  "private": true,
+  "description": "Local Firebase Emulator Suite helpers (seed data). Never point these at a real project.",
+  "scripts": {
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

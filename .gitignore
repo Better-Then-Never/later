@@ -132,3 +132,6 @@ pubspec.lock
 google-services.json
 **/google-services.json
 lib/firebase_options.dart
+
+# Node tooling
+node_modules/
