@@ -52,6 +52,8 @@ It does not fix the following. They are reported as `conflicts` for a person to 
 
 ## 3. Manual clean-ups
 
+- **Chat (from `main`) has no security rules yet.** The deployed `chats` index (participants array-contains + lastUpdated desc) belongs to the chat feature that exists only on `main`. `firestore.rules` on this branch has no `match /chats/...` block, so deploying these rules would block chat. Add chat rules (participants-only read/write) when porting `main` onto this branch, before step 5 of §1.
+
 - **Public profile images.** The old `getUserData` function called `makePublic()` on profile images it served (BUG-103). Those objects stay world-readable, under a URL without a token, until their ACL is removed. For example: `gsutil -m acl ch -d AllUsers -r gs://later-da778.firebasestorage.app/userdata` (owner; check the bucket name first).
 - **Old thumbnails.** `profile_image_small` files uploaded by old versions are 128×128 and squashed. They are replaced the next time the user changes their picture. No action is needed.
 - **Functions region.** The functions run in `us-central1`, while Firestore is in `europe-central2`. Moving them is a deployment decision (FIREBASE_AUDIT.md §2.6). The landing page calls the `us-central1` URL.
