@@ -7,8 +7,27 @@ class PreferencesStore {
     : _prefs = prefs ?? SharedPreferences.getInstance();
 
   final Future<SharedPreferences> _prefs;
+  SharedPreferences? _ready;
 
   static String _key(String uid, String name) => 'u:$uid:$name';
+  static String _deviceKey(String name) => 'device:$name';
+
+  /// Loads the preferences once, before the first frame, so device settings
+  /// (theme, language, interface size) can be read synchronously.
+  Future<void> init() async => _ready ??= await _prefs;
+
+  /// A setting of this device (not of the account); null before [init].
+  String? deviceStringSync(String name) => _ready?.getString(_deviceKey(name));
+
+  /// [value] null removes the setting.
+  Future<void> setDeviceString(String name, String? value) async {
+    final prefs = await _prefs;
+    if (value == null) {
+      await prefs.remove(_deviceKey(name));
+    } else {
+      await prefs.setString(_deviceKey(name), value);
+    }
+  }
 
   Future<List<String>> pinnedFriends(String uid) async =>
       (await _prefs).getStringList(_key(uid, 'pinned_friend_uids')) ?? const [];

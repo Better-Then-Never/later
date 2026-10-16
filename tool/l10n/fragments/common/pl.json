@@ -1,0 +1,15 @@
+{
+  "appName": "Later",
+  "commonCancel": "Anuluj",
+  "commonConfirm": "Potwierdź",
+  "commonSave": "Zapisz",
+  "commonDelete": "Usuń",
+  "commonClose": "Zamknij",
+  "commonRetry": "Spróbuj ponownie",
+  "commonLoading": "Ładowanie...",
+  "commonContinue": "Dalej",
+  "commonDone": "Gotowe",
+  "commonBack": "Wstecz",
+  "commonErrorGeneric": "Coś poszło nie tak. Spróbuj ponownie.",
+  "commonNoConnection": "Brak połączenia. Spróbuj ponownie."
+}

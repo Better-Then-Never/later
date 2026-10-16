@@ -1,0 +1,16 @@
+{
+  "@@locale": "de",
+  "appName": "Later",
+  "commonBack": "Zurück",
+  "commonCancel": "Abbrechen",
+  "commonClose": "Schließen",
+  "commonConfirm": "Bestätigen",
+  "commonContinue": "Weiter",
+  "commonDelete": "Löschen",
+  "commonDone": "Fertig",
+  "commonErrorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+  "commonLoading": "Wird geladen...",
+  "commonNoConnection": "Keine Verbindung. Bitte versuche es erneut.",
+  "commonRetry": "Erneut versuchen",
+  "commonSave": "Speichern"
+}

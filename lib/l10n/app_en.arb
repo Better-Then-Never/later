@@ -1,0 +1,22 @@
+{
+  "@@locale": "en",
+  "appName": "Later",
+  "@appName": {
+    "description": "The app's name. Never translated."
+  },
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Accessibility label of the back arrow."
+  },
+  "commonCancel": "Cancel",
+  "commonClose": "Close",
+  "commonConfirm": "Confirm",
+  "commonContinue": "Continue",
+  "commonDelete": "Delete",
+  "commonDone": "Done",
+  "commonErrorGeneric": "Something went wrong. Please try again.",
+  "commonLoading": "Loading...",
+  "commonNoConnection": "No connection. Please try again.",
+  "commonRetry": "Try again",
+  "commonSave": "Save"
+}

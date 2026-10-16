@@ -1,0 +1,16 @@
+{
+  "@@locale": "ru",
+  "appName": "Later",
+  "commonBack": "Назад",
+  "commonCancel": "Отмена",
+  "commonClose": "Закрыть",
+  "commonConfirm": "Подтвердить",
+  "commonContinue": "Продолжить",
+  "commonDelete": "Удалить",
+  "commonDone": "Готово",
+  "commonErrorGeneric": "Что-то пошло не так. Попробуйте ещё раз.",
+  "commonLoading": "Загрузка...",
+  "commonNoConnection": "Нет соединения. Попробуйте ещё раз.",
+  "commonRetry": "Повторить",
+  "commonSave": "Сохранить"
+}

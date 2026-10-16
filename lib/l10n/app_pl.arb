@@ -1,0 +1,16 @@
+{
+  "@@locale": "pl",
+  "appName": "Later",
+  "commonBack": "Wstecz",
+  "commonCancel": "Anuluj",
+  "commonClose": "Zamknij",
+  "commonConfirm": "Potwierdź",
+  "commonContinue": "Dalej",
+  "commonDelete": "Usuń",
+  "commonDone": "Gotowe",
+  "commonErrorGeneric": "Coś poszło nie tak. Spróbuj ponownie.",
+  "commonLoading": "Ładowanie...",
+  "commonNoConnection": "Brak połączenia. Spróbuj ponownie.",
+  "commonRetry": "Spróbuj ponownie",
+  "commonSave": "Zapisz"
+}

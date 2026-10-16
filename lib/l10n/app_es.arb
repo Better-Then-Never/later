@@ -1,0 +1,16 @@
+{
+  "@@locale": "es",
+  "appName": "Later",
+  "commonBack": "Atrás",
+  "commonCancel": "Cancelar",
+  "commonClose": "Cerrar",
+  "commonConfirm": "Confirmar",
+  "commonContinue": "Continuar",
+  "commonDelete": "Eliminar",
+  "commonDone": "Listo",
+  "commonErrorGeneric": "Algo salió mal. Inténtalo de nuevo.",
+  "commonLoading": "Cargando...",
+  "commonNoConnection": "Sin conexión. Inténtalo de nuevo.",
+  "commonRetry": "Reintentar",
+  "commonSave": "Guardar"
+}
