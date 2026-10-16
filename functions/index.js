@@ -5,7 +5,9 @@ const { onRequest } = require('firebase-functions/v2/https');
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const logger = require('firebase-functions/logger');
 const admin = require('firebase-admin');
+const functionsV1 = require('firebase-functions/v1');
 const notify = require('./lib/notify');
+const account = require('./lib/account');
 
 admin.initializeApp();
 
@@ -77,3 +79,37 @@ exports.sendCapsuleNotification = onDocumentCreated(
     }
   },
 );
+
+// Push for a new chat message to the other participant (respects their
+// notification settings, mutes and quiet hours).
+exports.sendMessageNotification = onDocumentCreated(
+  'chats/{chatId}/messages/{messageId}',
+  async (event) => {
+    try {
+      const result = await notify.onMessageCreated(
+        services(),
+        event.params.chatId,
+        event.params.messageId,
+        event.data && event.data.data(),
+      );
+      if (result) logger.info('Message notification', result);
+    } catch (error) {
+      logger.error('Message notification failed', error);
+    }
+  },
+);
+
+// "Delete account" in the app deletes the Auth user; this removes the data
+// the account leaves behind. (Auth triggers exist only in the v1 API.)
+exports.cleanupDeletedAccount = functionsV1
+  .runWith({ serviceAccount: 'later-functions@later-da778.iam.gserviceaccount.com' })
+  .auth.user()
+  .onDelete(async (user) => {
+    try {
+      const report = await account.deleteUserData(services(), user.uid);
+      logger.info('Deleted account data', { uid: user.uid, ...report });
+    } catch (error) {
+      logger.error('Deleting account data failed', error);
+      throw error; // retried by the platform when retries are enabled
+    }
+  });
