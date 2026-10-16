@@ -7,8 +7,9 @@ Workflows in `.github/workflows/`:
 | `release.yml` | every push to `main` | builds a signed APK and an unsigned IPA and publishes them as GitHub release `v0.0.N` (N = latest `v0.0.*` tag + 1) |
 | `android.yml` | manual | builds a signed APK, publishes it as release `v0.0.<run number>` |
 | `dart.yml` | manual | builds an unsigned IPA, publishes it as release `v0.0.<run number>` |
+| `pr-build.yml` | every pull request into `main` | builds Android and iOS like the release, publishes nothing (APK kept as a run artifact); merge only when it passes |
 
-A merge into `main` therefore always produces a public release.
+A merge into `main` therefore always produces a public release. All workflows use Flutter 3.38.4 (pinned; `stable` alone picked up a newer Flutter that broke both builds).
 
 ## Firebase config in CI
 
