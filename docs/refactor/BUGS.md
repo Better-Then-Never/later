@@ -120,7 +120,7 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-102 | Firestore | Required composite indexes are not declared (`capsules: ownerId + createdAt`; friend requests `fromUserId/toUserId + status`). | Empty `firestore.indexes.json`. | S2 | code | fixed | 76e3a75 |
 | BUG-103 | Functions | `getUserData` is a public unauthenticated endpoint that returns any user's email and calls `makePublic()` on their profile image. | Function design. | S1 | code | fixed | b0ea48e |
 | BUG-104 | Model | `TimeCapsule.fromMap` throws on unknown privacy/colour or null `createdAt`; the model is unused (maps everywhere) and defaults disagree (`blue` vs `red`). | No mapper layer. | S3 | code | fixed | fb6fc31 |
-| BUG-105 | Config | `firebase.json` `flutter` section still references the deleted Firebase app IDs. | Stale FlutterFire config. | S4 | code | fixed | e981792 |
+| BUG-105 | Config | `firebase.json` `flutter` section still references the deleted Firebase app IDs. | Stale FlutterFire config. | S4 | code | fixed | 4a0e38d |
 | BUG-106 | Repo | `pubspec.lock` is git-ignored (`*.lock`) → non-reproducible builds for an application. | `.gitignore`. | S3 | code | fixed | 90f7437 |
 | BUG-107 | Lints | `flutter_lints` is declared under `flutter_icons:` in pubspec and `analysis_options.yaml` has no `include`, so no lints run ("No issues found" is meaningless). | pubspec/analysis options. | S3 | code | fixed | 90f7437 |
 | BUG-108 | Android | Obsolete `WRITE_EXTERNAL_STORAGE`/`requestLegacyExternalStorage`; activity forced `showWhenLocked`/`turnScreenOn`. | Manifest. | S4 | code | fixed | 7fd29c8 |
