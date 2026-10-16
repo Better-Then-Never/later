@@ -14,12 +14,12 @@ import '../data/services/location_service.dart';
 import '../data/services/preferences_store.dart';
 import '../data/services/profile_image_cache.dart';
 import '../data/services/push_messaging_service.dart';
+import '../features/map/current_location.dart';
 import '../features/map/map_focus.dart';
 import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
 import '../services/capsule_data_service.dart';
-import '../services/map_capsule_jump_service.dart';
 import '../services/user_data_service.dart';
 import '../services/user_favorite_capsules_service.dart';
 import '../services/user_friends_service.dart';
@@ -55,6 +55,7 @@ class _AppScopeState extends State<AppScope> {
   final _links = AppLinkHandler(onOpenProfile: AppRoutes.openProfileFromLink);
   final _push = PushMessagingService();
   final _mapFocus = MapFocus();
+  final _currentLocation = CurrentLocation();
   late final _imageCache = ProfileImageCache(_images);
   late final _notificationsStore = NotificationsStore(_notifications);
   late final NotificationRouter _notificationRouter;
@@ -65,7 +66,6 @@ class _AppScopeState extends State<AppScope> {
   final _legacyCapsules = CapsuleDataService();
   final _legacyFavorites = FavoriteCapsuleService();
   final _legacyImages = UserImageService();
-  final _jump = CapsuleJumpService();
 
   late final SessionController _session;
 
@@ -130,7 +130,7 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider.value(value: _legacyCapsules),
         ChangeNotifierProvider.value(value: _legacyFavorites),
         ChangeNotifierProvider.value(value: _legacyImages),
-        ChangeNotifierProvider.value(value: _jump),
+        ChangeNotifierProvider<CurrentLocation>.value(value: _currentLocation),
         Provider<PushMessagingService>.value(value: _push),
         Provider<NotificationRouter>.value(value: _notificationRouter),
         ChangeNotifierProvider<ProfileImageCache>.value(value: _imageCache),

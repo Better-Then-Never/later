@@ -5,15 +5,16 @@ import 'package:later/controllers/page_controllers/capsule_creation/capsule_crea
 import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/views/pages/navbar_pages/map_page.dart' as map;
+import 'package:later/features/map/current_location.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/options_elements/options_settings_row.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_cycled_info.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_image_preview.dart';
-import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
-import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
+import 'package:later/shared/widgets/capsule/capsule_place_pill.dart';
+import 'package:later/data/models/geo_position.dart';
+import 'package:later/shared/widgets/capsule/capsule_date_pill.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_description_input.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_title_input.dart';
 import 'package:intl/intl.dart';
@@ -46,7 +47,10 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
   void initState() {
     super.initState();
     _userDataService = Provider.of<UserDataService>(context, listen: false);
-    _pickedLocation = map.MapPage.currentPositionStatic;
+    final here = context.read<CurrentLocation>().position;
+    _pickedLocation = here == null
+        ? null
+        : LatLng(here.latitude, here.longitude);
 
     CapsulePrivacy? initialPrivacy;
     if (widget.initialPrivacy == 'friends') {
@@ -138,14 +142,17 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                                         _controller.descriptionController,
                                   ),
 
-                                  CapsuleCreationDateStamp(
-                                    height: screenHeight * 0.045,
-                                  ),
+                                  CapsuleDatePill(height: screenHeight * 0.045),
                                   const SizedBox(height: 8),
-                                  CapsuleCreationLocationLabel(
+                                  CapsulePlacePill(
                                     height: screenHeight * 0.05,
                                     iconPath: AppIcons.capsuleLocation,
-                                    location: _pickedLocation,
+                                    position: _pickedLocation == null
+                                        ? null
+                                        : GeoPosition(
+                                            _pickedLocation!.latitude,
+                                            _pickedLocation!.longitude,
+                                          ),
                                   ),
                                   const SizedBox(height: 8),
                                 ],

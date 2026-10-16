@@ -54,6 +54,7 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-045 | Map | Map info window overflows on most phones (fixed `0.171 × height`). | Fixed-size `CustomInfoWindow`. | S3 | code (A-L2) | open | |
 | BUG-046 | Map | Friends list for friends-only capsules is loaded once and never refreshed; listeners never removed (`CapsuleJumpService` listener leak, `setState` without `mounted`). | Lifecycle. | S3 | code | open | |
 | BUG-047 | Map/History | Distance and capsule creation rely on a mutable static `MapPage.currentPositionStatic`. | Global state on a widget. | S3 | code | open | |
+| BUG-048 | Map | Native crash (`IllegalArgumentException: No input points`) when the user can see no capsule at all, e.g. a brand-new account: the heatmap layer was always added, even with zero points. | Heatmap built unconditionally. | S1 | repro (crash log after refactor exposed it; latent in the original for empty data) | open | |
 
 ## Camera / capsule creation
 

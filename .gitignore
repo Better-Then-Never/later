@@ -137,3 +137,6 @@ node_modules/
 
 # Applications commit their lockfile for reproducible builds.
 !pubspec.lock
+
+# Local secrets (Maps API keys)
+ios/Flutter/Secrets.xcconfig

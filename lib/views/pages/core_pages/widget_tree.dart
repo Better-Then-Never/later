@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/views/pages/navbar_pages/history_page.dart';
-import 'package:later/views/pages/navbar_pages/map_page.dart';
+import 'package:later/features/map/map_page.dart';
 import 'package:later/views/pages/navbar_pages/messages_page.dart';
 import 'package:later/views/pages/navbar_pages/profile_page.dart';
 import 'package:later/views/widgets/_common/default_elements/navbar_widget.dart';

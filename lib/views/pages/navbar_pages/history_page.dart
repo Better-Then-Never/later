@@ -5,7 +5,9 @@ import 'package:later/controllers/page_controllers/history_page_controller.dart'
 import 'package:later/data/models/time_capsule.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/services/capsule_data_service.dart';
-import 'package:later/services/map_capsule_jump_service.dart';
+import 'package:later/data/firebase/firestore_mappers.dart';
+import 'package:later/features/map/current_location.dart';
+import 'package:later/features/map/map_focus.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
@@ -165,6 +167,9 @@ class _HistoryPageState extends State<HistoryPage> {
                       builder: (context, _) {
                         final filtered = _controller.filteredCapsules(
                           favoriteService,
+                          currentPosition: context
+                              .read<CurrentLocation>()
+                              .position,
                         );
 
                         if (filtered.isEmpty) {
@@ -212,8 +217,8 @@ class _HistoryPageState extends State<HistoryPage> {
                                     if (_controller.isSelectionMode) {
                                       _controller.toggleSelection(capsuleId);
                                     } else if (c['location'] != null) {
-                                      context.read<CapsuleJumpService>().jumpTo(
-                                        c,
+                                      context.read<MapFocus>().focus(
+                                        FirestoreMappers.capsule(capsuleId, c),
                                       );
 
                                       selectedPageNotifier.value = 0;

@@ -3,7 +3,8 @@ import 'package:later/core/assets/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:later/views/pages/navbar_pages/map_page.dart';
+import 'package:later/features/map/current_location.dart';
+import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
@@ -323,11 +324,12 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
   }
 
   double distanceInKm(LatLng capsuleLocation) {
-    if (MapPage.currentPositionStatic == null) return 0.0;
+    final current = context.read<CurrentLocation>().position;
+    if (current == null) return 0.0;
 
     final double distanceMeters = Geolocator.distanceBetween(
-      MapPage.currentPositionStatic!.latitude,
-      MapPage.currentPositionStatic!.longitude,
+      current.latitude,
+      current.longitude,
       capsuleLocation.latitude,
       capsuleLocation.longitude,
     );

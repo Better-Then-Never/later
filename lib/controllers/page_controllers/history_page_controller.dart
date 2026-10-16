@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
-import 'package:later/views/pages/navbar_pages/map_page.dart';
+import 'package:later/data/models/geo_position.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum SortMode { none, relevance, distance }
@@ -125,8 +125,9 @@ class HistoryPageController extends ChangeNotifier {
   }
 
   List<Map<String, dynamic>> filteredCapsules(
-    FavoriteCapsuleService favoriteService,
-  ) {
+    FavoriteCapsuleService favoriteService, {
+    GeoPosition? currentPosition,
+  }) {
     List<Map<String, dynamic>> result = [..._allCapsules];
 
     // SEARCH
@@ -164,7 +165,7 @@ class HistoryPageController extends ChangeNotifier {
     }
 
     if (sortMode == SortMode.distance) {
-      final current = MapPage.currentPositionStatic;
+      final current = currentPosition;
 
       if (current != null) {
         result.sort((a, b) {

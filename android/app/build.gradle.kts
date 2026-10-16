@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 buildscript {
@@ -33,6 +34,17 @@ android {
     }
 
     defaultConfig {
+        // Google Maps key from the git-ignored android/local.properties
+        // (MAPS_API_KEY=...). Never commit the key; see docs/refactor/REPORT.md.
+        val localProperties = Properties().apply {
+            val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        manifestPlaceholders["MAPS_API_KEY"] =
+            localProperties.getProperty("MAPS_API_KEY")
+                ?: System.getenv("MAPS_API_KEY")
+                ?: ""
+
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.later"
         // You can update the following values to match your application needs.

@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:later/services/popup_notification_service.dart';
-import 'package:later/views/pages/navbar_pages/map_page.dart' as map;
 
 class CapsuleCreationPageController extends ChangeNotifier {
   final String uid;
@@ -29,7 +28,7 @@ class CapsuleCreationPageController extends ChangeNotifier {
     LatLng? initialLocation,
   }) : privacy = initialPrivacy ?? CapsulePrivacy.public,
        color = initialColor ?? CapsuleColor.red,
-       pickedLocation = initialLocation ?? map.MapPage.currentPositionStatic;
+       pickedLocation = initialLocation;
 
   void cyclePrivacy() {
     const values = CapsulePrivacy.values;
