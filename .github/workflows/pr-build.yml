@@ -39,7 +39,9 @@ jobs:
 
       - run: dart format --output=none --set-exit-if-changed lib test tool
       - run: flutter analyze
-      - run: flutter test
+      # Goldens are recorded on Windows; Linux rasterises the font slightly
+      # differently, so they are compared locally only.
+      - run: flutter test --exclude-tags golden
       - name: Design tokens
         run: dart run tool/check_design_tokens.dart
 
