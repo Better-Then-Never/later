@@ -79,4 +79,13 @@ close) and thumbnail placeholder; share-profile share/copy/info; toast icons (su
 error placeholder.
 
 ## New / replaced icons
-(Filled in as the messages and settings work lands.)
+No new image assets were added.
+
+- **Messages**: the chat port's Material icons (close, chevron, search, camera) were replaced by existing
+  custom assets: `goBack` (also rotated for "scroll to latest"), `messagesChatMenu`, the search bar's own icon,
+  `sendCapsule` for capsule messages; `AppNetworkImage` shows the allow-listed `Icons.image` while a picture
+  fails to load, like the capsule card.
+- **Settings**: every row uses the existing `goHere` arrow (turned 90° for an open FAQ answer). The chosen option
+  of a single choice (map look, starting camera) is marked with `Icons.check_circle` in brand green: the same
+  icon the success toasts already use (allow-listed, DESIGN_DECISIONS.md D-06). Switches are Material switches
+  in the brand colours (`AppSwitch`).
