@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
-import 'package:later/services/user_data_service.dart';
+import 'package:later/app/session/session_controller.dart';
+import 'package:later/data/repositories/repositories.dart';
+import 'package:later/features/settings/account_settings.dart';
 
 class NameSettingsPage extends StatefulWidget {
   const NameSettingsPage({super.key});
@@ -25,24 +27,21 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
   }
 
   Future<void> _saveName() async {
-    final userProfile = context.read<UserDataService>();
-    final uid = userProfile.currentLoggedInUid;
-    final newName = _nameController.text.trim();
-
-    if (newName.isEmpty) {
-      PopupNotificationService.showError(
-        context: context,
-        message: 'Please enter a new name!',
-        position: NotificationPosition.center,
-      );
-      return;
-    }
+    if (_isSaving) return;
+    final users = context.read<UserRepository>();
+    final uid = context.read<SessionController>().uid!;
 
     setState(() => _isSaving = true);
-    final success = await userProfile.updateName(uid, newName);
+    final failure = await AccountSettings.saveName(
+      users,
+      uid,
+      _nameController.text,
+    );
+    // The page may have been closed while saving (BUG-090).
+    if (!mounted) return;
     setState(() => _isSaving = false);
 
-    if (success) {
+    if (failure == null) {
       PopupNotificationService.showSuccess(
         context: context,
         message: 'Name updated successfully!',
@@ -51,7 +50,7 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
     } else {
       PopupNotificationService.showError(
         context: context,
-        message: 'Failed to update name!',
+        message: failure.message,
         position: NotificationPosition.center,
       );
     }

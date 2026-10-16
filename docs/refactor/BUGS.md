@@ -18,9 +18,9 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-007 | Login | `TextEditingController`s created inside `build()` of a `StatelessWidget` (never disposed; typed text can be lost on rebuild). | `LoginPage.build`. Signup controllers never disposed. | S4 | code | fixed | 7518612 |
 | BUG-008 | Signup | Username uniqueness is checked with an **unauthenticated** query on `users` before the account exists (requires world-readable `users`), and is racy (two signups can take the same username). | `createUserWithEmailAndPassword` queries `users where username ==` before auth. | S1 (security) | code | fixed | 7518612 |
 | BUG-009 | Google sign-in | If the derived username (email prefix) is taken, the Firebase account is created but **no `users` document** is written → broken account (profile "Unknown"). | `addUserToDatabase` throws after `signInWithCredential`. | S2 | code | fixed | 7518612 |
-| BUG-010 | Logout | Logout does not reset all session state: capsule cache, pinned friends (global prefs key), push token association, friends listener (`_friendsSub` never cancelled); `FirebaseAuthService().signOut()` is not awaited. | Session state is scattered over singletons; no single sign-out path. | S2 | code | open | |
+| BUG-010 | Logout | Logout does not reset all session state: capsule cache, pinned friends (global prefs key), push token association, friends listener (`_friendsSub` never cancelled); `FirebaseAuthService().signOut()` is not awaited. | Session state is scattered over singletons; no single sign-out path. | S2 | code | fixed | 18a8c1f |
 | BUG-011 | Session | `UserDataService.currentLoggedInUid` returns the literal `'No User'` until the profile is fetched; widgets use it for Firestore/Storage paths (`users/No User`, `userdata/No User/...`) and for the share QR link. | Sentinel string instead of nullable/auth uid. | S2 | code | fixed | 7518612 |
-| BUG-012 | Session | Data of the previous account can survive into the next session (profile/background image bytes cached in SharedPreferences under global keys; pinned friends under a global key; negative image cache). | Global, non-uid-scoped caches. | S2 | code | open | |
+| BUG-012 | Session | Data of the previous account can survive into the next session (profile/background image bytes cached in SharedPreferences under global keys; pinned friends under a global key; negative image cache). | Global, non-uid-scoped caches. | S2 | code | fixed | 18a8c1f |
 | BUG-013 | Permission gate | All five permissions (camera, mic, location, notifications, contacts) are mandatory; denying one blocks the app forever. A permission that is already granted shows "Granted" without advancing. | Product decision in `PermissionGatePage`. | S3 | repro | kept (behaviour preserved; auto-advance fixed) — see IDEAS_NOT_DONE.md | |
 
 ## Notifications (push + in-app list)
@@ -87,26 +87,26 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 
 | ID | Screen | Symptom | Root cause | Sev | Repro | Status | Fix |
 |---|---|---|---|---|---|---|---|
-| BUG-070 | Add friends | Received request (Dave → Alice) shows the same "pending" clock as a sent request; it should offer accept. | `requestExists` merges sent and received. | S3 | repro (`add_friends.png`) | open | |
-| BUG-071 | Add friends | Suggested users = unbounded realtime listener on the whole `users` collection, re-created on each rebuild/keystroke; exposes every user's email and FCM token to every client. | `getSuggestedFriends`. | S1 (privacy + cost) | code (B-H2) | open | |
-| BUG-072 | Add friends | Search is case-sensitive against lower-case usernames ("Dave" finds nothing); query errors (missing index) are swallowed → silently empty list. | Raw query text; no error handling. | S3 | code (B-H2) | open | |
-| BUG-073 | Add friends | N+1 reads + image preloads per suggested user from `build`. | `SuggestedFriendsListController.loadUser`. | S3 | code (B-H3) | open | |
-| BUG-074 | Friends | Each opening of "Manage friendship"/remove-friend modal creates a new `UserFriendsService` with 3 never-cancelled listeners. | `UserFriendsService()` in widgets. | S2 | code (B-H1) | open | |
-| BUG-075 | Friends | `UserFriendsService` initialises its listeners at provider creation; a different user logging in without app restart relies on `WidgetTreeWrapper` calling `init()`; `_friendsSub` is never cancelled. | Session lifecycle. | S2 | code | open | |
+| BUG-070 | Add friends | Received request (Dave → Alice) shows the same "pending" clock as a sent request; it should offer accept. | `requestExists` merges sent and received. | S3 | repro (`add_friends.png`) | fixed | 2e33d45 |
+| BUG-071 | Add friends | Suggested users = unbounded realtime listener on the whole `users` collection, re-created on each rebuild/keystroke; exposes every user's email and FCM token to every client. | `getSuggestedFriends`. | S1 (privacy + cost) | code (B-H2) | fixed | 2e33d45 |
+| BUG-072 | Add friends | Search is case-sensitive against lower-case usernames ("Dave" finds nothing); query errors (missing index) are swallowed → silently empty list. | Raw query text; no error handling. | S3 | code (B-H2) | fixed | 2e33d45 |
+| BUG-073 | Add friends | N+1 reads + image preloads per suggested user from `build`. | `SuggestedFriendsListController.loadUser`. | S3 | code (B-H3) | fixed | 2e33d45 |
+| BUG-074 | Friends | Each opening of "Manage friendship"/remove-friend modal creates a new `UserFriendsService` with 3 never-cancelled listeners. | `UserFriendsService()` in widgets. | S2 | code (B-H1) | fixed | 2e33d45 |
+| BUG-075 | Friends | `UserFriendsService` initialises its listeners at provider creation; a different user logging in without app restart relies on `WidgetTreeWrapper` calling `init()`; `_friendsSub` is never cancelled. | Session lifecycle. | S2 | code | fixed | 2e33d45 |
 | BUG-076 | Friends | Accepting a request writes the **other** user's document (`friends` arrayUnion) → requires rules that let any user edit any user's `friends`. | Cross-user write without server validation. | S1 (security) | code | open | |
-| BUG-077 | My friends | Crash (RangeError) when a friend has an empty name. | `friend['name'][0]`. | S2 | code (B-H7) | open | |
-| BUG-078 | Profile | Pinned friends row reshuffles randomly on every rebuild and re-fetches images. | `FutureBuilder(future: getDisplayFriends())` in `build`. | S3 | repro (`profile_own.png` vs later captures) | open | |
-| BUG-079 | Profile | Pinned-friends limit can be blocked by stale uids (global prefs key). | Not intersected with friends. | S3 | code (B-M2) | open | |
-| BUG-080 | Profile | Profile/background upload: no compression/size limit/content type; base64 copy in SharedPreferences; 128×128 thumbnail squashes non-square photos on the UI thread; other avatars not refreshed after upload. | Image pipeline. | S2 | code (B-H4) | open | |
-| BUG-081 | Profile | "Delete profile icon/background" without an existing image locks the widget in "Updating…" forever. | No try/catch. | S2 | code (B-H5) | open | |
-| BUG-082 | Profile/Add friends | Request-count badge wraps `Positioned` in `Positioned` → ParentDataWidget error in debug. | Widget returns `Positioned`. | S3 | code (B-H6) | open | |
+| BUG-077 | My friends | Crash (RangeError) when a friend has an empty name. | `friend['name'][0]`. | S2 | code (B-H7) | fixed | 2e33d45 |
+| BUG-078 | Profile | Pinned friends row reshuffles randomly on every rebuild and re-fetches images. | `FutureBuilder(future: getDisplayFriends())` in `build`. | S3 | repro (`profile_own.png` vs later captures) | fixed | 2e33d45 |
+| BUG-079 | Profile | Pinned-friends limit can be blocked by stale uids (global prefs key). | Not intersected with friends. | S3 | code (B-M2) | fixed | 2e33d45 |
+| BUG-080 | Profile | Profile/background upload: no compression/size limit/content type; base64 copy in SharedPreferences; 128×128 thumbnail squashes non-square photos on the UI thread; other avatars not refreshed after upload. | Image pipeline. | S2 | code (B-H4) | fixed | 18a8c1f |
+| BUG-081 | Profile | "Delete profile icon/background" without an existing image locks the widget in "Updating…" forever. | No try/catch. | S2 | code (B-H5) | fixed | 18a8c1f |
+| BUG-082 | Profile/Add friends | Request-count badge wraps `Positioned` in `Positioned` → ParentDataWidget error in debug. | Widget returns `Positioned`. | S3 | code (B-H6) | fixed | 2e33d45 |
 | BUG-083 | Settings | Username change: no lower-casing, no uniqueness, no validation. | `updateUsername`. | S2 | code (B-H8) | open | |
-| BUG-084 | Friends | Accept/Reject/Cancel without loading state or double-submit guard; success toasts never show (row unmounted). | UI state handling. | S3 | code (B-M4, B-M5) | open | |
-| BUG-085 | Friends | Page controllers never disposed → listeners leak on the global friends service. | Missing `dispose`. | S3 | code (B-M6) | open | |
-| BUG-086 | Profile | Header buttons positioned at fixed `top: 35` without SafeArea → overlap status bar on notched iPhones. | Fixed offsets. | S3 | code (B-M7) | open | |
-| BUG-087 | Profile | "Updating…" caption uses font family `Inria` (typo) → system font. | Typo. | S4 | code (B-M9) | open | |
+| BUG-084 | Friends | Accept/Reject/Cancel without loading state or double-submit guard; success toasts never show (row unmounted). | UI state handling. | S3 | code (B-M4, B-M5) | fixed | 2e33d45 |
+| BUG-085 | Friends | Page controllers never disposed → listeners leak on the global friends service. | Missing `dispose`. | S3 | code (B-M6) | fixed | 2e33d45 |
+| BUG-086 | Profile | Header buttons positioned at fixed `top: 35` without SafeArea → overlap status bar on notched iPhones. | Fixed offsets. | S3 | code (B-M7) | fixed | 18a8c1f |
+| BUG-087 | Profile | "Updating…" caption uses font family `Inria` (typo) → system font. | Typo. | S4 | code (B-M9) | fixed | 18a8c1f |
 | BUG-088 | Friend options | Chat settings, Capsules settings, Share profile to…, Report, Block, Open chat, Send Capsule: buttons do nothing. | Unimplemented features. | S3 | repro (`friend_options_modal.png`) | kept (adding them = new features; see IDEAS_NOT_DONE.md). "Share profile to…" wired to the existing share flow — see fix column | |
-| BUG-089 | Friend remove | Double `pop()` after removing a friend; global popup hidden on dispose. | Modal flow. | S3 | code (B-M13) | open | |
+| BUG-089 | Friend remove | Double `pop()` after removing a friend; global popup hidden on dispose. | Modal flow. | S3 | code (B-M13) | fixed | 2e33d45 |
 | BUG-090 | Settings | `setState`/context used after `await` without `mounted` (name settings, permissions, profile pictures). | Lifecycle. | S3 | code (B-M12, B-M14, B-M15) | open | |
 | BUG-091 | Permissions settings | Status not refreshed after returning from OS settings. | No resume hook. | S3 | code (B-M14) | open | |
 | BUG-092 | Share profile | QR/link built from `'No User'` until profile loaded. | BUG-011. | S3 | code | open | |
@@ -127,3 +127,4 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-109 | Deep links | Cold-start deep link can be lost: Kotlin sends it before the Dart handler exists, and Dart then waits a fixed 2 s. | Race in `MainActivity`/`main.dart`. | S3 | code | fixed | 7518612 |
 | BUG-110 | iOS | No `NSPhotoLibraryUsageDescription` → crash when picking a profile picture from the gallery on iOS; usage strings are placeholders ("Camera"). | Info.plist. | S1 (iOS) | code | fixed | 7fd29c8 |
 | BUG-111 | Tests | The only test is the default counter smoke test, which fails. | Template leftover. | S4 | repro | open | |
+| BUG-112 | Layout | "A RenderFlex overflowed by 7.0 pixels on the bottom" logged once, right after the soft keyboard first opened (Settings > Username, emulator, 2026-10-16). Not reproduced on later keyboard openings; overflow reports fire once per render object, so it is probably a long-lived page laid out with the keyboard inset. | Unknown; debug builds now log the full FlutterErrorDetails (bootstrap) so the next occurrence names the widget. | S4 | log | open | |

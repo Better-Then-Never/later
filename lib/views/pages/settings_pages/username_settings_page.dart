@@ -5,7 +5,9 @@ import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/_common/options_elements/options_input_field.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
-import 'package:later/services/user_data_service.dart';
+import 'package:later/app/session/session_controller.dart';
+import 'package:later/data/repositories/repositories.dart';
+import 'package:later/features/settings/account_settings.dart';
 
 class UsernameSettingsPage extends StatefulWidget {
   const UsernameSettingsPage({super.key});
@@ -21,36 +23,25 @@ class _UsernameSettingsPageState extends State<UsernameSettingsPage> {
   @override
   void dispose() {
     PopupNotificationService.hide();
+    _usernameController.dispose();
     super.dispose();
   }
 
   Future<void> _saveUsername() async {
-    final newUsername = _usernameController.text.trim();
-    if (newUsername.isEmpty) {
-      PopupNotificationService.showError(
-        context: context,
-        message: 'Please enter a new username!',
-        position: NotificationPosition.center,
-      );
-      return;
-    }
-
-    final uid = Provider.of<UserDataService>(
-      context,
-      listen: false,
-    ).currentLoggedInUid;
+    if (_isSaving) return;
+    final users = context.read<UserRepository>();
+    final uid = context.read<SessionController>().uid!;
 
     setState(() => _isSaving = true);
-
-    final profileService = Provider.of<UserDataService>(context, listen: false);
-
-    final success = await profileService.updateUsername(uid, newUsername);
-
+    final failure = await AccountSettings.saveUsername(
+      users,
+      uid,
+      _usernameController.text,
+    );
     if (!mounted) return;
-
     setState(() => _isSaving = false);
 
-    if (success) {
+    if (failure == null) {
       PopupNotificationService.showSuccess(
         context: context,
         message: 'Username updated successfully!',
@@ -59,7 +50,7 @@ class _UsernameSettingsPageState extends State<UsernameSettingsPage> {
     } else {
       PopupNotificationService.showError(
         context: context,
-        message: 'Failed to update username!',
+        message: failure.message,
         position: NotificationPosition.center,
       );
     }

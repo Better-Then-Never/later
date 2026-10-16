@@ -13,7 +13,6 @@ import 'package:later/views/widgets/_common/options_elements/options_settings_ro
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
-import 'package:later/services/user_data_service.dart';
 import 'package:later/app/session/session_controller.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 
@@ -22,7 +21,8 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProfileService = context.watch<UserDataService>();
+    final session = context.watch<SessionController>();
+    final profile = session.profile;
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -61,7 +61,7 @@ class SettingsPage extends StatelessWidget {
                           OptionsSettingsRow(
                             title: 'Name',
                             subtitle: DefaultText(
-                              userProfileService.name,
+                              profile?.name ?? 'Loading...',
                               textAlign: TextAlign.left,
                             ),
                             navigateTo: const NameSettingsPage(),
@@ -70,7 +70,7 @@ class SettingsPage extends StatelessWidget {
                           OptionsSettingsRow(
                             title: 'Username',
                             subtitle: DefaultText(
-                              '@${userProfileService.username}',
+                              '@${profile?.username ?? 'Loading...'}',
                               textAlign: TextAlign.left,
                             ),
                             navigateTo: const UsernameSettingsPage(),
@@ -79,7 +79,9 @@ class SettingsPage extends StatelessWidget {
                           OptionsSettingsRow(
                             title: 'Email',
                             subtitle: DefaultText(
-                              userProfileService.email,
+                              // From Auth: the copy in users/{uid} is to be
+                              // removed (MIGRATIONS_NEEDED.md).
+                              session.email ?? 'Loading...',
                               textAlign: TextAlign.left,
                             ),
                             navigateTo: const EmailSettingsPage(),

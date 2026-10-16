@@ -13,7 +13,8 @@ class PermissionsSettingsPage extends StatefulWidget {
       _PermissionsSettingsPageState();
 }
 
-class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
+class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
+    with WidgetsBindingObserver {
   final Map<Permission, PermissionStatus> _permissionStatuses = {};
   bool _isLoading = true;
 
@@ -55,12 +56,24 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadPermissionStatuses();
   }
 
-  Future<void> _loadPermissionStatuses() async {
-    setState(() => _isLoading = true);
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
+  /// Back from the system settings: show what the user changed there
+  /// (BUG-091).
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _loadPermissionStatuses();
+  }
+
+  Future<void> _loadPermissionStatuses() async {
     for (var permission in _permissions) {
       final status = await permission.permission.status;
       _permissionStatuses[permission.permission] = status;
@@ -85,6 +98,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
 
   Future<void> _requestPermission(Permission permission) async {
     final status = await permission.request();
+    if (!mounted) return; // BUG-090
 
     if (status.isPermanentlyDenied) {
       _showPermissionDialog(permission);

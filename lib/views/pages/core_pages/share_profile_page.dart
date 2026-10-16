@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/services/sharing_service.dart';
-import 'package:later/services/user_data_service.dart';
+import 'package:later/app/session/session_controller.dart';
 import 'package:later/views/styles/elevated_button_styles.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
@@ -17,8 +17,9 @@ class ShareProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final userService = Provider.of<UserDataService>(context);
-    final userId = userService.currentLoggedInUid;
+    // Always the real uid: the QR code and link were built from 'No User'
+    // until the profile had loaded (BUG-092).
+    final userId = context.read<SessionController>().uid!;
     final profileLink = SharingService.generateProfileLink(userId);
 
     return Scaffold(

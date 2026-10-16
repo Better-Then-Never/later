@@ -142,7 +142,7 @@ class FirebaseUserRepository implements UserRepository {
     if (prefix.isNotEmpty) {
       query = query
           .where('username', isGreaterThanOrEqualTo: prefix)
-          .where('username', isLessThan: '$prefix');
+          .where('username', isLessThan: '$prefix\uf8ff');
     }
     final snap = await query.limit(limit).get();
     return snap.docs

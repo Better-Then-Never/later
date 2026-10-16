@@ -23,7 +23,6 @@ import '../features/map/map_focus.dart';
 import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
-import '../services/user_data_service.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
 import 'session/session_controller.dart';
@@ -68,9 +67,6 @@ class _AppScopeState extends State<AppScope> {
   );
   late final NotificationRouter _notificationRouter;
 
-  // Legacy per-user services, reset by the session until they are replaced.
-  final _legacyUserData = UserDataService();
-
   late final SessionController _session;
 
   @override
@@ -87,7 +83,6 @@ class _AppScopeState extends State<AppScope> {
         _directory,
         _friendsStore,
         PushRegistration(push: _push, tokens: _pushTokens),
-        _LegacyServicesScope(userData: _legacyUserData),
       ],
     )..start();
     _links.init();
@@ -126,8 +121,6 @@ class _AppScopeState extends State<AppScope> {
         Provider<PreferencesStore>.value(value: _prefs),
         Provider<AppLinkHandler>.value(value: _links),
         ChangeNotifierProvider<SessionController>.value(value: _session),
-        // Legacy services (removed feature by feature).
-        ChangeNotifierProvider.value(value: _legacyUserData),
         ChangeNotifierProvider<CurrentLocation>.value(value: _currentLocation),
         Provider<PushMessagingService>.value(value: _push),
         Provider<NotificationRouter>.value(value: _notificationRouter),
@@ -143,20 +136,5 @@ class _AppScopeState extends State<AppScope> {
       ],
       child: widget.child,
     );
-  }
-}
-
-/// Resets the pre-refactor singletons when the user changes.
-class _LegacyServicesScope extends SessionScoped {
-  _LegacyServicesScope({required this.userData});
-
-  final UserDataService userData;
-
-  @override
-  void attach(String uid) {}
-
-  @override
-  void detach() {
-    userData.onLogout();
   }
 }

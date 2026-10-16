@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -26,7 +27,9 @@ Future<void> bootstrap() async {
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
     AppLogger.error(
-      'Flutter error',
+      // In debug builds the full report names the widget that failed (e.g.
+      // the creator of an overflowing Flex); release builds stay terse.
+      kDebugMode ? 'Flutter error\n$details' : 'Flutter error',
       error: details.exception,
       stackTrace: details.stack,
     );
