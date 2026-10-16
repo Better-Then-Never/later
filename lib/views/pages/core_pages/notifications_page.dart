@@ -38,8 +38,15 @@ class _NotificationsPageState extends State<NotificationsPage>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _handleBackButton,
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, child) => PopScope(
+        canPop: !_controller.isSelectionMode,
+        onPopInvokedWithResult: (didPop, _) {
+          if (!didPop) _controller.clearSelection();
+        },
+        child: child!,
+      ),
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F6F6),
         body: Column(
@@ -93,14 +100,6 @@ class _NotificationsPageState extends State<NotificationsPage>
         ),
       ),
     );
-  }
-
-  Future<bool> _handleBackButton() async {
-    if (_controller.isSelectionMode) {
-      _controller.clearSelection();
-      return false;
-    }
-    return true;
   }
 
   Future<void> _handleMarkAsRead() async {

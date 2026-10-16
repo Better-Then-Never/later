@@ -245,7 +245,7 @@ Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
                 _mapController.complete(controller);
                 _customInfoWindowController.googleMapController = controller;
               },
-              cloudMapId: Platform.isAndroid
+              mapId: Platform.isAndroid
                   ? '12b4f975aba292b65ac044ea'
                   : '12b4f975aba292b627a4b587',
               initialCameraPosition: CameraPosition(
