@@ -14,9 +14,12 @@ import '../../../data/models/capsule.dart';
 /// and re-initialised across app pause/resume), BUG-052 (black screen forever
 /// without a camera or when init fails) and BUG-053 (double captures).
 class CameraPage extends StatefulWidget {
-  const CameraPage({super.key, this.initialPrivacy});
+  const CameraPage({super.key, this.initialPrivacy, this.recipientId});
 
   final CapsulePrivacy? initialPrivacy;
+
+  /// The friend the capsule will be sent to, if any.
+  final String? recipientId;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -142,6 +145,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         context,
         imagePath: picture.path,
         privacy: widget.initialPrivacy,
+        recipientId: widget.recipientId,
         replace: true,
       );
     } on CameraException catch (e) {

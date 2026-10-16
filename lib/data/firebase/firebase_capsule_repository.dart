@@ -120,6 +120,9 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       createdAt: DateTime.now(),
       openAt: draft.openAt,
       isScheduled: draft.openAt != null,
+      sharedWith: [
+        if (draft.recipientId != null) ...[draft.ownerId, draft.recipientId!],
+      ],
     );
   }
 

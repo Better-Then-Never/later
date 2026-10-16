@@ -116,4 +116,25 @@ class FirebaseFriendsRepository implements FriendsRepository {
       ..delete(_user(target).collection(FirestorePaths.followers).doc(me));
     return batch.commit();
   }
+
+  DocumentReference<Map<String, dynamic>> _blocked(String uid, String other) =>
+      _user(uid).collection(FirestorePaths.blocked).doc(other);
+
+  @override
+  Stream<Set<String>> watchBlocked(String uid) => _user(uid)
+      .collection(FirestorePaths.blocked)
+      .snapshots()
+      .map((snap) => {for (final d in snap.docs) d.id});
+
+  @override
+  Future<void> block({required String me, required String other}) =>
+      _blocked(me, other).set({'blockedAt': FieldValue.serverTimestamp()});
+
+  @override
+  Future<void> unblock({required String me, required String other}) =>
+      _blocked(me, other).delete();
+
+  @override
+  Future<bool> isBlockedBy({required String me, required String other}) async =>
+      (await _blocked(other, me).get()).exists;
 }

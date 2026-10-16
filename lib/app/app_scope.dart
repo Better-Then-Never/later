@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../data/firebase/firebase_auth_repository.dart';
 import '../data/firebase/firebase_capsule_repository.dart';
+import '../data/firebase/firebase_chat_repository.dart';
 import '../data/firebase/firebase_friends_repository.dart';
 import '../data/firebase/firebase_image_storage_repository.dart';
 import '../data/firebase/firebase_notification_repository.dart';
@@ -20,6 +21,7 @@ import '../features/friends/friends_store.dart';
 import '../features/users/user_directory.dart';
 import '../features/map/current_location.dart';
 import '../features/map/map_focus.dart';
+import '../features/messages/chats_store.dart';
 import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
@@ -44,6 +46,7 @@ class _AppScopeState extends State<AppScope> {
   final UserRepository _users = FirebaseUserRepository();
   final FriendsRepository _friends = FirebaseFriendsRepository();
   final CapsuleRepository _capsules = FirebaseCapsuleRepository();
+  final ChatRepository _chats = FirebaseChatRepository();
   final NotificationRepository _notifications =
       FirebaseNotificationRepository();
   final PushTokenRepository _pushTokens = FirebasePushTokenRepository();
@@ -60,6 +63,7 @@ class _AppScopeState extends State<AppScope> {
   late final _ownCapsules = OwnCapsulesStore(_capsules);
   late final _favorites = FavoritesStore(_users);
   late final _directory = UserDirectory(_users);
+  late final _chatsStore = ChatsStore(_chats);
   late final _friendsStore = FriendsStore(
     friends: _friends,
     users: _users,
@@ -82,6 +86,7 @@ class _AppScopeState extends State<AppScope> {
         _favorites,
         _directory,
         _friendsStore,
+        _chatsStore,
         PushRegistration(push: _push, tokens: _pushTokens),
       ],
     )..start();
@@ -113,6 +118,7 @@ class _AppScopeState extends State<AppScope> {
         Provider<UserRepository>.value(value: _users),
         Provider<FriendsRepository>.value(value: _friends),
         Provider<CapsuleRepository>.value(value: _capsules),
+        Provider<ChatRepository>.value(value: _chats),
         Provider<NotificationRepository>.value(value: _notifications),
         Provider<PushTokenRepository>.value(value: _pushTokens),
         Provider<ImageStorageRepository>.value(value: _images),
@@ -133,6 +139,7 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<FavoritesStore>.value(value: _favorites),
         ChangeNotifierProvider<UserDirectory>.value(value: _directory),
         ChangeNotifierProvider<FriendsStore>.value(value: _friendsStore),
+        ChangeNotifierProvider<ChatsStore>.value(value: _chatsStore),
       ],
       child: widget.child,
     );

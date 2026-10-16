@@ -52,6 +52,7 @@ class Capsule {
     this.createdAt,
     this.openAt,
     this.isScheduled = false,
+    this.sharedWith = const [],
   });
 
   final String id;
@@ -70,6 +71,10 @@ class Capsule {
   final DateTime? openAt;
   final bool isScheduled;
 
+  /// For a capsule sent to a friend: the sender and the recipient. Private
+  /// capsules are visible to everyone listed here.
+  final List<String> sharedWith;
+
   bool isOpen(DateTime now) => openAt == null || !openAt!.isAfter(now);
 
   Duration timeUntilOpen(DateTime now) =>
@@ -87,6 +92,7 @@ class Capsule {
     createdAt: createdAt,
     openAt: openAt,
     isScheduled: isScheduled,
+    sharedWith: sharedWith,
   );
 
   @override
@@ -102,7 +108,9 @@ class Capsule {
       other.color == color &&
       other.createdAt == createdAt &&
       other.openAt == openAt &&
-      other.isScheduled == isScheduled;
+      other.isScheduled == isScheduled &&
+      other.sharedWith.length == sharedWith.length &&
+      other.sharedWith.every(sharedWith.contains);
 
   @override
   int get hashCode => Object.hash(
@@ -131,6 +139,7 @@ class CapsuleDraft {
     required this.imagePath,
     this.description,
     this.openAt,
+    this.recipientId,
   });
 
   final String ownerId;
@@ -141,4 +150,7 @@ class CapsuleDraft {
   final GeoPosition location;
   final String imagePath;
   final DateTime? openAt;
+
+  /// The friend this capsule is sent to, if any.
+  final String? recipientId;
 }

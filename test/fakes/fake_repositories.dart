@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/models/app_notification.dart';
 import 'package:later/data/models/capsule.dart';
+import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/friend_request.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/repositories/repositories.dart';
@@ -306,6 +307,138 @@ class FakeFriendsRepository implements FriendsRepository {
   @override
   Future<void> unfollow({required String me, required String target}) async =>
       following.remove('$me>$target');
+
+  /// "uid>other" pairs: uid blocked other.
+  final Set<String> blocks = {};
+
+  @override
+  Stream<Set<String>> watchBlocked(String uid) => seeded(
+    () => {
+      for (final b in blocks)
+        if (b.startsWith('$uid>')) b.substring(uid.length + 1),
+    },
+    _changes.stream,
+  );
+
+  @override
+  Future<void> block({required String me, required String other}) async {
+    blocks.add('$me>$other');
+    _notify();
+  }
+
+  @override
+  Future<void> unblock({required String me, required String other}) async {
+    blocks.remove('$me>$other');
+    _notify();
+  }
+
+  @override
+  Future<bool> isBlockedBy({required String me, required String other}) async =>
+      blocks.contains('$other>$me');
+}
+
+/// In-memory chats. [failSends] makes every send throw.
+class FakeChatRepository implements ChatRepository {
+  final _changes = StreamController<void>.broadcast();
+  final Map<String, List<ChatMessage>> messages = {};
+  final Map<String, Chat> chats = {};
+  final List<String> calls = [];
+  bool failSends = false;
+  int _ids = 0;
+
+  void _notify() => _changes.add(null);
+
+  @override
+  Stream<List<Chat>> watchChats(String uid) => seeded(
+    () => chats.values
+        .where((c) => c.participants.contains(uid) && c.hasMessages)
+        .toList(),
+    _changes.stream,
+  );
+
+  @override
+  Stream<List<ChatMessage>> watchMessages(String chatId, {int limit = 500}) =>
+      seeded(() => List.of(messages[chatId] ?? const []), _changes.stream);
+
+  void _add(String from, String to, ChatMessage Function(String id) build) {
+    if (failSends) throw StateError('send failed');
+    final chatId = Chat.idBetween(from, to);
+    final message = build('m${_ids++}');
+    (messages[chatId] ??= []).add(message);
+    chats[chatId] = Chat(
+      id: chatId,
+      participants: [from, to],
+      lastMessage: message.text,
+      lastUpdated: DateTime(2026, 10, 16),
+      lastSenderId: from,
+    );
+    _notify();
+  }
+
+  @override
+  Future<void> sendText({
+    required String from,
+    required String to,
+    required String text,
+  }) async {
+    calls.add('text:$from->$to:$text');
+    _add(from, to, (id) => ChatMessage(id: id, senderId: from, text: text));
+  }
+
+  @override
+  Future<void> sendCapsule({
+    required String from,
+    required String to,
+    required Capsule capsule,
+  }) async {
+    calls.add('capsule:$from->$to:${capsule.id}');
+    _add(
+      from,
+      to,
+      (id) => ChatMessage(
+        id: id,
+        senderId: from,
+        text: capsule.title,
+        type: ChatMessageType.capsule,
+        capsuleId: capsule.id,
+        imageUrl: capsule.imageUrl,
+      ),
+    );
+  }
+
+  @override
+  Future<void> markRead(String chatId, {required String sender}) async {
+    calls.add('read:$chatId:$sender');
+    final list = messages[chatId];
+    if (list == null) return;
+    for (var i = 0; i < list.length; i++) {
+      final m = list[i];
+      if (m.senderId == sender && !m.isRead) {
+        list[i] = ChatMessage(
+          id: m.id,
+          senderId: m.senderId,
+          text: m.text,
+          sentAt: m.sentAt,
+          isRead: true,
+          type: m.type,
+          capsuleId: m.capsuleId,
+          imageUrl: m.imageUrl,
+        );
+      }
+    }
+    _notify();
+  }
+
+  @override
+  Future<void> clearHistory(String chatId) async {
+    calls.add('clear:$chatId');
+    messages.remove(chatId);
+    final chat = chats[chatId];
+    if (chat != null) {
+      chats[chatId] = Chat(id: chat.id, participants: chat.participants);
+    }
+    _notify();
+  }
 }
 
 class FakeCapsuleRepository implements CapsuleRepository {

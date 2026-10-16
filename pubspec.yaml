@@ -74,6 +74,7 @@ flutter:
     - assets/icons/friends/
     - assets/icons/history/
     - assets/icons/map/
+    - assets/icons/messages/
     - assets/icons/navbar/
     - assets/icons/profile/
 

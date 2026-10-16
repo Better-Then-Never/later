@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
+import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import 'block_user.dart';
 import '../../profile/share/sharing_service.dart';
 import '../friends_store.dart';
 import '../../../core/theme/app_colors.dart';
@@ -13,75 +15,52 @@ class FriendOptionsModal extends StatelessWidget {
   const FriendOptionsModal({super.key, required this.friendUid});
 
   static void show(BuildContext context, String friendUid) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
-      builder: (BuildContext context) {
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(context).pop(),
-          child: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: FriendOptionsModal(friendUid: friendUid),
-            ),
-          ),
-        );
-      },
-    );
+    showCenteredSheet<void>(context, FriendOptionsModal(friendUid: friendUid));
   }
 
   @override
   Widget build(BuildContext context) {
-    return _ModalContainer(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _ModalOption(
-            text: 'Manage friendship',
-            onPressed: () {
-              Navigator.pop(context);
-              ManageFriendshipModal.show(context, friendUid);
-            },
-            isFirst: true,
-          ),
-          const _ModalDivider(),
-          _ModalOption(
-            text: 'Chat settings',
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Handle chat settings action
-            },
-          ),
-          const _ModalDivider(),
-          _ModalOption(
-            text: 'Capsules settings',
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Handle capsules settings action
-            },
-          ),
-          const _ModalDivider(),
-          _ModalOption(
-            text: 'Share profile to ...',
-            onPressed: () {
-              Navigator.pop(context);
-              // Same share sheet as the share button of the profile page;
-              // the page context outlives this sheet.
-              final page = AppRoutes.navigatorKey.currentContext;
-              if (page != null) {
-                SharingService.shareUserProfile(
-                  context: page,
-                  userId: friendUid,
-                );
-              }
-            },
-            isLast: true,
-          ),
-        ],
-      ),
+    return OptionsMenu(
+      children: [
+        OptionsMenuItem(
+          text: 'Manage friendship',
+          onPressed: () {
+            Navigator.pop(context);
+            ManageFriendshipModal.show(context, friendUid);
+          },
+          isFirst: true,
+        ),
+        const OptionsMenuDivider(),
+        OptionsMenuItem(
+          text: 'Chat settings',
+          onPressed: () {
+            Navigator.pop(context);
+            // TODO: Handle chat settings action
+          },
+        ),
+        const OptionsMenuDivider(),
+        OptionsMenuItem(
+          text: 'Capsules settings',
+          onPressed: () {
+            Navigator.pop(context);
+            // TODO: Handle capsules settings action
+          },
+        ),
+        const OptionsMenuDivider(),
+        OptionsMenuItem(
+          text: 'Share profile to ...',
+          onPressed: () {
+            Navigator.pop(context);
+            // Same share sheet as the share button of the profile page;
+            // the page context outlives this sheet.
+            final page = AppRoutes.navigatorKey.currentContext;
+            if (page != null) {
+              SharingService.shareUserProfile(context: page, userId: friendUid);
+            }
+          },
+          isLast: true,
+        ),
+      ],
     );
   }
 }
@@ -92,23 +71,9 @@ class ManageFriendshipModal extends StatefulWidget {
   const ManageFriendshipModal({super.key, required this.friendUid});
 
   static void show(BuildContext context, String friendUid) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
-      builder: (BuildContext context) {
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(context).pop(),
-          child: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: ManageFriendshipModal(friendUid: friendUid),
-            ),
-          ),
-        );
-      },
+    showCenteredSheet<void>(
+      context,
+      ManageFriendshipModal(friendUid: friendUid),
     );
   }
 
@@ -171,47 +136,44 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
 
   @override
   Widget build(BuildContext context) {
-    return _ModalContainer(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const _ModalHeader(text: 'Manage friendship'),
-          const _ModalDivider(color: Colors.black, thickness: 1),
-          _FollowButton(
-            isFollowing: _isFollowing,
-            isLoading: _isLoading,
-            onPressed: _isLoading ? null : _toggleFollow,
-          ),
-          const _ModalDivider(),
-          _ModalOption(
-            text: 'Report',
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Handle report action
-            },
-            textColor: AppColors.danger,
-          ),
-          const _ModalDivider(),
-          _ModalOption(
-            text: 'Block',
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Handle block action
-            },
-            textColor: AppColors.danger,
-          ),
-          const _ModalDivider(),
-          _ModalOption(
-            text: 'Remove from friends',
-            onPressed: () {
-              Navigator.pop(context);
-              RemoveFriendConfirmModal.show(context, widget.friendUid);
-            },
-            textColor: Colors.red,
-            isLast: true,
-          ),
-        ],
-      ),
+    return OptionsMenu(
+      children: [
+        const _ModalHeader(text: 'Manage friendship'),
+        const OptionsMenuDivider(color: Colors.black, thickness: 1),
+        _FollowButton(
+          isFollowing: _isFollowing,
+          isLoading: _isLoading,
+          onPressed: _isLoading ? null : _toggleFollow,
+        ),
+        const OptionsMenuDivider(),
+        OptionsMenuItem(
+          text: 'Report',
+          onPressed: () {
+            Navigator.pop(context);
+            // TODO: Handle report action
+          },
+          textColor: AppColors.danger,
+        ),
+        const OptionsMenuDivider(),
+        OptionsMenuItem(
+          text: 'Block',
+          onPressed: () {
+            Navigator.pop(context);
+            confirmBlockUser(context, widget.friendUid);
+          },
+          textColor: AppColors.danger,
+        ),
+        const OptionsMenuDivider(),
+        OptionsMenuItem(
+          text: 'Remove from friends',
+          onPressed: () {
+            Navigator.pop(context);
+            RemoveFriendConfirmModal.show(context, widget.friendUid);
+          },
+          textColor: Colors.red,
+          isLast: true,
+        ),
+      ],
     );
   }
 }
@@ -222,23 +184,9 @@ class RemoveFriendConfirmModal extends StatefulWidget {
   const RemoveFriendConfirmModal({super.key, required this.friendUid});
 
   static void show(BuildContext context, String friendUid) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
-      builder: (BuildContext context) {
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(context).pop(),
-          child: Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: RemoveFriendConfirmModal(friendUid: friendUid),
-            ),
-          ),
-        );
-      },
+    showCenteredSheet<void>(
+      context,
+      RemoveFriendConfirmModal(friendUid: friendUid),
     );
   }
 
@@ -315,24 +263,6 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
   }
 }
 
-class _ModalContainer extends StatelessWidget {
-  final Widget child;
-
-  const _ModalContainer({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 264,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: child,
-    );
-  }
-}
-
 class _ModalHeader extends StatelessWidget {
   final String text;
 
@@ -361,62 +291,6 @@ class _ModalHeader extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ModalOption extends StatelessWidget {
-  final String text;
-  final VoidCallback onPressed;
-  final Color? textColor;
-  final bool isFirst;
-  final bool isLast;
-
-  const _ModalOption({
-    required this.text,
-    required this.onPressed,
-    this.textColor,
-    this.isFirst = false,
-    this.isLast = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    BorderRadius? borderRadius;
-    if (isFirst && isLast) {
-      borderRadius = BorderRadius.circular(25);
-    } else if (isFirst) {
-      borderRadius = const BorderRadius.only(
-        topLeft: Radius.circular(25),
-        topRight: Radius.circular(25),
-      );
-    } else if (isLast) {
-      borderRadius = const BorderRadius.only(
-        bottomLeft: Radius.circular(25),
-        bottomRight: Radius.circular(25),
-      );
-    }
-
-    return SizedBox(
-      height: 37,
-      width: 264,
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          foregroundColor: textColor ?? Colors.black,
-          textStyle: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Irina',
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: borderRadius ?? BorderRadius.zero,
-          ),
-          splashFactory: NoSplash.splashFactory,
-          overlayColor: Colors.transparent,
-        ),
-        child: Center(child: Text(text)),
       ),
     );
   }
@@ -478,22 +352,6 @@ class _FollowButton extends StatelessWidget {
                 ),
         ),
       ),
-    );
-  }
-}
-
-class _ModalDivider extends StatelessWidget {
-  final Color? color;
-  final double thickness;
-
-  const _ModalDivider({this.color, this.thickness = 2});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 264,
-      height: thickness,
-      color: color ?? AppColors.divider,
     );
   }
 }

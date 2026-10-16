@@ -26,17 +26,31 @@ class CapsuleCreationController extends ChangeNotifier {
     required LocationService location,
     required CurrentLocation currentLocation,
     CapsulePrivacy? initialPrivacy,
-  }) : _capsules = capsules,
+    this.recipientId,
+    ChatRepository? chats,
+  }) : assert(recipientId == null || chats != null),
+       _capsules = capsules,
+       _chats = chats,
        _location = location,
        _currentLocation = currentLocation,
-       _privacy = initialPrivacy ?? CapsulePrivacy.public,
+       // A capsule for a friend is private (only the two of you) by default.
+       _privacy =
+           initialPrivacy ??
+           (recipientId != null
+               ? CapsulePrivacy.private
+               : CapsulePrivacy.public),
        _position = currentLocation.position {
     if (_position == null) unawaited(_locate());
   }
 
   final String ownerId;
   final String imagePath;
+
+  /// The friend this capsule is sent to: it is shared with them and posted
+  /// into your chat.
+  final String? recipientId;
   final CapsuleRepository _capsules;
+  final ChatRepository? _chats;
   final LocationService _location;
   final CurrentLocation _currentLocation;
 
@@ -49,6 +63,10 @@ class CapsuleCreationController extends ChangeNotifier {
   GeoPosition? _position;
   bool _saving = false;
   bool _disposed = false;
+
+  /// Set once the capsule exists, so a retry after a failed chat post does
+  /// not create it twice.
+  Capsule? _created;
 
   CapsulePrivacy get privacy => _privacy;
   CapsuleColor get color => _color;
@@ -104,7 +122,7 @@ class CapsuleCreationController extends ChangeNotifier {
       }
       final title = titleController.text.trim();
       final description = descriptionController.text.trim();
-      await _capsules.create(
+      final capsule = _created ??= await _capsules.create(
         CapsuleDraft(
           ownerId: ownerId,
           title: title.isEmpty ? 'Capsule' : title,
@@ -114,8 +132,26 @@ class CapsuleCreationController extends ChangeNotifier {
           location: position,
           imagePath: imagePath,
           openAt: _openAt,
+          recipientId: recipientId,
         ),
       );
+      final to = recipientId;
+      if (to != null) {
+        try {
+          await _chats!.sendCapsule(from: ownerId, to: to, capsule: capsule);
+        } catch (e, st) {
+          AppLogger.warning(
+            'Posting the capsule to the chat failed',
+            error: e,
+            stackTrace: st,
+          );
+          return AppFailure.from(
+            e,
+            fallbackMessage:
+                'The capsule was saved but not sent. Tap save to try again.',
+          );
+        }
+      }
       unawaited(_deleteTempPhoto());
       return null;
     } catch (e, st) {

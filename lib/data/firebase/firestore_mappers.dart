@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/app_notification.dart';
 import '../models/capsule.dart';
+import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/geo_position.dart';
 import '../models/user_profile.dart';
@@ -16,6 +17,9 @@ abstract final class FirestorePaths {
   static const fcmTokens = 'fcmTokens';
   static const following = 'following';
   static const followers = 'followers';
+  static const blocked = 'blocked';
+  static const chats = 'chats';
+  static const messages = 'messages';
 }
 
 /// Tolerant readers: every mapper accepts legacy shapes and missing fields.
@@ -63,6 +67,7 @@ abstract final class FirestoreMappers {
       createdAt: _date(data['createdAt']),
       openAt: _date(data['openAt']),
       isScheduled: data['isScheduled'] == true,
+      sharedWith: _stringList(data['sharedWith']),
     );
   }
 
@@ -81,7 +86,29 @@ abstract final class FirestoreMappers {
     'isScheduled': draft.openAt != null,
     'openAt': draft.openAt == null ? null : Timestamp.fromDate(draft.openAt!),
     'color': draft.color.name,
+    if (draft.recipientId != null)
+      'sharedWith': [draft.ownerId, draft.recipientId!],
   };
+
+  static Chat chat(String id, Map<String, dynamic> data) => Chat(
+    id: id,
+    participants: _stringList(data['participants']),
+    lastMessage: _string(data['lastMessage'], ''),
+    lastUpdated: _date(data['lastUpdated']),
+    lastSenderId: _nonEmptyString(data['lastSenderId']),
+  );
+
+  static ChatMessage chatMessage(String id, Map<String, dynamic> data) =>
+      ChatMessage(
+        id: id,
+        senderId: _string(data['senderId'], ''),
+        text: _string(data['text'], ''),
+        sentAt: _date(data['timestamp']),
+        isRead: data['status'] == 'read',
+        type: ChatMessageType.parse(data['type']),
+        capsuleId: _nonEmptyString(data['capsuleId']),
+        imageUrl: _nonEmptyString(data['imageUrl']),
+      );
 
   static FriendRequest friendRequest(Map<String, dynamic> data) =>
       FriendRequest(

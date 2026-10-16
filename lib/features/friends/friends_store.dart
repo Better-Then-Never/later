@@ -34,6 +34,7 @@ class FriendsStore extends ChangeNotifier implements SessionScoped {
   Set<String> _friendIds = const {};
   Set<String> _sentTo = const {};
   Set<String> _receivedFrom = const {};
+  Set<String> _blocked = const {};
   final Set<String> _dismissed = {};
   final Set<String> _busy = {};
   bool _loaded = false;
@@ -48,6 +49,10 @@ class FriendsStore extends ChangeNotifier implements SessionScoped {
   /// Users who sent this user a pending request.
   Set<String> get receivedFrom => _receivedFrom;
   int get incomingCount => _receivedFrom.length;
+
+  /// Users this user blocked.
+  Set<String> get blocked => _blocked;
+  bool isBlocked(String otherUid) => _blocked.contains(otherUid);
 
   /// Suggestions the user hid in this session.
   Set<String> get dismissed => _dismissed;
@@ -88,6 +93,12 @@ class FriendsStore extends ChangeNotifier implements SessionScoped {
           _receivedFrom = {for (final r in requests) r.fromUserId};
           notifyListeners();
         }, onError: onError),
+      )
+      ..add(
+        _friends.watchBlocked(uid).listen((blocked) {
+          _blocked = blocked;
+          notifyListeners();
+        }, onError: onError),
       );
   }
 
@@ -102,6 +113,7 @@ class FriendsStore extends ChangeNotifier implements SessionScoped {
     _friendIds = const {};
     _sentTo = const {};
     _receivedFrom = const {};
+    _blocked = const {};
     _dismissed.clear();
     _busy.clear();
     _loaded = false;
@@ -208,4 +220,30 @@ class FriendsStore extends ChangeNotifier implements SessionScoped {
     'Failed to unfollow user',
     (me) => _friends.unfollow(me: me, target: target),
   );
+
+  /// Blocks [other]: they can no longer send this user messages.
+  Future<AppFailure?> block(String other) => _guard(
+    other,
+    'Failed to block user',
+    (me) => _friends.block(me: me, other: other),
+  );
+
+  Future<AppFailure?> unblock(String other) => _guard(
+    other,
+    'Failed to unblock user',
+    (me) => _friends.unblock(me: me, other: other),
+  );
+
+  /// Whether [other] blocked this user (false when it cannot be checked;
+  /// the rules refuse the messages anyway).
+  Future<bool> isBlockedBy(String other) async {
+    final me = _uid;
+    if (me == null) return false;
+    try {
+      return await _friends.isBlockedBy(me: me, other: other);
+    } catch (e) {
+      AppLogger.debug('Block status unavailable: $e');
+      return false;
+    }
+  }
 }

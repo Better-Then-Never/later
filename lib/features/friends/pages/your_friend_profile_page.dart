@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
+import 'package:later/data/models/capsule.dart';
 import 'package:later/features/profile/share/sharing_service.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/buttons/default_button_with_icon.dart';
@@ -84,7 +86,7 @@ class YourFriendProfilePage extends StatelessWidget {
                           decoration: BoxDecorations.whiteCard(),
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
-                          onTap: () {}, // TODO: Open chat with friend
+                          onTap: () => AppRoutes.toChat(context, friendUid),
                           assetPath: AppIcons.sendMessage,
                           text: 'Open chat',
                         ),
@@ -95,7 +97,11 @@ class YourFriendProfilePage extends StatelessWidget {
                           decoration: BoxDecorations.whiteCard(),
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
-                          onTap: () {}, // TODO: Send Capsule to friend
+                          onTap: () => AppRoutes.toCamera(
+                            context,
+                            privacy: CapsulePrivacy.private,
+                            recipientId: friendUid,
+                          ),
                           assetPath: AppIcons.sendCapsule,
                           text: 'Send Capsule',
                         ),

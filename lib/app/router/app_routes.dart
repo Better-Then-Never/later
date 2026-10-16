@@ -14,6 +14,7 @@ import '../../features/friends/pages/my_friends_page.dart';
 import '../../features/friends/pages/your_friend_profile_page.dart';
 import '../../features/capsules/camera/camera_page.dart';
 import '../../features/capsules/creation/capsule_creation_page.dart';
+import '../../features/messages/chat_page.dart';
 import 'app_link_handler.dart';
 import 'app_page_route.dart';
 
@@ -41,13 +42,17 @@ abstract final class AppRoutes {
   }
 
   // Capsules
+  /// Camera for a new capsule; with [recipientId] the capsule is sent to
+  /// that friend.
   static Future<void> toCamera(
     BuildContext context, {
     CapsulePrivacy? privacy,
+    String? recipientId,
     bool replace = false,
   }) {
     final route = MaterialPageRoute<void>(
-      builder: (_) => CameraPage(initialPrivacy: privacy),
+      builder: (_) =>
+          CameraPage(initialPrivacy: privacy, recipientId: recipientId),
     );
     final nav = Navigator.of(context);
     return replace ? nav.pushReplacement(route) : nav.push(route);
@@ -58,10 +63,15 @@ abstract final class AppRoutes {
     BuildContext context, {
     required String imagePath,
     CapsulePrivacy? privacy,
+    String? recipientId,
     bool replace = false,
   }) {
     final route = fadeRoute<void>(
-      CapsuleCreationPage(imagePath: imagePath, initialPrivacy: privacy),
+      CapsuleCreationPage(
+        imagePath: imagePath,
+        initialPrivacy: privacy,
+        recipientId: recipientId,
+      ),
     );
     final nav = Navigator.of(context);
     return replace ? nav.pushReplacement(route) : nav.push(route);
@@ -96,6 +106,10 @@ abstract final class AppRoutes {
       Navigator.of(
         context,
       ).push(fadeRoute(YourFriendProfilePage(friendUid: friendUid)));
+
+  // Messages
+  static Future<void> toChat(BuildContext context, String friendUid) =>
+      Navigator.of(context).push(fadeRoute(ChatPage(friendUid: friendUid)));
 
   static Future<String?> toQrScanner(BuildContext context) =>
       Navigator.of(context).push<String>(fadeRoute(const QRScannerPage()));

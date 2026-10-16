@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../models/app_notification.dart';
 import '../models/capsule.dart';
+import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/user_profile.dart';
 
@@ -78,6 +79,43 @@ abstract interface class FriendsRepository {
     required String myUsername,
   });
   Future<void> unfollow({required String me, required String target});
+
+  /// Users [uid] blocked (`users/{uid}/blocked/{other}`).
+  Stream<Set<String>> watchBlocked(String uid);
+  Future<void> block({required String me, required String other});
+  Future<void> unblock({required String me, required String other});
+
+  /// Whether [other] blocked [me].
+  Future<bool> isBlockedBy({required String me, required String other});
+}
+
+/// Two-person chats (`chats/{chatId}` with a `messages` subcollection).
+abstract interface class ChatRepository {
+  /// Chats of [uid] that have messages, most recently active first.
+  Stream<List<Chat>> watchChats(String uid);
+
+  /// Messages of [chatId], oldest first (the newest [limit]).
+  Stream<List<ChatMessage>> watchMessages(String chatId, {int limit});
+
+  /// Sends [text] from [from] to [to], creating the chat on first use.
+  Future<void> sendText({
+    required String from,
+    required String to,
+    required String text,
+  });
+
+  /// Posts [capsule] (already shared with [to]) into the chat.
+  Future<void> sendCapsule({
+    required String from,
+    required String to,
+    required Capsule capsule,
+  });
+
+  /// Marks every unread message [sender] sent in [chatId] as read.
+  Future<void> markRead(String chatId, {required String sender});
+
+  /// Deletes every message of [chatId], for both participants.
+  Future<void> clearHistory(String chatId);
 }
 
 abstract interface class CapsuleRepository {

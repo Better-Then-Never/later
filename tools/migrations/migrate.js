@@ -22,7 +22,7 @@ async function migrateUsers(db, { apply, log = console.log }) {
   for (const doc of (await db.collection('usernames').get()).docs) {
     reservations.set(doc.id, doc.get('uid'));
   }
-  const report = { users: users.size, lowercased: 0, reserved: 0, conflicts: [], privateFieldsRemoved: 0, tokensMoved: 0 };
+  const report = { users: users.size, lowercased: 0, reserved: 0, conflicts: [], privateFieldsRemoved: 0, tokensMoved: 0, blocksMoved: 0 };
 
   for (const doc of users.docs) {
     const data = doc.data();
@@ -70,9 +70,22 @@ async function migrateUsers(db, { apply, log = console.log }) {
       report.tokensMoved++;
     }
 
+    // 4. Blocks made in main's app (blockedUsers array) become
+    //    users/{uid}/blocked/{other} documents, which the rules check.
+    if (Array.isArray(data.blockedUsers)) {
+      for (const other of data.blockedUsers) {
+        if (typeof other !== 'string' || !other || other === uid || other.includes('/')) continue;
+        writes.push((batch) =>
+          batch.set(doc.ref.collection('blocked').doc(other), { blockedAt: FieldValue.serverTimestamp() }),
+        );
+        report.blocksMoved++;
+      }
+      update.blockedUsers = FieldValue.delete();
+    }
+
     if (Object.keys(update).length) writes.push((batch) => batch.update(doc.ref, update));
     if (writes.length) {
-      log(`users/${uid}: ${Object.keys(update).join(', ') || '-'}${writes.length > 1 ? ' (+ reservation/token)' : ''}`);
+      log(`users/${uid}: ${Object.keys(update).join(', ') || '-'}${writes.length > 1 ? ' (+ reservation/token/blocks)' : ''}`);
       if (apply) {
         const batch = db.batch();
         writes.forEach((w) => w(batch));

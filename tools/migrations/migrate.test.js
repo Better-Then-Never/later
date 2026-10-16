@@ -16,7 +16,7 @@ before(async () => {
   db = admin.firestore();
   const users = db.collection('users');
   await users.doc('a').set({ name: 'A', username: 'Alice', email: 'a@x.y', fcmToken: 'tokA', friends: [] });
-  await users.doc('b').set({ name: 'B', username: 'bob', friends: [] });
+  await users.doc('b').set({ name: 'B', username: 'bob', friends: [], blockedUsers: ['a', 'b', ''] });
   await users.doc('c').set({ name: 'C', username: 'ALICE', friends: [] });
   await users.doc('d').set({ name: 'D', username: 'not valid!', friends: [] });
   await db.collection('usernames').doc('bob').set({ uid: 'b' });
@@ -38,6 +38,10 @@ test('apply: lower-case + reserve, private fields out, token moved, conflicts re
   assert.equal(a.fcmToken, undefined);
   assert.equal((await db.collection('usernames').doc('alice').get()).get('uid'), 'a');
   assert.ok((await db.doc('users/a/fcmTokens/tokA').get()).exists);
+  // main's block list moved to the subcollection the rules read.
+  assert.equal(report.blocksMoved, 1);
+  assert.ok((await db.doc('users/b/blocked/a').get()).exists);
+  assert.equal((await db.doc('users/b').get()).get('blockedUsers'), undefined);
   assert.equal(report.conflicts.length, 2, 'ALICE (taken) and "not valid!"');
   assert.equal((await db.collection('users').doc('c').get()).get('username'), 'ALICE');
 });

@@ -31,10 +31,14 @@ class CapsuleCreationPage extends StatelessWidget {
     super.key,
     required this.imagePath,
     this.initialPrivacy,
+    this.recipientId,
   });
 
   final String imagePath;
   final CapsulePrivacy? initialPrivacy;
+
+  /// The friend the capsule is sent to (it also lands in your chat).
+  final String? recipientId;
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +50,22 @@ class CapsuleCreationPage extends StatelessWidget {
         location: context.read<LocationService>(),
         currentLocation: context.read<CurrentLocation>(),
         initialPrivacy: initialPrivacy,
+        recipientId: recipientId,
+        chats: context.read<ChatRepository>(),
       ),
-      child: _CapsuleCreationView(initialPrivacy: initialPrivacy),
+      child: _CapsuleCreationView(
+        initialPrivacy: initialPrivacy,
+        recipientId: recipientId,
+      ),
     );
   }
 }
 
 class _CapsuleCreationView extends StatelessWidget {
-  const _CapsuleCreationView({this.initialPrivacy});
+  const _CapsuleCreationView({this.initialPrivacy, this.recipientId});
 
   final CapsulePrivacy? initialPrivacy;
+  final String? recipientId;
 
   Future<void> _pickOpenDate(BuildContext context) async {
     final now = DateTime.now();
@@ -106,6 +116,7 @@ class _CapsuleCreationView extends StatelessWidget {
                     context,
                     replace: true,
                     privacy: initialPrivacy,
+                    recipientId: recipientId,
                   ),
                   assetPath: AppIcons.goBack,
                 ),

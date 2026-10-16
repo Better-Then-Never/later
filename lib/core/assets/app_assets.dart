@@ -74,6 +74,11 @@ abstract final class AppIcons {
     return 'assets/icons/map/pin_${_capsulePinColors.contains(name) ? name : 'red'}.png';
   }
 
+  // Messages
+  static const messagesNew = 'assets/icons/messages/new_message.png';
+  static const messagesChatMenu = 'assets/icons/messages/chat_menu.png';
+  static const messagesSend = 'assets/icons/messages/send.png';
+
   // Navbar
   static const navbarAdd = 'assets/icons/navbar/add.png';
   static const navbarHistory = 'assets/icons/navbar/history.png';
@@ -139,6 +144,9 @@ abstract final class AppIcons {
     historySort,
     mapPinUser,
     for (final c in _capsulePinColors) mapPin(c),
+    messagesNew,
+    messagesChatMenu,
+    messagesSend,
     navbarAdd,
     navbarHistory,
     navbarMap,
