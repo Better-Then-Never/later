@@ -100,16 +100,16 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-080 | Profile | Profile/background upload: no compression/size limit/content type; base64 copy in SharedPreferences; 128×128 thumbnail squashes non-square photos on the UI thread; other avatars not refreshed after upload. | Image pipeline. | S2 | code (B-H4) | fixed | 18a8c1f |
 | BUG-081 | Profile | "Delete profile icon/background" without an existing image locks the widget in "Updating…" forever. | No try/catch. | S2 | code (B-H5) | fixed | 18a8c1f |
 | BUG-082 | Profile/Add friends | Request-count badge wraps `Positioned` in `Positioned` → ParentDataWidget error in debug. | Widget returns `Positioned`. | S3 | code (B-H6) | fixed | 2e33d45 |
-| BUG-083 | Settings | Username change: no lower-casing, no uniqueness, no validation. | `updateUsername`. | S2 | code (B-H8) | open | |
+| BUG-083 | Settings | Username change: no lower-casing, no uniqueness, no validation. | `updateUsername`. | S2 | code (B-H8) | fixed | 7e51a90 |
 | BUG-084 | Friends | Accept/Reject/Cancel without loading state or double-submit guard; success toasts never show (row unmounted). | UI state handling. | S3 | code (B-M4, B-M5) | fixed | 2e33d45 |
 | BUG-085 | Friends | Page controllers never disposed → listeners leak on the global friends service. | Missing `dispose`. | S3 | code (B-M6) | fixed | 2e33d45 |
 | BUG-086 | Profile | Header buttons positioned at fixed `top: 35` without SafeArea → overlap status bar on notched iPhones. | Fixed offsets. | S3 | code (B-M7) | fixed | 18a8c1f |
 | BUG-087 | Profile | "Updating…" caption uses font family `Inria` (typo) → system font. | Typo. | S4 | code (B-M9) | fixed | 18a8c1f |
 | BUG-088 | Friend options | Chat settings, Capsules settings, Share profile to…, Report, Block, Open chat, Send Capsule: buttons do nothing. | Unimplemented features. | S3 | repro (`friend_options_modal.png`) | kept (adding them = new features; see IDEAS_NOT_DONE.md). "Share profile to…" wired to the existing share flow — see fix column | |
 | BUG-089 | Friend remove | Double `pop()` after removing a friend; global popup hidden on dispose. | Modal flow. | S3 | code (B-M13) | fixed | 2e33d45 |
-| BUG-090 | Settings | `setState`/context used after `await` without `mounted` (name settings, permissions, profile pictures). | Lifecycle. | S3 | code (B-M12, B-M14, B-M15) | open | |
-| BUG-091 | Permissions settings | Status not refreshed after returning from OS settings. | No resume hook. | S3 | code (B-M14) | open | |
-| BUG-092 | Share profile | QR/link built from `'No User'` until profile loaded. | BUG-011. | S3 | code | open | |
+| BUG-090 | Settings | `setState`/context used after `await` without `mounted` (name settings, permissions, profile pictures). | Lifecycle. | S3 | code (B-M12, B-M14, B-M15) | fixed | 7e51a90 |
+| BUG-091 | Permissions settings | Status not refreshed after returning from OS settings. | No resume hook. | S3 | code (B-M14) | fixed | 7e51a90 |
+| BUG-092 | Share profile | QR/link built from `'No User'` until profile loaded. | BUG-011. | S3 | code | fixed | 7e51a90 |
 
 ## Data, security, backend
 

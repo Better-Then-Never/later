@@ -17,7 +17,9 @@
 - **Step 7 (map)** done in b7a6ac2 (see commit). Maps key moved to local.properties / Secrets.xcconfig.
 - **Step 8 (camera + capsule creation)** done in 560afff: camera lifecycle/flash/error state/capture guard; CapsuleCreationController (re-entrancy, location fallback, clean errors, temp photo cleanup). Verified: double tap -> 1 capsule, upload image/jpeg 99 KB (was octet-stream 151 KB).
 - **Step 9 (history)** done in 59daac4: OwnCapsulesStore, FavoritesStore, HistoryController, null-safe tile; legacy CapsuleDataService/FavoriteCapsuleService/HistoryPageController removed. Verified: newest first, favourite persisted, delete removes doc + Storage image.
-- Next: step 10 (profile, friends, share, settings).
+- **Step 10 (profile, friends, share, settings)** done in 2e33d45 (friends: FriendsStore, UserDirectory, FriendActions, bounded search, pinned friends), 18a8c1f (profile images: ProfileImageEditor, one options sheet, header offsets), 7e51a90 (settings: username transaction, mounted checks, permissions resume, share from session). All legacy services are gone except PopupNotificationService and SharingService (stateless helpers). BUG-071 privacy part (email/fcmToken readable in users docs) and BUG-076 (cross-user friends write) still need the rules + migration of step 13.
+- Emulator data was changed by manual checks (alice is @alice.w, bob unfriended, alice background deleted, alice profile picture set, dave is a friend): re-run `tools/emulator/seed.js` on a fresh emulator before the "after" screenshots.
+- Next: step 12 (component library, dead code, page_transition/location deps, prints, 0 analyzer issues).
 
 ## Final-report checklist (verify before writing REPORT.md)
 - SECURITY_FINDINGS.md and BLOCKERS.md describe some fixes in the present tense ("moved", "fixed in code"): confirm each one actually landed, or reword.
