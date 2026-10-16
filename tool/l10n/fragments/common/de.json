@@ -11,5 +11,12 @@
   "commonDone": "Fertig",
   "commonBack": "Zurück",
   "commonErrorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-  "commonNoConnection": "Keine Verbindung. Bitte versuche es erneut."
+  "commonNoConnection": "Keine Verbindung. Bitte versuche es erneut.",
+  "commonSearchHint": "Suchen...",
+  "commonUnknownUser": "Unbekannter Nutzer",
+  "commonUnknownUsername": "unbekannt",
+  "failurePermission": "Das darfst du nicht.",
+  "failureNotFound": "Dieses Element gibt es nicht mehr.",
+  "placeNoLocation": "Kein Standort",
+  "placeUnknown": "Unbekannter Ort"
 }

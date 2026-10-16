@@ -83,7 +83,7 @@ class YourFriendProfilePage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          decoration: BoxDecorations.whiteCard(),
+                          decoration: BoxDecorations.whiteCard(context),
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () => AppRoutes.toChat(context, friendUid),
@@ -94,7 +94,7 @@ class YourFriendProfilePage extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          decoration: BoxDecorations.whiteCard(),
+                          decoration: BoxDecorations.whiteCard(context),
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () => AppRoutes.toCamera(
@@ -119,7 +119,7 @@ class YourFriendProfilePage extends StatelessWidget {
                   Container(
                     width: screenWidth - 32,
                     height: 80,
-                    decoration: BoxDecorations.whiteCard(),
+                    decoration: BoxDecorations.whiteCard(context),
                     child: const Center(
                       child: DefaultText(
                         "Friend's capsules will appear here",

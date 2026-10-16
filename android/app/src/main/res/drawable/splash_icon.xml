@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ splash icon: a 288 dp canvas whose centre 192 dp circle is
+     visible; the logo is drawn 132 dp wide like the launch screen. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/splash_logo"
+    android:insetLeft="78dp"
+    android:insetRight="78dp"
+    android:insetTop="84dp"
+    android:insetBottom="84dp" />

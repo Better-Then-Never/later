@@ -150,7 +150,7 @@ class _Skeleton extends StatelessWidget {
       itemCount: 4,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (_, _) => DecoratedBox(
-        decoration: BoxDecorations.whiteCard(),
+        decoration: BoxDecorations.whiteCard(context),
         child: UserRowSkeleton(screenWidth: screenWidth),
       ),
     );

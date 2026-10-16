@@ -12,5 +12,12 @@
   "commonLoading": "Загрузка...",
   "commonNoConnection": "Нет соединения. Попробуйте ещё раз.",
   "commonRetry": "Повторить",
-  "commonSave": "Сохранить"
+  "commonSave": "Сохранить",
+  "commonSearchHint": "Поиск...",
+  "commonUnknownUser": "Неизвестный пользователь",
+  "commonUnknownUsername": "неизвестно",
+  "failureNotFound": "Этот объект больше не существует.",
+  "failurePermission": "У вас нет прав на это действие.",
+  "placeNoLocation": "Нет геопозиции",
+  "placeUnknown": "Неизвестное место"
 }

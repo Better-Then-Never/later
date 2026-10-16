@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
-import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/l10n/l10n.dart';
 
 class DefaultSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final DefaultIconButton? trailingButton;
-  final String hintText;
+
+  /// "Search..." in the app's language when null.
+  final String? hintText;
   final Color? color;
   final void Function(String value)? onChanged;
   final FocusNode? searchFocusNode;
@@ -16,7 +19,7 @@ class DefaultSearchBar extends StatelessWidget {
     super.key,
     required this.controller,
     this.trailingButton,
-    this.hintText = 'Search...',
+    this.hintText,
     this.color,
     this.searchFocusNode,
     this.onChanged,
@@ -31,7 +34,7 @@ class DefaultSearchBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: color ?? AppColors.surfaceMuted,
+          color: color ?? context.palette.surfaceMuted,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(
@@ -49,7 +52,7 @@ class DefaultSearchBar extends StatelessWidget {
                 focusNode: searchFocusNode,
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: hintText,
+                  hintText: hintText ?? context.l10n.commonSearchHint,
                   border: InputBorder.none,
                   isDense: true,
                 ),

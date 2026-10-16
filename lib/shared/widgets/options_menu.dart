@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
 
 /// Shows [child] centred over a dimmed barrier; tapping outside closes it.
 /// The look of every option menu and confirmation in the app.
@@ -10,7 +10,7 @@ Future<T?> showCenteredSheet<T>(BuildContext context, Widget child) =>
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: AppColors.barrier,
+      barrierColor: context.palette.scrim,
       builder: (context) => GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => Navigator.of(context).pop(),
@@ -32,7 +32,7 @@ class OptionsMenu extends StatelessWidget {
     return Container(
       width: 264,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: children),
@@ -74,7 +74,7 @@ class OptionsMenuItem extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          foregroundColor: textColor ?? AppColors.black,
+          foregroundColor: textColor ?? context.palette.textPrimary,
           textStyle: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,
@@ -101,7 +101,7 @@ class OptionsMenuDivider extends StatelessWidget {
     return Container(
       width: 264,
       height: thickness,
-      color: color ?? AppColors.divider,
+      color: color ?? context.palette.divider,
     );
   }
 }

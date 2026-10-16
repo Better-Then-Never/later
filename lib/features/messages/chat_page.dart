@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_text_styles.dart';
@@ -373,7 +374,7 @@ class _ChatHeader extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.pageTitle(
-                    screen,
+                    context,
                   ).copyWith(fontSize: screen.height * 0.028),
                 ),
                 // Muted chats send no pushes; say so where it matters.
@@ -542,10 +543,10 @@ class _ScrollToLatestButton extends StatelessWidget {
             width: 48,
             height: 48,
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
+            decoration: BoxDecoration(
+              color: context.palette.surface,
               shape: BoxShape.circle,
-              boxShadow: AppShadows.raised,
+              boxShadow: AppShadows.raised(context),
             ),
             // The app's back arrow, turned to point down.
             child: Transform.rotate(

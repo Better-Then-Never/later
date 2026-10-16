@@ -19,7 +19,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
       child: Container(
         width: screenWidth - 32,
         height: 45,
-        decoration: BoxDecorations.whiteCard(),
+        decoration: BoxDecorations.whiteCard(context),
         child: Stack(
           children: [
             Positioned(

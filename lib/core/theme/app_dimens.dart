@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'app_palette.dart';
 
 /// Corner radii used by the design (DESIGN_SPEC.md §4).
 abstract final class AppRadii {
@@ -29,41 +30,43 @@ abstract final class AppSpacing {
   static const double xxl = 24;
 }
 
-/// Shadows (DESIGN_SPEC.md §5).
+/// Shadows (DESIGN_SPEC.md §5), in the colour of the current theme (dark mode
+/// uses deeper shadows; cards there also get a hairline edge).
 abstract final class AppShadows {
-  static const card = [
+  static List<BoxShadow> card(BuildContext context) => [
     BoxShadow(
-      color: AppColors.shadowCard,
+      color: context.palette.shadowCard,
       blurRadius: 9,
       spreadRadius: 1,
-      offset: Offset(0, 4),
+      offset: const Offset(0, 4),
     ),
   ];
 
-  static const softCard = [
+  static List<BoxShadow> softCard(BuildContext context) => [
     BoxShadow(
-      color: AppColors.shadowCard,
+      color: context.palette.shadowCard,
       blurRadius: 16,
       spreadRadius: 1,
-      offset: Offset(0, 6),
+      offset: const Offset(0, 6),
     ),
   ];
 
-  static const raised = [
+  static List<BoxShadow> raised(BuildContext context) => [
     BoxShadow(
-      color: AppColors.shadowRaised,
+      color: context.palette.shadowRaised,
       blurRadius: 10,
-      offset: Offset(0, 4),
+      offset: const Offset(0, 4),
     ),
   ];
 
-  static const mapInfo = [
-    BoxShadow(color: AppColors.shadowRaised, blurRadius: 8),
+  static List<BoxShadow> mapInfo(BuildContext context) => [
+    BoxShadow(color: context.palette.shadowRaised, blurRadius: 8),
   ];
 
+  /// Over the profile photo: the same in both themes.
   static const header = [
     BoxShadow(
-      color: AppColors.shadowHeader,
+      color: AppColors.mediaShade,
       blurRadius: 20,
       spreadRadius: 15,
       offset: Offset(0, 6),

@@ -156,7 +156,7 @@ class PopupNotificationState extends State<PopupNotification>
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.black.withAlpha((0.2 * 255).round()),
+                  color: AppColors.mediaBlack.withAlpha((0.2 * 255).round()),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Placeholder of a user row while it loads (grey avatar and two text bars).
 class UserRowSkeleton extends StatelessWidget {
@@ -19,8 +19,8 @@ class UserRowSkeleton extends StatelessWidget {
           Container(
             width: screenWidth * 0.14,
             height: screenWidth * 0.14,
-            decoration: const BoxDecoration(
-              color: AppColors.grey300,
+            decoration: BoxDecoration(
+              color: context.palette.skeleton,
               shape: BoxShape.circle,
             ),
           ),
@@ -31,13 +31,13 @@ class UserRowSkeleton extends StatelessWidget {
               Container(
                 width: screenWidth * 0.3,
                 height: screenWidth * 0.04,
-                color: AppColors.grey300,
+                color: context.palette.skeleton,
               ),
               const SizedBox(height: 4),
               Container(
                 width: screenWidth * 0.2,
                 height: screenWidth * 0.03,
-                color: AppColors.grey300,
+                color: context.palette.skeleton,
               ),
             ],
           ),

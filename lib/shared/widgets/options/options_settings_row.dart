@@ -3,6 +3,7 @@ import 'package:later/app/router/app_page_route.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class OptionsSettingsRow extends StatelessWidget {
   final String title;
@@ -49,7 +50,7 @@ class OptionsSettingsRow extends StatelessWidget {
               textAlign: TextAlign.start,
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
-              color: isLast ? AppColors.danger : AppColors.black,
+              color: isLast ? AppColors.danger : context.palette.textPrimary,
             ),
             subtitle: subtitle,
             leading: leadingIconPath != null
@@ -82,12 +83,12 @@ class OptionsSettingsRow extends StatelessWidget {
           ),
         ),
         if (!isLast && withDivider)
-          const Divider(
+          Divider(
             height: 1,
             thickness: 1,
             indent: 0,
             endIndent: 0,
-            color: AppColors.divider,
+            color: context.palette.divider,
           ),
       ],
     );

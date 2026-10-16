@@ -28,7 +28,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
         Container(
           width: screenWidth - 32,
           height: 80,
-          decoration: BoxDecorations.whiteCard(),
+          decoration: BoxDecorations.whiteCard(context),
           child: Stack(
             children: [
               Align(

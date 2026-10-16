@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../styles/box_decorations.dart';
 import '../default_text.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// A titled white card of settings rows, as on the Settings page.
 class OptionsSection extends StatelessWidget {
@@ -44,7 +45,7 @@ class OptionsSection extends StatelessWidget {
             child: Container(
               width: screenWidth * 0.92,
               clipBehavior: Clip.antiAlias,
-              decoration: BoxDecorations.whiteCard(),
+              decoration: BoxDecorations.whiteCard(context),
               child: Column(children: children),
             ),
           ),
@@ -52,7 +53,7 @@ class OptionsSection extends StatelessWidget {
             DefaultText(
               footer!,
               textAlign: TextAlign.left,
-              color: AppColors.textSecondary,
+              color: context.palette.textSecondary,
               padding: EdgeInsets.only(
                 left: screenWidth * 0.09,
                 right: screenWidth * 0.09,
@@ -105,7 +106,9 @@ class OptionsSwitchRow extends StatelessWidget {
               textAlign: TextAlign.start,
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
-              color: enabled ? AppColors.black : AppColors.grey500,
+              color: enabled
+                  ? context.palette.textPrimary
+                  : context.palette.iconMuted,
             ),
             subtitle: subtitle == null
                 ? null
@@ -113,15 +116,15 @@ class OptionsSwitchRow extends StatelessWidget {
                     subtitle!,
                     textAlign: TextAlign.start,
                     color: enabled
-                        ? AppColors.textSecondary
-                        : AppColors.grey500,
+                        ? context.palette.textSecondary
+                        : context.palette.iconMuted,
                   ),
             trailing: AppSwitch(value: value, onChanged: onChanged),
             onTap: enabled ? () => onChanged!(!value) : null,
           ),
         ),
         if (withDivider)
-          const Divider(height: 1, thickness: 1, color: AppColors.divider),
+          Divider(height: 1, thickness: 1, color: context.palette.divider),
       ],
     );
   }
@@ -139,10 +142,10 @@ class AppSwitch extends StatelessWidget {
     return Switch(
       value: value,
       onChanged: onChanged,
-      activeThumbColor: AppColors.white,
+      activeThumbColor: AppColors.onAccent,
       activeTrackColor: AppColors.brandGreen,
-      inactiveThumbColor: AppColors.white,
-      inactiveTrackColor: AppColors.grey400,
+      inactiveThumbColor: AppColors.onAccent,
+      inactiveTrackColor: context.palette.disabled,
       trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
     );
   }

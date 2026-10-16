@@ -7,6 +7,7 @@ import '../../features/auth/welcome_page.dart';
 import '../../features/settings/pages/complete_profile_page.dart';
 import '../shell/widget_tree_wrapper_page.dart';
 import '../router/app_routes.dart';
+import '../../shared/widgets/splash_logo.dart';
 import 'session_controller.dart';
 
 /// Root of the navigator. Shows the right top-level screen for the session:
@@ -41,7 +42,8 @@ class _AuthGateState extends State<AuthGate> {
 
     switch (status) {
       case SessionStatus.unknown:
-        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        // Same picture as the native launch screen: no flash at start-up.
+        return const SplashLogo();
       case SessionStatus.signedOut:
         _permissionsGrantedFor = null;
         return session.signedOutByUser

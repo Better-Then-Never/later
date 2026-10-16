@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../features/users/user_directory.dart';
 import '../default_text.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/l10n/l10n.dart';
 
 /// Name above "@username" of any user, from [UserDirectory].
 class UserNameAndUsername extends StatelessWidget {
@@ -12,8 +13,10 @@ class UserNameAndUsername extends StatelessWidget {
   final TextAlign textAlign;
   final double nameFontSize;
   final double usernameFontSize;
-  final Color nameColor;
-  final Color usernameColor;
+
+  /// Theme text colours when null.
+  final Color? nameColor;
+  final Color? usernameColor;
   final FontWeight nameFontWeight;
   final FontWeight usernameFontWeight;
   final CrossAxisAlignment crossAxisAlignment;
@@ -24,8 +27,8 @@ class UserNameAndUsername extends StatelessWidget {
     this.textAlign = TextAlign.center,
     this.nameFontSize = 32,
     this.usernameFontSize = 22,
-    this.nameColor = AppColors.black,
-    this.usernameColor = AppColors.textSecondary,
+    this.nameColor,
+    this.usernameColor,
     this.nameFontWeight = FontWeight.bold,
     this.usernameFontWeight = FontWeight.bold,
     this.crossAxisAlignment = CrossAxisAlignment.start,
@@ -41,8 +44,8 @@ class UserNameAndUsername extends StatelessWidget {
         children: const [Center(), Center()],
       );
     }
-    final name = profile?.name ?? 'Unknown User';
-    final username = profile?.username ?? 'unknown';
+    final name = profile?.name ?? context.l10n.commonUnknownUser;
+    final username = profile?.username ?? context.l10n.commonUnknownUsername;
 
     return Column(
       crossAxisAlignment: crossAxisAlignment,
@@ -56,7 +59,7 @@ class UserNameAndUsername extends StatelessWidget {
             name,
             fontSize: nameFontSize,
             fontWeight: nameFontWeight,
-            color: nameColor,
+            color: nameColor ?? context.palette.textPrimary,
             textAlign: textAlign,
             height: 1.0,
           ),
@@ -64,7 +67,7 @@ class UserNameAndUsername extends StatelessWidget {
         DefaultText(
           '@$username',
           fontSize: usernameFontSize,
-          color: usernameColor,
+          color: usernameColor ?? context.palette.textSecondary,
           fontWeight: usernameFontWeight,
           textAlign: textAlign,
         ),

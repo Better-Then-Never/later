@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/default_search_bar.dart';
-import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_motion.dart';
 import 'package:later/core/theme/app_dimens.dart';
+import '../../core/theme/app_palette.dart';
 
 class PageHeader extends StatelessWidget {
   final String mainText;
@@ -33,9 +33,9 @@ class PageHeader extends StatelessWidget {
       curve: AppMotion.emphasizedCurve,
       child: Container(
         width: screenWidth,
-        decoration: const BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.only(
+        decoration: BoxDecoration(
+          color: context.palette.surface,
+          borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
           ),
@@ -91,7 +91,7 @@ class PageHeader extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
                   child: DefaultText(
                     description!,
-                    color: AppColors.textSecondary,
+                    color: context.palette.textSecondary,
                     fontWeight: FontWeight.bold,
                     fontSize: screenHeight * 0.017,
                   ),

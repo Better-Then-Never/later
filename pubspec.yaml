@@ -91,6 +91,16 @@ flutter:
     - assets/icons/messages/
     - assets/icons/navbar/
     - assets/icons/profile/
+    # Dark-theme variants (tool/make_dark_icons.dart), served by ThemedAssetBundle.
+    - assets/icons_dark/auth/
+    - assets/icons_dark/camera/
+    - assets/icons_dark/capsule/
+    - assets/icons_dark/friends/
+    - assets/icons_dark/history/
+    - assets/icons_dark/map/
+    - assets/icons_dark/messages/
+    - assets/icons_dark/navbar/
+    - assets/icons_dark/profile/
 
   # Inria Sans, registered under the family name "Irina" used throughout the app.
   fonts:

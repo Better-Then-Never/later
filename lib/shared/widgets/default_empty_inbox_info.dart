@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/buttons/default_green_button.dart';
 import 'package:later/shared/widgets/default_text.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 
 /// The app's empty and error state: icon (72 px), bold title, grey subtitle
 /// and, when [actionText] is set, a small green button (e.g. "Retry").
@@ -45,7 +45,7 @@ class DefaultEmptyInboxInfo extends StatelessWidget {
                 subtitle!,
                 textAlign: TextAlign.center,
                 fontSize: screen.width * 0.033,
-                color: AppColors.grey600,
+                color: context.palette.textMuted,
               ),
             if (actionText != null && action != null) ...[
               const SizedBox(height: 16),

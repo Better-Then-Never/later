@@ -48,4 +48,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get commonSave => 'Speichern';
+
+  @override
+  String get commonSearchHint => 'Suchen...';
+
+  @override
+  String get commonUnknownUser => 'Unbekannter Nutzer';
+
+  @override
+  String get commonUnknownUsername => 'unbekannt';
+
+  @override
+  String get failureNotFound => 'Dieses Element gibt es nicht mehr.';
+
+  @override
+  String get failurePermission => 'Das darfst du nicht.';
+
+  @override
+  String get placeNoLocation => 'Kein Standort';
+
+  @override
+  String get placeUnknown => 'Unbekannter Ort';
 }

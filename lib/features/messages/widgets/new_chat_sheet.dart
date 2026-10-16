@@ -110,7 +110,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: DecoratedBox(
-              decoration: BoxDecorations.whiteCard(),
+              decoration: BoxDecorations.whiteCard(context),
               child: Semantics(
                 button: true,
                 label: 'Start chat with ${profile?.name ?? ''}',
@@ -166,7 +166,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
                     Text(
                       'New Chat',
                       style: AppTextStyles.pageTitle(
-                        screen,
+                        context,
                       ).copyWith(fontSize: screen.height * 0.03),
                     ),
                     Positioned(

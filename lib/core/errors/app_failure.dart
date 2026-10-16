@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import '../../core/l10n/l10n.dart';
 
 /// A failure that can be shown to the user. [message] is always safe to
 /// display; [cause] keeps the original error for logging.
@@ -16,26 +17,26 @@ sealed class AppFailure implements Exception {
         case 'permission-denied':
         case 'unauthenticated':
           return PermissionFailure(
-            'You are not allowed to do that.',
+            AppL10n.current.failurePermission,
             cause: error,
           );
         case 'unavailable':
         case 'network-request-failed':
         case 'deadline-exceeded':
           return NetworkFailure(
-            'No connection. Please try again.',
+            AppL10n.current.commonNoConnection,
             cause: error,
           );
         case 'not-found':
         case 'object-not-found':
           return NotFoundFailure(
-            fallbackMessage ?? 'This item no longer exists.',
+            fallbackMessage ?? AppL10n.current.failureNotFound,
             cause: error,
           );
       }
     }
     return UnknownFailure(
-      fallbackMessage ?? 'Something went wrong. Please try again.',
+      fallbackMessage ?? AppL10n.current.commonErrorGeneric,
       cause: error,
     );
   }

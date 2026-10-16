@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
@@ -86,10 +87,10 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
     final isOpen = _isOpen;
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
+      decoration: BoxDecoration(
+        color: context.palette.surface,
         borderRadius: AppRadii.lCircular,
-        boxShadow: AppShadows.mapInfo,
+        boxShadow: AppShadows.mapInfo(context),
       ),
       child: Column(
         children: [

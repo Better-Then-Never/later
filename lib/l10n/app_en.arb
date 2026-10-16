@@ -18,5 +18,15 @@
   "commonLoading": "Loading...",
   "commonNoConnection": "No connection. Please try again.",
   "commonRetry": "Try again",
-  "commonSave": "Save"
+  "commonSave": "Save",
+  "commonSearchHint": "Search...",
+  "commonUnknownUser": "Unknown user",
+  "commonUnknownUsername": "unknown",
+  "failureNotFound": "This item no longer exists.",
+  "failurePermission": "You are not allowed to do that.",
+  "placeNoLocation": "No location",
+  "@placeNoLocation": {
+    "description": "Place pill on a capsule when the phone has no location yet."
+  },
+  "placeUnknown": "Unknown location"
 }

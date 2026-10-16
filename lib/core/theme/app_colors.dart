@@ -16,6 +16,23 @@ abstract final class AppColors {
   static const pendingYellow = Color(0xFFFDDB07);
   static const warningOrange = Color(0xFFFF9800);
 
+  // Content on colour and on photos: the same in light and dark.
+  /// Text and icons on brand green, danger red, info blue.
+  static const onAccent = Color(0xFFFFFFFF);
+
+  /// Text and icons drawn over photos and the camera preview.
+  static const onMedia = Color(0xFFFFFFFF);
+  static const onMediaMuted = Color(0xB3FFFFFF);
+
+  /// Dark veils over photos (gradients, captions, the camera).
+  static const mediaScrim = Color(0x73000000);
+  static const mediaScrimStrong = Color(0xDD000000);
+  static const mediaBlack = Color(0xFF000000);
+  static const mediaShade = Color(0x78000000);
+
+  // Theme-dependent colours live in AppPalette (context.palette); the
+  // members below are being replaced by it and will be removed.
+
   // Neutral scale: the Material greys the screens already used, named so no
   // screen needs raw `Colors.*` (docs/polish/DESIGN_DECISIONS.md §1).
   static const white = Color(0xFFFFFFFF);

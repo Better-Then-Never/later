@@ -28,6 +28,7 @@ import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
 import '../features/settings/device_settings_store.dart';
 import '../features/settings/settings_store.dart';
+import 'appearance/appearance_controller.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
 import 'session/session_controller.dart';
@@ -35,8 +36,16 @@ import 'session/session_controller.dart';
 /// Composition root: creates every repository, service and session-scoped
 /// store once and provides them to the widget tree.
 class AppScope extends StatefulWidget {
-  const AppScope({super.key, required this.child});
+  const AppScope({
+    super.key,
+    required this.preferences,
+    required this.appearance,
+    required this.child,
+  });
 
+  /// Created and loaded in `bootstrap()`, before the first frame.
+  final PreferencesStore preferences;
+  final AppearanceController appearance;
   final Widget child;
 
   @override
@@ -57,7 +66,7 @@ class _AppScopeState extends State<AppScope> {
   final SettingsRepository _settings = FirebaseSettingsRepository();
   final _location = const LocationService();
   final _geocoding = GeocodingService();
-  final _prefs = PreferencesStore();
+  late final _prefs = widget.preferences;
   final _links = AppLinkHandler(onOpenProfile: AppRoutes.openProfileFromLink);
   final _push = PushMessagingService();
   final _mapFocus = MapFocus();
@@ -139,6 +148,9 @@ class _AppScopeState extends State<AppScope> {
         Provider<LocationService>.value(value: _location),
         Provider<GeocodingService>.value(value: _geocoding),
         Provider<PreferencesStore>.value(value: _prefs),
+        ChangeNotifierProvider<AppearanceController>.value(
+          value: widget.appearance,
+        ),
         Provider<AppLinkHandler>.value(value: _links),
         ChangeNotifierProvider<SessionController>.value(value: _session),
         ChangeNotifierProvider<CurrentLocation>.value(value: _currentLocation),

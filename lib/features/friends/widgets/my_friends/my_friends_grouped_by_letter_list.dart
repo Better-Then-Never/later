@@ -38,7 +38,7 @@ class MyFriendsGroupedByLetterList extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Container(
-                decoration: BoxDecorations.whiteCard(),
+                decoration: BoxDecorations.whiteCard(context),
                 child: Column(
                   children: [
                     for (final friend in group)

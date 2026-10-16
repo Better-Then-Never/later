@@ -140,7 +140,7 @@ class _CapsuleCreationView extends StatelessWidget {
                       Container(
                         width: screen.width,
                         height: screen.height * 0.4,
-                        decoration: BoxDecorations.whiteCard(),
+                        decoration: BoxDecorations.whiteCard(context),
                         padding: const EdgeInsets.all(8),
                         child: Row(
                           children: [
@@ -189,7 +189,7 @@ class _CapsuleCreationView extends StatelessWidget {
                       const SizedBox(height: 8),
                       Container(
                         width: screen.width,
-                        decoration: BoxDecorations.whiteCard(),
+                        decoration: BoxDecorations.whiteCard(context),
                         child: Column(
                           children: [
                             OptionsSettingsRow(

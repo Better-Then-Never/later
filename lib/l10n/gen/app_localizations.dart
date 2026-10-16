@@ -181,6 +181,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get commonSave;
+
+  /// No description provided for @commonSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get commonSearchHint;
+
+  /// No description provided for @commonUnknownUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown user'**
+  String get commonUnknownUser;
+
+  /// No description provided for @commonUnknownUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get commonUnknownUsername;
+
+  /// No description provided for @failureNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This item no longer exists.'**
+  String get failureNotFound;
+
+  /// No description provided for @failurePermission.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not allowed to do that.'**
+  String get failurePermission;
+
+  /// Place pill on a capsule when the phone has no location yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No location'**
+  String get placeNoLocation;
+
+  /// No description provided for @placeUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown location'**
+  String get placeUnknown;
 }
 
 class _AppLocalizationsDelegate

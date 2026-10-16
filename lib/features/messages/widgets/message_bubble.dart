@@ -53,7 +53,7 @@ class MessageBubble extends StatelessWidget {
           bottomLeft: showTail && !isMine ? _tail : _radius,
           bottomRight: showTail && isMine ? _tail : _radius,
         ),
-        boxShadow: isMine ? null : AppShadows.card,
+        boxShadow: isMine ? null : AppShadows.card(context),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,

@@ -47,7 +47,7 @@ class NotificationItem extends StatelessWidget {
                 ),
               ],
             )
-          : BoxDecorations.whiteCard(borderRadius: 25).copyWith(
+          : BoxDecorations.whiteCard(context, borderRadius: 25).copyWith(
               color: notification.isRead
                   ? AppColors.white
                   : AppColors.unreadNotification,

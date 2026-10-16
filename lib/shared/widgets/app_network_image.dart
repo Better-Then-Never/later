@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_palette.dart';
 
 /// A photo from the network with the app's placeholders: a grey box while it
 /// loads (fading the image in), and the same box with a picture icon when it
@@ -32,7 +32,7 @@ class AppNetworkImage extends StatelessWidget {
         return Stack(
           fit: StackFit.passthrough,
           children: [
-            const ColoredBox(color: AppColors.placeholderGrey),
+            ColoredBox(color: context.palette.skeleton),
             AnimatedOpacity(
               opacity: frame == null ? 0 : 1,
               duration: AppMotion.of(context, AppMotion.fast),
@@ -42,9 +42,11 @@ class AppNetworkImage extends StatelessWidget {
           ],
         );
       },
-      errorBuilder: (_, _, _) => const ColoredBox(
-        color: AppColors.placeholderGrey,
-        child: Center(child: Icon(Icons.image, color: AppColors.grey500)),
+      errorBuilder: (_, _, _) => ColoredBox(
+        color: context.palette.skeleton,
+        child: Center(
+          child: Icon(Icons.image, color: context.palette.iconMuted),
+        ),
       ),
     );
   }

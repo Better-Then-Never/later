@@ -1,6 +1,8 @@
 {
   "appName": "Later",
-  "@appName": {"description": "The app's name. Never translated."},
+  "@appName": {
+    "description": "The app's name. Never translated."
+  },
   "commonCancel": "Cancel",
   "commonConfirm": "Confirm",
   "commonSave": "Save",
@@ -11,7 +13,19 @@
   "commonContinue": "Continue",
   "commonDone": "Done",
   "commonBack": "Back",
-  "@commonBack": {"description": "Accessibility label of the back arrow."},
+  "@commonBack": {
+    "description": "Accessibility label of the back arrow."
+  },
   "commonErrorGeneric": "Something went wrong. Please try again.",
-  "commonNoConnection": "No connection. Please try again."
+  "commonNoConnection": "No connection. Please try again.",
+  "commonSearchHint": "Search...",
+  "commonUnknownUser": "Unknown user",
+  "commonUnknownUsername": "unknown",
+  "failurePermission": "You are not allowed to do that.",
+  "failureNotFound": "This item no longer exists.",
+  "placeNoLocation": "No location",
+  "placeUnknown": "Unknown location",
+  "@placeNoLocation": {
+    "description": "Place pill on a capsule when the phone has no location yet."
+  }
 }

@@ -11,5 +11,12 @@
   "commonDone": "Listo",
   "commonBack": "Atrás",
   "commonErrorGeneric": "Algo salió mal. Inténtalo de nuevo.",
-  "commonNoConnection": "Sin conexión. Inténtalo de nuevo."
+  "commonNoConnection": "Sin conexión. Inténtalo de nuevo.",
+  "commonSearchHint": "Buscar...",
+  "commonUnknownUser": "Usuario desconocido",
+  "commonUnknownUsername": "desconocido",
+  "failurePermission": "No tienes permiso para hacer eso.",
+  "failureNotFound": "Este elemento ya no existe.",
+  "placeNoLocation": "Sin ubicación",
+  "placeUnknown": "Lugar desconocido"
 }

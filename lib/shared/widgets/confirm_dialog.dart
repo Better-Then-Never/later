@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/l10n/l10n.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
-  final String confirmText;
-  final String cancelText;
+
+  /// "Confirm" / "Cancel" in the app's language when null.
+  final String? confirmText;
+  final String? cancelText;
   final VoidCallback onConfirm;
   final VoidCallback? onCancel;
   final Color? confirmButtonColor;
@@ -13,8 +17,8 @@ class ConfirmDialog extends StatelessWidget {
   const ConfirmDialog({
     super.key,
     required this.title,
-    this.confirmText = 'Confirm',
-    this.cancelText = 'Cancel',
+    this.confirmText,
+    this.cancelText,
     required this.onConfirm,
     this.onCancel,
     this.confirmButtonColor,
@@ -33,7 +37,7 @@ class ConfirmDialog extends StatelessWidget {
           child: Container(
             width: 264,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: context.palette.surface,
               borderRadius: BorderRadius.circular(25),
             ),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
@@ -44,8 +48,8 @@ class ConfirmDialog extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
                     title,
-                    style: const TextStyle(
-                      color: AppColors.black,
+                    style: TextStyle(
+                      color: context.palette.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -70,9 +74,9 @@ class ConfirmDialog extends StatelessWidget {
                       onConfirm();
                     },
                     child: Text(
-                      confirmText,
+                      confirmText ?? context.l10n.commonConfirm,
                       style: const TextStyle(
-                        color: AppColors.white,
+                        color: AppColors.onAccent,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -83,7 +87,7 @@ class ConfirmDialog extends StatelessWidget {
                 TextButton(
                   onPressed: onCancel ?? () => Navigator.of(context).pop(),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textSecondary,
+                    foregroundColor: context.palette.textSecondary,
                     textStyle: const TextStyle(
                       fontFamily: kAppFontFamily,
                       fontSize: 16,
@@ -91,7 +95,7 @@ class ConfirmDialog extends StatelessWidget {
                     ),
                     padding: EdgeInsets.zero,
                   ),
-                  child: Text(cancelText),
+                  child: Text(cancelText ?? context.l10n.commonCancel),
                 ),
               ],
             ),
@@ -104,8 +108,8 @@ class ConfirmDialog extends StatelessWidget {
   static Future<void> show({
     required BuildContext context,
     required String title,
-    String confirmText = 'Confirm',
-    String cancelText = 'Cancel',
+    String? confirmText,
+    String? cancelText,
     required VoidCallback onConfirm,
     VoidCallback? onCancel,
     Color? confirmButtonColor,
@@ -114,7 +118,7 @@ class ConfirmDialog extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: AppColors.barrier,
+      barrierColor: context.palette.scrim,
       builder: (BuildContext context) {
         return ConfirmDialog(
           title: title,

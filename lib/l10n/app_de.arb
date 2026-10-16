@@ -12,5 +12,12 @@
   "commonLoading": "Wird geladen...",
   "commonNoConnection": "Keine Verbindung. Bitte versuche es erneut.",
   "commonRetry": "Erneut versuchen",
-  "commonSave": "Speichern"
+  "commonSave": "Speichern",
+  "commonSearchHint": "Suchen...",
+  "commonUnknownUser": "Unbekannter Nutzer",
+  "commonUnknownUsername": "unbekannt",
+  "failureNotFound": "Dieses Element gibt es nicht mehr.",
+  "failurePermission": "Das darfst du nicht.",
+  "placeNoLocation": "Kein Standort",
+  "placeUnknown": "Unbekannter Ort"
 }

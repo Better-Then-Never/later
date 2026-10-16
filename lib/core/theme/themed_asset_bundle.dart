@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../assets/app_assets.dart';
+
 /// Serves the dark variants of the hand-drawn icons in dark mode.
 ///
 /// Every `Image.asset(AppIcons.x)` loads through `DefaultAssetBundle`, so
@@ -16,8 +18,8 @@ class ThemedAssetBundle extends CachingAssetBundle {
   final bool dark;
   final AssetBundle _parent;
 
-  static const _light = 'assets/icons/';
-  static const _dark = 'assets/icons_dark/';
+  static const _light = AppAssetDirs.icons;
+  static const _dark = AppAssetDirs.iconsDark;
 
   /// Dark variants that exist, from the asset manifest (null until loaded).
   static Set<String>? _darkAssets;

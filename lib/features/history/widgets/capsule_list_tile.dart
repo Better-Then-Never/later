@@ -51,9 +51,9 @@ class CapsuleListTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-        decoration: BoxDecorations.whiteCard().copyWith(
-          color: isSelected ? AppColors.selectedCapsule : null,
-        ),
+        decoration: BoxDecorations.whiteCard(
+          context,
+        ).copyWith(color: isSelected ? AppColors.selectedCapsule : null),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
 
 class DefaultText extends StatelessWidget {
   final String text;
@@ -39,7 +39,7 @@ class DefaultText extends StatelessWidget {
           fontFamily: kAppFontFamily,
           fontWeight: fontWeight ?? FontWeight.normal,
           fontSize: fontSize ?? 14,
-          color: color ?? AppColors.black,
+          color: color ?? context.palette.textPrimary,
           height: height,
         ),
       ),

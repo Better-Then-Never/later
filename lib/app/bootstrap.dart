@@ -7,8 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/logging/app_logger.dart';
+import '../core/theme/themed_asset_bundle.dart';
+import '../data/services/preferences_store.dart';
 import '../firebase_options.dart';
 import 'app_scope.dart';
+import 'appearance/appearance_controller.dart';
 import 'later_app.dart';
 
 /// Opt-in local Firebase Emulator Suite, for development and testing only:
@@ -33,8 +36,21 @@ Future<void> bootstrap() async {
     );
   };
 
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Everything the first frame needs, in parallel: Firebase, the device
+  // settings (theme, language, interface size: no flash of the wrong ones)
+  // and the list of dark icon variants.
+  final preferences = PreferencesStore();
+  await Future.wait([
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    preferences.init(),
+    ThemedAssetBundle.preload(),
+  ]);
+  final appearance = AppearanceController(preferences);
+  await appearance.load();
+  // Draw under transparent status and navigation bars (styles.xml); screens
+  // pad themselves with the real insets.
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   if (_useFirebaseEmulator) {
     await FirebaseAuth.instance.useAuthEmulator(_firebaseEmulatorHost, 9099);
@@ -55,5 +71,11 @@ Future<void> bootstrap() async {
   // second Flutter engine on Android's main thread at every launch; with an
   // empty handler that cost bought nothing and froze startup (POL-001).
 
-  runApp(const AppScope(child: LaterApp()));
+  runApp(
+    AppScope(
+      preferences: preferences,
+      appearance: appearance,
+      child: const LaterApp(),
+    ),
+  );
 }

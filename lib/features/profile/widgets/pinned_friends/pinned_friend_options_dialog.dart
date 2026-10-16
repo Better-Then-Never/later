@@ -27,7 +27,7 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
       child: Center(
         child: Container(
           width: 250,
-          decoration: BoxDecorations.whiteCard(),
+          decoration: BoxDecorations.whiteCard(context),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

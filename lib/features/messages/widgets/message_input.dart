@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -84,10 +85,10 @@ class _MessageInputState extends State<MessageInput> {
             ],
             Expanded(
               child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
+                decoration: BoxDecoration(
+                  color: context.palette.surface,
                   borderRadius: AppRadii.lCircular,
-                  boxShadow: AppShadows.card,
+                  boxShadow: AppShadows.card(context),
                 ),
                 child: TextField(
                   controller: _controller,
@@ -173,7 +174,7 @@ class _RoundButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
-                boxShadow: AppShadows.card,
+                boxShadow: AppShadows.card(context),
               ),
               child: child,
             ),

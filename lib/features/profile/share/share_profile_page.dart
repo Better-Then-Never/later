@@ -116,7 +116,7 @@ class ShareProfilePage extends StatelessWidget {
                 SizedBox(height: screenHeight * 0.03),
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecorations.lightBlueInfo(),
+                  decoration: BoxDecorations.lightBlueInfo(context),
                   child: Row(
                     children: [
                       const Icon(

@@ -11,5 +11,12 @@
   "commonDone": "Готово",
   "commonBack": "Назад",
   "commonErrorGeneric": "Что-то пошло не так. Попробуйте ещё раз.",
-  "commonNoConnection": "Нет соединения. Попробуйте ещё раз."
+  "commonNoConnection": "Нет соединения. Попробуйте ещё раз.",
+  "commonSearchHint": "Поиск...",
+  "commonUnknownUser": "Неизвестный пользователь",
+  "commonUnknownUsername": "неизвестно",
+  "failurePermission": "У вас нет прав на это действие.",
+  "failureNotFound": "Этот объект больше не существует.",
+  "placeNoLocation": "Нет геопозиции",
+  "placeUnknown": "Неизвестное место"
 }

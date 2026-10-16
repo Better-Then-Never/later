@@ -19,7 +19,7 @@ class ShareProfileQR extends StatelessWidget {
     return Container(
       width: screenWidth * 0.75,
       height: screenWidth * 0.75,
-      decoration: BoxDecorations.whiteCard(),
+      decoration: BoxDecorations.whiteCard(context),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: QrImageView(

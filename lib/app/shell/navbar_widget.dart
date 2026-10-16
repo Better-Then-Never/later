@@ -6,7 +6,8 @@ import '../../core/theme/app_motion.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_dimens.dart';
+import 'package:later/core/theme/app_palette.dart';
 
 const double navbarIconHeight = 46.0;
 
@@ -28,15 +29,12 @@ class NavbarWidget extends StatelessWidget {
         height: 80,
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: context.palette.surface,
           borderRadius: BorderRadius.circular(30),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColors.shadowRaised,
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
+          border: context.palette.isDark
+              ? Border.all(color: context.palette.cardBorder)
+              : null,
+          boxShadow: AppShadows.raised(context),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

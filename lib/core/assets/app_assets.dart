@@ -1,6 +1,13 @@
 /// Typed access to every bundled asset. UI code must not use raw asset paths;
 /// `test/core/app_assets_test.dart` checks that each path exists and that
 /// every bundled file is referenced here.
+/// Folders of the hand-drawn icons and of their dark-theme variants
+/// (`tool/make_dark_icons.dart`, served by `ThemedAssetBundle`).
+abstract final class AppAssetDirs {
+  static const icons = 'assets/icons/';
+  static const iconsDark = 'assets/icons_dark/';
+}
+
 abstract final class AppImages {
   static const laterLogo = 'assets/images/later_logo.png';
 

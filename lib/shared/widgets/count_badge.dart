@@ -47,7 +47,7 @@ class CountBadge extends StatelessWidget {
             count > 99 ? '99+' : '$count',
             semanticsLabel: '$count unread',
             style: TextStyle(
-              color: AppColors.white,
+              color: AppColors.onAccent,
               fontSize: size * 0.6,
               fontWeight: FontWeight.bold,
               fontFamily: kAppFontFamily,

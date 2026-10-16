@@ -29,7 +29,7 @@ class FriendRequestsSentRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecorations.whiteCard(),
+      decoration: BoxDecorations.whiteCard(context),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: InkWell(

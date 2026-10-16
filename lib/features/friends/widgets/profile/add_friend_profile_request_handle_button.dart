@@ -28,7 +28,7 @@ class AddProfileRequestHandleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecorations.softBlackShadow(),
+      decoration: BoxDecorations.softBlackShadow(context),
       child: SizedBox(
         width: width,
         height: height,

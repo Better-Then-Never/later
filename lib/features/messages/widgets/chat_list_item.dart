@@ -40,7 +40,7 @@ class ChatListItem extends StatelessWidget {
 
     return AppPressable(
       child: Container(
-        decoration: BoxDecorations.whiteCard(),
+        decoration: BoxDecorations.whiteCard(context),
         child: ListTile(
           onTap: onTap,
           contentPadding: EdgeInsets.symmetric(
@@ -55,7 +55,7 @@ class ChatListItem extends StatelessWidget {
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.listName(screen),
+            style: AppTextStyles.listName(context),
           ),
           subtitle: Text(
             preview,

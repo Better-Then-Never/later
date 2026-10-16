@@ -28,7 +28,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
         Container(
           width: screenWidth - 32,
           height: 150,
-          decoration: BoxDecorations.whiteCard(),
+          decoration: BoxDecorations.whiteCard(context),
         ),
 
         Positioned(

@@ -46,4 +46,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get commonSave => 'Сохранить';
+
+  @override
+  String get commonSearchHint => 'Поиск...';
+
+  @override
+  String get commonUnknownUser => 'Неизвестный пользователь';
+
+  @override
+  String get commonUnknownUsername => 'неизвестно';
+
+  @override
+  String get failureNotFound => 'Этот объект больше не существует.';
+
+  @override
+  String get failurePermission => 'У вас нет прав на это действие.';
+
+  @override
+  String get placeNoLocation => 'Нет геопозиции';
+
+  @override
+  String get placeUnknown => 'Неизвестное место';
 }
