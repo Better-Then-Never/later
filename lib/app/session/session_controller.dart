@@ -17,6 +17,7 @@ class SessionController extends ChangeNotifier {
     required AuthRepository auth,
     required UserRepository users,
     List<SessionScoped> scoped = const [],
+    this.cleanupTimeout = const Duration(seconds: 5),
   }) : _auth = auth,
        _users = users,
        _scoped = List.unmodifiable(scoped);
@@ -24,6 +25,9 @@ class SessionController extends ChangeNotifier {
   final AuthRepository _auth;
   final UserRepository _users;
   final List<SessionScoped> _scoped;
+
+  /// Longest wait for each part's sign-out cleanup.
+  final Duration cleanupTimeout;
 
   StreamSubscription<String?>? _authSub;
   StreamSubscription<UserProfile?>? _profileSub;
@@ -101,7 +105,10 @@ class SessionController extends ChangeNotifier {
     try {
       for (final s in _scoped.reversed) {
         try {
-          await s.beforeSignOut(uid);
+          // A cleanup that cannot finish (e.g. a Firestore write while the
+          // backend is unreachable, which waits forever) must not keep the
+          // user signed in (POL-003).
+          await s.beforeSignOut(uid).timeout(cleanupTimeout);
         } catch (e, st) {
           AppLogger.warning(
             'Sign-out cleanup failed',

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/app/session/session_controller.dart';
@@ -20,6 +23,18 @@ class _RecordingScope extends SessionScoped {
   @override
   Future<void> beforeSignOut(String uid) async =>
       events.add('beforeSignOut:$uid');
+}
+
+/// A cleanup that waits forever, like a Firestore write while offline.
+class _StuckScope extends SessionScoped {
+  @override
+  void attach(String uid) {}
+
+  @override
+  void detach() {}
+
+  @override
+  Future<void> beforeSignOut(String uid) => Completer<void>().future;
 }
 
 void main() {
@@ -75,6 +90,26 @@ void main() {
       expect(session.status, SessionStatus.signedOut);
       expect(session.signedOutByUser, isTrue);
       expect(auth.signOuts, 1);
+    });
+
+    test('a cleanup that never finishes does not block sign-out (POL-003)', () {
+      fakeAsync((clock) {
+        final stuck = SessionController(
+          auth: auth,
+          users: users,
+          scoped: [_StuckScope()],
+          cleanupTimeout: const Duration(seconds: 5),
+        )..start();
+        auth.emit('u1');
+        clock.flushMicrotasks();
+        var done = false;
+        stuck.signOut().then((_) => done = true);
+        clock.elapse(const Duration(seconds: 6));
+        expect(done, isTrue);
+        expect(auth.signOuts, 1);
+        expect(stuck.status, SessionStatus.signedOut);
+        stuck.dispose();
+      });
     });
   });
 
