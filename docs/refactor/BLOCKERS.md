@@ -16,8 +16,8 @@ Each blocker: what is blocked · what was tried · best hypothesis · exact manu
 
 ## B-03 — Push notifications end to end
 - **Blocked:** sending a real FCM message (needs a service account for the production project; the Functions emulator cannot deliver FCM to a device).
-- **Verified instead:** token registration/removal against the Firestore emulator; foreground display and tap routing by injecting `RemoteMessage`s through the same handlers (widget/unit tests) and by posting local notifications on the emulator; Cloud Functions logic with unit tests (mocked `messaging().sendEach`).
-- **Manual step:** after deploying functions and rules, sign in on two devices (A, B), have B follow A → A receives "New Follower" in background, foreground and terminated states; tap opens B's profile. Optionally use `tools/push/send_test.js` with a service-account JSON (never commit it).
+- **Verified instead:** on the emulator against the Firebase emulators: a token document is created at sign-in and removed at sign-out (checked after an account switch: signed-out user 0 tokens, signed-in user 1), the in-app list and unread badge, and the tap route of an in-app follow notification to the profile. The push payload parser (`NotificationTap`) has unit tests. Not verified: display of a real push in foreground, background or terminated state, and tapping a system notification (needs real FCM). Also verified: Cloud Functions logic with tests on the Firestore/Storage emulators and a fake `messaging.sendEach` (`functions/test`, `npm run test:emulate`).
+- **Manual step:** after deploying functions and rules, sign in on two devices (A, B), have B follow A → A receives "New Follower" in background, foreground and terminated states; tap opens B's profile. (No push test script is included: sending a real FCM message needs a service account for the production project, which this refactor must not use.)
 
 ## B-04 — iOS build and iOS push
 - **Blocked:** building/running iOS (Windows host), APNs configuration, Push capability.
