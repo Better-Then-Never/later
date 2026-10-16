@@ -1,5 +1,6 @@
 'use strict';
 
+const { setGlobalOptions } = require('firebase-functions/v2');
 const { onRequest } = require('firebase-functions/v2/https');
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const logger = require('firebase-functions/logger');
@@ -7,6 +8,15 @@ const admin = require('firebase-admin');
 const notify = require('./lib/notify');
 
 admin.initializeApp();
+
+// The project's Compute Engine default service account no longer exists;
+// the functions run (and their Firestore triggers deliver) as this one.
+// Roles: Datastore User, FCM Admin, Storage Object Viewer, Logs Writer,
+// Run Invoker, Eventarc Event Receiver (+ Cloud Build / Artifact Registry
+// for building). See docs/refactor/MIGRATIONS_NEEDED.md.
+setGlobalOptions({
+  serviceAccount: 'later-functions@later-da778.iam.gserviceaccount.com',
+});
 
 const services = () => ({
   db: admin.firestore(),
