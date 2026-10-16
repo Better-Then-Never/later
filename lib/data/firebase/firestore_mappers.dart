@@ -77,8 +77,8 @@ abstract final class FirestoreMappers {
     'location': GeoPoint(draft.location.latitude, draft.location.longitude),
     'privacy': draft.privacy.name,
     'createdAt': FieldValue.serverTimestamp(),
-    // Kept for compatibility with existing documents and the history UI.
-    'isScheduled': true,
+    // True only when the capsule has an open date (was always true, BUG-057).
+    'isScheduled': draft.openAt != null,
     'openAt': draft.openAt == null ? null : Timestamp.fromDate(draft.openAt!),
     'color': draft.color.name,
   };

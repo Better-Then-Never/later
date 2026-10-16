@@ -70,6 +70,7 @@ void main() {
       expect(map['createdAt'], isA<FieldValue>());
       expect(map['location'], const GeoPoint(10, 20));
       expect(map['openAt'], isNull);
+      expect(map['isScheduled'], isFalse, reason: 'no open date (BUG-057)');
       expect(map.containsKey('creatorId'), isFalse);
     });
   });

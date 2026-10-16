@@ -119,7 +119,7 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       color: draft.color,
       createdAt: DateTime.now(),
       openAt: draft.openAt,
-      isScheduled: true,
+      isScheduled: draft.openAt != null,
     );
   }
 
