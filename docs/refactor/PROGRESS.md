@@ -14,7 +14,8 @@
 - **Step 5 (app shell) + step 11 (auth)** done in 7518612: bootstrap, AppScope, SessionController + SessionScoped, AuthGate, AppRoutes, AppLinkHandler (+ Kotlin cold-start fix), auth feature with AuthController. Verified on emulator: logout -> login page, clean error text, cold-start deep link opens profile after home is ready.
 - **Step 6 (notifications)** done in 7fd29c8: PushMessagingService, NotificationsStore, PushRegistration, NotificationRouter, ProfileImageCache, MapFocus (consumed by the new map in step 7), Android icon/manifest, iOS plist/entitlements. Verified: list after login, token doc, follow tap.
 - IMPORTANT for step 13: functions must read users/{uid}/fcmTokens (+ legacy fcmToken); deploy functions before releasing the app.
-- Next: step 7 (map).
+- **Step 7 (map)** done in b7a6ac2 (see commit). Maps key moved to local.properties / Secrets.xcconfig.
+- Next: step 8 (camera + capsule creation).
 
 ## Final-report checklist (verify before writing REPORT.md)
 - SECURITY_FINDINGS.md and BLOCKERS.md describe some fixes in the present tense ("moved", "fixed in code"): confirm each one actually landed, or reword.

@@ -47,14 +47,14 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | ID | Screen | Symptom | Root cause | Sev | Repro | Status | Fix |
 |---|---|---|---|---|---|---|---|
 | BUG-040 | Map | Map tiles are blank (beige), no markers. Logcat: `Google Android Maps SDK: Authorization failure … FE:77:7D:3A…;com.example.later`. | The Maps API key does not authorise this app/signing certificate (or Maps SDK for Android is disabled for the key). | S1 | repro (`map_blank_tiles_auth_failure.png`) | blocked (Cloud Console, see BLOCKERS.md) | |
-| BUG-041 | Map | Infinite loading logo when no location fix arrives (GPS off, no fix yet, permission revoked). | Map renders only after the first `location` stream event; no initial fix, timeout, fallback or error. | S2 | repro (`map_loading.png`, ~20 s on emulator) | open | |
-| BUG-042 | Map | Red error screen possible: `_capsuleIcons['user']!` / `icon!` null-check when a location event arrives before marker icons finish loading, or for an unknown colour. | Async icon loading race, force unwraps. | S1 | code | open | |
-| BUG-043 | Map | Downloads the **entire** `capsules` collection (all users, incl. private) and filters on the client; the stream is re-created in `build()` on every location update and zoom change → re-subscribe storms and cost. | Unbounded query inside `build`. | S1 (privacy + cost) | code | open | |
-| BUG-044 | Map | Crash for capsules without `location`/`createdAt`. | Unchecked casts. | S2 | code | open | |
-| BUG-045 | Map | Map info window overflows on most phones (fixed `0.171 × height`). | Fixed-size `CustomInfoWindow`. | S3 | code (A-L2) | open | |
-| BUG-046 | Map | Friends list for friends-only capsules is loaded once and never refreshed; listeners never removed (`CapsuleJumpService` listener leak, `setState` without `mounted`). | Lifecycle. | S3 | code | open | |
-| BUG-047 | Map/History | Distance and capsule creation rely on a mutable static `MapPage.currentPositionStatic`. | Global state on a widget. | S3 | code | open | |
-| BUG-048 | Map | Native crash (`IllegalArgumentException: No input points`) when the user can see no capsule at all, e.g. a brand-new account: the heatmap layer was always added, even with zero points. | Heatmap built unconditionally. | S1 | repro (crash log after refactor exposed it; latent in the original for empty data) | open | |
+| BUG-041 | Map | Infinite loading logo when no location fix arrives (GPS off, no fix yet, permission revoked). | Map renders only after the first `location` stream event; no initial fix, timeout, fallback or error. | S2 | repro (`map_loading.png`, ~20 s on emulator) | fixed | b7a6ac2 |
+| BUG-042 | Map | Red error screen possible: `_capsuleIcons['user']!` / `icon!` null-check when a location event arrives before marker icons finish loading, or for an unknown colour. | Async icon loading race, force unwraps. | S1 | code | fixed | b7a6ac2 |
+| BUG-043 | Map | Downloads the **entire** `capsules` collection (all users, incl. private) and filters on the client; the stream is re-created in `build()` on every location update and zoom change → re-subscribe storms and cost. | Unbounded query inside `build`. | S1 (privacy + cost) | code | fixed | b7a6ac2 |
+| BUG-044 | Map | Crash for capsules without `location`/`createdAt`. | Unchecked casts. | S2 | code | fixed | b7a6ac2 |
+| BUG-045 | Map | Map info window overflows on most phones (fixed `0.171 × height`). | Fixed-size `CustomInfoWindow`. | S3 | code (A-L2) | fixed | b7a6ac2 |
+| BUG-046 | Map | Friends list for friends-only capsules is loaded once and never refreshed; listeners never removed (`CapsuleJumpService` listener leak, `setState` without `mounted`). | Lifecycle. | S3 | code | fixed | b7a6ac2 |
+| BUG-047 | Map/History | Distance and capsule creation rely on a mutable static `MapPage.currentPositionStatic`. | Global state on a widget. | S3 | code | fixed | b7a6ac2 |
+| BUG-048 | Map | Native crash (`IllegalArgumentException: No input points`) when the user can see no capsule at all, e.g. a brand-new account: the heatmap layer was always added, even with zero points. | Heatmap built unconditionally. | S1 | repro (crash log after refactor exposed it; latent in the original for empty data) | fixed | b7a6ac2 |
 
 ## Camera / capsule creation
 
