@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>GMSApiKey</key>
+	<string>$(GMS_API_KEY)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -42,17 +44,23 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location Always</string>
+	<string>Later uses your location to pin time capsules where you create them and to show capsules nearby.</string>
 	<key>NSLocationUsageDescription</key>
-	<string>Location</string>
+	<string>Later uses your location to pin time capsules where you create them and to show capsules nearby.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location when in use</string>
+	<string>Later uses your location to pin time capsules where you create them and to show capsules nearby.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone</string>
+	<string>Later needs the microphone for the camera you use to create time capsules.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera</string>
+	<string>Later uses the camera to take the photo of a time capsule and to scan friends' QR codes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Later lets you pick a profile or background picture from your photo library.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>Contacts</string>
+	<string>Later uses your contacts to help you find and invite friends.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

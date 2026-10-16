@@ -8,26 +8,12 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    var mapKey = ""
-    if let envPath = Bundle.main.path(forResource: ".env", ofType: nil, inDirectory: "flutter_assets") {
-        do {
-            let envContent = try String(contentsOfFile: envPath, encoding: .utf8)
-            let lines = envContent.components(separatedBy: .newlines)
-            for line in lines {
-                let parts = line.split(separator: "=", maxSplits: 1).map(String.init)
-                if parts.count == 2 && parts[0] == "GOOGLE_MAPS_API_KEY" {
-                    mapKey = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
-                }
-            }
-        } catch {
-            print("Error reading .env file")
-        }
+    // The key comes from ios/Flutter/Secrets.xcconfig (git-ignored) through
+    // the GMSApiKey entry of Info.plist; it is never committed.
+    if let key = Bundle.main.object(forInfoDictionaryKey: "GMSApiKey") as? String,
+       !key.isEmpty {
+      GMSServices.provideAPIKey(key)
     }
-    
-    if !mapKey.isEmpty {
-        GMSServices.provideAPIKey(mapKey)
-    }
-
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

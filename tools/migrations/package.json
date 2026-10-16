@@ -1,0 +1,13 @@
+{
+  "name": "later-migrations",
+  "private": true,
+  "description": "One-off data migration (dry run by default). See docs/refactor/MIGRATIONS_NEEDED.md.",
+  "scripts": {
+    "migrate": "node migrate.js",
+    "test": "node --test migrate.test.js",
+    "test:emulate": "firebase emulators:exec --config firebase.json --project demo-later-migrations \"npm test\""
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

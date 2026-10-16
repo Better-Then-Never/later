@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand green (#56C92E), used to tint notification icons. -->
+    <color name="notification_accent">#FF56C92E</color>
+</resources>

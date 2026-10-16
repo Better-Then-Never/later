@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/shared/widgets/default_search_bar.dart';
+import 'package:later/core/theme/app_colors.dart';
+
+class PageHeader extends StatelessWidget {
+  final String mainText;
+  final String? description;
+  final Widget? leadingButton;
+  final Widget? trailingButton;
+  final DefaultSearchBar? searchBar;
+  final Widget? actionButtonsRow;
+
+  const PageHeader({
+    super.key,
+    required this.mainText,
+    this.description,
+    this.leadingButton,
+    this.trailingButton,
+    this.searchBar,
+    this.actionButtonsRow,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.fastOutSlowIn,
+      child: Container(
+        width: screenWidth,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(top: screenHeight * 0.04),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: screenWidth,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    DefaultText(
+                      mainText,
+                      fontSize: screenHeight * 0.04,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    if (leadingButton != null)
+                      Positioned(
+                        left: 16,
+                        top: 0,
+                        bottom: 0,
+                        child: leadingButton!,
+                      ),
+                    if (trailingButton != null)
+                      Positioned(
+                        right: 16,
+                        top: 0,
+                        bottom: 0,
+                        child: trailingButton!,
+                      ),
+                  ],
+                ),
+              ),
+              if (description != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
+                  child: DefaultText(
+                    description!,
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenHeight * 0.017,
+                  ),
+                ),
+
+              if (searchBar != null)
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: screenWidth * 0.04,
+                    right: screenWidth * 0.04,
+                    top: screenHeight * 0.01,
+                  ),
+                  child: searchBar!,
+                ),
+
+              Padding(
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.04,
+                  right: screenWidth * 0.04,
+                  bottom: screenHeight * 0.01,
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 150),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  child: actionButtonsRow == null
+                      ? const SizedBox.shrink()
+                      : actionButtonsRow!,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

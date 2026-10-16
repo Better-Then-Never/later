@@ -1,59 +1,372 @@
 rules_version = '2';
 
+// Least-privilege rules for the data model in docs/refactor/FIREBASE_AUDIT.md.
+// Tested by tools/rules-tests (emulator). Deploy only after the refactored
+// app is rolled out: see docs/refactor/MIGRATIONS_NEEDED.md.
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Users collection
-    match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+
+    // ---- helpers -----------------------------------------------------------
+
+    function signedIn() {
+      return request.auth != null;
     }
-    
-    // Friend requests collection
+
+    function me() {
+      return request.auth.uid;
+    }
+
+    function isMe(uid) {
+      return signedIn() && me() == uid;
+    }
+
+    function myFriends() {
+      return get(/databases/$(database)/documents/users/$(me())).data.get('friends', []);
+    }
+
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function validUsername(u) {
+      return u is string && u.matches('^[a-z0-9._-]{3,30}$');
+    }
+
+    function validName(n) {
+      return n is string && n.size() > 0 && n.size() <= 100;
+    }
+
+    function isServerTime(t) {
+      return t == request.time;
+    }
+
+    // users/{uid}/blocked/{other} exists: uid blocked other.
+    function blocked(uid, other) {
+      return exists(/databases/$(database)/documents/users/$(uid)/blocked/$(other));
+    }
+
+    // friend_requests/{from}_{to} is accepted once this write is done.
+    function acceptedAfter(from, to) {
+      return getAfter(/databases/$(database)/documents/friend_requests/$(from + '_' + to))
+        .data.get('status', '') == 'accepted';
+    }
+
+    // ---- users -------------------------------------------------------------
+
+    match /users/{uid} {
+      // Profiles are needed for search, friend lists and avatars. They must
+      // not contain private data: see MIGRATIONS_NEEDED.md (email, fcmToken).
+      allow read: if signedIn();
+
+      // Created together with usernames/{username} in one transaction.
+      allow create: if isMe(uid)
+        && request.resource.data.keys().hasOnly(
+          ['uid', 'name', 'username', 'friends', 'favorites', 'createdAt'])
+        && request.resource.data.uid == uid
+        && validName(request.resource.data.name)
+        && validUsername(request.resource.data.username)
+        && request.resource.data.friends == []
+        && request.resource.data.favorites == []
+        && isServerTime(request.resource.data.createdAt)
+        && getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.username))
+          .data.uid == uid;
+
+      allow update: if ownerUpdate(uid) || friendshipEdit(uid);
+      allow delete: if false;
+
+      function ownerUpdate(uid) {
+        let d = request.resource.data;
+        let keys = changed();
+        return isMe(uid)
+          && keys.hasOnly(['name', 'username', 'friends', 'favorites',
+            // Legacy fields of older app versions may only be removed.
+            'email', 'fcmToken', 'fcmTokenUpdatedAt', 'blockedUsers'])
+          && (!keys.hasAny(['name']) || validName(d.name))
+          && (!keys.hasAny(['username']) || (validUsername(d.username)
+            && getAfter(/databases/$(database)/documents/usernames/$(d.username)).data.uid == uid))
+          && (!keys.hasAny(['favorites'])
+            || (d.favorites is list && d.favorites.size() <= 1000))
+          && (!keys.hasAny(['friends']) || ownFriendsChange(uid))
+          && !(keys.hasAny(['email']) && d.keys().hasAny(['email']))
+          && !(keys.hasAny(['fcmToken']) && d.keys().hasAny(['fcmToken']))
+          && !(keys.hasAny(['fcmTokenUpdatedAt'])
+            && d.keys().hasAny(['fcmTokenUpdatedAt']))
+          // main's app kept blocks in this array; now users/{uid}/blocked.
+          && !(keys.hasAny(['blockedUsers']) && d.keys().hasAny(['blockedUsers']));
+      }
+
+      // The owner may remove friends freely, and add one friend only while
+      // accepting that friend's request in the same batch.
+      function ownFriendsChange(uid) {
+        let added = request.resource.data.friends
+          .removeAll(resource.data.get('friends', []));
+        return request.resource.data.friends is list
+          && (added.size() == 0
+            || (added.size() == 1 && acceptedAfter(added[0], uid)));
+      }
+
+      // Another user may only add or remove themselves: adding requires
+      // accepting this user's request in the same batch.
+      function friendshipEdit(uid) {
+        let before = resource.data.get('friends', []);
+        let after = request.resource.data.get('friends', []);
+        let added = after.removeAll(before);
+        let removed = before.removeAll(after);
+        return signedIn() && me() != uid
+          && changed().hasOnly(['friends'])
+          && after is list
+          && ((added.size() == 0 && removed.size() == 0)
+            || (added == [me()] && removed.size() == 0
+              && acceptedAfter(uid, me()))
+            || (removed == [me()] && added.size() == 0));
+      }
+
+      // users/{uid}/blocked/{other}: uid blocked other. Only the two of them
+      // may see it (the blocked user's app hides the message box).
+      match /blocked/{other} {
+        allow get: if isMe(uid) || isMe(other);
+        allow list, delete: if isMe(uid);
+        allow create: if isMe(uid) && other != uid
+          && request.resource.data.keys().hasOnly(['blockedAt'])
+          && isServerTime(request.resource.data.blockedAt);
+      }
+
+      // One document per device token, private to the user.
+      match /fcmTokens/{token} {
+        allow read, delete: if isMe(uid);
+        allow create, update: if isMe(uid)
+          && request.resource.data.keys().hasOnly(['token', 'platform', 'updatedAt'])
+          && request.resource.data.token == token
+          && request.resource.data.platform in ['android', 'ios', 'web', 'other']
+          && isServerTime(request.resource.data.updatedAt);
+      }
+
+      match /notifications/{notificationId} {
+        allow read, delete: if isMe(uid);
+        allow update: if isMe(uid)
+          && changed().hasOnly(['isRead'])
+          && request.resource.data.isRead == true;
+        // Other users may only leave a "started following you" notice, as
+        // themselves, after following. Everything else is written by the
+        // Cloud Functions (admin SDK).
+        allow create: if signedIn() && me() != uid
+          && request.resource.data.keys().hasOnly(['type', 'fromUserId',
+            'fromUserName', 'fromUserAvatar', 'message', 'timestamp', 'isRead'])
+          && request.resource.data.type == 'follow'
+          && request.resource.data.fromUserId == me()
+          && request.resource.data.fromUserName is string
+          && request.resource.data.fromUserName.size() <= 100
+          && request.resource.data.fromUserAvatar == ''
+          && request.resource.data.message == 'started following you'
+          && request.resource.data.isRead == false
+          && isServerTime(request.resource.data.timestamp)
+          && exists(/databases/$(database)/documents/users/$(uid)/followers/$(me()));
+      }
+
+      // Create and update: following again re-writes the same documents.
+      match /following/{target} {
+        allow read, delete: if isMe(uid);
+        allow create, update: if isMe(uid) && target != uid
+          && request.resource.data.keys().hasOnly(['followedAt', 'notificationsEnabled'])
+          && isServerTime(request.resource.data.followedAt)
+          && request.resource.data.notificationsEnabled is bool;
+      }
+
+      match /followers/{follower} {
+        allow read: if isMe(uid) || isMe(follower);
+        allow create, update: if isMe(follower) && follower != uid
+          && request.resource.data.keys().hasOnly(['followedAt'])
+          && isServerTime(request.resource.data.followedAt)
+          && existsAfter(/databases/$(database)/documents/users/$(follower)/following/$(uid));
+        allow delete: if isMe(follower) || isMe(uid);
+      }
+    }
+
+    // ---- usernames ---------------------------------------------------------
+
+    // usernames/{username} = {uid}: makes usernames unique. Written in the
+    // same transaction as users/{uid}.username.
+    match /usernames/{username} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && validUsername(username)
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == me()
+        && getAfter(/databases/$(database)/documents/users/$(me())).data.username == username;
+      allow delete: if signedIn()
+        && resource.data.uid == me()
+        && getAfter(/databases/$(database)/documents/users/$(me())).data.username != username;
+      allow update: if false;
+    }
+
+    // ---- friend requests ---------------------------------------------------
+
+    // friend_requests/{fromUserId}_{toUserId}. Auth uids never contain "_".
     match /friend_requests/{requestId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null 
-        && request.resource.data.fromUserId == request.auth.uid;
-      allow update, delete: if request.auth != null;
+      function participant() {
+        let parts = requestId.split('_');
+        return signedIn() && parts.size() == 2 && me() in parts;
+      }
+
+      function validNew() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['fromUserId', 'toUserId', 'status', 'createdAt'])
+          && requestId == d.fromUserId + '_' + d.toUserId
+          && d.fromUserId == me()
+          && d.toUserId is string && d.toUserId != me()
+          && d.status == 'pending'
+          && isServerTime(d.createdAt);
+      }
+
+      allow read: if signedIn()
+        && (resource.data.fromUserId == me() || resource.data.toUserId == me());
+      allow create: if signedIn() && validNew();
+      allow update: if signedIn() && (
+        // The sender sends again while it is still pending.
+        (resource.data.fromUserId == me() && resource.data.status == 'pending'
+          && validNew())
+        // The receiver accepts.
+        || (resource.data.toUserId == me() && resource.data.status == 'pending'
+          && changed().hasOnly(['status', 'acceptedAt'])
+          && request.resource.data.status == 'accepted'
+          && isServerTime(request.resource.data.acceptedAt)));
+      // Cancel, reject and unfriend; deleting a missing request is allowed.
+      allow delete: if participant();
     }
-    
-    // Chats collection
+
+    // ---- capsules ----------------------------------------------------------
+
+    match /capsules/{capsuleId} {
+      function canSee() {
+        return resource.data.ownerId == me()
+          || resource.data.privacy == 'public'
+          || (resource.data.privacy == 'friends'
+            && resource.data.ownerId in myFriends())
+          // A capsule sent to a friend (see validCapsule).
+          || me() in resource.data.get('sharedWith', []);
+      }
+
+      allow get: if signedIn() && (resource == null || canSee());
+      allow list: if signedIn() && canSee();
+
+      allow create: if signedIn() && validCapsule();
+      allow delete: if signedIn() && resource.data.ownerId == me();
+      allow update: if false;
+
+      function validCapsule() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['ownerId', 'imageUrl', 'title', 'description',
+            'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
+            'sharedWith'])
+          && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
+            'privacy', 'createdAt', 'color'])
+          && d.ownerId == me()
+          && d.imageUrl is string && d.imageUrl.size() <= 2048
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 100
+          && (d.get('description', null) == null
+            || (d.description is string && d.description.size() <= 2000))
+          && d.location is latlng
+          && d.privacy in ['private', 'friends', 'public']
+          && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
+          && isServerTime(d.createdAt)
+          && (d.get('isScheduled', false) is bool)
+          && (d.get('openAt', null) == null || d.openAt is timestamp)
+          // Sent to a friend: shared with exactly the owner and the recipient.
+          && (!d.keys().hasAny(['sharedWith'])
+            || (d.sharedWith is list && d.sharedWith.size() == 2
+              && d.sharedWith[0] == me() && d.sharedWith[1] is string
+              && d.sharedWith[1] != me()));
+      }
+    }
+
+    // ---- chats -------------------------------------------------------------
+
+    // chats/{uidA}_{uidB} (uids sorted): the two participants read and write
+    // it; nobody writes to someone who blocked them (or whom they blocked).
+    // Same shape as the chats of main's app.
     match /chats/{chatId} {
-      // Allow list/query if user queries with their own uid in participants
-      // This allows: .where('participants', arrayContains: currentUid)
-      allow list: if request.auth != null;
-      
-      // Allow read single document if user is a participant
-      allow get: if request.auth != null 
-        && request.auth.uid in resource.data.participants;
-      
-      // Allow create if user is authenticated and is one of the participants
-      allow create: if request.auth != null 
-        && request.auth.uid in request.resource.data.participants
-        && request.resource.data.participants.size() == 2;
-      
-      // Allow update if user is a participant
-      allow update: if request.auth != null 
-        && request.auth.uid in resource.data.participants;
-      
-      // Messages subcollection
+      function members() {
+        return chatId.split('_');
+      }
+
+      function isMember() {
+        return signedIn() && members().size() == 2 && me() in members();
+      }
+
+      function other() {
+        return members()[0] == me() ? members()[1] : members()[0];
+      }
+
+      function mayWrite() {
+        return !blocked(other(), me()) && !blocked(me(), other());
+      }
+
+      function validSummary(d) {
+        return d.lastMessage is string
+          && d.lastMessage.size() <= 2000
+          && isServerTime(d.lastUpdated);
+      }
+
+      // get works before the chat exists (the send transaction reads it).
+      allow get: if isMember();
+      // The app's query: participants array-contains me.
+      allow list: if signedIn() && me() in resource.data.participants;
+
+      allow create: if isMember() && mayWrite()
+        && members()[0] < members()[1]
+        && request.resource.data.keys().hasOnly(['participants', 'lastMessage',
+          'lastUpdated', 'createdAt', 'lastSenderId'])
+        && request.resource.data.participants is list
+        && request.resource.data.participants.size() == 2
+        && request.resource.data.participants.hasAll(members())
+        && isServerTime(request.resource.data.createdAt)
+        && validSummary(request.resource.data)
+        && request.resource.data.get('lastSenderId', me()) == me();
+      // Sending updates the summary; clearing the history empties it.
+      allow update: if isMember()
+        && changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+        && validSummary(request.resource.data)
+        && (!changed().hasAny(['lastSenderId'])
+          || request.resource.data.lastSenderId == me())
+        && (request.resource.data.lastMessage == '' || mayWrite());
+      allow delete: if false;
+
       match /messages/{messageId} {
-        // Allow list for queries (filtered client-side or by query)
-        allow list: if request.auth != null 
-          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
-        
-        // Allow read single message if user is a participant
-        allow get: if request.auth != null 
-          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
-        
-        // Allow create if user is a participant and is the sender
-        allow create: if request.auth != null 
-          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
-          && request.resource.data.senderId == request.auth.uid;
-        
-        // Allow update for marking messages as read (by participants only)
-        allow update: if request.auth != null 
-          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+        allow read: if isMember();
+
+        allow create: if isMember() && mayWrite()
+          && existsAfter(/databases/$(database)/documents/chats/$(chatId))
+          && validMessage(request.resource.data);
+
+        // The recipient marks messages read.
+        allow update: if isMember()
+          && resource.data.senderId != me()
+          && changed().hasOnly(['status'])
+          && request.resource.data.status == 'read';
+
+        // "Clear history" clears the chat for both participants.
+        allow delete: if isMember();
+
+        function validMessage(d) {
+          return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
+              'type', 'capsuleId', 'imageUrl'])
+            && d.senderId == me()
+            && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
+            && isServerTime(d.timestamp)
+            && d.status == 'sent'
+            && (!d.keys().hasAny(['type']) || d.type == 'text'
+              || (d.type == 'capsule' && validCapsuleMessage(d)));
+        }
+
+        // Only your own capsule, shared with this chat's other participant.
+        function validCapsuleMessage(d) {
+          let capsule = get(/databases/$(database)/documents/capsules/$(d.capsuleId));
+          return d.capsuleId is string
+            && (!d.keys().hasAny(['imageUrl'])
+              || (d.imageUrl is string && d.imageUrl.size() <= 2048))
+            && capsule.data.ownerId == me()
+            && other() in capsule.data.get('sharedWith', []);
+        }
       }
     }
   }

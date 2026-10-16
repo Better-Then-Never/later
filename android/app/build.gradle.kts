@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 buildscript {
     repositories {
@@ -7,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:8.9.1")
-        classpath("com.google.gms:google-services:4.3.15")
+        classpath("com.google.gms:google-services:4.4.0")  // Updated version
     }
 }
 
@@ -21,39 +22,49 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val envProps = Properties()
-val envFile = rootProject.file("../.env")
-if (envFile.exists()) {
-    envFile.inputStream().use { envProps.load(it) }
-}
-val mapsApiKey = envProps.getProperty("GOOGLE_MAPS_API_KEY", "")
-
 android {
-    namespace = "com.example.later"
+    namespace = "com.btn.later"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true 
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
     defaultConfig {
+        // Google Maps key, never committed. First found wins:
+        // android/local.properties (MAPS_API_KEY=...), the MAPS_API_KEY
+        // environment variable (CI), or GOOGLE_MAPS_API_KEY in the git-ignored
+        // .env at the repo root (the setup used on main).
+        val localProperties = Properties().apply {
+            val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        val dotEnv = Properties().apply {
+            val file = rootProject.file("../.env")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        manifestPlaceholders["MAPS_API_KEY"] =
+            localProperties.getProperty("MAPS_API_KEY")
+                ?: System.getenv("MAPS_API_KEY")
+                ?: dotEnv.getProperty("GOOGLE_MAPS_API_KEY")
+                ?: ""
+
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.later"
+        applicationId = "com.btn.later"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdkVersion(24)  // Updated to 24 for geolocator_android compatibility
+        minSdk = 24  // Updated to 24 for geolocator_android compatibility
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
 
+    // Release keystore from the environment (the GitHub Actions workflows
+    // decode it from the KEYSTORE_BASE64 secret). Without it, release builds
+    // are signed with the debug key so `flutter run --release` still works.
     signingConfigs {
         create("release") {
             storeFile = file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
@@ -72,6 +83,22 @@ android {
             }
         }
     }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    
+    // Firebase dependencies
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore")
 }
 
 flutter {

@@ -1,105 +1,79 @@
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+'use strict';
 
-// Initialize Firebase Admin
+const { setGlobalOptions } = require('firebase-functions/v2');
+const { onRequest } = require('firebase-functions/v2/https');
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const logger = require('firebase-functions/logger');
+const admin = require('firebase-admin');
+const notify = require('./lib/notify');
+
 admin.initializeApp();
 
-exports.getUserData = functions.https.onRequest(async (req, res) => {
-    // Set CORS headers
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-
-    if (req.method !== 'GET') {
-        res.status(405).json({ error: 'Method not allowed' });
-        return;
-    }
-
-    try {
-        const userId = req.query.userId;
-
-        if (!userId) {
-            res.status(400).json({ error: 'User ID is required' });
-            return;
-        }
-
-        console.log('Fetching data for userId:', userId);
-
-        // Fetch user data from Firebase Auth
-        const userRecord = await admin.auth().getUser(userId);
-
-        // Fetch additional data from Firestore
-        const db = admin.firestore();
-        const userDoc = await db.collection('users').doc(userId).get();
-
-        let displayName = userRecord.displayName;
-        let photoURL = userRecord.photoURL;
-
-        // If no display name in Auth, try to get from Firestore
-        if (!displayName && userDoc.exists) {
-            const userData = userDoc.data();
-            displayName = userData.displayName || userData.name || userData.firstName;
-        }
-
-        // Try to find profile image in Firebase Storage
-        const bucket = admin.storage().bucket();
-        
-        // First, let's try to list files in the directory to see what's actually there
-        try {
-            const [files] = await bucket.getFiles({
-                prefix: `userdata/${userId}/assets/images/`
-            });
-            
-            console.log('Files found in directory:');
-            files.forEach(file => {
-                console.log('- File name:', file.name);
-            });
-            
-            // Look for profile image file
-            const profileImageFile = files.find(file => 
-                file.name.includes('profile_image') || 
-                file.name.includes('profile')
-            );
-            
-            if (profileImageFile) {
-                console.log('Found profile image file:', profileImageFile.name);
-                
-                // Make the file publicly readable
-                await profileImageFile.makePublic();
-                
-                // Get the public URL
-                photoURL = `https://storage.googleapis.com/${bucket.name}/${profileImageFile.name}`;
-                console.log('Generated public URL:', photoURL);
-            } else {
-                console.log('No profile image file found');
-            }
-            
-        } catch (listError) {
-            console.error('Error listing files:', listError);
-        }
-
-        console.log('Final photoURL:', photoURL);
-
-        res.json({
-            displayName: displayName || 'Your friend',
-            email: userRecord.email,
-            photoURL: photoURL,
-            debug: {
-                userId: userId,
-                foundImage: !!photoURL
-            }
-        });
-
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        res.status(500).json({
-            error: 'Failed to fetch user data',
-            displayName: 'Your friend'
-        });
-    }
+// The project's Compute Engine default service account no longer exists;
+// the functions run (and their Firestore triggers deliver) as this one.
+// Roles: Datastore User, FCM Admin, Storage Object Viewer, Logs Writer,
+// Run Invoker, Eventarc Event Receiver (+ Cloud Build / Artifact Registry
+// for building). See docs/refactor/MIGRATIONS_NEEDED.md.
+setGlobalOptions({
+  serviceAccount: 'later-functions@later-da778.iam.gserviceaccount.com',
 });
+
+const services = () => ({
+  db: admin.firestore(),
+  messaging: admin.messaging(),
+  bucket: admin.storage().bucket(),
+});
+
+// Name and avatar for the profile landing page (public/index.html).
+exports.getUserData = onRequest({ cors: true }, async (req, res) => {
+  if (req.method !== 'GET') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+  try {
+    const summary = await notify.profileSummary(services(), req.query.userId);
+    if (!summary) {
+      res.status(404).json({ displayName: 'Your friend', photoURL: null });
+      return;
+    }
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json(summary);
+  } catch (error) {
+    logger.error('getUserData failed', error);
+    res.status(500).json({ displayName: 'Your friend', photoURL: null });
+  }
+});
+
+// Push for "started following you" notifications.
+exports.sendFollowerNotification = onDocumentCreated(
+  'users/{userId}/notifications/{notificationId}',
+  async (event) => {
+    try {
+      const result = await notify.onNotificationCreated(
+        services(),
+        event.params.userId,
+        event.data && event.data.data(),
+      );
+      if (result) logger.info('Follower notification', result);
+    } catch (error) {
+      logger.error('Follower notification failed', error);
+    }
+  },
+);
+
+// In-app notification + push to followers when a capsule is created.
+exports.sendCapsuleNotification = onDocumentCreated(
+  'capsules/{capsuleId}',
+  async (event) => {
+    try {
+      const result = await notify.onCapsuleCreated(
+        services(),
+        event.params.capsuleId,
+        event.data && event.data.data(),
+      );
+      logger.info('Capsule notification', result);
+    } catch (error) {
+      logger.error('Capsule notification failed', error);
+    }
+  },
+);
