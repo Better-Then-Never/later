@@ -1,10 +1,42 @@
 rules_version = '2';
 
-// Craft rules based on data in your Firestore database
-// allow write: if firestore.get(
-//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+// Least-privilege Storage rules (see docs/refactor/FIREBASE_AUDIT.md §2.4).
+// Images shown to other users are loaded through download URLs (with a
+// token), which do not go through these rules. Tested by tools/rules-tests.
 service firebase.storage {
   match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isMe(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Uploads must be images below [maxBytes]; deletes have no resource.
+    function imageUpload(maxBytes) {
+      return request.resource == null
+        || (request.resource.contentType.matches('image/.*')
+          && request.resource.size <= maxBytes);
+    }
+
+    // Profile picture, its thumbnail and the profile background.
+    match /userdata/{uid}/assets/images/{name} {
+      allow read: if signedIn();
+      allow write: if isMe(uid)
+        && name in ['profile_image', 'profile_image_small', 'background_image']
+        && imageUpload(5 * 1024 * 1024);
+    }
+
+    // Capsule photos (the app stores them as image.jpg, compressed).
+    match /userdata/{uid}/capsules/{capsuleId}/{file} {
+      allow read: if isMe(uid);
+      allow write: if isMe(uid)
+        && file == 'image.jpg'
+        && imageUpload(10 * 1024 * 1024);
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

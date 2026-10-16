@@ -1,0 +1,13 @@
+{
+  "name": "later-rules-tests",
+  "private": true,
+  "description": "Security rules tests for firestore.rules and storage.rules, run against local emulators only.",
+  "scripts": {
+    "test": "node --test --test-concurrency=1",
+    "emulate": "firebase emulators:exec --config firebase.json --project demo-later-rules \"npm test\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "4.0.1",
+    "firebase": "11.10.0"
+  }
+}

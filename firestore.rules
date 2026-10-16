@@ -1,18 +1,257 @@
-rules_version='2'
+rules_version = '2';
 
+// Least-privilege rules for the data model in docs/refactor/FIREBASE_AUDIT.md.
+// Tested by tools/rules-tests (emulator). Deploy only after the refactored
+// app is rolled out: see docs/refactor/MIGRATIONS_NEEDED.md.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2025, 9, 3);
+
+    // ---- helpers -----------------------------------------------------------
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function me() {
+      return request.auth.uid;
+    }
+
+    function isMe(uid) {
+      return signedIn() && me() == uid;
+    }
+
+    function myFriends() {
+      return get(/databases/$(database)/documents/users/$(me())).data.get('friends', []);
+    }
+
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function validUsername(u) {
+      return u is string && u.matches('^[a-z0-9._-]{3,30}$');
+    }
+
+    function validName(n) {
+      return n is string && n.size() > 0 && n.size() <= 100;
+    }
+
+    function isServerTime(t) {
+      return t == request.time;
+    }
+
+    // friend_requests/{from}_{to} is accepted once this write is done.
+    function acceptedAfter(from, to) {
+      return getAfter(/databases/$(database)/documents/friend_requests/$(from + '_' + to))
+        .data.get('status', '') == 'accepted';
+    }
+
+    // ---- users -------------------------------------------------------------
+
+    match /users/{uid} {
+      // Profiles are needed for search, friend lists and avatars. They must
+      // not contain private data: see MIGRATIONS_NEEDED.md (email, fcmToken).
+      allow read: if signedIn();
+
+      // Created together with usernames/{username} in one transaction.
+      allow create: if isMe(uid)
+        && request.resource.data.keys().hasOnly(
+          ['uid', 'name', 'username', 'friends', 'favorites', 'createdAt'])
+        && request.resource.data.uid == uid
+        && validName(request.resource.data.name)
+        && validUsername(request.resource.data.username)
+        && request.resource.data.friends == []
+        && request.resource.data.favorites == []
+        && isServerTime(request.resource.data.createdAt)
+        && getAfter(/databases/$(database)/documents/usernames/$(request.resource.data.username))
+          .data.uid == uid;
+
+      allow update: if ownerUpdate(uid) || friendshipEdit(uid);
+      allow delete: if false;
+
+      function ownerUpdate(uid) {
+        let d = request.resource.data;
+        let keys = changed();
+        return isMe(uid)
+          && keys.hasOnly(['name', 'username', 'friends', 'favorites',
+            // Legacy fields of older app versions may only be removed.
+            'email', 'fcmToken', 'fcmTokenUpdatedAt'])
+          && (!keys.hasAny(['name']) || validName(d.name))
+          && (!keys.hasAny(['username']) || (validUsername(d.username)
+            && getAfter(/databases/$(database)/documents/usernames/$(d.username)).data.uid == uid))
+          && (!keys.hasAny(['favorites'])
+            || (d.favorites is list && d.favorites.size() <= 1000))
+          && (!keys.hasAny(['friends']) || ownFriendsChange(uid))
+          && !(keys.hasAny(['email']) && d.keys().hasAny(['email']))
+          && !(keys.hasAny(['fcmToken']) && d.keys().hasAny(['fcmToken']))
+          && !(keys.hasAny(['fcmTokenUpdatedAt'])
+            && d.keys().hasAny(['fcmTokenUpdatedAt']));
+      }
+
+      // The owner may remove friends freely, and add one friend only while
+      // accepting that friend's request in the same batch.
+      function ownFriendsChange(uid) {
+        let added = request.resource.data.friends
+          .removeAll(resource.data.get('friends', []));
+        return request.resource.data.friends is list
+          && (added.size() == 0
+            || (added.size() == 1 && acceptedAfter(added[0], uid)));
+      }
+
+      // Another user may only add or remove themselves: adding requires
+      // accepting this user's request in the same batch.
+      function friendshipEdit(uid) {
+        let before = resource.data.get('friends', []);
+        let after = request.resource.data.get('friends', []);
+        let added = after.removeAll(before);
+        let removed = before.removeAll(after);
+        return signedIn() && me() != uid
+          && changed().hasOnly(['friends'])
+          && after is list
+          && ((added.size() == 0 && removed.size() == 0)
+            || (added == [me()] && removed.size() == 0
+              && acceptedAfter(uid, me()))
+            || (removed == [me()] && added.size() == 0));
+      }
+
+      // One document per device token, private to the user.
+      match /fcmTokens/{token} {
+        allow read, delete: if isMe(uid);
+        allow create, update: if isMe(uid)
+          && request.resource.data.keys().hasOnly(['token', 'platform', 'updatedAt'])
+          && request.resource.data.token == token
+          && request.resource.data.platform in ['android', 'ios', 'web', 'other']
+          && isServerTime(request.resource.data.updatedAt);
+      }
+
+      match /notifications/{notificationId} {
+        allow read, delete: if isMe(uid);
+        allow update: if isMe(uid)
+          && changed().hasOnly(['isRead'])
+          && request.resource.data.isRead == true;
+        // Other users may only leave a "started following you" notice, as
+        // themselves, after following. Everything else is written by the
+        // Cloud Functions (admin SDK).
+        allow create: if signedIn() && me() != uid
+          && request.resource.data.keys().hasOnly(['type', 'fromUserId',
+            'fromUserName', 'fromUserAvatar', 'message', 'timestamp', 'isRead'])
+          && request.resource.data.type == 'follow'
+          && request.resource.data.fromUserId == me()
+          && request.resource.data.fromUserName is string
+          && request.resource.data.fromUserName.size() <= 100
+          && request.resource.data.fromUserAvatar == ''
+          && request.resource.data.message == 'started following you'
+          && request.resource.data.isRead == false
+          && isServerTime(request.resource.data.timestamp)
+          && exists(/databases/$(database)/documents/users/$(uid)/followers/$(me()));
+      }
+
+      // Create and update: following again re-writes the same documents.
+      match /following/{target} {
+        allow read, delete: if isMe(uid);
+        allow create, update: if isMe(uid) && target != uid
+          && request.resource.data.keys().hasOnly(['followedAt', 'notificationsEnabled'])
+          && isServerTime(request.resource.data.followedAt)
+          && request.resource.data.notificationsEnabled is bool;
+      }
+
+      match /followers/{follower} {
+        allow read: if isMe(uid) || isMe(follower);
+        allow create, update: if isMe(follower) && follower != uid
+          && request.resource.data.keys().hasOnly(['followedAt'])
+          && isServerTime(request.resource.data.followedAt)
+          && existsAfter(/databases/$(database)/documents/users/$(follower)/following/$(uid));
+        allow delete: if isMe(follower) || isMe(uid);
+      }
+    }
+
+    // ---- usernames ---------------------------------------------------------
+
+    // usernames/{username} = {uid}: makes usernames unique. Written in the
+    // same transaction as users/{uid}.username.
+    match /usernames/{username} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && validUsername(username)
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == me()
+        && getAfter(/databases/$(database)/documents/users/$(me())).data.username == username;
+      allow delete: if signedIn()
+        && resource.data.uid == me()
+        && getAfter(/databases/$(database)/documents/users/$(me())).data.username != username;
+      allow update: if false;
+    }
+
+    // ---- friend requests ---------------------------------------------------
+
+    // friend_requests/{fromUserId}_{toUserId}. Auth uids never contain "_".
+    match /friend_requests/{requestId} {
+      function participant() {
+        let parts = requestId.split('_');
+        return signedIn() && parts.size() == 2 && me() in parts;
+      }
+
+      function validNew() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['fromUserId', 'toUserId', 'status', 'createdAt'])
+          && requestId == d.fromUserId + '_' + d.toUserId
+          && d.fromUserId == me()
+          && d.toUserId is string && d.toUserId != me()
+          && d.status == 'pending'
+          && isServerTime(d.createdAt);
+      }
+
+      allow read: if signedIn()
+        && (resource.data.fromUserId == me() || resource.data.toUserId == me());
+      allow create: if signedIn() && validNew();
+      allow update: if signedIn() && (
+        // The sender sends again while it is still pending.
+        (resource.data.fromUserId == me() && resource.data.status == 'pending'
+          && validNew())
+        // The receiver accepts.
+        || (resource.data.toUserId == me() && resource.data.status == 'pending'
+          && changed().hasOnly(['status', 'acceptedAt'])
+          && request.resource.data.status == 'accepted'
+          && isServerTime(request.resource.data.acceptedAt)));
+      // Cancel, reject and unfriend; deleting a missing request is allowed.
+      allow delete: if participant();
+    }
+
+    // ---- capsules ----------------------------------------------------------
+
+    match /capsules/{capsuleId} {
+      function canSee() {
+        return resource.data.ownerId == me()
+          || resource.data.privacy == 'public'
+          || (resource.data.privacy == 'friends'
+            && resource.data.ownerId in myFriends());
+      }
+
+      allow get: if signedIn() && (resource == null || canSee());
+      allow list: if signedIn() && canSee();
+
+      allow create: if signedIn() && validCapsule();
+      allow delete: if signedIn() && resource.data.ownerId == me();
+      allow update: if false;
+
+      function validCapsule() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['ownerId', 'imageUrl', 'title', 'description',
+            'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color'])
+          && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
+            'privacy', 'createdAt', 'color'])
+          && d.ownerId == me()
+          && d.imageUrl is string && d.imageUrl.size() <= 2048
+          && d.title is string && d.title.size() > 0 && d.title.size() <= 100
+          && (d.get('description', null) == null
+            || (d.description is string && d.description.size() <= 2000))
+          && d.location is latlng
+          && d.privacy in ['private', 'friends', 'public']
+          && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
+          && isServerTime(d.createdAt)
+          && (d.get('isScheduled', false) is bool)
+          && (d.get('openAt', null) == null || d.openAt is timestamp);
+      }
     }
   }
 }
