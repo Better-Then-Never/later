@@ -83,6 +83,9 @@ abstract interface class FriendsRepository {
 abstract interface class CapsuleRepository {
   Stream<List<Capsule>> watchOwn(String uid);
 
+  /// One capsule, or null when it does not exist or is not visible.
+  Future<Capsule?> getById(String id);
+
   /// Friends-only capsules of [friendIds] (chunked `whereIn`).
   Stream<List<Capsule>> watchFriends(List<String> friendIds);
 

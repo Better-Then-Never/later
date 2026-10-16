@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/push_notification_service.dart';
 import 'package:provider/provider.dart';
 
-class UnreadNotificationBadge extends StatelessWidget {
-  final double size;
-  final Color badgeColor;
-  final Color textColor;
-  final TextStyle? textStyle;
+import '../../../core/theme/app_text_styles.dart';
+import '../notifications_store.dart';
 
+class UnreadNotificationBadge extends StatelessWidget {
   const UnreadNotificationBadge({
     super.key,
     this.size = 20,
@@ -16,14 +13,17 @@ class UnreadNotificationBadge extends StatelessWidget {
     this.textStyle,
   });
 
+  final double size;
+  final Color badgeColor;
+  final Color textColor;
+  final TextStyle? textStyle;
+
   @override
   Widget build(BuildContext context) {
-    final notificationService = Provider.of<PushNotificationService>(context);
-    final unreadCount = notificationService.unreadCount;
-
-    if (unreadCount == 0) {
-      return const SizedBox.shrink();
-    }
+    final unreadCount = context.select<NotificationsStore, int>(
+      (s) => s.unreadCount,
+    );
+    if (unreadCount == 0) return const SizedBox.shrink();
 
     return Container(
       height: size,
@@ -45,7 +45,7 @@ class UnreadNotificationBadge extends StatelessWidget {
               color: textColor,
               fontSize: size * 0.6,
               fontWeight: FontWeight.bold,
-              fontFamily: 'Irina',
+              fontFamily: kAppFontFamily,
             ),
       ),
     );

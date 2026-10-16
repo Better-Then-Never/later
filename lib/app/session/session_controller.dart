@@ -3,22 +3,13 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/logging/app_logger.dart';
+import '../../core/session/session_scoped.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
 
+export '../../core/session/session_scoped.dart';
+
 enum SessionStatus { unknown, signedOut, signedIn }
-
-/// Something whose state belongs to one signed-in user. The session attaches
-/// it when a user signs in and detaches it when they sign out, so no data can
-/// survive from one account into the next.
-abstract class SessionScoped {
-  void attach(String uid);
-  void detach();
-
-  /// Runs while the user is still authenticated, right before sign-out
-  /// (e.g. to remove this device's push token).
-  Future<void> beforeSignOut(String uid) async {}
-}
 
 /// The single source of truth for "who is signed in".
 class SessionController extends ChangeNotifier {

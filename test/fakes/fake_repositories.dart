@@ -317,6 +317,11 @@ class FakeCapsuleRepository implements CapsuleRepository {
   @override
   Stream<List<Capsule>> watchOwn(String uid) => seeded(() => own, _own.stream);
 
+  Capsule? byId;
+
+  @override
+  Future<Capsule?> getById(String id) async => byId?.id == id ? byId : null;
+
   @override
   Stream<List<Capsule>> watchFriends(List<String> friendIds) =>
       Stream.value(const []);

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,7 +8,7 @@ import 'package:flutter/services.dart';
 
 import '../core/logging/app_logger.dart';
 import '../firebase_options.dart';
-import '../services/push_notification_service.dart';
+import '../data/services/push_messaging_service.dart';
 import 'app_scope.dart';
 import 'later_app.dart';
 
@@ -53,17 +51,4 @@ Future<void> bootstrap() async {
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   runApp(const AppScope(child: LaterApp()));
-
-  // Push setup never blocks or breaks startup (BUG-001).
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    unawaited(
-      PushNotificationService().initialize().catchError(
-        (Object e, StackTrace st) => AppLogger.warning(
-          'Push notifications unavailable',
-          error: e,
-          stackTrace: st,
-        ),
-      ),
-    );
-  });
 }

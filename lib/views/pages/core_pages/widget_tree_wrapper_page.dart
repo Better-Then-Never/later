@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/app/session/session_controller.dart';
+import 'package:later/features/notifications/notification_router.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
@@ -20,6 +21,7 @@ class WidgetTreeWrapper extends StatefulWidget {
 class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
   bool _preloaded = false;
   late final AppLinkHandler _links;
+  late final NotificationRouter _notificationRouter;
 
   @override
   void initState() {
@@ -31,9 +33,12 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
     context.read<UserDataService>().getCurrentUserProfile(uid);
 
     _links = context.read<AppLinkHandler>();
+    _notificationRouter = context.read<NotificationRouter>();
     // Pending deep links open once the home screen is on screen.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _links.onHomeReady();
+      if (!mounted) return;
+      _links.onHomeReady();
+      _notificationRouter.onHomeReady();
     });
   }
 
@@ -55,6 +60,7 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
   @override
   void dispose() {
     _links.onHomeGone();
+    _notificationRouter.onHomeGone();
     super.dispose();
   }
 

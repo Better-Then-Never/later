@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class NotificationsPageController extends ChangeNotifier {
+class NotificationsSelectionController extends ChangeNotifier {
   final Set<String> _selectedIds = {};
 
   bool get isSelectionMode => _selectedIds.isNotEmpty;

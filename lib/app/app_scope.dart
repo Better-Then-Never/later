@@ -12,9 +12,14 @@ import '../data/repositories/repositories.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/services/location_service.dart';
 import '../data/services/preferences_store.dart';
+import '../data/services/profile_image_cache.dart';
+import '../data/services/push_messaging_service.dart';
+import '../features/map/map_focus.dart';
+import '../features/notifications/notification_router.dart';
+import '../features/notifications/notifications_store.dart';
+import '../features/notifications/push_registration.dart';
 import '../services/capsule_data_service.dart';
 import '../services/map_capsule_jump_service.dart';
-import '../services/push_notification_service.dart';
 import '../services/user_data_service.dart';
 import '../services/user_favorite_capsules_service.dart';
 import '../services/user_friends_service.dart';
@@ -48,6 +53,11 @@ class _AppScopeState extends State<AppScope> {
   final _geocoding = GeocodingService();
   final _prefs = PreferencesStore();
   final _links = AppLinkHandler(onOpenProfile: AppRoutes.openProfileFromLink);
+  final _push = PushMessagingService();
+  final _mapFocus = MapFocus();
+  late final _imageCache = ProfileImageCache(_images);
+  late final _notificationsStore = NotificationsStore(_notifications);
+  late final NotificationRouter _notificationRouter;
 
   // Legacy per-user services, reset by the session until they are replaced.
   final _legacyUserData = UserDataService();
@@ -66,6 +76,9 @@ class _AppScopeState extends State<AppScope> {
       auth: _auth,
       users: _users,
       scoped: [
+        _imageCache,
+        _notificationsStore,
+        PushRegistration(push: _push, tokens: _pushTokens),
         _LegacyServicesScope(
           userData: _legacyUserData,
           friends: _legacyFriends,
@@ -76,12 +89,22 @@ class _AppScopeState extends State<AppScope> {
       ],
     )..start();
     _links.init();
+    _notificationRouter = NotificationRouter(
+      push: _push,
+      session: _session,
+      capsules: _capsules,
+      mapFocus: _mapFocus,
+    )..start();
+    // Push setup never blocks or breaks startup (BUG-001).
+    WidgetsBinding.instance.addPostFrameCallback((_) => _push.initialize());
     _prefs.purgeLegacyGlobalKeys();
   }
 
   @override
   void dispose() {
     _session.dispose();
+    _notificationRouter.dispose();
+    _push.dispose();
     super.dispose();
   }
 
@@ -108,7 +131,13 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider.value(value: _legacyFavorites),
         ChangeNotifierProvider.value(value: _legacyImages),
         ChangeNotifierProvider.value(value: _jump),
-        ChangeNotifierProvider.value(value: PushNotificationService()),
+        Provider<PushMessagingService>.value(value: _push),
+        Provider<NotificationRouter>.value(value: _notificationRouter),
+        ChangeNotifierProvider<ProfileImageCache>.value(value: _imageCache),
+        ChangeNotifierProvider<NotificationsStore>.value(
+          value: _notificationsStore,
+        ),
+        ChangeNotifierProvider<MapFocus>.value(value: _mapFocus),
       ],
       child: widget.child,
     );

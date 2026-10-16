@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
-import 'package:later/views/pages/core_pages/notifications_page.dart';
+import 'package:later/features/notifications/notifications_page.dart';
 import 'package:later/views/pages/core_pages/settings_page.dart';
 import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
-import 'package:later/views/widgets/notifications/unread_notification_badge.dart';
+import 'package:later/features/notifications/widgets/unread_notification_badge.dart';
 import 'package:page_transition/page_transition.dart';
 
 class ProfilePageHeaderActionButtons extends StatelessWidget {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../data/models/capsule.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/signup_page.dart';
-import '../../views/pages/core_pages/notifications_page.dart';
+import '../../features/notifications/notifications_page.dart';
 import '../../views/pages/core_pages/qr_code_scanner_page.dart';
 import '../../views/pages/core_pages/settings_page.dart';
 import '../../views/pages/core_pages/share_profile_page.dart';

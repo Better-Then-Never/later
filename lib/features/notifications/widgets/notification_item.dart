@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:later/data/models/app_notification.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
-import 'package:later/views/widgets/notifications/notification_avatar.dart';
-import 'package:later/views/widgets/notifications/notification_thumbnail.dart';
-import 'package:later/views/widgets/notifications/notification_timestamp.dart';
-import 'package:later/views/widgets/notifications/notification_unread_indicator.dart';
+import 'package:later/features/notifications/widgets/notification_avatar.dart';
+import 'package:later/features/notifications/widgets/notification_thumbnail.dart';
+import 'package:later/features/notifications/widgets/notification_timestamp.dart';
+import 'package:later/features/notifications/widgets/notification_unread_indicator.dart';
 
 class NotificationItem extends StatelessWidget {
-  final String id;
-  final String type;
-  final String userName;
-  final String userAvatar;
-  final String message;
-  final String? thumbnailImage;
-  final DateTime timestamp;
-  final bool isRead;
+  final AppNotification notification;
   final bool isSelected;
   final bool selectionMode;
   final VoidCallback onTap;
@@ -21,14 +15,7 @@ class NotificationItem extends StatelessWidget {
 
   const NotificationItem({
     super.key,
-    required this.id,
-    required this.type,
-    required this.userName,
-    required this.userAvatar,
-    required this.message,
-    this.thumbnailImage,
-    required this.timestamp,
-    required this.isRead,
+    required this.notification,
     required this.isSelected,
     required this.selectionMode,
     required this.onTap,
@@ -58,9 +45,9 @@ class NotificationItem extends StatelessWidget {
                 ),
               ],
             )
-          : BoxDecorations.whiteCard(
-              borderRadius: 25,
-            ).copyWith(color: isRead ? Colors.white : Colors.blue.shade50),
+          : BoxDecorations.whiteCard(borderRadius: 25).copyWith(
+              color: notification.isRead ? Colors.white : Colors.blue.shade50,
+            ),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
@@ -68,7 +55,10 @@ class NotificationItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            NotificationAvatar(userAvatar: userAvatar),
+            NotificationAvatar(
+              avatarUrl: notification.fromUserAvatarUrl,
+              userId: notification.fromUserId,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -76,13 +66,18 @@ class NotificationItem extends StatelessWidget {
                 children: [
                   _buildMessageRow(),
                   const SizedBox(height: 4),
-                  NotificationTimestamp(timestamp: timestamp),
+                  NotificationTimestamp(
+                    // Null only while the server timestamp is pending.
+                    timestamp: notification.timestamp ?? DateTime.now(),
+                  ),
                 ],
               ),
             ),
-            if (thumbnailImage != null) ...[
+            if (notification.thumbnailImageUrl != null) ...[
               const SizedBox(width: 12),
-              NotificationThumbnail(thumbnailImage: thumbnailImage),
+              NotificationThumbnail(
+                thumbnailImage: notification.thumbnailImageUrl,
+              ),
             ],
           ],
         ),
@@ -103,16 +98,17 @@ class NotificationItem extends StatelessWidget {
               ),
               children: [
                 TextSpan(
-                  text: userName,
+                  text: notification.fromUserName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const TextSpan(text: ' '),
-                TextSpan(text: message),
+                TextSpan(text: notification.message),
               ],
             ),
           ),
         ),
-        if (!selectionMode) NotificationUnreadIndicator(isRead: isRead),
+        if (!selectionMode)
+          NotificationUnreadIndicator(isRead: notification.isRead),
       ],
     );
   }

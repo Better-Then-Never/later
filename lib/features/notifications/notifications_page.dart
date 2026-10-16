@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/page_controllers/notifications_page_controller.dart';
+import 'package:later/features/notifications/notifications_selection_controller.dart';
 import 'package:later/services/popup_notification_service.dart';
-import 'package:later/services/push_notification_service.dart';
+import 'package:later/core/errors/app_failure.dart';
+import 'package:later/features/notifications/notifications_store.dart';
 import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
-import 'package:later/views/widgets/notifications/notification_filter_tabs.dart';
-import 'package:later/views/widgets/notifications/notification_selection_action_bar.dart';
-import 'package:later/views/widgets/notifications/notifications_list.dart';
+import 'package:later/features/notifications/widgets/notification_filter_tabs.dart';
+import 'package:later/features/notifications/widgets/notification_selection_action_bar.dart';
+import 'package:later/features/notifications/widgets/notifications_list.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsPage extends StatefulWidget {
@@ -20,13 +21,13 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  late NotificationsPageController _controller;
+  late NotificationsSelectionController _controller;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _controller = NotificationsPageController();
+    _controller = NotificationsSelectionController();
   }
 
   @override
@@ -83,14 +84,17 @@ class _NotificationsPageState extends State<NotificationsPage>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  NotificationsList(filterType: 'All', controller: _controller),
                   NotificationsList(
-                    filterType: 'Replies',
-                    controller: _controller,
+                    filter: NotificationFilter.all,
+                    selection: _controller,
                   ),
                   NotificationsList(
-                    filterType: 'Comments',
-                    controller: _controller,
+                    filter: NotificationFilter.replies,
+                    selection: _controller,
+                  ),
+                  NotificationsList(
+                    filter: NotificationFilter.comments,
+                    selection: _controller,
                   ),
                 ],
               ),
@@ -102,24 +106,22 @@ class _NotificationsPageState extends State<NotificationsPage>
   }
 
   Future<void> _handleMarkAsRead() async {
-    final notificationService = context.read<PushNotificationService>();
-    final selectedIds = _controller.selectedIds.toList();
-
-    for (final id in selectedIds) {
-      final index = notificationService.notifications.indexWhere(
-        (n) => n['id'] == id,
+    final ids = _controller.selectedIds.toList();
+    final count = ids.length;
+    try {
+      await context.read<NotificationsStore>().markRead(ids);
+    } catch (e) {
+      if (!mounted) return;
+      PopupNotificationService.showError(
+        context: context,
+        message: AppFailure.from(e).message,
       );
-      if (index != -1) {
-        await notificationService.markAsRead(index);
-      }
+      return;
     }
-
     if (!mounted) return;
-
     PopupNotificationService.showInfo(
       context: context,
-      message:
-          "${_controller.selectedCount} notification${_controller.selectedCount > 1 ? 's' : ''} marked as read",
+      message: '$count notification${count > 1 ? 's' : ''} marked as read',
       position: NotificationPosition.bottom,
     );
     _controller.clearSelection();
@@ -138,24 +140,21 @@ class _NotificationsPageState extends State<NotificationsPage>
   }
 
   Future<void> _performDelete() async {
-    final notificationService = context.read<PushNotificationService>();
-    final selectedIds = _controller.selectedIds.toList();
-
-    for (final id in selectedIds) {
-      final index = notificationService.notifications.indexWhere(
-        (n) => n['id'] == id,
+    final ids = _controller.selectedIds.toList();
+    try {
+      await context.read<NotificationsStore>().delete(ids);
+    } catch (e) {
+      if (!mounted) return;
+      PopupNotificationService.showError(
+        context: context,
+        message: AppFailure.from(e).message,
       );
-      if (index != -1) {
-        await notificationService.deleteNotification(index);
-      }
+      return;
     }
-
     if (!mounted) return;
-
     PopupNotificationService.showInfo(
       context: context,
-      message:
-          "${selectedIds.length} notification${selectedIds.length > 1 ? 's' : ''} deleted",
+      message: '${ids.length} notification${ids.length > 1 ? 's' : ''} deleted',
       position: NotificationPosition.bottom,
     );
     _controller.clearSelection();

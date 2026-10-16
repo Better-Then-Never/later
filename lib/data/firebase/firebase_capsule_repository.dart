@@ -45,6 +45,19 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       .map(_map);
 
   @override
+  Future<Capsule?> getById(String id) async {
+    try {
+      final doc = await _capsules.doc(id).get();
+      final data = doc.data();
+      return data == null ? null : FirestoreMappers.capsule(doc.id, data);
+    } on FirebaseException catch (e) {
+      // Not visible to this user (private or no longer a friend).
+      if (e.code == 'permission-denied') return null;
+      rethrow;
+    }
+  }
+
+  @override
   Stream<List<Capsule>> watchFriends(List<String> friendIds) {
     final ids = friendIds.toSet().toList();
     if (ids.isEmpty) return Stream.value(const []);
