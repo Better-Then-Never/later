@@ -1,318 +1,69 @@
-const functions = require('firebase-functions/v2');
-const admin = require('firebase-admin');
+'use strict';
 
-// Initialize Firebase Admin
+const { onRequest } = require('firebase-functions/v2/https');
+const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const logger = require('firebase-functions/logger');
+const admin = require('firebase-admin');
+const notify = require('./lib/notify');
+
 admin.initializeApp();
 
-exports.getUserData = functions.https.onRequest(async (req, res) => {
-    // Set CORS headers
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-
-    if (req.method !== 'GET') {
-        res.status(405).json({ error: 'Method not allowed' });
-        return;
-    }
-
-    try {
-        const userId = req.query.userId;
-
-        if (!userId) {
-            res.status(400).json({ error: 'User ID is required' });
-            return;
-        }
-
-        console.log('Fetching data for userId:', userId);
-
-        // Fetch user data from Firebase Auth
-        const userRecord = await admin.auth().getUser(userId);
-
-        // Fetch additional data from Firestore
-        const db = admin.firestore();
-        const userDoc = await db.collection('users').doc(userId).get();
-
-        let displayName = userRecord.displayName;
-        let photoURL = userRecord.photoURL;
-
-        // If no display name in Auth, try to get from Firestore
-        if (!displayName && userDoc.exists) {
-            const userData = userDoc.data();
-            displayName = userData.displayName || userData.name || userData.firstName;
-        }
-
-        // Try to find profile image in Firebase Storage
-        const bucket = admin.storage().bucket();
-        
-        try {
-            const [files] = await bucket.getFiles({
-                prefix: `userdata/${userId}/assets/images/`
-            });
-            
-            console.log('Files found in directory:');
-            files.forEach(file => {
-                console.log('- File name:', file.name);
-            });
-            
-            const profileImageFile = files.find(file => 
-                file.name.includes('profile_image') || 
-                file.name.includes('profile')
-            );
-            
-            if (profileImageFile) {
-                console.log('Found profile image file:', profileImageFile.name);
-                await profileImageFile.makePublic();
-                photoURL = `https://storage.googleapis.com/${bucket.name}/${profileImageFile.name}`;
-                console.log('Generated public URL:', photoURL);
-            } else {
-                console.log('No profile image file found');
-            }
-            
-        } catch (listError) {
-            console.error('Error listing files:', listError);
-        }
-
-        console.log('Final photoURL:', photoURL);
-
-        res.json({
-            displayName: displayName || 'Your friend',
-            email: userRecord.email,
-            photoURL: photoURL,
-            debug: {
-                userId: userId,
-                foundImage: !!photoURL
-            }
-        });
-
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        res.status(500).json({
-            error: 'Failed to fetch user data',
-            displayName: 'Your friend'
-        });
-    }
+const services = () => ({
+  db: admin.firestore(),
+  messaging: admin.messaging(),
+  bucket: admin.storage().bucket(),
 });
 
-// Send push notification when someone follows a user
-exports.sendFollowerNotification = functions.firestore.onDocumentCreated(
-    'users/{userId}/notifications/{notificationId}',
-    async (event) => {
-        const notification = event.data.data();
-        const userId = event.params.userId;
-
-        // Only send push for follow notifications
-        if (notification.type !== 'follow') {
-            console.log('Not a follow notification, skipping');
-            return null;
-        }
-
-        try {
-            console.log(`Processing follow notification for user: ${userId}`);
-
-            // Get user's FCM token
-            const userDoc = await admin.firestore()
-                .collection('users')
-                .doc(userId)
-                .get();
-
-            if (!userDoc.exists) {
-                console.log('User not found');
-                return null;
-            }
-
-            const userData = userDoc.data();
-            const fcmToken = userData.fcmToken;
-            
-            if (!fcmToken) {
-                console.log('No FCM token for user');
-                return null;
-            }
-
-            console.log('Sending notification to token:', fcmToken);
-
-            // Send notification
-            const message = {
-                token: fcmToken,
-                notification: {
-                    title: 'New Follower',
-                    body: `${notification.fromUserName} started following you`,
-                },
-                data: {
-                    type: 'follow',
-                    userName: notification.fromUserName || 'Someone',
-                    userAvatar: notification.fromUserAvatar || '',
-                    userId: notification.fromUserId || '',
-                    clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-                },
-                android: {
-                    priority: 'high',
-                    notification: {
-                        channelId: 'high_importance_channel',
-                        sound: 'default',
-                    },
-                },
-                apns: {
-                    payload: {
-                        aps: {
-                            sound: 'default',
-                            badge: 1,
-                            contentAvailable: true,
-                        },
-                    },
-                },
-            };
-
-            const response = await admin.messaging().send(message);
-            console.log('Follower notification sent successfully:', response);
-
-            return null;
-        } catch (error) {
-            console.error('Error sending notification:', error);
-            
-            // If token is invalid, remove it from user document
-            if (error.code === 'messaging/invalid-registration-token' ||
-                error.code === 'messaging/registration-token-not-registered') {
-                console.log('Removing invalid FCM token');
-                await admin.firestore()
-                    .collection('users')
-                    .doc(userId)
-                    .update({ fcmToken: admin.firestore.FieldValue.delete() });
-            }
-            
-            return null;
-        }
+// Name and avatar for the profile landing page (public/index.html).
+exports.getUserData = onRequest({ cors: true }, async (req, res) => {
+  if (req.method !== 'GET') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+  try {
+    const summary = await notify.profileSummary(services(), req.query.userId);
+    if (!summary) {
+      res.status(404).json({ displayName: 'Your friend', photoURL: null });
+      return;
     }
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json(summary);
+  } catch (error) {
+    logger.error('getUserData failed', error);
+    res.status(500).json({ displayName: 'Your friend', photoURL: null });
+  }
+});
+
+// Push for "started following you" notifications.
+exports.sendFollowerNotification = onDocumentCreated(
+  'users/{userId}/notifications/{notificationId}',
+  async (event) => {
+    try {
+      const result = await notify.onNotificationCreated(
+        services(),
+        event.params.userId,
+        event.data && event.data.data(),
+      );
+      if (result) logger.info('Follower notification', result);
+    } catch (error) {
+      logger.error('Follower notification failed', error);
+    }
+  },
 );
 
-// Send notification when someone creates a capsule (for followers)
-exports.sendCapsuleNotification = functions.firestore.onDocumentCreated(
-    'capsules/{capsuleId}',
-    async (event) => {
-        const capsule = event.data.data();
-        const creatorId = capsule.creatorId;
-
-        if (!creatorId) {
-            console.log('No creator ID found');
-            return null;
-        }
-
-        try {
-            console.log(`Processing capsule notification for creator: ${creatorId}`);
-
-            // Get creator's data
-            const creatorDoc = await admin.firestore()
-                .collection('users')
-                .doc(creatorId)
-                .get();
-
-            if (!creatorDoc.exists) {
-                console.log('Creator not found');
-                return null;
-            }
-
-            const creatorData = creatorDoc.data();
-            const creatorName = creatorData.username || creatorData.displayName || 'Someone';
-
-            // Get all followers
-            const followersSnapshot = await admin.firestore()
-                .collection('users')
-                .doc(creatorId)
-                .collection('followers')
-                .get();
-
-            if (followersSnapshot.empty) {
-                console.log('No followers to notify');
-                return null;
-            }
-
-            const followerIds = followersSnapshot.docs.map(doc => doc.id);
-            const tokens = [];
-            const notificationPromises = [];
-
-            for (const followerId of followerIds) {
-                // Check if notifications enabled
-                const followingDoc = await admin.firestore()
-                    .collection('users')
-                    .doc(followerId)
-                    .collection('following')
-                    .doc(creatorId)
-                    .get();
-
-                if (!followingDoc.exists || !followingDoc.data().notificationsEnabled) {
-                    continue;
-                }
-
-                // Get follower's FCM token
-                const followerDoc = await admin.firestore()
-                    .collection('users')
-                    .doc(followerId)
-                    .get();
-
-                if (followerDoc.exists && followerDoc.data().fcmToken) {
-                    tokens.push(followerDoc.data().fcmToken);
-
-                    // Create notification document
-                    notificationPromises.push(
-                        admin.firestore()
-                            .collection('users')
-                            .doc(followerId)
-                            .collection('notifications')
-                            .add({
-                                type: 'capsule',
-                                fromUserId: creatorId,
-                                fromUserName: creatorName,
-                                fromUserAvatar: creatorData.profilePicture || '',
-                                message: 'created a new capsule',
-                                capsuleId: event.params.capsuleId,
-                                timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                                isRead: false,
-                            })
-                    );
-                }
-            }
-
-            await Promise.all(notificationPromises);
-
-            if (tokens.length === 0) {
-                console.log('No valid tokens');
-                return null;
-            }
-
-            // Send notifications
-            const messages = tokens.map(token => ({
-                token: token,
-                notification: {
-                    title: 'New Capsule',
-                    body: `${creatorName} created a new capsule`,
-                },
-                data: {
-                    type: 'capsule',
-                    userName: creatorName,
-                    userId: creatorId,
-                    capsuleId: event.params.capsuleId,
-                    clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-                },
-                android: {
-                    priority: 'high',
-                    notification: {
-                        channelId: 'high_importance_channel',
-                        sound: 'default',
-                    },
-                },
-            }));
-
-            const response = await admin.messaging().sendEach(messages);
-            console.log(`Capsule notifications: ${response.successCount} succeeded, ${response.failureCount} failed`);
-
-            return null;
-        } catch (error) {
-            console.error('Error sending capsule notification:', error);
-            return null;
-        }
+// In-app notification + push to followers when a capsule is created.
+exports.sendCapsuleNotification = onDocumentCreated(
+  'capsules/{capsuleId}',
+  async (event) => {
+    try {
+      const result = await notify.onCapsuleCreated(
+        services(),
+        event.params.capsuleId,
+        event.data && event.data.data(),
+      );
+      logger.info('Capsule notification', result);
+    } catch (error) {
+      logger.error('Capsule notification failed', error);
     }
+  },
 );

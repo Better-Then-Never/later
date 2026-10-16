@@ -93,7 +93,7 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-073 | Add friends | N+1 reads + image preloads per suggested user from `build`. | `SuggestedFriendsListController.loadUser`. | S3 | code (B-H3) | fixed | 2e33d45 |
 | BUG-074 | Friends | Each opening of "Manage friendship"/remove-friend modal creates a new `UserFriendsService` with 3 never-cancelled listeners. | `UserFriendsService()` in widgets. | S2 | code (B-H1) | fixed | 2e33d45 |
 | BUG-075 | Friends | `UserFriendsService` initialises its listeners at provider creation; a different user logging in without app restart relies on `WidgetTreeWrapper` calling `init()`; `_friendsSub` is never cancelled. | Session lifecycle. | S2 | code | fixed | 2e33d45 |
-| BUG-076 | Friends | Accepting a request writes the **other** user's document (`friends` arrayUnion) → requires rules that let any user edit any user's `friends`. | Cross-user write without server validation. | S1 (security) | code | open | |
+| BUG-076 | Friends | Accepting a request writes the **other** user's document (`friends` arrayUnion) → requires rules that let any user edit any user's `friends`. | Cross-user write without server validation. | S1 (security) | code | fixed | 76e3a75 |
 | BUG-077 | My friends | Crash (RangeError) when a friend has an empty name. | `friend['name'][0]`. | S2 | code (B-H7) | fixed | 2e33d45 |
 | BUG-078 | Profile | Pinned friends row reshuffles randomly on every rebuild and re-fetches images. | `FutureBuilder(future: getDisplayFriends())` in `build`. | S3 | repro (`profile_own.png` vs later captures) | fixed | 2e33d45 |
 | BUG-079 | Profile | Pinned-friends limit can be blocked by stale uids (global prefs key). | Not intersected with friends. | S3 | code (B-M2) | fixed | 2e33d45 |
@@ -115,9 +115,9 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 
 | ID | Area | Symptom | Root cause | Sev | Repro | Status | Fix |
 |---|---|---|---|---|---|---|---|
-| BUG-100 | Firestore rules | Repo `firestore.rules` is the expired test-mode rule (denies everything after 2025-09-03); production rules are unknown but must be permissive for the app to work. | No real rules. | S1 | code | open | |
-| BUG-101 | Storage rules | Repo `storage.rules` denies everything; production differs. | No real rules. | S1 | code | open | |
-| BUG-102 | Firestore | Required composite indexes are not declared (`capsules: ownerId + createdAt`; friend requests `fromUserId/toUserId + status`). | Empty `firestore.indexes.json`. | S2 | code | open | |
+| BUG-100 | Firestore rules | Repo `firestore.rules` is the expired test-mode rule (denies everything after 2025-09-03); production rules are unknown but must be permissive for the app to work. | No real rules. | S1 | code | fixed | 76e3a75 |
+| BUG-101 | Storage rules | Repo `storage.rules` denies everything; production differs. | No real rules. | S1 | code | fixed | 76e3a75 |
+| BUG-102 | Firestore | Required composite indexes are not declared (`capsules: ownerId + createdAt`; friend requests `fromUserId/toUserId + status`). | Empty `firestore.indexes.json`. | S2 | code | fixed | 76e3a75 |
 | BUG-103 | Functions | `getUserData` is a public unauthenticated endpoint that returns any user's email and calls `makePublic()` on their profile image. | Function design. | S1 | code | open | |
 | BUG-104 | Model | `TimeCapsule.fromMap` throws on unknown privacy/colour or null `createdAt`; the model is unused (maps everywhere) and defaults disagree (`blue` vs `red`). | No mapper layer. | S3 | code | fixed | fb6fc31 |
 | BUG-105 | Config | `firebase.json` `flutter` section still references the deleted Firebase app IDs. | Stale FlutterFire config. | S4 | code | open | |
