@@ -3,6 +3,7 @@ import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/default_search_bar.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_motion.dart';
+import 'package:later/core/theme/app_dimens.dart';
 
 class PageHeader extends StatelessWidget {
   final String mainText;
@@ -49,10 +50,24 @@ class PageHeader extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    DefaultText(
-                      mainText,
-                      fontSize: screenHeight * 0.04,
-                      fontWeight: FontWeight.bold,
+                    // Long titles shrink instead of running under the
+                    // buttons on either side.
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal:
+                            leadingButton != null || trailingButton != null
+                            ? screenWidth * 0.17
+                            : AppSpacing.l,
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: DefaultText(
+                          mainText,
+                          fontSize: screenHeight * 0.04,
+                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                        ),
+                      ),
                     ),
                     if (leadingButton != null)
                       Positioned(
