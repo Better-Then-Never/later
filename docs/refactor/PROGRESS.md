@@ -8,7 +8,11 @@
 
 ## Log
 - **2026-10-16 — Phase 0/1/2.** Branch created; committed build fixes (Kotlin 2.3.10, compilerOptions, incremental off), gitignore of Firebase config, deprecated API replacements, emulator support + seed tooling. Read the whole repo (notes in `audit/`). Baseline gates recorded in AUDIT.md §5. 55 baseline screenshots captured against the emulators (`screenshots/before/`). Wrote AUDIT, FIREBASE_AUDIT, BUGS, DESIGN_SPEC, SECURITY_FINDINGS, BLOCKERS, IDEAS_NOT_DONE, REFACTOR_PLAN.
-- Next: plan step 1 (tooling).
+- **Step 1 (tooling)** done: lints active (442 → 85 after dart fix; remaining are print/context/unawaited, fixed per feature), unused deps removed, dead files deleted, lockfile tracked.
+- **Steps 2-3 (core + assets)** done: tokens/theme/logger/failures/route transitions; assets reorganised with typed accessors + test.
+- **Step 4 (data layer)** done: models with tolerant mappers, repository interfaces + Firebase impls (auth, users+username reservation, friends, capsules, notifications, push tokens, image storage), services (image processing in isolates, geolocator location, cached geocoding, uid-scoped prefs). 27 unit tests (fake_cloud_firestore). Not wired to the UI yet.
+- Next: step 5 (app shell: bootstrap, scope, session, auth gate, router).
 
 ## Final-report checklist (verify before writing REPORT.md)
 - SECURITY_FINDINGS.md and BLOCKERS.md describe some fixes in the present tense ("moved", "fixed in code"): confirm each one actually landed, or reword.
+- verify watchPublicInBand latitude-band query against the Firestore emulator (tools/rules-tests)
