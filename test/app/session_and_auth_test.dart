@@ -106,6 +106,14 @@ void main() {
       expect(auth.currentUid, 'u1');
     });
 
+    test('the page may close (and dispose it) while signing in', () async {
+      auth.accounts['a@b.c'] = 'secret';
+      auth.uidsByEmail['a@b.c'] = 'u1';
+      final pending = controller.login(email: 'a@b.c', password: 'secret');
+      controller.dispose(); // AuthGate swapped the login page out.
+      expect(await pending, isNull);
+    });
+
     test('signup normalises the username and creates the profile', () async {
       final failure = await controller.signUp(
         name: '  Alice ',

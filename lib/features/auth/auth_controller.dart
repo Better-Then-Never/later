@@ -18,7 +18,14 @@ class AuthController extends ChangeNotifier {
   final UserRepository _users;
 
   bool _busy = false;
+  bool _disposed = false;
   bool get busy => _busy;
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
 
   Future<AppFailure?> _run(Future<void> Function() action) async {
     if (_busy) return null;
@@ -34,7 +41,9 @@ class AuthController extends ChangeNotifier {
       return AppFailure.from(e);
     } finally {
       _busy = false;
-      notifyListeners();
+      // A successful sign-in replaces the page (and disposes this
+      // controller) before the action returns.
+      if (!_disposed) notifyListeners();
     }
   }
 
