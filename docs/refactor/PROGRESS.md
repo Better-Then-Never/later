@@ -23,8 +23,9 @@
 - **Step 13 (Firebase backend)**: 76e3a75 (rules + indexes + tools/rules-tests, 31 tests incl. the latitude-band GeoPoint query), b0ea48e (functions: lib/notify.js + 10 emulator tests), 46f37b3 (auth dispose crash found while re-testing). MIGRATIONS_NEEDED.md + tools/migrations (dry-run default, 4 emulator tests, rehearsed on the seeded dev emulator: 6 users migrated). Dev emulators now run from the repo firebase.json, i.e. WITH the new rules: `firebase emulators:start --project later-da778 --only auth,firestore,storage`, then `node tools/emulator/seed.js` and (to mirror production after migration) `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node tools/migrations/migrate.js --apply`.
 - **App vs. new rules (emulator, migrated seed data)**: login/logout, map (own/friends/public band), history, favourite, notifications list + mark read, search, accept (batch incl. cross-user friends), send request, follow (+ follow notice), capsule create (Storage image/jpeg + validated doc) and delete (doc + image), profile picture upload, username change (reservation moved): all succeeded, no PERMISSION_DENIED in logcat. Found and fixed BUG-113 on the way.
 - Emulator note: the AVD has hw.ramSize=2048; under load Android itself stalled (one ANR from input dispatch, a system_server restart). A guest reboot fixed it; more RAM for the AVD would help.
-- Next: step 14 (format/analyze/tests/builds, after screenshots on a fresh seed, REPORT.md).
+- **Step 14 (gates + report)** done: format clean, analyze 0, 94 tests (+31 rules, 10 functions, 4 migration), debug + release APK, 56 after screenshots + COMPARISON.md, SECURITY_FINDINGS/BLOCKERS re-verified, REPORT.md. Found and fixed BUG-114 (avatar misses across sessions) and the dead "Share profile to..." option while doing so.
+- Status: refactor complete. Remaining items are owner actions (BLOCKERS.md, REPORT.md section 3).
 
-## Final-report checklist (verify before writing REPORT.md)
-- SECURITY_FINDINGS.md and BLOCKERS.md describe some fixes in the present tense ("moved", "fixed in code"): confirm each one actually landed, or reword.
-- verify watchPublicInBand latitude-band query against the Firestore emulator (tools/rules-tests)
+## Final-report checklist (done)
+- [x] SECURITY_FINDINGS.md and BLOCKERS.md present-tense claims checked against code/emulator (7be2900).
+- [x] watchPublicInBand latitude-band query verified on the Firestore emulator (tools/rules-tests).
