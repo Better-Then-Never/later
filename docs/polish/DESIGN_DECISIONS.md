@@ -37,8 +37,36 @@ that are part of the original design (history hearts and selection bars, notific
 page, QR flash, follow bell, filter menu) are kept and listed in `tool/design_tokens_allowlist.txt`; new Material
 icons fail the check.
 
+## 6. Motion (`lib/core/theme/app_motion.dart`, `lib/shared/motion/`)
+Character of the original app: quick and subtle; ease-out to enter, ease-in to leave, ease-in-out for in-place
+changes, fast-out-slow-in for size changes. The tokens are exactly the values it already used:
+
+| Token | Value | Used for | Was |
+|---|---|---|---|
+| `quick` | 100 ms | press feedback, navbar icon scale | navbar icon scale (10 ms, i.e. a jump), add-friends slide |
+| `fast` | 150 ms | page transitions, cross-fades | header switcher (150 ms); pages were a 10 ms fade |
+| `standard` | 200 ms | state changes (navbar selection, list item enter) | navbar (200 ms) |
+| `emphasized` | 250 ms | size changes, sheets (Material default) | page header resize (250 ms) |
+| `slow` | 300 ms | toasts, scroll to latest, selection bar | popup, notifications bar, chat scroll (300 ms) |
+| `reveal` | 350 ms | permission gate pages | permission gate (350 ms) |
+| curves `enter`/`exit`/`standardCurve`/`emphasizedCurve` | easeOut / easeIn / easeInOut / fastOutSlowIn | | the same |
+| `pressedScale` | 0.97 | press feedback | — |
+
+Shared widgets: `AppPressable` (scale to 0.97 while pressed; on every shared button and the navbar),
+`AppFadeSwitcher` (cross-fade between loading/content/empty/error), `AppEnter` (fade + small lift for items that
+just arrived). **Reduce motion:** with the system's "remove animations" setting (`MediaQuery.disableAnimations`),
+page transitions are instant, `AppPressable` adds nothing, `AppEnter` shows at once and `AppMotion.of(context, d)`
+returns zero for the in-place animations. `raw-duration` in the token check blocks new hard-coded animation
+timings.
+
 ## 5. Decision log
 - **D-01 Tokens over raw values.** Every colour outside `core/theme` is a token; the check script keeps it that way.
   Material greys became tokens instead of being snapped to the nearest existing token, so nothing changes visually.
+- **D-03 One page transition.** Every push now fades in 150 ms (`AppMotion.fast`); "Add friends" keeps its
+  slide-up with the same timing. Before: a 10 ms fade (an instant swap) for most pages, 100 ms slide-up for one,
+  and the Android platform transition (about 300 ms zoom) for the camera and signup. The 150 ms fade keeps the quick,
+  subtle character and removes the hard cut.
+- **D-04 Press feedback.** No consistent feedback existed (some buttons had an ink splash, menus had none). A 0.97
+  scale in 100 ms on the shared buttons and the navbar matches the navbar's own scale animation.
 - **D-02 Allow-listed debt.** Raw animation durations (until the motion tokens exist) and the chat port's Material
   icons are allow-listed with TODO markers; the script reports stale entries, so removing the debt is enforced.

@@ -19,6 +19,7 @@ import 'chats_store.dart';
 import 'widgets/chat_options_sheet.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
+import 'package:later/core/theme/app_motion.dart';
 
 /// A conversation with one friend (main's PrivateMessagePage).
 class ChatPage extends StatelessWidget {
@@ -83,8 +84,8 @@ class _ChatViewState extends State<_ChatView> {
       if (animate) {
         _scroll.animateTo(
           end,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
+          duration: AppMotion.of(context, AppMotion.slow),
+          curve: AppMotion.enter,
         );
       } else {
         _scroll.jumpTo(end);

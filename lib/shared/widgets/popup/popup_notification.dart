@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import 'package:later/core/theme/app_motion.dart';
 
 class PopupNotification extends StatefulWidget {
   final String message;
@@ -49,15 +50,12 @@ class PopupNotificationState extends State<PopupNotification>
   }
 
   void _setupEntryAnimations() {
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
+    _controller = AnimationController(duration: AppMotion.slow, vsync: this);
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    ).animate(CurvedAnimation(parent: _controller, curve: AppMotion.enter));
 
     _slideAnimation = _createSlideAnimation(false);
   }
@@ -82,7 +80,7 @@ class PopupNotificationState extends State<PopupNotification>
     return Tween<Offset>(begin: startOffset, end: endOffset).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: isExit ? Curves.easeIn : Curves.easeOut,
+        curve: isExit ? AppMotion.exit : AppMotion.enter,
       ),
     );
   }
@@ -92,14 +90,14 @@ class PopupNotificationState extends State<PopupNotification>
     _isExiting = true;
 
     _exitController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: AppMotion.slow,
       vsync: this,
     );
 
     final exitFadeAnimation = Tween<double>(
       begin: 1.0,
       end: 0.0,
-    ).animate(CurvedAnimation(parent: _exitController!, curve: Curves.easeIn));
+    ).animate(CurvedAnimation(parent: _exitController!, curve: AppMotion.exit));
     final exitSlideAnimation = _createExitSlideAnimation(_exitController!);
 
     setState(() {
@@ -128,7 +126,7 @@ class PopupNotificationState extends State<PopupNotification>
     return Tween<Offset>(
       begin: Offset.zero,
       end: endOffset,
-    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeIn));
+    ).animate(CurvedAnimation(parent: controller, curve: AppMotion.exit));
   }
 
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/motion/app_motion_widgets.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/core/theme/app_colors.dart';
@@ -27,6 +28,10 @@ class DefaultButtonWithIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return AppPressable(child: _buildButton());
+  }
+
+  Widget _buildButton() {
     return Container(
       decoration: decoration ?? BoxDecorations.greyCard(),
       child: Material(

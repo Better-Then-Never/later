@@ -26,13 +26,6 @@ material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.err
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.info  # original design (toasts)
 material-icon lib/features/map/widgets/capsule_preview_card.dart Icons.broken_image_outlined  # image error placeholder
 
-# TODO(polish phase 3, motion tokens): replace with AppMotion, then delete these lines
-raw-duration lib/app/shell/navbar_widget.dart *
-raw-duration lib/features/auth/permission_gate_page.dart *
-raw-duration lib/features/messages/chat_page.dart *
-raw-duration lib/features/notifications/notifications_page.dart *
-raw-duration lib/shared/widgets/page_header.dart *
-raw-duration lib/shared/widgets/popup/popup_notification.dart *
 
 # TODO(polish phase 4, messages): chat port from main; custom icons + tokens, then delete these lines
 raw-hex lib/features/messages/widgets/message_bubble.dart *

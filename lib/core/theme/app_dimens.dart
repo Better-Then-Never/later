@@ -71,15 +71,8 @@ abstract final class AppShadows {
   ];
 }
 
-/// Animation timings (DESIGN_SPEC.md §8).
+/// How long toasts stay on screen. Animation timings live in AppMotion.
 abstract final class AppDurations {
-  /// The app's page transition: a 10 ms fade, i.e. effectively instant.
-  static const pageFade = Duration(milliseconds: 10);
-  static const pageSlideUp = Duration(milliseconds: 100);
-  static const headerSwitch = Duration(milliseconds: 150);
-  static const navbar = Duration(milliseconds: 200);
-  static const headerResize = Duration(milliseconds: 250);
-  static const popup = Duration(milliseconds: 300);
   static const toastShort = Duration(seconds: 2);
   static const toastLong = Duration(seconds: 3);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/motion/app_motion_widgets.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -19,18 +20,23 @@ class AuthSubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 275,
-      height: 55,
-      child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.brandGreen,
-          shape: const RoundedRectangleBorder(borderRadius: AppRadii.lCircular),
+    return AppPressable(
+      enabled: !isLoading,
+      child: SizedBox(
+        width: 275,
+        height: 55,
+        child: ElevatedButton(
+          onPressed: isLoading ? null : onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.brandGreen,
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppRadii.lCircular,
+            ),
+          ),
+          child: isLoading
+              ? const CircularProgressIndicator(color: AppColors.white)
+              : Text(text, style: AppTextStyles.buttonLarge),
         ),
-        child: isLoading
-            ? const CircularProgressIndicator(color: AppColors.white)
-            : Text(text, style: AppTextStyles.buttonLarge),
       ),
     );
   }

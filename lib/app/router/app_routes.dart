@@ -18,9 +18,8 @@ import '../../features/messages/chat_page.dart';
 import 'app_link_handler.dart';
 import 'app_page_route.dart';
 
-/// Every navigation in the app goes through here. Each method keeps the
-/// transition the screen had before the refactor (most are a 10 ms fade;
-/// the camera and signup use the platform transition).
+/// Every navigation in the app goes through here. All pages use the same
+/// short fade (AppMotion.fast); "Add friends" slides up like a sheet.
 abstract final class AppRoutes {
   static final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -37,7 +36,7 @@ abstract final class AppRoutes {
   /// pushes when it is the root (after a log-out).
   static Future<void> toSignupFromLogin(BuildContext context) {
     final nav = Navigator.of(context);
-    final route = MaterialPageRoute<void>(builder: (_) => const SignupPage());
+    final route = fadeRoute<void>(const SignupPage());
     return nav.canPop() ? nav.pushReplacement(route) : nav.push(route);
   }
 
@@ -50,9 +49,8 @@ abstract final class AppRoutes {
     String? recipientId,
     bool replace = false,
   }) {
-    final route = MaterialPageRoute<void>(
-      builder: (_) =>
-          CameraPage(initialPrivacy: privacy, recipientId: recipientId),
+    final route = fadeRoute<void>(
+      CameraPage(initialPrivacy: privacy, recipientId: recipientId),
     );
     final nav = Navigator.of(context);
     return replace ? nav.pushReplacement(route) : nav.push(route);

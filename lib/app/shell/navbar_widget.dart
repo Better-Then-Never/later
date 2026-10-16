@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_motion.dart';
+import '../../shared/motion/app_motion_widgets.dart';
 import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/core/theme/app_colors.dart';
@@ -36,52 +38,45 @@ class NavbarWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildIcon(0, AppIcons.navbarMap),
-            _buildIcon(1, AppIcons.navbarHistory),
+            _buildIcon(context, 0, AppIcons.navbarMap),
+            _buildIcon(context, 1, AppIcons.navbarHistory),
             _buildAddIcon(context, AppIcons.navbarAdd),
-            _buildIcon(2, AppIcons.navbarMessages),
-            _buildIcon(3, AppIcons.navbarProfile),
+            _buildIcon(context, 2, AppIcons.navbarMessages),
+            _buildIcon(context, 3, AppIcons.navbarProfile),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildIcon(int index, String assetPath) {
+  Widget _buildIcon(BuildContext context, int index, String assetPath) {
     final isSelected = index == selectedIndex;
 
-    return GestureDetector(
-      onTap: () {
-        onItemTapped(index);
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        height: navbarIconHeight * (isSelected ? 1.2 : 1.0),
-        width: navbarIconHeight * (isSelected ? 1.2 : 1.0),
-        child: TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 100),
-          tween: Tween(begin: 1.0, end: 1.0),
-          builder: (context, scale, child) {
-            return AnimatedScale(
-              scale: isSelected ? 1.1 : 1.0,
-              duration: const Duration(milliseconds: 10),
-              curve: Curves.easeInOut,
-              child: child,
-            );
-          },
-          child: Image.asset(assetPath),
+    return AppPressable(
+      child: GestureDetector(
+        onTap: () => onItemTapped(index),
+        child: AnimatedContainer(
+          duration: AppMotion.of(context, AppMotion.standard),
+          curve: AppMotion.standardCurve,
+          height: navbarIconHeight * (isSelected ? 1.2 : 1.0),
+          width: navbarIconHeight * (isSelected ? 1.2 : 1.0),
+          child: AnimatedScale(
+            scale: isSelected ? 1.1 : 1.0,
+            duration: AppMotion.of(context, AppMotion.quick),
+            curve: AppMotion.standardCurve,
+            child: Image.asset(assetPath),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildAddIcon(BuildContext context, String assetPath) {
-    return GestureDetector(
-      onTap: () {
-        AppRoutes.toCamera(context);
-      },
-      child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
+    return AppPressable(
+      child: GestureDetector(
+        onTap: () => AppRoutes.toCamera(context),
+        child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
+      ),
     );
   }
 }
