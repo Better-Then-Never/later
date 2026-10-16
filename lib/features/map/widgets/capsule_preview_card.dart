@@ -8,11 +8,12 @@ import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
 
 /// Dialog content showing an opened capsule: photo, title, description,
-/// place and creation date.
+/// place and creation date. Tapping the place calls [onPlaceTap].
 class CapsulePreviewCard extends StatelessWidget {
-  const CapsulePreviewCard({super.key, required this.capsule});
+  const CapsulePreviewCard({super.key, required this.capsule, this.onPlaceTap});
 
   final Capsule capsule;
+  final VoidCallback? onPlaceTap;
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +78,13 @@ class CapsulePreviewCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                CapsulePlacePill(
-                  height: screen.height * 0.05,
-                  iconPath: AppIcons.capsuleLocation,
-                  position: capsule.location,
+                GestureDetector(
+                  onTap: capsule.location == null ? null : onPlaceTap,
+                  child: CapsulePlacePill(
+                    height: screen.height * 0.05,
+                    iconPath: AppIcons.capsuleLocation,
+                    position: capsule.location,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 CapsuleDatePill(

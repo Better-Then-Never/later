@@ -95,10 +95,17 @@ class _MapViewState extends State<_MapView> {
     capsule: capsule,
     onMoreInfo: () => showDialog<void>(
       context: context,
-      builder: (context) => Dialog(
+      builder: (dialogContext) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.all(16),
-        child: CapsulePreviewCard(capsule: capsule),
+        child: CapsulePreviewCard(
+          capsule: capsule,
+          // Back to the capsule's place on the map.
+          onPlaceTap: () {
+            Navigator.of(dialogContext).pop();
+            _focus.focus(capsule);
+          },
+        ),
       ),
     ),
   );
