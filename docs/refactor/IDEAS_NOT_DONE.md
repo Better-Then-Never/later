@@ -14,4 +14,4 @@
 - **Pagination UI for history and notifications** (the refactor bounds the queries; no "load more" UI was added).
 - **Edit capsule**, **delete account**, **change email/password**.
 - **Localisation** (strings are English literals).
-- **Region alignment for Cloud Functions** (`europe-central2` like Firestore) — a deployment decision.
+- **Region alignment for Cloud Functions** (`europe-west1`, inside Firestore's `eur3` multi-region) — a deployment decision.

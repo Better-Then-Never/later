@@ -104,7 +104,7 @@ Not fixed, with reasons:
 2. Cloud Functions:
    `cd functions && npm ci && firebase deploy --only functions --project later-da778`
 3. Release the app built from this branch.
-4. Back up the data (`gcloud firestore export gs://<bucket>/backup-<date>`). Then run the migration as a dry run, then apply:
+4. Back up the data (`gcloud firestore export gs://<bucket>/backup-<date>`; the bucket must be in the `EU` multi-region, like Firestore's `eur3`). Then run the migration as a dry run, then apply:
    `cd tools/migrations && npm install && GOOGLE_APPLICATION_CREDENTIALS=<service-account.json> node migrate.js --project later-da778 --production` (add `--apply` after reviewing the dry run).
 5. Run the rules tests (`cd tools/rules-tests && npm install && npm run emulate`), then deploy the rules last, once most users run the new version:
    `firebase deploy --only firestore:rules,storage --project later-da778`
@@ -242,7 +242,7 @@ Not run: iOS build (Windows host) and real-device push (B-03/B-04).
 
 1. **Owner actions:** rotate and restrict the Maps key; register the developers' SHA-1s (B-01/B-02); deploy in the order of §3; set up APNs/iOS signing (B-04).
 2. **App Check**, Crashlytics, and Analytics events.
-3. **Functions region** next to Firestore (`europe-central2`).
+3. **Functions region** next to Firestore (`europe-west1`, inside `eur3`).
 4. **Geohash map queries** instead of latitude bands, for dense areas (needs a migration).
 5. **Features** that are placeholders today: chat, send capsule, friend's capsules, report/block, Facebook login, e-mail/password change, dark mode, localisation, "load more" in History and Notifications.
 6. **Optional permissions:** ask for contacts and microphone just in time instead of at onboarding.

@@ -17,6 +17,8 @@ other. Deploy in this order:
 | 4 | Data migration | §2 below | Removes private fields, reserves usernames, fixes legacy capsules. |
 | 5 | Security rules | `firebase deploy --only firestore:rules,storage` | Last. Old app versions write things the new rules refuse: they store `email` and `fcmToken` on the user document, upload images without a content type, and write notifications for themselves when a push arrives. Deploy once most users run the new version, or after forcing an update. |
 
+**Status (2026-10-16):** steps 1–4 are done in `later-da778`. Step 3 was release v0.0.30 on GitHub. For step 4, the export (341 documents) is in `gs://later-da778-backups/before-migration`. The migration reserved 32 usernames, removed private fields from 34 profiles and moved 3 push tokens. Two invalid usernames were renamed by hand: `9` became `user9` and `@chujesos` became `chujesos`. A second dry run found nothing left. Step 5 was also done the same day, after the 41 rules tests passed. Until then production had run `allow read, write: if true` for Firestore and public reads for all of Storage; those rules are saved in `D:\Projects\Later\backups\rules-before-deploy-20261016`. Anonymous reads of users, chats and capsules, and anonymous Storage listing, now return 403. The public ACL grants were removed from 8 profile images (no other files had one).
+
 Before step 5, run the rules tests (`tools/rules-tests`, `npm run emulate`). Ideally also replay a sample of production documents against the rules in a staging project (BLOCKERS.md B-06). The repo never contained the rules production actually runs (FIREBASE_AUDIT.md §2.7).
 
 ## 2. Data migration (`tools/migrations/migrate.js`)
@@ -26,7 +28,8 @@ A dry run is the default. It refuses to run without `FIRESTORE_EMULATOR_HOST` un
 ```sh
 cd tools/migrations && npm install
 # Rehearse on an emulator loaded with an export of production (recommended):
-#   gcloud firestore export gs://<bucket>/backup   (owner)
+#   gcloud firestore export gs://<bucket>/backup   (owner; the bucket must be in
+#   the EU multi-region: Firestore is in eur3 and refuses other buckets)
 #   firebase emulators:start --import <exported dir>
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node migrate.js            # dry run
 FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 node migrate.js --apply
@@ -58,5 +61,5 @@ It does not fix the following. They are reported as `conflicts` for a person to 
 
 - **Public profile images.** The old `getUserData` function called `makePublic()` on profile images it served (BUG-103). Those objects stay world-readable, under a URL without a token, until their ACL is removed. For example: `gsutil -m acl ch -d AllUsers -r gs://later-da778.firebasestorage.app/userdata` (owner; check the bucket name first).
 - **Old thumbnails.** `profile_image_small` files uploaded by old versions are 128×128 and squashed. They are replaced the next time the user changes their picture. No action is needed.
-- **Functions region.** The functions run in `us-central1`, while Firestore is in `europe-central2`. Moving them is a deployment decision (FIREBASE_AUDIT.md §2.6). The landing page calls the `us-central1` URL.
+- **Functions region.** The functions run in `us-central1`, while Firestore is in the `eur3` multi-region (Belgium + Netherlands). Moving them is a deployment decision (FIREBASE_AUDIT.md §2.6). The landing page calls the `us-central1` URL.
 - **Friend lists out of sync.** The old cross-user writes could leave one side of a friendship behind. The app copes. A query for users who list someone that does not list them back would find these cases (not automated).

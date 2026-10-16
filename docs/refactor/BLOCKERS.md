@@ -3,6 +3,7 @@
 Each blocker: what is blocked · what was tried · best hypothesis · exact manual step for the project owner.
 
 ## B-01 — Google Maps tiles do not load (Android)
+- **Resolved 2026-10-16.** The key the app used (also committed in old history) had been deleted from `later-da778` and Google reports it as expired. New keys: "Later Maps Android" (`com.btn.later` with the debug and the CI release SHA-1, Maps SDK for Android only) and "Later Maps iOS" (bundle `com.btn.later`, Maps SDK for iOS only), in the local files and the `MAPS_API_KEY_ANDROID` / `MAPS_API_KEY_IOS` secrets. Checked on the emulator: tiles load, markers and the heatmap show, and tapping a marker opens the info window right above it. Releases up to v0.0.30 still contain the dead key and show a blank map.
 - **Blocked:** verifying the map visually (tiles, cloud styling via `mapId`).
 - **Tried:** ran the app on the emulator; logcat shows `Google Android Maps SDK: Authorization failure … Android Application (<cert_fingerprint>;<package_name>): FE:77:7D:3A:18:E3:26:53:1E:78:20:16:5F:C4:63:8F:0F:A8:F0:6E;com.example.later`. No `gcloud` access to inspect the key.
 - **Hypothesis:** the Maps API key is restricted to other Android apps (e.g. the teammate's debug SHA-1), or "Maps SDK for Android" is not enabled for it, or the key was rotated during the secrets cleanup.
