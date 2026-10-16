@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:later/services/deep_link_service.dart';
+import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -21,8 +21,8 @@ class QRScannerPage extends StatefulWidget {
     );
 
     if (result != null && result is String) {
-      if (DeepLinkService.isLaterDeepLink(result)) {
-        final userId = DeepLinkService.extractUserIdFromLink(result);
+      if (AppLinkHandler.isProfileLink(result)) {
+        final userId = AppLinkHandler.profileUserId(result);
         if (userId != null && context.mounted) {
           Navigator.push(
             context,
@@ -60,7 +60,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
       if (scannedData != null) {
         _isScanning = false;
 
-        if (DeepLinkService.isLaterDeepLink(scannedData)) {
+        if (AppLinkHandler.isProfileLink(scannedData)) {
           Navigator.pop(context, scannedData);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

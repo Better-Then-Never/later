@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:later/core/assets/app_assets.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:later/views/widgets/_common/default_elements/later_loading_bar.dart';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../core/assets/app_assets.dart';
+import '../../views/widgets/_common/default_elements/later_loading_bar.dart';
 
 class AppPermission {
   final String name;
@@ -27,11 +29,12 @@ class PermissionGatePage extends StatefulWidget {
   State<PermissionGatePage> createState() => _PermissionGatePageState();
 }
 
-class _PermissionGatePageState extends State<PermissionGatePage> {
+class _PermissionGatePageState extends State<PermissionGatePage>
+    with WidgetsBindingObserver {
   final Map<Permission, PermissionStatus> _statuses = {};
   bool _loaded = false;
   bool _navigated = false;
-  final PageController _pageController = PageController();
+  late final PageController _pageController;
   int _currentPage = 0;
 
   final List<AppPermission> _permissionsList = [
@@ -72,26 +75,62 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkPermissions();
   }
 
-  Future<void> _checkPermissions() async {
-    for (var item in _permissionsList) {
-      final status = await item.permission.status;
-      _statuses[item.permission] = status;
-    }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    if (_loaded) _pageController.dispose();
+    super.dispose();
+  }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The user may have granted a permission in the system settings.
+    if (state == AppLifecycleState.resumed && _loaded) _refreshStatuses();
+  }
+
+  Future<void> _readStatuses() async {
+    for (final item in _permissionsList) {
+      _statuses[item.permission] = await item.permission.status;
+    }
+  }
+
+  bool _isGranted(AppPermission p) =>
+      _statuses[p.permission]?.isGranted ?? false;
+
+  /// First page whose permission is still missing (0 when none).
+  int _firstPendingIndex({int from = 0}) {
+    for (var i = from; i < _permissionsList.length; i++) {
+      if (!_isGranted(_permissionsList[i])) return i;
+    }
+    for (var i = 0; i < from && i < _permissionsList.length; i++) {
+      if (!_isGranted(_permissionsList[i])) return i;
+    }
+    return 0;
+  }
+
+  Future<void> _checkPermissions() async {
+    await _readStatuses();
     if (!mounted) return;
 
-    final allRequiredGranted = _permissionsList.every(
-      (p) => _statuses[p.permission]?.isGranted ?? false,
-    );
-
-    if (allRequiredGranted) {
+    if (_permissionsList.every(_isGranted)) {
+      _navigated = true;
       widget.onAllGranted();
     } else {
+      _currentPage = _firstPendingIndex();
+      _pageController = PageController(initialPage: _currentPage);
       setState(() => _loaded = true);
     }
+  }
+
+  Future<void> _refreshStatuses() async {
+    await _readStatuses();
+    if (!mounted) return;
+    setState(() {});
+    _checkIfAllGranted();
   }
 
   Future<void> _requestPermission(Permission permission) async {
@@ -101,18 +140,17 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
     setState(() {});
     if (status.isPermanentlyDenied) {
       await openAppSettings();
+      return;
     }
 
-    if (status.isGranted) {
-      final nextPage = _currentPage + 1;
-
-      if (nextPage < _permissionsList.length) {
-        _pageController.animateToPage(
-          nextPage,
-          duration: const Duration(milliseconds: 350),
-          curve: Curves.easeOut,
-        );
-      }
+    if (status.isGranted && !_permissionsList.every(_isGranted)) {
+      // Skip pages that are already granted.
+      final next = _firstPendingIndex(from: _currentPage + 1);
+      await _pageController.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOut,
+      );
     }
 
     _checkIfAllGranted();

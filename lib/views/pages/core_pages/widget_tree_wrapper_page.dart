@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_link_handler.dart';
+import 'package:later/app/session/session_controller.dart';
 import 'package:later/data/notifiers.dart';
+import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_favorite_capsules_service.dart';
-import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/core_pages/widget_tree.dart';
-import 'package:later/services/user_data_service.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
+/// Home shell of a signed-in user. Only built by the AuthGate while a user is
+/// signed in, so the session uid is always available here.
 class WidgetTreeWrapper extends StatefulWidget {
   const WidgetTreeWrapper({super.key});
 
@@ -17,21 +19,22 @@ class WidgetTreeWrapper extends StatefulWidget {
 
 class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
   bool _preloaded = false;
+  late final AppLinkHandler _links;
 
   @override
   void initState() {
     super.initState();
     selectedPageNotifier.value = 0;
 
-    final userProfileService = context.read<UserDataService>();
-    final userFriendsService = context.read<UserFriendsService>();
-    context.read<FavoriteCapsuleService>().loadFavorites(
-      FirebaseAuth.instance.currentUser!.uid,
-    );
-    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final uid = context.read<SessionController>().uid!;
+    context.read<FavoriteCapsuleService>().loadFavorites(uid);
+    context.read<UserDataService>().getCurrentUserProfile(uid);
 
-    userProfileService.getCurrentUserProfile(uid!);
-    userFriendsService.init();
+    _links = context.read<AppLinkHandler>();
+    // Pending deep links open once the home screen is on screen.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _links.onHomeReady();
+    });
   }
 
   @override
@@ -42,11 +45,17 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
       _preloaded = true;
 
       final userImageService = context.read<UserImageService>();
-      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final uid = context.read<SessionController>().uid!;
 
       userImageService.preloadBackgroundImageForUser(uid, context);
       userImageService.preloadProfileImageForUser(uid, context);
     }
+  }
+
+  @override
+  void dispose() {
+    _links.onHomeGone();
+    super.dispose();
   }
 
   @override

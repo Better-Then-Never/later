@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/errors/app_failure.dart';
+
 class PasswordResetDialog extends StatefulWidget {
   final String initialEmail;
-  final Future<void> Function(String email) onSubmit;
+  final Future<AppFailure?> Function(String email) onSubmit;
 
   const PasswordResetDialog({
     super.key,
@@ -101,11 +103,15 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                               return;
                             }
                             setState(() => _submitting = true);
-                            try {
-                              await widget.onSubmit(email);
-                              if (!mounted) return;
-                              Navigator.of(context).pop();
-                              ScaffoldMessenger.of(context).showSnackBar(
+                            // Captured now: the sheet's context is gone
+                            // once it is popped.
+                            final messenger = ScaffoldMessenger.of(context);
+                            final navigator = Navigator.of(context);
+                            final failure = await widget.onSubmit(email);
+                            if (!mounted) return;
+                            if (failure == null) {
+                              navigator.pop();
+                              messenger.showSnackBar(
                                 const SnackBar(
                                   content: Text(
                                     'Password reset email sent! Check your inbox.',
@@ -113,15 +119,13 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                                   backgroundColor: Color(0xFF56C92E),
                                 ),
                               );
-                            } catch (e) {
-                              if (!mounted) return;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error: $e')),
+                            } else {
+                              setState(() => _submitting = false);
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: ${failure.message}'),
+                                ),
                               );
-                            } finally {
-                              if (mounted) {
-                                setState(() => _submitting = false);
-                              }
                             }
                           },
                     child: _submitting
@@ -169,7 +173,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
 Future<void> showPasswordResetDialog(
   BuildContext context, {
   String initialEmail = '',
-  required Future<void> Function(String) onSubmit,
+  required Future<AppFailure?> Function(String) onSubmit,
 }) {
   return showModalBottomSheet(
     context: context,

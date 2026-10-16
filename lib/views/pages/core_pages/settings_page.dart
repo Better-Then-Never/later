@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:later/services/user_favorite_capsules_service.dart';
-import 'package:later/services/user_friends_service.dart';
-import 'package:later/services/user_image_service.dart';
-import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:later/views/pages/settings_pages/email_settings_page.dart';
 import 'package:later/views/pages/settings_pages/name_settings_page.dart';
-import 'package:later/services/firebase_auth_service.dart';
 import 'package:later/views/pages/settings_pages/password_settings_page.dart';
 import 'package:later/views/pages/settings_pages/language_settings_page.dart';
 import 'package:later/views/pages/settings_pages/profile_customization_settings_page.dart';
@@ -16,12 +11,11 @@ import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/options_elements/options_settings_row.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 import 'package:later/services/user_data_service.dart';
+import 'package:later/app/session/session_controller.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
-import 'package:later/services/image_assets_service.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -29,10 +23,6 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProfileService = context.watch<UserDataService>();
-    final userFriendsService = context.watch<UserFriendsService>();
-    final userImageService = context.watch<UserImageService>();
-    final favoriteCapsuleService = context.watch<FavoriteCapsuleService>();
-    final assetService = AssetImageService();
 
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -127,31 +117,10 @@ class SettingsPage extends StatelessWidget {
                               ConfirmDialog.show(
                                 context: context,
                                 title: 'Are you sure you want to log out?',
-                                onConfirm: () async {
-                                  FirebaseAuthService().signOut();
-                                  await assetService.clearLocalCache();
-                                  userProfileService.onLogout();
-                                  userFriendsService.onLogout();
-                                  userImageService.onLogout();
-                                  favoriteCapsuleService.onLogout();
-
-                                  if (!context.mounted) return;
-
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    PageTransition(
-                                      type: PageTransitionType.fade,
-                                      duration: const Duration(
-                                        milliseconds: 10,
-                                      ),
-                                      reverseDuration: const Duration(
-                                        milliseconds: 10,
-                                      ),
-                                      child: const LoginPage(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                },
+                                // The session resets every per-user store and
+                                // the auth gate shows the login page.
+                                onConfirm: () =>
+                                    context.read<SessionController>().signOut(),
                               );
                             },
                           ),

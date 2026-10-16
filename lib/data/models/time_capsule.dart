@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum CapsulePrivacy { private, friends, public }
+import 'capsule.dart';
 
-enum CapsuleColor { red, blue, green, yellow, orange, purple }
+export 'capsule.dart' show CapsulePrivacy, CapsuleColor;
 
 class TimeCapsule {
   final String id;
@@ -63,36 +63,4 @@ class TimeCapsule {
           (c) => c.name == (map['color'] ?? 'red'),
         ),
       );
-}
-
-extension CapsulePrivacyX on CapsulePrivacy {
-  String get label {
-    switch (this) {
-      case CapsulePrivacy.public:
-        return 'Public';
-      case CapsulePrivacy.private:
-        return 'Private';
-      case CapsulePrivacy.friends:
-        return 'Friends';
-    }
-  }
-}
-
-extension CapsuleColorX on CapsuleColor {
-  String get label {
-    switch (this) {
-      case CapsuleColor.red:
-        return 'Red';
-      case CapsuleColor.blue:
-        return 'Blue';
-      case CapsuleColor.green:
-        return 'Green';
-      case CapsuleColor.yellow:
-        return 'Yellow';
-      case CapsuleColor.orange:
-        return 'Orange';
-      case CapsuleColor.purple:
-        return 'Purple';
-    }
-  }
 }

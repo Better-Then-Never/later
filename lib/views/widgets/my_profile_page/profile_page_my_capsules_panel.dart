@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_routes.dart';
+import 'package:later/data/models/capsule.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
@@ -53,10 +55,9 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                   height: 39,
                   child: DefaultTextButton(
                     onTap: () {
-                      Navigator.pushNamed(
+                      AppRoutes.toCamera(
                         context,
-                        '/camera',
-                        arguments: {'privacy': 'friends'},
+                        privacy: CapsulePrivacy.friends,
                       );
                     },
                     text: 'Add to map | Only for friends',
@@ -79,10 +80,9 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                   height: 41,
                   child: DefaultTextButton(
                     onTap: () {
-                      Navigator.pushNamed(
+                      AppRoutes.toCamera(
                         context,
-                        '/camera',
-                        arguments: {'privacy': 'public'},
+                        privacy: CapsulePrivacy.public,
                       );
                     },
                     text: 'Add to map | Everyone',

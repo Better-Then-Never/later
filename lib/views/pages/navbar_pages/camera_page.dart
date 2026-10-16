@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:later/data/models/capsule.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:camera/camera.dart';
 import 'package:later/views/pages/capsule_related_pages/capsule_creation_page.dart';
 import 'package:page_transition/page_transition.dart';
 
 class CameraPage extends StatefulWidget {
-  final Map<String, dynamic>? arguments;
+  final CapsulePrivacy? initialPrivacy;
 
-  const CameraPage({super.key, this.arguments});
+  const CameraPage({super.key, this.initialPrivacy});
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -108,7 +109,7 @@ class _CameraPageState extends State<CameraPage> {
                           reverseDuration: const Duration(milliseconds: 10),
                           child: CapsuleCreationPage(
                             imagePath: picture.path,
-                            initialPrivacy: widget.arguments?['privacy'],
+                            initialPrivacy: widget.initialPrivacy?.name,
                           ),
                         ),
                       );

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/assets/app_assets.dart';
-import 'package:later/views/pages/auth_pages/login_page.dart';
-import 'package:page_transition/page_transition.dart';
 
-List<Widget> pages = [const LoginPage()];
+import '../../app/router/app_routes.dart';
+import '../../core/assets/app_assets.dart';
+import '../../core/theme/app_colors.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -67,21 +66,9 @@ class WelcomePage extends StatelessWidget {
                         width: 325,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              PageTransition(
-                                type: PageTransitionType.fade,
-                                duration: const Duration(milliseconds: 10),
-                                reverseDuration: const Duration(
-                                  milliseconds: 10,
-                                ),
-                                child: const LoginPage(),
-                              ),
-                            );
-                          },
+                          onPressed: () => AppRoutes.toLogin(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF56C92E),
+                            backgroundColor: AppColors.brandGreen,
                           ),
                           child: Transform.translate(
                             offset: const Offset(0, -2.0),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_link_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/popup_notification_service.dart';
@@ -7,7 +8,7 @@ import 'package:share_plus/share_plus.dart';
 
 class SharingService {
   static String generateProfileLink(String userId) {
-    return 'https://later-da778.web.app/?userId=$userId';
+    return AppLinkHandler.profileWebLink(userId);
   }
 
   static Future<void> shareUserProfile({

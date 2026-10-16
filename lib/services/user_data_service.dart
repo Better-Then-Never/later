@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,7 +15,9 @@ class UserDataService extends ChangeNotifier {
   String get name => _userCache[_currentUid]?['name'] ?? 'Loading...';
   String get username => _userCache[_currentUid]?['username'] ?? 'Loading...';
   String get email => _userCache[_currentUid]?['email'] ?? 'Loading...';
-  String get currentLoggedInUid => _currentUid ?? 'No User';
+  // Never the old 'No User' sentinel: fall back to the authenticated uid.
+  String get currentLoggedInUid =>
+      _currentUid ?? FirebaseAuth.instance.currentUser?.uid ?? '';
   bool get isFetched => _isFetched;
 
   Future<void> getCurrentUserProfile(String uid) async {

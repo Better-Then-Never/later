@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
 
 const double navbarIconHeight = 46.0;
@@ -77,7 +78,7 @@ class NavbarWidget extends StatelessWidget {
   Widget _buildAddIcon(BuildContext context, String assetPath) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/camera');
+        AppRoutes.toCamera(context);
       },
       child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
     );

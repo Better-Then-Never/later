@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/page_controllers/capsule_creation/capsule_creation_page_controller.dart';
 import 'package:later/data/models/time_capsule.dart';
@@ -82,8 +83,13 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
               PageHeader(
                 mainText: 'Create Capsule',
                 leadingButton: DefaultIconButton(
-                  onTap: () =>
-                      Navigator.pushReplacementNamed(context, '/camera'),
+                  onTap: () => AppRoutes.toCamera(
+                    context,
+                    replace: true,
+                    privacy: CapsulePrivacy.values
+                        .where((p) => p.name == widget.initialPrivacy)
+                        .firstOrNull,
+                  ),
                   assetPath: AppIcons.goBack,
                 ),
                 trailingButton: DefaultIconButton(
