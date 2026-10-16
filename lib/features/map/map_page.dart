@@ -15,6 +15,7 @@ import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/later_loading_bar.dart';
+import '../settings/device_settings_store.dart';
 import 'current_location.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
@@ -187,6 +188,7 @@ class _MapViewState extends State<_MapView> {
   @override
   Widget build(BuildContext context) {
     final map = context.watch<MapController>();
+    final look = context.select<DeviceSettingsStore, MapLook>((s) => s.mapLook);
     if (map.state == MapLoadState.loading) {
       return const Center(child: LaterLoadingBar(width: 150, height: 150));
     }
@@ -198,6 +200,11 @@ class _MapViewState extends State<_MapView> {
       children: [
         GoogleMap(
           mapId: _mapId,
+          mapType: switch (look) {
+            MapLook.standard => MapType.normal,
+            MapLook.satellite => MapType.satellite,
+            MapLook.hybrid => MapType.hybrid,
+          },
           initialCameraPosition: CameraPosition(
             target: LatLng(start.latitude, start.longitude),
             zoom: map.initialCameraZoom,

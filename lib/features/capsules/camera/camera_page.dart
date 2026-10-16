@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
+import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
 
 /// Full-screen camera used to take the photo of a new capsule.
@@ -38,6 +40,10 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // The camera chosen in Settings > Map and camera.
+    if (context.read<DeviceSettingsStore>().startCamera == StartCamera.front) {
+      _lens = CameraLensDirection.front;
+    }
     unawaited(_setup());
   }
 

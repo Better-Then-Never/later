@@ -4,8 +4,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_text_styles.dart';
-
-// TODO: Refactor
+import 'package:later/shared/widgets/buttons/go_back_button.dart';
+import 'package:later/shared/widgets/options/options_section.dart';
+import 'package:later/shared/widgets/page_header.dart';
 
 class PermissionsSettingsPage extends StatefulWidget {
   const PermissionsSettingsPage({super.key});
@@ -250,74 +251,11 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
       backgroundColor: AppColors.pageBackgroundAlt,
       body: Column(
         children: [
-          // Header
-          Container(
-            width: screenWidth,
-            height: screenHeight * 0.16,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(25),
-                bottomRight: Radius.circular(25),
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: 4,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'App permissions',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.095,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: kAppFontFamily,
-                            color: AppColors.black,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.05,
-                            vertical: 0,
-                          ),
-                          child: const Text(
-                            'Manage app permissions',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              fontFamily: kAppFontFamily,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 39,
-                  left: 8,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Image.asset(
-                      AppIcons.goBack,
-                      width: screenWidth * 0.11,
-                      height: screenWidth * 0.11,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          PageHeader(
+            mainText: 'App permissions',
+            description: 'What Later may use on this phone',
+            leadingButton: GoBackButton(context: context),
           ),
-
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -406,20 +344,10 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                               ),
                             ],
                           ),
-                          trailing: Switch(
+                          trailing: AppSwitch(
                             value: status.isGranted,
                             onChanged: (_) =>
                                 _togglePermission(permission.permission),
-                            activeThumbColor: const Color.fromARGB(
-                              255,
-                              86,
-                              201,
-                              46,
-                            ),
-                            inactiveThumbColor: AppColors.grey500,
-                            inactiveTrackColor: AppColors.grey500.withValues(
-                              alpha: 0.3,
-                            ),
                           ),
                         ),
                       );

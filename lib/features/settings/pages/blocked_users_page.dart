@@ -1,0 +1,71 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../core/assets/app_assets.dart';
+import '../../../data/models/user_profile.dart';
+import '../../../shared/widgets/buttons/default_text_button.dart';
+import '../../../shared/widgets/default_empty_inbox_info.dart';
+import '../../../shared/widgets/options/options_section.dart';
+import '../../../shared/widgets/user/user_list_tile.dart';
+import '../../../shared/widgets/user/user_row_skeleton.dart';
+import '../../friends/friends_store.dart';
+import '../../friends/widgets/block_user.dart';
+import '../../users/user_directory.dart';
+import '../widgets/settings_scaffold.dart';
+
+/// People the user blocked, with a way to unblock each.
+class BlockedUsersPage extends StatelessWidget {
+  const BlockedUsersPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final blocked = context.select<FriendsStore, List<String>>(
+      (s) => s.blocked.toList()..sort(),
+    );
+    return SettingsScaffold(
+      title: 'Blocked users',
+      description: 'They cannot message you or send you friend requests',
+      children: [
+        if (blocked.isEmpty)
+          const DefaultEmptyInboxInfo(
+            message: 'Nobody is blocked',
+            subtitle: 'Block someone from their profile\nor from a chat',
+            assetPath: AppIcons.friendsRequestPage,
+          )
+        else
+          OptionsSection(
+            children: [for (final uid in blocked) _BlockedRow(uid: uid)],
+          ),
+      ],
+    );
+  }
+}
+
+class _BlockedRow extends StatelessWidget {
+  const _BlockedRow({required this.uid});
+
+  final String uid;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final user = context.select<UserDirectory, UserProfile?>(
+      (d) => d.profile(uid),
+    );
+    final resolved = context.select<UserDirectory, bool>(
+      (d) => d.isResolved(uid),
+    );
+    final busy = context.select<FriendsStore, bool>((s) => s.isBusy(uid));
+    if (!resolved) return UserRowSkeleton(screenWidth: screenWidth);
+    return UserListTile(
+      uid: uid,
+      name: user?.name ?? 'Deleted account',
+      username: user?.username ?? '',
+      screenWidth: screenWidth,
+      trailing: DefaultTextButton(
+        text: busy ? 'Unblocking...' : 'Unblock',
+        onTap: busy ? () {} : () => unblockUser(context, uid),
+      ),
+    );
+  }
+}

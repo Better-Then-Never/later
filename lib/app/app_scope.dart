@@ -26,6 +26,7 @@ import '../features/messages/chats_store.dart';
 import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
+import '../features/settings/device_settings_store.dart';
 import '../features/settings/settings_store.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
@@ -68,6 +69,7 @@ class _AppScopeState extends State<AppScope> {
   late final _directory = UserDirectory(_users);
   late final _chatsStore = ChatsStore(_chats);
   late final _settingsStore = SettingsStore(_settings);
+  late final _deviceSettings = DeviceSettingsStore(_prefs);
   late final _friendsStore = FriendsStore(
     friends: _friends,
     users: _users,
@@ -92,6 +94,7 @@ class _AppScopeState extends State<AppScope> {
         _friendsStore,
         _chatsStore,
         _settingsStore,
+        _deviceSettings,
         PushRegistration(push: _push, tokens: _pushTokens),
       ],
     )..start();
@@ -152,6 +155,9 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<FriendsStore>.value(value: _friendsStore),
         ChangeNotifierProvider<ChatsStore>.value(value: _chatsStore),
         ChangeNotifierProvider<SettingsStore>.value(value: _settingsStore),
+        ChangeNotifierProvider<DeviceSettingsStore>.value(
+          value: _deviceSettings,
+        ),
       ],
       child: widget.child,
     );

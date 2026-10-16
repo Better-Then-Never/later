@@ -27,3 +27,4 @@ material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.inf
 material-icon lib/shared/widgets/app_network_image.dart Icons.image  # original design (image placeholder, as on notification thumbnails)
 
 
+material-icon lib/features/settings/widgets/settings_scaffold.dart Icons.check_circle  # same check as the success toasts (selected option)
