@@ -11,7 +11,8 @@ import '../../views/pages/friends_pages/add_friend_profile_page.dart';
 import '../../views/pages/friends_pages/add_friends_page.dart';
 import '../../views/pages/friends_pages/my_friends_page.dart';
 import '../../views/pages/friends_pages/your_friend_profile_page.dart';
-import '../../views/pages/navbar_pages/camera_page.dart';
+import '../../features/capsules/camera/camera_page.dart';
+import '../../features/capsules/creation/capsule_creation_page.dart';
 import 'app_page_route.dart';
 
 /// Every navigation in the app goes through here. Each method keeps the
@@ -45,6 +46,20 @@ abstract final class AppRoutes {
   }) {
     final route = MaterialPageRoute<void>(
       builder: (_) => CameraPage(initialPrivacy: privacy),
+    );
+    final nav = Navigator.of(context);
+    return replace ? nav.pushReplacement(route) : nav.push(route);
+  }
+
+  /// Capsule form after taking the photo (replaces the camera route).
+  static Future<void> toCapsuleCreation(
+    BuildContext context, {
+    required String imagePath,
+    CapsulePrivacy? privacy,
+    bool replace = false,
+  }) {
+    final route = fadeRoute<void>(
+      CapsuleCreationPage(imagePath: imagePath, initialPrivacy: privacy),
     );
     final nav = Navigator.of(context);
     return replace ? nav.pushReplacement(route) : nav.push(route);
