@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/router/app_routes.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../profile/share/sharing_service.dart';
 import '../friends_store.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -66,7 +68,15 @@ class FriendOptionsModal extends StatelessWidget {
             text: 'Share profile to ...',
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Handle share profile action
+              // Same share sheet as the share button of the profile page;
+              // the page context outlives this sheet.
+              final page = AppRoutes.navigatorKey.currentContext;
+              if (page != null) {
+                SharingService.shareUserProfile(
+                  context: page,
+                  userId: friendUid,
+                );
+              }
             },
             isLast: true,
           ),
