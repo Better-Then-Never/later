@@ -63,3 +63,6 @@ Branch: `feature/polish-motion-messages-settings` (from main 5b30770). Plan: POL
   - Checked, no change needed: double taps cannot open a page twice (the Navigator absorbs pointers as soon as
     a push or pop starts; a test showed one page with and without a guard, so the guard was not added); every
     async button already ignores taps while busy.
+- **Phase 8 (gates + report)**: format clean, analyze 0, 132 tests (+1 skipped), token check 0 violations, rules
+  45/45, functions 23/23, release APK builds. After screenshots (`after/`, 45 images) and recordings
+  (`after/flow_tabs.mp4`, `after/flow_settings.mp4`); the before/after comparison is in REPORT.md. Done.
