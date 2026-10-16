@@ -24,25 +24,6 @@ material-icon lib/features/profile/share/share_profile_page.dart Icons.info_outl
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.check_circle  # original design (toasts)
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.error  # original design (toasts)
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.info  # original design (toasts)
-material-icon lib/features/map/widgets/capsule_preview_card.dart Icons.broken_image_outlined  # image error placeholder
+material-icon lib/shared/widgets/app_network_image.dart Icons.image  # original design (image placeholder, as on notification thumbnails)
 
 
-# TODO(polish phase 4, messages): chat port from main; custom icons + tokens, then delete these lines
-raw-hex lib/features/messages/widgets/message_bubble.dart *
-raw-hex lib/features/messages/widgets/message_input.dart *
-material-icon lib/features/messages/chat_page.dart Icons.error_outline
-material-icon lib/features/messages/chat_page.dart Icons.chat_bubble_outline
-material-icon lib/features/messages/chat_page.dart Icons.search
-material-icon lib/features/messages/chat_page.dart Icons.keyboard_arrow_down
-material-icon lib/features/messages/messages_page.dart Icons.error_outline
-material-icon lib/features/messages/messages_page.dart Icons.chat_bubble_outline
-material-icon lib/features/messages/widgets/message_bubble.dart Icons.done_all
-material-icon lib/features/messages/widgets/message_bubble.dart Icons.done
-material-icon lib/features/messages/widgets/message_bubble.dart Icons.broken_image
-material-icon lib/features/messages/widgets/message_bubble.dart Icons.all_inbox_rounded
-material-icon lib/features/messages/widgets/message_input.dart Icons.camera_alt_rounded
-material-icon lib/features/messages/widgets/new_chat_sheet.dart Icons.close
-material-icon lib/features/messages/widgets/new_chat_sheet.dart Icons.search
-material-icon lib/features/messages/widgets/new_chat_sheet.dart Icons.search_off
-material-icon lib/features/messages/widgets/new_chat_sheet.dart Icons.chevron_right
-material-icon lib/features/messages/widgets/new_chat_sheet.dart Icons.people_outline

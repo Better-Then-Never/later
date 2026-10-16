@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../features/messages/chats_store.dart';
+import '../../shared/widgets/count_badge.dart';
 import '../../core/theme/app_motion.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import 'package:later/app/router/app_routes.dart';
@@ -41,7 +44,13 @@ class NavbarWidget extends StatelessWidget {
             _buildIcon(context, 0, AppIcons.navbarMap),
             _buildIcon(context, 1, AppIcons.navbarHistory),
             _buildAddIcon(context, AppIcons.navbarAdd),
-            _buildIcon(context, 2, AppIcons.navbarMessages),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                _buildIcon(context, 2, AppIcons.navbarMessages),
+                const Positioned(top: -4, right: -6, child: _UnreadMessages()),
+              ],
+            ),
             _buildIcon(context, 3, AppIcons.navbarProfile),
           ],
         ),
@@ -78,5 +87,16 @@ class NavbarWidget extends StatelessWidget {
         child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
       ),
     );
+  }
+}
+
+/// Unread messages over all chats that are not muted.
+class _UnreadMessages extends StatelessWidget {
+  const _UnreadMessages();
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.select<ChatsStore, int>((s) => s.totalUnread);
+    return IgnorePointer(child: CountBadge(count: count, size: 18));
   }
 }

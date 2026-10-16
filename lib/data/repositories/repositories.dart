@@ -97,11 +97,18 @@ abstract interface class ChatRepository {
   /// Messages of [chatId], oldest first (the newest [limit]).
   Stream<List<ChatMessage>> watchMessages(String chatId, {int limit});
 
-  /// Sends [text] from [from] to [to], creating the chat on first use.
+  /// A new message id, made on the device: the message can be shown before
+  /// the server has it, and a retry with the same id cannot duplicate it.
+  String newMessageId(String chatId);
+
+  /// Sends [text] as message [messageId] from [from] to [to], creating the
+  /// chat on first use and counting it as unread for [to]. Sending an id that
+  /// already arrived does nothing.
   Future<void> sendText({
     required String from,
     required String to,
     required String text,
+    required String messageId,
   });
 
   /// Posts [capsule] (already shared with [to]) into the chat.
@@ -111,8 +118,9 @@ abstract interface class ChatRepository {
     required Capsule capsule,
   });
 
-  /// Marks every unread message [sender] sent in [chatId] as read.
-  Future<void> markRead(String chatId, {required String sender});
+  /// [reader] has read [chatId]: their unread count goes to 0 and their read
+  /// receipt to now, in one write.
+  Future<void> markRead(String chatId, {required String reader});
 
   /// Deletes every message of [chatId], for both participants.
   Future<void> clearHistory(String chatId);

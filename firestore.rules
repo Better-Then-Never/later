@@ -307,6 +307,53 @@ service cloud.firestore {
           && isServerTime(d.lastUpdated);
       }
 
+      // unreadCounts {uid: n}: what each participant has not read yet.
+      function unreadChanged() {
+        return request.resource.data.get('unreadCounts', {})
+          .diff(resource.data.get('unreadCounts', {})).affectedKeys();
+      }
+
+      function unreadBefore(uid) {
+        return resource.data.get('unreadCounts', {}).get(uid, 0);
+      }
+
+      function unreadAfter(uid) {
+        return request.resource.data.get('unreadCounts', {}).get(uid, 0);
+      }
+
+      // Sending: new summary, and +1 unread for the recipient only.
+      function isSend() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId',
+            'unreadCounts'])
+          && d.lastMessage != '' && mayWrite() && validSummary(d)
+          && (!changed().hasAny(['lastSenderId']) || d.lastSenderId == me())
+          && (!changed().hasAny(['unreadCounts'])
+            || (unreadChanged().hasOnly([other()])
+              && unreadAfter(other()) == unreadBefore(other()) + 1));
+      }
+
+      // Reading: my unread count to 0 and my read receipt to now (one write;
+      // the other participant's values cannot be touched).
+      function isRead() {
+        let d = request.resource.data;
+        return changed().hasOnly(['unreadCounts', 'lastReadAt'])
+          && (!changed().hasAny(['unreadCounts'])
+            || (unreadChanged().hasOnly([me()]) && unreadAfter(me()) == 0))
+          && (!changed().hasAny(['lastReadAt'])
+            || (d.lastReadAt.diff(resource.data.get('lastReadAt', {}))
+                .affectedKeys().hasOnly([me()])
+              && d.lastReadAt[me()] == request.time));
+      }
+
+      // Clearing the history empties the summary and both unread counts.
+      function isClear() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'unreadCounts'])
+          && d.lastMessage == '' && isServerTime(d.lastUpdated)
+          && (!changed().hasAny(['unreadCounts']) || d.unreadCounts == {});
+      }
+
       // get works before the chat exists (the send transaction reads it).
       allow get: if isMember();
       // The app's query: participants array-contains me.
@@ -315,20 +362,18 @@ service cloud.firestore {
       allow create: if isMember() && mayWrite()
         && members()[0] < members()[1]
         && request.resource.data.keys().hasOnly(['participants', 'lastMessage',
-          'lastUpdated', 'createdAt', 'lastSenderId'])
+          'lastUpdated', 'createdAt', 'lastSenderId', 'unreadCounts'])
         && request.resource.data.participants is list
         && request.resource.data.participants.size() == 2
         && request.resource.data.participants.hasAll(members())
         && isServerTime(request.resource.data.createdAt)
         && validSummary(request.resource.data)
-        && request.resource.data.get('lastSenderId', me()) == me();
-      // Sending updates the summary; clearing the history empties it.
-      allow update: if isMember()
-        && changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
-        && validSummary(request.resource.data)
-        && (!changed().hasAny(['lastSenderId'])
-          || request.resource.data.lastSenderId == me())
-        && (request.resource.data.lastMessage == '' || mayWrite());
+        && request.resource.data.get('lastSenderId', me()) == me()
+        // The first message is unread for the recipient.
+        && (!request.resource.data.keys().hasAny(['unreadCounts'])
+          || (request.resource.data.unreadCounts.keys().hasOnly([other()])
+            && request.resource.data.unreadCounts[other()] == 1));
+      allow update: if isMember() && (isSend() || isRead() || isClear());
       allow delete: if false;
 
       match /messages/{messageId} {

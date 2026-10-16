@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/widgets/app_network_image.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -38,15 +39,9 @@ class CapsulePreviewCard extends StatelessWidget {
               height: double.infinity,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadii.m),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
+                child: AppNetworkImage(
+                  url: imageUrl,
                   cacheWidth: (screen.width * 0.45 * 3).round(),
-                  loadingBuilder: (context, child, progress) => progress == null
-                      ? child
-                      : const Center(child: CircularProgressIndicator()),
-                  errorBuilder: (_, _, _) =>
-                      const Center(child: Icon(Icons.broken_image_outlined)),
                 ),
               ),
             ),

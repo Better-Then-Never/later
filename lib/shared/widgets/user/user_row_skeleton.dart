@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:later/core/theme/app_colors.dart';
 
-class SuggestedFriendPlaceholderRow extends StatelessWidget {
+/// Placeholder of a user row while it loads (grey avatar and two text bars).
+class UserRowSkeleton extends StatelessWidget {
   final double screenWidth;
 
-  const SuggestedFriendPlaceholderRow({super.key, required this.screenWidth});
+  const UserRowSkeleton({super.key, required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {

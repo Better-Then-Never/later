@@ -344,6 +344,9 @@ class FakeChatRepository implements ChatRepository {
   final Map<String, Chat> chats = {};
   final List<String> calls = [];
   bool failSends = false;
+
+  /// Clock used for message times and read receipts.
+  DateTime now = DateTime(2026, 10, 16, 12);
   int _ids = 0;
 
   void _notify() => _changes.add(null);
@@ -357,20 +360,30 @@ class FakeChatRepository implements ChatRepository {
   );
 
   @override
-  Stream<List<ChatMessage>> watchMessages(String chatId, {int limit = 500}) =>
-      seeded(() => List.of(messages[chatId] ?? const []), _changes.stream);
+  Stream<List<ChatMessage>> watchMessages(String chatId, {int limit = 50}) =>
+      seeded(() {
+        final all = messages[chatId] ?? const <ChatMessage>[];
+        return List.of(all.skip(all.length > limit ? all.length - limit : 0));
+      }, _changes.stream);
 
-  void _add(String from, String to, ChatMessage Function(String id) build) {
+  @override
+  String newMessageId(String chatId) => 'm${_ids++}';
+
+  void _add(String from, String to, ChatMessage message) {
     if (failSends) throw StateError('send failed');
     final chatId = Chat.idBetween(from, to);
-    final message = build('m${_ids++}');
-    (messages[chatId] ??= []).add(message);
+    final list = messages[chatId] ??= [];
+    if (list.any((m) => m.id == message.id)) return; // already arrived
+    list.add(message);
+    final old = chats[chatId];
     chats[chatId] = Chat(
       id: chatId,
       participants: [from, to],
       lastMessage: message.text,
-      lastUpdated: DateTime(2026, 10, 16),
+      lastUpdated: now,
       lastSenderId: from,
+      unreadCounts: {...?old?.unreadCounts, to: (old?.unreadFor(to) ?? 0) + 1},
+      lastReadAt: old?.lastReadAt ?? const {},
     );
     _notify();
   }
@@ -380,9 +393,14 @@ class FakeChatRepository implements ChatRepository {
     required String from,
     required String to,
     required String text,
+    required String messageId,
   }) async {
     calls.add('text:$from->$to:$text');
-    _add(from, to, (id) => ChatMessage(id: id, senderId: from, text: text));
+    _add(
+      from,
+      to,
+      ChatMessage(id: messageId, senderId: from, text: text, sentAt: now),
+    );
   }
 
   @override
@@ -395,10 +413,11 @@ class FakeChatRepository implements ChatRepository {
     _add(
       from,
       to,
-      (id) => ChatMessage(
-        id: id,
+      ChatMessage(
+        id: 'capsule_${capsule.id}',
         senderId: from,
         text: capsule.title,
+        sentAt: now,
         type: ChatMessageType.capsule,
         capsuleId: capsule.id,
         imageUrl: capsule.imageUrl,
@@ -407,25 +426,19 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String chatId, {required String sender}) async {
-    calls.add('read:$chatId:$sender');
-    final list = messages[chatId];
-    if (list == null) return;
-    for (var i = 0; i < list.length; i++) {
-      final m = list[i];
-      if (m.senderId == sender && !m.isRead) {
-        list[i] = ChatMessage(
-          id: m.id,
-          senderId: m.senderId,
-          text: m.text,
-          sentAt: m.sentAt,
-          isRead: true,
-          type: m.type,
-          capsuleId: m.capsuleId,
-          imageUrl: m.imageUrl,
-        );
-      }
-    }
+  Future<void> markRead(String chatId, {required String reader}) async {
+    calls.add('read:$chatId:$reader');
+    final chat = chats[chatId];
+    if (chat == null) return;
+    chats[chatId] = Chat(
+      id: chat.id,
+      participants: chat.participants,
+      lastMessage: chat.lastMessage,
+      lastUpdated: chat.lastUpdated,
+      lastSenderId: chat.lastSenderId,
+      unreadCounts: {...chat.unreadCounts, reader: 0},
+      lastReadAt: {...chat.lastReadAt, reader: now},
+    );
     _notify();
   }
 

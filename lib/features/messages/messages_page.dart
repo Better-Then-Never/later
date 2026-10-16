@@ -2,15 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
+import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/models/chat.dart';
+import '../../shared/motion/app_motion_widgets.dart';
+import '../../shared/styles/box_decorations.dart';
+import '../../shared/widgets/buttons/default_icon_button.dart';
+import '../../shared/widgets/default_empty_inbox_info.dart';
+import '../../shared/widgets/default_search_bar.dart';
+import '../../shared/widgets/page_header.dart';
+import '../../shared/widgets/user/user_row_skeleton.dart';
 import '../users/user_directory.dart';
 import 'chats_store.dart';
 import 'widgets/chat_list_item.dart';
-import 'widgets/messages_header.dart';
 import 'widgets/new_chat_sheet.dart';
 
-/// The "Messages" tab: the user's chats, newest first, with search.
+/// The "Messages" tab: the user's chats, most recent first, with search.
 class MessagesPage extends StatefulWidget {
   const MessagesPage({super.key});
 
@@ -31,19 +38,24 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.grey100,
-      body: SafeArea(
-        child: Column(
-          children: [
-            MessagesHeader(
-              searchController: _searchController,
-              onNewChat: () => NewChatSheet.show(context),
-              onSearchChanged: (value) =>
+      backgroundColor: AppColors.pageBackground,
+      body: Column(
+        children: [
+          PageHeader(
+            mainText: 'My Laters',
+            leadingButton: DefaultIconButton(
+              onTap: () => NewChatSheet.show(context),
+              assetPath: AppIcons.messagesNew,
+            ),
+            searchBar: DefaultSearchBar(
+              controller: _searchController,
+              hintText: 'Find chats',
+              onChanged: (value) =>
                   setState(() => _query = value.trim().toLowerCase()),
             ),
-            Expanded(child: _ChatList(query: _query)),
-          ],
-        ),
+          ),
+          Expanded(child: _ChatList(query: _query)),
+        ],
       ),
     );
   }
@@ -60,112 +72,86 @@ class _ChatList extends StatelessWidget {
     final directory = context.watch<UserDirectory>();
     final me = store.uid ?? '';
 
+    final Widget body;
     if (!store.isLoaded) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.brandGreen),
+      body = const _Skeleton(key: ValueKey('loading'));
+    } else if (store.hasError) {
+      body = DefaultEmptyInboxInfo(
+        key: const ValueKey('error'),
+        message: "Couldn't load your chats",
+        subtitle: 'Check your connection and try again',
+        assetPath: AppIcons.navbarMessages,
+        actionText: 'Retry',
+        onAction: store.retry,
       );
-    }
-    if (store.hasError) {
-      return _Info(
-        icon: Icons.error_outline,
-        title: 'Failed to load chats',
-        action: TextButton(onPressed: store.retry, child: const Text('Retry')),
-      );
-    }
-    if (store.chats.isEmpty) {
-      return const _Info(
-        icon: Icons.chat_bubble_outline,
-        title: 'No conversations yet',
+    } else if (store.chats.isEmpty) {
+      body = const DefaultEmptyInboxInfo(
+        key: ValueKey('empty'),
+        message: 'No conversations yet',
         subtitle: 'Tap the new message button to start chatting with friends!',
+        assetPath: AppIcons.navbarMessages,
       );
-    }
+    } else {
+      bool matches(Chat chat) {
+        if (query.isEmpty) return true;
+        final friend = directory.profile(chat.otherThan(me));
+        return chat.lastMessage.toLowerCase().contains(query) ||
+            (friend?.name.toLowerCase().contains(query) ?? false) ||
+            (friend?.username.toLowerCase().contains(query) ?? false);
+      }
 
-    bool matches(Chat chat) {
-      if (query.isEmpty) return true;
-      final friend = directory.profile(chat.otherThan(me));
-      return chat.lastMessage.toLowerCase().contains(query) ||
-          (friend?.name.toLowerCase().contains(query) ?? false) ||
-          (friend?.username.toLowerCase().contains(query) ?? false);
+      final chats = store.chats.where(matches).toList();
+      body = chats.isEmpty
+          ? DefaultEmptyInboxInfo(
+              key: const ValueKey('no-match'),
+              message: 'No chats found',
+              subtitle: 'Nothing matches "$query"',
+              assetPath: AppIcons.profileFriendSearch,
+            )
+          : ListView.separated(
+              key: const ValueKey('list'),
+              // Clear of the floating navbar.
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
+              itemCount: chats.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final chat = chats[index];
+                final friendUid = chat.otherThan(me);
+                final mine = chat.lastSenderId == me;
+                return ChatListItem(
+                  key: ValueKey(chat.id),
+                  friendUid: friendUid,
+                  name: directory.profile(friendUid)?.name ?? '',
+                  preview: mine ? 'You: ${chat.lastMessage}' : chat.lastMessage,
+                  timestamp: chat.lastUpdated,
+                  unread: chat.unreadFor(me),
+                  muted: store.isMuted(chat.id),
+                  onTap: friendUid.isEmpty
+                      ? () {}
+                      : () => AppRoutes.toChat(context, friendUid),
+                );
+              },
+            );
     }
-
-    final chats = store.chats.where(matches).toList();
-    return ListView.builder(
-      itemCount: chats.length + 1,
-      itemBuilder: (context, index) {
-        if (index == chats.length) {
-          return const Padding(
-            padding: EdgeInsets.all(24),
-            child: Center(
-              child: Text(
-                'No more chats',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.grey800,
-                ),
-              ),
-            ),
-          );
-        }
-        final chat = chats[index];
-        final friendUid = chat.otherThan(me);
-        return ChatListItem(
-          key: ValueKey(chat.id),
-          friendUid: friendUid,
-          name: directory.profile(friendUid)?.name ?? '',
-          message: chat.lastMessage,
-          timestamp: chat.lastUpdated,
-          onTap: friendUid.isEmpty
-              ? () {}
-              : () => AppRoutes.toChat(context, friendUid),
-        );
-      },
-    );
+    return AppFadeSwitcher(child: body);
   }
 }
 
-class _Info extends StatelessWidget {
-  const _Info({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    this.action,
-  });
-
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final Widget? action;
+/// Grey rows in white cards while the chats load.
+class _Skeleton extends StatelessWidget {
+  const _Skeleton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: AppColors.grey300),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.grey700,
-              ),
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16, color: AppColors.grey600),
-              ),
-            ],
-            ?action,
-          ],
-        ),
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    return ListView.separated(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      itemCount: 4,
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
+      itemBuilder: (_, _) => DecoratedBox(
+        decoration: BoxDecorations.whiteCard(),
+        child: UserRowSkeleton(screenWidth: screenWidth),
       ),
     );
   }

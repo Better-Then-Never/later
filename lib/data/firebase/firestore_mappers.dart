@@ -36,6 +36,9 @@ abstract final class FirestoreMappers {
   static String? _nonEmptyString(Object? value) =>
       value is String && value.trim().isNotEmpty ? value : null;
 
+  static Map<String, Object?> _map(Object? value) =>
+      value is Map ? value.cast<String, Object?>() : const {};
+
   static List<String> _stringList(Object? value) =>
       value is Iterable ? value.whereType<String>().toList() : const [];
 
@@ -96,6 +99,14 @@ abstract final class FirestoreMappers {
     lastMessage: _string(data['lastMessage'], ''),
     lastUpdated: _date(data['lastUpdated']),
     lastSenderId: _nonEmptyString(data['lastSenderId']),
+    unreadCounts: {
+      for (final e in _map(data['unreadCounts']).entries)
+        if (e.value is num) e.key: (e.value as num).toInt(),
+    },
+    lastReadAt: {
+      for (final e in _map(data['lastReadAt']).entries)
+        if (_date(e.value) case final DateTime at) e.key: at,
+    },
   );
 
   static ChatMessage chatMessage(String id, Map<String, dynamic> data) =>

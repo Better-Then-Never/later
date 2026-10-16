@@ -1,79 +1,98 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../shared/motion/app_motion_widgets.dart';
+import '../../../shared/styles/box_decorations.dart';
+import '../../../shared/widgets/count_badge.dart';
 import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../chat_time.dart';
-import 'package:later/core/theme/app_colors.dart';
 
-/// A row of the chat list: the friend's photo and name, the last message and
-/// how long ago it was sent.
+/// A chat in the list, styled like the friend rows: white card, round
+/// avatar, bold name, grey preview of the last message, its time and the
+/// unread count (grey when the chat is muted).
 class ChatListItem extends StatelessWidget {
   const ChatListItem({
     super.key,
     required this.friendUid,
     required this.name,
-    required this.message,
+    required this.preview,
     required this.onTap,
     this.timestamp,
+    this.unread = 0,
+    this.muted = false,
   });
 
   final String friendUid;
   final String name;
-  final String message;
+
+  /// Last message, already prefixed with "You: " for the user's own.
+  final String preview;
   final DateTime? timestamp;
+  final int unread;
+  final bool muted;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            UserRoundAvatar(userId: friendUid, radius: 30),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          name,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.black,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (timestamp != null)
-                        Text(
-                          ChatTime.listLabel(timestamp, DateTime.now()),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppColors.grey500,
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    message,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: AppColors.grey600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+    final screen = MediaQuery.sizeOf(context);
+    final hasUnread = unread > 0;
+
+    return AppPressable(
+      child: Container(
+        decoration: BoxDecorations.whiteCard(),
+        child: ListTile(
+          onTap: onTap,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: screen.width * 0.02,
+            vertical: 2,
+          ),
+          leading: UserRoundAvatar(
+            userId: friendUid,
+            radius: screen.width * 0.07,
+          ),
+          title: Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.listName(screen),
+          ),
+          subtitle: Text(
+            preview,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: screen.width * 0.04,
+              fontFamily: kAppFontFamily,
+              // Unread chats read darker, like an unread notification.
+              color: hasUnread
+                  ? AppColors.textPrimary
+                  : AppColors.textSecondary,
+              fontWeight: hasUnread ? FontWeight.bold : FontWeight.normal,
             ),
-          ],
+          ),
+          trailing: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                ChatTime.listLabel(timestamp, DateTime.now()),
+                style: TextStyle(
+                  fontSize: screen.width * 0.032,
+                  fontFamily: kAppFontFamily,
+                  color: hasUnread && !muted
+                      ? AppColors.brandGreen
+                      : AppColors.textMuted,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              CountBadge(
+                count: unread,
+                color: muted ? AppColors.grey500 : AppColors.materialRed,
+              ),
+            ],
+          ),
         ),
       ),
     );

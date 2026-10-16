@@ -1,13 +1,23 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
 import '../../data/repositories/repositories.dart';
+import '../../shared/motion/app_motion_widgets.dart';
+import '../../shared/widgets/buttons/default_icon_button.dart';
+import '../../shared/widgets/buttons/go_back_button.dart';
+import '../../shared/widgets/default_empty_inbox_info.dart';
+import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../friends/friends_store.dart';
@@ -19,9 +29,8 @@ import 'chats_store.dart';
 import 'widgets/chat_options_sheet.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
-import 'package:later/core/theme/app_motion.dart';
 
-/// A conversation with one friend (main's PrivateMessagePage).
+/// A conversation with one friend.
 class ChatPage extends StatelessWidget {
   const ChatPage({super.key, required this.friendUid});
 
@@ -48,10 +57,14 @@ class _ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<_ChatView> {
+  /// The list is reversed: offset 0 is the newest message.
   final _scroll = ScrollController();
   final _searchController = TextEditingController();
-  bool _showScrollToBottom = false;
-  int _lastCount = 0;
+  bool _showScrollToLatest = false;
+
+  /// Messages already on screen: only messages that arrive later animate in.
+  final Set<String> _shown = {};
+  bool _firstBuild = true;
 
   @override
   void initState() {
@@ -66,54 +79,44 @@ class _ChatViewState extends State<_ChatView> {
     super.dispose();
   }
 
-  bool get _nearBottom =>
-      !_scroll.hasClients ||
-      _scroll.position.maxScrollExtent - _scroll.position.pixels <= 100;
-
   void _onScroll() {
-    final show = !_nearBottom;
-    if (show != _showScrollToBottom) {
-      setState(() => _showScrollToBottom = show);
+    if (!_scroll.hasClients) return;
+    final position = _scroll.position;
+    final show = position.pixels > 300;
+    if (show != _showScrollToLatest) {
+      setState(() => _showScrollToLatest = show);
+    }
+    if (position.pixels >= position.maxScrollExtent - 200) {
+      context.read<ChatController>().loadOlder();
     }
   }
 
-  void _scrollToBottom({bool animate = true}) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scroll.hasClients) return;
-      final end = _scroll.position.maxScrollExtent;
-      if (animate) {
-        _scroll.animateTo(
-          end,
-          duration: AppMotion.of(context, AppMotion.slow),
-          curve: AppMotion.enter,
-        );
-      } else {
-        _scroll.jumpTo(end);
-      }
-    });
+  void _scrollToLatest() {
+    if (!_scroll.hasClients) return;
+    _scroll.animateTo(
+      0,
+      duration: AppMotion.of(context, AppMotion.slow),
+      curve: AppMotion.enter,
+    );
   }
 
-  /// Follows new messages when the user is at the bottom (or on first load).
-  void _followNewMessages(int count) {
-    if (count == _lastCount) return;
-    final first = _lastCount == 0;
-    _lastCount = count;
-    if (first || _nearBottom) _scrollToBottom(animate: !first);
+  void _send(String text) {
+    final controller = context.read<ChatController>();
+    unawaited(controller.send(text).then(_report));
+    _scrollToLatest();
   }
 
-  Future<bool> _send(String text) async {
-    final failure = await context.read<ChatController>().send(text);
-    if (!mounted) return false;
-    if (failure != null) {
-      PopupNotificationService.showError(
-        context: context,
-        message: failure.message,
-        position: NotificationPosition.top,
-      );
-      return false;
-    }
-    _scrollToBottom();
-    return true;
+  void _retry(String messageId) {
+    unawaited(context.read<ChatController>().retry(messageId).then(_report));
+  }
+
+  void _report(Object? failure) {
+    if (failure == null || !mounted) return;
+    PopupNotificationService.showError(
+      context: context,
+      message: failure.toString(),
+      position: NotificationPosition.top,
+    );
   }
 
   void _toggleSearch(ChatController controller) {
@@ -134,6 +137,7 @@ class _ChatViewState extends State<_ChatView> {
     }
     await showDialog<void>(
       context: context,
+      barrierColor: AppColors.barrier,
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,7 +155,6 @@ class _ChatViewState extends State<_ChatView> {
     final friendName = context.select<UserDirectory, String>(
       (d) => d.profile(friendUid)?.name ?? 'Chat',
     );
-    final screen = MediaQuery.sizeOf(context);
 
     return Scaffold(
       backgroundColor: AppColors.pageBackground,
@@ -163,7 +166,7 @@ class _ChatViewState extends State<_ChatView> {
             onMenu: () => ChatOptionsSheet.show(context, controller),
           ),
           if (controller.isSearching)
-            _SearchBar(
+            _SearchRow(
               controller: _searchController,
               onChanged: controller.search,
               onCancel: () => _toggleSearch(controller),
@@ -171,13 +174,19 @@ class _ChatViewState extends State<_ChatView> {
           Expanded(
             child: Stack(
               children: [
-                _messages(controller, friendName, screen),
-                if (_showScrollToBottom)
-                  Positioned(
-                    right: 16,
-                    bottom: 16,
-                    child: _ScrollToBottomButton(onTap: _scrollToBottom),
+                AppFadeSwitcher(child: _body(controller, friendName)),
+                Positioned(
+                  right: 16,
+                  bottom: 12,
+                  child: AnimatedScale(
+                    scale: _showScrollToLatest ? 1 : 0,
+                    duration: AppMotion.of(context, AppMotion.standard),
+                    curve: _showScrollToLatest
+                        ? AppMotion.enter
+                        : AppMotion.exit,
+                    child: _ScrollToLatestButton(onTap: _scrollToLatest),
                   ),
+                ),
               ],
             ),
           ),
@@ -191,93 +200,123 @@ class _ChatViewState extends State<_ChatView> {
               ),
             )
           else
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Center(
-                  child: Text(
-                    controller.iBlockedThem
-                        ? 'You blocked this user'
-                        : "You can't send messages to this user",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontFamily: kAppFontFamily,
-                      color: AppColors.grey500,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            _BlockedNotice(iBlockedThem: controller.iBlockedThem),
         ],
       ),
     );
   }
 
-  Widget _messages(ChatController controller, String friendName, Size screen) {
+  Widget _body(ChatController controller, String friendName) {
     if (!controller.isLoaded) {
       return const Center(
+        key: ValueKey('loading'),
         child: CircularProgressIndicator(color: AppColors.brandGreen),
       );
     }
     if (controller.hasError) {
-      return const _Info(
-        icon: Icons.error_outline,
-        title: 'Failed to load messages',
+      return DefaultEmptyInboxInfo(
+        key: const ValueKey('error'),
+        message: "Couldn't load the messages",
+        subtitle: 'Check your connection and try again',
+        assetPath: AppIcons.navbarMessages,
+        actionText: 'Retry',
+        onAction: controller.reload,
       );
     }
     if (!controller.hasMessages) {
-      return _Info(
-        icon: Icons.chat_bubble_outline,
-        title: 'No messages yet',
+      return DefaultEmptyInboxInfo(
+        key: const ValueKey('empty'),
+        message: 'No messages yet',
         subtitle: 'Say hello to $friendName!',
+        assetPath: AppIcons.navbarMessages,
+      );
+    }
+    final messages = controller.visibleMessages;
+    if (messages.isEmpty) {
+      return DefaultEmptyInboxInfo(
+        key: const ValueKey('no-match'),
+        message: 'No messages found',
+        subtitle: 'Nothing matches "${controller.query}"',
+        assetPath: AppIcons.profileFriendSearch,
       );
     }
 
-    final messages = controller.visibleMessages;
-    if (!controller.isSearching) _followNewMessages(messages.length);
     final now = DateTime.now();
     DateTime dayOf(ChatMessage m) => m.sentAt ?? now;
+    final receipt = controller.isSearching ? null : controller.receipt;
+    final showOlderSpinner = controller.isLoadingOlder;
+    final count = messages.length + (showOlderSpinner ? 1 : 0);
+    final animate = !_firstBuild;
+    _firstBuild = false;
 
     return ListView.builder(
+      key: const ValueKey('list'),
       controller: _scroll,
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(
-        horizontal: screen.width * 0.04,
-        vertical: 16,
-      ),
-      itemCount: messages.length,
+      reverse: true,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 16),
+      itemCount: count,
       itemBuilder: (context, index) {
-        final message = messages[index];
-        final showDay =
-            index == 0 ||
-            !ChatTime.isSameDay(dayOf(messages[index - 1]), dayOf(message));
-        final lastOfGroup =
-            index == messages.length - 1 ||
-            messages[index + 1].senderId != message.senderId ||
-            !ChatTime.isSameDay(dayOf(message), dayOf(messages[index + 1]));
-        final capsuleId = message.capsuleId;
-
-        return Column(
-          key: ValueKey(message.id),
-          children: [
-            if (showDay) _DaySeparator(ChatTime.dayLabel(message.sentAt, now)),
-            MessageBubble(
-              message: message,
-              isMine: controller.isMine(message),
-              showTail: lastOfGroup,
-              onCapsuleTap: message.isCapsule && capsuleId != null
-                  ? () => _openCapsule(capsuleId)
-                  : null,
+        if (index == messages.length) {
+          return const Padding(
+            padding: EdgeInsets.all(12),
+            child: Center(
+              child: SizedBox.square(
+                dimension: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.brandGreen,
+                ),
+              ),
             ),
-          ],
+          );
+        }
+        // Reversed: index 0 is the newest message.
+        final i = messages.length - 1 - index;
+        final message = messages[i];
+        final older = i > 0 ? messages[i - 1] : null;
+        final newer = i < messages.length - 1 ? messages[i + 1] : null;
+        final firstOfDay =
+            older == null || !ChatTime.isSameDay(dayOf(older), dayOf(message));
+        final lastOfGroup =
+            newer == null ||
+            newer.senderId != message.senderId ||
+            !ChatTime.isSameDay(dayOf(message), dayOf(newer));
+        final capsuleId = message.capsuleId;
+        final failed = message.delivery == MessageDelivery.failed;
+        final isNew = animate && !_shown.contains(message.id);
+        _shown.add(message.id);
+
+        return AppEnter(
+          key: ValueKey(message.id),
+          animate: isNew,
+          child: Column(
+            children: [
+              if (firstOfDay)
+                _DaySeparator(ChatTime.dayLabel(message.sentAt, now)),
+              GestureDetector(
+                onTap: failed ? () => _retry(message.id) : null,
+                child: MessageBubble(
+                  message: message,
+                  isMine: controller.isMine(message),
+                  showTail: lastOfGroup,
+                  onCapsuleTap: message.isCapsule && capsuleId != null
+                      ? () => _openCapsule(capsuleId)
+                      : null,
+                ),
+              ),
+              if (index == 0 && receipt != null)
+                _Receipt(status: receipt, onRetry: () => _retry(message.id)),
+              SizedBox(height: lastOfGroup ? 10 : 3),
+            ],
+          ),
         );
       },
     );
   }
 }
 
+/// White header like every page: back, the friend's avatar and name, menu.
 class _ChatHeader extends StatelessWidget {
   const _ChatHeader({
     required this.friendUid,
@@ -293,72 +332,52 @@ class _ChatHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screen.width * 0.03,
-        vertical: screen.height * 0.01,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(AppRadii.l),
+          bottomRight: Radius.circular(AppRadii.l),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+      ),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        screen.height * 0.04,
+        16,
+        screen.height * 0.012,
+      ),
+      child: Row(
+        children: [
+          GoBackButton(context: context),
+          SizedBox(width: screen.width * 0.04),
+          UserRoundAvatar(userId: friendUid, radius: screen.width * 0.06),
+          SizedBox(width: screen.width * 0.03),
+          Expanded(
+            child: Text(
+              friendName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.pageTitle(
+                screen,
+              ).copyWith(fontSize: screen.height * 0.028),
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: 'Chat options',
+            child: DefaultIconButton(
+              onTap: onMenu,
+              assetPath: AppIcons.messagesChatMenu,
+              size: screen.width * 0.12,
+            ),
           ),
         ],
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          children: [
-            IconButton(
-              tooltip: 'Back',
-              icon: Image.asset(
-                AppIcons.goBack,
-                height: screen.height * 0.05,
-                width: screen.height * 0.05,
-              ),
-              onPressed: () => Navigator.of(context).maybePop(),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            SizedBox(width: screen.width * 0.04),
-            UserRoundAvatar(userId: friendUid, radius: screen.height * 0.025),
-            SizedBox(width: screen.width * 0.04),
-            Expanded(
-              child: Text(
-                friendName,
-                style: TextStyle(
-                  fontSize: screen.height * 0.025,
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            IconButton(
-              tooltip: 'Chat options',
-              icon: Image.asset(
-                AppIcons.messagesChatMenu,
-                height: screen.height * 0.075,
-                width: screen.height * 0.075,
-              ),
-              onPressed: onMenu,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-          ],
-        ),
       ),
     );
   }
 }
 
-class _SearchBar extends StatelessWidget {
-  const _SearchBar({
+class _SearchRow extends StatelessWidget {
+  const _SearchRow({
     required this.controller,
     required this.onChanged,
     required this.onCancel,
@@ -371,55 +390,34 @@ class _SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.04,
-        vertical: 8,
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        screenWidth * 0.04,
+        12,
+        screenWidth * 0.04,
+        0,
       ),
-      color: AppColors.white,
       child: Row(
         children: [
           Expanded(
-            child: TextField(
+            child: DefaultSearchBar(
               controller: controller,
-              autofocus: true,
-              style: const TextStyle(fontSize: 15, fontFamily: kAppFontFamily),
-              decoration: InputDecoration(
-                hintText: 'Search messages...',
-                hintStyle: const TextStyle(
-                  fontSize: 15,
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.grey400,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.grey400,
-                  size: 20,
-                ),
-                filled: true,
-                fillColor: AppColors.pageBackground,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+              hintText: 'Search messages',
+              color: AppColors.surface,
               onChanged: onChanged,
             ),
           ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: onCancel,
+          TextButton(
+            onPressed: onCancel,
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.textSecondary,
+            ),
             child: const Text(
               'Cancel',
               style: TextStyle(
-                fontSize: 15,
                 fontFamily: kAppFontFamily,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: AppColors.grey600,
               ),
             ),
           ),
@@ -437,17 +435,22 @@ class _DaySeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.grey200,
-            borderRadius: BorderRadius.circular(12),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+          decoration: const BoxDecoration(
+            color: AppColors.surfaceMuted,
+            borderRadius: AppRadii.lCircular,
           ),
           child: Text(
             label,
-            style: const TextStyle(fontSize: 12, color: AppColors.grey600),
+            style: const TextStyle(
+              fontFamily: kAppFontFamily,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textMuted,
+            ),
           ),
         ),
       ),
@@ -455,36 +458,74 @@ class _DaySeparator extends StatelessWidget {
   }
 }
 
-class _ScrollToBottomButton extends StatelessWidget {
-  const _ScrollToBottomButton({required this.onTap});
+/// "Sending…", "Sent", "Read" or "Not sent · Tap to retry" under the user's
+/// newest message.
+class _Receipt extends StatelessWidget {
+  const _Receipt({required this.status, required this.onRetry});
+
+  final ReceiptStatus status;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final (text, color) = switch (status) {
+      ReceiptStatus.sending => ('Sending…', AppColors.textMuted),
+      ReceiptStatus.sent => ('Sent', AppColors.textMuted),
+      ReceiptStatus.read => ('Read', AppColors.brandGreen),
+      ReceiptStatus.failed => ('Not sent · Tap to retry', AppColors.danger),
+    };
+    final label = Padding(
+      padding: const EdgeInsets.only(top: 3, right: 4),
+      child: AnimatedSwitcher(
+        duration: AppMotion.of(context, AppMotion.fast),
+        child: Text(
+          text,
+          key: ValueKey(status),
+          style: TextStyle(
+            fontFamily: kAppFontFamily,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ),
+    );
+    return Align(
+      alignment: Alignment.centerRight,
+      child: status == ReceiptStatus.failed
+          ? GestureDetector(onTap: onRetry, child: label)
+          : label,
+    );
+  }
+}
+
+class _ScrollToLatestButton extends StatelessWidget {
+  const _ScrollToLatestButton({required this.onTap});
 
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(28),
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.15),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.keyboard_arrow_down,
-            color: AppColors.brandGreen,
-            size: 28,
+    return Semantics(
+      button: true,
+      label: 'Scroll to the latest message',
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 48,
+            height: 48,
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              shape: BoxShape.circle,
+              boxShadow: AppShadows.raised,
+            ),
+            // The app's back arrow, turned to point down.
+            child: Transform.rotate(
+              angle: -math.pi / 2,
+              child: Image.asset(AppIcons.goBack),
+            ),
           ),
         ),
       ),
@@ -492,40 +533,29 @@ class _ScrollToBottomButton extends StatelessWidget {
   }
 }
 
-class _Info extends StatelessWidget {
-  const _Info({required this.icon, required this.title, this.subtitle});
+class _BlockedNotice extends StatelessWidget {
+  const _BlockedNotice({required this.iBlockedThem});
 
-  final IconData icon;
-  final String title;
-  final String? subtitle;
+  final bool iBlockedThem;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SafeArea(
+      top: false,
       child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: AppColors.grey300),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                color: AppColors.grey600,
-                fontWeight: FontWeight.w500,
-              ),
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Text(
+            iBlockedThem
+                ? 'You blocked this user'
+                : "You can't send messages to this user",
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: kAppFontFamily,
+              color: AppColors.textMuted,
+              fontWeight: FontWeight.bold,
             ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 14, color: AppColors.grey500),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );
