@@ -25,6 +25,7 @@ import 'package:later/features/profile/widgets/image_options_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 Future<void> _loadFont(String family, List<String> paths) async {
   final loader = FontLoader(family);
@@ -82,6 +83,9 @@ Widget _app(Widget child) => MultiProvider(
   ],
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
+    locale: const Locale('en'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: ThemeData(fontFamily: kAppFontFamily),
     home: Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),

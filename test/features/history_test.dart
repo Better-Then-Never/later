@@ -13,6 +13,7 @@ import 'package:later/features/map/current_location.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
+import '../helpers/test_app.dart';
 
 Capsule _c(
   String id, {
@@ -202,7 +203,7 @@ void main() {
             Provider(create: (_) => GeocodingService()),
             ChangeNotifierProvider(create: (_) => CurrentLocation()),
           ],
-          child: MaterialApp(
+          child: testApp(
             home: Scaffold(
               body: CapsuleListTile(
                 capsule: _c(

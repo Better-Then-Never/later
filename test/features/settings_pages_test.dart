@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../fakes/fake_repositories.dart';
+import '../helpers/test_app.dart';
 
 void main() {
   group('DeviceSettingsStore', () {
@@ -81,7 +82,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider<SettingsStore>.value(
           value: store,
-          child: const MaterialApp(home: NotificationSettingsPage()),
+          child: testApp(home: const NotificationSettingsPage()),
         ),
       );
       await tester.pumpAndSettle();
@@ -112,7 +113,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider<SettingsStore>.value(
           value: store,
-          child: const MaterialApp(home: NotificationSettingsPage()),
+          child: testApp(home: const NotificationSettingsPage()),
         ),
       );
       await tester.pump();
@@ -130,7 +131,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider<SettingsStore>.value(
           value: store,
-          child: const MaterialApp(home: NotificationSettingsPage()),
+          child: testApp(home: const NotificationSettingsPage()),
         ),
       );
       await tester.pumpAndSettle();
