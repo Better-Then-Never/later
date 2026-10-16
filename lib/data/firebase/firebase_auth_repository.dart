@@ -114,6 +114,90 @@ class FirebaseAuthRepository implements AuthRepository {
     }
   }
 
+  @override
+  bool get hasPassword =>
+      _auth.currentUser?.providerData.any(
+        (p) => p.providerId == EmailAuthProvider.PROVIDER_ID,
+      ) ??
+      false;
+
+  User get _user {
+    final user = _auth.currentUser;
+    if (user == null) throw const AuthFailure('Please sign in again.');
+    return user;
+  }
+
+  @override
+  Future<bool> reauthenticate({String? password}) async {
+    final user = _user;
+    try {
+      final AuthCredential credential;
+      if (password != null) {
+        credential = EmailAuthProvider.credential(
+          email: user.email ?? '',
+          password: password,
+        );
+      } else {
+        await _googleSignIn.signOut();
+        final googleUser = await _googleSignIn.signIn();
+        if (googleUser == null) return false;
+        final googleAuth = await googleUser.authentication;
+        credential = GoogleAuthProvider.credential(
+          idToken: googleAuth.idToken,
+          accessToken: googleAuth.accessToken,
+        );
+      }
+      await user.reauthenticateWithCredential(credential);
+      return true;
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure(accountMessageFor(e.code), cause: e);
+    }
+  }
+
+  @override
+  Future<void> updatePassword(String newPassword) async {
+    try {
+      await _user.updatePassword(newPassword);
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure(accountMessageFor(e.code), cause: e);
+    }
+  }
+
+  @override
+  Future<void> requestEmailChange(String newEmail) async {
+    try {
+      await _user.verifyBeforeUpdateEmail(newEmail);
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure(accountMessageFor(e.code), cause: e);
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await _user.delete();
+    } on FirebaseAuthException catch (e) {
+      throw AuthFailure(accountMessageFor(e.code), cause: e);
+    }
+    try {
+      await _googleSignIn.signOut();
+    } catch (_) {
+      // Not signed in with Google: nothing to do.
+    }
+  }
+
+  /// Messages for changes to a signed-in account (the sign-in wording of
+  /// [messageFor] talks about "email or password").
+  static String accountMessageFor(String code) => switch (code) {
+    'wrong-password' ||
+    'invalid-credential' ||
+    'INVALID_LOGIN_CREDENTIALS' => 'Wrong password.',
+    'user-mismatch' => 'Please pick the Google account you sign in with.',
+    'requires-recent-login' => 'Please confirm it is you and try again.',
+    'email-already-in-use' => 'Another account already uses this email.',
+    _ => messageFor(code),
+  };
+
   /// User-facing messages for Firebase Auth error codes. The first five keep
   /// the original wording.
   static String messageFor(String code) => switch (code) {

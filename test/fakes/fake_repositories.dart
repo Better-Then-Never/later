@@ -7,6 +7,7 @@ import 'package:later/data/models/capsule.dart';
 import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/friend_request.dart';
 import 'package:later/data/models/user_profile.dart';
+import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/repositories/repositories.dart';
 
 /// In-memory auth for controller tests.
@@ -81,6 +82,93 @@ class FakeAuthRepository implements AuthRepository {
   Future<void> signOut() async {
     signOuts++;
     emit(null);
+  }
+
+  @override
+  bool hasPassword = true;
+
+  /// What the Google picker does on re-authentication: null = cancelled.
+  bool? googleReauth = true;
+
+  @override
+  Future<bool> reauthenticate({String? password}) async {
+    calls.add('reauth');
+    if (password == null) return googleReauth ?? false;
+    final email = currentEmail;
+    if (email == null || accounts[email] != password) {
+      throw const AuthFailure('Wrong password.');
+    }
+    return true;
+  }
+
+  @override
+  Future<void> updatePassword(String newPassword) async {
+    calls.add('password');
+    accounts[currentEmail!] = newPassword;
+  }
+
+  @override
+  Future<void> requestEmailChange(String newEmail) async =>
+      calls.add('email:$newEmail');
+
+  @override
+  Future<void> deleteAccount() async {
+    calls.add('delete');
+    final email = currentEmail;
+    if (email != null) {
+      accounts.remove(email);
+      uidsByEmail.remove(email);
+    }
+    emit(null);
+  }
+}
+
+/// In-memory settings documents.
+class FakeSettingsRepository implements SettingsRepository {
+  final Map<String, UserSettings> docs = {};
+  final _changes = StreamController<String>.broadcast();
+  bool failWrites = false;
+
+  @override
+  Stream<UserSettings> watch(String uid) => seeded(
+    () => docs[uid] ?? const UserSettings(),
+    _changes.stream
+        .where((u) => u == uid)
+        .map((_) => docs[uid] ?? const UserSettings()),
+  );
+
+  void _check() {
+    if (failWrites) {
+      throw const PermissionFailure('denied');
+    }
+  }
+
+  @override
+  Future<void> saveNotifications(
+    String uid,
+    NotificationSettings settings,
+  ) async {
+    _check();
+    docs[uid] = (docs[uid] ?? const UserSettings()).copyWith(
+      notifications: settings,
+    );
+    _changes.add(uid);
+  }
+
+  @override
+  Future<void> setChatMuted(
+    String uid,
+    String chatId, {
+    required bool muted,
+  }) async {
+    _check();
+    final current = docs[uid] ?? const UserSettings();
+    docs[uid] = current.copyWith(
+      mutedChats: muted
+          ? {...current.mutedChats, chatId}
+          : ({...current.mutedChats}..remove(chatId)),
+    );
+    _changes.add(uid);
   }
 }
 

@@ -8,6 +8,7 @@ import '../data/firebase/firebase_friends_repository.dart';
 import '../data/firebase/firebase_image_storage_repository.dart';
 import '../data/firebase/firebase_notification_repository.dart';
 import '../data/firebase/firebase_push_token_repository.dart';
+import '../data/firebase/firebase_settings_repository.dart';
 import '../data/firebase/firebase_user_repository.dart';
 import '../data/repositories/repositories.dart';
 import '../data/services/geocoding_service.dart';
@@ -25,6 +26,7 @@ import '../features/messages/chats_store.dart';
 import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
+import '../features/settings/settings_store.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
 import 'session/session_controller.dart';
@@ -51,6 +53,7 @@ class _AppScopeState extends State<AppScope> {
       FirebaseNotificationRepository();
   final PushTokenRepository _pushTokens = FirebasePushTokenRepository();
   final ImageStorageRepository _images = FirebaseImageStorageRepository();
+  final SettingsRepository _settings = FirebaseSettingsRepository();
   final _location = const LocationService();
   final _geocoding = GeocodingService();
   final _prefs = PreferencesStore();
@@ -64,6 +67,7 @@ class _AppScopeState extends State<AppScope> {
   late final _favorites = FavoritesStore(_users);
   late final _directory = UserDirectory(_users);
   late final _chatsStore = ChatsStore(_chats);
+  late final _settingsStore = SettingsStore(_settings);
   late final _friendsStore = FriendsStore(
     friends: _friends,
     users: _users,
@@ -87,10 +91,13 @@ class _AppScopeState extends State<AppScope> {
         _directory,
         _friendsStore,
         _chatsStore,
+        _settingsStore,
         PushRegistration(push: _push, tokens: _pushTokens),
       ],
     )..start();
     _links.init();
+    // Muted chats leave the unread badge.
+    _settingsStore.addListener(_syncMutedChats);
     _notificationRouter = NotificationRouter(
       push: _push,
       session: _session,
@@ -102,8 +109,11 @@ class _AppScopeState extends State<AppScope> {
     _prefs.purgeLegacyGlobalKeys();
   }
 
+  void _syncMutedChats() => _chatsStore.muted = _settingsStore.mutedChats;
+
   @override
   void dispose() {
+    _settingsStore.removeListener(_syncMutedChats);
     _session.dispose();
     _notificationRouter.dispose();
     _push.dispose();
@@ -122,6 +132,7 @@ class _AppScopeState extends State<AppScope> {
         Provider<NotificationRepository>.value(value: _notifications),
         Provider<PushTokenRepository>.value(value: _pushTokens),
         Provider<ImageStorageRepository>.value(value: _images),
+        Provider<SettingsRepository>.value(value: _settings),
         Provider<LocationService>.value(value: _location),
         Provider<GeocodingService>.value(value: _geocoding),
         Provider<PreferencesStore>.value(value: _prefs),
@@ -140,6 +151,7 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<UserDirectory>.value(value: _directory),
         ChangeNotifierProvider<FriendsStore>.value(value: _friendsStore),
         ChangeNotifierProvider<ChatsStore>.value(value: _chatsStore),
+        ChangeNotifierProvider<SettingsStore>.value(value: _settingsStore),
       ],
       child: widget.child,
     );

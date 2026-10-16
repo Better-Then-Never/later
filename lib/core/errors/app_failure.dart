@@ -67,3 +67,9 @@ final class NotFoundFailure extends AppFailure {
 final class UnknownFailure extends AppFailure {
   const UnknownFailure(super.message, {super.cause});
 }
+
+/// The user backed out (e.g. closed the Google account picker): nothing to
+/// report.
+final class CancelledFailure extends AppFailure {
+  const CancelledFailure() : super('Cancelled.');
+}

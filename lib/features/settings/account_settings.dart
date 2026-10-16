@@ -52,3 +52,103 @@ abstract final class AccountSettings {
     }
   }
 }
+
+/// Password, email and account deletion. Firebase wants a recent sign-in
+/// for each, so every action confirms the user's identity first: with the
+/// current password for email accounts, with the Google account picker for
+/// Google-only ones. Each returns null on success, [CancelledFailure] when
+/// the user closed the picker, otherwise a failure with a message.
+abstract final class AccountSecurity {
+  static const minPasswordLength = 6;
+
+  static final _email = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+  static Future<AppFailure?> changePassword(
+    AuthRepository auth, {
+    required String current,
+    required String next,
+    required String confirm,
+  }) async {
+    if (current.isEmpty) {
+      return const ValidationFailure('Please enter your current password.');
+    }
+    if (next.length < minPasswordLength) {
+      return const ValidationFailure(
+        'The new password needs at least $minPasswordLength characters.',
+      );
+    }
+    if (next != confirm) {
+      return const ValidationFailure('The new passwords do not match.');
+    }
+    if (next == current) {
+      return const ValidationFailure(
+        'The new password is the same as the current one.',
+      );
+    }
+    return _run('Changing the password', () async {
+      await auth.reauthenticate(password: current);
+      await auth.updatePassword(next);
+    });
+  }
+
+  /// Sends the confirmation link to [newEmail]; the sign-in email changes
+  /// when the user opens it.
+  static Future<AppFailure?> changeEmail(
+    AuthRepository auth, {
+    required String newEmail,
+    String? password,
+  }) async {
+    final email = newEmail.trim();
+    if (!_email.hasMatch(email)) {
+      return const ValidationFailure('Please enter a valid email address.');
+    }
+    if (email.toLowerCase() == auth.currentEmail?.toLowerCase()) {
+      return const ValidationFailure('This is already your email.');
+    }
+    if (auth.hasPassword && (password == null || password.isEmpty)) {
+      return const ValidationFailure('Please enter your password.');
+    }
+    return _run('Changing the email', () async {
+      if (!await auth.reauthenticate(
+        password: auth.hasPassword ? password : null,
+      )) {
+        throw const CancelledFailure();
+      }
+      await auth.requestEmailChange(email);
+    });
+  }
+
+  /// Deletes the account after confirming the user's identity.
+  static Future<AppFailure?> deleteAccount(
+    AuthRepository auth,
+    Future<void> Function() delete, {
+    String? password,
+  }) async {
+    if (auth.hasPassword && (password == null || password.isEmpty)) {
+      return const ValidationFailure('Please enter your password.');
+    }
+    return _run('Deleting the account', () async {
+      if (!await auth.reauthenticate(
+        password: auth.hasPassword ? password : null,
+      )) {
+        throw const CancelledFailure();
+      }
+      await delete();
+    });
+  }
+
+  static Future<AppFailure?> _run(
+    String what,
+    Future<void> Function() action,
+  ) async {
+    try {
+      await action();
+      return null;
+    } on CancelledFailure catch (e) {
+      return e;
+    } catch (e, st) {
+      AppLogger.warning('$what failed', error: e, stackTrace: st);
+      return AppFailure.from(e);
+    }
+  }
+}

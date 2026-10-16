@@ -124,6 +124,22 @@ class SessionController extends ChangeNotifier {
     }
   }
 
+  /// Deletes the signed-in account for good (after
+  /// [AuthRepository.reauthenticate]). No client cleanup first: the server
+  /// removes everything the account owned, push tokens included
+  /// (functions/lib/account.js), and a failed delete leaves the user
+  /// signed in with nothing removed. Throws an AppFailure on failure.
+  Future<void> deleteAccount() async {
+    if (_uid == null || _signingOut) return;
+    _signingOut = true;
+    try {
+      // The welcome page follows, not the login page.
+      await _auth.deleteAccount();
+    } finally {
+      _signingOut = false;
+    }
+  }
+
   @override
   void dispose() {
     unawaited(_authSub?.cancel());
