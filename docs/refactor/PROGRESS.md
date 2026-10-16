@@ -15,7 +15,8 @@
 - **Step 6 (notifications)** done in 7fd29c8: PushMessagingService, NotificationsStore, PushRegistration, NotificationRouter, ProfileImageCache, MapFocus (consumed by the new map in step 7), Android icon/manifest, iOS plist/entitlements. Verified: list after login, token doc, follow tap.
 - IMPORTANT for step 13: functions must read users/{uid}/fcmTokens (+ legacy fcmToken); deploy functions before releasing the app.
 - **Step 7 (map)** done in b7a6ac2 (see commit). Maps key moved to local.properties / Secrets.xcconfig.
-- Next: step 8 (camera + capsule creation).
+- **Step 8 (camera + capsule creation)** done in 560afff: camera lifecycle/flash/error state/capture guard; CapsuleCreationController (re-entrancy, location fallback, clean errors, temp photo cleanup). Verified: double tap -> 1 capsule, upload image/jpeg 99 KB (was octet-stream 151 KB).
+- Next: step 9 (history).
 
 ## Final-report checklist (verify before writing REPORT.md)
 - SECURITY_FINDINGS.md and BLOCKERS.md describe some fixes in the present tense ("moved", "fixed in code"): confirm each one actually landed, or reword.

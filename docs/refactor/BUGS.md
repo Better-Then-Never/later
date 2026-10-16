@@ -60,15 +60,15 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 
 | ID | Screen | Symptom | Root cause | Sev | Repro | Status | Fix |
 |---|---|---|---|---|---|---|---|
-| BUG-050 | Camera | Flash button does nothing. | `// TODO` (icons `Flashon`/`Flashoff` exist). | S3 | repro (`camera_preview.png`) | open | |
-| BUG-051 | Camera | No app-lifecycle handling: preview breaks after backgrounding (camera not released/re-initialised). | No `WidgetsBindingObserver`. | S2 | code | open | |
-| BUG-052 | Camera | Blank black screen forever if no camera / init fails; `cameras.first` throws on devices without cameras. | No error state. | S2 | code | open | |
-| BUG-053 | Camera | Double tap on shutter takes two pictures / pushes twice; `takePicture` errors unhandled. | No guard / try-catch. | S3 | code | open | |
-| BUG-054 | Capsule creation | Two taps on "Create Capsule" create two capsules. | No re-entrancy guard. | S2 | code (A-B33) | open | |
-| BUG-055 | Capsule creation | Full-resolution photo uploaded with no compression/content type; temp file never deleted; if Firestore write fails the uploaded image is orphaned. | No image pipeline. | S3 | code | open | |
-| BUG-056 | Capsule creation | Raw exception text shown: `Failed to save capsule: <exception>`. | `'$e'` in message. | S3 | code | open | |
+| BUG-050 | Camera | Flash button does nothing. | `// TODO` (icons `Flashon`/`Flashoff` exist). | S3 | repro (`camera_preview.png`) | fixed | 560afff |
+| BUG-051 | Camera | No app-lifecycle handling: preview breaks after backgrounding (camera not released/re-initialised). | No `WidgetsBindingObserver`. | S2 | code | fixed | 560afff |
+| BUG-052 | Camera | Blank black screen forever if no camera / init fails; `cameras.first` throws on devices without cameras. | No error state. | S2 | code | fixed | 560afff |
+| BUG-053 | Camera | Double tap on shutter takes two pictures / pushes twice; `takePicture` errors unhandled. | No guard / try-catch. | S3 | code | fixed | 560afff |
+| BUG-054 | Capsule creation | Two taps on "Create Capsule" create two capsules. | No re-entrancy guard. | S2 | code (A-B33) | fixed | 560afff |
+| BUG-055 | Capsule creation | Full-resolution photo uploaded with no compression/content type; temp file never deleted; if Firestore write fails the uploaded image is orphaned. | No image pipeline. | S3 | code | fixed | 560afff |
+| BUG-056 | Capsule creation | Raw exception text shown: `Failed to save capsule: <exception>`. | `'$e'` in message. | S3 | code | fixed | 560afff |
 | BUG-057 | Capsule creation | Capsule saved without an open date is marked `isScheduled: true` with `openAt: null` and shows "Capsule is opened!" immediately. | Model defaults. | S3 | repro (`history_with_new_capsule.png`) | kept (current semantics: no date = opened); documented | |
-| BUG-058 | Capsule creation | Controllers never disposed; `setState` after `await` without `mounted`; reverse geocoding re-runs on every rebuild. | Lifecycle. | S3 | code (A-B21, A-B27, A-B28) | open | |
+| BUG-058 | Capsule creation | Controllers never disposed; `setState` after `await` without `mounted`; reverse geocoding re-runs on every rebuild. | Lifecycle. | S3 | code (A-B21, A-B27, A-B28) | fixed | 560afff |
 | BUG-059 | Capsule creation | "Back" re-opens the camera without the original privacy argument. | `pushReplacementNamed('/camera')` without arguments. | S4 | code (A-B23) | fixed | 7518612 |
 
 ## History (My Capsules)
