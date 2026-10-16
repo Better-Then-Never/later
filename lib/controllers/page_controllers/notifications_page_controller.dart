@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 class NotificationsPageController extends ChangeNotifier {
   final Set<String> _selectedIds = {};
-  
+
   bool get isSelectionMode => _selectedIds.isNotEmpty;
   int get selectedCount => _selectedIds.length;
   Set<String> get selectedIds => Set.unmodifiable(_selectedIds);

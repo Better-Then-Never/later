@@ -58,9 +58,9 @@ class NotificationItem extends StatelessWidget {
                 ),
               ],
             )
-          : BoxDecorations.whiteCard(borderRadius: 25).copyWith(
-              color: isRead ? Colors.white : Colors.blue.shade50,
-            ),
+          : BoxDecorations.whiteCard(
+              borderRadius: 25,
+            ).copyWith(color: isRead ? Colors.white : Colors.blue.shade50),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,

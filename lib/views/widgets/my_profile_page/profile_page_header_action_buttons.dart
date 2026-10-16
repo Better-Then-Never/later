@@ -18,7 +18,8 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
           children: [
             DefaultIconButton(
               size: 44,
-              assetPath: 'assets/images/icons/prof_page/notifications_button.png',
+              assetPath:
+                  'assets/images/icons/prof_page/notifications_button.png',
               onTap: () {
                 Navigator.push(
                   context,
@@ -26,19 +27,19 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
                     type: PageTransitionType.fade,
                     duration: const Duration(milliseconds: 10),
                     reverseDuration: const Duration(milliseconds: 10),
-                    child: NotificationsPage(),
+                    child: const NotificationsPage(),
                   ),
                 );
               },
             ),
-            Positioned(
+            const Positioned(
               right: 2,
               top: 2,
               child: UnreadNotificationBadge(size: 18),
             ),
           ],
         ),
-        SizedBox(width: 4),
+        const SizedBox(width: 4),
         DefaultIconButton(
           size: 41,
           assetPath: 'assets/images/icons/prof_page/share_button.png',
@@ -49,12 +50,12 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
                 type: PageTransitionType.fade,
                 duration: const Duration(milliseconds: 10),
                 reverseDuration: const Duration(milliseconds: 10),
-                child: ShareProfilePage(),
+                child: const ShareProfilePage(),
               ),
             );
           },
         ),
-        SizedBox(width: 5),
+        const SizedBox(width: 5),
         DefaultIconButton(
           size: 41,
           assetPath: 'assets/images/icons/prof_page/settings_button.png',
@@ -65,7 +66,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
                 type: PageTransitionType.fade,
                 duration: const Duration(milliseconds: 10),
                 reverseDuration: const Duration(milliseconds: 10),
-                child: SettingsPage(),
+                child: const SettingsPage(),
               ),
             );
           },

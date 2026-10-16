@@ -27,7 +27,7 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
                     type: PageTransitionType.fade,
                     duration: const Duration(milliseconds: 10),
                     reverseDuration: const Duration(milliseconds: 10),
-                    child: ShareProfilePage(),
+                    child: const ShareProfilePage(),
                   ),
                 );
               },
@@ -35,7 +35,7 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
               text: 'Share Profile',
             ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Stack(
               clipBehavior: Clip.none,
@@ -48,7 +48,7 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
                         type: PageTransitionType.fade,
                         duration: const Duration(milliseconds: 10),
                         reverseDuration: const Duration(milliseconds: 10),
-                        child: FriendRequestsPage(),
+                        child: const FriendRequestsPage(),
                       ),
                     );
                   },
@@ -56,7 +56,7 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
                       'assets/images/icons/friends_page/friend_request.png',
                   text: 'Requests',
                 ),
-                Positioned(
+                const Positioned(
                   top: -4,
                   right: -4,
                   child: FriendRequestCountBadge(),

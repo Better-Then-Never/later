@@ -14,7 +14,7 @@ class FirebaseAuthService extends ChangeNotifier {
     String password,
   ) async {
     try {
-      UserCredential userCredential = await _firebaseAuth
+      final UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -58,7 +58,7 @@ class FirebaseAuthService extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    return await _firebaseAuth.signOut();
+    return _firebaseAuth.signOut();
   }
 
   String _getErrorMessage(String code) {

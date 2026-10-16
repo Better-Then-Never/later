@@ -27,21 +27,20 @@ class UnreadNotificationBadge extends StatelessWidget {
 
     return Container(
       height: size,
-      constraints: BoxConstraints(
-        minWidth: size,
-      ),
+      constraints: BoxConstraints(minWidth: size),
       decoration: BoxDecoration(
         color: badgeColor,
         shape: unreadCount > 9 ? BoxShape.rectangle : BoxShape.circle,
         borderRadius: unreadCount > 9 ? BorderRadius.circular(size / 2) : null,
       ),
-      padding: unreadCount > 9 
+      padding: unreadCount > 9
           ? EdgeInsets.symmetric(horizontal: size * 0.35)
           : EdgeInsets.zero,
       alignment: Alignment.center,
       child: Text(
         unreadCount > 99 ? '99+' : unreadCount.toString(),
-        style: textStyle ??
+        style:
+            textStyle ??
             TextStyle(
               color: textColor,
               fontSize: size * 0.6,

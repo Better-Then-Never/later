@@ -48,7 +48,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   }
 
   String _formatDuration(Duration d) {
-    if (d.isNegative) return "";
+    if (d.isNegative) return '';
 
     final days = d.inDays;
     final hours = d.inHours.remainder(24);
@@ -57,12 +57,12 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
 
     final parts = <String>[];
 
-    if (days > 0) parts.add("${days}d");
-    if (hours > 0 || days > 0) parts.add("${hours}h");
-    if (minutes > 0 || hours > 0 || days > 0) parts.add("${minutes}m");
-    parts.add("${seconds}s");
+    if (days > 0) parts.add('${days}d');
+    if (hours > 0 || days > 0) parts.add('${hours}h');
+    if (minutes > 0 || hours > 0 || days > 0) parts.add('${minutes}m');
+    parts.add('${seconds}s');
 
-    return parts.join(" ");
+    return parts.join(' ');
   }
 
   @override
@@ -98,7 +98,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
 
           if (!_isOpen) ...[
             Text(
-              "Opens in ${_formatDuration(_remaining)}",
+              'Opens in ${_formatDuration(_remaining)}',
               style: const TextStyle(
                 color: Colors.red,
                 fontFamily: 'Irina',

@@ -53,8 +53,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.height;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.height;
 
     final capsuleService = context.read<CapsuleDataService>();
     final favoriteService = context.read<FavoriteCapsuleService>();
@@ -75,11 +75,11 @@ class _HistoryPageState extends State<HistoryPage> {
               AnimatedBuilder(
                 animation: _controller,
                 builder: (_, __) => PageHeader(
-                  mainText: "My Capsules",
+                  mainText: 'My Capsules',
                   searchBar: DefaultSearchBar(
                     controller: _searchController,
                     searchFocusNode: _searchFocusNode,
-                    hintText: "Find Capsules...",
+                    hintText: 'Find Capsules...',
                   ),
                   actionButtonsRow: Column(
                     children: [
@@ -168,14 +168,13 @@ class _HistoryPageState extends State<HistoryPage> {
                         final filtered = _controller.filteredCapsules(
                           favoriteService,
                         );
-                        ;
 
                         if (filtered.isEmpty) {
                           return Center(
                             child: Text(
                               _controller.searchQuery.isEmpty
-                                  ? "No capsules yet"
-                                  : "No capsules match your search",
+                                  ? 'No capsules yet'
+                                  : 'No capsules match your search',
                             ),
                           );
                         }
@@ -207,7 +206,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                     PopupNotificationService.showInfo(
                                       context: context,
                                       message:
-                                          "${capsuleTitle} ${favoriteService.isFavorite(capsuleId) ? 'Added to' : 'Removed from'}  favorites",
+                                          "$capsuleTitle ${favoriteService.isFavorite(capsuleId) ? 'Added to' : 'Removed from'}  favorites",
                                       position: NotificationPosition.bottom,
                                     );
                                   },
@@ -310,10 +309,7 @@ class _HistoryPageState extends State<HistoryPage> {
         child: NestedMenu(
           title: 'Sort By',
           rootItems: [
-            MenuItemNode(
-              label: 'Reset',
-              onTap: () => controller.resetSort(),
-            ),
+            MenuItemNode(label: 'Reset', onTap: () => controller.resetSort()),
 
             MenuItemNode(
               label: 'Relevance',

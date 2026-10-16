@@ -10,7 +10,7 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F6F6),
+      backgroundColor: const Color(0xFFF6F6F6),
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -23,7 +23,7 @@ class WelcomePage extends StatelessWidget {
                   child: Column(
                     children: [
                       Image.asset(
-                        "assets/images/later_logo.png",
+                        'assets/images/later_logo.png',
                         height: 300,
                         width: 200,
                       ),
@@ -79,12 +79,12 @@ class WelcomePage extends StatelessWidget {
                                 reverseDuration: const Duration(
                                   milliseconds: 10,
                                 ),
-                                child: LoginPage(),
+                                child: const LoginPage(),
                               ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF56C92E),
+                            backgroundColor: const Color(0xFF56C92E),
                           ),
                           child: Transform.translate(
                             offset: const Offset(0, -2.0),

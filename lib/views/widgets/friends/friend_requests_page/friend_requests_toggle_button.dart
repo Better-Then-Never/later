@@ -24,10 +24,12 @@ class FriendRequestsToggleButton extends StatelessWidget {
         child: Container(
           height: 35,
           decoration: BoxDecoration(
-            color: isSelected ? Color.fromARGB(255, 86, 201, 46) : Colors.white,
+            color: isSelected
+                ? const Color.fromARGB(255, 86, 201, 46)
+                : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Color.fromARGB(255, 86, 201, 46),
+              color: const Color.fromARGB(255, 86, 201, 46),
               width: 2,
             ),
           ),
@@ -38,7 +40,7 @@ class FriendRequestsToggleButton extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: isSelected
                   ? Colors.white
-                  : Color.fromARGB(255, 86, 201, 46),
+                  : const Color.fromARGB(255, 86, 201, 46),
             ),
           ),
         ),

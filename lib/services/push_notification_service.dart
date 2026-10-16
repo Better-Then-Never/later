@@ -5,15 +5,17 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/foundation.dart';
 
 class PushNotificationService extends ChangeNotifier {
-  static final PushNotificationService _instance = PushNotificationService._internal();
+  static final PushNotificationService _instance =
+      PushNotificationService._internal();
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   bool _isInitialized = false;
 
   // Store notifications for display in app
@@ -30,14 +32,15 @@ class PushNotificationService extends ChangeNotifier {
       print('Starting initialization...');
 
       // Initialize local notifications FIRST
-      const AndroidInitializationSettings androidSettings = 
+      const AndroidInitializationSettings androidSettings =
           AndroidInitializationSettings('@mipmap/ic_launcher');
-      
-      const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-      );
+
+      const DarwinInitializationSettings iosSettings =
+          DarwinInitializationSettings(
+            requestAlertPermission: true,
+            requestBadgePermission: true,
+            requestSoundPermission: true,
+          );
 
       const InitializationSettings initSettings = InitializationSettings(
         android: androidSettings,
@@ -65,18 +68,21 @@ class PushNotificationService extends ChangeNotifier {
       );
 
       await _localNotifications
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(channel);
 
       print('Notification channel created');
 
       // Request permission for iOS and Firebase
-      NotificationSettings settings = await _firebaseMessaging.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-        provisional: false,
-      );
+      final NotificationSettings settings = await _firebaseMessaging
+          .requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+            provisional: false,
+          );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
         print('User granted permission');
@@ -85,9 +91,9 @@ class PushNotificationService extends ChangeNotifier {
       }
 
       // Get FCM token and save to Firestore
-      String? token = await _firebaseMessaging.getToken();
+      final String? token = await _firebaseMessaging.getToken();
       print('FCM Token: $token');
-      
+
       if (token != null) {
         await _saveFcmToken(token);
       }
@@ -102,7 +108,8 @@ class PushNotificationService extends ChangeNotifier {
       FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundMessage);
 
       // Handle terminated state messages
-      RemoteMessage? initialMessage = await _firebaseMessaging.getInitialMessage();
+      final RemoteMessage? initialMessage = await _firebaseMessaging
+          .getInitialMessage();
       if (initialMessage != null) {
         _handleBackgroundMessage(initialMessage);
       }
@@ -130,7 +137,7 @@ class PushNotificationService extends ChangeNotifier {
         'fcmToken': token,
         'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
       });
-      
+
       print('FCM token saved to Firestore for user: $userId');
     } catch (e) {
       print('Error saving FCM token: $e');
@@ -139,13 +146,13 @@ class PushNotificationService extends ChangeNotifier {
 
   void _handleForegroundMessage(RemoteMessage message) {
     print('Foreground message received: ${message.notification?.title}');
-    
+
     // Save to Firestore first
     _saveNotificationToFirestore(message);
 
     // Show local notification
     _showLocalNotification(message);
-    
+
     // Reload from Firestore to get the saved notification with ID
     loadNotificationsFromFirestore();
   }
@@ -169,17 +176,17 @@ class PushNotificationService extends ChangeNotifier {
           .doc(userId)
           .collection('notifications')
           .add({
-        'type': message.data['type'] ?? 'notification',
-        'fromUserName': message.data['userName'] ?? 'System',
-        'fromUserAvatar': message.data['userAvatar'],
-        'message': message.notification?.body ?? '',
-        'thumbnailImage': message.data['thumbnailImage'],
-        'timestamp': FieldValue.serverTimestamp(),
-        'isRead': false,
-        'title': message.notification?.title ?? 'Notification',
-        'fromUserId': message.data['userId'],
-        'capsuleId': message.data['capsuleId'],
-      });
+            'type': message.data['type'] ?? 'notification',
+            'fromUserName': message.data['userName'] ?? 'System',
+            'fromUserAvatar': message.data['userAvatar'],
+            'message': message.notification?.body ?? '',
+            'thumbnailImage': message.data['thumbnailImage'],
+            'timestamp': FieldValue.serverTimestamp(),
+            'isRead': false,
+            'title': message.notification?.title ?? 'Notification',
+            'fromUserId': message.data['userId'],
+            'capsuleId': message.data['capsuleId'],
+          });
 
       print('Notification saved to Firestore');
     } catch (e) {
@@ -193,14 +200,16 @@ class PushNotificationService extends ChangeNotifier {
       return;
     }
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'high_importance_channel',
-      'High Importance Notifications',
-      channelDescription: 'This channel is used for important notifications',
-      importance: Importance.max,
-      priority: Priority.high,
-      showWhen: true,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'high_importance_channel',
+          'High Importance Notifications',
+          channelDescription:
+              'This channel is used for important notifications',
+          importance: Importance.max,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -239,7 +248,7 @@ class PushNotificationService extends ChangeNotifier {
       // Update in Firestore to persist
       final userId = _auth.currentUser?.uid;
       if (userId == null) return;
-      
+
       final notificationId = notification['id'];
       if (notificationId != null) {
         await _firestore
@@ -248,10 +257,10 @@ class PushNotificationService extends ChangeNotifier {
             .collection('notifications')
             .doc(notificationId)
             .update({'isRead': true});
-        
+
         print('Notification marked as read in Firestore');
       }
-      
+
       notifyListeners();
     } catch (e) {
       print('Error updating notification read status: $e');
@@ -285,7 +294,7 @@ class PushNotificationService extends ChangeNotifier {
 
       await batch.commit();
       print('All notifications marked as read');
-      
+
       notifyListeners();
     } catch (e) {
       print('Error marking all notifications as read: $e');
@@ -314,7 +323,7 @@ class PushNotificationService extends ChangeNotifier {
 
       await batch.commit();
       print('All notifications cleared from Firestore');
-      
+
       notifyListeners();
     } catch (e) {
       print('Error clearing all notifications: $e');
@@ -341,11 +350,11 @@ class PushNotificationService extends ChangeNotifier {
               .collection('notifications')
               .doc(notificationId)
               .delete();
-          
+
           print('Notification deleted from Firestore');
         }
       }
-      
+
       notifyListeners();
     } catch (e) {
       print('Error deleting notification: $e');
@@ -371,17 +380,20 @@ class PushNotificationService extends ChangeNotifier {
           .get();
 
       _notifications.clear();
-      
+
       for (var doc in querySnapshot.docs) {
         final data = doc.data();
         _notifications.add({
           'id': doc.id, // Store the document ID for updates
           'type': data['type'] ?? 'notification',
           'userName': data['fromUserName'] ?? 'System',
-          'userAvatar': data['fromUserAvatar'] ?? 'assets/images/icons/prof_page/no_photo.png',
+          'userAvatar':
+              data['fromUserAvatar'] ??
+              'assets/images/icons/prof_page/no_photo.png',
           'message': data['message'] ?? '',
           'thumbnailImage': data['thumbnailImage'],
-          'timestamp': (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+          'timestamp':
+              (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
           'isRead': data['isRead'] ?? false,
           'title': _getNotificationTitle(data['type']),
           'userId': data['fromUserId'],

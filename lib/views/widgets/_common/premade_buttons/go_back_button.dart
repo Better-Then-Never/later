@@ -5,10 +5,9 @@ class GoBackButton extends DefaultIconButton {
   GoBackButton({
     super.key,
     required BuildContext context,
-    double? size,
+    super.size,
     bool isBlack = true,
   }) : super(
-         size: size,
          onTap: () => Navigator.pop(context),
          assetPath: isBlack
              ? 'assets/images/icons/prof_page/go_back.png'

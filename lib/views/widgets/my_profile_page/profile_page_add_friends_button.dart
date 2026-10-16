@@ -22,7 +22,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
             type: PageTransitionType.bottomToTop,
             duration: const Duration(milliseconds: 100),
             reverseDuration: const Duration(milliseconds: 100),
-            child: AddFriendsPage(),
+            child: const AddFriendsPage(),
           ),
         );
       },
@@ -56,7 +56,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
                 ],
               ),
             ),
-            FriendRequestCountBadge(),
+            const FriendRequestCountBadge(),
           ],
         ),
       ),

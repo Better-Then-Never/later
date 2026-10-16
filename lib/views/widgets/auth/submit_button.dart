@@ -98,7 +98,7 @@ class _SubmitButtonState extends State<SubmitButton> {
           ),
         ),
         child: _isLoading
-            ? CircularProgressIndicator(color: Colors.white)
+            ? const CircularProgressIndicator(color: Colors.white)
             : Text(
                 widget.buttonText,
                 style: const TextStyle(

@@ -44,11 +44,11 @@ class UserNameAndUsername extends StatelessWidget {
           crossAxisAlignment: crossAxisAlignment,
           children: [
             isLoading
-                ? Center()
+                ? const Center()
                 : FittedBox(
                     fit: BoxFit.scaleDown,
-                    alignment: crossAxisAlignment == CrossAxisAlignment.start 
-                        ? Alignment.centerLeft 
+                    alignment: crossAxisAlignment == CrossAxisAlignment.start
+                        ? Alignment.centerLeft
                         : Alignment.center,
                     child: DefaultText(
                       name,
@@ -60,7 +60,7 @@ class UserNameAndUsername extends StatelessWidget {
                     ),
                   ),
             isLoading
-                ? Center()
+                ? const Center()
                 : DefaultText(
                     '@$username',
                     fontSize: usernameFontSize,

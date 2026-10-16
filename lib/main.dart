@@ -50,7 +50,10 @@ void main() async {
 
   if (_useFirebaseEmulator) {
     await FirebaseAuth.instance.useAuthEmulator(_firebaseEmulatorHost, 9099);
-    FirebaseFirestore.instance.useFirestoreEmulator(_firebaseEmulatorHost, 8080);
+    FirebaseFirestore.instance.useFirestoreEmulator(
+      _firebaseEmulatorHost,
+      8080,
+    );
     await FirebaseStorage.instance.useStorageEmulator(
       _firebaseEmulatorHost,
       9199,
@@ -111,7 +114,7 @@ class _ApplicationState extends State<Application> {
     try {
       final String? initialLink = await platform.invokeMethod('getInitialLink');
       if (initialLink != null) {
-        Future.delayed(Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 2), () {
           _handleIncomingLink(initialLink);
         });
       }
@@ -124,7 +127,7 @@ class _ApplicationState extends State<Application> {
     if (navigatorKey.currentContext != null) {
       DeepLinkService.handleDeepLink(navigatorKey.currentContext!, link);
     } else {
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(const Duration(milliseconds: 500), () {
         if (navigatorKey.currentContext != null) {
           DeepLinkService.handleDeepLink(navigatorKey.currentContext!, link);
         }
@@ -141,7 +144,7 @@ class _ApplicationState extends State<Application> {
         return Stack(
           children: [
             child ?? const SizedBox(),
-            IgnorePointer(
+            const IgnorePointer(
               child: SnowFallAnimation(
                 config: SnowfallConfig(
                   numberOfSnowflakes: 15,
@@ -177,7 +180,9 @@ class _ApplicationState extends State<Application> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(body: Center(child: CircularProgressIndicator()));
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
 
           if (!snapshot.hasData) {
@@ -199,7 +204,7 @@ class _ApplicationState extends State<Application> {
           seedColor: Colors.green,
           brightness: Brightness.light,
         ),
-        fontFamily: "Irina",
+        fontFamily: 'Irina',
       ),
     );
   }

@@ -32,13 +32,13 @@ class CapsuleCreationPageController extends ChangeNotifier {
        pickedLocation = initialLocation ?? map.MapPage.currentPositionStatic;
 
   void cyclePrivacy() {
-    final values = CapsulePrivacy.values;
+    const values = CapsulePrivacy.values;
     privacy = values[(values.indexOf(privacy) + 1) % values.length];
     notifyListeners();
   }
 
   void cycleColor() {
-    final values = CapsuleColor.values;
+    const values = CapsuleColor.values;
     color = values[(values.indexOf(color) + 1) % values.length];
     notifyListeners();
   }

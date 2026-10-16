@@ -12,9 +12,9 @@ class PasswordSettingsPage extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                "The feature will be added soon.",
-                style: const TextStyle(fontSize: 16, color: Colors.black54),
+              const Text(
+                'The feature will be added soon.',
+                style: TextStyle(fontSize: 16, color: Colors.black54),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

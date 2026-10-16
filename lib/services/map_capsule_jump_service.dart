@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-
 class CapsuleJumpService extends ChangeNotifier {
   Map<String, dynamic>? _capsule;
 

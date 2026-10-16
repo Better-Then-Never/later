@@ -31,7 +31,7 @@ class PinnedFriendsController extends ChangeNotifier {
 
     allFriends = friendsService.friends.toSet();
 
-    Map<String, Map<String, String>> infoMap = {};
+    final Map<String, Map<String, String>> infoMap = {};
     for (var uid in allFriends) {
       final data = await userDataService.getUserData(uid);
       infoMap[uid] = {
@@ -45,7 +45,7 @@ class PinnedFriendsController extends ChangeNotifier {
     final pinnedList = prefs.getStringList('pinned_friend_uids') ?? [];
     pinnedUids = pinnedList.toSet();
 
-    Map<String, String?> images = {};
+    final Map<String, String?> images = {};
     for (var uid in pinnedUids) {
       images[uid] = await FirebaseStorageService.getProfileImageUrl(uid);
     }
@@ -73,7 +73,7 @@ class PinnedFriendsController extends ChangeNotifier {
   Future<List<Map<String, String>>> getDisplayFriends() async {
     if (allFriends.isEmpty) return [];
 
-    List<Map<String, String>> widgets = [];
+    final List<Map<String, String>> widgets = [];
 
     for (var uid in pinnedUids) {
       if (allFriends.contains(uid)) {

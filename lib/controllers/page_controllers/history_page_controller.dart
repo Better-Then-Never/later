@@ -178,14 +178,14 @@ class HistoryPageController extends ChangeNotifier {
           final locA = LatLng(geoA.latitude, geoA.longitude);
           final locB = LatLng(geoB.latitude, geoB.longitude);
 
-          double distA = Geolocator.distanceBetween(
+          final double distA = Geolocator.distanceBetween(
             current.latitude,
             current.longitude,
             locA.latitude,
             locA.longitude,
           );
 
-          double distB = Geolocator.distanceBetween(
+          final double distB = Geolocator.distanceBetween(
             current.latitude,
             current.longitude,
             locB.latitude,

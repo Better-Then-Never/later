@@ -21,13 +21,13 @@ class DefaultEmptyInboxInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Image.asset(assetPath, width: 72, height: 72),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           DefaultText(
             message,
             fontSize: screenWidth * 0.048,
             fontWeight: FontWeight.w900,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           if (subtitle != null)
             DefaultText(
               subtitle!,

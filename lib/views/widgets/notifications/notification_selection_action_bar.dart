@@ -33,14 +33,10 @@ class NotificationSelectionActionBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          DefaultText(
-            "$count",
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          DefaultText('$count', fontSize: 18, fontWeight: FontWeight.bold),
           const SizedBox(width: 4),
           DefaultText(
-            count == 1 ? "selected" : "selected",
+            count == 1 ? 'selected' : 'selected',
             fontSize: 14,
             color: Colors.grey[600],
           ),
@@ -65,11 +61,7 @@ class NotificationSelectionActionBar extends StatelessWidget {
           const SizedBox(width: 8),
           DefaultIconButton(
             onTap: onCancel,
-            child: const Icon(
-              Icons.close,
-              color: Colors.black,
-              size: 24,
-            ),
+            child: const Icon(Icons.close, color: Colors.black, size: 24),
           ),
         ],
       ),

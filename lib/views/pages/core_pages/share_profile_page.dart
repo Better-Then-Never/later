@@ -62,7 +62,7 @@ class ShareProfilePage extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: screenHeight * 0.06,
                         child: ElevatedButton.icon(
                           style: ElevatedButtonStyles.roundedButtonStyle(
@@ -85,10 +85,10 @@ class ShareProfilePage extends StatelessWidget {
                       ),
                     ),
 
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
 
                     Expanded(
-                      child: Container(
+                      child: SizedBox(
                         height: screenHeight * 0.06,
                         child: ElevatedButton.icon(
                           style: ElevatedButtonStyles.roundedButtonStyle(
@@ -113,7 +113,7 @@ class ShareProfilePage extends StatelessWidget {
                 ),
                 SizedBox(height: screenHeight * 0.03),
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   decoration: BoxDecorations.lightBlueInfo(),
                   child: Row(
                     children: [
@@ -122,7 +122,7 @@ class ShareProfilePage extends StatelessWidget {
                         color: Colors.blue[600],
                         size: 20,
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: DefaultText(
                           'Others can scan this code with their camera or the app to add you as a friend',

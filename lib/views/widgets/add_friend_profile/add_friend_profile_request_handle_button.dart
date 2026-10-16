@@ -32,7 +32,9 @@ class AddProfileRequestHandleButton extends StatelessWidget {
         width: width,
         height: height,
         child: ElevatedButton(
-          style: ElevatedButtonStyles.roundedButtonStyle(color: color ?? Colors.red),
+          style: ElevatedButtonStyles.roundedButtonStyle(
+            color: color ?? Colors.red,
+          ),
           onPressed: isCancelling ? null : onPressed,
           child: isCancelling
               ? const WhiteCircularProgressIndicator(size: 16)

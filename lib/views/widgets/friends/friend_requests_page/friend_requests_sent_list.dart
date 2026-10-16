@@ -70,7 +70,7 @@ class FriendRequestsSentList extends StatelessWidget {
                         child: AddFriendProfilePage(userId: toUserId),
                       ),
                     );
-                  },                  
+                  },
                 );
               },
             );

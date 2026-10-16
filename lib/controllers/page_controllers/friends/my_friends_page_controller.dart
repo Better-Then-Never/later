@@ -56,7 +56,7 @@ class MyFriendsPageController extends ChangeNotifier {
   }
 
   Map<String, List<Map<String, dynamic>>> get groupedFilteredFriends {
-    Map<String, List<Map<String, dynamic>>> grouped = {};
+    final Map<String, List<Map<String, dynamic>>> grouped = {};
     final seen = <String>{};
     for (var friend in filteredFriends) {
       if (seen.contains(friend['uid'])) continue;
@@ -71,38 +71,37 @@ class MyFriendsPageController extends ChangeNotifier {
     return sorted;
   }
 
-Future<void> _preloadFriendsData() async {
-  _isLoading = true;
-  notifyListeners();
+  Future<void> _preloadFriendsData() async {
+    _isLoading = true;
+    notifyListeners();
 
-  final updatedFriends = <Map<String, dynamic>>[];
+    final updatedFriends = <Map<String, dynamic>>[];
 
-  for (var uid in _friendsService.friends) {
-    final existing = _friendsData.firstWhere(
-      (f) => f['uid'] == uid,
-      orElse: () => {},
-    );
-    if (existing.isNotEmpty) {
-      updatedFriends.add(existing);
-      continue;
+    for (var uid in _friendsService.friends) {
+      final existing = _friendsData.firstWhere(
+        (f) => f['uid'] == uid,
+        orElse: () => {},
+      );
+      if (existing.isNotEmpty) {
+        updatedFriends.add(existing);
+        continue;
+      }
+
+      final data = await _userService.getUserData(uid);
+      updatedFriends.add({
+        'uid': uid,
+        'name': data['name'] ?? '',
+        'username': data['username'] ?? '',
+      });
     }
 
-    final data = await _userService.getUserData(uid);
-    updatedFriends.add({
-      'uid': uid,
-      'name': data['name'] ?? '',
-      'username': data['username'] ?? '',
-    });
+    _friendsData
+      ..clear()
+      ..addAll(updatedFriends);
+
+    _isLoading = false;
+    notifyListeners();
   }
-
-  _friendsData
-    ..clear()
-    ..addAll(updatedFriends);
-
-  _isLoading = false;
-  notifyListeners();
-}
-
 
   @override
   void dispose() {

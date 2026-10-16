@@ -94,7 +94,8 @@ class _CameraPageState extends State<CameraPage> {
                     onTap: () async {
                       if (cameraController == null) return;
 
-                      XFile picture = await cameraController!.takePicture();
+                      final XFile picture = await cameraController!
+                          .takePicture();
 
                       if (!mounted) return;
 
@@ -147,7 +148,7 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _setupCameraController() async {
-    List<CameraDescription> cameras = await availableCameras();
+    final List<CameraDescription> cameras = await availableCameras();
 
     frontCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,

@@ -9,7 +9,7 @@ class CapsuleImagePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(25), 
+      borderRadius: BorderRadius.circular(25),
       child: Image.file(File(imagePath), fit: BoxFit.cover),
     );
   }

@@ -81,7 +81,7 @@ class AddProfileMainButton extends StatelessWidget {
       case 'own_profile':
         return const Color.fromARGB(255, 108, 117, 125);
       case 'pending':
-        return Color.fromARGB(255, 253, 219, 7);
+        return const Color.fromARGB(255, 253, 219, 7);
       case 'friends':
         return const Color.fromARGB(255, 54, 144, 255);
       default:

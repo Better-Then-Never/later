@@ -18,36 +18,37 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
 
   final List<AppPermissionSetting> _permissions = [
     AppPermissionSetting(
-      name: "Camera",
-      description: "Access camera to create time capsules",
+      name: 'Camera',
+      description: 'Access camera to create time capsules',
       permission: Permission.camera,
-      iconAsset: "assets/images/icons/camera/Camerafull.png",
+      iconAsset: 'assets/images/icons/camera/Camerafull.png',
     ),
     AppPermissionSetting(
-      name: "Microphone",
-      description: "Record audio for time capsules",
+      name: 'Microphone',
+      description: 'Record audio for time capsules',
       permission: Permission.microphone,
-      iconAsset: "assets/images/icons/capsule_creation/microphone_icon.png",
+      iconAsset: 'assets/images/icons/capsule_creation/microphone_icon.png',
     ),
     AppPermissionSetting(
-      name: "Location",
-      description: "Find capsules nearby and location-based features",
+      name: 'Location',
+      description: 'Find capsules nearby and location-based features',
       permission: Platform.isIOS
           ? Permission.locationWhenInUse
           : Permission.location,
-      iconAsset: "assets/images/icons/capsule_creation/location_icon.png",
+      iconAsset: 'assets/images/icons/capsule_creation/location_icon.png',
     ),
     AppPermissionSetting(
-      name: "Notifications",
-      description: "Receive updates about followers and capsules",
+      name: 'Notifications',
+      description: 'Receive updates about followers and capsules',
       permission: Permission.notification,
-      iconAsset: "assets/images/icons/prof_page/notifications_button_black_full.png",
+      iconAsset:
+          'assets/images/icons/prof_page/notifications_button_black_full.png',
     ),
     AppPermissionSetting(
-      name: "Contacts",
-      description: "Invite friends and find people you know",
+      name: 'Contacts',
+      description: 'Invite friends and find people you know',
       permission: Permission.contacts,
-      iconAsset: "assets/images/icons/friends_page/friend_book.png",
+      iconAsset: 'assets/images/icons/friends_page/friend_book.png',
     ),
   ];
 
@@ -101,18 +102,18 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: Text(
+          title: const Text(
             'Revoke Permission',
             style: TextStyle(fontFamily: 'Irina', fontWeight: FontWeight.bold),
           ),
-          content: Text(
+          content: const Text(
             'To revoke this permission, you need to go to your device settings. This will disable the related features in the app.',
             style: TextStyle(fontFamily: 'Irina'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(fontFamily: 'Irina', color: Colors.grey),
               ),
@@ -122,7 +123,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                 Navigator.of(context).pop();
                 openAppSettings();
               },
-              child: Text(
+              child: const Text(
                 'Open Settings',
                 style: TextStyle(
                   fontFamily: 'Irina',
@@ -145,18 +146,18 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: Text(
+          title: const Text(
             'Permission Required',
             style: TextStyle(fontFamily: 'Irina', fontWeight: FontWeight.bold),
           ),
-          content: Text(
+          content: const Text(
             'This permission has been permanently denied. Please enable it in your device settings.',
             style: TextStyle(fontFamily: 'Irina'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
+              child: const Text(
                 'Cancel',
                 style: TextStyle(fontFamily: 'Irina', color: Colors.grey),
               ),
@@ -166,7 +167,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                 Navigator.of(context).pop();
                 openAppSettings();
               },
-              child: Text(
+              child: const Text(
                 'Open Settings',
                 style: TextStyle(
                   fontFamily: 'Irina',
@@ -201,10 +202,10 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
   Color _getPermissionStatusColor(PermissionStatus status) {
     switch (status) {
       case PermissionStatus.granted:
-        return Color.fromARGB(255, 86, 201, 46);
+        return const Color.fromARGB(255, 86, 201, 46);
       case PermissionStatus.denied:
       case PermissionStatus.permanentlyDenied:
-        return Color.fromARGB(255, 255, 87, 87);
+        return const Color.fromARGB(255, 255, 87, 87);
       case PermissionStatus.restricted:
       case PermissionStatus.limited:
       case PermissionStatus.provisional:
@@ -255,7 +256,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                             horizontal: screenWidth * 0.05,
                             vertical: 0,
                           ),
-                          child: Text(
+                          child: const Text(
                             'Manage app permissions',
                             textAlign: TextAlign.center,
                             style: TextStyle(
@@ -266,7 +267,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
@@ -291,7 +292,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
 
           Expanded(
             child: _isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
                     padding: EdgeInsets.only(
                       left: screenWidth * 0.04,
@@ -315,12 +316,12 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 5,
-                              offset: Offset(0, 2),
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: ListTile(
-                          contentPadding: EdgeInsets.all(16),
+                          contentPadding: const EdgeInsets.all(16),
                           leading: Container(
                             width: 50,
                             height: 50,
@@ -335,7 +336,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                           ),
                           title: Text(
                             permission.name,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontFamily: 'Irina',
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -345,7 +346,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              SizedBox(height: 4),
+                              const SizedBox(height: 4),
                               Text(
                                 permission.description,
                                 style: TextStyle(
@@ -354,9 +355,9 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                                   color: Colors.grey[600],
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Container(
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 8,
                                   vertical: 4,
                                 ),
@@ -381,7 +382,12 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                             value: status.isGranted,
                             onChanged: (_) =>
                                 _togglePermission(permission.permission),
-                            activeThumbColor: Color.fromARGB(255, 86, 201, 46),
+                            activeThumbColor: const Color.fromARGB(
+                              255,
+                              86,
+                              201,
+                              46,
+                            ),
                             inactiveThumbColor: Colors.grey,
                             inactiveTrackColor: Colors.grey.withValues(
                               alpha: 0.3,

@@ -18,7 +18,7 @@ class _MainTextState extends State<MainText> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset("assets/images/later_logo.png", height: 150, width: 120),
+        Image.asset('assets/images/later_logo.png', height: 150, width: 120),
         Column(
           children: [
             Text(
@@ -34,7 +34,7 @@ class _MainTextState extends State<MainText> {
             Text(
               widget.additionalText,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16.0,
                 fontFamily: 'Irina',
                 letterSpacing: 0.1,

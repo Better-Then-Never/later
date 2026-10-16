@@ -22,10 +22,12 @@ class PinnedFriendAvatar extends StatelessWidget {
         width: size,
         height: size,
         margin: const EdgeInsets.symmetric(horizontal: 2),
-        decoration: BoxDecoration(borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
-              )),
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
         clipBehavior: Clip.hardEdge,
         child: UserProfileImage(
           userId: uid,

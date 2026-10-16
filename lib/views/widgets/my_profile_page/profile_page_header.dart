@@ -17,7 +17,6 @@ class ProfilePageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
     return Stack(
       children: [
         ProfileBackgroundPicture(
@@ -30,10 +29,10 @@ class ProfilePageHeader extends StatelessWidget {
           height: 1,
           decoration: BoxDecorations.blackShadow(),
         ),
-        Positioned(
+        const Positioned(
           top: 35,
           right: 12,
-          child: const ProfilePageHeaderActionButtons(),
+          child: ProfilePageHeaderActionButtons(),
         ),
         Positioned(
           top: 99,

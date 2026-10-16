@@ -18,7 +18,7 @@ class BoxDecorations {
 
   static BoxDecoration greyCard({double borderRadius = 25}) {
     return BoxDecoration(
-      color: Color(0xFFEAEAEA),
+      color: const Color(0xFFEAEAEA),
       borderRadius: BorderRadius.circular(borderRadius),
     );
   }
@@ -32,7 +32,7 @@ class BoxDecorations {
           color: Colors.black.withAlpha(120),
           spreadRadius: 15,
           blurRadius: 20,
-          offset: Offset(0, 6),
+          offset: const Offset(0, 6),
         ),
       ],
     );
@@ -40,7 +40,7 @@ class BoxDecorations {
 
   static BoxDecoration softBlackShadow() {
     return BoxDecoration(
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
           color: Colors.black12,
           spreadRadius: 1,

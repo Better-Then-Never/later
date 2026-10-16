@@ -14,9 +14,9 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Center(
-          child: const DefaultText(
-            "My capsules",
+        const Center(
+          child: DefaultText(
+            'My capsules',
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),

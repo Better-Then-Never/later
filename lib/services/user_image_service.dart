@@ -126,7 +126,7 @@ class UserImageService extends ChangeNotifier {
     BuildContext context,
   ) async {
     final notifier = getProfileNotifier(userId);
-    if (!(notifier.value is NetworkImage)) {
+    if (notifier.value is! NetworkImage) {
       await precacheImage(notifier.value, context);
     }
   }
@@ -136,7 +136,7 @@ class UserImageService extends ChangeNotifier {
     BuildContext context,
   ) async {
     final notifier = getBackgroundNotifier(userId);
-    if (!(notifier.value is NetworkImage)) {
+    if (notifier.value is! NetworkImage) {
       await precacheImage(notifier.value, context);
     }
   }

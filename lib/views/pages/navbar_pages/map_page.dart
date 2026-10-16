@@ -98,31 +98,33 @@ class _MapPageState extends State<MapPage> {
     }
   }
 
-Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
-  final controller = await _mapController.future;
-   
-  _customInfoWindowController.hideInfoWindow!();
-  final geoPoint = capsule['location'];
-  if (geoPoint == null) return;
+  Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
+    final controller = await _mapController.future;
 
-  final capsulePosition = LatLng(geoPoint.latitude, geoPoint.longitude);
+    _customInfoWindowController.hideInfoWindow!();
+    final geoPoint = capsule['location'];
+    if (geoPoint == null) return;
 
-  await controller.animateCamera(
-    CameraUpdate.newLatLngZoom(capsulePosition, 18),
-  );
+    final capsulePosition = LatLng(geoPoint.latitude, geoPoint.longitude);
 
-  _customInfoWindowController.addInfoWindow!(
-    CapsuleInfoPanel(
-      title: capsule['title'],
-      dateStamp: DateFormat('dd-MM-yyyy').format(capsule['createdAt'].toDate()),
-      openAt: capsule['openAt'] ?? Timestamp.now(),
-      onMoreInfo: () => _showCapsuleInfo(context, capsule),
-    ),
-    capsulePosition,
-  );  
+    await controller.animateCamera(
+      CameraUpdate.newLatLngZoom(capsulePosition, 18),
+    );
 
-  _jumpService.clear();
-}
+    _customInfoWindowController.addInfoWindow!(
+      CapsuleInfoPanel(
+        title: capsule['title'],
+        dateStamp: DateFormat(
+          'dd-MM-yyyy',
+        ).format(capsule['createdAt'].toDate()),
+        openAt: capsule['openAt'] ?? Timestamp.now(),
+        onMoreInfo: () => _showCapsuleInfo(context, capsule),
+      ),
+      capsulePosition,
+    );
+
+    _jumpService.clear();
+  }
 
   bool _canViewCapsule(Map<String, dynamic> capsuleData) {
     final privacy = capsuleData['privacy'] as String? ?? 'public';
@@ -169,7 +171,7 @@ Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     if (_currentPosition == null) {
-      return Center(child: LaterLoadingBar(width: 150, height: 150));
+      return const Center(child: LaterLoadingBar(width: 150, height: 150));
     }
 
     return StreamBuilder<QuerySnapshot>(
@@ -182,8 +184,8 @@ Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
         _markers.clear();
         _heatmaps.clear();
 
-        _markers[const MarkerId("_currentLocation")] = Marker(
-          markerId: const MarkerId("_currentLocation"),
+        _markers[const MarkerId('_currentLocation')] = Marker(
+          markerId: const MarkerId('_currentLocation'),
           icon: _capsuleIcons['user']!,
           position: _currentPosition!,
         );
@@ -227,10 +229,10 @@ Future<void> jumpToCapsule(Map<String, dynamic> capsule) async {
 
         _heatmaps.add(
           Heatmap(
-            heatmapId: const HeatmapId("capsules_heatmap"),
+            heatmapId: const HeatmapId('capsules_heatmap'),
             data: heatmapData,
-            radius: HeatmapRadius.fromPixels(50),
-            gradient: HeatmapGradient([
+            radius: const HeatmapRadius.fromPixels(50),
+            gradient: const HeatmapGradient([
               HeatmapGradientColor(Colors.green, 0.2),
               HeatmapGradientColor(Colors.yellow, 0.5),
               HeatmapGradientColor(Colors.red, 1.0),

@@ -18,7 +18,9 @@ class NotificationsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final notificationService = Provider.of<PushNotificationService>(context);
-    final filteredNotifications = _filterNotifications(notificationService.notifications);
+    final filteredNotifications = _filterNotifications(
+      notificationService.notifications,
+    );
 
     if (filteredNotifications.isEmpty) {
       return _buildEmptyState();
@@ -36,7 +38,9 @@ class NotificationsList extends StatelessWidget {
             itemBuilder: (context, index) => _buildNotificationItem(
               context,
               filteredNotifications[index],
-              notificationService.notifications.indexOf(filteredNotifications[index]),
+              notificationService.notifications.indexOf(
+                filteredNotifications[index],
+              ),
               notificationService,
             ),
           ),
@@ -45,9 +49,11 @@ class NotificationsList extends StatelessWidget {
     );
   }
 
-  List<Map<String, dynamic>> _filterNotifications(List<Map<String, dynamic>> notifications) {
+  List<Map<String, dynamic>> _filterNotifications(
+    List<Map<String, dynamic>> notifications,
+  ) {
     if (filterType == 'All') return notifications;
-    
+
     return notifications.where((n) {
       if (filterType == 'Replies') return n['type'] == 'reply';
       if (filterType == 'Comments') return n['type'] == 'comment';
@@ -62,13 +68,15 @@ class NotificationsList extends StatelessWidget {
     PushNotificationService notificationService,
   ) {
     final notificationId = notification['id'] ?? '';
-    
+
     return NotificationItem(
       key: ValueKey(notificationId),
       id: notificationId,
       type: notification['type'] ?? 'notification',
       userName: notification['userName'] ?? 'System',
-      userAvatar: notification['userAvatar'] ?? 'assets/images/icons/prof_page/no_photo.png',
+      userAvatar:
+          notification['userAvatar'] ??
+          'assets/images/icons/prof_page/no_photo.png',
       message: notification['message'] ?? '',
       thumbnailImage: notification['thumbnailImage'],
       timestamp: notification['timestamp'] ?? DateTime.now(),
@@ -93,8 +101,10 @@ class NotificationsList extends StatelessWidget {
     Map<String, dynamic> notification,
     int index,
   ) async {
-    final notificationService =
-        Provider.of<PushNotificationService>(context, listen: false);
+    final notificationService = Provider.of<PushNotificationService>(
+      context,
+      listen: false,
+    );
     await notificationService.markAsRead(index);
 
     final notificationType = notification['type'];
@@ -140,7 +150,8 @@ class NotificationsList extends StatelessWidget {
         return {
           'title': 'Notifications',
           'subtitle': 'Your notifications and activity will appear here',
-          'iconPath': 'assets/images/icons/prof_page/notifications_button_black.png',
+          'iconPath':
+              'assets/images/icons/prof_page/notifications_button_black.png',
         };
     }
   }

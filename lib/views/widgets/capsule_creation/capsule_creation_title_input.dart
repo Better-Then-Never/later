@@ -10,8 +10,8 @@ class CapsuleCreationTitleInput extends StatelessWidget {
     return TextField(
       controller: controller,
       maxLength: maxTitleLength,
-      decoration: InputDecoration(
-        hintText: "Add Title... ",
+      decoration: const InputDecoration(
+        hintText: 'Add Title... ',
         counterText: '',
         hintStyle: TextStyle(
           fontSize: 25,

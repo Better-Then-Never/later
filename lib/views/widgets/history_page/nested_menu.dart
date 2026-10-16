@@ -35,7 +35,7 @@ class _NestedMenuState extends State<NestedMenu> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Color(0xFFEAEAEA),
+      color: const Color(0xFFEAEAEA),
       elevation: 8,
       borderRadius: BorderRadius.circular(20),
       child: Container(
@@ -59,7 +59,7 @@ class _NestedMenuState extends State<NestedMenu> {
 
             ..._currentItems.map(
               (item) => ListTile(
-                title: DefaultText(item.label, textAlign: TextAlign.left,),
+                title: DefaultText(item.label, textAlign: TextAlign.left),
                 trailing: item.hasChildren
                     ? const Icon(Icons.chevron_right)
                     : null,

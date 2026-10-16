@@ -30,18 +30,22 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              DefaultText(friendInfoMap[friendUid]?['name'] ?? 'Unknown', 
+              DefaultText(
+                friendInfoMap[friendUid]?['name'] ?? 'Unknown',
                 fontSize: 22,
                 color: const Color.fromARGB(255, 86, 201, 46),
                 fontWeight: FontWeight.bold,
                 padding: const EdgeInsets.symmetric(vertical: 4),
               ),
-              ProfilePageDivider(width: double.infinity, color: Colors.black45),
+              const ProfilePageDivider(
+                width: double.infinity,
+                color: Colors.black45,
+              ),
               PinnedFriendOptionTile(
                 onTap: onViewProfile,
                 text: 'View profile page',
               ),
-              ProfilePageDivider(width: double.infinity),
+              const ProfilePageDivider(width: double.infinity),
               PinnedFriendOptionTile(
                 onTap: onChoosePinned,
                 text: 'Choose pinned friends',

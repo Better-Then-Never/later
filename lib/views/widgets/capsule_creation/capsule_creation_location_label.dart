@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class CapsuleCreationLocationLabel extends StatelessWidget {
   final double height;
   final String iconPath;
-  final LatLng? location; 
+  final LatLng? location;
 
   const CapsuleCreationLocationLabel({
     super.key,
@@ -15,17 +15,20 @@ class CapsuleCreationLocationLabel extends StatelessWidget {
   });
 
   Future<Object> _getAddress(LatLng? loc) async {
-    if (loc == null) return "No location";
+    if (loc == null) return 'No location';
     try {
       final placemarks = await placemarkFromCoordinates(
         loc.latitude,
         loc.longitude,
       );
-      if (placemarks.isEmpty) return "Unknown location";
+      if (placemarks.isEmpty) return 'Unknown location';
       final p = placemarks.first;
-      return p.locality ?? p.subAdministrativeArea ?? p.administrativeArea ?? 'Unknown';
+      return p.locality ??
+          p.subAdministrativeArea ??
+          p.administrativeArea ??
+          'Unknown';
     } catch (e) {
-      return "Error getting location";
+      return 'Error getting location';
     }
   }
 
@@ -44,7 +47,7 @@ class CapsuleCreationLocationLabel extends StatelessWidget {
               child: FutureBuilder<Object>(
                 future: _getAddress(location),
                 builder: (context, snapshot) {
-                  final text = snapshot.data?.toString() ?? "Loading...";
+                  final text = snapshot.data?.toString() ?? 'Loading...';
                   return FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Padding(

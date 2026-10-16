@@ -113,14 +113,14 @@ class _ProfileBackgroundPictureState extends State<ProfileBackgroundPicture> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 37,
                     width: 264,
                     child: Center(
                       child: Text(
                         'Background picture',
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 86, 201, 46),
+                          color: Color.fromARGB(255, 86, 201, 46),
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Irina',
@@ -232,16 +232,16 @@ class _ProfileBackgroundPictureState extends State<ProfileBackgroundPicture> {
               : null,
         ),
         child: isUploading
-            ? Align(
+            ? const Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 60),
+                  padding: EdgeInsets.only(bottom: 60),
                   child: LaterLoadingBar(
                     width: 40,
                     height: 40,
-                    message: "Updating...",
+                    message: 'Updating...',
                     messageSpacing: 5,
-                    messageStyle: const TextStyle(
+                    messageStyle: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Inria',
                       fontWeight: FontWeight.normal,

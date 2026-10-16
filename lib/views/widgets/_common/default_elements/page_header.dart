@@ -38,9 +38,7 @@ class PageHeader extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.only(
-            top: screenHeight * 0.04,
-          ),
+          padding: EdgeInsets.only(top: screenHeight * 0.04),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -76,7 +74,7 @@ class PageHeader extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
                   child: DefaultText(
                     description!,
-                    color: Color.fromARGB(255, 94, 94, 94),
+                    color: const Color.fromARGB(255, 94, 94, 94),
                     fontWeight: FontWeight.bold,
                     fontSize: screenHeight * 0.017,
                   ),
@@ -93,7 +91,11 @@ class PageHeader extends StatelessWidget {
                 ),
 
               Padding(
-                padding: EdgeInsets.only(left: screenWidth * 0.04, right: screenWidth * 0.04, bottom: screenHeight * 0.01),
+                padding: EdgeInsets.only(
+                  left: screenWidth * 0.04,
+                  right: screenWidth * 0.04,
+                  bottom: screenHeight * 0.01,
+                ),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 150),
                   switchInCurve: Curves.easeOut,

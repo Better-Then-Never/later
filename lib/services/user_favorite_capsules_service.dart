@@ -21,7 +21,7 @@ class FavoriteCapsuleService extends ChangeNotifier {
   }
 
   Future<void> toggleFavorite(String capsuleId) async {
-    if (_uid == null) return null;
+    if (_uid == null) return;
 
     final ref = _firestore.collection('users').doc(_uid);
     final isFavorite = _favoriteIds.contains(capsuleId);

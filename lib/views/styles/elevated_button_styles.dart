@@ -8,7 +8,7 @@ class ElevatedButtonStyles {
   }) {
     return ElevatedButton.styleFrom(
       backgroundColor: color,
-      foregroundColor: foregroundColor ?? null,
+      foregroundColor: foregroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius),
       ),

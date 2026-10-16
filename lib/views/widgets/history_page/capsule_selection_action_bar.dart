@@ -8,6 +8,7 @@ class SelectionActionBar extends StatelessWidget {
   final VoidCallback onDelete;
 
   const SelectionActionBar({
+    super.key,
     required this.count,
     required this.onCancel,
     required this.onDelete,
@@ -15,17 +16,17 @@ class SelectionActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
+    final double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
         children: [
           SizedBox(height: screenHeight * 0.01),
-          ProfilePageDivider(width: double.infinity),
+          const ProfilePageDivider(width: double.infinity),
           Row(
             children: [
               DefaultText(
-                "$count selected",
+                '$count selected',
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -33,21 +34,21 @@ class SelectionActionBar extends StatelessWidget {
               TextButton.icon(
                 onPressed: onCancel,
                 icon: const Icon(Icons.close, color: Colors.black),
-                label: const DefaultText("Cancel"),
+                label: const DefaultText('Cancel'),
               ),
               const SizedBox(width: 8),
               TextButton.icon(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete, color: Colors.redAccent),
                 label: Text(
-                  "Delete ($count)",
+                  'Delete ($count)',
                   style: const TextStyle(color: Colors.redAccent),
                 ),
               ),
             ],
           ),
 
-          ProfilePageDivider(width: double.infinity),
+          const ProfilePageDivider(width: double.infinity),
         ],
       ),
     );

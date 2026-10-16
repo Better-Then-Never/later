@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class NotificationUnreadIndicator extends StatelessWidget {
   final bool isRead;
 
-  const NotificationUnreadIndicator({
-    super.key,
-    required this.isRead,
-  });
+  const NotificationUnreadIndicator({super.key, required this.isRead});
 
   @override
   Widget build(BuildContext context) {

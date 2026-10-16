@@ -27,10 +27,10 @@ class CapsulePreviewCard extends StatelessWidget {
     return Container(
       width: screenWidth,
       height: screenHeight * 0.45,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: const BorderRadius.all(Radius.circular(25)),
-        boxShadow: const [
+        borderRadius: BorderRadius.all(Radius.circular(25)),
+        boxShadow: [
           BoxShadow(
             color: Colors.black26,
             blurRadius: 10,

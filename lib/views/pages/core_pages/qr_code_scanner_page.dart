@@ -16,7 +16,7 @@ class QRScannerPage extends StatefulWidget {
         type: PageTransitionType.fade,
         duration: const Duration(milliseconds: 10),
         reverseDuration: const Duration(milliseconds: 10),
-        child: QRScannerPage(),
+        child: const QRScannerPage(),
       ),
     );
 
@@ -64,7 +64,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
           Navigator.pop(context, scannedData);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
+            const SnackBar(
               content: DefaultText(
                 'Invalid QR code. Please scan a Later profile QR code.',
                 color: Colors.white,
@@ -73,7 +73,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
             ),
           );
 
-          Future.delayed(Duration(seconds: 2), () {
+          Future.delayed(const Duration(seconds: 2), () {
             if (mounted) {
               setState(() {
                 _isScanning = true;
@@ -85,6 +85,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -100,12 +101,12 @@ class _QRScannerPageState extends State<QRScannerPage> {
           SafeArea(
             child: Container(
               height: 100,
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   GoBackButton(context: context, isBlack: false),
-                  SizedBox(width: 16),
-                  DefaultText(
+                  const SizedBox(width: 16),
+                  const DefaultText(
                     'Scan QR Code',
                     color: Colors.white,
                     fontSize: 24,
@@ -121,8 +122,8 @@ class _QRScannerPageState extends State<QRScannerPage> {
             left: 20,
             right: 20,
             child: Container(
-              padding: EdgeInsets.all(20),
-              child: DefaultText(
+              padding: const EdgeInsets.all(20),
+              child: const DefaultText(
                 'Point your camera at the QR code to add a friend',
                 color: Colors.white,
                 fontSize: 16,
@@ -140,7 +141,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                   _isTorchEnabled = !_isTorchEnabled;
                 });
               },
-              child: Container(
+              child: SizedBox(
                 width: 56,
                 height: 56,
                 child: Icon(
@@ -200,8 +201,8 @@ class QRScannerOverlayShape extends ShapeBorder {
 
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    Path path = Path()..addRect(rect);
-    Path cutOut = Path()
+    final Path path = Path()..addRect(rect);
+    final Path cutOut = Path()
       ..addRRect(
         RRect.fromRectAndCorners(
           Rect.fromCenter(

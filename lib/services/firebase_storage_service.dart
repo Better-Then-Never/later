@@ -66,7 +66,9 @@ class FirebaseStorageService {
 
     try {
       final ref = _storage.ref().child(path);
-      final url = await ref.getDownloadURL().timeout(Duration(seconds: 10));
+      final url = await ref.getDownloadURL().timeout(
+        const Duration(seconds: 10),
+      );
       CacheService.setCachedImageUrl(bgCacheKey, url);
       return url;
     } catch (e) {

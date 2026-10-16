@@ -49,19 +49,19 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
               friendsService: userFriendsService,
               userDataService: userDataService,
             ),
-            child: PinnedFriendsRow(),
+            child: const PinnedFriendsRow(),
           ),
         ),
-        
+
         Positioned(
           bottom: 0,
           left: 0,
           child: Container(
             width: screenWidth - 32,
             height: 45,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 255, 255, 255),
-              borderRadius: const BorderRadius.only(
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 255, 255, 255),
+              borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(25),
                 bottomRight: Radius.circular(25),
               ),
@@ -96,7 +96,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
                         type: PageTransitionType.fade,
                         duration: const Duration(milliseconds: 10),
                         reverseDuration: const Duration(milliseconds: 10),
-                        child: MyFriendsPage(),
+                        child: const MyFriendsPage(),
                       ),
                     );
                   },

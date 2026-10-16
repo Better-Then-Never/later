@@ -67,7 +67,7 @@ class UserFriendsService extends ChangeNotifier {
 
           final updatedFriends = Set<String>.from(data['friends'] ?? []);
 
-          if (!SetEquality().equals(_friends, updatedFriends)) {
+          if (!const SetEquality().equals(_friends, updatedFriends)) {
             _friends
               ..clear()
               ..addAll(updatedFriends);
@@ -195,15 +195,17 @@ class UserFriendsService extends ChangeNotifier {
         .collection('friend_requests')
         .doc(requestId1)
         .get();
-    if (doc1.exists)
+    if (doc1.exists) {
       batch.delete(_firestore.collection('friend_requests').doc(requestId1));
+    }
 
     final doc2 = await _firestore
         .collection('friend_requests')
         .doc(requestId2)
         .get();
-    if (doc2.exists)
+    if (doc2.exists) {
       batch.delete(_firestore.collection('friend_requests').doc(requestId2));
+    }
 
     await batch.commit();
 
@@ -243,7 +245,7 @@ class UserFriendsService extends ChangeNotifier {
     if (searchQuery.isNotEmpty) {
       query = query
           .where('username', isGreaterThanOrEqualTo: searchQuery)
-          .where('username', isLessThanOrEqualTo: searchQuery + '\uf8ff');
+          .where('username', isLessThanOrEqualTo: '$searchQuery\uf8ff');
     }
 
     return query.snapshots().map((snapshot) {
@@ -344,7 +346,8 @@ class UserFriendsService extends ChangeNotifier {
       final followerData = followerDoc.data()!;
       final followerName = followerData['username'] ?? 'Someone';
       final followerAvatar =
-          followerData['profilePicture'] ?? 'assets/images/icons/prof_page/no_photo.png';
+          followerData['profilePicture'] ??
+          'assets/images/icons/prof_page/no_photo.png';
 
       // Get target user's FCM token
       final targetDoc = await _firestore

@@ -20,7 +20,7 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text("Or connect with"),
+        const Text('Or connect with'),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -37,14 +37,14 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => WidgetTreeWrapper(),
+                              builder: (context) => const WidgetTreeWrapper(),
                             ),
-                            (route) => false, 
+                            (route) => false,
                           );
                         },
                       ),
                     ),
-                    (route) => false, 
+                    (route) => false,
                   );
                 }
               },

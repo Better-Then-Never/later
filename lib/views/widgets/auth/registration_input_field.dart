@@ -27,19 +27,19 @@ class _RegistrationInputFieldState extends State<RegistrationInputField> {
       child: TextField(
         controller: widget.controller,
         obscureText: widget.isTextHidden && isObscured,
-        style: TextStyle(fontSize: 20.0),
+        style: const TextStyle(fontSize: 20.0),
         decoration: InputDecoration(
           hintText: widget.textHint,
           suffixIcon: widget.isTextHidden
               ? IconButton(
                   icon: isObscured
                       ? Image.asset(
-                          "assets/images/icons/login_signup_pages/Shown.png",
+                          'assets/images/icons/login_signup_pages/Shown.png',
                           width: 25.0,
                           height: 25.0,
                         )
                       : Image.asset(
-                          "assets/images/icons/login_signup_pages/Hidden.png",
+                          'assets/images/icons/login_signup_pages/Hidden.png',
                           width: 25.0,
                           height: 25.0,
                         ),
@@ -52,7 +52,7 @@ class _RegistrationInputFieldState extends State<RegistrationInputField> {
               : null,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25.0),
-            borderSide: BorderSide(width: 1.5, color: Colors.black),
+            borderSide: const BorderSide(width: 1.5, color: Colors.black),
           ),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(25.0)),
         ),

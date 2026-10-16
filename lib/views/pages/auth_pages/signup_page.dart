@@ -35,32 +35,32 @@ class _SignupPageState extends State<SignupPage> {
                       Expanded(flex: 1, child: Container()),
                       Column(
                         children: [
-                          MainText(
+                          const MainText(
                             mainText: 'Sign Up Now',
                             additionalText:
                                 'Please fill the details to create your account',
                           ),
-                          SizedBox(height: 17.5),
+                          const SizedBox(height: 17.5),
                           Column(
                             children: [
                               RegistrationInputField(
                                 controller: nameController,
-                                textHint: "Name",
+                                textHint: 'Name',
                               ),
                               const SizedBox(height: 10.0),
                               RegistrationInputField(
                                 controller: usernameController,
-                                textHint: "Nickname",
+                                textHint: 'Nickname',
                               ),
                               const SizedBox(height: 10.0),
                               RegistrationInputField(
                                 controller: emailController,
-                                textHint: "Email",
+                                textHint: 'Email',
                               ),
                               const SizedBox(height: 10.0),
                               RegistrationInputField(
                                 controller: passwordController,
-                                textHint: "Password",
+                                textHint: 'Password',
                                 isTextHidden: true,
                               ),
                             ],
@@ -78,7 +78,7 @@ class _SignupPageState extends State<SignupPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text(
-                                "Do you have an account?",
+                                'Do you have an account?',
                                 style: TextStyle(fontSize: 16.0),
                               ),
                               TextButton(
@@ -101,12 +101,12 @@ class _SignupPageState extends State<SignupPage> {
                                       reverseDuration: const Duration(
                                         milliseconds: 10,
                                       ),
-                                      child: LoginPage(),
+                                      child: const LoginPage(),
                                     ),
                                   );
                                 },
                                 child: const Text(
-                                  "Log In",
+                                  'Log In',
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class _SignupPageState extends State<SignupPage> {
                             ],
                           ),
                           const SizedBox(height: 20),
-                          LoginWithSocial(),
+                          const LoginWithSocial(),
                         ],
                       ),
                       Expanded(flex: 1, child: Container()),

@@ -10,13 +10,13 @@ class CapsuleCreationDescriptionInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int maxDescriptionLength = 2200;
+    const int maxDescriptionLength = 2200;
     return Expanded(
       child: TextField(
         controller: controller,
         maxLength: maxDescriptionLength,
         decoration: const InputDecoration(
-          hintText: "Add description...",
+          hintText: 'Add description...',
           counterText: '',
           hintStyle: TextStyle(
             fontFamily: 'Irina',

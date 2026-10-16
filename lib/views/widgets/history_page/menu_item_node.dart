@@ -5,11 +5,7 @@ class MenuItemNode {
   final VoidCallback? onTap;
   final List<MenuItemNode>? children;
 
-  const MenuItemNode({
-    required this.label,
-    this.onTap,
-    this.children,
-  });
+  const MenuItemNode({required this.label, this.onTap, this.children});
 
   bool get hasChildren => children != null && children!.isNotEmpty;
 }

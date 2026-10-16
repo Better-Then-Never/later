@@ -35,36 +35,37 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
 
   final List<AppPermission> _permissionsList = [
     AppPermission(
-      name: "Share Camera access with Later",
-      description: "And you will be able to create time capsules!",
+      name: 'Share Camera access with Later',
+      description: 'And you will be able to create time capsules!',
       permission: Permission.camera,
-      iconAsset: "assets/images/icons/camera/Camerafull.png",
+      iconAsset: 'assets/images/icons/camera/Camerafull.png',
     ),
     AppPermission(
-      name: "Provide Later with microphone access",
+      name: 'Provide Later with microphone access',
       description: "Camera won't work without it",
       permission: Permission.microphone,
-      iconAsset: "assets/images/icons/capsule_creation/microphone_icon.png",
+      iconAsset: 'assets/images/icons/capsule_creation/microphone_icon.png',
     ),
     AppPermission(
-      name: "Share geolocation with us",
-      description: "And you will be able to find capsules nearby you!",
+      name: 'Share geolocation with us',
+      description: 'And you will be able to find capsules nearby you!',
       permission: Platform.isIOS
           ? Permission.locationWhenInUse
           : Permission.location,
-      iconAsset: "assets/images/icons/capsule_creation/location_icon.png",
+      iconAsset: 'assets/images/icons/capsule_creation/location_icon.png',
     ),
     AppPermission(
-      name: "Enable notifications",
-      description: "Stay updated with new followers and capsules!",
+      name: 'Enable notifications',
+      description: 'Stay updated with new followers and capsules!',
       permission: Permission.notification,
-      iconAsset: "assets/images/icons/prof_page/notifications_button_black_full.png",
+      iconAsset:
+          'assets/images/icons/prof_page/notifications_button_black_full.png',
     ),
     AppPermission(
-      name: "Access contacts",
-      description: "Find and invite friends from your contacts!",
+      name: 'Access contacts',
+      description: 'Find and invite friends from your contacts!',
       permission: Permission.contacts,
-      iconAsset: "assets/images/icons/friends_page/friend_book.png",
+      iconAsset: 'assets/images/icons/friends_page/friend_book.png',
     ),
   ];
 
@@ -137,8 +138,8 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
   @override
   Widget build(BuildContext context) {
     if (!_loaded) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF6F6F6),
+      return const Scaffold(
+        backgroundColor: Color(0xFFF6F6F6),
         body: Center(child: LaterLoadingBar(width: 150, height: 150)),
       );
     }
@@ -217,7 +218,7 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
                                   ),
                                 ),
                                 child: Text(
-                                  granted ? "Granted" : "Enable",
+                                  granted ? 'Granted' : 'Enable',
                                   style: const TextStyle(
                                     fontFamily: 'Irina',
                                     fontWeight: FontWeight.bold,

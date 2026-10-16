@@ -81,7 +81,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             ),
           ),
 
-          AddFriendsActionButtonsRow(),
+          const AddFriendsActionButtonsRow(),
 
           Align(
             alignment: Alignment.centerLeft,

@@ -8,10 +8,10 @@ class ShareProfileQR extends StatelessWidget {
   final double screenWidth;
 
   const ShareProfileQR({
-    Key? key,
+    super.key,
     required this.profileLink,
     required this.screenWidth,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,8 @@ class ShareProfileQR extends StatelessWidget {
             dataModuleShape: QrDataModuleShape.square,
             color: Colors.black,
           ),
-          errorStateBuilder: (context, error) => Center(
-            child: DefaultText("Something went wrong...", color: Colors.red),
+          errorStateBuilder: (context, error) => const Center(
+            child: DefaultText('Something went wrong...', color: Colors.red),
           ),
         ),
       ),

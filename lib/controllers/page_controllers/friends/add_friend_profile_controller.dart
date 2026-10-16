@@ -21,8 +21,8 @@ class AddFriendProfileController extends ChangeNotifier {
     required UserFriendsService requestService,
     required UserDataService userService,
     this.onNavigateToFriendProfile,
-  })  : _requestService = requestService,
-        _userService = userService {
+  }) : _requestService = requestService,
+       _userService = userService {
     _updateButtonState();
 
     _serviceListener = () {
@@ -117,8 +117,12 @@ class AddFriendProfileController extends ChangeNotifier {
 
     try {
       final currentUserUid = _userService.currentLoggedInUid;
-      final requestId = '$userId\_$currentUserUid';
-      await _requestService.acceptFriendRequest(requestId, userId, currentUserUid);
+      final requestId = '${userId}_$currentUserUid';
+      await _requestService.acceptFriendRequest(
+        requestId,
+        userId,
+        currentUserUid,
+      );
 
       buttonState = 'friends';
       PopupNotificationService.showSuccess(
@@ -144,7 +148,7 @@ class AddFriendProfileController extends ChangeNotifier {
 
     try {
       final currentUserUid = _userService.currentLoggedInUid;
-      final requestId = '$userId\_$currentUserUid';
+      final requestId = '${userId}_$currentUserUid';
       await _requestService.rejectFriendRequest(requestId, userId);
 
       buttonState = 'add';

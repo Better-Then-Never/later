@@ -14,7 +14,7 @@ class PinnedFriendsRow extends StatelessWidget {
     final size = screenWidth / 3.8;
 
     if (controller.isLoading) {
-      return SizedBox(height: 80, child: Center());
+      return const SizedBox(height: 80, child: Center());
     }
 
     if (controller.allFriends.isEmpty) {
@@ -33,7 +33,7 @@ class PinnedFriendsRow extends StatelessWidget {
       future: controller.getDisplayFriends(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center();
+          return const Center();
         }
 
         final friendsData = snapshot.data!;

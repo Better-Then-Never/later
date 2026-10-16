@@ -31,7 +31,7 @@ class SuggestedFriendPlaceholderRow extends StatelessWidget {
                 height: screenWidth * 0.04,
                 color: Colors.grey[300],
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Container(
                 width: screenWidth * 0.2,
                 height: screenWidth * 0.03,

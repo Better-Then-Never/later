@@ -8,11 +8,11 @@ class AssetImageService {
   final Map<String, String?> _imageUrlCache = {};
 
   String _profileImagePath(String uid) =>
-      "userdata/$uid/assets/images/profile_image";
+      'userdata/$uid/assets/images/profile_image';
   String _profileImageSmallPath(String uid) =>
-      "userdata/$uid/assets/images/profile_image_small";
+      'userdata/$uid/assets/images/profile_image_small';
   String _backgroundImagePath(String uid) =>
-      "userdata/$uid/assets/images/background_image";
+      'userdata/$uid/assets/images/background_image';
 
   Future<Uint8List?> getProfileImage(String uid) async {
     final prefs = await SharedPreferences.getInstance();

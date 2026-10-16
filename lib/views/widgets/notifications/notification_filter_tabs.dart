@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 
 class NotificationFilterTabs extends StatelessWidget {
   final TabController controller;
-  
-  const NotificationFilterTabs({
-    super.key,
-    required this.controller,
-  });
+
+  const NotificationFilterTabs({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     final List<String> filters = ['All', 'Replies', 'Comments'];
-    
+
     return Center(
       child: IntrinsicWidth(
         child: TabBar(
@@ -35,11 +32,17 @@ class NotificationFilterTabs extends StatelessWidget {
           ),
           labelPadding: const EdgeInsets.symmetric(horizontal: 8),
           padding: EdgeInsets.zero,
-          indicatorPadding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+          indicatorPadding: const EdgeInsets.symmetric(
+            horizontal: 5,
+            vertical: 8,
+          ),
           tabs: filters.map((filter) {
             return Tab(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Text(filter),
               ),
             );

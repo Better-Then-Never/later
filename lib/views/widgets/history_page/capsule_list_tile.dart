@@ -34,7 +34,7 @@ class CapsuleListTile extends StatefulWidget {
 
 class _CapsuleListTileState extends State<CapsuleListTile> {
   late DateTime? openAt;
-  final String openedLabel = "Capsule is opened!";
+  final String openedLabel = 'Capsule is opened!';
 
   late LatLng? location;
   Timer? _timer;
@@ -59,10 +59,11 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
 
     if (location != null) {
       _getAddress(location).then((addr) {
-        if (mounted)
+        if (mounted) {
           setState(() {
             address = addr;
           });
+        }
       });
     }
   }
@@ -75,8 +76,8 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     final String title = widget.capsule['title'] ?? 'Untitled';
     final String color = widget.capsule['color'] ?? 'blue';
@@ -90,7 +91,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(14),
-        margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         decoration: BoxDecorations.whiteCard().copyWith(
           color: widget.isSelected
               ? const Color.fromARGB(255, 103, 207, 255).withAlpha(100)
@@ -108,10 +109,10 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                       height: screenHeight * 0.15,
                       fit: BoxFit.cover,
                     )
-                  : Container(
+                  : const SizedBox(
                       width: 0.2,
                       height: 0.15,
-                      child: const Icon(Icons.lock_clock, color: Colors.white),
+                      child: Icon(Icons.lock_clock, color: Colors.white),
                     ),
             ),
 
@@ -151,7 +152,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                     ],
                   ),
                   SizedBox(height: screenHeight * 0.004),
-                  ProfilePageDivider(width: double.infinity),
+                  const ProfilePageDivider(width: double.infinity),
                   SizedBox(height: screenHeight * 0.016),
 
                   Row(
@@ -182,7 +183,9 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                DefaultText('${toCapitalCase(privacy)} visibility'),
+                                DefaultText(
+                                  '${toCapitalCase(privacy)} visibility',
+                                ),
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.008),
@@ -193,7 +196,9 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
-                                DefaultText('${distanceInKm(location!)} km from you'),
+                                DefaultText(
+                                  '${distanceInKm(location!)} km from you',
+                                ),
                               ],
                             ),
                           ],
@@ -249,7 +254,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                                     vertical: screenHeight * 0.003,
                                   ),
                                   child: Text(
-                                    "${createdAt.day}.${createdAt.month}.${createdAt.year}",
+                                    '${createdAt.day}.${createdAt.month}.${createdAt.year}',
                                     style: TextStyle(
                                       fontSize: screenWidth * 0.04,
                                       fontFamily: 'Irina',
@@ -276,7 +281,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
   String formatCountdown(DateTime openAt) {
     final now = DateTime.now();
 
-    Duration diff = openAt.difference(now);
+    final Duration diff = openAt.difference(now);
 
     if (diff.inSeconds <= 0) return openedLabel;
 
@@ -287,9 +292,9 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
     final seconds = diff.inSeconds % 60;
 
     if (years > 0) {
-      return "${years}y ${days}d ${hours}h ${minutes}m";
+      return '${years}y ${days}d ${hours}h ${minutes}m';
     } else {
-      return "${days}d ${hours}h ${minutes}m ${seconds}s";
+      return '${days}d ${hours}h ${minutes}m ${seconds}s';
     }
   }
 
@@ -299,20 +304,20 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
   }
 
   Future<String> _getAddress(LatLng? loc) async {
-    if (loc == null) return "";
+    if (loc == null) return '';
     try {
       final placemarks = await placemarkFromCoordinates(
         loc.latitude,
         loc.longitude,
       );
-      if (placemarks.isEmpty) return "";
+      if (placemarks.isEmpty) return '';
       final p = placemarks.first;
       return p.locality ??
           p.subAdministrativeArea ??
           p.administrativeArea ??
           'Unknown';
     } catch (e) {
-      return "";
+      return '';
     }
   }
 
@@ -326,7 +331,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
       capsuleLocation.longitude,
     );
 
-    double distanceKm = distanceMeters / 1000;
+    final double distanceKm = distanceMeters / 1000;
     return double.parse(distanceKm.toStringAsFixed(1));
   }
 }

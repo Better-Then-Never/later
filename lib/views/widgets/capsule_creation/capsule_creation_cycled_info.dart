@@ -7,10 +7,10 @@ class CapsuleCreationCycledInfo extends StatelessWidget {
   final String? trailingLeadingIconPath;
 
   const CapsuleCreationCycledInfo({
-    Key? key,
+    super.key,
     required this.infoText,
     this.trailingLeadingIconPath,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

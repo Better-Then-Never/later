@@ -65,7 +65,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: screenWidth * 0.02,),
+              SizedBox(width: screenWidth * 0.02),
               FriendRequestsActionButton(
                 onTap: onAccept,
                 color: const Color.fromARGB(255, 86, 201, 46),

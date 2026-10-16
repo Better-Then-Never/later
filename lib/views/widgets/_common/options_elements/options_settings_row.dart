@@ -18,7 +18,7 @@ class OptionsSettingsRow extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.isLast = false,
-    this.onTap = null,
+    this.onTap,
     this.navigateTo,
     this.trailing,
     this.leadingIconPath,
@@ -40,16 +40,18 @@ class OptionsSettingsRow extends StatelessWidget {
           child: ListTile(
             dense: true,
             minVerticalPadding: minVerticalPadding,
-            visualDensity: VisualDensity(vertical: -3),
+            visualDensity: const VisualDensity(vertical: -3),
 
             title: DefaultText(
               title,
               textAlign: TextAlign.start,
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
-              color: isLast ? Color.fromARGB(255, 253, 65, 64) : Colors.black,
+              color: isLast
+                  ? const Color.fromARGB(255, 253, 65, 64)
+                  : Colors.black,
             ),
-            subtitle: subtitle ?? null,
+            subtitle: subtitle,
             leading: leadingIconPath != null
                 ? Image.asset(
                     leadingIconPath!,
@@ -59,16 +61,15 @@ class OptionsSettingsRow extends StatelessWidget {
                 : null,
             trailing: isLast
                 ? null
-                : trailing == null
-                ? (Opacity(
-                    opacity: 0.3,
-                    child: Image.asset(
-                      'assets/images/icons/prof_page/go_here.png',
-                      width: screenWidth * 0.09,
-                      height: screenWidth * 0.09,
-                    ),
-                  ))
-                : trailing,
+                : trailing ??
+                      (Opacity(
+                        opacity: 0.3,
+                        child: Image.asset(
+                          'assets/images/icons/prof_page/go_here.png',
+                          width: screenWidth * 0.09,
+                          height: screenWidth * 0.09,
+                        ),
+                      )),
             contentPadding: EdgeInsets.only(
               left: screenWidth * 0.05,
               right: screenWidth * 0.03,

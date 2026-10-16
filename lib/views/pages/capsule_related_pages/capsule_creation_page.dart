@@ -57,7 +57,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
       uid: _userDataService.currentLoggedInUid,
       imagePath: widget.imagePath,
       initialLocation: _pickedLocation,
-      initialPrivacy: initialPrivacy ?? null,
+      initialPrivacy: initialPrivacy,
     );
   }
 
@@ -148,14 +148,14 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
                       DefaultText(
                         'Capsule Settings',
                         fontSize: screenWidth * 0.05,
                         fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Container(
                         width: screenWidth,
                         decoration: BoxDecorations.whiteCard(),
@@ -183,7 +183,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                                     ? DateFormat(
                                         'yyyy-MM-dd',
                                       ).format(_controller.openAt!.toDate())
-                                    : "Select date",
+                                    : 'Select date',
                               ),
                               leadingIconPath:
                                   'assets/images/icons/capsule_creation/timer_icon.png',

@@ -51,7 +51,7 @@ class SettingsPage extends StatelessWidget {
                 Row(
                   children: [
                     DefaultText(
-                      "MY ACCOUNT",
+                      'MY ACCOUNT',
                       padding: EdgeInsets.only(
                         left: screenWidth * 0.09,
                         bottom: screenHeight * 0.01,
@@ -74,16 +74,16 @@ class SettingsPage extends StatelessWidget {
                               userProfileService.name,
                               textAlign: TextAlign.left,
                             ),
-                            navigateTo: NameSettingsPage(),
+                            navigateTo: const NameSettingsPage(),
                           ),
 
                           OptionsSettingsRow(
                             title: 'Username',
                             subtitle: DefaultText(
-                              '@' + userProfileService.username,
+                              '@${userProfileService.username}',
                               textAlign: TextAlign.left,
                             ),
-                            navigateTo: UsernameSettingsPage(),
+                            navigateTo: const UsernameSettingsPage(),
                           ),
 
                           OptionsSettingsRow(
@@ -92,30 +92,30 @@ class SettingsPage extends StatelessWidget {
                               userProfileService.email,
                               textAlign: TextAlign.left,
                             ),
-                            navigateTo: EmailSettingsPage(),
+                            navigateTo: const EmailSettingsPage(),
                           ),
 
-                          OptionsSettingsRow(
+                          const OptionsSettingsRow(
                             title: 'Password',
                             navigateTo: PasswordSettingsPage(),
                           ),
 
-                          OptionsSettingsRow(
+                          const OptionsSettingsRow(
                             title: 'Language',
                             navigateTo: LanguageSettingsPage(),
                           ),
 
-                          OptionsSettingsRow(
+                          const OptionsSettingsRow(
                             title: 'App appearance',
                             navigateTo: AppThemeSettingsPage(),
                           ),
 
-                          OptionsSettingsRow(
+                          const OptionsSettingsRow(
                             title: 'Customize profile',
                             navigateTo: ProfileCustomizationSettingsPage(),
                           ),
 
-                          OptionsSettingsRow(
+                          const OptionsSettingsRow(
                             title: 'App permissions',
                             navigateTo: PermissionsSettingsPage(),
                           ),
@@ -136,7 +136,7 @@ class SettingsPage extends StatelessWidget {
                                   favoriteCapsuleService.onLogout();
 
                                   if (!context.mounted) return;
-                                  
+
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     PageTransition(
@@ -147,7 +147,7 @@ class SettingsPage extends StatelessWidget {
                                       reverseDuration: const Duration(
                                         milliseconds: 10,
                                       ),
-                                      child: LoginPage(),
+                                      child: const LoginPage(),
                                     ),
                                     (route) => false,
                                   );

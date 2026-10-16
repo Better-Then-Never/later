@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
     return Scaffold(
-      backgroundColor: Color(0xFFF6F6F6),
+      backgroundColor: const Color(0xFFF6F6F6),
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -27,25 +27,25 @@ class LoginPage extends StatelessWidget {
                       Expanded(flex: 1, child: Container()),
                       Column(
                         children: [
-                          MainText(
+                          const MainText(
                             mainText: 'Log In Now',
                             additionalText:
                                 'Please log in to continue using our app',
                           ),
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           Column(
                             children: [
                               RegistrationInputField(
-                                textHint: "Email",
+                                textHint: 'Email',
                                 controller: emailController,
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               RegistrationInputField(
-                                textHint: "Password",
+                                textHint: 'Password',
                                 isTextHidden: true,
                                 controller: passwordController,
                               ),
-                              SizedBox(height: 2),
+                              const SizedBox(height: 2),
                               Container(
                                 width: 325,
                                 alignment: Alignment.centerRight,
@@ -84,8 +84,8 @@ class LoginPage extends StatelessWidget {
                                       },
                                     );
                                   },
-                                  child: Text(
-                                    "Forgot password?",
+                                  child: const Text(
+                                    'Forgot password?',
                                     style: TextStyle(
                                       color: Color(0xFF56C92E),
                                       fontSize: 16.0,
@@ -95,7 +95,7 @@ class LoginPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 25),
+                          const SizedBox(height: 25),
                           SubmitButton(
                             buttonText: 'Log In',
                             email: emailController,
@@ -105,13 +105,13 @@ class LoginPage extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 "Don't have an account?",
                                 style: TextStyle(fontSize: 16.0),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
-                                  padding: EdgeInsets.all(5),
+                                  padding: const EdgeInsets.all(5),
                                   splashFactory: NoSplash.splashFactory,
                                   minimumSize: Size.zero,
                                   tapTargetSize:
@@ -124,8 +124,8 @@ class LoginPage extends StatelessWidget {
                                     '/signupPage',
                                   );
                                 },
-                                child: Text(
-                                  "Sign Up",
+                                child: const Text(
+                                  'Sign Up',
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -135,8 +135,8 @@ class LoginPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          SizedBox(height: 40.0),
-                          LoginWithSocial(),
+                          const SizedBox(height: 40.0),
+                          const LoginWithSocial(),
                         ],
                       ),
                       Expanded(flex: 1, child: Container()),

@@ -8,7 +8,7 @@ class LogOutButton extends StatefulWidget {
   final VoidCallback? onSignedOut;
   const LogOutButton({
     super.key,
-    this.buttonText = "Sign Out",
+    this.buttonText = 'Sign Out',
     this.onSignedOut,
   });
 
@@ -63,7 +63,7 @@ class _LogOutButtonState extends State<LogOutButton> {
           ),
         ),
         child: _isLoading
-            ? CircularProgressIndicator(color: Colors.white)
+            ? const CircularProgressIndicator(color: Colors.white)
             : Text(widget.buttonText, style: const TextStyle(/* ... */)),
       ),
     );

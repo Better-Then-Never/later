@@ -34,10 +34,7 @@ class ConfirmDialog extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(25),
             ),
-            padding: const EdgeInsets.symmetric(
-              vertical: 16,
-              horizontal: 0,
-            ),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -59,7 +56,8 @@ class ConfirmDialog extends StatelessWidget {
                   height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: confirmButtonColor ?? 
+                      backgroundColor:
+                          confirmButtonColor ??
                           const Color.fromARGB(255, 253, 65, 64),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),

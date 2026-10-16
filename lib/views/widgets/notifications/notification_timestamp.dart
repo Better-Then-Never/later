@@ -4,10 +4,7 @@ import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 class NotificationTimestamp extends StatelessWidget {
   final DateTime timestamp;
 
-  const NotificationTimestamp({
-    super.key,
-    required this.timestamp,
-  });
+  const NotificationTimestamp({super.key, required this.timestamp});
 
   @override
   Widget build(BuildContext context) {

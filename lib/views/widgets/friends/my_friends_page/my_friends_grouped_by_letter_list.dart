@@ -53,7 +53,9 @@ class MyFriendsGroupedByLetterList extends StatelessWidget {
                               type: PageTransitionType.fade,
                               duration: const Duration(milliseconds: 10),
                               reverseDuration: const Duration(milliseconds: 10),
-                              child: YourFriendProfilePage(friendUid: friend['uid']!),
+                              child: YourFriendProfilePage(
+                                friendUid: friend['uid']!,
+                              ),
                             ),
                           );
                         },

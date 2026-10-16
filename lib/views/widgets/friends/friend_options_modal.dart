@@ -44,7 +44,7 @@ class FriendOptionsModal extends StatelessWidget {
             },
             isFirst: true,
           ),
-          _ModalDivider(),
+          const _ModalDivider(),
           _ModalOption(
             text: 'Chat settings',
             onPressed: () {
@@ -52,7 +52,7 @@ class FriendOptionsModal extends StatelessWidget {
               // TODO: Handle chat settings action
             },
           ),
-          _ModalDivider(),
+          const _ModalDivider(),
           _ModalOption(
             text: 'Capsules settings',
             onPressed: () {
@@ -60,7 +60,7 @@ class FriendOptionsModal extends StatelessWidget {
               // TODO: Handle capsules settings action
             },
           ),
-          _ModalDivider(),
+          const _ModalDivider(),
           _ModalOption(
             text: 'Share profile to ...',
             onPressed: () {
@@ -120,7 +120,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
     try {
       final userService = Provider.of<UserDataService>(context, listen: false);
       final currentUserUid = userService.currentLoggedInUid;
-      
+
       final isFollowing = await _friendsService.isFollowing(
         currentUserUid,
         widget.friendUid,
@@ -164,7 +164,8 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
         if (mounted) {
           PopupNotificationService.showSuccess(
             context: context,
-            message: 'Following! You\'ll get notifications about their capsules',
+            message:
+                'Following! You\'ll get notifications about their capsules',
             position: NotificationPosition.bottom,
           );
         }
@@ -197,14 +198,14 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _ModalHeader(text: 'Manage friendship'),
-          _ModalDivider(color: Colors.black, thickness: 1),
+          const _ModalHeader(text: 'Manage friendship'),
+          const _ModalDivider(color: Colors.black, thickness: 1),
           _FollowButton(
             isFollowing: _isFollowing,
             isLoading: _isLoading,
             onPressed: _isLoading ? null : _toggleFollow,
           ),
-          _ModalDivider(),
+          const _ModalDivider(),
           _ModalOption(
             text: 'Report',
             onPressed: () {
@@ -213,7 +214,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
             },
             textColor: const Color.fromARGB(255, 253, 65, 64),
           ),
-          _ModalDivider(),
+          const _ModalDivider(),
           _ModalOption(
             text: 'Block',
             onPressed: () {
@@ -222,7 +223,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
             },
             textColor: const Color.fromARGB(255, 253, 65, 64),
           ),
-          _ModalDivider(),
+          const _ModalDivider(),
           _ModalOption(
             text: 'Remove from friends',
             onPressed: () {
@@ -482,17 +483,13 @@ class _FollowButton extends StatelessWidget {
         onPressed: onPressed,
         style: TextButton.styleFrom(
           foregroundColor: Colors.black,
-          backgroundColor: isFollowing 
-              ? Colors.grey[300] 
-              : Colors.transparent,
+          backgroundColor: isFollowing ? Colors.grey[300] : Colors.transparent,
           textStyle: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,
             fontFamily: 'Irina',
           ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           splashFactory: NoSplash.splashFactory,
           overlayColor: Colors.transparent,
         ),
@@ -510,7 +507,9 @@ class _FollowButton extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      isFollowing ? Icons.notifications_active : Icons.notifications_outlined,
+                      isFollowing
+                          ? Icons.notifications_active
+                          : Icons.notifications_outlined,
                       size: 20,
                       color: Colors.black,
                     ),

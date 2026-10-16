@@ -54,7 +54,9 @@ class _NotificationsPageState extends State<NotificationsPage>
             PageHeader(
               mainText: 'Notifications',
               leadingButton: GoBackButton(context: context),
-              actionButtonsRow: NotificationFilterTabs(controller: _tabController),
+              actionButtonsRow: NotificationFilterTabs(
+                controller: _tabController,
+              ),
             ),
             const SizedBox(height: 8),
             AnimatedBuilder(
@@ -81,10 +83,7 @@ class _NotificationsPageState extends State<NotificationsPage>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  NotificationsList(
-                    filterType: 'All',
-                    controller: _controller,
-                  ),
+                  NotificationsList(filterType: 'All', controller: _controller),
                   NotificationsList(
                     filterType: 'Replies',
                     controller: _controller,
@@ -107,8 +106,9 @@ class _NotificationsPageState extends State<NotificationsPage>
     final selectedIds = _controller.selectedIds.toList();
 
     for (final id in selectedIds) {
-      final index = notificationService.notifications
-          .indexWhere((n) => n['id'] == id);
+      final index = notificationService.notifications.indexWhere(
+        (n) => n['id'] == id,
+      );
       if (index != -1) {
         await notificationService.markAsRead(index);
       }
@@ -142,8 +142,9 @@ class _NotificationsPageState extends State<NotificationsPage>
     final selectedIds = _controller.selectedIds.toList();
 
     for (final id in selectedIds) {
-      final index = notificationService.notifications
-          .indexWhere((n) => n['id'] == id);
+      final index = notificationService.notifications.indexWhere(
+        (n) => n['id'] == id,
+      );
       if (index != -1) {
         await notificationService.deleteNotification(index);
       }
