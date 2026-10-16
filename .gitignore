@@ -128,3 +128,7 @@ linux/flutter/generated_plugins.cmake
 windows/flutter/generated_plugin_registrant.cc
 windows/flutter/generated_plugins.cmake
 pubspec.lock
+# Firebase config (keep local, do not commit)
+google-services.json
+**/google-services.json
+lib/firebase_options.dart
