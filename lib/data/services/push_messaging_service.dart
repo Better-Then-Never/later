@@ -9,12 +9,6 @@ import '../../core/logging/app_logger.dart';
 import '../models/app_notification.dart';
 import '../../core/theme/app_colors.dart';
 
-/// Must be top-level and annotated so it survives tree shaking; registered in
-/// bootstrap before runApp. The OS shows `notification` payloads itself while
-/// the app is in the background, so nothing else is needed here.
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
-
 /// What a tapped notification points to.
 class NotificationTap {
   const NotificationTap({required this.type, this.userId, this.capsuleId});

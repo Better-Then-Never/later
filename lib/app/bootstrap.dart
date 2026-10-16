@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/services.dart';
 
 import '../core/logging/app_logger.dart';
 import '../firebase_options.dart';
-import '../data/services/push_messaging_service.dart';
 import 'app_scope.dart';
 import 'later_app.dart';
 
@@ -50,8 +48,12 @@ Future<void> bootstrap() async {
     );
   }
 
-  // Must be registered before runApp and must be a top-level function.
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // No FirebaseMessaging.onBackgroundMessage handler on purpose: every push
+  // carries a `notification` payload, which the OS displays by itself while
+  // the app is in the background or terminated, and taps arrive through
+  // getInitialMessage/onMessageOpenedApp. Registering a handler starts a
+  // second Flutter engine on Android's main thread at every launch; with an
+  // empty handler that cost bought nothing and froze startup (POL-001).
 
   runApp(const AppScope(child: LaterApp()));
 }
