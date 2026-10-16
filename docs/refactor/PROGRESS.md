@@ -25,6 +25,7 @@
 - Emulator note: the AVD has hw.ramSize=2048; under load Android itself stalled (one ANR from input dispatch, a system_server restart). A guest reboot fixed it; more RAM for the AVD would help.
 - **Step 14 (gates + report)** done: format clean, analyze 0, 94 tests (+31 rules, 10 functions, 4 migration), debug + release APK, 56 after screenshots + COMPARISON.md, SECURITY_FINDINGS/BLOCKERS re-verified, REPORT.md. Found and fixed BUG-114 (avatar misses across sessions) and the dead "Share profile to..." option while doing so.
 - Status: refactor complete. Remaining items are owner actions (BLOCKERS.md, REPORT.md section 3).
+- **2026-10-16, with the owner:** app id changed to com.btn.later + new Firebase apps (API key `…VmcUBE` restrictions fixed by the owner; push token verified on the emulator). Deployed to later-da778: Firestore indexes (step 1) and Cloud Functions (step 2) after creating the `later-functions` service account (the default compute account had been deleted; live functions were failing until then). Not yet done: app release, migration, rules, Maps key, SHA-1s, iOS.
 
 ## Final-report checklist (done)
 - [x] SECURITY_FINDINGS.md and BLOCKERS.md present-tense claims checked against code/emulator (7be2900).
