@@ -121,6 +121,46 @@ service cloud.firestore {
             || (removed == [me()] && added.size() == 0));
       }
 
+      // users/{uid}/settings/app: the user's own settings. The Cloud
+      // Functions (admin) read them before sending a push.
+      match /settings/{doc} {
+        allow read: if isMe(uid);
+        allow create, update: if isMe(uid) && doc == 'app'
+          && validSettings(request.resource.data);
+        allow delete: if false;
+
+        function isBool(m, key) {
+          return m.get(key, true) is bool;
+        }
+
+        function isMinute(m, key) {
+          return m.get(key, 0) is int && m.get(key, 0) >= 0
+            && m.get(key, 0) < 1440;
+        }
+
+        function validNotifications(n) {
+          let q = n.get('quietHours', {});
+          return n is map
+            && n.keys().hasOnly(['enabled', 'messages', 'follows', 'capsules',
+              'preview', 'sound', 'quietHours', 'utcOffsetMinutes'])
+            && isBool(n, 'enabled') && isBool(n, 'messages')
+            && isBool(n, 'follows') && isBool(n, 'capsules')
+            && isBool(n, 'preview') && isBool(n, 'sound')
+            && q is map && q.keys().hasOnly(['enabled', 'start', 'end'])
+            && isBool(q, 'enabled') && isMinute(q, 'start') && isMinute(q, 'end')
+            && n.get('utcOffsetMinutes', 0) is int
+            && n.get('utcOffsetMinutes', 0) >= -840
+            && n.get('utcOffsetMinutes', 0) <= 840;
+        }
+
+        function validSettings(d) {
+          return d.keys().hasOnly(['notifications', 'mutedChats'])
+            && validNotifications(d.get('notifications', {}))
+            && d.get('mutedChats', []) is list
+            && d.get('mutedChats', []).size() <= 500;
+        }
+      }
+
       // users/{uid}/blocked/{other}: uid blocked other. Only the two of them
       // may see it (the blocked user's app hides the message box).
       match /blocked/{other} {

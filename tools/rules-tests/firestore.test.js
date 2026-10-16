@@ -639,3 +639,41 @@ describe('chats', () => {
     await assertFails(send(alice, 'alice', 'bob', { ...msg, capsuleId: 'missing' }));
   });
 });
+
+describe('settings', () => {
+  const settingsRef = (db, uid = 'alice') => doc(db, `users/${uid}/settings/app`);
+  const valid = {
+    notifications: {
+      enabled: true,
+      messages: false,
+      follows: true,
+      capsules: true,
+      preview: false,
+      sound: true,
+      quietHours: { enabled: true, start: 1320, end: 420 },
+      utcOffsetMinutes: 120,
+    },
+  };
+
+  test('only the owner reads and writes, as the app does', async () => {
+    const alice = as('alice');
+    await assertSucceeds(setDoc(settingsRef(alice), valid, { merge: true }));
+    await assertSucceeds(setDoc(settingsRef(alice), { mutedChats: arrayUnion('alice_bob') }, { merge: true }));
+    await assertSucceeds(getDoc(settingsRef(alice)));
+    await assertFails(getDoc(settingsRef(as('bob'), 'alice')));
+    await assertFails(setDoc(settingsRef(as('bob'), 'alice'), valid));
+    await assertFails(deleteDoc(settingsRef(alice)));
+    await assertFails(setDoc(doc(alice, 'users/alice/settings/other'), valid));
+  });
+
+  test('values are validated', async () => {
+    const alice = as('alice');
+    const n = valid.notifications;
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, enabled: 'yes' } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, quietHours: { enabled: true, start: 2000, end: 0 } } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, utcOffsetMinutes: 5000 } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, extra: true } }));
+    await assertFails(setDoc(settingsRef(alice), { ...valid, isAdmin: true }));
+    await assertFails(setDoc(settingsRef(alice), { mutedChats: 'alice_bob' }));
+  });
+});

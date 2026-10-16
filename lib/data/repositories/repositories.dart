@@ -5,6 +5,7 @@ import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/user_profile.dart';
+import '../models/user_settings.dart';
 
 /// Result of a Google sign-in, or null when the user cancelled.
 class SocialSignInResult {
@@ -155,6 +156,14 @@ abstract interface class NotificationRepository {
     required String fromUid,
     required String fromUserName,
   });
+}
+
+/// Account-level settings (`users/{uid}/settings/app`).
+abstract interface class SettingsRepository {
+  /// The settings, with defaults while the document does not exist.
+  Stream<UserSettings> watch(String uid);
+  Future<void> saveNotifications(String uid, NotificationSettings settings);
+  Future<void> setChatMuted(String uid, String chatId, {required bool muted});
 }
 
 abstract interface class PushTokenRepository {
