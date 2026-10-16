@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/app/session/session_controller.dart';
@@ -92,25 +91,24 @@ void main() {
       expect(auth.signOuts, 1);
     });
 
-    test('a cleanup that never finishes does not block sign-out (POL-003)', () {
-      fakeAsync((clock) {
+    test(
+      'a cleanup that never finishes does not block sign-out (POL-003)',
+      () async {
         final stuck = SessionController(
           auth: auth,
           users: users,
           scoped: [_StuckScope()],
-          cleanupTimeout: const Duration(seconds: 5),
+          cleanupTimeout: const Duration(milliseconds: 50),
         )..start();
         auth.emit('u1');
-        clock.flushMicrotasks();
-        var done = false;
-        stuck.signOut().then((_) => done = true);
-        clock.elapse(const Duration(seconds: 6));
-        expect(done, isTrue);
+        await pumpEventQueue();
+        await stuck.signOut().timeout(const Duration(seconds: 2));
+        await pumpEventQueue();
         expect(auth.signOuts, 1);
         expect(stuck.status, SessionStatus.signedOut);
         stuck.dispose();
-      });
-    });
+      },
+    );
   });
 
   group('AuthController', () {
