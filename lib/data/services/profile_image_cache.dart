@@ -60,16 +60,22 @@ class ProfileImageCache extends ChangeNotifier implements SessionScoped {
     ProfileImageKind kind,
     bool small,
   ) {
+    final generation = _generation;
     return _inFlight[key] ??= () async {
       String? url;
+      var failed = false;
       try {
         url = await _repo.imageUrl(uid, kind, small: small);
       } catch (e) {
+        failed = true;
         AppLogger.debug('Image lookup failed for $key: $e');
       }
+      // Started in another session (e.g. while signing out, when Storage
+      // refuses every read): its answer must not reach the next one.
+      if (generation != _generation) return url;
       // The removed future is this very lookup; nothing to wait for.
       _inFlight.remove(key)?.ignore();
-      _entries[key] = _Entry(url, DateTime.now());
+      _entries[key] = _Entry(url, DateTime.now(), failed: failed);
       notifyListeners();
       return url;
     }();
@@ -83,28 +89,44 @@ class ProfileImageCache extends ChangeNotifier implements SessionScoped {
     notifyListeners();
   }
 
-  @override
-  void attach(String uid) {}
+  int _generation = 0;
 
-  @override
-  void detach() {
+  void _reset() {
+    _generation++;
     _entries.clear();
+    _inFlight.clear();
     notifyListeners();
   }
+
+  // Both ends of a session start from an empty cache, so nothing looked up
+  // for (or during the sign-out of) one account is shown to the next.
+  @override
+  void attach(String uid) => _reset();
+
+  @override
+  void detach() => _reset();
 
   @override
   Future<void> beforeSignOut(String uid) async {}
 }
 
 class _Entry {
-  _Entry(this.url, this.fetchedAt);
+  _Entry(this.url, this.fetchedAt, {this.failed = false});
 
   final String? url;
   final DateTime fetchedAt;
 
+  /// The lookup threw (offline, not authorised) rather than finding
+  /// nothing: retried much sooner than a real "no picture".
+  final bool failed;
+
+  static const _failureTtl = Duration(seconds: 30);
+
   bool get resolved => true;
 
-  /// Hits are kept for the session; misses are retried after [ttl].
+  /// Hits are kept for the session; misses are retried after [ttl],
+  /// failures after 30 seconds.
   bool isExpired(Duration ttl) =>
-      url == null && DateTime.now().difference(fetchedAt) > ttl;
+      url == null &&
+      DateTime.now().difference(fetchedAt) > (failed ? _failureTtl : ttl);
 }
