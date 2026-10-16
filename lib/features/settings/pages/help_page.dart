@@ -68,7 +68,7 @@ class HelpPage extends StatelessWidget {
     final uid = context.read<SessionController>().uid;
     final info = await AppInfo.load();
     final opened = await AppInfo.openEmail(
-      AppLinks.supportEmail!,
+      AppLinks.supportEmail,
       subject: subject,
       body: '\n\n---\n${info.supportText(uid: uid)}',
     );
@@ -83,7 +83,6 @@ class HelpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const email = AppLinks.supportEmail;
     return SettingsScaffold(
       title: 'Help',
       description: 'Answers and ways to reach us',
@@ -97,21 +96,18 @@ class HelpPage extends StatelessWidget {
         ),
         OptionsSection(
           title: 'CONTACT',
-          footer: email == null
-              ? 'When you write to us, include this information: it tells us '
-                    'your app version and phone.'
-              : null,
+          footer:
+              'Emails from the app include your app version and phone. '
+              'You can also write to ${AppLinks.supportEmail}.',
           children: [
-            if (email != null) ...[
-              OptionsSettingsRow(
-                title: 'Contact support',
-                onTap: () => _write(context, 'Later: question'),
-              ),
-              OptionsSettingsRow(
-                title: 'Report a problem',
-                onTap: () => _write(context, 'Later: problem report'),
-              ),
-            ],
+            OptionsSettingsRow(
+              title: 'Contact support',
+              onTap: () => _write(context, 'Later: question'),
+            ),
+            OptionsSettingsRow(
+              title: 'Report a problem',
+              onTap: () => _write(context, 'Later: problem report'),
+            ),
             OptionsSettingsRow(
               title: 'Copy app information',
               withDivider: false,

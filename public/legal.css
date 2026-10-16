@@ -1,0 +1,44 @@
+/* Privacy policy and terms of use: the landing page's colours and font. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inria Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #2196f3 0%, #56c92e 100%);
+    min-height: 100vh;
+    padding: 24px 16px;
+    color: #000;
+    line-height: 1.55;
+}
+
+main {
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px 32px;
+    max-width: 760px;
+    margin: 0 auto;
+    box-shadow: 0 32px 64px rgba(33, 150, 243, 0.2);
+}
+
+h1 { color: #1565c0; font-size: 32px; margin-bottom: 4px; }
+.updated { color: #5e5e5e; margin-bottom: 24px; }
+h2 { color: #1565c0; font-size: 22px; margin: 32px 0 8px; }
+h3 { font-size: 17px; margin: 18px 0 6px; }
+p, li { font-size: 16px; }
+p { margin-bottom: 10px; }
+ul { margin: 0 0 12px 22px; }
+li { margin-bottom: 6px; }
+a { color: #1976d2; }
+.summary {
+    background: linear-gradient(135deg, #e3f2fd, #e8f5e8);
+    border: 1px solid #bbdefb;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 8px;
+}
+.summary ul { margin-bottom: 0; }
+nav { margin-top: 32px; padding-top: 16px; border-top: 1px solid #d3d3d3; color: #5e5e5e; }
+
+@media (max-width: 480px) {
+    main { padding: 28px 20px; }
+    h1 { font-size: 26px; }
+}

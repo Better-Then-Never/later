@@ -2,23 +2,30 @@
 
 Things this branch could not finish without the owner. Each has a place in the code ready for it.
 
-## B-01. No support email address
+## B-01. Support email: resolved 2026-10-17
 
-Help shows "Contact support" and "Report a problem" (an email with the app version and phone filled in) only
-when `AppLinks.supportEmail` is set (`lib/core/config/app_links.dart`). No address exists in the repo or the
-project, and inventing one would send users' messages nowhere. Until then, Help offers "Copy app
-information" for whatever channel users already use.
+The owner gave `betterthannever.business@gmail.com`. Help now shows "Contact support" and "Report a problem"
+(verified on the emulator: the email app opens with the address, subject and app information).
 
-**Owner:** set `supportEmail` and the two rows appear.
+## B-02. Privacy policy and terms: resolved 2026-10-17, review recommended
 
-## B-02. No privacy policy or terms of use
+Written at the owner's request in `public/privacy.html` and `public/terms.html`, modelled on common messenger
+policies and matched to what the app actually stores (Firestore in the EU, Storage in US-EAST1, no analytics or
+ads, messages not end-to-end encrypted, account deletion via `functions/lib/account.js`). Linked from About and
+from the signup page. They name the operator "Better Than Never" with the support address. **Owner:** add the
+legal entity name and postal address if there is one, and have a lawyer review them before relying on them.
 
-About shows "Privacy policy" and "Terms of use" only when `AppLinks.privacyPolicy` / `termsOfService` are set.
-Neither document exists. Both stores ask for a privacy policy URL, and with account deletion and message
-pushes now in the app, the policy should say what is stored and how deletion works (see
-`functions/lib/account.js`).
+## B-06. The app asks for Contacts and Microphone but uses neither
 
-**Owner:** publish the documents (Firebase Hosting `public/` would do) and set the two links.
+The permission screen requests both, yet no code reads contacts or records audio. The privacy policy says so
+truthfully, but Google Play and the App Store reject or flag apps that request permissions they do not need.
+**Recommended:** remove both from the permission screens and from the Android manifest / iOS Info.plist.
+
+## B-07. Backups keep user data indefinitely
+
+`gs://later-da778-backups/before-migration` (the export made before the data migration) contains every account
+as of 2026-10-16. The policy says copies in backups are deleted when the backups are removed. **Recommended:**
+delete that export once the migration is confirmed good, or add a lifecycle rule (for example 90 days).
 
 ## B-03. Functions must be deployed before shipping "Delete account"
 

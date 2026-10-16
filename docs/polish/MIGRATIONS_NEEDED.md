@@ -23,7 +23,8 @@ stored when someone last read a chat, so there is nothing reliable to count from
 |---|---|---|---|
 | 1 | Firestore rules | `firebase deploy --only firestore:rules` | The new app writes `unreadCounts` / `lastReadAt` on chats and `users/{uid}/settings/app`. The rules in production refuse both, so the new app's sends, read receipts and settings would fail. The new rules still accept every write of the current app (rules tests `legacy` cases, 45/45). Safe to deploy before the app. |
 | 2 | Cloud Functions | `cd functions && npm ci && firebase deploy --only functions` | Adds `sendMessageNotification` (message pushes) and `cleanupDeletedAccount` (auth `onDelete`, v1). Updates follow/capsule pushes to honour the settings and the new Android channels. **Must be live before an app with "Delete account" ships**, otherwise a deleted account's data stays behind. `cleanupDeletedAccount` runs as `later-functions@later-da778.iam.gserviceaccount.com` like the other functions; it needs Firestore and Storage delete access (the account already has them for the existing functions). |
-| 3 | App release | store / GitHub release of this branch | |
+| 3 | Hosting | `firebase deploy --only hosting` | Publishes `privacy.html` and `terms.html`, which About and the signup page link to. The landing page `index.html` only differs from the live one in trailing spaces. |
+| 4 | App release | store / GitHub release of this branch | |
 
 Old app versions after steps 1–2: the new functions name the channels `messages` / `activity` (and their
 silent variants), which old versions never created. Android then uses the manifest's default channel

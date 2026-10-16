@@ -24,8 +24,6 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const privacy = AppLinks.privacyPolicy;
-    const terms = AppLinks.termsOfService;
     return FutureBuilder<AppInfo>(
       future: AppInfo.load(),
       builder: (context, snapshot) {
@@ -40,16 +38,14 @@ class AboutPage extends StatelessWidget {
                   title: 'Version',
                   trailing: DefaultText(version),
                 ),
-                if (privacy != null)
-                  OptionsSettingsRow(
-                    title: 'Privacy policy',
-                    onTap: () => _open(context, privacy),
-                  ),
-                if (terms != null)
-                  OptionsSettingsRow(
-                    title: 'Terms of use',
-                    onTap: () => _open(context, terms),
-                  ),
+                OptionsSettingsRow(
+                  title: 'Privacy policy',
+                  onTap: () => _open(context, AppLinks.privacyPolicy),
+                ),
+                OptionsSettingsRow(
+                  title: 'Terms of use',
+                  onTap: () => _open(context, AppLinks.termsOfService),
+                ),
                 OptionsSettingsRow(
                   title: 'Open-source licenses',
                   withDivider: false,

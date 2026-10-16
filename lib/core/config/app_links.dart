@@ -1,12 +1,11 @@
-/// Addresses shown in Settings > Help and support and Settings > About.
+/// Addresses shown in Settings > Help and Settings > About, and on signup.
 ///
-/// One place for every external link. A null value hides its row: there is
-/// no support mailbox, privacy policy or terms page yet
-/// (docs/polish/BLOCKERS.md). Fill them in here and the rows appear.
+/// One place for every external link.
 abstract final class AppLinks {
   /// Where "Contact support" and "Report a problem" write to.
-  static const String? supportEmail = null;
+  static const supportEmail = 'betterthannever.business@gmail.com';
 
-  static const String? privacyPolicy = null;
-  static const String? termsOfService = null;
+  /// Hosted from `public/` (Firebase Hosting).
+  static const privacyPolicy = 'https://later-da778.web.app/privacy.html';
+  static const termsOfService = 'https://later-da778.web.app/terms.html';
 }

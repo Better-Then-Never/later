@@ -10,6 +10,7 @@ import 'widgets/auth_heading.dart';
 import 'widgets/auth_submit_button.dart';
 import 'widgets/auth_text_field.dart';
 import 'widgets/social_login_buttons.dart';
+import 'widgets/legal_notice.dart';
 
 class SignupPage extends StatelessWidget {
   const SignupPage({super.key});
@@ -169,6 +170,7 @@ class _SignupViewState extends State<_SignupView> {
                               ),
                             ],
                           ),
+                          const LegalNotice(),
                           const SizedBox(height: 20),
                           SocialLoginButtons(onGoogle: busy ? null : _google),
                         ],
