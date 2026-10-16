@@ -59,9 +59,16 @@ class ChatController extends ChangeNotifier {
   bool get isLoadingOlder => _loadingOlder;
 
   Chat? get chat => _chats.chatWith(friendUid);
+
+  /// The chat's id, also before its first message.
+  String? get chatId {
+    final me = myUid;
+    return me == null ? null : Chat.idBetween(me, friendUid);
+  }
+
   bool get isMuted {
-    final c = chat;
-    return c != null && _chats.isMuted(c.id);
+    final id = chatId;
+    return id != null && _chats.isMuted(id);
   }
 
   /// Everything to show, oldest first: confirmed messages, then the ones

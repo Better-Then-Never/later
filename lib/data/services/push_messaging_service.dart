@@ -11,15 +11,21 @@ import '../../core/theme/app_colors.dart';
 
 /// What a tapped notification points to.
 class NotificationTap {
-  const NotificationTap({required this.type, this.userId, this.capsuleId});
+  const NotificationTap({
+    required this.type,
+    this.userId,
+    this.capsuleId,
+    this.chatId,
+  });
 
   /// Reads the `data` map sent by the Cloud Functions
-  /// (`type`, `userId`, `capsuleId`).
+  /// (`type`, `userId`, `capsuleId`, `chatId`).
   factory NotificationTap.fromData(Map<String, dynamic> data) =>
       NotificationTap(
         type: NotificationType.parse(data['type']),
         userId: _nonEmpty(data['userId']),
         capsuleId: _nonEmpty(data['capsuleId']),
+        chatId: _nonEmpty(data['chatId']),
       );
 
   factory NotificationTap.fromNotification(AppNotification n) =>
@@ -32,6 +38,9 @@ class NotificationTap {
   final NotificationType type;
   final String? userId;
   final String? capsuleId;
+
+  /// Message pushes: the chat (`{uidA}_{uidB}`), also the Android tag.
+  final String? chatId;
 
   static String? _nonEmpty(Object? v) => v is String && v.isNotEmpty ? v : null;
 }
@@ -51,10 +60,53 @@ class PushMessagingService {
   FirebaseMessaging get _messaging =>
       _messagingOverride ?? FirebaseMessaging.instance;
 
+  /// Android channels, one per kind of push and a silent variant of each
+  /// (the user's "Sound" setting picks one on the server,
+  /// functions/lib/prefs.js). Users can tune each in the system settings.
+  static const channels = [
+    AndroidNotificationChannel(
+      'messages',
+      'Messages',
+      description: 'New messages from your friends',
+      importance: Importance.high,
+    ),
+    AndroidNotificationChannel(
+      'messages_silent',
+      'Messages (silent)',
+      description: 'New messages, without sound or vibration',
+      importance: Importance.low,
+      playSound: false,
+      enableVibration: false,
+    ),
+    AndroidNotificationChannel(
+      'activity',
+      'Followers and capsules',
+      description: 'New followers and new capsules of people you follow',
+      importance: Importance.high,
+    ),
+    AndroidNotificationChannel(
+      'activity_silent',
+      'Followers and capsules (silent)',
+      description: 'New followers and capsules, without sound or vibration',
+      importance: Importance.low,
+      playSound: false,
+      enableVibration: false,
+    ),
+    // Pushes from Cloud Functions deployed before the channels above
+    // (and the manifest's default channel).
+    AndroidNotificationChannel(
+      channelId,
+      'Other notifications',
+      description: 'Other notifications from Later',
+      importance: Importance.max,
+    ),
+  ];
+
   static const channelId = 'high_importance_channel';
-  static const _channelName = 'High Importance Notifications';
-  static const _channelDescription =
-      'This channel is used for important notifications';
+
+  /// The chat on screen: its message pushes are not shown in the
+  /// foreground (set by the chat page).
+  String? activeChatId;
 
   final _taps = StreamController<NotificationTap>.broadcast();
   final List<StreamSubscription<RemoteMessage>> _subscriptions = [];
@@ -94,18 +146,13 @@ class PushMessagingService {
         onDidReceiveNotificationResponse: (response) =>
             _onLocalTap(response.payload),
       );
-      await _local
+      final android = _local
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
-          >()
-          ?.createNotificationChannel(
-            const AndroidNotificationChannel(
-              channelId,
-              _channelName,
-              description: _channelDescription,
-              importance: Importance.max,
-            ),
-          );
+          >();
+      for (final channel in channels) {
+        await android?.createNotificationChannel(channel);
+      }
 
       // iOS shows FCM banners in the foreground only with these options; the
       // app displays its own local notification instead, like on Android.
@@ -167,28 +214,54 @@ class PushMessagingService {
     }
   }
 
+  /// Removes the system notification of [chatId] (opening the chat reads
+  /// its messages). Android only; FCM posts it with id 0 and the chat tag.
+  Future<void> clearChat(String chatId) async {
+    try {
+      await _local.cancel(0, tag: chatId);
+      await _local.cancel(chatId.hashCode, tag: chatId);
+    } catch (e) {
+      AppLogger.warning('Could not clear chat notifications', error: e);
+    }
+  }
+
   Future<void> _showForeground(RemoteMessage message) async {
     final notification = message.notification;
     if (notification == null) return;
+    final tap = NotificationTap.fromData(message.data);
+    final chatId = tap.type == NotificationType.message ? tap.chatId : null;
+    // The user is reading this chat right now.
+    if (chatId != null && chatId == activeChatId) return;
+    final channel = channels.firstWhere(
+      (c) => c.id == notification.android?.channelId,
+      orElse: () => channels.last,
+    );
     try {
       await _local.show(
-        message.messageId?.hashCode ?? message.hashCode,
+        // One notification per chat, replaced by the next message.
+        chatId?.hashCode ?? message.messageId?.hashCode ?? message.hashCode,
         notification.title ?? 'New Notification',
         notification.body ?? '',
-        const NotificationDetails(
+        NotificationDetails(
           android: AndroidNotificationDetails(
-            channelId,
-            _channelName,
-            channelDescription: _channelDescription,
-            importance: Importance.max,
-            priority: Priority.high,
+            channel.id,
+            channel.name,
+            channelDescription: channel.description,
+            importance: channel.importance,
+            priority: channel.importance == Importance.low
+                ? Priority.low
+                : Priority.high,
+            playSound: channel.playSound,
+            enableVibration: channel.enableVibration,
+            tag: chatId,
             icon: '@drawable/ic_stat_notification',
             color: _brandGreen,
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
             presentBadge: true,
-            presentSound: true,
+            presentSound: channel.playSound,
+            threadIdentifier: chatId,
           ),
         ),
         payload: jsonEncode(message.data),

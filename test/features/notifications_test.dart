@@ -83,6 +83,16 @@ void main() {
       expect(capsule.type, NotificationType.capsule);
       expect(capsule.capsuleId, 'c9');
 
+      final message = NotificationTap.fromData({
+        'type': 'message',
+        'userId': 'alice',
+        'chatId': 'alice_bob',
+        'messageId': 'm1',
+      });
+      expect(message.type, NotificationType.message);
+      expect(message.userId, 'alice');
+      expect(message.chatId, 'alice_bob');
+
       expect(NotificationTap.fromData({}).type, NotificationType.other);
       expect(NotificationTap.fromData({'userId': ''}).userId, isNull);
     });

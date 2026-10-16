@@ -13,6 +13,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
 import '../../data/repositories/repositories.dart';
+import '../../data/services/push_messaging_service.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/widgets/buttons/default_icon_button.dart';
 import '../../shared/widgets/buttons/go_back_button.dart';
@@ -66,14 +67,25 @@ class _ChatViewState extends State<_ChatView> {
   final Set<String> _shown = {};
   bool _firstBuild = true;
 
+  /// Pushes of this chat are not shown while it is open; the chat under
+  /// this one (if any) gets its turn back when this page closes.
+  late final PushMessagingService _push;
+  String? _previousActiveChat;
+
   @override
   void initState() {
     super.initState();
     _scroll.addListener(_onScroll);
+    _push = context.read<PushMessagingService>();
+    final chatId = context.read<ChatController>().chatId;
+    _previousActiveChat = _push.activeChatId;
+    _push.activeChatId = chatId;
+    if (chatId != null) unawaited(_push.clearChat(chatId));
   }
 
   @override
   void dispose() {
+    _push.activeChatId = _previousActiveChat;
     _scroll.dispose();
     _searchController.dispose();
     super.dispose();
