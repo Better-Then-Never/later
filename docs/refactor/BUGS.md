@@ -75,13 +75,13 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 
 | ID | Screen | Symptom | Root cause | Sev | Repro | Status | Fix |
 |---|---|---|---|---|---|---|---|
-| BUG-060 | History | Crash for a capsule without `location` (`location!`). | Force unwrap. | S1 | code (A-B1) | open | |
-| BUG-061 | History | Every tile runs a 1-second timer forever (N rebuilds per second). | `Timer.periodic` never cancelled when opened. | S3 | code (A-B29) | open | |
-| BUG-062 | History | Deleting capsules leaves their images in Storage; errors unhandled. | `deleteCapsules` only deletes documents. | S3 | code | open | |
-| BUG-063 | History | Default order is undefined (document-id order). | Listener has no `orderBy` (the fetch method has one). | S4 | repro (`history_populated.png`) | open | |
-| BUG-064 | History | "No image" placeholder is 0.2×0.15 px (invisible). | Typo in sizes. | S4 | code (A-B15) | open | |
-| BUG-065 | History | Info rows overflow on 320–360 dp phones. | Rows without `Flexible`. | S3 | code (A-L1) | open | |
-| BUG-066 | History | Favourite toggle: optimistic update without rollback; `update()` fails if the user doc is missing. | Service logic. | S4 | code | open | |
+| BUG-060 | History | Crash for a capsule without `location` (`location!`). | Force unwrap. | S1 | code (A-B1) | fixed | 59daac4 |
+| BUG-061 | History | Every tile runs a 1-second timer forever (N rebuilds per second). | `Timer.periodic` never cancelled when opened. | S3 | code (A-B29) | fixed | 59daac4 |
+| BUG-062 | History | Deleting capsules leaves their images in Storage; errors unhandled. | `deleteCapsules` only deletes documents. | S3 | code | fixed | 59daac4 |
+| BUG-063 | History | Default order is undefined (document-id order). | Listener has no `orderBy` (the fetch method has one). | S4 | repro (`history_populated.png`) | fixed | 59daac4 |
+| BUG-064 | History | "No image" placeholder is 0.2×0.15 px (invisible). | Typo in sizes. | S4 | code (A-B15) | fixed | 59daac4 |
+| BUG-065 | History | Info rows overflow on 320–360 dp phones. | Rows without `Flexible`. | S3 | code (A-L1) | fixed | 59daac4 |
+| BUG-066 | History | Favourite toggle: optimistic update without rollback; `update()` fails if the user doc is missing. | Service logic. | S4 | code | fixed | 59daac4 |
 
 ## Friends / profile
 

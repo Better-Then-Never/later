@@ -16,7 +16,8 @@
 - IMPORTANT for step 13: functions must read users/{uid}/fcmTokens (+ legacy fcmToken); deploy functions before releasing the app.
 - **Step 7 (map)** done in b7a6ac2 (see commit). Maps key moved to local.properties / Secrets.xcconfig.
 - **Step 8 (camera + capsule creation)** done in 560afff: camera lifecycle/flash/error state/capture guard; CapsuleCreationController (re-entrancy, location fallback, clean errors, temp photo cleanup). Verified: double tap -> 1 capsule, upload image/jpeg 99 KB (was octet-stream 151 KB).
-- Next: step 9 (history).
+- **Step 9 (history)** done in 59daac4: OwnCapsulesStore, FavoritesStore, HistoryController, null-safe tile; legacy CapsuleDataService/FavoriteCapsuleService/HistoryPageController removed. Verified: newest first, favourite persisted, delete removes doc + Storage image.
+- Next: step 10 (profile, friends, share, settings).
 
 ## Final-report checklist (verify before writing REPORT.md)
 - SECURITY_FINDINGS.md and BLOCKERS.md describe some fixes in the present tense ("moved", "fixed in code"): confirm each one actually landed, or reword.
