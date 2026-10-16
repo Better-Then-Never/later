@@ -35,11 +35,11 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-025 | Push | Foreground notification small icon is the full-colour launcher icon (renders as a white square on Android status bar); no `default_notification_icon` metadata. | Android requires a monochrome icon. | S3 | code | fixed | 7fd29c8 |
 | BUG-026 | Push | `sendCapsuleNotification` never notifies anyone. | Function reads `capsule.creatorId`; the app writes `ownerId`. | S2 | code | open | |
 | BUG-027 | Push | Once fixed, `sendCapsuleNotification` would notify followers about **private** capsules and about friends-only capsules to non-friends. | No privacy check. | S1 (privacy, latent) | code | open | |
-| BUG-028 | Push | Follow notification is only created when the target already has an FCM token; avatar field stores a local asset path string (`assets/images/...`) in Firestore. | `_sendFollowerNotification` preconditions and missing `profilePicture` field. | S3 | code | open | |
+| BUG-028 | Push | Follow notification is only created when the target already has an FCM token; avatar field stores a local asset path string (`assets/images/...`) in Firestore. | `_sendFollowerNotification` preconditions and missing `profilePicture` field. | S3 | code | fixed | 2e33d45 |
 | BUG-029 | Notifications | "Replies" and "Comments" tabs are always empty (types never produced). | Tabs filter `reply`/`comment`. | S3 | repro (`notifications_replies.png`) | kept (tabs are part of the design; documented) | |
 | BUG-030 | Notifications | Mark-as-read / delete operate by list index captured at build time → can hit the wrong notification after a refresh. | Positional API. | S2 | code (A-B10) | fixed | 7fd29c8 |
 | BUG-031 | Notifications | 'capsule' notifications build `AssetImage('')` → asset load exception and grey avatar. | Function writes `fromUserAvatar: ''`. | S3 | code (A-B2) | fixed | 7fd29c8 |
-| BUG-032 | Notifications | `markAllAsRead`/`clearAll` use a single batch → fail above 500 documents. | Unbounded batch. | S4 | code | open | |
+| BUG-032 | Notifications | `markAllAsRead`/`clearAll` use a single batch → fail above 500 documents. | Unbounded batch. | S4 | code | fixed | 7fd29c8 |
 | BUG-033 | Notifications | iOS: no `UIBackgroundModes/remote-notification`, no `aps-environment` entitlement → no pushes on iOS. | Missing iOS config. | S2 | code | blocked (needs Xcode/APNs, see BLOCKERS.md) | |
 
 ## Map
@@ -67,7 +67,7 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-054 | Capsule creation | Two taps on "Create Capsule" create two capsules. | No re-entrancy guard. | S2 | code (A-B33) | fixed | 560afff |
 | BUG-055 | Capsule creation | Full-resolution photo uploaded with no compression/content type; temp file never deleted; if Firestore write fails the uploaded image is orphaned. | No image pipeline. | S3 | code | fixed | 560afff |
 | BUG-056 | Capsule creation | Raw exception text shown: `Failed to save capsule: <exception>`. | `'$e'` in message. | S3 | code | fixed | 560afff |
-| BUG-057 | Capsule creation | Capsule saved without an open date is marked `isScheduled: true` with `openAt: null` and shows "Capsule is opened!" immediately. | Model defaults. | S3 | repro (`history_with_new_capsule.png`) | kept (current semantics: no date = opened); documented | |
+| BUG-057 | Capsule creation | Capsule saved without an open date is marked `isScheduled: true` with `openAt: null` and shows "Capsule is opened!" immediately. | Model defaults. | S3 | repro (`history_with_new_capsule.png`) | fixed: `isScheduled` now true only with an open date; "no date = opened" kept as the current behaviour (IDEAS_NOT_DONE.md) | a5108bc |
 | BUG-058 | Capsule creation | Controllers never disposed; `setState` after `await` without `mounted`; reverse geocoding re-runs on every rebuild. | Lifecycle. | S3 | code (A-B21, A-B27, A-B28) | fixed | 560afff |
 | BUG-059 | Capsule creation | "Back" re-opens the camera without the original privacy argument. | `pushReplacementNamed('/camera')` without arguments. | S4 | code (A-B23) | fixed | 7518612 |
 
@@ -119,12 +119,12 @@ Detailed widget-level findings with line numbers live in `audit/WIDGETS_AUDIT_A.
 | BUG-101 | Storage rules | Repo `storage.rules` denies everything; production differs. | No real rules. | S1 | code | open | |
 | BUG-102 | Firestore | Required composite indexes are not declared (`capsules: ownerId + createdAt`; friend requests `fromUserId/toUserId + status`). | Empty `firestore.indexes.json`. | S2 | code | open | |
 | BUG-103 | Functions | `getUserData` is a public unauthenticated endpoint that returns any user's email and calls `makePublic()` on their profile image. | Function design. | S1 | code | open | |
-| BUG-104 | Model | `TimeCapsule.fromMap` throws on unknown privacy/colour or null `createdAt`; the model is unused (maps everywhere) and defaults disagree (`blue` vs `red`). | No mapper layer. | S3 | code | open | |
+| BUG-104 | Model | `TimeCapsule.fromMap` throws on unknown privacy/colour or null `createdAt`; the model is unused (maps everywhere) and defaults disagree (`blue` vs `red`). | No mapper layer. | S3 | code | fixed | fb6fc31 |
 | BUG-105 | Config | `firebase.json` `flutter` section still references the deleted Firebase app IDs. | Stale FlutterFire config. | S4 | code | open | |
-| BUG-106 | Repo | `pubspec.lock` is git-ignored (`*.lock`) → non-reproducible builds for an application. | `.gitignore`. | S3 | code | open | |
-| BUG-107 | Lints | `flutter_lints` is declared under `flutter_icons:` in pubspec and `analysis_options.yaml` has no `include`, so no lints run ("No issues found" is meaningless). | pubspec/analysis options. | S3 | code | open | |
+| BUG-106 | Repo | `pubspec.lock` is git-ignored (`*.lock`) → non-reproducible builds for an application. | `.gitignore`. | S3 | code | fixed | 90f7437 |
+| BUG-107 | Lints | `flutter_lints` is declared under `flutter_icons:` in pubspec and `analysis_options.yaml` has no `include`, so no lints run ("No issues found" is meaningless). | pubspec/analysis options. | S3 | code | fixed | 90f7437 |
 | BUG-108 | Android | Obsolete `WRITE_EXTERNAL_STORAGE`/`requestLegacyExternalStorage`; activity forced `showWhenLocked`/`turnScreenOn`. | Manifest. | S4 | code | fixed | 7fd29c8 |
 | BUG-109 | Deep links | Cold-start deep link can be lost: Kotlin sends it before the Dart handler exists, and Dart then waits a fixed 2 s. | Race in `MainActivity`/`main.dart`. | S3 | code | fixed | 7518612 |
 | BUG-110 | iOS | No `NSPhotoLibraryUsageDescription` → crash when picking a profile picture from the gallery on iOS; usage strings are placeholders ("Camera"). | Info.plist. | S1 (iOS) | code | fixed | 7fd29c8 |
-| BUG-111 | Tests | The only test is the default counter smoke test, which fails. | Template leftover. | S4 | repro | open | |
+| BUG-111 | Tests | The only test is the default counter smoke test, which fails. | Template leftover. | S4 | repro | fixed | 4666b92 |
 | BUG-112 | Layout | "A RenderFlex overflowed by 7.0 pixels on the bottom" logged once, right after the soft keyboard first opened (Settings > Username, emulator, 2026-10-16). Not reproduced on later keyboard openings; overflow reports fire once per render object, so it is probably a long-lived page laid out with the keyboard inset. | Unknown; debug builds now log the full FlutterErrorDetails (bootstrap) so the next occurrence names the widget. | S4 | log | open | |
