@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/data/models/friend_request.dart';
 import 'package:later/shared/styles/elevated_button_styles.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class AddProfileMainButton extends StatelessWidget {
   final double width;
@@ -72,9 +73,9 @@ class AddProfileMainButton extends StatelessWidget {
   };
 
   Color _getButtonColor() => switch (relation) {
-    FriendRelation.self => const Color.fromARGB(255, 108, 117, 125),
-    FriendRelation.requestSent => const Color.fromARGB(255, 253, 219, 7),
-    FriendRelation.friends => const Color.fromARGB(255, 54, 144, 255),
-    _ => const Color.fromARGB(255, 86, 201, 46),
+    FriendRelation.self => AppColors.neutralButton,
+    FriendRelation.requestSent => AppColors.pendingYellow,
+    FriendRelation.friends => AppColors.viewProfileBlue,
+    _ => AppColors.brandGreen,
   };
 }

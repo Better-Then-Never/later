@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'package:later/core/theme/app_colors.dart';
 
 // TODO: Refactor
 
@@ -141,7 +142,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                 'Open Settings',
                 style: TextStyle(
                   fontFamily: 'Irina',
-                  color: Color.fromARGB(255, 33, 150, 243),
+                  color: AppColors.infoBlue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -185,7 +186,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                 'Open Settings',
                 style: TextStyle(
                   fontFamily: 'Irina',
-                  color: Color.fromARGB(255, 33, 150, 243),
+                  color: AppColors.infoBlue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -216,10 +217,10 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
   Color _getPermissionStatusColor(PermissionStatus status) {
     switch (status) {
       case PermissionStatus.granted:
-        return const Color.fromARGB(255, 86, 201, 46);
+        return AppColors.brandGreen;
       case PermissionStatus.denied:
       case PermissionStatus.permanentlyDenied:
-        return const Color.fromARGB(255, 255, 87, 87);
+        return AppColors.errorPopup;
       case PermissionStatus.restricted:
       case PermissionStatus.limited:
       case PermissionStatus.provisional:
@@ -233,7 +234,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.pageBackgroundAlt,
       body: Column(
         children: [
           // Header
@@ -277,7 +278,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                               fontFamily: 'Irina',
-                              color: Color.fromARGB(255, 94, 94, 94),
+                              color: AppColors.textSecondary,
                             ),
                           ),
                         ),

@@ -9,6 +9,7 @@ import 'package:later/features/profile/share/share_profile_qr.dart';
 import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:provider/provider.dart';
 import 'package:later/shared/widgets/page_header.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class ShareProfilePage extends StatelessWidget {
   const ShareProfilePage({super.key});
@@ -23,7 +24,7 @@ class ShareProfilePage extends StatelessWidget {
     final profileLink = SharingService.generateProfileLink(userId);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: Column(
         children: [
           PageHeader(
@@ -69,7 +70,7 @@ class ShareProfilePage extends StatelessWidget {
                           style: ElevatedButtonStyles.roundedButtonStyle(
                             borderRadius: 15,
                             foregroundColor: Colors.white,
-                            color: const Color.fromARGB(255, 86, 201, 46),
+                            color: AppColors.brandGreen,
                           ),
                           onPressed: () => SharingService.shareUserProfile(
                             context: context,

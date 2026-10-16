@@ -5,6 +5,7 @@ import 'package:later/features/map/map_page.dart';
 import 'package:later/features/messages/messages_page.dart';
 import 'package:later/features/profile/profile_page.dart';
 import 'package:later/app/shell/navbar_widget.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 List<Widget> pages = [
   const MapPage(),
@@ -22,7 +23,7 @@ class WidgetTree extends StatelessWidget {
       valueListenable: selectedPageNotifier,
       builder: (context, selectedPage, child) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF6F6F6),
+          backgroundColor: AppColors.pageBackground,
           body: Stack(
             children: [
               IndexedStack(index: selectedPage, children: pages),

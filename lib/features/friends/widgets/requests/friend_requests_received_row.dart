@@ -3,6 +3,7 @@ import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
 import 'package:later/shared/widgets/user/user_round_avatar.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class FriendRequestsReceivedRow extends StatelessWidget {
   final String name;
@@ -70,13 +71,13 @@ class FriendRequestsReceivedRow extends StatelessWidget {
               SizedBox(width: screenWidth * 0.02),
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onAccept,
-                color: const Color.fromARGB(255, 86, 201, 46),
+                color: AppColors.brandGreen,
                 text: 'Accept',
               ),
               SizedBox(width: screenWidth * 0.01),
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onReject,
-                color: const Color.fromARGB(255, 253, 65, 64),
+                color: AppColors.danger,
                 text: 'Reject',
               ),
             ],

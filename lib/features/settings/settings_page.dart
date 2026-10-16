@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:later/shared/widgets/page_header.dart';
 import 'package:later/app/session/session_controller.dart';
 import 'package:later/shared/styles/box_decorations.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -28,7 +29,7 @@ class SettingsPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.pageBackgroundAlt,
       body: Column(
         children: [
           PageHeader(

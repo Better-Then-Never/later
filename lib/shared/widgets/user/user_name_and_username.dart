@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../features/users/user_directory.dart';
 import '../default_text.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Name above "@username" of any user, from [UserDirectory].
 class UserNameAndUsername extends StatelessWidget {
@@ -24,7 +25,7 @@ class UserNameAndUsername extends StatelessWidget {
     this.nameFontSize = 32,
     this.usernameFontSize = 22,
     this.nameColor = Colors.black,
-    this.usernameColor = const Color.fromARGB(255, 94, 94, 94),
+    this.usernameColor = AppColors.textSecondary,
     this.nameFontWeight = FontWeight.bold,
     this.usernameFontWeight = FontWeight.bold,
     this.crossAxisAlignment = CrossAxisAlignment.start,

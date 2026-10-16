@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class EmailSettingsPage extends StatelessWidget {
   const EmailSettingsPage({super.key});
@@ -26,7 +27,7 @@ class EmailSettingsPage extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.pageBackgroundAlt,
     );
   }
 }

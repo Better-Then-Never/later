@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class DefaultSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -29,7 +30,7 @@ class DefaultSearchBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: color ?? const Color(0xFFEAEAEA),
+          color: color ?? AppColors.surfaceMuted,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(

@@ -9,6 +9,7 @@ import '../../../data/services/profile_image_cache.dart';
 import '../../../shared/widgets/later_loading_bar.dart';
 import '../profile_image_editor.dart';
 import 'edit_profile_image.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// The signed-in user's profile background; tap to change or delete.
 class ProfileBackgroundPicture extends StatelessWidget {
@@ -54,7 +55,7 @@ class _BackgroundView extends StatelessWidget {
         height: height,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 187, 187, 187),
+          color: AppColors.emptyBackground,
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_search_bar.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class PinnedFriendSelectionDialogHeader extends StatelessWidget {
   final TextEditingController searchController;
@@ -22,7 +23,7 @@ class PinnedFriendSelectionDialogHeader extends StatelessWidget {
             'Choose up to 3 pinned friends',
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 86, 201, 46),
+            color: AppColors.brandGreen,
           ),
           const SizedBox(height: 4),
           const DefaultText(

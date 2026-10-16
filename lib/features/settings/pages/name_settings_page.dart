@@ -8,6 +8,7 @@ import 'package:later/shared/widgets/buttons/default_green_button.dart';
 import 'package:later/app/session/session_controller.dart';
 import 'package:later/data/repositories/repositories.dart';
 import 'package:later/features/settings/account_settings.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class NameSettingsPage extends StatefulWidget {
   const NameSettingsPage({super.key});
@@ -62,7 +63,7 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.pageBackgroundAlt,
       body: Column(
         children: [
           PageHeader(

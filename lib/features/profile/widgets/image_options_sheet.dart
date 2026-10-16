@@ -41,7 +41,7 @@ class ImageOptionsSheet extends StatelessWidget {
 
   static const _width = 264.0;
   static const _rowHeight = 37.0;
-  static const _green = Color.fromARGB(255, 86, 201, 46);
+  static const _green = AppColors.brandGreen;
   static const _red = Color.fromARGB(253, 253, 65, 64);
 
   Widget _option(

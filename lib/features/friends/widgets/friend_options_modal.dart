@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../friends_store.dart';
+import '../../../core/theme/app_colors.dart';
 
 class FriendOptionsModal extends StatelessWidget {
   final String friendUid;
@@ -178,7 +179,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
               Navigator.pop(context);
               // TODO: Handle report action
             },
-            textColor: const Color.fromARGB(255, 253, 65, 64),
+            textColor: AppColors.danger,
           ),
           const _ModalDivider(),
           _ModalOption(
@@ -187,7 +188,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
               Navigator.pop(context);
               // TODO: Handle block action
             },
-            textColor: const Color.fromARGB(255, 253, 65, 64),
+            textColor: AppColors.danger,
           ),
           const _ModalDivider(),
           _ModalOption(
@@ -291,7 +292,7 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
           _ConfirmButton(
             text: _isRemoving ? 'Removing...' : 'Remove',
             onPressed: _isRemoving ? null : _removeFriend,
-            backgroundColor: const Color.fromARGB(255, 253, 65, 64),
+            backgroundColor: AppColors.danger,
             textColor: Colors.white,
             isLoading: _isRemoving,
           ),
@@ -482,7 +483,7 @@ class _ModalDivider extends StatelessWidget {
     return Container(
       width: 264,
       height: thickness,
-      color: color ?? const Color.fromARGB(255, 211, 211, 211),
+      color: color ?? AppColors.divider,
     );
   }
 }

@@ -10,6 +10,7 @@ import 'package:later/features/profile/widgets/profile_header_background_image.d
 import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:later/shared/widgets/user/user_square_avatar.dart';
 import 'package:later/features/friends/widgets/friend_options_modal.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;
@@ -22,7 +23,7 @@ class YourFriendProfilePage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [

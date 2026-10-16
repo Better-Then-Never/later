@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'user_round_avatar.dart';
+import '../../../core/theme/app_colors.dart';
 
 class UserListTile extends StatelessWidget {
   final String uid;
@@ -40,7 +41,7 @@ class UserListTile extends StatelessWidget {
         style: TextStyle(
           fontSize: screenWidth * 0.04,
           fontFamily: 'Irina',
-          color: const Color.fromARGB(255, 94, 94, 94),
+          color: AppColors.textSecondary,
         ),
       ),
       trailing: trailing,

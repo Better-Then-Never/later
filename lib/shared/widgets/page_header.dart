@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/default_search_bar.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class PageHeader extends StatelessWidget {
   final String mainText;
@@ -74,7 +75,7 @@ class PageHeader extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
                   child: DefaultText(
                     description!,
-                    color: const Color.fromARGB(255, 94, 94, 94),
+                    color: AppColors.textSecondary,
                     fontWeight: FontWeight.bold,
                     fontSize: screenHeight * 0.017,
                   ),

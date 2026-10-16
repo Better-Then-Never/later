@@ -7,6 +7,7 @@ import '../../../../shared/widgets/user/user_round_avatar.dart';
 import '../../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../../shared/widgets/default_text.dart';
 import 'pinned_friends_selection_dialog_header.dart';
+import '../../../../core/theme/app_colors.dart';
 
 /// Lets the user pick up to three pinned friends. Pops with the chosen
 /// uids on "Save" (null when dismissed).
@@ -94,7 +95,7 @@ class _PinnedFriendsSelectionDialogState
                     ),
                     trailing: Checkbox(
                       value: isPinned,
-                      activeColor: const Color.fromARGB(255, 86, 201, 46),
+                      activeColor: AppColors.brandGreen,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),

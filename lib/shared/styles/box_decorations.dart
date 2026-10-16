@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class BoxDecorations {
   static BoxDecoration whiteCard({double borderRadius = 25}) {
@@ -18,7 +19,7 @@ class BoxDecorations {
 
   static BoxDecoration greyCard({double borderRadius = 25}) {
     return BoxDecoration(
-      color: const Color(0xFFEAEAEA),
+      color: AppColors.surfaceMuted,
       borderRadius: BorderRadius.circular(borderRadius),
     );
   }
@@ -68,7 +69,7 @@ class BoxDecorations {
   }
 
   static BoxDecoration defaultBorderRadius({
-    Color color = const Color(0xFF56C92E),
+    Color color = AppColors.brandGreen,
   }) {
     return BoxDecoration(color: color, borderRadius: BorderRadius.circular(25));
   }

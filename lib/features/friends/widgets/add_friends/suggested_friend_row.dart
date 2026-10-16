@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/assets/app_assets.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/user/user_round_avatar.dart';
+import '../../../../core/theme/app_colors.dart';
 
 /// One suggestion: avatar, name, @username, add (or pending) and hide.
 ///
@@ -59,7 +60,7 @@ class SuggestedFriendRow extends StatelessWidget {
             style: TextStyle(
               fontSize: screenWidth * 0.04,
               fontFamily: 'Irina',
-              color: const Color(0xFF5E5E5E),
+              color: AppColors.textSecondary,
             ),
           ),
           trailing: Row(

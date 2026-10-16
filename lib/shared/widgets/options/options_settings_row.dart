@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/app/router/app_page_route.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class OptionsSettingsRow extends StatelessWidget {
   final String title;
@@ -48,9 +49,7 @@ class OptionsSettingsRow extends StatelessWidget {
               textAlign: TextAlign.start,
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
-              color: isLast
-                  ? const Color.fromARGB(255, 253, 65, 64)
-                  : Colors.black,
+              color: isLast ? AppColors.danger : Colors.black,
             ),
             subtitle: subtitle,
             leading: leadingIconPath != null
@@ -88,7 +87,7 @@ class OptionsSettingsRow extends StatelessWidget {
             thickness: 1,
             indent: 0,
             endIndent: 0,
-            color: Color.fromARGB(255, 211, 211, 211),
+            color: AppColors.divider,
           ),
       ],
     );

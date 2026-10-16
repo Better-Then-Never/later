@@ -10,6 +10,7 @@ import '../friend_actions.dart';
 import '../friends_store.dart';
 import '../widgets/profile/add_friend_profile_action_button.dart';
 import '../widgets/profile/add_friend_profile_header.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Profile of someone who is not (yet) a friend: add, cancel, accept or
 /// reject, live from [FriendsStore].
@@ -69,7 +70,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: Stack(
         children: [
           SingleChildScrollView(

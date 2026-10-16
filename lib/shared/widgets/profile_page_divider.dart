@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class ProfilePageDivider extends StatelessWidget {
   final double width;
@@ -9,7 +10,7 @@ class ProfilePageDivider extends StatelessWidget {
     super.key,
     required this.width,
     this.thickness = 1,
-    this.color = const Color.fromARGB(255, 211, 211, 211),
+    this.color = AppColors.divider,
   });
 
   @override

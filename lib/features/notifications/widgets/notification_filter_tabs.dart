@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class NotificationFilterTabs extends StatelessWidget {
   final TabController controller;
@@ -15,7 +16,7 @@ class NotificationFilterTabs extends StatelessWidget {
           controller: controller,
           isScrollable: false,
           indicator: BoxDecoration(
-            color: const Color.fromARGB(255, 86, 201, 46),
+            color: AppColors.brandGreen,
             borderRadius: BorderRadius.circular(25),
           ),
           indicatorSize: TabBarIndicatorSize.label,

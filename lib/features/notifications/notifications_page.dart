@@ -10,6 +10,7 @@ import 'package:later/features/notifications/widgets/notification_filter_tabs.da
 import 'package:later/features/notifications/widgets/notification_selection_action_bar.dart';
 import 'package:later/features/notifications/widgets/notifications_list.dart';
 import 'package:provider/provider.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -49,7 +50,7 @@ class _NotificationsPageState extends State<NotificationsPage>
         child: child!,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF6F6F6),
+        backgroundColor: AppColors.pageBackground,
         body: Column(
           children: [
             PageHeader(

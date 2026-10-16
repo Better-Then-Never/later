@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_colors.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -56,9 +57,7 @@ class ConfirmDialog extends StatelessWidget {
                   height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          confirmButtonColor ??
-                          const Color.fromARGB(255, 253, 65, 64),
+                      backgroundColor: confirmButtonColor ?? AppColors.danger,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),

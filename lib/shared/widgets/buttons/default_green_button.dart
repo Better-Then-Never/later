@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class DefaultGreenButton extends StatelessWidget {
   final String text;
@@ -32,7 +33,7 @@ class DefaultGreenButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: loading ? null : onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF56C92E),
+          backgroundColor: AppColors.brandGreen,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25.0),
           ),

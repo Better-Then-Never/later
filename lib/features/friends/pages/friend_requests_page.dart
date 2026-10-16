@@ -13,6 +13,7 @@ import '../friends_store.dart';
 import '../widgets/requests/friend_requests_received_row.dart';
 import '../widgets/requests/friend_requests_sent_row.dart';
 import '../widgets/requests/friend_requests_toggle_button.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// Received and sent friend requests, live from [FriendsStore]; names come
 /// from [UserDirectory] in one batched lookup.
@@ -99,7 +100,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: Column(
         children: [
           PageHeader(

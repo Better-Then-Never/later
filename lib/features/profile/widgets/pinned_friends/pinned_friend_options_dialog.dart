@@ -5,6 +5,7 @@ import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
 import 'package:later/features/profile/widgets/pinned_friends/pinned_friend_option_tile.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class PinnedFriendOptionsDialog extends StatelessWidget {
   final String friendUid;
@@ -35,7 +36,7 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
                   (d) => d.profile(friendUid)?.name ?? 'Unknown',
                 ),
                 fontSize: 22,
-                color: const Color.fromARGB(255, 86, 201, 46),
+                color: AppColors.brandGreen,
                 fontWeight: FontWeight.bold,
                 padding: const EdgeInsets.symmetric(vertical: 4),
               ),

@@ -15,6 +15,7 @@ import '../friend_actions.dart';
 import '../friend_suggestions_controller.dart';
 import '../widgets/add_friends/add_friends_action_buttons_row.dart';
 import '../widgets/add_friends/suggested_friends_list.dart';
+import '../../../core/theme/app_colors.dart';
 
 class AddFriendsPage extends StatefulWidget {
   const AddFriendsPage({super.key});
@@ -56,7 +57,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: Column(
         children: [
           PageHeader(

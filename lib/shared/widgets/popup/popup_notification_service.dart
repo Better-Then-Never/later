@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:later/shared/widgets/popup/popup_notification.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 enum NotificationPosition { top, center, bottom }
 
@@ -66,7 +67,7 @@ class PopupNotificationService {
     show(
       context: context,
       message: message,
-      backgroundColor: const Color.fromARGB(255, 86, 201, 46),
+      backgroundColor: AppColors.brandGreen,
       icon: Icons.check_circle,
       duration: duration,
       position: position,
@@ -84,7 +85,7 @@ class PopupNotificationService {
     show(
       context: context,
       message: message,
-      backgroundColor: const Color.fromARGB(255, 255, 87, 87),
+      backgroundColor: AppColors.errorPopup,
       icon: Icons.error,
       duration: duration,
       position: position,
@@ -102,7 +103,7 @@ class PopupNotificationService {
     show(
       context: context,
       message: message,
-      backgroundColor: const Color.fromARGB(255, 33, 150, 243),
+      backgroundColor: AppColors.infoBlue,
       icon: Icons.info,
       duration: duration,
       position: position,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/errors/app_failure.dart';
+import '../../../core/theme/app_colors.dart';
 
 class PasswordResetDialog extends StatefulWidget {
   final String initialEmail;
@@ -83,7 +84,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                   height: 40,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF56C92E),
+                      backgroundColor: AppColors.brandGreen,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
@@ -116,7 +117,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                                   content: Text(
                                     'Password reset email sent! Check your inbox.',
                                   ),
-                                  backgroundColor: Color(0xFF56C92E),
+                                  backgroundColor: AppColors.brandGreen,
                                 ),
                               );
                             } else {

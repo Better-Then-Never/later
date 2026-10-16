@@ -3,6 +3,7 @@ import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
 import 'package:later/shared/widgets/user/user_round_avatar.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class FriendRequestsSentRow extends StatelessWidget {
   final String name;
@@ -57,7 +58,7 @@ class FriendRequestsSentRow extends StatelessWidget {
               ),
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onCancel,
-                color: const Color.fromARGB(255, 253, 65, 64),
+                color: AppColors.danger,
                 text: 'Cancel',
               ),
             ],

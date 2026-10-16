@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class CapsuleCreationCycledInfo extends StatelessWidget {
   final String infoText;
@@ -18,9 +19,7 @@ class CapsuleCreationCycledInfo extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1.0),
       child: Container(
-        decoration: BoxDecorations.defaultBorderRadius(
-          color: const Color.fromARGB(217, 217, 217, 217),
-        ),
+        decoration: BoxDecorations.defaultBorderRadius(color: AppColors.pill),
         width: screenWidth * 0.4,
         alignment: Alignment.centerRight,
         child: Center(
@@ -33,7 +32,7 @@ class CapsuleCreationCycledInfo extends StatelessWidget {
                   DefaultText(
                     infoText,
                     fontSize: 35,
-                    color: const Color.fromARGB(255, 106, 106, 106),
+                    color: AppColors.textTertiary,
                   ),
                   if (trailingLeadingIconPath != null) const SizedBox(width: 8),
                   if (trailingLeadingIconPath != null)

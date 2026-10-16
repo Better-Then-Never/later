@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/assets/app_assets.dart';
 import '../../shared/widgets/later_loading_bar.dart';
+import '../../core/theme/app_colors.dart';
 
 class AppPermission {
   final String name;
@@ -177,7 +178,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
   Widget build(BuildContext context) {
     if (!_loaded) {
       return const Scaffold(
-        backgroundColor: Color(0xFFF6F6F6),
+        backgroundColor: AppColors.pageBackground,
         body: Center(child: LaterLoadingBar(width: 150, height: 150)),
       );
     }
@@ -185,7 +186,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -204,7 +205,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                   return Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Card(
-                      color: const Color(0xFFF6F6F6),
+                      color: AppColors.pageBackground,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
@@ -250,7 +251,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                                     ? null
                                     : () => _requestPermission(item.permission),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF56C92E),
+                                  backgroundColor: AppColors.brandGreen,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(25.0),
                                   ),
@@ -283,7 +284,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                   height: 8,
                   decoration: BoxDecoration(
                     color: _currentPage == index
-                        ? const Color(0xFF56C92E)
+                        ? AppColors.brandGreen
                         : Colors.grey.shade400,
                     borderRadius: BorderRadius.circular(4),
                   ),

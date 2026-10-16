@@ -14,6 +14,7 @@ import '../../../shared/widgets/buttons/go_back_button.dart';
 import '../../users/user_directory.dart';
 import '../friends_store.dart';
 import '../widgets/my_friends/my_friends_grouped_by_letter_list.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// All friends grouped by first letter, with a local search.
 class MyFriendsPage extends StatefulWidget {
@@ -85,7 +86,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F6F6),
+      backgroundColor: AppColors.pageBackground,
       body: Column(
         children: [
           PageHeader(

@@ -8,6 +8,7 @@ import '../../../data/services/profile_image_cache.dart';
 import '../../../shared/widgets/later_loading_bar.dart';
 import '../profile_image_editor.dart';
 import 'edit_profile_image.dart';
+import '../../../core/theme/app_colors.dart';
 
 /// The signed-in user's square profile picture; tap to change or delete.
 class ProfilePicture extends StatelessWidget {
@@ -58,7 +59,7 @@ class _ProfilePictureView extends StatelessWidget {
         height: height,
         width: width,
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 223, 223, 223),
+          color: AppColors.emptyAvatar,
           borderRadius: BorderRadius.circular(25),
           image: image != null && !editor.isBusy
               ? DecorationImage(image: image, fit: BoxFit.cover)

@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui' show Color;
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../core/logging/app_logger.dart';
 import '../models/app_notification.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Must be top-level and annotated so it survives tree shaking; registered in
 /// bootstrap before runApp. The OS shows `notification` payloads itself while
@@ -223,7 +223,7 @@ class PushMessagingService {
 
   static String get platformName => Platform.isIOS ? 'ios' : 'android';
 
-  static const _brandGreen = Color(0xFF56C92E);
+  static const _brandGreen = AppColors.brandGreen;
 
   Future<void> dispose() async {
     for (final s in _subscriptions) {
