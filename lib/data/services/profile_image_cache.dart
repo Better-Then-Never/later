@@ -74,9 +74,11 @@ class ProfileImageCache extends ChangeNotifier implements SessionScoped {
     }();
   }
 
-  /// Forget everything about [uid] (after it uploaded or deleted a picture).
-  void invalidate(String uid) {
-    _entries.removeWhere((key, _) => key.startsWith('$uid/'));
+  /// Forget [uid]'s pictures of [kind] (all kinds when null), after an
+  /// upload or delete. Other kinds stay cached so they do not flicker.
+  void invalidate(String uid, {ProfileImageKind? kind}) {
+    final prefix = kind == null ? '$uid/' : '$uid/${kind.name}/';
+    _entries.removeWhere((key, _) => key.startsWith(prefix));
     notifyListeners();
   }
 

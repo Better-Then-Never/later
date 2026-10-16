@@ -4,7 +4,7 @@ import 'package:later/views/widgets/my_profile_page/profile_page_header.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_my_capsules_panel.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_my_friends_panel.dart';
 import 'package:provider/provider.dart';
-import 'package:later/services/user_data_service.dart';
+import 'package:later/app/session/session_controller.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -23,8 +23,8 @@ class _ProfilePageState extends State<ProfilePage>
     super.build(context);
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final userProfileService = context.read<UserDataService>();
-    final uid = userProfileService.currentLoggedInUid;
+    // Only built while signed in (AuthGate), never the old 'No User'.
+    final uid = context.read<SessionController>().uid!;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),

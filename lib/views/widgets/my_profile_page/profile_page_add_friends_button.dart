@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
-import 'package:later/features/friends/pages/add_friends_page.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/features/friends/widgets/friend_requests_count.dart';
-import 'package:page_transition/page_transition.dart';
 
 class ProfilePageAddFriendsButton extends StatelessWidget {
   final String currentUserUid;
@@ -16,17 +15,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.bottomToTop,
-            duration: const Duration(milliseconds: 100),
-            reverseDuration: const Duration(milliseconds: 100),
-            child: const AddFriendsPage(),
-          ),
-        );
-      },
+      onTap: () => AppRoutes.toAddFriends(context),
       child: Container(
         width: screenWidth - 32,
         height: 45,

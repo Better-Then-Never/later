@@ -1,6 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/my_profile_page/profile_background_picture.dart';
-import 'package:later/views/widgets/my_profile_page/profile_picture.dart';
+import 'package:later/features/profile/widgets/profile_background_picture.dart';
+import 'package:later/features/profile/widgets/profile_picture.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_header_action_buttons.dart';
 import 'package:later/shared/widgets/user/user_name_and_username.dart';
@@ -19,20 +21,18 @@ class ProfilePageHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ProfileBackgroundPicture(
-          allignment: Alignment.topLeft,
-          pictureHeight: 230,
-          pictureWidth: screenWidth,
-        ),
+        const ProfileBackgroundPicture(pictureHeight: 230),
         Container(
           width: screenWidth,
           height: 1,
           decoration: BoxDecorations.blackShadow(),
         ),
-        const Positioned(
-          top: 35,
+        Positioned(
+          // Below the status bar / notch on every device (BUG-086); 35 on
+          // phones with a regular status bar, as before.
+          top: math.max(35, MediaQuery.paddingOf(context).top + 8),
           right: 12,
-          child: ProfilePageHeaderActionButtons(),
+          child: const ProfilePageHeaderActionButtons(),
         ),
         Positioned(
           top: 99,

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
-import 'package:later/features/notifications/notifications_page.dart';
-import 'package:later/views/pages/core_pages/settings_page.dart';
-import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
 import 'package:later/features/notifications/widgets/unread_notification_badge.dart';
-import 'package:page_transition/page_transition.dart';
 
 class ProfilePageHeaderActionButtons extends StatelessWidget {
   const ProfilePageHeaderActionButtons({super.key});
@@ -20,17 +17,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
             DefaultIconButton(
               size: 44,
               assetPath: AppIcons.notifications,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.fade,
-                    duration: const Duration(milliseconds: 10),
-                    reverseDuration: const Duration(milliseconds: 10),
-                    child: const NotificationsPage(),
-                  ),
-                );
-              },
+              onTap: () => AppRoutes.toNotifications(context),
             ),
             const Positioned(
               right: 2,
@@ -43,33 +30,13 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
         DefaultIconButton(
           size: 41,
           assetPath: AppIcons.share,
-          onTap: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.fade,
-                duration: const Duration(milliseconds: 10),
-                reverseDuration: const Duration(milliseconds: 10),
-                child: const ShareProfilePage(),
-              ),
-            );
-          },
+          onTap: () => AppRoutes.toShareProfile(context),
         ),
         const SizedBox(width: 5),
         DefaultIconButton(
           size: 41,
           assetPath: AppIcons.settings,
-          onTap: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                type: PageTransitionType.fade,
-                duration: const Duration(milliseconds: 10),
-                reverseDuration: const Duration(milliseconds: 10),
-                child: const SettingsPage(),
-              ),
-            );
-          },
+          onTap: () => AppRoutes.toSettings(context),
         ),
       ],
     );

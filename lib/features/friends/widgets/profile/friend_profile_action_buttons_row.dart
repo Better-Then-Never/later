@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
@@ -17,7 +19,8 @@ class ProfileActionButtonsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 32,
+      // Clear of the status bar / notch (BUG-086); 32 as before otherwise.
+      top: math.max(32, MediaQuery.paddingOf(context).top + 8),
       left: 16,
       right: 16,
       child: Row(

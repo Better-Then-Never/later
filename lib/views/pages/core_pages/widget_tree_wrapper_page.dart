@@ -4,7 +4,6 @@ import 'package:later/app/session/session_controller.dart';
 import 'package:later/features/notifications/notification_router.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/core_pages/widget_tree.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +17,6 @@ class WidgetTreeWrapper extends StatefulWidget {
 }
 
 class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
-  bool _preloaded = false;
   late final AppLinkHandler _links;
   late final NotificationRouter _notificationRouter;
 
@@ -38,21 +36,6 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
       _links.onHomeReady();
       _notificationRouter.onHomeReady();
     });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    if (!_preloaded) {
-      _preloaded = true;
-
-      final userImageService = context.read<UserImageService>();
-      final uid = context.read<SessionController>().uid!;
-
-      userImageService.preloadBackgroundImageForUser(uid, context);
-      userImageService.preloadProfileImageForUser(uid, context);
-    }
   }
 
   @override

@@ -24,7 +24,6 @@ import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
 import '../services/user_data_service.dart';
-import '../services/user_image_service.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
 import 'session/session_controller.dart';
@@ -71,7 +70,6 @@ class _AppScopeState extends State<AppScope> {
 
   // Legacy per-user services, reset by the session until they are replaced.
   final _legacyUserData = UserDataService();
-  final _legacyImages = UserImageService();
 
   late final SessionController _session;
 
@@ -89,7 +87,7 @@ class _AppScopeState extends State<AppScope> {
         _directory,
         _friendsStore,
         PushRegistration(push: _push, tokens: _pushTokens),
-        _LegacyServicesScope(userData: _legacyUserData, images: _legacyImages),
+        _LegacyServicesScope(userData: _legacyUserData),
       ],
     )..start();
     _links.init();
@@ -130,7 +128,6 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<SessionController>.value(value: _session),
         // Legacy services (removed feature by feature).
         ChangeNotifierProvider.value(value: _legacyUserData),
-        ChangeNotifierProvider.value(value: _legacyImages),
         ChangeNotifierProvider<CurrentLocation>.value(value: _currentLocation),
         Provider<PushMessagingService>.value(value: _push),
         Provider<NotificationRouter>.value(value: _notificationRouter),
@@ -151,10 +148,9 @@ class _AppScopeState extends State<AppScope> {
 
 /// Resets the pre-refactor singletons when the user changes.
 class _LegacyServicesScope extends SessionScoped {
-  _LegacyServicesScope({required this.userData, required this.images});
+  _LegacyServicesScope({required this.userData});
 
   final UserDataService userData;
-  final UserImageService images;
 
   @override
   void attach(String uid) {}
@@ -162,6 +158,5 @@ class _LegacyServicesScope extends SessionScoped {
   @override
   void detach() {
     userData.onLogout();
-    images.onLogout();
   }
 }
