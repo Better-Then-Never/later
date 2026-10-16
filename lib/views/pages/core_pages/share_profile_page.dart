@@ -6,7 +6,7 @@ import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:later/views/widgets/share_profile/share_profile_qr.dart';
-import 'package:later/views/widgets/user/user_name_and_username.dart';
+import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:provider/provider.dart';
 import 'package:later/views/widgets/_common/default_elements/page_header.dart';
 

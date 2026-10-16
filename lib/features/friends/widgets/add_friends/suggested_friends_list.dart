@@ -1,0 +1,85 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../app/router/app_routes.dart';
+import '../../../../data/models/friend_request.dart';
+import '../../../../views/widgets/_common/default_elements/default_text.dart';
+import '../../friend_actions.dart';
+import '../../friend_suggestions_controller.dart';
+import '../../friends_store.dart';
+import 'suggested_friend_placeholder_row.dart';
+import 'suggested_friend_row.dart';
+
+/// Search results minus the user, their friends and dismissed suggestions.
+class SuggestedFriendsList extends StatelessWidget {
+  const SuggestedFriendsList({
+    super.key,
+    required this.controller,
+    required this.actions,
+  });
+
+  final FriendSuggestionsController controller;
+  final FriendActions actions;
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final store = context.watch<FriendsStore>();
+
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        final error = controller.error;
+        if (error != null) {
+          return Center(
+            child: GestureDetector(
+              onTap: controller.retry,
+              child: DefaultText(error.message),
+            ),
+          );
+        }
+        if (controller.isLoading && controller.results.isEmpty) {
+          return ListView(
+            children: [
+              for (var i = 0; i < 3; i++)
+                SuggestedFriendPlaceholderRow(screenWidth: screenWidth),
+            ],
+          );
+        }
+
+        final users = controller.results.where((u) {
+          final relation = store.relationTo(u.uid);
+          return relation != FriendRelation.self &&
+              relation != FriendRelation.friends &&
+              !store.dismissed.contains(u.uid);
+        }).toList();
+
+        if (users.isEmpty) {
+          return const Center(child: DefaultText('No more suggested friends'));
+        }
+
+        return ListView(
+          children: [
+            for (final user in users)
+              SuggestedFriendRow(
+                key: ValueKey(user.uid),
+                userId: user.uid,
+                name: user.name,
+                username: user.username,
+                relation: store.relationTo(user.uid),
+                screenWidth: screenWidth,
+                onTapProfile: () =>
+                    AppRoutes.toAddFriendProfile(context, user.uid),
+                // A received request is accepted from here (BUG-070).
+                onSendRequest: () =>
+                    store.relationTo(user.uid) == FriendRelation.requestReceived
+                    ? actions.acceptRequest(user.uid)
+                    : actions.sendRequest(user.uid),
+                onRemove: () => actions.dismissSuggestion(user.uid),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}

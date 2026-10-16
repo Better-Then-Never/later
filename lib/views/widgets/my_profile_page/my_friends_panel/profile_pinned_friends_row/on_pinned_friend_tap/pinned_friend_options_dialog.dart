@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:later/features/users/user_directory.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
@@ -6,14 +8,12 @@ import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pin
 
 class PinnedFriendOptionsDialog extends StatelessWidget {
   final String friendUid;
-  final Map<String, Map<String, String>> friendInfoMap;
   final VoidCallback onViewProfile;
   final VoidCallback onChoosePinned;
 
   const PinnedFriendOptionsDialog({
     super.key,
     required this.friendUid,
-    required this.friendInfoMap,
     required this.onViewProfile,
     required this.onChoosePinned,
   });
@@ -31,7 +31,9 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               DefaultText(
-                friendInfoMap[friendUid]?['name'] ?? 'Unknown',
+                context.select<UserDirectory, String>(
+                  (d) => d.profile(friendUid)?.name ?? 'Unknown',
+                ),
                 fontSize: 22,
                 color: const Color.fromARGB(255, 86, 201, 46),
                 fontWeight: FontWeight.bold,

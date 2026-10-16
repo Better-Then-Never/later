@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/user/user_background_image.dart';
+import 'package:later/shared/widgets/user/user_background_image.dart';
 
 class ProfileHeaderBackground extends StatelessWidget {
   final String userId;

@@ -7,10 +7,11 @@ import '../../features/notifications/notifications_page.dart';
 import '../../views/pages/core_pages/qr_code_scanner_page.dart';
 import '../../views/pages/core_pages/settings_page.dart';
 import '../../views/pages/core_pages/share_profile_page.dart';
-import '../../views/pages/friends_pages/add_friend_profile_page.dart';
-import '../../views/pages/friends_pages/add_friends_page.dart';
-import '../../views/pages/friends_pages/my_friends_page.dart';
-import '../../views/pages/friends_pages/your_friend_profile_page.dart';
+import '../../features/friends/pages/add_friend_profile_page.dart';
+import '../../features/friends/pages/add_friends_page.dart';
+import '../../features/friends/pages/friend_requests_page.dart';
+import '../../features/friends/pages/my_friends_page.dart';
+import '../../features/friends/pages/your_friend_profile_page.dart';
 import '../../features/capsules/camera/camera_page.dart';
 import '../../features/capsules/creation/capsule_creation_page.dart';
 import 'app_page_route.dart';
@@ -78,6 +79,9 @@ abstract final class AppRoutes {
   // Friends
   static Future<void> toAddFriends(BuildContext context) =>
       Navigator.of(context).push(slideUpRoute(const AddFriendsPage()));
+
+  static Future<void> toFriendRequests(BuildContext context) =>
+      Navigator.of(context).push(fadeRoute(const FriendRequestsPage()));
 
   static Future<void> toMyFriends(BuildContext context) =>
       Navigator.of(context).push(fadeRoute(const MyFriendsPage()));

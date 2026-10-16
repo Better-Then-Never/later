@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/_common/default_buttons/default_green_button.dart';
-import 'package:later/views/widgets/_common/default_elements/default_text.dart';
-import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_dialog_header.dart';
-import 'package:later/views/widgets/user/user_round_avatar.dart';
-import 'package:later/services/popup_notification_service.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../../../features/users/user_directory.dart';
+import '../../../../../../services/popup_notification_service.dart';
+import '../../../../../../shared/widgets/user/user_round_avatar.dart';
+import '../../../../_common/default_buttons/default_green_button.dart';
+import '../../../../_common/default_elements/default_text.dart';
+import 'pinned_friends_selection_dialog_header.dart';
+
+/// Lets the user pick up to three pinned friends. Pops with the chosen
+/// uids on "Save" (null when dismissed).
 class PinnedFriendsSelectionDialog extends StatefulWidget {
   final List<String> pinnedUids;
   final List<String> allFriends;
-  final Map<String, Map<String, String>> friendInfoMap;
-  final Future<void> Function(List<String> newPinned) onSave;
 
   const PinnedFriendsSelectionDialog({
     super.key,
     required this.pinnedUids,
     required this.allFriends,
-    required this.friendInfoMap,
-    required this.onSave,
   });
 
   @override
@@ -26,24 +27,24 @@ class PinnedFriendsSelectionDialog extends StatefulWidget {
 
 class _PinnedFriendsSelectionDialogState
     extends State<PinnedFriendsSelectionDialog> {
-  late List<String> tempPinned;
+  late final List<String> tempPinned = List.of(widget.pinnedUids);
   String searchQuery = '';
   final TextEditingController searchController = TextEditingController();
 
   @override
-  void initState() {
-    super.initState();
-    tempPinned = List.from(widget.pinnedUids);
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final directory = context.watch<UserDirectory>();
     final filteredFriends = widget.allFriends.where((uid) {
-      final info = widget.friendInfoMap[uid];
+      final info = directory.profile(uid);
       if (info == null) return false;
-      final name = info['name']?.toLowerCase() ?? '';
-      final username = info['username']?.toLowerCase() ?? '';
-      return name.contains(searchQuery) || username.contains(searchQuery);
+      return info.name.toLowerCase().contains(searchQuery) ||
+          info.username.toLowerCase().contains(searchQuery);
     }).toList();
 
     filteredFriends.sort((a, b) {
@@ -53,7 +54,7 @@ class _PinnedFriendsSelectionDialogState
     });
 
     return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
+      height: MediaQuery.sizeOf(context).height * 0.7,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
@@ -76,20 +77,18 @@ class _PinnedFriendsSelectionDialogState
                 itemCount: filteredFriends.length,
                 itemBuilder: (context, index) {
                   final uid = filteredFriends[index];
-                  final info = widget.friendInfoMap[uid] ?? {};
-                  final name = info['name'] ?? '';
-                  final username = info['username'] ?? '';
+                  final info = directory.profile(uid);
                   final isPinned = tempPinned.contains(uid);
 
                   return ListTile(
                     leading: UserRoundAvatar(userId: uid, radius: 24),
                     title: DefaultText(
-                      name,
+                      info?.name ?? '',
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                     subtitle: DefaultText(
-                      '@$username',
+                      '@${info?.username ?? ''}',
                       fontSize: 14,
                       color: Colors.grey,
                     ),
@@ -107,18 +106,7 @@ class _PinnedFriendsSelectionDialogState
             ),
             DefaultGreenButton(
               padding: const EdgeInsets.all(16.0),
-              onTap: () async {
-                Navigator.pop(context);
-                await widget.onSave(tempPinned);
-                await Future.delayed(const Duration(milliseconds: 300));
-                if (mounted) {
-                  PopupNotificationService.showSuccess(
-                    context: context,
-                    message: 'Pinned friends updated successfully!',
-                    position: NotificationPosition.top,
-                  );
-                }
-              },
+              onTap: () => Navigator.pop(context, List.of(tempPinned)),
               text: 'Save',
             ),
           ],
@@ -138,14 +126,10 @@ class _PinnedFriendsSelectionDialogState
         return;
       }
       if (!tempPinned.contains(uid)) {
-        setState(() {
-          tempPinned.add(uid);
-        });
+        setState(() => tempPinned.add(uid));
       }
     } else {
-      setState(() {
-        tempPinned.remove(uid);
-      });
+      setState(() => tempPinned.remove(uid));
     }
   }
 }

@@ -1,17 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:later/controllers/widget_controllers/profile/pinned_friends_controller.dart';
-import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_options_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:later/views/widgets/my_profile_page/my_friends_panel/profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_avatar.dart';
+
+import '../../../../app/router/app_routes.dart';
+import '../../../../features/friends/pinned_friends_controller.dart';
+import '../../../../features/users/user_directory.dart';
+import '../../../../services/popup_notification_service.dart';
+import 'profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_avatar.dart';
+import 'profile_pinned_friends_row/on_pinned_friend_tap/pinned_friend_options_dialog.dart';
+import 'profile_pinned_friends_row/on_pinned_friend_tap/pinned_friends_selection_dialog.dart';
 
 class PinnedFriendsRow extends StatelessWidget {
   const PinnedFriendsRow({super.key});
 
+  Future<void> _choosePinned(
+    BuildContext context,
+    PinnedFriendsController controller,
+  ) async {
+    Navigator.pop(context);
+    final friends = controller.allFriends.toList();
+    // One batched lookup for the names shown in the dialog.
+    await context.read<UserDirectory>().resolveAll(friends);
+    if (!context.mounted) return;
+    final chosen = await showModalBottomSheet<List<String>>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      barrierColor: Colors.black.withAlpha(128),
+      builder: (_) => PinnedFriendsSelectionDialog(
+        pinnedUids: controller.pinnedUids,
+        allFriends: friends,
+      ),
+    );
+    if (chosen == null) return;
+    await controller.setPinnedFriends(chosen);
+    // Shown from the profile page: the sheet's own context is gone by now,
+    // which used to swallow this message.
+    if (!context.mounted) return;
+    PopupNotificationService.showSuccess(
+      context: context,
+      message: 'Pinned friends updated successfully!',
+      position: NotificationPosition.top,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<PinnedFriendsController>();
-    final screenWidth = MediaQuery.of(context).size.width;
-    final size = screenWidth / 3.8;
+    final size = MediaQuery.sizeOf(context).width / 3.8;
 
     if (controller.isLoading) {
       return const SizedBox(height: 80, child: Center());
@@ -29,43 +64,32 @@ class PinnedFriendsRow extends StatelessWidget {
       );
     }
 
-    return FutureBuilder<List<Map<String, String>>>(
-      future: controller.getDisplayFriends(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center();
-        }
-
-        final friendsData = snapshot.data!;
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: friendsData.map((friend) {
-            final uid = friend['uid']!;
-            return PinnedFriendAvatar(
-              uid: uid,
-              size: size,
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.transparent,
-                  isScrollControlled: true,
-                  barrierColor: Colors.black.withAlpha(128),
-                  builder: (_) => PinnedFriendOptionsDialog(
-                    friendUid: uid,
-                    friendInfoMap: controller.friendInfoMap,
-                    onViewProfile: () {
-                      Navigator.pop(context);
-                      controller.openFriendPage(context, uid);
-                    },
-                    onChoosePinned: () =>
-                        controller.showChoosePinnedFriendsDialog(context),
-                  ),
-                );
-              },
-            );
-          }).toList(),
-        );
-      },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (final uid in controller.displayFriends)
+          PinnedFriendAvatar(
+            key: ValueKey(uid),
+            uid: uid,
+            size: size,
+            onTap: () {
+              showModalBottomSheet<void>(
+                context: context,
+                backgroundColor: Colors.transparent,
+                isScrollControlled: true,
+                barrierColor: Colors.black.withAlpha(128),
+                builder: (_) => PinnedFriendOptionsDialog(
+                  friendUid: uid,
+                  onViewProfile: () {
+                    Navigator.pop(context);
+                    AppRoutes.toFriendProfile(context, uid);
+                  },
+                  onChoosePinned: () => _choosePinned(context, controller),
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 }

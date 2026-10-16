@@ -3,7 +3,7 @@ import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:later/app/router/app_link_handler.dart';
-import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
+import 'package:later/features/friends/pages/add_friend_profile_page.dart';
 import 'package:page_transition/page_transition.dart';
 
 class QRScannerPage extends StatefulWidget {

@@ -100,11 +100,16 @@ class FakeUserRepository implements UserRepository {
   @override
   Future<UserProfile?> getProfile(String uid) async => profiles[uid];
 
+  int getProfilesCalls = 0;
+
   @override
-  Future<Map<String, UserProfile>> getProfiles(Iterable<String> uids) async => {
-    for (final id in uids)
-      if (profiles[id] != null) id: profiles[id]!,
-  };
+  Future<Map<String, UserProfile>> getProfiles(Iterable<String> uids) async {
+    getProfilesCalls++;
+    return {
+      for (final id in uids)
+        if (profiles[id] != null) id: profiles[id]!,
+    };
+  }
 
   @override
   Future<bool> isUsernameTaken(String username) async =>

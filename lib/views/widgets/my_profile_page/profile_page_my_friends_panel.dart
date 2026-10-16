@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
-import 'package:later/controllers/widget_controllers/profile/pinned_friends_controller.dart';
-import 'package:later/services/user_data_service.dart';
-import 'package:later/services/user_friends_service.dart';
-import 'package:later/views/pages/friends_pages/my_friends_page.dart';
+import 'package:later/app/router/app_routes.dart';
+import 'package:later/data/services/preferences_store.dart';
+import 'package:later/features/friends/friends_store.dart';
+import 'package:later/features/friends/pinned_friends_controller.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_text_button.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/my_profile_page/my_friends_panel/pinned_friends_row.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePageMyFriendsPanel extends StatelessWidget {
@@ -23,16 +22,6 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userFriendsService = Provider.of<UserFriendsService>(
-      context,
-      listen: false,
-    );
-
-    final userDataService = Provider.of<UserDataService>(
-      context,
-      listen: false,
-    );
-
     return Stack(
       children: [
         Container(
@@ -47,8 +36,8 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
           right: 0,
           child: ChangeNotifierProvider(
             create: (context) => PinnedFriendsController(
-              friendsService: userFriendsService,
-              userDataService: userDataService,
+              friends: context.read<FriendsStore>(),
+              prefs: context.read<PreferencesStore>(),
             ),
             child: const PinnedFriendsRow(),
           ),
@@ -90,17 +79,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
                 width: screenWidth - 95,
                 height: 40,
                 child: DefaultTextButton(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        type: PageTransitionType.fade,
-                        duration: const Duration(milliseconds: 10),
-                        reverseDuration: const Duration(milliseconds: 10),
-                        child: const MyFriendsPage(),
-                      ),
-                    );
-                  },
+                  onTap: () => AppRoutes.toMyFriends(context),
                   text: 'My friends',
                 ),
               ),

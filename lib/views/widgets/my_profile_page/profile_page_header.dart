@@ -3,7 +3,7 @@ import 'package:later/views/widgets/my_profile_page/profile_background_picture.d
 import 'package:later/views/widgets/my_profile_page/profile_picture.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/my_profile_page/profile_page_header_action_buttons.dart';
-import 'package:later/views/widgets/user/user_name_and_username.dart';
+import 'package:later/shared/widgets/user/user_name_and_username.dart';
 
 class ProfilePageHeader extends StatelessWidget {
   final double screenWidth;
