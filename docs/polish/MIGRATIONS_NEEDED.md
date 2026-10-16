@@ -50,8 +50,6 @@ opens the app without going to the chat (they do not know the `message` type). A
   account). Artifact cleanup policy set for europe-west1. **Any future new function needs the same first
   step.**
 - **Step 3 (hosting): done.** `privacy.html`, `terms.html`, `legal.css` return 200.
-- **Pending (owner):** give `later-functions@later-da778.iam.gserviceaccount.com` delete access on the Storage
-  bucket, otherwise `cleanupDeletedAccount` removes the Firestore data but stops at the pictures:
-  `gcloud storage buckets add-iam-policy-binding gs://later-da778.firebasestorage.app
-  --member=serviceAccount:later-functions@later-da778.iam.gserviceaccount.com --role=roles/storage.objectAdmin`
-- **Step 4 (app release):** after the Storage access.
+- **Storage access: done by the owner.** `later-functions` has `roles/storage.objectAdmin` on
+  `gs://later-da778.firebasestorage.app`, so `cleanupDeletedAccount` can remove pictures too.
+- **Step 4 (app release):** next.
