@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../data/models/app_notification.dart';
 import '../../../data/services/push_messaging_service.dart';
-import '../../../views/widgets/_common/default_elements/default_empty_inbox_info.dart';
+import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../notification_router.dart';
 import '../notifications_selection_controller.dart';
 import '../notifications_store.dart';

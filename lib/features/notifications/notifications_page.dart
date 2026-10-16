@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:later/features/notifications/notifications_selection_controller.dart';
-import 'package:later/services/popup_notification_service.dart';
+import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/features/notifications/notifications_store.dart';
-import 'package:later/views/widgets/_common/default_elements/confirm_dialog.dart';
-import 'package:later/views/widgets/_common/default_elements/page_header.dart';
-import 'package:later/views/widgets/_common/premade_buttons/go_back_button.dart';
+import 'package:later/shared/widgets/confirm_dialog.dart';
+import 'package:later/shared/widgets/page_header.dart';
+import 'package:later/shared/widgets/buttons/go_back_button.dart';
 import 'package:later/features/notifications/widgets/notification_filter_tabs.dart';
 import 'package:later/features/notifications/widgets/notification_selection_action_bar.dart';
 import 'package:later/features/notifications/widgets/notifications_list.dart';

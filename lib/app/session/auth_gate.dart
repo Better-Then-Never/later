@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/permission_gate_page.dart';
 import '../../features/auth/welcome_page.dart';
-import '../../views/pages/core_pages/widget_tree_wrapper_page.dart';
+import '../shell/widget_tree_wrapper_page.dart';
 import '../router/app_routes.dart';
 import 'session_controller.dart';
 

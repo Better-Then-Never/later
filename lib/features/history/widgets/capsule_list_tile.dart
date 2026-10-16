@@ -10,9 +10,9 @@ import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
 import '../../../data/services/geocoding_service.dart';
 import '../../map/current_location.dart';
-import '../../../views/widgets/_common/decorations/box_decorations.dart';
-import '../../../views/widgets/_common/default_elements/default_text.dart';
-import '../../../views/widgets/my_profile_page/profile_page_divider.dart';
+import '../../../shared/styles/box_decorations.dart';
+import '../../../shared/widgets/default_text.dart';
+import '../../../shared/widgets/profile_page_divider.dart';
 import '../history_controller.dart';
 
 /// One capsule in the History list.

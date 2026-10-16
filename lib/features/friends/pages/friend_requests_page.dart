@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
-import '../../../services/popup_notification_service.dart';
-import '../../../views/widgets/_common/default_elements/default_empty_inbox_info.dart';
-import '../../../views/widgets/_common/default_elements/page_header.dart';
-import '../../../views/widgets/_common/premade_buttons/go_back_button.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../../shared/widgets/default_empty_inbox_info.dart';
+import '../../../shared/widgets/page_header.dart';
+import '../../../shared/widgets/buttons/go_back_button.dart';
 import '../../users/user_directory.dart';
 import '../friend_actions.dart';
 import '../friends_store.dart';

@@ -5,7 +5,7 @@ import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/profile_image_cache.dart';
-import '../../../views/widgets/_common/default_elements/later_loading_bar.dart';
+import '../../../shared/widgets/later_loading_bar.dart';
 import '../profile_image_editor.dart';
 import 'edit_profile_image.dart';
 

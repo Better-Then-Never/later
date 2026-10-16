@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/shared/widgets/default_text.dart';
 
 class NotificationTimestamp extends StatelessWidget {
   final DateTime timestamp;

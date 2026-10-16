@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/_common/default_elements/default_text.dart';
-import 'package:later/views/widgets/my_profile_page/profile_page_divider.dart';
+import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/shared/widgets/profile_page_divider.dart';
 
 class SelectionActionBar extends StatelessWidget {
   final int count;

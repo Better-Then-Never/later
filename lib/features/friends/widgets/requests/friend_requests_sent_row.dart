@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
-import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/shared/styles/box_decorations.dart';
+import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
 import 'package:later/shared/widgets/user/user_round_avatar.dart';
 

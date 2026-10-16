@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/assets/app_assets.dart';
-import '../../views/widgets/_common/default_elements/later_loading_bar.dart';
+import '../../shared/widgets/later_loading_bar.dart';
 
 class AppPermission {
   final String name;

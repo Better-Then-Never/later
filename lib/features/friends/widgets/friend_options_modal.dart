@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../services/popup_notification_service.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../friends_store.dart';
 
 class FriendOptionsModal extends StatelessWidget {

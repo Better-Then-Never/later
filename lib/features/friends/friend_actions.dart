@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/errors/app_failure.dart';
-import '../../services/popup_notification_service.dart';
+import '../../shared/widgets/popup/popup_notification_service.dart';
 import 'friends_store.dart';
 
 /// Runs friend actions from any screen and shows the same messages

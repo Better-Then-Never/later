@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../data/models/user_profile.dart';
 import '../../../../shared/widgets/user/user_list_tile.dart';
-import '../../../../views/widgets/_common/decorations/box_decorations.dart';
-import '../../../../views/widgets/_common/default_elements/default_text.dart';
+import '../../../../shared/styles/box_decorations.dart';
+import '../../../../shared/widgets/default_text.dart';
 
 class MyFriendsGroupedByLetterList extends StatelessWidget {
   final Map<String, List<UserProfile>> groupedFriends;

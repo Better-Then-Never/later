@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/models/app_notification.dart';
-import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
+import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/features/notifications/widgets/notification_avatar.dart';
 import 'package:later/features/notifications/widgets/notification_thumbnail.dart';
 import 'package:later/features/notifications/widgets/notification_timestamp.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../views/widgets/_common/default_elements/default_text.dart';
+import '../../../shared/widgets/default_text.dart';
 import 'menu_item_node.dart';
-import '../../../views/widgets/my_profile_page/profile_page_divider.dart';
+import '../../../shared/widgets/profile_page_divider.dart';
 
 class NestedMenu extends StatefulWidget {
   final String title;

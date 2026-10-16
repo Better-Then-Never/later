@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
-import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/shared/styles/box_decorations.dart';
+import 'package:later/shared/widgets/default_text.dart';
 
 class FriendRequestsActionButton extends StatelessWidget {
   final VoidCallback? onTap;

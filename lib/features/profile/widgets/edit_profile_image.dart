@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/profile_image_cache.dart';
-import '../../../services/popup_notification_service.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../profile_image_editor.dart';
 import 'image_options_sheet.dart';
 import 'pick_image.dart';

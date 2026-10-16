@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/models/friend_request.dart';
-import 'package:later/views/styles/elevated_button_styles.dart';
-import 'package:later/views/widgets/_common/default_elements/default_text.dart';
+import 'package:later/shared/styles/elevated_button_styles.dart';
+import 'package:later/shared/widgets/default_text.dart';
 
 class AddProfileMainButton extends StatelessWidget {
   final double width;

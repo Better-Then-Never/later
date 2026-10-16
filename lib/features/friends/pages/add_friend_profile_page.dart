@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../data/models/friend_request.dart';
-import '../../../services/popup_notification_service.dart';
-import '../../../services/sharing_service.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../profile/share/sharing_service.dart';
 import '../../../shared/widgets/user/user_name_and_username.dart';
 import '../friend_actions.dart';
 import '../friends_store.dart';

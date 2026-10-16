@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/assets/app_assets.dart';
-import '../../../../views/widgets/_common/default_buttons/default_button_with_icon.dart';
+import '../../../../shared/widgets/buttons/default_button_with_icon.dart';
 import '../friend_requests_count.dart';
 
 class AddFriendsActionButtonsRow extends StatelessWidget {

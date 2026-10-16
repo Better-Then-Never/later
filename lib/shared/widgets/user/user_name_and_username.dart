@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../features/users/user_directory.dart';
-import '../../../views/widgets/_common/default_elements/default_text.dart';
+import '../default_text.dart';
 
 /// Name above "@username" of any user, from [UserDirectory].
 class UserNameAndUsername extends StatelessWidget {

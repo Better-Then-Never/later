@@ -4,7 +4,7 @@ import '../../app/router/app_routes.dart';
 import '../../app/session/session_controller.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/app_notification.dart';
-import '../../data/notifiers.dart';
+import '../../app/shell/selected_page.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../map/map_focus.dart';

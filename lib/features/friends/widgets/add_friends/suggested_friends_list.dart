@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/router/app_routes.dart';
 import '../../../../data/models/friend_request.dart';
-import '../../../../views/widgets/_common/default_elements/default_text.dart';
+import '../../../../shared/widgets/default_text.dart';
 import '../../friend_actions.dart';
 import '../../friend_suggestions_controller.dart';
 import '../../friends_store.dart';
