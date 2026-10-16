@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:later/services/popup_notification_service.dart';
 import 'package:later/services/user_data_service.dart';
@@ -256,7 +257,7 @@ class _ProfileBackgroundPictureState extends State<ProfileBackgroundPicture> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 80),
                   child: Image.asset(
-                    'assets/images/icons/prof_page/choose_bg.png',
+                    AppIcons.profileChooseBackground,
                     width: 35,
                     height: 35,
                     fit: BoxFit.contain,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:camera/camera.dart';
 import 'package:later/views/pages/capsule_related_pages/capsule_creation_page.dart';
 import 'package:page_transition/page_transition.dart';
@@ -66,7 +67,7 @@ class _CameraPageState extends State<CameraPage> {
                         Navigator.pop(context);
                       },
                       child: Image.asset(
-                        'assets/images/icons/camera/whitearrow.png',
+                        AppIcons.cameraBack,
                         width: 50,
                         height: 50,
                       ),
@@ -76,7 +77,7 @@ class _CameraPageState extends State<CameraPage> {
                         // TODO: Add action for right button
                       },
                       child: Image.asset(
-                        'assets/images/icons/camera/Flashoff.png',
+                        AppIcons.cameraFlashOff,
                         width: 40,
                         height: 40,
                       ),
@@ -113,7 +114,7 @@ class _CameraPageState extends State<CameraPage> {
                       );
                     },
                     child: Image.asset(
-                      'assets/images/icons/camera/123.png',
+                      AppIcons.cameraShutter,
                       width: 100,
                       height: 100,
                     ),
@@ -134,7 +135,7 @@ class _CameraPageState extends State<CameraPage> {
                 GestureDetector(
                   onTap: _switchCamera,
                   child: Image.asset(
-                    'assets/images/icons/camera/Camera.png',
+                    AppIcons.cameraSwitch,
                     width: 50,
                     height: 50,
                   ),

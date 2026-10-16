@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/widget_controllers/profile/pinned_friends_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_friends_service.dart';
@@ -80,7 +81,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
                 width: 40,
                 height: 40,
                 child: Image.asset(
-                  'assets/images/icons/prof_page/my_friends.png',
+                  AppIcons.profileMyFriends,
                   fit: BoxFit.contain,
                 ),
               ),

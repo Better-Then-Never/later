@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/pages/friends_pages/add_friends_page.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
@@ -43,7 +44,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
                     width: 40,
                     height: 40,
                     child: Image.asset(
-                      'assets/images/icons/prof_page/add_friend.png',
+                      AppIcons.profileAddFriend,
                       fit: BoxFit.contain,
                     ),
                   ),

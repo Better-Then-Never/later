@@ -65,23 +65,25 @@ flutter_icons:
 flutter:
   uses-material-design: true
 
+  # Typed accessors: lib/core/assets/app_assets.dart
   assets:
     - assets/images/
-    - assets/images/icons/navbar/
-    - assets/images/icons/login_signup_pages/
-    - assets/images/icons/prof_page/
-    - assets/images/icons/camera/
-    - assets/images/icons/map/pins/
-    - assets/images/icons/capsule_creation/
-    - assets/images/icons/history_page/
-    - assets/images/icons/friends_page/
-    - assets/gifs/loading/
+    - assets/animations/
+    - assets/icons/auth/
+    - assets/icons/camera/
+    - assets/icons/capsule/
+    - assets/icons/friends/
+    - assets/icons/history/
+    - assets/icons/map/
+    - assets/icons/navbar/
+    - assets/icons/profile/
 
+  # Inria Sans, registered under the family name "Irina" used throughout the app.
   fonts:
     - family: Irina
       fonts:
-        - asset: assets/fonts/IrinaSans/InriaSans-Regular.ttf
-        - asset: assets/fonts/IrinaSans/InriaSans-Bold.ttf
+        - asset: assets/fonts/inria_sans/InriaSans-Regular.ttf
+        - asset: assets/fonts/inria_sans/InriaSans-Bold.ttf
           weight: 700
-        - asset: assets/fonts/IrinaSans/InriaSans-Italic.ttf
+        - asset: assets/fonts/inria_sans/InriaSans-Italic.ttf
           style: italic

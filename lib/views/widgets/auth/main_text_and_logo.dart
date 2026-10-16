@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 
 class MainText extends StatefulWidget {
   final String mainText;
@@ -18,7 +19,7 @@ class _MainTextState extends State<MainText> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset('assets/images/later_logo.png', height: 150, width: 120),
+        Image.asset(AppImages.laterLogo, height: 150, width: 120),
         Column(
           children: [
             Text(

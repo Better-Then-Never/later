@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
 
 class DefaultSearchBar extends StatelessWidget {
@@ -36,7 +37,7 @@ class DefaultSearchBar extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Image.asset(
-                'assets/images/icons/friends_page/look_for.png',
+                AppIcons.friendsLookFor,
                 width: screenWidth * 0.07,
                 height: screenWidth * 0.07,
               ),

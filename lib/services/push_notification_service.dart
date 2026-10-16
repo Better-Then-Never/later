@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -387,9 +388,7 @@ class PushNotificationService extends ChangeNotifier {
           'id': doc.id, // Store the document ID for updates
           'type': data['type'] ?? 'notification',
           'userName': data['fromUserName'] ?? 'System',
-          'userAvatar':
-              data['fromUserAvatar'] ??
-              'assets/images/icons/prof_page/no_photo.png',
+          'userAvatar': data['fromUserAvatar'] ?? AppIcons.profileNoPhoto,
           'message': data['message'] ?? '',
           'thumbnailImage': data['thumbnailImage'],
           'timestamp':

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/page_controllers/capsule_creation/capsule_creation_page_controller.dart';
 import 'package:later/data/models/time_capsule.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -83,11 +84,11 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                 leadingButton: DefaultIconButton(
                   onTap: () =>
                       Navigator.pushReplacementNamed(context, '/camera'),
-                  assetPath: 'assets/images/icons/prof_page/go_back.png',
+                  assetPath: AppIcons.goBack,
                 ),
                 trailingButton: DefaultIconButton(
                   onTap: () => Navigator.pop(context),
-                  assetPath: 'assets/images/icons/capsule_creation/cross.png',
+                  assetPath: AppIcons.capsuleClose,
                 ),
               ),
 
@@ -137,8 +138,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                                   const SizedBox(height: 8),
                                   CapsuleCreationLocationLabel(
                                     height: screenHeight * 0.05,
-                                    iconPath:
-                                        'assets/images/icons/capsule_creation/location_icon.png',
+                                    iconPath: AppIcons.capsuleLocation,
                                     location: _pickedLocation,
                                   ),
                                   const SizedBox(height: 8),
@@ -164,8 +164,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                             OptionsSettingsRow(
                               minVerticalPadding: 10,
                               title: 'Privacy',
-                              leadingIconPath:
-                                  'assets/images/icons/capsule_creation/privacy_icon.png',
+                              leadingIconPath: AppIcons.capsulePrivacy,
                               trailing: CapsuleCreationCycledInfo(
                                 infoText: _controller.privacy.label,
                               ),
@@ -185,8 +184,7 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                                       ).format(_controller.openAt!.toDate())
                                     : 'Select date',
                               ),
-                              leadingIconPath:
-                                  'assets/images/icons/capsule_creation/timer_icon.png',
+                              leadingIconPath: AppIcons.capsuleTimer,
                               onTap: () async {
                                 await _controller.pickOpenDate(context);
                                 setState(() {});
@@ -198,11 +196,11 @@ class _CapsuleCreationPageState extends State<CapsuleCreationPage> {
                               title: 'Color',
                               trailing: CapsuleCreationCycledInfo(
                                 infoText: _controller.color.label,
-                                trailingLeadingIconPath:
-                                    'assets/images/icons/capsule_creation/pin_${_controller.color.label.toLowerCase()}_icon.png',
+                                trailingLeadingIconPath: AppIcons.capsulePin(
+                                  _controller.color.name,
+                                ),
                               ),
-                              leadingIconPath:
-                                  'assets/images/icons/capsule_creation/pin_color_icon.png',
+                              leadingIconPath: AppIcons.capsulePinColor,
                               onTap: () {
                                 _controller.cycleColor();
                                 setState(() {});

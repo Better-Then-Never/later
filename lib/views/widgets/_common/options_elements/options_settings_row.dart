@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -65,7 +66,7 @@ class OptionsSettingsRow extends StatelessWidget {
                       (Opacity(
                         opacity: 0.3,
                         child: Image.asset(
-                          'assets/images/icons/prof_page/go_here.png',
+                          AppIcons.goHere,
                           width: screenWidth * 0.09,
                           height: screenWidth * 0.09,
                         ),

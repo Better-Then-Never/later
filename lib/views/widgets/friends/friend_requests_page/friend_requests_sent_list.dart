@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/page_controllers/friends/friend_requests_page_controller.dart';
 import 'package:later/views/pages/friends_pages/add_friend_profile_page.dart';
 import 'package:page_transition/page_transition.dart';
@@ -30,8 +31,7 @@ class FriendRequestsSentList extends StatelessWidget {
           return const DefaultEmptyInboxInfo(
             message: 'No sent requests',
             subtitle: 'Friend requests you send\nwill appear here',
-            assetPath:
-                'assets/images/icons/friends_page/friend_request_page.png',
+            assetPath: AppIcons.friendsRequestPage,
           );
         }
 

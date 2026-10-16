@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 
 class LaterLoadingBar extends StatelessWidget {
   final String assetPath;
@@ -10,7 +11,7 @@ class LaterLoadingBar extends StatelessWidget {
 
   const LaterLoadingBar({
     super.key,
-    this.assetPath = 'assets/gifs/loading/later_logo_loading.gif',
+    this.assetPath = AppAnimations.laterLogoLoading,
     this.width = 150,
     this.height = 150,
     this.message,

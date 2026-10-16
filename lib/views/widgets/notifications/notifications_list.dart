@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/page_controllers/notifications_page_controller.dart';
 import 'package:later/views/widgets/_common/default_elements/default_empty_inbox_info.dart';
 import 'package:later/views/widgets/notifications/notification_item.dart';
@@ -74,9 +75,7 @@ class NotificationsList extends StatelessWidget {
       id: notificationId,
       type: notification['type'] ?? 'notification',
       userName: notification['userName'] ?? 'System',
-      userAvatar:
-          notification['userAvatar'] ??
-          'assets/images/icons/prof_page/no_photo.png',
+      userAvatar: notification['userAvatar'] ?? AppIcons.profileNoPhoto,
       message: notification['message'] ?? '',
       thumbnailImage: notification['thumbnailImage'],
       timestamp: notification['timestamp'] ?? DateTime.now(),
@@ -138,20 +137,19 @@ class NotificationsList extends StatelessWidget {
         return {
           'title': 'Replies',
           'subtitle': 'Replies to your messages will appear here',
-          'iconPath': 'assets/images/icons/prof_page/reply.png',
+          'iconPath': AppIcons.reply,
         };
       case 'Comments':
         return {
           'title': 'Comments',
           'subtitle': 'Comments on your Capsules will appear here',
-          'iconPath': 'assets/images/icons/prof_page/send_message.png',
+          'iconPath': AppIcons.sendMessage,
         };
       default:
         return {
           'title': 'Notifications',
           'subtitle': 'Your notifications and activity will appear here',
-          'iconPath':
-              'assets/images/icons/prof_page/notifications_button_black.png',
+          'iconPath': AppIcons.notificationsBlack,
         };
     }
   }

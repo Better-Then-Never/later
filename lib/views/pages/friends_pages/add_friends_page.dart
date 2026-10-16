@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/page_controllers/friends/add_friends_page_controller.dart';
 import 'package:later/services/user_friends_service.dart';
 import 'package:later/services/popup_notification_service.dart';
@@ -75,7 +76,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
               hintText: 'Search by tag',
               trailingButton: DefaultIconButton(
                 onTap: () => QRScannerPage.open(context),
-                assetPath: 'assets/images/icons/friends_page/qr_scan.png',
+                assetPath: AppIcons.friendsQrScan,
                 size: screenWidth * 0.09,
               ),
             ),

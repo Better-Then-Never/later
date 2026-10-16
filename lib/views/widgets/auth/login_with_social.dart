@@ -1,4 +1,5 @@
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -48,11 +49,7 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
                   );
                 }
               },
-              icon: Image.asset(
-                'assets/images/icons/login_signup_pages/google.png',
-                height: 40.0,
-                width: 40.0,
-              ),
+              icon: Image.asset(AppIcons.authGoogle, height: 40.0, width: 40.0),
             ),
             const SizedBox(
               height: 40,
@@ -67,7 +64,7 @@ class _LoginWithSocialState extends State<LoginWithSocial> {
                 // TODO: Facebook LogIn
               },
               icon: Image.asset(
-                'assets/images/icons/login_signup_pages/facebook.png',
+                AppIcons.authFacebook,
                 height: 40.0,
                 width: 40.0,
               ),

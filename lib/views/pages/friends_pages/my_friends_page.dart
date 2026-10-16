@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/controllers/page_controllers/friends/my_friends_page_controller.dart';
 import 'package:later/services/user_data_service.dart';
 import 'package:later/services/user_friends_service.dart';
@@ -66,7 +67,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
               hintText: 'Find my friends',
               trailingButton: DefaultIconButton(
                 onTap: () => QRScannerPage.open(context),
-                assetPath: 'assets/images/icons/friends_page/qr_scan.png',
+                assetPath: AppIcons.friendsQrScan,
                 size: screenWidth * 0.09,
               ),
             ),
@@ -87,8 +88,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
                     message: _controller.searchQuery.isEmpty
                         ? 'No friends added yet'
                         : 'No friends match your search',
-                    assetPath:
-                        'assets/images/icons/prof_page/friend_search.png',
+                    assetPath: AppIcons.profileFriendSearch,
                   );
                 }
 

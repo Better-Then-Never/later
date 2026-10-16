@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:later/views/widgets/_common/default_elements/later_loading_bar.dart';
 import 'dart:io';
@@ -38,13 +39,13 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
       name: 'Share Camera access with Later',
       description: 'And you will be able to create time capsules!',
       permission: Permission.camera,
-      iconAsset: 'assets/images/icons/camera/Camerafull.png',
+      iconAsset: AppIcons.cameraFull,
     ),
     AppPermission(
       name: 'Provide Later with microphone access',
       description: "Camera won't work without it",
       permission: Permission.microphone,
-      iconAsset: 'assets/images/icons/capsule_creation/microphone_icon.png',
+      iconAsset: AppIcons.capsuleMicrophone,
     ),
     AppPermission(
       name: 'Share geolocation with us',
@@ -52,20 +53,19 @@ class _PermissionGatePageState extends State<PermissionGatePage> {
       permission: Platform.isIOS
           ? Permission.locationWhenInUse
           : Permission.location,
-      iconAsset: 'assets/images/icons/capsule_creation/location_icon.png',
+      iconAsset: AppIcons.capsuleLocation,
     ),
     AppPermission(
       name: 'Enable notifications',
       description: 'Stay updated with new followers and capsules!',
       permission: Permission.notification,
-      iconAsset:
-          'assets/images/icons/prof_page/notifications_button_black_full.png',
+      iconAsset: AppIcons.notificationsBlackFull,
     ),
     AppPermission(
       name: 'Access contacts',
       description: 'Find and invite friends from your contacts!',
       permission: Permission.contacts,
-      iconAsset: 'assets/images/icons/friends_page/friend_book.png',
+      iconAsset: AppIcons.friendsBook,
     ),
   ];
 

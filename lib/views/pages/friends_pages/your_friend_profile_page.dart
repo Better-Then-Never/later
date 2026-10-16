@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/services/sharing_service.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
@@ -83,8 +84,7 @@ class YourFriendProfilePage extends StatelessWidget {
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () {}, // TODO: Open chat with friend
-                          assetPath:
-                              'assets/images/icons/prof_page/send_message.png',
+                          assetPath: AppIcons.sendMessage,
                           text: 'Open chat',
                         ),
                       ),
@@ -95,8 +95,7 @@ class YourFriendProfilePage extends StatelessWidget {
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () {}, // TODO: Send Capsule to friend
-                          assetPath:
-                              'assets/images/icons/prof_page/send_capsule.png',
+                          assetPath: AppIcons.sendCapsule,
                           text: 'Send Capsule',
                         ),
                       ),

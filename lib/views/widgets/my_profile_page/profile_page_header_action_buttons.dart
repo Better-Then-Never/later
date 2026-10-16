@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/pages/core_pages/notifications_page.dart';
 import 'package:later/views/pages/core_pages/settings_page.dart';
 import 'package:later/views/pages/core_pages/share_profile_page.dart';
@@ -18,8 +19,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
           children: [
             DefaultIconButton(
               size: 44,
-              assetPath:
-                  'assets/images/icons/prof_page/notifications_button.png',
+              assetPath: AppIcons.notifications,
               onTap: () {
                 Navigator.push(
                   context,
@@ -42,7 +42,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
         const SizedBox(width: 4),
         DefaultIconButton(
           size: 41,
-          assetPath: 'assets/images/icons/prof_page/share_button.png',
+          assetPath: AppIcons.share,
           onTap: () {
             Navigator.push(
               context,
@@ -58,7 +58,7 @@ class ProfilePageHeaderActionButtons extends StatelessWidget {
         const SizedBox(width: 5),
         DefaultIconButton(
           size: 41,
-          assetPath: 'assets/images/icons/prof_page/settings_button.png',
+          assetPath: AppIcons.settings,
           onTap: () {
             Navigator.push(
               context,

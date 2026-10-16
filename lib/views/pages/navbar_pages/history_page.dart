@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:later/controllers/page_controllers/history_page_controller.dart';
 import 'package:later/data/models/time_capsule.dart';
@@ -89,8 +90,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
                               onTap: () => _openSortMenu(context),
-                              assetPath:
-                                  'assets/images/icons/history_page/sort.png',
+                              assetPath: AppIcons.historySort,
                               text: _controller.activeSortLabel,
                             ),
                           ),
@@ -98,8 +98,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           Expanded(
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
-                              assetPath:
-                                  'assets/images/icons/history_page/filter.png',
+                              assetPath: AppIcons.historyFilter,
                               text: _controller.activeFilterLabel,
                               onTap: () => _openFilterMenu(context),
                             ),
@@ -109,8 +108,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             child: DefaultButtonWithIcon(
                               height: screenHeight * 0.05,
                               onTap: () => _controller.resetAll(),
-                              assetPath:
-                                  'assets/images/icons/history_page/sort.png',
+                              assetPath: AppIcons.historySort,
                               text: 'Reset',
                             ),
                           ),

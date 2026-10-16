@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 
 const double navbarIconHeight = 46.0;
 
@@ -33,11 +34,11 @@ class NavbarWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildIcon(0, 'assets/images/icons/navbar/icon-map.png'),
-            _buildIcon(1, 'assets/images/icons/navbar/icon-history.png'),
-            _buildAddIcon(context, 'assets/images/icons/navbar/icon-add.png'),
-            _buildIcon(2, 'assets/images/icons/navbar/icon-messages.png'),
-            _buildIcon(3, 'assets/images/icons/navbar/icon-profile.png'),
+            _buildIcon(0, AppIcons.navbarMap),
+            _buildIcon(1, AppIcons.navbarHistory),
+            _buildAddIcon(context, AppIcons.navbarAdd),
+            _buildIcon(2, AppIcons.navbarMessages),
+            _buildIcon(3, AppIcons.navbarProfile),
           ],
         ),
       ),

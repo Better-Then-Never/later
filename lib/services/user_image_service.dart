@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 enum ProfilePlaceholderType { friendsList, pinnedFriend }
@@ -14,15 +15,15 @@ class UserImageService extends ChangeNotifier {
 
   final Map<ProfilePlaceholderType, ImageProvider> _profilePlaceholders = {
     ProfilePlaceholderType.friendsList: const AssetImage(
-      'assets/images/icons/prof_page/no_photo.png',
+      AppIcons.profileNoPhoto,
     ),
     ProfilePlaceholderType.pinnedFriend: const AssetImage(
-      'assets/images/icons/prof_page/no_photo.png',
+      AppIcons.profileNoPhoto,
     ),
   };
 
   final ImageProvider backgroundPlaceholder = const AssetImage(
-    'assets/images/icons/prof_page/background_image_placeholder.png',
+    AppIcons.profileBackgroundPlaceholder,
   );
 
   ValueNotifier<ImageProvider> getProfileNotifier(

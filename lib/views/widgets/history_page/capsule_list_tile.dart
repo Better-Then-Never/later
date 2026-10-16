@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -135,7 +136,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                         ),
                       ),
                       Image.asset(
-                        'assets/images/icons/capsule_creation/pin_${color.toLowerCase()}_icon.png',
+                        AppIcons.capsulePin(color),
                         width: screenHeight * 0.025,
                       ),
                       SizedBox(width: screenWidth * 0.01),
@@ -165,7 +166,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                             Row(
                               children: [
                                 Image.asset(
-                                  'assets/images/icons/capsule_creation/timer_icon.png',
+                                  AppIcons.capsuleTimer,
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
@@ -179,7 +180,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                             Row(
                               children: [
                                 Image.asset(
-                                  'assets/images/icons/capsule_creation/privacy_icon.png',
+                                  AppIcons.capsulePrivacy,
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),
@@ -192,7 +193,7 @@ class _CapsuleListTileState extends State<CapsuleListTile> {
                             Row(
                               children: [
                                 Image.asset(
-                                  'assets/images/icons/capsule_creation/location_icon.png',
+                                  AppIcons.capsuleLocation,
                                   width: screenWidth * 0.05,
                                 ),
                                 SizedBox(width: screenWidth * 0.01),

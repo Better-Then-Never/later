@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
 
 class ProfileActionButtonsRow extends StatelessWidget {
@@ -24,7 +25,7 @@ class ProfileActionButtonsRow extends StatelessWidget {
         children: [
           DefaultIconButton(
             onTap: onBack,
-            assetPath: 'assets/images/icons/prof_page/go_back_circle.png',
+            assetPath: AppIcons.goBackCircle,
             size: 44,
           ),
 
@@ -32,14 +33,14 @@ class ProfileActionButtonsRow extends StatelessWidget {
             children: [
               DefaultIconButton(
                 onTap: onShare,
-                assetPath: 'assets/images/icons/prof_page/share_button.png',
+                assetPath: AppIcons.share,
                 size: 44,
               ),
               if (onOptions != null) ...[
                 const SizedBox(width: 8),
                 DefaultIconButton(
                   onTap: onOptions!,
-                  assetPath: 'assets/images/icons/prof_page/open_menu.png',
+                  assetPath: AppIcons.openMenu,
                   size: 44,
                 ),
               ],

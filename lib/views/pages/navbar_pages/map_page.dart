@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -41,13 +42,13 @@ class _MapPageState extends State<MapPage> {
 
   final Map<String, BitmapDescriptor> _capsuleIcons = {};
   final Map<String, String> _iconPaths = {
-    'red': 'assets/images/icons/map/pins/red_pin.png',
-    'blue': 'assets/images/icons/map/pins/blue_pin.png',
-    'green': 'assets/images/icons/map/pins/green_pin.png',
-    'yellow': 'assets/images/icons/map/pins/yellow_pin.png',
-    'purple': 'assets/images/icons/map/pins/purple_pin.png',
-    'orange': 'assets/images/icons/map/pins/orange_pin.png',
-    'user': 'assets/images/icons/map/pins/user_pin.png',
+    'red': AppIcons.mapPin('red'),
+    'blue': AppIcons.mapPin('blue'),
+    'green': AppIcons.mapPin('green'),
+    'yellow': AppIcons.mapPin('yellow'),
+    'purple': AppIcons.mapPin('purple'),
+    'orange': AppIcons.mapPin('orange'),
+    'user': AppIcons.mapPinUser,
   };
 
   late final CapsuleJumpService _jumpService;

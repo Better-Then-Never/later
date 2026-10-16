@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/pages/auth_pages/login_page.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -22,11 +23,7 @@ class WelcomePage extends StatelessWidget {
                   offset: const Offset(0, -48.0),
                   child: Column(
                     children: [
-                      Image.asset(
-                        'assets/images/later_logo.png',
-                        height: 300,
-                        width: 200,
-                      ),
+                      Image.asset(AppImages.laterLogo, height: 300, width: 200),
                       Transform.translate(
                         offset: const Offset(0, -32.0),
                         child: Column(

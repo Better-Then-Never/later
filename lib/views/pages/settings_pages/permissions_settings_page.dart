@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 
@@ -21,13 +22,13 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
       name: 'Camera',
       description: 'Access camera to create time capsules',
       permission: Permission.camera,
-      iconAsset: 'assets/images/icons/camera/Camerafull.png',
+      iconAsset: AppIcons.cameraFull,
     ),
     AppPermissionSetting(
       name: 'Microphone',
       description: 'Record audio for time capsules',
       permission: Permission.microphone,
-      iconAsset: 'assets/images/icons/capsule_creation/microphone_icon.png',
+      iconAsset: AppIcons.capsuleMicrophone,
     ),
     AppPermissionSetting(
       name: 'Location',
@@ -35,20 +36,19 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
       permission: Platform.isIOS
           ? Permission.locationWhenInUse
           : Permission.location,
-      iconAsset: 'assets/images/icons/capsule_creation/location_icon.png',
+      iconAsset: AppIcons.capsuleLocation,
     ),
     AppPermissionSetting(
       name: 'Notifications',
       description: 'Receive updates about followers and capsules',
       permission: Permission.notification,
-      iconAsset:
-          'assets/images/icons/prof_page/notifications_button_black_full.png',
+      iconAsset: AppIcons.notificationsBlackFull,
     ),
     AppPermissionSetting(
       name: 'Contacts',
       description: 'Invite friends and find people you know',
       permission: Permission.contacts,
-      iconAsset: 'assets/images/icons/friends_page/friend_book.png',
+      iconAsset: AppIcons.friendsBook,
     ),
   ];
 
@@ -280,7 +280,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage> {
                       Navigator.pop(context);
                     },
                     child: Image.asset(
-                      'assets/images/icons/prof_page/go_back.png',
+                      AppIcons.goBack,
                       width: screenWidth * 0.11,
                       height: screenWidth * 0.11,
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 
 class RegistrationInputField extends StatefulWidget {
   final dynamic textHint;
@@ -34,12 +35,12 @@ class _RegistrationInputFieldState extends State<RegistrationInputField> {
               ? IconButton(
                   icon: isObscured
                       ? Image.asset(
-                          'assets/images/icons/login_signup_pages/Shown.png',
+                          AppIcons.authPasswordShown,
                           width: 25.0,
                           height: 25.0,
                         )
                       : Image.asset(
-                          'assets/images/icons/login_signup_pages/Hidden.png',
+                          AppIcons.authPasswordHidden,
                           width: 25.0,
                           height: 25.0,
                         ),

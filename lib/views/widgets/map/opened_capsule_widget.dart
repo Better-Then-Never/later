@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_location_label.dart';
 import 'package:later/views/widgets/capsule_creation/capsule_creation_datestamp.dart';
@@ -80,8 +81,7 @@ class CapsulePreviewCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 CapsuleCreationLocationLabel(
                   height: screenHeight * 0.05,
-                  iconPath:
-                      'assets/images/icons/capsule_creation/location_icon.png',
+                  iconPath: AppIcons.capsuleLocation,
                   location: location,
                 ),
                 const SizedBox(height: 8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/pages/core_pages/share_profile_page.dart';
 import 'package:later/views/pages/friends_pages/friend_requests_page.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_button_with_icon.dart';
@@ -31,7 +32,7 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
                   ),
                 );
               },
-              assetPath: 'assets/images/icons/prof_page/share_button_black.png',
+              assetPath: AppIcons.shareBlack,
               text: 'Share Profile',
             ),
           ),
@@ -52,8 +53,7 @@ class AddFriendsActionButtonsRow extends StatelessWidget {
                       ),
                     );
                   },
-                  assetPath:
-                      'assets/images/icons/friends_page/friend_request.png',
+                  assetPath: AppIcons.friendsRequest,
                   text: 'Requests',
                 ),
                 const Positioned(

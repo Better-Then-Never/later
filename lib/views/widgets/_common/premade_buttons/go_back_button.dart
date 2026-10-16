@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_icon_button.dart';
 
 class GoBackButton extends DefaultIconButton {
@@ -9,8 +10,6 @@ class GoBackButton extends DefaultIconButton {
     bool isBlack = true,
   }) : super(
          onTap: () => Navigator.pop(context),
-         assetPath: isBlack
-             ? 'assets/images/icons/prof_page/go_back.png'
-             : 'assets/images/icons/prof_page/go_back_white.png',
+         assetPath: isBlack ? AppIcons.goBack : AppIcons.goBackWhite,
        );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/_common/decorations/box_decorations.dart';
 import 'package:later/views/widgets/_common/default_elements/default_text.dart';
 import 'package:later/views/widgets/_common/default_buttons/default_text_button.dart';
@@ -37,9 +38,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                     height: 40,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage(
-                          'assets/images/icons/prof_page/my_capsules.png',
-                        ),
+                        image: AssetImage(AppIcons.profileMyCapsules),
                       ),
                     ),
                   ),

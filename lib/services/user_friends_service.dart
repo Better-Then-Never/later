@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:later/core/assets/app_assets.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
@@ -346,8 +347,7 @@ class UserFriendsService extends ChangeNotifier {
       final followerData = followerDoc.data()!;
       final followerName = followerData['username'] ?? 'Someone';
       final followerAvatar =
-          followerData['profilePicture'] ??
-          'assets/images/icons/prof_page/no_photo.png';
+          followerData['profilePicture'] ?? AppIcons.profileNoPhoto;
 
       // Get target user's FCM token
       final targetDoc = await _firestore

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
@@ -225,7 +226,7 @@ class _ProfilePictureState extends State<ProfilePicture> {
             : pickedImage == null
             ? Center(
                 child: Image.asset(
-                  'assets/images/icons/prof_page/choose_pp.png',
+                  AppIcons.profileChoosePhoto,
                   width: 35,
                   height: 35,
                   fit: BoxFit.contain,

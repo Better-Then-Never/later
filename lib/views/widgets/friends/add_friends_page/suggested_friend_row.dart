@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/assets/app_assets.dart';
 import 'package:later/views/widgets/user/user_round_avatar.dart';
 
 class SuggestedFriendRow extends StatelessWidget {
@@ -57,14 +58,14 @@ class SuggestedFriendRow extends StatelessWidget {
             children: [
               isSent || isPending
                   ? Image.asset(
-                      'assets/images/icons/friends_page/pending.png',
+                      AppIcons.friendsPending,
                       width: screenWidth * 0.09,
                       height: screenWidth * 0.09,
                     )
                   : GestureDetector(
                       onTap: onSendRequest,
                       child: Image.asset(
-                        'assets/images/icons/prof_page/add_friend.png',
+                        AppIcons.profileAddFriend,
                         width: screenWidth * 0.09,
                         height: screenWidth * 0.09,
                       ),
@@ -73,7 +74,7 @@ class SuggestedFriendRow extends StatelessWidget {
               GestureDetector(
                 onTap: onRemove,
                 child: Image.asset(
-                  'assets/images/icons/friends_page/delete_reset.png',
+                  AppIcons.friendsDeleteReset,
                   width: screenWidth * 0.07,
                   height: screenWidth * 0.07,
                 ),
