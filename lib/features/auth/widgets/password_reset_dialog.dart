@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class PasswordResetDialog extends StatefulWidget {
   final String initialEmail;
@@ -155,6 +156,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.textSecondary,
                     textStyle: const TextStyle(
+                      fontFamily: kAppFontFamily,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),

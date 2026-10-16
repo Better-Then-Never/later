@@ -364,13 +364,27 @@ class _ChatHeader extends StatelessWidget {
           UserRoundAvatar(userId: friendUid, radius: screen.width * 0.06),
           SizedBox(width: screen.width * 0.03),
           Expanded(
-            child: Text(
-              friendName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.pageTitle(
-                screen,
-              ).copyWith(fontSize: screen.height * 0.028),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  friendName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.pageTitle(
+                    screen,
+                  ).copyWith(fontSize: screen.height * 0.028),
+                ),
+                // Muted chats send no pushes; say so where it matters.
+                if (context.select<ChatController, bool>((c) => c.isMuted))
+                  Text(
+                    'Notifications muted',
+                    style: AppTextStyles.body.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+              ],
             ),
           ),
           Semantics(

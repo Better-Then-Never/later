@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -84,6 +85,7 @@ class ConfirmDialog extends StatelessWidget {
                   style: TextButton.styleFrom(
                     foregroundColor: AppColors.textSecondary,
                     textStyle: const TextStyle(
+                      fontFamily: kAppFontFamily,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
