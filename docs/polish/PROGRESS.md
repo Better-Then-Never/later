@@ -30,3 +30,9 @@ Branch: `feature/polish-motion-messages-settings` (from main 5b30770). Plan: POL
   read a chat instead of one per message), client-generated message ids for an optimistic outbox
   (sending/failed/retry), reverse list + growing `limitToLast` window for older messages. UI: white-card rows
   like My friends, unread badges (tab + rows), custom icons only, "Sent/Read/Not sent" text receipts.
+- **Phase 4 (messages)** 68f6c71: unread counts + one-write receipts (rules + 2 rules tests, 43 total), optimistic
+  outbox with retry (no duplicates), paging, full redesign with shared components/tokens/custom icons, tab badge,
+  CountBadge, AppNetworkImage. Verified on the emulator: list → chat clears both badges (rules accept the read
+  write), send → "Sent", friend reads → "Read", offline send → "Not sent · Tap to retry", retry online → delivered
+  once. Note: running `tools/rules-tests` (`npm run emulate`) stops the dev emulators; restart them afterwards.
+- **Next: Phase 5+6 together** (settings data first, then a settings-aware sender, then the settings UI).
