@@ -14,14 +14,14 @@ import '../data/services/location_service.dart';
 import '../data/services/preferences_store.dart';
 import '../data/services/profile_image_cache.dart';
 import '../data/services/push_messaging_service.dart';
+import '../features/history/favorites_store.dart';
+import '../features/history/own_capsules_store.dart';
 import '../features/map/current_location.dart';
 import '../features/map/map_focus.dart';
 import '../features/notifications/notification_router.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
-import '../services/capsule_data_service.dart';
 import '../services/user_data_service.dart';
-import '../services/user_favorite_capsules_service.dart';
 import '../services/user_friends_service.dart';
 import '../services/user_image_service.dart';
 import 'router/app_link_handler.dart';
@@ -58,13 +58,13 @@ class _AppScopeState extends State<AppScope> {
   final _currentLocation = CurrentLocation();
   late final _imageCache = ProfileImageCache(_images);
   late final _notificationsStore = NotificationsStore(_notifications);
+  late final _ownCapsules = OwnCapsulesStore(_capsules);
+  late final _favorites = FavoritesStore(_users);
   late final NotificationRouter _notificationRouter;
 
   // Legacy per-user services, reset by the session until they are replaced.
   final _legacyUserData = UserDataService();
   final _legacyFriends = UserFriendsService();
-  final _legacyCapsules = CapsuleDataService();
-  final _legacyFavorites = FavoriteCapsuleService();
   final _legacyImages = UserImageService();
 
   late final SessionController _session;
@@ -78,12 +78,12 @@ class _AppScopeState extends State<AppScope> {
       scoped: [
         _imageCache,
         _notificationsStore,
+        _ownCapsules,
+        _favorites,
         PushRegistration(push: _push, tokens: _pushTokens),
         _LegacyServicesScope(
           userData: _legacyUserData,
           friends: _legacyFriends,
-          capsules: _legacyCapsules,
-          favorites: _legacyFavorites,
           images: _legacyImages,
         ),
       ],
@@ -127,8 +127,6 @@ class _AppScopeState extends State<AppScope> {
         // Legacy services (removed feature by feature).
         ChangeNotifierProvider.value(value: _legacyUserData),
         ChangeNotifierProvider.value(value: _legacyFriends),
-        ChangeNotifierProvider.value(value: _legacyCapsules),
-        ChangeNotifierProvider.value(value: _legacyFavorites),
         ChangeNotifierProvider.value(value: _legacyImages),
         ChangeNotifierProvider<CurrentLocation>.value(value: _currentLocation),
         Provider<PushMessagingService>.value(value: _push),
@@ -138,6 +136,8 @@ class _AppScopeState extends State<AppScope> {
           value: _notificationsStore,
         ),
         ChangeNotifierProvider<MapFocus>.value(value: _mapFocus),
+        ChangeNotifierProvider<OwnCapsulesStore>.value(value: _ownCapsules),
+        ChangeNotifierProvider<FavoritesStore>.value(value: _favorites),
       ],
       child: widget.child,
     );
@@ -149,15 +149,11 @@ class _LegacyServicesScope extends SessionScoped {
   _LegacyServicesScope({
     required this.userData,
     required this.friends,
-    required this.capsules,
-    required this.favorites,
     required this.images,
   });
 
   final UserDataService userData;
   final UserFriendsService friends;
-  final CapsuleDataService capsules;
-  final FavoriteCapsuleService favorites;
   final UserImageService images;
 
   @override
@@ -169,8 +165,6 @@ class _LegacyServicesScope extends SessionScoped {
   void detach() {
     userData.onLogout();
     friends.onLogout();
-    capsules.onLogout();
-    favorites.onLogout();
     images.onLogout();
   }
 }

@@ -4,7 +4,6 @@ import 'package:later/app/session/session_controller.dart';
 import 'package:later/features/notifications/notification_router.dart';
 import 'package:later/data/notifiers.dart';
 import 'package:later/services/user_data_service.dart';
-import 'package:later/services/user_favorite_capsules_service.dart';
 import 'package:later/services/user_image_service.dart';
 import 'package:later/views/pages/core_pages/widget_tree.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +28,6 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
     selectedPageNotifier.value = 0;
 
     final uid = context.read<SessionController>().uid!;
-    context.read<FavoriteCapsuleService>().loadFavorites(uid);
     context.read<UserDataService>().getCurrentUserProfile(uid);
 
     _links = context.read<AppLinkHandler>();

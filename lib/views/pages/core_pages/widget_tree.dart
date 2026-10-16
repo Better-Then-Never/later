@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/data/notifiers.dart';
-import 'package:later/views/pages/navbar_pages/history_page.dart';
+import 'package:later/features/history/history_page.dart';
 import 'package:later/features/map/map_page.dart';
 import 'package:later/views/pages/navbar_pages/messages_page.dart';
 import 'package:later/views/pages/navbar_pages/profile_page.dart';
