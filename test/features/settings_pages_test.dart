@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/services/cache_service.dart';
 import 'package:later/data/services/preferences_store.dart';
 import 'package:later/features/settings/device_settings_store.dart';
@@ -101,6 +103,26 @@ void main() {
       store.detach();
     });
 
+    testWidgets('nothing can change before the saved settings arrive', (
+      tester,
+    ) async {
+      final repo = _SlowSettingsRepository();
+      final store = SettingsStore(repo, utcOffsetMinutes: () => 0)
+        ..attach('alice');
+      await tester.pumpWidget(
+        ChangeNotifierProvider<SettingsStore>.value(
+          value: store,
+          child: const MaterialApp(home: NotificationSettingsPage()),
+        ),
+      );
+      await tester.pump();
+      await tester.tap(find.text('Push notifications'));
+      await tester.tap(find.text('Messages'));
+      await tester.pump();
+      expect(repo.saves, 0);
+      store.detach();
+    });
+
     testWidgets('quiet hours show their times when on', (tester) async {
       final repo = FakeSettingsRepository();
       final store = SettingsStore(repo, utcOffsetMinutes: () => 0)
@@ -124,4 +146,19 @@ void main() {
       store.detach();
     });
   });
+}
+
+/// Never delivers the saved settings (a slow or offline first load).
+class _SlowSettingsRepository extends FakeSettingsRepository {
+  int saves = 0;
+
+  @override
+  Stream<UserSettings> watch(String uid) =>
+      StreamController<UserSettings>().stream;
+
+  @override
+  Future<void> saveNotifications(
+    String uid,
+    NotificationSettings settings,
+  ) async => saves++;
 }

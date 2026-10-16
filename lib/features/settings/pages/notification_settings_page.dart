@@ -106,7 +106,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
     final n = context.select<SettingsStore, NotificationSettings>(
       (s) => s.notifications,
     );
-    final on = n.enabled;
+    // Until the saved settings arrive the page shows the defaults; a change
+    // then would save them over the user's real choices.
+    final loaded = context.select<SettingsStore, bool>((s) => s.isLoaded);
+    final on = n.enabled && loaded;
     final quiet = n.quietHours;
 
     return SettingsScaffold(
@@ -134,10 +137,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           children: [
             OptionsSwitchRow(
               title: 'Push notifications',
-              subtitle: on ? null : 'You get no pushes from Later',
-              value: on,
+              subtitle: n.enabled ? null : 'You get no pushes from Later',
+              value: n.enabled,
               withDivider: false,
-              onChanged: (v) => _save(n.copyWith(enabled: v)),
+              onChanged: loaded ? (v) => _save(n.copyWith(enabled: v)) : null,
             ),
           ],
         ),

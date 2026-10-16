@@ -36,3 +36,30 @@ Branch: `feature/polish-motion-messages-settings` (from main 5b30770). Plan: POL
   write), send → "Sent", friend reads → "Read", offline send → "Not sent · Tap to retry", retry online → delivered
   once. Note: running `tools/rules-tests` (`npm run emulate`) stops the dev emulators; restart them afterwards.
 - **Next: Phase 5+6 together** (settings data first, then a settings-aware sender, then the settings UI).
+- **Phase 5+6 (notifications + settings)** d58b01a … 3d4cc45:
+  - Server: `functions/lib/prefs.js` reads `users/{uid}/settings/app` (defaults when missing or malformed);
+    follow/capsule pushes honour it; new `sendMessageNotification` (mute, categories, quiet hours in local time,
+    preview, silent channels, one notification per chat); new `cleanupDeletedAccount` (auth `onDelete`).
+    Functions tests 23/23. On the Functions emulator (`demo-later` project, so nothing real is reachable) both
+    triggers ran: deleting an Auth user removed its profile, settings, username, chats and friend links.
+  - Rules: owner-only, validated settings document; rules tests 45/45.
+  - Client: `SettingsStore` (optimistic, rollback, keeps the quiet-hours UTC offset in sync), muted chats feed the
+    unread badge, Mute/Unmute in the chat menu; push channels per kind, message pushes open the chat, no
+    foreground notification for the chat on screen, opening a chat clears its notification.
+  - Settings, all real: email (confirmation link) and password with re-auth, notifications, blocked users,
+    permissions (shared header now), map and camera, data and storage (cache size, clear), help, about
+    (version, licenses), customize profile, delete account. Language/App appearance removed (D-07).
+  - Verified on the emulator: notification switches write the document and the rules accept it; a wrong current
+    password is refused ("Wrong password."), the right one changes it (checked against the Auth emulator) and back;
+    account deletion signs out to the welcome page and the Auth user is gone.
+  - Fixed on the way: long page titles ran under the back button (PageHeader), raw `Color.fromARGB` literals (new
+    `raw-argb` rule, D-05), POL-002 (account without profile → "Almost there" page).
+- **Next: Phase 7 (quality sweep)**, then the final gates, after-screenshots and REPORT.md.
+- **Phase 7 (quality sweep)**:
+  - Text at 1.3×: messages, chat, profile, settings, blocked users fit without clipping (`after/text130_*.png`).
+  - Fixed: dialog "Cancel" rendered in Roboto (button text style without the app font); muted chats now say
+    "Notifications muted" in the chat header; the notifications page could save the defaults over the user's
+    real choices if touched before the settings loaded (switches now wait; test proves the old page saved 2×).
+  - Checked, no change needed: double taps cannot open a page twice (the Navigator absorbs pointers as soon as
+    a push or pop starts; a test showed one page with and without a guard, so the guard was not added); every
+    async button already ignores taps while busy.
