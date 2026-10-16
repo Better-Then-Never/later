@@ -840,30 +840,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.1"
-  location:
-    dependency: "direct main"
-    description:
-      name: location
-      sha256: b080053c181c7d152c43dd576eec6436c40e25f326933051c330da563ddd5333
-      url: "https://pub.dev"
-    source: hosted
-    version: "8.0.1"
-  location_platform_interface:
-    dependency: transitive
-    description:
-      name: location_platform_interface
-      sha256: ca8700bb3f6b1e8b2afbd86bd78b2280d116c613ca7bfa1d4d7b64eba357d749
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.1"
-  location_web:
-    dependency: transitive
-    description:
-      name: location_web
-      sha256: b8e3add5efe0d65c5e692b7a135d80a4015c580d3ea646fa71973e97668dd868
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.1"
   logger:
     dependency: transitive
     description:
@@ -976,14 +952,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
-  page_transition:
-    dependency: "direct main"
-    description:
-      name: page_transition
-      sha256: "61dac670e80ebdd7da847c21841e1dfd8f9ab483b3a0c5fddc877ad8d23b69ee"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
   path:
     dependency: transitive
     description:

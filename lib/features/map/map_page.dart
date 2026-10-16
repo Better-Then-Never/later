@@ -167,7 +167,7 @@ class _MapViewState extends State<_MapView> {
       Heatmap(
         heatmapId: const HeatmapId('capsules_heatmap'),
         data: points,
-        radius: HeatmapRadius.fromPixels(50),
+        radius: const HeatmapRadius.fromPixels(50),
         gradient: const HeatmapGradient([
           HeatmapGradientColor(AppColors.heatmapLow, 0.2),
           HeatmapGradientColor(AppColors.heatmapMid, 0.5),
@@ -197,8 +197,9 @@ class _MapViewState extends State<_MapView> {
           ),
           onMapCreated: (controller) {
             _infoWindow.googleMapController = controller;
-            if (!_mapController.isCompleted)
+            if (!_mapController.isCompleted) {
               _mapController.complete(controller);
+            }
             if (_focus.pending != null) unawaited(_showFocusedCapsule());
           },
           markers: _markers(map),

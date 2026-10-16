@@ -67,7 +67,8 @@ class ProfileImageCache extends ChangeNotifier implements SessionScoped {
       } catch (e) {
         AppLogger.debug('Image lookup failed for $key: $e');
       }
-      _inFlight.remove(key);
+      // The removed future is this very lookup; nothing to wait for.
+      _inFlight.remove(key)?.ignore();
       _entries[key] = _Entry(url, DateTime.now());
       notifyListeners();
       return url;

@@ -209,9 +209,10 @@ class MapController extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _session.removeListener(_onSessionChanged);
-    for (final sub in [_positionSub, _ownSub, _friendsSub, _publicSub]) {
-      unawaited(sub?.cancel());
-    }
+    unawaited(_positionSub?.cancel());
+    unawaited(_ownSub?.cancel());
+    unawaited(_friendsSub?.cancel());
+    unawaited(_publicSub?.cancel());
     super.dispose();
   }
 }

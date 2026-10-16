@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../services/popup_notification_service.dart';
-import '../../../views/pages/core_pages/qr_code_scanner_page.dart';
+import '../../../app/router/app_routes.dart';
 import '../../../views/widgets/_common/default_buttons/default_icon_button.dart';
 import '../../../views/widgets/_common/default_elements/default_search_bar.dart';
 import '../../../views/widgets/_common/default_elements/default_text.dart';
@@ -66,7 +66,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
               controller: _searchController,
               hintText: 'Search by tag',
               trailingButton: DefaultIconButton(
-                onTap: () => QRScannerPage.open(context),
+                onTap: () => AppRoutes.scanProfileQr(context),
                 assetPath: AppIcons.friendsQrScan,
                 size: screenWidth * 0.09,
               ),

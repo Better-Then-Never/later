@@ -18,13 +18,13 @@ class LaterApp extends StatelessWidget {
       builder: (context, child) => Stack(
         children: [
           child ?? const SizedBox(),
-          IgnorePointer(
+          const IgnorePointer(
             child: SnowFallAnimation(
               config: SnowfallConfig(
                 numberOfSnowflakes: 15,
                 speed: 0.5,
                 useEmoji: true,
-                customEmojis: const ['❄️', '❅', '❆'],
+                customEmojis: ['❄️', '❅', '❆'],
               ),
             ),
           ),

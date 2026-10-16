@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../views/pages/core_pages/qr_code_scanner_page.dart';
+import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../data/models/user_profile.dart';
 import '../../../views/widgets/_common/default_buttons/default_icon_button.dart';
@@ -95,7 +95,7 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
               controller: _searchController,
               hintText: 'Find my friends',
               trailingButton: DefaultIconButton(
-                onTap: () => QRScannerPage.open(context),
+                onTap: () => AppRoutes.scanProfileQr(context),
                 assetPath: AppIcons.friendsQrScan,
                 size: screenWidth * 0.09,
               ),

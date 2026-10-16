@@ -14,6 +14,7 @@ import '../../features/friends/pages/my_friends_page.dart';
 import '../../features/friends/pages/your_friend_profile_page.dart';
 import '../../features/capsules/camera/camera_page.dart';
 import '../../features/capsules/creation/capsule_creation_page.dart';
+import 'app_link_handler.dart';
 import 'app_page_route.dart';
 
 /// Every navigation in the app goes through here. Each method keeps the
@@ -98,6 +99,17 @@ abstract final class AppRoutes {
 
   static Future<String?> toQrScanner(BuildContext context) =>
       Navigator.of(context).push<String>(fadeRoute(const QRScannerPage()));
+
+  /// Scans a QR code and opens the profile it links to (other codes are
+  /// ignored, as before).
+  static Future<void> scanProfileQr(BuildContext context) async {
+    final result = await toQrScanner(context);
+    if (result == null || !AppLinkHandler.isProfileLink(result)) return;
+    final userId = AppLinkHandler.profileUserId(result);
+    if (userId != null && context.mounted) {
+      await toAddFriendProfile(context, userId);
+    }
+  }
 
   /// Profile link from outside (deep link, QR): opens the add-friend profile
   /// on top of the current screen.
