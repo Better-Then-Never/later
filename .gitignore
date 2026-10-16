@@ -130,6 +130,7 @@ windows/flutter/generated_plugins.cmake
 # Firebase config (keep local, do not commit)
 google-services.json
 **/google-services.json
+**/GoogleService-Info.plist
 lib/firebase_options.dart
 
 # Node tooling
