@@ -37,3 +37,21 @@ opens the app without going to the chat (they do not know the `message` type). A
   Settings > Notifications, per chat with Mute, or with quiet hours.
 - Deleting an account removes the user's chats for the other participant too (the partner no longer exists).
   See `functions/lib/account.js`.
+
+## 4. Status (2026-10-17, with the owner's authorization)
+
+- **Step 1 (rules): done.** `firebase deploy --only firestore:rules`.
+- **Step 2 (functions): done.** The Firebase CLI updated the three existing functions but could not *create* the
+  two new ones: a new function is built with the project's default build account, the Compute Engine account
+  that was deleted long ago (see the refactor's MIGRATIONS_NEEDED.md). Both were therefore created once with
+  `gcloud functions deploy … --build-service-account=…later-functions…` (`sendMessageNotification` in
+  europe-west1 with an `eur3` trigger, `cleanupDeletedAccount` 1st gen in us-central1), then `firebase deploy
+  --only functions` took them over (labels `deployment-tool: cli-firebase`; later updates keep the build
+  account). Artifact cleanup policy set for europe-west1. **Any future new function needs the same first
+  step.**
+- **Step 3 (hosting): done.** `privacy.html`, `terms.html`, `legal.css` return 200.
+- **Pending (owner):** give `later-functions@later-da778.iam.gserviceaccount.com` delete access on the Storage
+  bucket, otherwise `cleanupDeletedAccount` removes the Firestore data but stops at the pictures:
+  `gcloud storage buckets add-iam-policy-binding gs://later-da778.firebasestorage.app
+  --member=serviceAccount:later-functions@later-da778.iam.gserviceaccount.com --role=roles/storage.objectAdmin`
+- **Step 4 (app release):** after the Storage access.
