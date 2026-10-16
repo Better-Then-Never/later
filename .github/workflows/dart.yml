@@ -1,5 +1,7 @@
 name: iOS-ipa-build
 
+# Manual unsigned iOS build published as GitHub release v0.0.<run number>.
+# Required secrets: docs/CI.md.
 on:
   workflow_dispatch:
 
@@ -11,15 +13,22 @@ jobs:
     name: iOS Build
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           architecture: x64
-      
+
       - run: flutter pub get
-       
+
+      - name: Write Firebase config
+        env:
+          FIREBASE_OPTIONS_DART_BASE64: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+          MAPS_API_KEY_IOS: ${{ secrets.MAPS_API_KEY_IOS }}
+        run: bash tools/ci/write-config.sh ios
+
       - run: pod repo update
         working-directory: ios
 

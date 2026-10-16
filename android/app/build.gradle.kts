@@ -34,15 +34,22 @@ android {
     }
 
     defaultConfig {
-        // Google Maps key from the git-ignored android/local.properties
-        // (MAPS_API_KEY=...). Never commit the key; see docs/refactor/REPORT.md.
+        // Google Maps key, never committed. First found wins:
+        // android/local.properties (MAPS_API_KEY=...), the MAPS_API_KEY
+        // environment variable (CI), or GOOGLE_MAPS_API_KEY in the git-ignored
+        // .env at the repo root (the setup used on main).
         val localProperties = Properties().apply {
             val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        val dotEnv = Properties().apply {
+            val file = rootProject.file("../.env")
             if (file.exists()) file.inputStream().use { load(it) }
         }
         manifestPlaceholders["MAPS_API_KEY"] =
             localProperties.getProperty("MAPS_API_KEY")
                 ?: System.getenv("MAPS_API_KEY")
+                ?: dotEnv.getProperty("GOOGLE_MAPS_API_KEY")
                 ?: ""
 
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -55,11 +62,25 @@ android {
         versionName = flutter.versionName
     }
 
+    // Release keystore from the environment (the GitHub Actions workflows
+    // decode it from the KEYSTORE_BASE64 secret). Without it, release builds
+    // are signed with the debug key so `flutter run --release` still works.
+    signingConfigs {
+        create("release") {
+            storeFile = file(System.getenv("KEYSTORE_FILE") ?: "release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so flutter run --release works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (System.getenv("KEYSTORE_FILE") != null) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }

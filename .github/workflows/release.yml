@@ -1,0 +1,154 @@
+name: Build & Release (iOS + Android)
+
+# Every push to main builds a signed APK and an unsigned IPA and publishes
+# them as GitHub release v0.0.N. Required secrets: docs/CI.md.
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    name: Android Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      - run: flutter pub get
+
+      - name: Write Firebase config
+        env:
+          FIREBASE_OPTIONS_DART_BASE64: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: bash tools/ci/write-config.sh android
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+
+      - name: Build APK
+        env:
+          KEYSTORE_FILE: release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY_ANDROID }}
+        run: flutter build apk --release --build-number=${{ github.run_number }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  build-ios:
+    name: iOS Build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          architecture: x64
+
+      - run: flutter pub get
+
+      - name: Write Firebase config
+        env:
+          FIREBASE_OPTIONS_DART_BASE64: ${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}
+          GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_BASE64 }}
+          MAPS_API_KEY_IOS: ${{ secrets.MAPS_API_KEY_IOS }}
+        run: bash tools/ci/write-config.sh ios
+
+      - run: pod repo update
+        working-directory: ios
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign --build-number=${{ github.run_number }}
+
+      - name: Create IPA
+        working-directory: build/ios/iphoneos
+        run: |
+          mkdir Payload
+          mv Runner.app/ Payload
+          zip -qq -r -9 FlutterIpaExport.ipa Payload
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/iphoneos/FlutterIpaExport.ipa
+
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [build-android, build-ios]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest release version and increment
+        id: version
+        run: |
+          LATEST_TAG=$(git tag -l "v0.0.*" | sort -V | tail -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_VERSION="0.0.1"
+          else
+            CURRENT_VERSION=${LATEST_TAG#v0.0.}
+            NEW_PATCH=$((CURRENT_VERSION + 1))
+            NEW_VERSION="0.0.$NEW_PATCH"
+          fi
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Next version: $NEW_VERSION"
+
+      - name: Download Android APK
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: artifacts/android
+
+      - name: Download iOS IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-ipa
+          path: artifacts/ios
+
+      - name: Upload APK to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/android/app-release.apk
+          asset_name: app-release-${{ steps.version.outputs.tag }}.apk
+          tag: ${{ steps.version.outputs.tag }}
+          release_name: "Release ${{ steps.version.outputs.tag }}"
+          make_latest: true
+          overwrite: true
+          body: "Automatic build version ${{ steps.version.outputs.version }}"
+
+      - name: Upload IPA to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: artifacts/ios/FlutterIpaExport.ipa
+          asset_name: FlutterIpaExport-${{ steps.version.outputs.tag }}.ipa
+          tag: ${{ steps.version.outputs.tag }}
+          release_name: "Release ${{ steps.version.outputs.tag }}"
+          make_latest: true
+          overwrite: true
+          body: "Automatic build version ${{ steps.version.outputs.version }}"

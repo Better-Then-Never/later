@@ -141,3 +141,19 @@ node_modules/
 
 # Local secrets (Maps API keys)
 ios/Flutter/Secrets.xcconfig
+
+# Local environment files (from main: GOOGLE_MAPS_API_KEY in .env)
+.env
+.env.*
+!.env.example
+.direnv
+shell.nix
+
+# IDE / OS files (removed from the repo on main)
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# CI writes the release keystore here
+android/app/release.keystore
