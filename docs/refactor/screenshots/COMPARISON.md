@@ -12,7 +12,7 @@ Both sets come from the same emulator (Pixel-class AVD, 1080×2400) against the 
 | `history_*` | Newest capsule first; the new "Living room" capsule shows its photo. | BUG-063 (ordering); BUG-055 (upload with content type). |
 | `add_friends` | Dave (who sent Alice a request) shows the add button instead of the pending clock; Erin (request sent) keeps the clock. | BUG-070. |
 | `add_friends_search` | "da" finds @davem. | BUG-072: case-insensitive prefix search. |
-| `permission_gate_notifications_already_granted` | After: the home map directly. | With every permission already granted the gate is skipped, which is the intended flow. The before shot showed the gate page. |
+| `permission_gate_notifications_already_granted` | Identical ("Granted" state). The gate now moves past already-granted pages on its own; this shot was taken by swiping back. | Gate auto-advance fix (see BUGS.md). |
 | `profile_second_user_after_switch`, `history_second_user` | Bob's own avatar and Alice's avatar load after the account switch. | BUG-012 and BUG-114: no data or cache survives from the previous account. |
 | `settings` | Name, @username and e-mail come from the live session (Auth for the e-mail). | BUG-011: no "Loading..."/placeholder uid. |
 | `capsule_creation_*` | Identical. Save shows the spinner once, and a double tap creates one capsule. | BUG-054 (behaviour, not visible in a still). |
