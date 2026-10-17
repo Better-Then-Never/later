@@ -70,7 +70,8 @@ Everything is a token in `lib/core/theme/app_colors.dart`; `tool/check_design_to
   options in danger red, the current choice in green, a chevron for a submenu; confirm dialog = title, optional
   message, coloured confirm pill (red when destructive, green otherwise), grey "Cancel" text.
 - **Sheets:** lists and threads come from the bottom edge (`showEdgeSheet` + `EdgeSheet`): rounded top 25, grab
-  handle, page background. Nothing uses a stock `AlertDialog`/`showDialog` any more.
+  handle, page background. No stock `AlertDialog`s; the only `showDialog` is the capsule viewer
+  (`CapsuleDetailDialog`), which fades in like opening a photo.
 - **Toasts:** rounded 10, coloured (green success, red error, blue info), slide and fade in at top, centre or bottom.
 - **Avatars:** circles for people in lists and chat, rounded squares (radius 12) on profiles.
 - **Empty states:** hand-drawn icon (72), bold title, grey subtitle, optional green action.
