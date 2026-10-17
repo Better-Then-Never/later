@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -102,11 +101,10 @@ class _MyLocationButton extends StatelessWidget {
 }
 
 class _MapViewState extends State<_MapView> {
-  var _mapController = Completer<GoogleMapController>();
+  final _mapController = Completer<GoogleMapController>();
 
-  /// The look the map was created with: a theme change recreates the map
-  /// (the cloud style needs the map ID, the dark style needs none), at the
-  /// place the user was looking at.
+  /// The theme the marker icons were drawn for. A theme switch restyles the
+  /// map in place (two local styles, no map ID) and redraws the icons.
   bool? _builtDark;
   CameraPosition? _lastCamera;
 
@@ -120,11 +118,6 @@ class _MapViewState extends State<_MapView> {
   /// (hidden until that is known).
   bool _hintClosed = true;
   static const _hintKey = 'first_capsule_hint';
-
-  /// Cloud-based map styles (Google Cloud Console "Map Management").
-  static final _mapId = Platform.isAndroid
-      ? '12b4f975aba292b65ac044ea'
-      : '12b4f975aba292b627a4b587';
 
   @override
   void initState() {
@@ -347,7 +340,6 @@ class _MapViewState extends State<_MapView> {
     final start = map.initialCamera;
     final dark = Theme.of(context).brightness == Brightness.dark;
     if (_builtDark != null && _builtDark != dark) {
-      _mapController = Completer<GoogleMapController>();
       unawaited(map.setDarkIcons(dark));
     }
     _builtDark = dark;
@@ -375,9 +367,7 @@ class _MapViewState extends State<_MapView> {
       child: Stack(
         children: [
           GoogleMap(
-            key: ValueKey(dark),
-            mapId: dark ? null : _mapId,
-            style: dark ? MapStyles.dark : null,
+            style: dark ? MapStyles.dark : MapStyles.light,
             // The Google logo stays visible above the floating navigation
             // bar, above the capsule card while it is open, and below the
             // status bar: it is never covered (F-12, F-14). The zoom buttons
@@ -427,8 +417,7 @@ class _MapViewState extends State<_MapView> {
                 );
                 map.onCameraIdle(center, await controller.getZoomLevel());
               } on StateError {
-                // The map was recreated (theme change) while this ran; the
-                // new map reports its own idle camera.
+                // The map went away (the tab was rebuilt) while this ran.
               }
             },
           ),
