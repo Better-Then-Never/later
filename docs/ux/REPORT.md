@@ -27,7 +27,8 @@ onboarding (asks for the permission first now); creation header scrolled under t
 vanished on the dark map; comments sheet went under the status bar with the keyboard; the info panel overflowed by
 2 px and its locked button was unreadable.
 
-**Features.** Reactions, comments (one level of replies), reports; per-capsule comment/reaction/approximate-location
+**Features.** Reactions, comments (one level of replies), reports; a friend's capsules on their profile; camera
+pinch zoom, tap to focus and instant shutter feedback; per-capsule comment/reaction/approximate-location
 switches and privacy defaults; read receipts honoured both ways; friends-of-friends suggestions (replacing a list of
 the app's first 50 users, a privacy problem); follower counts and verified badge; achievements and streak on
 profiles; new notification types and categories; topic subscription for announcements; admin scripts (admin claim,
@@ -38,7 +39,7 @@ streak reminders, announcements), localized pushes, rules for every new document
 removes the user's reactions and comments. Functions 43/43, rules 53/53.
 
 ## Numbers
-Flutter tests 224 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
+Flutter tests 226 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
 PERFORMANCE.md (build p90 within a frame except first builds of tabs/pages at 17-18 ms).
 
 ## Decisions (DECISIONS.md)
@@ -46,7 +47,7 @@ D-03 charcoal dark palette; D-07 dark map without the cloud map ID; optional per
 removed from Android; friends-of-friends suggestions; feature flags for anything not finished (loop capsules).
 
 ## Not done (IDEAS_NOT_DONE.md)
-Loop capsules, offline outbox, camera controls, own date picker and composer, chat reactions/replies/photos/voice,
+Loop capsules, offline outbox, flash auto/torch, own date picker and composer, chat reactions/replies/photos/voice,
 map clusters, friend's capsules list, co-authors, some consistency items (history controls, one sheet system,
 requests toggle, share icon) and transition polish.
 

@@ -13,12 +13,14 @@ Checked by hand on the emulator (dark theme, English and Russian). ✓ = good, �
 | Capsule dialog | ✓ | Reactions respond instantly (optimistic), green tint on the chosen one. △ the card itself is the old 45%-height layout. |
 | Comments | ✓ | Sheet with grab handle, composer above the keyboard, "Just now" times, replies indented. |
 | Creation | △ | Header pinned, new switches clear; still the cycling pills and stock date picker (F-27/F-28). |
-| Camera | △ | Starts on first use now; no zoom/focus yet (F-20). |
+| Camera | ✓ | Starts on first use; pinch zoom with a 1.8× hint, tap-to-focus ring, haptic + blink on the shutter. △ flash has on/off only. |
 | History | ✓ | Photos from disk after restart; labels fit in all languages. △ Reset still uses the sort icon (F-31). |
 | Messages / Chat | ✓ | Re-entering a chat shows the last messages at once; read receipts respect the privacy switch. |
 | Profile | ✓ | Scrolls now; counts and verified badge; achievements card with streak. |
 | Achievements | ✓ | Clear levels and progress bars; goals written as actions. |
-| Add friends | ✓ | Suggestions from friends of friends with mutual counts; no list of strangers. △ transition (F-38). |
+| Add friends | ✓ | Suggestions from friends of friends with mutual counts; no list of strangers; built lazily. |
+| Friend's profile | ✓ | Their capsules (open ones open in place, locked ones on the map), achievements, readable header. |
+| Friend requests | ✓ | Same tab look as Notifications. |
 | Settings | ✓ | Appearance, Language, Privacy pages follow the existing settings look; theme switch crossfades. |
 | Russian / German | △ | Texts fit (several shortened after checks); Cyrillic uses the system font (BLOCKERS.md). |
 

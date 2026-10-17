@@ -13,6 +13,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Photo disk cache, decode buckets, remembered avatars, instant chat re-entry (F-01..F-03) | on | `data/services/app_image_cache.dart`, `profile_image_cache.dart`, `chats_store.dart` | tests, emulator cold restart |
 | Optional permission onboarding (3 steps, "Not now") (F-42) | on | `auth/permission_gate_page.dart` | emulator |
 | Round list avatars (F-30), nav tab labels (F-34), pinned headers | on | shared widgets | goldens, emulator |
+| One segmented control (requests = notifications tabs, F-41); Reset icon (F-31); lazy suggestions (F-38); readable header without a background (F-40) | on | `app_segmented_tabs.dart` and others | emulator |
 
 ## Map and creation (Tier 1)
 | Feature | Status | Where | Verified |
@@ -24,6 +25,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Privacy defaults in creation; per-capsule comments/reactions/approximate location (F-29) | on | `capsule_creation_*` | tests, emulator |
 | Capture time + UTC offset on capsules (for streaks) | on | draft/mapper | tests |
 | Camera asks for its permission first (fix) | on | `camera_page.dart` | emulator |
+| Camera: pinch to zoom, tap to focus/exposure, instant shutter feedback (F-20..F-22) | on | `camera_page.dart` | emulator (focus ring; pinch needs a real device) |
 | Description limit 2000 (F-25 bug) | on | creation | – |
 
 ## Social and gamification (Tier 2)
@@ -33,6 +35,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Comments with one level of replies, delete, report | on | `capsules/social` | tests, emulator |
 | Reports (capsules, comments) | on | `capsule_social_panel.dart` | tests |
 | Friends-of-friends suggestions with mutual counts (F-57) | on | `friend_suggestions_controller.dart` | tests |
+| A friend's capsules on their profile (F-54) | on | `friend_capsules_strip.dart`, `CapsuleRepository.sharedBy` | tests, emulator against the rules |
 | Follower/following counts, verified badge (F-53, F-58) | on | `user_name_and_username.dart`, `verified_name.dart` | emulator |
 | Achievements and streak on profiles (F-90..F-92) | on | `features/achievements` | tests, emulator |
 | Privacy: read receipts (both ways), show achievements, default visibility, approximate location | on | `settings/pages/privacy_settings_page.dart` | tests |
