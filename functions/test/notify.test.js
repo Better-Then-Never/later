@@ -152,6 +152,38 @@ describe('capsule notifications (BUG-026, BUG-027)', () => {
     assert.equal((await notified('follower')).length, 0);
   });
 
+  test('co-authors hear about it, even when private; once, not as followers', async () => {
+    await addUser('owner', { friends: ['friendFollower', 'pal'] });
+    await addUser('pal', {}, ['pal1']);
+    const messaging = fakeMessaging();
+    const result = await notify.onCapsuleCreated({ db, messaging }, 'c6', {
+      ownerId: 'owner',
+      privacy: 'private',
+      coAuthors: ['pal', 'stranger', 'owner', 'pal'],
+    });
+    assert.equal(result.recipients, 0);
+    assert.equal(result.coAuthors, 1);
+    assert.deepEqual(messaging.sent.map((m) => m.token), ['pal1']);
+    assert.equal(messaging.sent[0].data.type, 'coAuthor');
+    assert.equal(messaging.sent[0].notification.body, 'owner made a capsule with you');
+    const [n] = await notified('pal');
+    assert.equal(n.type, 'coAuthor');
+    assert.equal(n.capsuleId, 'c6');
+    assert.equal((await notified('stranger')).length, 0);
+
+    // A friend who follows and co-authored gets the co-author one only.
+    const again = fakeMessaging();
+    const friendsOnly = await notify.onCapsuleCreated({ db, messaging: again }, 'c7', {
+      ownerId: 'owner',
+      privacy: 'friends',
+      coAuthors: ['friendFollower'],
+    });
+    assert.equal(friendsOnly.recipients, 0);
+    assert.equal(friendsOnly.coAuthors, 1);
+    const got = (await notified('friendFollower')).filter((x) => x.capsuleId === 'c7');
+    assert.deepEqual(got.map((x) => x.type), ['coAuthor']);
+  });
+
   test('private capsule: nobody', async () => {
     const messaging = fakeMessaging();
     const result = await notify.onCapsuleCreated({ db, messaging }, 'c3', {

@@ -14,6 +14,7 @@ extension NotificationTypeL10n on NotificationType {
     NotificationType.friendRequest => l10n.notificationsTypeFriendRequest,
     NotificationType.friendAccepted => l10n.notificationsTypeFriendAccepted,
     NotificationType.achievement => l10n.notificationsTypeAchievement,
+    NotificationType.coAuthor => l10n.notificationsTypeCoAuthor,
     NotificationType.other => l10n.notificationsTypeOther,
   };
 }
@@ -64,6 +65,7 @@ abstract final class NotificationTexts {
       NotificationType.achievement => strings.notificationsAchievementBody(
         _name,
       ),
+      NotificationType.coAuthor => strings.notificationsCoAuthorBody(_name),
       NotificationType.other => null,
     };
     if (template == null) return (before: '', after: ' ${n.message}');

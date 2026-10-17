@@ -27,6 +27,7 @@ typedef GroupPick = ({String name, List<String> friends});
 
 /// Friends to pick for a group: for a new one ([withName]: a name field
 /// too), or to add to one ([exclude]: already in it; [room]: places left).
+/// Also picks a capsule's co-authors ([initial], [allowEmpty]).
 class GroupFriendsPicker extends StatefulWidget {
   const GroupFriendsPicker({
     super.key,
@@ -35,6 +36,9 @@ class GroupFriendsPicker extends StatefulWidget {
     this.withName = false,
     this.exclude = const {},
     this.room = Chat.maxGroupMembers - 1,
+    this.initial = const {},
+    this.allowEmpty = false,
+    this.tooManyText,
   });
 
   final String title;
@@ -42,6 +46,15 @@ class GroupFriendsPicker extends StatefulWidget {
   final bool withName;
   final Set<String> exclude;
   final int room;
+
+  /// Picked when the sheet opens.
+  final Set<String> initial;
+
+  /// Done with nobody picked is an answer (clears the pick).
+  final bool allowEmpty;
+
+  /// Said when [room] is full (the group's limit otherwise).
+  final String? tooManyText;
 
   /// The pick, or null when the sheet is dismissed.
   static Future<GroupPick?> show(
@@ -51,6 +64,9 @@ class GroupFriendsPicker extends StatefulWidget {
     bool withName = false,
     Set<String> exclude = const {},
     int room = Chat.maxGroupMembers - 1,
+    Set<String> initial = const {},
+    bool allowEmpty = false,
+    String? tooManyText,
   }) => showEdgeSheet<GroupPick>(
     context,
     (_) => GroupFriendsPicker(
@@ -59,6 +75,9 @@ class GroupFriendsPicker extends StatefulWidget {
       withName: withName,
       exclude: exclude,
       room: room,
+      initial: initial,
+      allowEmpty: allowEmpty,
+      tooManyText: tooManyText,
     ),
   );
 
@@ -71,6 +90,12 @@ class _GroupFriendsPickerState extends State<GroupFriendsPicker> {
   final _search = TextEditingController();
   final Set<String> _picked = {};
   String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _picked.addAll(widget.initial);
+  }
 
   @override
   void dispose() {
@@ -92,7 +117,7 @@ class _GroupFriendsPickerState extends State<GroupFriendsPicker> {
     if (!_picked.contains(uid) && _picked.length >= widget.room) {
       PopupNotificationService.showError(
         context: context,
-        message: l10n.messagesGroupTooMany,
+        message: widget.tooManyText ?? l10n.messagesGroupTooMany,
         position: NotificationPosition.top,
       );
       return;
@@ -108,7 +133,7 @@ class _GroupFriendsPickerState extends State<GroupFriendsPicker> {
     final name = _name.text.trim();
     final problem = widget.withName && name.isEmpty
         ? l10n.messagesGroupNeedsName
-        : _picked.isEmpty
+        : _picked.isEmpty && !widget.allowEmpty
         ? l10n.messagesGroupNeedsPeople
         : null;
     if (problem != null) {
@@ -202,19 +227,23 @@ class _GroupFriendsPickerState extends State<GroupFriendsPicker> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                widget.withName ? l10n.messagesGroupWho : widget.title,
-                style: AppTextStyles.body.copyWith(
-                  color: palette.textSecondary,
-                  fontWeight: FontWeight.bold,
+          // Under a name field it says who; otherwise the title already does.
+          if (widget.withName)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  l10n.messagesGroupWho,
+                  style: AppTextStyles.body.copyWith(
+                    color: palette.textSecondary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-          ),
+            )
+          else
+            const SizedBox(height: 12),
           Expanded(
             child: ids.isEmpty
                 ? DefaultEmptyInboxInfo(

@@ -277,6 +277,12 @@ abstract interface class CapsuleRepository {
   /// capsules, newest first, at most [limit] of each.
   Future<List<Capsule>> sharedBy(String ownerId, {int limit});
 
+  /// Capsules [uid] co-authored (someone else's), newest first.
+  Stream<List<Capsule>> watchCoAuthored(String uid);
+
+  /// [uid] takes themselves off capsule [capsuleId] as a co-author.
+  Future<void> leaveCoAuthors(String capsuleId, String uid);
+
   /// Friends-only capsules of [friendIds] (chunked `whereIn`).
   Stream<List<Capsule>> watchFriends(List<String> friendIds);
 

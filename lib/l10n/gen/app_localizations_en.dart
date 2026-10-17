@@ -396,6 +396,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String capsulesByWith(String name, String others) {
+    return '$name with $others';
+  }
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Allow camera access in Settings to take a photo';
 
@@ -442,6 +447,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String capsulesCameraZoomTo(String zoom) {
     return 'Zoom $zoom×';
+  }
+
+  @override
+  String get capsulesCoAuthorsDone => 'Done';
+
+  @override
+  String get capsulesCoAuthorsPick => 'Who made it with you';
+
+  @override
+  String capsulesCoAuthorsTooMany(int count) {
+    return 'Up to $count co-authors';
   }
 
   @override
@@ -518,6 +534,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'About a kilometre off, not the exact spot';
 
   @override
+  String get capsulesCreationCoAuthors => 'Co-authors';
+
+  @override
+  String capsulesCreationCoAuthorsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count friends',
+      one: '1 friend',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCreationCoAuthorsNone => 'Just me';
+
+  @override
   String get capsulesCreationColor => 'Color';
 
   @override
@@ -565,6 +598,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get capsulesErrorSavedNotSent =>
       'The capsule was saved but not sent. Tap save to try again.';
+
+  @override
+  String get capsulesLeaveCoAuthors => 'Remove me as co-author';
+
+  @override
+  String get capsulesLeftCoAuthors => 'You are no longer a co-author';
 
   @override
   String get capsulesLinkNotShared => 'This capsule is not shared with you';
@@ -666,6 +705,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String capsulesShareMessage(String title, String link) {
     return 'A time capsule on Later: $title\n$link';
+  }
+
+  @override
+  String capsulesWith(String names) {
+    return 'With $names';
   }
 
   @override
@@ -1710,6 +1754,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Other notifications from Later';
 
   @override
+  String notificationsCoAuthorBody(String name) {
+    return '$name made a capsule with you';
+  }
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name commented on your capsule';
   }
@@ -1866,6 +1915,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsTypeCapsule => 'New Capsule';
+
+  @override
+  String get notificationsTypeCoAuthor => 'Made Together';
 
   @override
   String get notificationsTypeComment => 'New Comment';

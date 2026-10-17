@@ -131,6 +131,40 @@ function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true
 /** What a photo message without a caption carries as its text. */
 const PHOTO_SIGN = '📷';
 
+/** Push to a co-author: a friend made a capsule with them. */
+function coAuthorMessage({ creatorName, ownerId, capsuleId }, token, sound = true, lang = 'en') {
+  return {
+    token,
+    notification: {
+      title: i18n.t(lang, 'coAuthorTitle'),
+      body: i18n.t(lang, 'coAuthorBody', { name: creatorName }),
+    },
+    data: {
+      type: 'coAuthor',
+      userName: creatorName,
+      userId: ownerId,
+      capsuleId,
+      clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+    },
+    ...delivery('capsules', sound),
+  };
+}
+
+/** Most co-authors a capsule may have (firestore.rules). */
+const MAX_CO_AUTHORS = 5;
+
+/**
+ * The co-authors of [capsule] worth telling: friends of its owner (the rules
+ * check that too), never the owner, at most five.
+ */
+function coAuthorsOf(capsule, ownerId, ownerFriends) {
+  const list = Array.isArray(capsule.coAuthors) ? capsule.coAuthors : [];
+  const friends = new Set(ownerFriends);
+  return [...new Set(list)]
+    .filter((id) => typeof id === 'string' && id !== ownerId && friends.has(id))
+    .slice(0, MAX_CO_AUTHORS);
+}
+
 /** Body of a message push: the text, or a neutral line without preview. */
 function messageBody(message, preview, lang = 'en') {
   const capsule = message.type === 'capsule';
@@ -281,7 +315,10 @@ async function capsuleRecipients(db, ownerId, privacy, ownerFriends) {
   return ids.filter((_, i) => following[i].exists && following[i].get('notificationsEnabled') === true);
 }
 
-/** capsules/{id} was created: notify the owner's followers. */
+/**
+ * capsules/{id} was created: notify its co-authors (whatever its privacy)
+ * and the owner's followers (co-authors hear about it only once).
+ */
 async function onCapsuleCreated(services, capsuleId, capsule) {
   const { db } = services;
   // `creatorId` was what this function used to read (never written, BUG-026).
@@ -294,21 +331,28 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
   const owner = ownerDoc.data();
   const creatorName = owner.username || owner.name || 'Someone';
 
-  const recipients = await capsuleRecipients(db, ownerId, privacy, owner.friends || []);
-  if (recipients.length === 0) return { recipients: 0 };
+  const coAuthors = coAuthorsOf(capsule, ownerId, owner.friends || []);
+  const together = new Set(coAuthors);
+  const recipients = (await capsuleRecipients(db, ownerId, privacy, owner.friends || []))
+    .filter((uid) => !together.has(uid));
+  if (recipients.length === 0 && coAuthors.length === 0) return { recipients: 0 };
   const at = now(services);
 
   // The in-app notification is written for every recipient, with or without
-  // a device token.
-  for (let i = 0; i < recipients.length; i += BATCH_LIMIT) {
+  // a device token. Old apps show an unknown type's stored message.
+  const everyone = [
+    ...coAuthors.map((uid) => ({ uid, type: 'coAuthor', message: 'made a capsule with you' })),
+    ...recipients.map((uid) => ({ uid, type: 'capsule', message: 'created a new capsule' })),
+  ];
+  for (let i = 0; i < everyone.length; i += BATCH_LIMIT) {
     const batch = db.batch();
-    for (const uid of recipients.slice(i, i + BATCH_LIMIT)) {
+    for (const { uid, type, message } of everyone.slice(i, i + BATCH_LIMIT)) {
       batch.set(db.collection('users').doc(uid).collection('notifications').doc(), {
-        type: 'capsule',
+        type,
         fromUserId: ownerId,
         fromUserName: creatorName,
         fromUserAvatar: '',
-        message: 'created a new capsule',
+        message,
         capsuleId,
         timestamp: FieldValue.serverTimestamp(),
         isRead: false,
@@ -320,18 +364,20 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
   // Pushes only for recipients who want capsule pushes now; the in-app
   // notification above is written for everyone.
   const results = await Promise.all(
-    recipients.map(async (uid) => {
+    everyone.map(async ({ uid, type }) => {
       const settings = await prefs.loadSettings(db, uid);
       if (prefs.blockedReason(settings, 'capsules', at)) return { sent: 0, pruned: 0 };
       const sound = settings.notifications.sound;
       const lang = i18n.languageOf(settings);
+      const build = type === 'coAuthor' ? coAuthorMessage : capsuleMessage;
       return sendToUser(services, uid, (token) =>
-        capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound, lang),
+        build({ creatorName, ownerId, capsuleId }, token, sound, lang),
       );
     }),
   );
   return {
     recipients: recipients.length,
+    coAuthors: coAuthors.length,
     sent: results.reduce((n, r) => n + r.sent, 0),
     pruned: results.reduce((n, r) => n + r.pruned, 0),
   };
@@ -374,6 +420,8 @@ module.exports = {
   sendToUser,
   followMessage,
   capsuleMessage,
+  coAuthorMessage,
+  coAuthorsOf,
   onNotificationCreated,
   messageBody,
   shorten,

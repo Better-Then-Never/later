@@ -110,6 +110,16 @@ void main() {
     c.dispose();
   });
 
+  test('co-authors reach the draft, five at most', () async {
+    final repo = FakeCapsuleRepository();
+    final c = build(repo, known: const GeoPosition(52.2297, 21.0122))
+      ..coAuthors = ['a', 'b', 'c', 'd', 'e', 'f'];
+    expect(c.coAuthors, ['a', 'b', 'c', 'd', 'e']);
+    expect(await c.save(), isNull);
+    expect(repo.created.single.coAuthors, ['a', 'b', 'c', 'd', 'e']);
+    c.dispose();
+  });
+
   test('comments, reactions and precision chosen per capsule', () async {
     final repo = FakeCapsuleRepository();
     final c = build(repo, known: const GeoPosition(52.2297, 21.0122))

@@ -200,6 +200,7 @@ void main() {
           'Friend Request',
           'New Friend',
           'Achievement',
+          'Made Together',
           'Notification',
         ],
       );
@@ -309,6 +310,7 @@ void main() {
       text(server('friendAccepted'), 'Zoe'),
       'Zoe accepted your friend request',
     );
+    expect(text(server('coAuthor'), 'Zoe'), 'Zoe made a capsule with you');
     final achievement = server('achievement');
     expect(achievement.fromUserName, 'Later');
     expect(

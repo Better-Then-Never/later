@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/feature_flags.dart';
@@ -18,6 +19,7 @@ import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/motion/reaction_burst.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../history/own_capsules_store.dart';
 import '../../profile/share/sharing_service.dart';
 import 'capsule_comments_sheet.dart';
 import 'quick_reply_card.dart';
@@ -124,26 +126,65 @@ class CapsuleSocialPanel extends StatelessWidget {
 
   Future<void> _capsuleMenu(BuildContext context) async {
     final l10n = context.l10n;
-    final report = await showCenteredSheet<bool>(
+    final coAuthor = controller.capsule.coAuthors.contains(controller.uid);
+    final choice = await showCenteredSheet<_MenuChoice>(
       context,
       OptionsMenu(
         children: [
+          if (coAuthor)
+            OptionsMenuItem(
+              text: l10n.capsulesLeaveCoAuthors,
+              isFirst: true,
+              onPressed: () => Navigator.of(context).pop(_MenuChoice.leave),
+            ),
           OptionsMenuItem(
             text: l10n.capsulesReportCapsule,
             textColor: AppColors.danger,
-            isFirst: true,
+            isFirst: !coAuthor,
             isLast: true,
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(context).pop(_MenuChoice.report),
           ),
         ],
       ),
     );
-    if (report != true || !context.mounted) return;
+    if (choice == null || !context.mounted) return;
+    if (choice == _MenuChoice.leave) return _leave(context);
     await reportFlow(
       context,
       controller,
       target: ReportTarget.capsule,
       targetPath: 'capsules/${controller.capsule.id}',
+    );
+  }
+
+  Future<void> _leave(BuildContext context) =>
+      _leaveCapsule(context, controller.capsule.id);
+}
+
+enum _MenuChoice { leave, report }
+
+/// Takes the user off a capsule they co-authored; it is no longer theirs to
+/// see, so its card closes.
+Future<void> _leaveCapsule(BuildContext context, String capsuleId) async {
+  final l10n = context.l10n;
+  final navigator = Navigator.of(context);
+  final failure = await context.read<OwnCapsulesStore>().leave(capsuleId);
+  if (!context.mounted) return;
+  if (failure != null) {
+    PopupNotificationService.showError(
+      context: context,
+      message: failure.message,
+      position: NotificationPosition.bottom,
+    );
+    return;
+  }
+  await navigator.maybePop();
+  final root = navigator.context;
+  if (root.mounted) {
+    PopupNotificationService.showSuccess(
+      context: root,
+      message: l10n.capsulesLeftCoAuthors,
+      position: NotificationPosition.bottom,
     );
   }
 }

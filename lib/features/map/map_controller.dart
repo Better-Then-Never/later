@@ -63,12 +63,14 @@ class MapController extends ChangeNotifier {
   double? _bandCenter;
 
   List<Capsule> _own = const [];
+  List<Capsule> _coAuthored = const [];
   List<Capsule> _friends = const [];
   List<Capsule> _public = const [];
   List<String> _friendIds = const [];
 
   StreamSubscription<GeoPosition>? _positionSub;
   StreamSubscription<List<Capsule>>? _ownSub;
+  StreamSubscription<List<Capsule>>? _coSub;
   StreamSubscription<List<Capsule>>? _friendsSub;
   StreamSubscription<List<Capsule>>? _publicSub;
   bool _disposed = false;
@@ -146,7 +148,7 @@ class MapController extends ChangeNotifier {
     final uid = _session.uid;
     final friends = _friendIds.toSet();
     final byId = <String, Capsule>{};
-    for (final c in [..._public, ..._friends, ..._own]) {
+    for (final c in [..._public, ..._friends, ..._own, ..._coAuthored]) {
       if (c.location == null) continue; // malformed: cannot be placed
       if (isVisibleTo(c, uid: uid, friendIds: friends)) byId[c.id] = c;
     }
@@ -165,6 +167,7 @@ class MapController extends ChangeNotifier {
     required Set<String> friendIds,
   }) =>
       c.ownerId == uid ||
+      (uid != null && c.coAuthors.contains(uid)) ||
       c.privacy == CapsulePrivacy.public ||
       (c.privacy == CapsulePrivacy.friends && friendIds.contains(c.ownerId));
 
@@ -195,6 +198,12 @@ class MapController extends ChangeNotifier {
         .listen(
           (list) => _set(() => _own = list),
           onError: _logStreamError('own'),
+        );
+    _coSub = _capsules
+        .watchCoAuthored(uid)
+        .listen(
+          (list) => _set(() => _coAuthored = list),
+          onError: _logStreamError('co-authored'),
         );
     _session.addListener(_onSessionChanged);
     _onSessionChanged();
@@ -319,6 +328,7 @@ class MapController extends ChangeNotifier {
     _session.removeListener(_onSessionChanged);
     unawaited(_positionSub?.cancel());
     unawaited(_ownSub?.cancel());
+    unawaited(_coSub?.cancel());
     unawaited(_friendsSub?.cancel());
     unawaited(_publicSub?.cancel());
     super.dispose();

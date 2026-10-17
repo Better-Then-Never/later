@@ -98,6 +98,15 @@ class CapsuleCreationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Friends who made it with the user (at most [Capsule.maxCoAuthors]).
+  List<String> _coAuthors = const [];
+  List<String> get coAuthors => _coAuthors;
+
+  set coAuthors(List<String> value) {
+    _coAuthors = value.take(Capsule.maxCoAuthors).toList();
+    notifyListeners();
+  }
+
   /// Others see who left it (F-60).
   bool _showAuthor = true;
   bool get showAuthor => _showAuthor;
@@ -224,6 +233,7 @@ class CapsuleCreationController extends ChangeNotifier {
         allowComments: _allowComments,
         allowReactions: _allowReactions,
         showAuthor: _showAuthor,
+        coAuthors: _coAuthors,
         imagePath: imagePath,
         framePaths: framePaths,
         openAt: _openAt,

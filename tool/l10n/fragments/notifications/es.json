@@ -46,5 +46,7 @@
   "notificationsChannelActivitySilent": "Actividad (en silencio)",
   "notificationsChannelActivitySilentDescription": "Actividad sin sonido ni vibración",
   "notificationsChannelOther": "Otras notificaciones",
-  "notificationsChannelOtherDescription": "Otras notificaciones de Later"
+  "notificationsChannelOtherDescription": "Otras notificaciones de Later",
+  "notificationsTypeCoAuthor": "Juntos",
+  "notificationsCoAuthorBody": "{name} hizo una cápsula contigo"
 }

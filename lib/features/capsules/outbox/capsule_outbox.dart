@@ -267,6 +267,7 @@ class CapsuleOutbox extends ChangeNotifier
       'capturedAt': d.capturedAt?.toIso8601String(),
       'utcOffsetMinutes': d.utcOffsetMinutes,
       'showAuthor': d.showAuthor,
+      if (d.coAuthors.isNotEmpty) 'coAuthors': d.coAuthors,
       'allowComments': d.allowComments,
       'allowReactions': d.allowReactions,
       'locationPrecision': d.locationPrecision.name,
@@ -298,6 +299,10 @@ class CapsuleOutbox extends ChangeNotifier
         capturedAt: date(j['capturedAt']),
         utcOffsetMinutes: j['utcOffsetMinutes'] as int?,
         showAuthor: j['showAuthor'] as bool? ?? true,
+        coAuthors: [
+          for (final uid in (j['coAuthors'] as List?) ?? const [])
+            if (uid is String) uid,
+        ],
         allowComments: j['allowComments'] as bool? ?? true,
         allowReactions: j['allowReactions'] as bool? ?? true,
         locationPrecision: LocationPrecision.parse(j['locationPrecision']),

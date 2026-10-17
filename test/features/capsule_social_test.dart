@@ -54,6 +54,36 @@ void main() {
     );
   });
 
+  test('co-authors: insiders always see who made it; others as chosen', () {
+    const together = Capsule(
+      id: 'cap3',
+      ownerId: 'owner',
+      title: 'Together',
+      privacy: CapsulePrivacy.public,
+      color: CapsuleColor.blue,
+      showAuthor: false,
+      coAuthors: ['ben', 'carl'],
+    );
+    // A stranger: the author chose not to be shown, so nobody is named.
+    expect(CapsuleAuthorRow.shows(together, 'someone'), isFalse);
+    expect(CapsuleAuthorRow.coAuthorsShown(together, 'someone'), isEmpty);
+    // A co-author sees the owner and the other co-author, never themselves.
+    expect(CapsuleAuthorRow.shows(together, 'ben'), isTrue);
+    expect(CapsuleAuthorRow.coAuthorsShown(together, 'ben'), ['carl']);
+    // The owner sees who made it with them.
+    expect(CapsuleAuthorRow.shows(together, 'owner'), isFalse);
+    expect(CapsuleAuthorRow.coAuthorsShown(together, 'owner'), ['ben', 'carl']);
+    const shown = Capsule(
+      id: 'cap4',
+      ownerId: 'owner',
+      title: 'Together',
+      privacy: CapsulePrivacy.public,
+      color: CapsuleColor.blue,
+      coAuthors: ['ben', 'carl'],
+    );
+    expect(CapsuleAuthorRow.coAuthorsShown(shown, 'someone'), ['ben', 'carl']);
+  });
+
   group('CapsuleSocialController', () {
     test('comments load a page at a time, older ones on request', () async {
       social.comments['cap'] = [

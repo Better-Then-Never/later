@@ -421,6 +421,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String capsulesByWith(String name, String others) {
+    return '$name i $others';
+  }
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Zezwól na dostęp do aparatu w ustawieniach, żeby zrobić zdjęcie';
 
@@ -467,6 +472,17 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String capsulesCameraZoomTo(String zoom) {
     return 'Powiększenie $zoom×';
+  }
+
+  @override
+  String get capsulesCoAuthorsDone => 'Gotowe';
+
+  @override
+  String get capsulesCoAuthorsPick => 'Z kim go zrobiłeś';
+
+  @override
+  String capsulesCoAuthorsTooMany(int count) {
+    return 'Najwyżej $count współautorów';
   }
 
   @override
@@ -546,6 +562,25 @@ class AppLocalizationsPl extends AppLocalizations {
       'Około kilometra obok, nie w dokładnym miejscu';
 
   @override
+  String get capsulesCreationCoAuthors => 'Współautorzy';
+
+  @override
+  String capsulesCreationCoAuthorsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count znajomych',
+      many: '$count znajomych',
+      few: '$count znajomych',
+      one: '1 znajomy',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCreationCoAuthorsNone => 'Tylko ja';
+
+  @override
   String get capsulesCreationColor => 'Kolor';
 
   @override
@@ -594,6 +629,12 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get capsulesErrorSavedNotSent =>
       'Kapsuła została zapisana, ale nie wysłana. Dotknij przycisku jeszcze raz, żeby spróbować ponownie.';
+
+  @override
+  String get capsulesLeaveCoAuthors => 'Usuń mnie ze współautorów';
+
+  @override
+  String get capsulesLeftCoAuthors => 'Nie jesteś już współautorem';
 
   @override
   String get capsulesLinkNotShared => 'Ta kapsuła nie jest ci udostępniona';
@@ -695,6 +736,11 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String capsulesShareMessage(String title, String link) {
     return 'Kapsuła czasu w Later: $title\n$link';
+  }
+
+  @override
+  String capsulesWith(String names) {
+    return 'Razem z: $names';
   }
 
   @override
@@ -1767,6 +1813,11 @@ class AppLocalizationsPl extends AppLocalizations {
       'Inne powiadomienia od Later';
 
   @override
+  String notificationsCoAuthorBody(String name) {
+    return '$name tworzy kapsułę razem z tobą';
+  }
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name komentuje twoją kapsułę';
   }
@@ -1937,6 +1988,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get notificationsTypeCapsule => 'Nowa kapsuła';
+
+  @override
+  String get notificationsTypeCoAuthor => 'Razem';
 
   @override
   String get notificationsTypeComment => 'Nowy komentarz';

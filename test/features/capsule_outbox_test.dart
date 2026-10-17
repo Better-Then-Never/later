@@ -106,7 +106,7 @@ void main() {
     final first = outbox()..attach('me');
     await first.loading;
     repo.offline = true;
-    final c = creation(await photo(), first);
+    final c = creation(await photo(), first)..coAuthors = ['pal'];
     await c.save();
     final id = first.pending.single.id;
     first.dispose();
@@ -116,6 +116,7 @@ void main() {
     await again.loading;
     expect(again.pending, isEmpty);
     expect(repo.created.single.id, id);
+    expect(repo.created.single.coAuthors, ['pal'], reason: 'kept on disk');
     again.dispose();
     c.dispose();
   });

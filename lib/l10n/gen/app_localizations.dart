@@ -674,6 +674,12 @@ abstract class AppLocalizations {
   /// **'By {name}'**
   String capsulesBy(String name);
 
+  /// Author line on a capsule made with friends: the author, then the co-authors.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} with {others}'**
+  String capsulesByWith(String name, String others);
+
   /// Camera screen when camera permission was denied. 'Settings' are the phone's settings.
   ///
   /// In en, this message translates to:
@@ -763,6 +769,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Zoom {zoom}×'**
   String capsulesCameraZoomTo(String zoom);
+
+  /// Button closing the co-authors sheet with the pick.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get capsulesCoAuthorsDone;
+
+  /// Title of the sheet that picks a capsule's co-authors.
+  ///
+  /// In en, this message translates to:
+  /// **'Who made it with you'**
+  String get capsulesCoAuthorsPick;
+
+  /// Shown when more co-authors are picked than allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {count} co-authors'**
+  String capsulesCoAuthorsTooMany(int count);
 
   /// No description provided for @capsulesColorBlue.
   ///
@@ -890,6 +914,24 @@ abstract class AppLocalizations {
   /// **'About a kilometre off, not the exact spot'**
   String get capsulesCreationApproximateHint;
 
+  /// Capsule creation row: friends who made the capsule with the user.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-authors'**
+  String get capsulesCreationCoAuthors;
+
+  /// Value of the co-authors row: how many friends are picked.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 friend} other{{count} friends}}'**
+  String capsulesCreationCoAuthorsCount(int count);
+
+  /// Value of the co-authors row when nobody is picked.
+  ///
+  /// In en, this message translates to:
+  /// **'Just me'**
+  String get capsulesCreationCoAuthorsNone;
+
   /// Row title: the colour of the capsule's map pin (tapping cycles the colours).
   ///
   /// In en, this message translates to:
@@ -985,6 +1027,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The capsule was saved but not sent. Tap save to try again.'**
   String get capsulesErrorSavedNotSent;
+
+  /// Capsule menu item for a co-author: take themselves off the capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove me as co-author'**
+  String get capsulesLeaveCoAuthors;
+
+  /// Shown after the user took themselves off a capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'You are no longer a co-author'**
+  String get capsulesLeftCoAuthors;
 
   /// Shown when a capsule link opens a capsule the user may not see (or that is gone).
   ///
@@ -1165,6 +1219,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A time capsule on Later: {title}\n{link}'**
   String capsulesShareMessage(String title, String link);
+
+  /// Line on the user's own capsule (or one they co-authored) naming the others who made it.
+  ///
+  /// In en, this message translates to:
+  /// **'With {names}'**
+  String capsulesWith(String names);
 
   /// No description provided for @capsulesYou.
   ///
@@ -2954,6 +3014,12 @@ abstract class AppLocalizations {
   /// **'Other notifications from Later'**
   String get notificationsChannelOtherDescription;
 
+  /// Notification: a friend added the user as a co-author of a new capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} made a capsule with you'**
+  String notificationsCoAuthorBody(String name);
+
   /// Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.
   ///
   /// In en, this message translates to:
@@ -3115,6 +3181,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Capsule'**
   String get notificationsTypeCapsule;
+
+  /// Title of a notification: a friend made a capsule with the user (co-author).
+  ///
+  /// In en, this message translates to:
+  /// **'Made Together'**
+  String get notificationsTypeCoAuthor;
 
   /// No description provided for @notificationsTypeComment.
   ///

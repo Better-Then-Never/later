@@ -265,5 +265,71 @@
         "example": "Anna"
       }
     }
+  },
+  "capsulesByWith": "{name} with {others}",
+  "@capsulesByWith": {
+    "description": "Author line on a capsule made with friends: the author, then the co-authors.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      },
+      "others": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesWith": "With {names}",
+  "@capsulesWith": {
+    "description": "Line on the user's own capsule (or one they co-authored) naming the others who made it.",
+    "placeholders": {
+      "names": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesCreationCoAuthors": "Co-authors",
+  "@capsulesCreationCoAuthors": {
+    "description": "Capsule creation row: friends who made the capsule with the user."
+  },
+  "capsulesCreationCoAuthorsNone": "Just me",
+  "@capsulesCreationCoAuthorsNone": {
+    "description": "Value of the co-authors row when nobody is picked."
+  },
+  "capsulesCreationCoAuthorsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@capsulesCreationCoAuthorsCount": {
+    "description": "Value of the co-authors row: how many friends are picked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCoAuthorsPick": "Who made it with you",
+  "@capsulesCoAuthorsPick": {
+    "description": "Title of the sheet that picks a capsule's co-authors."
+  },
+  "capsulesCoAuthorsDone": "Done",
+  "@capsulesCoAuthorsDone": {
+    "description": "Button closing the co-authors sheet with the pick."
+  },
+  "capsulesCoAuthorsTooMany": "Up to {count} co-authors",
+  "@capsulesCoAuthorsTooMany": {
+    "description": "Shown when more co-authors are picked than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesLeaveCoAuthors": "Remove me as co-author",
+  "@capsulesLeaveCoAuthors": {
+    "description": "Capsule menu item for a co-author: take themselves off the capsule."
+  },
+  "capsulesLeftCoAuthors": "You are no longer a co-author",
+  "@capsulesLeftCoAuthors": {
+    "description": "Shown after the user took themselves off a capsule."
   }
 }

@@ -320,7 +320,9 @@ service cloud.firestore {
           || (resource.data.privacy == 'friends'
             && resource.data.ownerId in myFriends())
           // A capsule sent to a friend (see validCapsule).
-          || me() in resource.data.get('sharedWith', []);
+          || me() in resource.data.get('sharedWith', [])
+          // Its co-authors.
+          || me() in resource.data.get('coAuthors', []);
       }
 
       allow get: if signedIn() && (resource == null || canSee());
@@ -328,7 +330,13 @@ service cloud.firestore {
 
       allow create: if signedIn() && validCapsule();
       allow delete: if signedIn() && resource.data.ownerId == me();
-      allow update: if false;
+      // Nobody edits a capsule; a co-author may only take themselves off it.
+      allow update: if signedIn() && me() in resource.data.get('coAuthors', [])
+        && changed().hasOnly(['coAuthors'])
+        && request.resource.data.coAuthors.toSet()
+          == resource.data.coAuthors.toSet().difference([me()].toSet())
+        && request.resource.data.coAuthors.size()
+          == resource.data.coAuthors.size() - 1;
 
       // Reactions: one per person (document id = uid), counted by a function.
       match /reactions/{uid} {
@@ -374,7 +382,7 @@ service cloud.firestore {
             'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
             'sharedWith', 'capturedAt', 'utcOffsetMinutes', 'showAuthor',
             'allowComments', 'allowReactions', 'locationPrecision', 'frames',
-            'frameDelayMs', 'thumbUrl', 'placeName'])
+            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors'])
           && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
             'privacy', 'createdAt', 'color'])
           && d.ownerId == me()
@@ -405,6 +413,7 @@ service cloud.firestore {
           && isServerTime(d.createdAt)
           && (d.get('isScheduled', false) is bool)
           && (d.get('openAt', null) == null || d.openAt is timestamp)
+          && validCoAuthors(d.get('coAuthors', []))
           // Sent to a friend: shared with exactly the owner and the recipient.
           && (!d.keys().hasAny(['sharedWith'])
             || (d.sharedWith is list && d.sharedWith.size() == 2
@@ -423,7 +432,20 @@ service cloud.firestore {
       return c.ownerId == me()
         || c.privacy == 'public'
         || (c.privacy == 'friends' && c.ownerId in myFriends())
-        || me() in c.get('sharedWith', []);
+        || me() in c.get('sharedWith', [])
+        || me() in c.get('coAuthors', []);
+    }
+
+    // Up to five co-authors of a capsule: each a friend of its owner (who
+    // is not one of them). Rules have no loops, hence one check per place.
+    function validCoAuthors(c) {
+      return c is list && c.size() <= 5 && !(me() in c)
+        && c.toSet().size() == c.size()
+        && (c.size() < 1 || c[0] in myFriends())
+        && (c.size() < 2 || c[1] in myFriends())
+        && (c.size() < 3 || c[2] in myFriends())
+        && (c.size() < 4 || c[3] in myFriends())
+        && (c.size() < 5 || c[4] in myFriends());
     }
 
     // ---- reports and announcements -------------------------------------------

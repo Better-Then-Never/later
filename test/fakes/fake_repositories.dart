@@ -994,6 +994,30 @@ class FakeCapsuleRepository implements CapsuleRepository {
   @override
   Future<void> delete(Iterable<Capsule> capsules) async =>
       deleted.addAll(capsules.map((c) => c.id));
+
+  final _coAuthored = StreamController<List<Capsule>>.broadcast();
+  List<Capsule> coAuthored = [];
+
+  /// (capsule id, uid) of every leave.
+  final List<(String, String)> left = [];
+
+  void emitCoAuthored(List<Capsule> list) {
+    coAuthored = list;
+    _coAuthored.add(list);
+  }
+
+  @override
+  Stream<List<Capsule>> watchCoAuthored(String uid) =>
+      seeded(() => coAuthored, _coAuthored.stream);
+
+  @override
+  Future<void> leaveCoAuthors(String capsuleId, String uid) async {
+    left.add((capsuleId, uid));
+    emitCoAuthored([
+      for (final c in coAuthored)
+        if (c.id != capsuleId) c,
+    ]);
+  }
 }
 
 /// In-memory reactions, comments, reports, achievements and announcements.

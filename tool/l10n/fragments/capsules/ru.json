@@ -82,5 +82,15 @@
   "capsulesShareMessage": "Капсула времени в Later: {title}\n{link}",
   "capsulesQuickReply": "Ответить автору",
   "capsulesQuickReplyHint": "Напишите {name}…",
-  "capsulesQuickReplySent": "Отправлено: {name}"
+  "capsulesQuickReplySent": "Отправлено: {name}",
+  "capsulesByWith": "{name} и {others}",
+  "capsulesWith": "Вместе с: {names}",
+  "capsulesCreationCoAuthors": "Соавторы",
+  "capsulesCreationCoAuthorsNone": "Только я",
+  "capsulesCreationCoAuthorsCount": "{count, plural, one{{count} друг} few{{count} друга} many{{count} друзей} other{{count} друга}}",
+  "capsulesCoAuthorsPick": "С кем вы его сделали",
+  "capsulesCoAuthorsDone": "Готово",
+  "capsulesCoAuthorsTooMany": "Не больше {count} соавторов",
+  "capsulesLeaveCoAuthors": "Убрать меня из соавторов",
+  "capsulesLeftCoAuthors": "Вы больше не соавтор"
 }

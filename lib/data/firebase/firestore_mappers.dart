@@ -116,6 +116,7 @@ abstract final class FirestoreMappers {
       openAt: _date(data['openAt']),
       isScheduled: data['isScheduled'] == true,
       sharedWith: _stringList(data['sharedWith']),
+      coAuthors: _stringList(data['coAuthors']),
       capturedAt: _date(data['capturedAt']),
       utcOffsetMinutes: data['utcOffsetMinutes'] is int
           ? data['utcOffsetMinutes'] as int
@@ -156,6 +157,7 @@ abstract final class FirestoreMappers {
     'frameDelayMs',
     'thumbUrl',
     'placeName',
+    'coAuthors',
   };
 
   /// [capsule] without the added fields, for a backend whose rules predate
@@ -190,6 +192,8 @@ abstract final class FirestoreMappers {
       'utcOffsetMinutes': draft.utcOffsetMinutes!.clamp(-840, 840),
     // Defaults are left out (absent means true / exact).
     if (!draft.showAuthor) 'showAuthor': false,
+    if (draft.coAuthors.isNotEmpty)
+      'coAuthors': draft.coAuthors.take(Capsule.maxCoAuthors).toList(),
     if (!draft.allowComments) 'allowComments': false,
     if (!draft.allowReactions) 'allowReactions': false,
     if (draft.locationPrecision != LocationPrecision.exact)

@@ -366,6 +366,33 @@ describe('capsules', () => {
     await assertFails(setDoc(doc(db, 'capsules/new5'), { ...fresh, title: '' }));
   });
 
+  test('co-authors: friends of the owner, up to five; they see it and may leave it', async () => {
+    const db = as('alice');
+    const fresh = (coAuthors, privacy = 'private') => ({
+      ...capsule('alice', privacy),
+      createdAt: serverTimestamp(),
+      coAuthors,
+    });
+    await assertSucceeds(setDoc(doc(db, 'capsules/co1'), fresh(['bob'])));
+    await assertFails(setDoc(doc(db, 'capsules/co2'), fresh(['carol'])), 'not a friend');
+    await assertFails(setDoc(doc(db, 'capsules/co3'), fresh(['alice'])));
+    await assertFails(setDoc(doc(db, 'capsules/co4'), fresh(['bob', 'bob'])));
+    await assertFails(setDoc(doc(db, 'capsules/co5'), fresh(['bob', 'b2', 'b3', 'b4', 'b5', 'b6'])));
+    await assertFails(setDoc(doc(db, 'capsules/co6'), fresh('bob')));
+    // Bob sees Alice's private capsule because he is a co-author; Carol does not.
+    await assertSucceeds(getDoc(doc(as('bob'), 'capsules/co1')));
+    await assertFails(getDoc(doc(as('carol'), 'capsules/co1')));
+    const mine = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'capsules'), where('coAuthors', 'array-contains', 'bob'))),
+    );
+    assert.deepEqual(mine.docs.map((d) => d.id), ['co1']);
+    // Only taking yourself off; nothing else changes.
+    await assertFails(updateDoc(doc(as('bob'), 'capsules/co1'), { title: 'Mine now' }));
+    await assertFails(updateDoc(doc(as('alice'), 'capsules/co1'), { coAuthors: [] }));
+    await assertSucceeds(updateDoc(doc(as('bob'), 'capsules/co1'), { coAuthors: [] }));
+    await assertFails(getDoc(doc(as('bob'), 'capsules/co1')));
+  });
+
   test('visibility: own, friends-only of friends, public; never others\' private', async () => {
     const db = as('alice');
     await assertSucceeds(getDoc(doc(db, 'capsules/alicePrivate')));

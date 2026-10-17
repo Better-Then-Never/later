@@ -420,6 +420,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String capsulesByWith(String name, String others) {
+    return '$name и $others';
+  }
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Разрешите доступ к камере в настройках, чтобы сделать фото';
 
@@ -466,6 +471,17 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String capsulesCameraZoomTo(String zoom) {
     return 'Увеличение $zoom×';
+  }
+
+  @override
+  String get capsulesCoAuthorsDone => 'Готово';
+
+  @override
+  String get capsulesCoAuthorsPick => 'С кем вы его сделали';
+
+  @override
+  String capsulesCoAuthorsTooMany(int count) {
+    return 'Не больше $count соавторов';
   }
 
   @override
@@ -545,6 +561,25 @@ class AppLocalizationsRu extends AppLocalizations {
       'Примерно в километре, а не точно';
 
   @override
+  String get capsulesCreationCoAuthors => 'Соавторы';
+
+  @override
+  String capsulesCreationCoAuthorsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count друга',
+      many: '$count друзей',
+      few: '$count друга',
+      one: '$count друг',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCreationCoAuthorsNone => 'Только я';
+
+  @override
   String get capsulesCreationColor => 'Цвет';
 
   @override
@@ -592,6 +627,12 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get capsulesErrorSavedNotSent =>
       'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
+
+  @override
+  String get capsulesLeaveCoAuthors => 'Убрать меня из соавторов';
+
+  @override
+  String get capsulesLeftCoAuthors => 'Вы больше не соавтор';
 
   @override
   String get capsulesLinkNotShared => 'Эта капсула вам не открыта';
@@ -693,6 +734,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String capsulesShareMessage(String title, String link) {
     return 'Капсула времени в Later: $title\n$link';
+  }
+
+  @override
+  String capsulesWith(String names) {
+    return 'Вместе с: $names';
   }
 
   @override
@@ -1759,6 +1805,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Другие уведомления от Later';
 
   @override
+  String notificationsCoAuthorBody(String name) {
+    return 'Совместная капсула от $name';
+  }
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name комментирует вашу капсулу';
   }
@@ -1929,6 +1980,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationsTypeCapsule => 'Новая капсула';
+
+  @override
+  String get notificationsTypeCoAuthor => 'Вместе';
 
   @override
   String get notificationsTypeComment => 'Новый комментарий';

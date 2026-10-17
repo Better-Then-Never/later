@@ -153,6 +153,22 @@ void main() {
       expect(visible(_c('stranger', CapsulePrivacy.friends)), isFalse);
     });
 
+    test('capsules the user made with a friend are visible', () {
+      const together = Capsule(
+        id: 'together',
+        ownerId: 'stranger',
+        title: 't',
+        privacy: CapsulePrivacy.private,
+        color: CapsuleColor.red,
+        coAuthors: ['me'],
+      );
+      expect(visible(together), isTrue);
+      expect(
+        MapController.isVisibleTo(together, uid: 'other', friendIds: {}),
+        isFalse,
+      );
+    });
+
     test("other people's private capsules are never visible", () {
       expect(visible(_c('friend', CapsulePrivacy.private)), isFalse);
       expect(visible(_c('stranger', CapsulePrivacy.private)), isFalse);

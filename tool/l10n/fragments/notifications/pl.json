@@ -46,5 +46,7 @@
   "notificationsChannelActivitySilent": "Aktywność (bez dźwięku)",
   "notificationsChannelActivitySilentDescription": "Aktywność bez dźwięku i wibracji",
   "notificationsChannelOther": "Inne powiadomienia",
-  "notificationsChannelOtherDescription": "Inne powiadomienia od Later"
+  "notificationsChannelOtherDescription": "Inne powiadomienia od Later",
+  "notificationsTypeCoAuthor": "Razem",
+  "notificationsCoAuthorBody": "{name} tworzy kapsułę razem z tobą"
 }

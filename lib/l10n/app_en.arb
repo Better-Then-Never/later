@@ -301,6 +301,20 @@
       }
     }
   },
+  "capsulesByWith": "{name} with {others}",
+  "@capsulesByWith": {
+    "description": "Author line on a capsule made with friends: the author, then the co-authors.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      },
+      "others": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
   "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
   "@capsulesCameraAccessDenied": {
     "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
@@ -364,6 +378,23 @@
       }
     }
   },
+  "capsulesCoAuthorsDone": "Done",
+  "@capsulesCoAuthorsDone": {
+    "description": "Button closing the co-authors sheet with the pick."
+  },
+  "capsulesCoAuthorsPick": "Who made it with you",
+  "@capsulesCoAuthorsPick": {
+    "description": "Title of the sheet that picks a capsule's co-authors."
+  },
+  "capsulesCoAuthorsTooMany": "Up to {count} co-authors",
+  "@capsulesCoAuthorsTooMany": {
+    "description": "Shown when more co-authors are picked than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "capsulesColorBlue": "Blue",
   "capsulesColorGreen": "Green",
   "capsulesColorOrange": "Orange",
@@ -399,6 +430,23 @@
   "capsulesCreationAllowReactions": "Allow reactions",
   "capsulesCreationApproximate": "Approximate location",
   "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
+  "capsulesCreationCoAuthors": "Co-authors",
+  "@capsulesCreationCoAuthors": {
+    "description": "Capsule creation row: friends who made the capsule with the user."
+  },
+  "capsulesCreationCoAuthorsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@capsulesCreationCoAuthorsCount": {
+    "description": "Value of the co-authors row: how many friends are picked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCreationCoAuthorsNone": "Just me",
+  "@capsulesCreationCoAuthorsNone": {
+    "description": "Value of the co-authors row when nobody is picked."
+  },
   "capsulesCreationColor": "Color",
   "@capsulesCreationColor": {
     "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
@@ -456,6 +504,14 @@
   "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
   "@capsulesErrorSavedNotSent": {
     "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
+  },
+  "capsulesLeaveCoAuthors": "Remove me as co-author",
+  "@capsulesLeaveCoAuthors": {
+    "description": "Capsule menu item for a co-author: take themselves off the capsule."
+  },
+  "capsulesLeftCoAuthors": "You are no longer a co-author",
+  "@capsulesLeftCoAuthors": {
+    "description": "Shown after the user took themselves off a capsule."
   },
   "capsulesLinkNotShared": "This capsule is not shared with you",
   "@capsulesLinkNotShared": {
@@ -554,6 +610,16 @@
       "link": {
         "type": "String",
         "example": "https://later-da778.web.app/?capsuleId=abc"
+      }
+    }
+  },
+  "capsulesWith": "With {names}",
+  "@capsulesWith": {
+    "description": "Line on the user's own capsule (or one they co-authored) naming the others who made it.",
+    "placeholders": {
+      "names": {
+        "type": "String",
+        "example": "Ben, Carl"
       }
     }
   },
@@ -1560,6 +1626,16 @@
   "notificationsChannelMessagesSilentDescription": "New messages, without sound or vibration",
   "notificationsChannelOther": "Other notifications",
   "notificationsChannelOtherDescription": "Other notifications from Later",
+  "notificationsCoAuthorBody": "{name} made a capsule with you",
+  "@notificationsCoAuthorBody": {
+    "description": "Notification: a friend added the user as a co-author of a new capsule.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
   "notificationsCommentBody": "{name} commented on your capsule",
   "@notificationsCommentBody": {
     "description": "Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.",
@@ -1747,6 +1823,10 @@
   },
   "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeCoAuthor": "Made Together",
+  "@notificationsTypeCoAuthor": {
+    "description": "Title of a notification: a friend made a capsule with the user (co-author)."
+  },
   "notificationsTypeComment": "New Comment",
   "notificationsTypeFollow": "New Follower",
   "@notificationsTypeFollow": {

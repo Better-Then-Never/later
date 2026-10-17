@@ -11,6 +11,9 @@ class OptionsSettingsRow extends StatelessWidget {
   final Widget? subtitle;
   final Widget? trailing;
   final String? leadingIconPath;
+
+  /// Paints a coloured picture in the row's ink (the black icons' look).
+  final bool tintLeadingIcon;
   final bool isLast;
   final bool withDivider;
   final VoidCallback? onTap;
@@ -26,6 +29,7 @@ class OptionsSettingsRow extends StatelessWidget {
     this.navigateTo,
     this.trailing,
     this.leadingIconPath,
+    this.tintLeadingIcon = false,
     this.minVerticalPadding = 6,
     this.withDivider = true,
   });
@@ -51,7 +55,12 @@ class OptionsSettingsRow extends StatelessWidget {
           ),
           subtitle: subtitle,
           leading: leadingIconPath != null
-              ? Image.asset(leadingIconPath!, width: iconSize, height: iconSize)
+              ? Image.asset(
+                  leadingIconPath!,
+                  width: iconSize,
+                  height: iconSize,
+                  color: tintLeadingIcon ? context.palette.icon : null,
+                )
               : null,
           trailing: isLast
               ? null

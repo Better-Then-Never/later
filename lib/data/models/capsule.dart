@@ -91,7 +91,15 @@ class Capsule {
     this.reactionTotal = 0,
     this.commentCount = 0,
     this.pending = false,
+    this.coAuthors = const [],
   });
+
+  /// Most co-authors a capsule may have (firestore.rules).
+  static const maxCoAuthors = 5;
+
+  /// Friends of the owner who made it with them; they see it like the owner
+  /// and may take themselves off it.
+  final List<String> coAuthors;
 
   /// Pause between the frames of a loop capsule.
   static const defaultFrameDelayMs = 300;
@@ -163,6 +171,7 @@ class Capsule {
     Map<ReactionType, int>? reactionCounts,
     int? reactionTotal,
     int? commentCount,
+    List<String>? coAuthors,
   }) => Capsule(
     id: id,
     ownerId: ownerId,
@@ -179,6 +188,7 @@ class Capsule {
     capturedAt: capturedAt,
     utcOffsetMinutes: utcOffsetMinutes,
     showAuthor: showAuthor,
+    coAuthors: coAuthors ?? this.coAuthors,
     allowComments: allowComments,
     allowReactions: allowReactions,
     locationPrecision: locationPrecision,
@@ -210,6 +220,7 @@ class Capsule {
       other.capturedAt == capturedAt &&
       other.utcOffsetMinutes == utcOffsetMinutes &&
       other.showAuthor == showAuthor &&
+      _listEquals(other.coAuthors, coAuthors) &&
       other.allowComments == allowComments &&
       other.allowReactions == allowReactions &&
       other.locationPrecision == locationPrecision &&
@@ -274,7 +285,11 @@ class CapsuleDraft {
     this.framePaths = const [],
     this.frameDelayMs = Capsule.defaultFrameDelayMs,
     this.placeName,
+    this.coAuthors = const [],
   });
+
+  /// Friends who made it with the owner (at most [Capsule.maxCoAuthors]).
+  final List<String> coAuthors;
 
   final String ownerId;
   final String title;
@@ -327,6 +342,7 @@ class CapsuleDraft {
     framePaths: framePaths ?? this.framePaths,
     frameDelayMs: frameDelayMs,
     placeName: placeName,
+    coAuthors: coAuthors,
   );
 
   /// Local files of a loop capsule, in order; [imagePath] is the first.

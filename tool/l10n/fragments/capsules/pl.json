@@ -82,5 +82,15 @@
   "capsulesShareMessage": "Kapsuła czasu w Later: {title}\n{link}",
   "capsulesQuickReply": "Odpowiedz autorowi",
   "capsulesQuickReplyHint": "Napisz do {name}…",
-  "capsulesQuickReplySent": "Wysłano: {name}"
+  "capsulesQuickReplySent": "Wysłano: {name}",
+  "capsulesByWith": "{name} i {others}",
+  "capsulesWith": "Razem z: {names}",
+  "capsulesCreationCoAuthors": "Współautorzy",
+  "capsulesCreationCoAuthorsNone": "Tylko ja",
+  "capsulesCreationCoAuthorsCount": "{count, plural, =1{1 znajomy} few{{count} znajomych} many{{count} znajomych} other{{count} znajomych}}",
+  "capsulesCoAuthorsPick": "Z kim go zrobiłeś",
+  "capsulesCoAuthorsDone": "Gotowe",
+  "capsulesCoAuthorsTooMany": "Najwyżej {count} współautorów",
+  "capsulesLeaveCoAuthors": "Usuń mnie ze współautorów",
+  "capsulesLeftCoAuthors": "Nie jesteś już współautorem"
 }

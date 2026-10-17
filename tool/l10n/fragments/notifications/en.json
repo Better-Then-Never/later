@@ -237,5 +237,19 @@
   "notificationsChannelActivitySilent": "Activity (silent)",
   "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
   "notificationsChannelOther": "Other notifications",
-  "notificationsChannelOtherDescription": "Other notifications from Later"
+  "notificationsChannelOtherDescription": "Other notifications from Later",
+  "notificationsTypeCoAuthor": "Made Together",
+  "@notificationsTypeCoAuthor": {
+    "description": "Title of a notification: a friend made a capsule with the user (co-author)."
+  },
+  "notificationsCoAuthorBody": "{name} made a capsule with you",
+  "@notificationsCoAuthorBody": {
+    "description": "Notification: a friend added the user as a co-author of a new capsule.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  }
 }

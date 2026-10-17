@@ -4,17 +4,13 @@ import 'package:provider/provider.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
-import '../../../core/theme/app_motion.dart';
-import '../../../core/theme/app_text_styles.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/location_service.dart';
-import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
@@ -29,6 +25,7 @@ import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
+import '../../messages/widgets/group_friends_picker.dart';
 import '../../settings/settings_store.dart';
 import '../outbox/capsule_outbox.dart';
 import 'capsule_creation_controller.dart';
@@ -36,6 +33,7 @@ import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/capsule_image_preview.dart';
+import 'widgets/capsule_submit_button.dart';
 import '../../../core/l10n/app_dates.dart';
 
 class CapsuleCreationPage extends StatelessWidget {
@@ -129,6 +127,21 @@ class _CapsuleCreationView extends StatelessWidget {
       ],
     );
     if (chosen != null) controller.color = chosen;
+  }
+
+  Future<void> _chooseCoAuthors(BuildContext context) async {
+    final l10n = context.l10n;
+    final controller = context.read<CapsuleCreationController>();
+    final pick = await GroupFriendsPicker.show(
+      context,
+      title: l10n.capsulesCoAuthorsPick,
+      actionText: l10n.capsulesCoAuthorsDone,
+      room: Capsule.maxCoAuthors,
+      initial: controller.coAuthors.toSet(),
+      allowEmpty: true,
+      tooManyText: l10n.capsulesCoAuthorsTooMany(Capsule.maxCoAuthors),
+    );
+    if (pick != null) controller.coAuthors = pick.friends;
   }
 
   /// Quick choices first; the calendar only for another day.
@@ -352,6 +365,20 @@ class _CapsuleCreationView extends StatelessWidget {
                               ),
                               OptionsSettingsRow(
                                 minVerticalPadding: 10,
+                                title: l10n.capsulesCreationCoAuthors,
+                                trailing: CapsuleCreationCycledInfo(
+                                  infoText: controller.coAuthors.isEmpty
+                                      ? l10n.capsulesCreationCoAuthorsNone
+                                      : l10n.capsulesCreationCoAuthorsCount(
+                                          controller.coAuthors.length,
+                                        ),
+                                ),
+                                leadingIconPath: AppIcons.profileMyFriends,
+                                tintLeadingIcon: true,
+                                onTap: () => _chooseCoAuthors(context),
+                              ),
+                              OptionsSettingsRow(
+                                minVerticalPadding: 10,
                                 title: l10n.capsulesCreationColor,
                                 trailing: CapsuleCreationCycledInfo(
                                   infoText: controller.color.localized(l10n),
@@ -416,7 +443,7 @@ class _CapsuleCreationView extends StatelessWidget {
         bottomNavigationBar: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-            child: _SubmitButton(
+            child: CapsuleSubmitButton(
               label: l10n.capsulesCreationSubmit,
               saving: controller.isSaving,
               onSave: () => _save(context),
@@ -450,132 +477,4 @@ extension on CapsuleColor {
     CapsuleColor.orange => l10n.capsulesColorOrange,
     CapsuleColor.purple => l10n.capsulesColorPurple,
   };
-}
-
-/// "Create capsule" that answers the tap: it draws in to a green circle with
-/// a spinner while saving, turns into a check when the capsule is made, and
-/// the page closes a moment later; a failure opens it back into the button
-/// (MOTION_CATALOG.md, "Creation"). Reduced motion: no morph, no wait.
-class _SubmitButton extends StatefulWidget {
-  const _SubmitButton({
-    required this.label,
-    required this.saving,
-    required this.onSave,
-    required this.onDone,
-  });
-
-  final String label;
-  final bool saving;
-  final Future<bool> Function() onSave;
-  final VoidCallback onDone;
-
-  @override
-  State<_SubmitButton> createState() => _SubmitButtonState();
-}
-
-class _SubmitButtonState extends State<_SubmitButton> {
-  bool _done = false;
-
-  Future<void> _tap() async {
-    if (widget.saving || _done) return;
-    final ok = await widget.onSave();
-    if (!mounted || !ok) return;
-    setState(() => _done = true);
-    await Future<void>.delayed(AppMotion.of(context, AppMotion.slow));
-    if (mounted) widget.onDone();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * 0.06;
-    final compact = widget.saving || _done;
-    final motion = AppMotion.of(context, AppMotion.emphasized);
-    return Semantics(
-      button: true,
-      label: widget.label,
-      excludeSemantics: true,
-      child: LayoutBuilder(
-        builder: (context, box) => Center(
-          child: AppPressable(
-            enabled: !compact,
-            child: GestureDetector(
-              onTap: _tap,
-              child: AnimatedContainer(
-                duration: motion,
-                curve: AppMotion.emphasizedCurve,
-                width: compact ? height : box.maxWidth,
-                height: height,
-                decoration: BoxDecoration(
-                  color: AppColors.brandGreen,
-                  borderRadius: BorderRadius.circular(height / 2),
-                ),
-                alignment: Alignment.center,
-                child: AnimatedSwitcher(
-                  duration: AppMotion.of(context, AppMotion.fast),
-                  child: _done
-                      ? const SizedBox.square(
-                          key: ValueKey('done'),
-                          dimension: 28,
-                          child: CustomPaint(painter: _CheckPainter()),
-                        )
-                      : widget.saving
-                      ? const SizedBox(
-                          key: ValueKey('saving'),
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            color: AppColors.onAccent,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Padding(
-                          key: const ValueKey('label'),
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              widget.label,
-                              maxLines: 1,
-                              style: const TextStyle(
-                                fontFamily: kAppFontFamily,
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.onAccent,
-                              ),
-                            ),
-                          ),
-                        ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// The check of a saved capsule, in the hand-drawn icons' rounded stroke.
-class _CheckPainter extends CustomPainter {
-  const _CheckPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(size.width * 0.2, size.height * 0.52)
-      ..lineTo(size.width * 0.42, size.height * 0.72)
-      ..lineTo(size.width * 0.8, size.height * 0.3);
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = AppColors.onAccent
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_CheckPainter old) => false;
 }

@@ -70,6 +70,7 @@ class NotificationRouter {
       case NotificationType.friendRequest:
         await AppRoutes.toFriendRequests(context);
       case NotificationType.capsule ||
+          NotificationType.coAuthor ||
           NotificationType.reaction ||
           NotificationType.comment ||
           NotificationType.reply:
@@ -89,7 +90,9 @@ class NotificationRouter {
           await CapsuleDetailDialog.show(
             root,
             capsule,
-            openComments: tap.type != NotificationType.reaction,
+            openComments:
+                tap.type == NotificationType.comment ||
+                tap.type == NotificationType.reply,
           );
         } catch (e) {
           AppLogger.warning('Could not open capsule $capsuleId', error: e);

@@ -52,6 +52,20 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       .map(_map);
 
   @override
+  Stream<List<Capsule>> watchCoAuthored(String uid) => _capsules
+      .where('coAuthors', arrayContains: uid)
+      .orderBy('createdAt', descending: true)
+      .limit(100)
+      .snapshots()
+      .map(_map);
+
+  @override
+  Future<void> leaveCoAuthors(String capsuleId, String uid) =>
+      _capsules.doc(capsuleId).update({
+        'coAuthors': FieldValue.arrayRemove([uid]),
+      });
+
+  @override
   Future<Capsule?> getById(String id) async {
     try {
       final doc = await _capsules.doc(id).get();
@@ -214,6 +228,7 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       capturedAt: draft.capturedAt,
       utcOffsetMinutes: draft.utcOffsetMinutes,
       showAuthor: draft.showAuthor,
+      coAuthors: draft.coAuthors,
       allowComments: draft.allowComments,
       allowReactions: draft.allowReactions,
       locationPrecision: draft.locationPrecision,
