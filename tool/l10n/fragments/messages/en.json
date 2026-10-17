@@ -181,5 +181,121 @@
   "messagesTyping": "typing",
   "@messagesTyping": {
     "description": "Under the friend's name in the chat header while they type (animated dots follow)."
+  },
+  "messagesGroupFailed": "Something went wrong with the group. Try again.",
+  "@messagesGroupFailed": {
+    "description": "Shown when creating, renaming, leaving or inviting to a group fails."
+  },
+  "messagesGroupNameTooLong": "A group name can have at most 60 characters",
+  "@messagesGroupNameTooLong": {
+    "description": "Shown when a group name is longer than allowed."
+  },
+  "messagesNewGroup": "New group",
+  "@messagesNewGroup": {
+    "description": "Button at the top of the new-chat sheet; title of the page that makes a group."
+  },
+  "messagesGroupName": "Group name",
+  "@messagesGroupName": {
+    "description": "Hint of the group name field."
+  },
+  "messagesGroupCreate": "Create",
+  "@messagesGroupCreate": {
+    "description": "Button that creates the group."
+  },
+  "messagesGroupWho": "Who is in it?",
+  "@messagesGroupWho": {
+    "description": "Title above the friends to pick for a new group."
+  },
+  "messagesGroupNeedsName": "Give the group a name",
+  "@messagesGroupNeedsName": {
+    "description": "Shown when creating a group without a name."
+  },
+  "messagesGroupNeedsPeople": "Choose at least one friend",
+  "@messagesGroupNeedsPeople": {
+    "description": "Shown when creating a group without picking friends."
+  },
+  "messagesGroupTooMany": "A group has at most 20 people",
+  "@messagesGroupTooMany": {
+    "description": "Shown when more people are picked than a group holds."
+  },
+  "messagesGroupMembers": "{count, plural, =1{1 member} other{{count} members}}",
+  "@messagesGroupMembers": {
+    "description": "Under a group's name in its header.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesTypingName": "{name} is typing",
+  "@messagesTypingName": {
+    "description": "Group header while one person types (animated dots follow).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesTypingMany": "{count} people are typing",
+  "@messagesTypingMany": {
+    "description": "Group header while several people type (animated dots follow).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesGroupLeave": "Leave group",
+  "@messagesGroupLeave": {
+    "description": "Group menu item."
+  },
+  "messagesGroupLeaveConfirm": "Leave “{name}”? Its messages will no longer show here.",
+  "@messagesGroupLeaveConfirm": {
+    "description": "Confirmation before leaving a group.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Trip"
+      }
+    }
+  },
+  "messagesGroupRename": "Rename group",
+  "@messagesGroupRename": {
+    "description": "Group menu item and title of the rename card."
+  },
+  "messagesGroupAddPeople": "Add people",
+  "@messagesGroupAddPeople": {
+    "description": "Group menu item and title of the page that invites friends."
+  },
+  "messagesGroupMembersTitle": "Members",
+  "@messagesGroupMembersTitle": {
+    "description": "Group menu item and title of the members list."
+  },
+  "messagesGroupInvited": "Invited. Your friends join in a moment.",
+  "@messagesGroupInvited": {
+    "description": "Shown after inviting friends to a group (the server adds them)."
+  },
+  "messagesGroupLeft": "You are no longer in this group",
+  "@messagesGroupLeft": {
+    "description": "Instead of the message field when the user is no longer in the group."
+  },
+  "messagesGroupHello": "Say hello to everyone",
+  "@messagesGroupHello": {
+    "description": "Empty state of a new group chat."
+  },
+  "messagesOpenGroup": "Open group {name}",
+  "@messagesOpenGroup": {
+    "description": "Screen reader label of a group in the chat list.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Trip"
+      }
+    }
+  },
+  "messagesGroupSave": "Save",
+  "@messagesGroupSave": {
+    "description": "Button saving a group's new name."
   }
 }

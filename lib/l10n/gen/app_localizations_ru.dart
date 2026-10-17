@@ -1307,6 +1307,75 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesFindChatsHint => 'Поиск чатов';
 
   @override
+  String get messagesGroupAddPeople => 'Добавить людей';
+
+  @override
+  String get messagesGroupCreate => 'Создать';
+
+  @override
+  String get messagesGroupFailed =>
+      'С группой что-то пошло не так. Попробуйте ещё раз.';
+
+  @override
+  String get messagesGroupHello => 'Поздоровайтесь со всеми';
+
+  @override
+  String get messagesGroupInvited =>
+      'Приглашения отправлены. Друзья появятся через мгновение.';
+
+  @override
+  String get messagesGroupLeave => 'Выйти из группы';
+
+  @override
+  String messagesGroupLeaveConfirm(String name) {
+    return 'Выйти из «$name»? Её сообщения больше не будут здесь видны.';
+  }
+
+  @override
+  String get messagesGroupLeft => 'Вы больше не в этой группе';
+
+  @override
+  String messagesGroupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count участника',
+      many: '$count участников',
+      few: '$count участника',
+      one: '$count участник',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesGroupMembersTitle => 'Участники';
+
+  @override
+  String get messagesGroupName => 'Название группы';
+
+  @override
+  String get messagesGroupNameTooLong =>
+      'В названии группы не больше 60 символов';
+
+  @override
+  String get messagesGroupNeedsName => 'Дайте группе название';
+
+  @override
+  String get messagesGroupNeedsPeople => 'Выберите хотя бы одного друга';
+
+  @override
+  String get messagesGroupRename => 'Переименовать группу';
+
+  @override
+  String get messagesGroupSave => 'Сохранить';
+
+  @override
+  String get messagesGroupTooMany => 'В группе не больше 20 человек';
+
+  @override
+  String get messagesGroupWho => 'Кто в группе?';
+
+  @override
   String get messagesInputHint => 'Напишите сообщение...';
 
   @override
@@ -1353,6 +1422,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesNewChatTitle => 'Новый чат';
 
   @override
+  String get messagesNewGroup => 'Новая группа';
+
+  @override
   String get messagesNoChatsFound => 'Чаты не найдены';
 
   @override
@@ -1376,6 +1448,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String messagesOpenCapsule(String title) {
     return 'Открыть капсулу «$title»';
+  }
+
+  @override
+  String messagesOpenGroup(String name) {
+    return 'Открыть группу $name';
   }
 
   @override
@@ -1446,6 +1523,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesTyping => 'печатает';
+
+  @override
+  String messagesTypingMany(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Печатают $count человека',
+      many: 'Печатают $count человек',
+      few: 'Печатают $count человека',
+      one: 'Печатает $count человек',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String messagesTypingName(String name) {
+    return '$name печатает';
+  }
 
   @override
   String get messagesUnmutedToast => 'Уведомления чата включены';

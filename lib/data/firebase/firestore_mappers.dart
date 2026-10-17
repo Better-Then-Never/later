@@ -217,6 +217,8 @@ abstract final class FirestoreMappers {
       for (final e in _map(data['lastReadAt']).entries)
         if (_date(e.value) case final DateTime at) e.key: at,
     },
+    members: _stringList(data['members']),
+    name: _string(data['name'], ''),
   );
 
   static ChatMessage chatMessage(String id, Map<String, dynamic> data) =>

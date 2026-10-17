@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/user_profile.dart';
@@ -13,10 +16,108 @@ import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../../../shared/widgets/default_search_bar.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../../../shared/widgets/user/user_list_tile.dart';
 import '../../../shared/widgets/user/user_row_skeleton.dart';
 import '../../friends/friends_store.dart';
+import '../chats_store.dart';
+import 'group_friends_picker.dart';
 import '../../users/user_directory.dart';
+
+/// "New group": the user picks a name and friends, the group is created
+/// (the friends join as the server accepts them) and its chat opens.
+Future<void> startGroup(BuildContext root) async {
+  final l10n = root.l10n;
+  final pick = await GroupFriendsPicker.show(
+    root,
+    title: l10n.messagesNewGroup,
+    actionText: l10n.messagesGroupCreate,
+    withName: true,
+  );
+  if (pick == null || !root.mounted) return;
+  final (id, failure) = await root.read<ChatsStore>().createGroup(
+    pick.name,
+    pick.friends,
+  );
+  if (!root.mounted) return;
+  if (id == null) {
+    PopupNotificationService.showError(
+      context: root,
+      message: failure?.message ?? l10n.messagesGroupFailed,
+      position: NotificationPosition.top,
+    );
+    return;
+  }
+  await AppRoutes.toGroupChat(root, id);
+}
+
+/// The first row of the sheet: start a group.
+class _NewGroupRow extends StatelessWidget {
+  const _NewGroupRow({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final screen = MediaQuery.sizeOf(context);
+    final radius = UserRoundAvatar.listRadius(screen.width);
+    return Semantics(
+      button: true,
+      child: AppPressable(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecorations.whiteCard(context),
+            padding: EdgeInsets.symmetric(
+              horizontal: screen.width * 0.03,
+              vertical: 10,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: radius * 2,
+                  height: radius * 2,
+                  decoration: const BoxDecoration(
+                    color: AppColors.brandGreen,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const CustomPaint(painter: _PlusPainter()),
+                ),
+                SizedBox(width: screen.width * 0.04),
+                Text(
+                  context.l10n.messagesNewGroup,
+                  style: AppTextStyles.listName(context),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PlusPainter extends CustomPainter {
+  const _PlusPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.onAccent
+      ..strokeWidth = 2.6
+      ..strokeCap = StrokeCap.round;
+    final c = size.center(Offset.zero);
+    final arm = size.width * 0.22;
+    canvas
+      ..drawLine(c - Offset(arm, 0), c + Offset(arm, 0), paint)
+      ..drawLine(c - Offset(0, arm), c + Offset(0, arm), paint);
+  }
+
+  @override
+  bool shouldRepaint(_PlusPainter old) => false;
+}
 
 /// Bottom sheet listing the user's friends; picking one opens the chat.
 class NewChatSheet extends StatefulWidget {
@@ -197,6 +298,13 @@ class _NewChatSheetState extends State<NewChatSheet> {
             ),
           ),
           const SizedBox(height: 12),
+          if (friends.isLoaded && ids.isNotEmpty && _query.trim().isEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: _NewGroupRow(
+                onTap: () => _closeThen((root) => unawaited(startGroup(root))),
+              ),
+            ),
           Expanded(child: AppFadeSwitcher(child: body)),
         ],
       ),

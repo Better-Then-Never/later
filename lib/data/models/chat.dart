@@ -1,20 +1,45 @@
 import 'capsule.dart';
 
 /// A conversation between two users (`chats/{uidA}_{uidB}`, uids sorted so
-/// both sides compute the same id).
+/// both sides compute the same id), or a group (`chats/g_{id}`, [members]
+/// and a [name]).
 class Chat {
   const Chat({
     required this.id,
-    required this.participants,
+    this.participants = const [],
     this.lastMessage = '',
     this.lastUpdated,
     this.lastSenderId,
     this.unreadCounts = const {},
     this.lastReadAt = const {},
+    this.members = const [],
+    this.name = '',
   });
 
   final String id;
+
+  /// The two people of a two-person chat (empty for groups).
   final List<String> participants;
+
+  /// A group's people (2-20; empty for two-person chats).
+  final List<String> members;
+
+  /// A group's name.
+  final String name;
+
+  /// Most people in a group (firestore.rules).
+  static const maxGroupMembers = 20;
+
+  /// Longest group name.
+  static const maxGroupName = 60;
+
+  static bool isGroupId(String id) => id.startsWith('g_');
+
+  bool get isGroup => isGroupId(id);
+
+  /// Everyone in it but [uid].
+  List<String> othersThan(String uid) =>
+      (isGroup ? members : participants).where((p) => p != uid).toList();
 
   /// Text of the newest message (a capsule's title for capsules); empty
   /// before the first message and after the history was cleared.
@@ -29,7 +54,15 @@ class Chat {
   /// When each participant last read the chat (read receipts).
   final Map<String, DateTime> lastReadAt;
 
-  int unreadFor(String uid) => unreadCounts[uid] ?? 0;
+  /// Messages [uid] has not read. A group keeps no counts: 1 while it has
+  /// something newer from someone else than [uid]'s read mark.
+  int unreadFor(String uid) {
+    if (!isGroup) return unreadCounts[uid] ?? 0;
+    final updated = lastUpdated;
+    if (!hasMessages || lastSenderId == uid || updated == null) return 0;
+    final read = lastReadAt[uid];
+    return read == null || updated.isAfter(read) ? 1 : 0;
+  }
 
   DateTime? readAtOf(String uid) => lastReadAt[uid];
 
@@ -58,7 +91,10 @@ class Chat {
       _mapEquals(other.unreadCounts, unreadCounts) &&
       _mapEquals(other.lastReadAt, lastReadAt) &&
       other.participants.length == participants.length &&
-      other.participants.every(participants.contains);
+      other.participants.every(participants.contains) &&
+      other.name == name &&
+      other.members.length == members.length &&
+      other.members.every(members.contains);
 
   @override
   int get hashCode => Object.hash(id, lastMessage, lastUpdated, lastSenderId);

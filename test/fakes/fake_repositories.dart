@@ -479,8 +479,139 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
-  Stream<DateTime?> watchTyping(String chatId, String uid) =>
-      seeded(() => typing['$chatId/$uid'], _typingChanges.stream);
+  Stream<Map<String, DateTime>> watchTyping(String chatId) => seeded(
+    () => {
+      for (final e in typing.entries)
+        if (e.key.startsWith('$chatId/') && e.value != null)
+          e.key.substring(chatId.length + 1): e.value!,
+    },
+    _typingChanges.stream,
+  );
+
+  /// Groups by id. Invited people join at once (as the server would for
+  /// friends) unless their uid is in [refusedInvites].
+  final Map<String, Chat> groups = {};
+  final Set<String> refusedInvites = {};
+  int _groupIds = 0;
+
+  Chat _group(String id) => groups[id] ?? (throw StateError('no group $id'));
+
+  void _putGroup(Chat g) {
+    groups[g.id] = g;
+    _notify();
+  }
+
+  Chat _copyGroup(
+    Chat g, {
+    List<String>? members,
+    String? name,
+    String? lastMessage,
+    String? lastSenderId,
+    Map<String, DateTime>? lastReadAt,
+    bool touch = false,
+  }) => Chat(
+    id: g.id,
+    members: members ?? g.members,
+    name: name ?? g.name,
+    lastMessage: lastMessage ?? g.lastMessage,
+    lastUpdated: touch ? now : g.lastUpdated,
+    lastSenderId: lastSenderId ?? g.lastSenderId,
+    lastReadAt: lastReadAt ?? g.lastReadAt,
+  );
+
+  @override
+  Stream<List<Chat>> watchGroups(String uid) => seeded(
+    () => groups.values.where((g) => g.members.contains(uid)).toList(),
+    _changes.stream,
+  );
+
+  @override
+  Future<String> createGroup({
+    required String creator,
+    required String name,
+    required List<String> invitees,
+  }) async {
+    calls.add('group:$creator:$name:${invitees.join(',')}');
+    if (failSends) throw StateError('create failed');
+    final id = 'g_group${_groupIds++}abcdef';
+    _putGroup(Chat(id: id, members: [creator], name: name, lastUpdated: now));
+    await inviteToGroup(id, by: creator, invitees: invitees);
+    return id;
+  }
+
+  @override
+  Future<void> inviteToGroup(
+    String groupId, {
+    required String by,
+    required List<String> invitees,
+  }) async {
+    calls.add('invite:$groupId:$by:${invitees.join(',')}');
+    final g = _group(groupId);
+    _putGroup(
+      _copyGroup(
+        g,
+        members: [
+          ...g.members,
+          for (final uid in invitees)
+            if (!g.members.contains(uid) && !refusedInvites.contains(uid)) uid,
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<void> renameGroup(String groupId, String name) async {
+    calls.add('rename:$groupId:$name');
+    _putGroup(_copyGroup(_group(groupId), name: name));
+  }
+
+  @override
+  Future<void> leaveGroup(String groupId, String uid) async {
+    calls.add('leave:$groupId:$uid');
+    final g = _group(groupId);
+    _putGroup(
+      _copyGroup(
+        g,
+        members: [...g.members]..remove(uid),
+        lastReadAt: {...g.lastReadAt}..remove(uid),
+      ),
+    );
+  }
+
+  @override
+  Future<void> markGroupRead(String groupId, String uid) async {
+    calls.add('groupread:$groupId:$uid');
+    final g = _group(groupId);
+    _putGroup(_copyGroup(g, lastReadAt: {...g.lastReadAt, uid: now}));
+  }
+
+  @override
+  Future<void> sendToGroup({
+    required String groupId,
+    required String from,
+    required String text,
+    required String messageId,
+    MessageReply? replyTo,
+  }) async {
+    calls.add('grouptext:$groupId:$from:$text');
+    if (failSends) throw StateError('send failed');
+    final g = _group(groupId);
+    if (!g.members.contains(from)) throw StateError('not a member');
+    final list = messages[groupId] ??= [];
+    if (list.any((m) => m.id == messageId)) return;
+    list.add(
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: text,
+        sentAt: now,
+        replyTo: replyTo,
+      ),
+    );
+    _putGroup(
+      _copyGroup(g, lastMessage: text, lastSenderId: from, touch: true),
+    );
+  }
 
   /// Clock used for message times and read receipts.
   DateTime now = DateTime(2026, 10, 16, 12);

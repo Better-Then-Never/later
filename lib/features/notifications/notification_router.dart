@@ -4,6 +4,7 @@ import '../../app/router/app_routes.dart';
 import '../../app/session/session_controller.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/app_notification.dart';
+import '../../data/models/chat.dart';
 import '../../app/shell/selected_page.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/push_messaging_service.dart';
@@ -83,6 +84,11 @@ class NotificationRouter {
           AppLogger.warning('Could not open capsule $capsuleId', error: e);
         }
       case NotificationType.message:
+        final chatId = tap.chatId;
+        if (chatId != null && Chat.isGroupId(chatId)) {
+          await AppRoutes.toGroupChat(context, chatId);
+          return;
+        }
         final userId = tap.userId;
         if (userId == null) return;
         await AppRoutes.toChat(context, userId);

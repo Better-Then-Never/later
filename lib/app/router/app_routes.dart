@@ -112,6 +112,9 @@ abstract final class AppRoutes {
   static Future<void> toChat(BuildContext context, String friendUid) =>
       Navigator.of(context).push(appRoute(ChatPage(friendUid: friendUid)));
 
+  static Future<void> toGroupChat(BuildContext context, String groupId) =>
+      Navigator.of(context).push(appRoute(ChatPage.group(groupId: groupId)));
+
   static Future<String?> toQrScanner(BuildContext context) =>
       Navigator.of(context).push<String>(appRoute(const QRScannerPage()));
 

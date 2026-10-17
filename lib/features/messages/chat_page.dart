@@ -41,6 +41,7 @@ import 'chat_controller.dart';
 import 'chat_time.dart';
 import 'chats_store.dart';
 import 'widgets/chat_options_sheet.dart';
+import 'widgets/group_avatar.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
 import 'widgets/photo_message.dart';
@@ -48,21 +49,39 @@ import 'widgets/photo_send_card.dart';
 import 'widgets/typing_label.dart';
 import 'widgets/reply_bar.dart';
 
-/// A conversation with one friend.
+/// A conversation with one friend, or a group.
 class ChatPage extends StatelessWidget {
-  const ChatPage({super.key, required this.friendUid});
+  const ChatPage({super.key, required String this.friendUid}) : groupId = null;
 
-  final String friendUid;
+  const ChatPage.group({super.key, required String this.groupId})
+    : friendUid = null;
+
+  final String? friendUid;
+  final String? groupId;
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ChatController(
-        friendUid: friendUid,
-        chats: context.read<ChatsStore>(),
-        friends: context.read<FriendsStore>(),
-        readReceipts: () => context.read<SettingsStore>().privacy.readReceipts,
-      ),
+      create: (context) {
+        final chats = context.read<ChatsStore>();
+        final friends = context.read<FriendsStore>();
+        bool readReceipts() =>
+            context.read<SettingsStore>().privacy.readReceipts;
+        final group = groupId;
+        return group != null
+            ? ChatController.group(
+                groupId: group,
+                chats: chats,
+                friends: friends,
+                readReceipts: readReceipts,
+              )
+            : ChatController(
+                friendUid: friendUid!,
+                chats: chats,
+                friends: friends,
+                readReceipts: readReceipts,
+              );
+      },
       child: const _ChatView(),
     );
   }
@@ -355,19 +374,27 @@ class _ChatViewState extends State<_ChatView> {
     final controller = context.watch<ChatController>();
     // Rebuilds when this user blocks or unblocks the friend.
     context.watch<FriendsStore>();
+    // Names of the friend, or of everyone writing in the group.
+    final directory = context.watch<UserDirectory>();
+    final l10n = context.l10n;
+    final fallbackName = l10n.messagesChatFallbackTitle;
+    String nameOf(String uid) => directory.profile(uid)?.name ?? fallbackName;
     final friendUid = controller.friendUid;
-    final fallbackName = context.l10n.messagesChatFallbackTitle;
-    final friendName = context.select<UserDirectory, String>(
-      (d) => d.profile(friendUid)?.name ?? fallbackName,
-    );
+    final groupId = controller.groupId;
+    final title = friendUid != null
+        ? nameOf(friendUid)
+        : controller.chat?.name ?? fallbackName;
 
     return Scaffold(
       backgroundColor: context.palette.background,
       body: Column(
         children: [
           _ChatHeader(
-            friendUid: friendUid,
-            friendName: friendName,
+            avatar: (radius) => groupId != null
+                ? GroupAvatar(groupId: groupId, name: title, radius: radius)
+                : UserRoundAvatar(userId: friendUid!, radius: radius),
+            title: title,
+            subtitle: _subtitle(controller, nameOf),
             onMenu: () => ChatOptionsSheet.show(context, controller),
           ),
           if (controller.isSearching)
@@ -379,7 +406,7 @@ class _ChatViewState extends State<_ChatView> {
           Expanded(
             child: Stack(
               children: [
-                AppFadeSwitcher(child: _body(controller, friendName)),
+                AppFadeSwitcher(child: _body(controller, nameOf, title)),
                 Positioned(
                   right: 16,
                   bottom: 12,
@@ -404,8 +431,8 @@ class _ChatViewState extends State<_ChatView> {
                 final reply? => ReplyBar(
                   key: ValueKey(reply.id),
                   name: reply.senderId == controller.myUid
-                      ? context.l10n.capsulesYou
-                      : friendName,
+                      ? l10n.capsulesYou
+                      : nameOf(reply.senderId),
                   text: reply.text,
                   onCancel: controller.cancelReply,
                 ),
@@ -414,23 +441,60 @@ class _ChatViewState extends State<_ChatView> {
             ),
             MessageInput(
               onSend: _send,
-              onPhotoTap: _sendPhoto,
+              onPhotoTap: controller.canSendPhotos ? _sendPhoto : null,
               onChanged: controller.onInputChanged,
               focusNode: _inputFocus,
-              onCapsuleTap: () => AppRoutes.toCamera(
-                context,
-                privacy: CapsulePrivacy.private,
-                recipientId: friendUid,
-              ),
+              onCapsuleTap: friendUid == null
+                  ? null
+                  : () => AppRoutes.toCamera(
+                      context,
+                      privacy: CapsulePrivacy.private,
+                      recipientId: friendUid,
+                    ),
             ),
-          ] else
+          ] else if (controller.isGroup)
+            const _GroupLeftNotice()
+          else
             _BlockedNotice(iBlockedThem: controller.iBlockedThem),
         ],
       ),
     );
   }
 
-  Widget _body(ChatController controller, String friendName) {
+  /// Under the name: who is typing; else, in a group, how many are in it;
+  /// else, for a muted chat, that it sends no pushes.
+  Widget? _subtitle(ChatController controller, String Function(String) nameOf) {
+    final l10n = context.l10n;
+    final typing = controller.typingPeople;
+    if (typing.isNotEmpty) {
+      return TypingLabel(
+        text: !controller.isGroup
+            ? l10n.messagesTyping
+            : typing.length == 1
+            ? l10n.messagesTypingName(nameOf(typing.first))
+            : l10n.messagesTypingMany(typing.length),
+      );
+    }
+    final secondary = AppTextStyles.body.copyWith(
+      color: context.palette.textSecondary,
+    );
+    if (controller.isGroup) {
+      return Text(
+        l10n.messagesGroupMembers(controller.chat?.members.length ?? 1),
+        style: secondary,
+      );
+    }
+    if (controller.isMuted) {
+      return Text(l10n.messagesNotificationsMuted, style: secondary);
+    }
+    return null;
+  }
+
+  Widget _body(
+    ChatController controller,
+    String Function(String) nameOf,
+    String title,
+  ) {
     if (!controller.isLoaded) {
       return const Center(
         key: ValueKey('loading'),
@@ -452,7 +516,9 @@ class _ChatViewState extends State<_ChatView> {
       return DefaultEmptyInboxInfo(
         key: const ValueKey('empty'),
         message: l10n.messagesEmptyTitle,
-        subtitle: l10n.messagesEmptySubtitle(friendName),
+        subtitle: controller.isGroup
+            ? l10n.messagesGroupHello
+            : l10n.messagesEmptySubtitle(title),
         assetPath: AppIcons.navbarMessages,
       );
     }
@@ -510,6 +576,13 @@ class _ChatViewState extends State<_ChatView> {
             !ChatTime.isSameDay(dayOf(message), dayOf(newer));
         final capsuleId = message.capsuleId;
         final failed = message.delivery == MessageDelivery.failed;
+        // In a group, who wrote: over the first of their messages in a row.
+        final senderName =
+            controller.isGroup &&
+                !controller.isMine(message) &&
+                (firstOfDay || older.senderId != message.senderId)
+            ? nameOf(message.senderId)
+            : null;
         final isNew = animate && !_shown.contains(message.id);
         _shown.add(message.id);
 
@@ -547,11 +620,12 @@ class _ChatViewState extends State<_ChatView> {
                           message: message,
                           isMine: controller.isMine(message),
                           showTail: lastOfGroup,
+                          senderName: senderName,
                           replyName: message.replyTo == null
                               ? null
                               : message.replyTo!.senderId == controller.myUid
                               ? l10n.capsulesYou
-                              : friendName,
+                              : nameOf(message.replyTo!.senderId),
                           onQuoteTap: message.replyTo == null
                               ? null
                               : () => _showQuoted(message.replyTo!.id),
@@ -591,16 +665,19 @@ class _ChatViewState extends State<_ChatView> {
   }
 }
 
-/// White header like every page: back, the friend's avatar and name, menu.
+/// White header like every page: back, the friend's avatar and name (or
+/// the group's), a line under the name (typing, members, muted), menu.
 class _ChatHeader extends StatelessWidget {
   const _ChatHeader({
-    required this.friendUid,
-    required this.friendName,
+    required this.avatar,
+    required this.title,
+    required this.subtitle,
     required this.onMenu,
   });
 
-  final String friendUid;
-  final String friendName;
+  final Widget Function(double radius) avatar;
+  final String title;
+  final Widget? subtitle;
   final VoidCallback onMenu;
 
   @override
@@ -624,7 +701,7 @@ class _ChatHeader extends StatelessWidget {
         children: [
           GoBackButton(context: context),
           SizedBox(width: screen.width * 0.04),
-          UserRoundAvatar(userId: friendUid, radius: screen.width * 0.06),
+          avatar(screen.width * 0.06),
           SizedBox(width: screen.width * 0.03),
           Expanded(
             child: Column(
@@ -632,32 +709,18 @@ class _ChatHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  friendName,
+                  title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.pageTitle(
                     context,
                   ).copyWith(fontSize: screen.height * 0.028),
                 ),
-                // The friend typing; otherwise, for a muted chat, that it
-                // sends no pushes.
                 AnimatedSize(
                   duration: AppMotion.of(context, AppMotion.standard),
                   curve: AppMotion.standardCurve,
                   alignment: Alignment.topLeft,
-                  child: switch ((
-                    context.select<ChatController, bool>((c) => c.friendTyping),
-                    context.select<ChatController, bool>((c) => c.isMuted),
-                  )) {
-                    (true, _) => TypingLabel(text: context.l10n.messagesTyping),
-                    (false, true) => Text(
-                      context.l10n.messagesNotificationsMuted,
-                      style: AppTextStyles.body.copyWith(
-                        color: context.palette.textSecondary,
-                      ),
-                    ),
-                    _ => const SizedBox(width: double.infinity),
-                  },
+                  child: subtitle ?? const SizedBox(width: double.infinity),
                 ),
               ],
             ),
@@ -669,6 +732,28 @@ class _ChatHeader extends StatelessWidget {
             size: screen.width * 0.12,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Instead of the message field once the user is no longer in the group.
+class _GroupLeftNotice extends StatelessWidget {
+  const _GroupLeftNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+        child: Text(
+          context.l10n.messagesGroupLeft,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.body.copyWith(
+            color: context.palette.textSecondary,
+          ),
+        ),
       ),
     );
   }

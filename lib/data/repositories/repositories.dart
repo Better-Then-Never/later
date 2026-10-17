@@ -163,9 +163,44 @@ abstract interface class ChatRepository {
   /// [uid] is typing in [chatId] now ([typing]), or stopped.
   Future<void> setTyping(String chatId, String uid, {required bool typing});
 
-  /// When [uid] last said they were typing in [chatId] (server time); null
-  /// once they stopped.
-  Stream<DateTime?> watchTyping(String chatId, String uid);
+  /// Who says they are typing in [chatId], and since when (server time).
+  Stream<Map<String, DateTime>> watchTyping(String chatId);
+
+  /// Groups [uid] is in, most recently active first.
+  Stream<List<Chat>> watchGroups(String uid);
+
+  /// A new group named [name] with [creator] in it; [invitees] are invited
+  /// (the server adds the ones it accepts). Returns its id.
+  Future<String> createGroup({
+    required String creator,
+    required String name,
+    required List<String> invitees,
+  });
+
+  /// [by] invites [invitees] to [groupId].
+  Future<void> inviteToGroup(
+    String groupId, {
+    required String by,
+    required List<String> invitees,
+  });
+
+  Future<void> renameGroup(String groupId, String name);
+
+  /// [uid] leaves [groupId] (their read mark goes with them).
+  Future<void> leaveGroup(String groupId, String uid);
+
+  /// [uid] has read [groupId] up to now.
+  Future<void> markGroupRead(String groupId, String uid);
+
+  /// Sends [text] to [groupId] as message [messageId] (one batched write, so
+  /// it also waits offline).
+  Future<void> sendToGroup({
+    required String groupId,
+    required String from,
+    required String text,
+    required String messageId,
+    MessageReply? replyTo,
+  });
 
   /// Posts [capsule] (already shared with [to]) into the chat.
   Future<void> sendCapsule({

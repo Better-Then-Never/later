@@ -28,7 +28,11 @@ class MessageBubble extends StatelessWidget {
     this.onPhotoTap,
     this.replyName,
     this.onQuoteTap,
+    this.senderName,
   });
+
+  /// In a group, who wrote it (on the first of their messages in a row).
+  final String? senderName;
 
   final ChatMessage message;
   final bool isMine;
@@ -88,6 +92,21 @@ class MessageBubble extends StatelessWidget {
               : CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (senderName case final name?)
+              Padding(
+                padding: EdgeInsets.fromLTRB(photo ? 6 : 0, 0, 0, 2),
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.brandGreen,
+                  ),
+                ),
+              ),
             if (message.replyTo case final reply?)
               GestureDetector(
                 onTap: onQuoteTap,

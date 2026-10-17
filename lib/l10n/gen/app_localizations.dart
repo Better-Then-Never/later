@@ -2192,6 +2192,114 @@ abstract class AppLocalizations {
   /// **'Find chats'**
   String get messagesFindChatsHint;
 
+  /// Group menu item and title of the page that invites friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Add people'**
+  String get messagesGroupAddPeople;
+
+  /// Button that creates the group.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get messagesGroupCreate;
+
+  /// Shown when creating, renaming, leaving or inviting to a group fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong with the group. Try again.'**
+  String get messagesGroupFailed;
+
+  /// Empty state of a new group chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello to everyone'**
+  String get messagesGroupHello;
+
+  /// Shown after inviting friends to a group (the server adds them).
+  ///
+  /// In en, this message translates to:
+  /// **'Invited. Your friends join in a moment.'**
+  String get messagesGroupInvited;
+
+  /// Group menu item.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave group'**
+  String get messagesGroupLeave;
+
+  /// Confirmation before leaving a group.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave “{name}”? Its messages will no longer show here.'**
+  String messagesGroupLeaveConfirm(String name);
+
+  /// Instead of the message field when the user is no longer in the group.
+  ///
+  /// In en, this message translates to:
+  /// **'You are no longer in this group'**
+  String get messagesGroupLeft;
+
+  /// Under a group's name in its header.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 member} other{{count} members}}'**
+  String messagesGroupMembers(int count);
+
+  /// Group menu item and title of the members list.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get messagesGroupMembersTitle;
+
+  /// Hint of the group name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name'**
+  String get messagesGroupName;
+
+  /// Shown when a group name is longer than allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'A group name can have at most 60 characters'**
+  String get messagesGroupNameTooLong;
+
+  /// Shown when creating a group without a name.
+  ///
+  /// In en, this message translates to:
+  /// **'Give the group a name'**
+  String get messagesGroupNeedsName;
+
+  /// Shown when creating a group without picking friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one friend'**
+  String get messagesGroupNeedsPeople;
+
+  /// Group menu item and title of the rename card.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename group'**
+  String get messagesGroupRename;
+
+  /// Button saving a group's new name.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get messagesGroupSave;
+
+  /// Shown when more people are picked than a group holds.
+  ///
+  /// In en, this message translates to:
+  /// **'A group has at most 20 people'**
+  String get messagesGroupTooMany;
+
+  /// Title above the friends to pick for a new group.
+  ///
+  /// In en, this message translates to:
+  /// **'Who is in it?'**
+  String get messagesGroupWho;
+
   /// No description provided for @messagesInputHint.
   ///
   /// In en, this message translates to:
@@ -2282,6 +2390,12 @@ abstract class AppLocalizations {
   /// **'New Chat'**
   String get messagesNewChatTitle;
 
+  /// Button at the top of the new-chat sheet; title of the page that makes a group.
+  ///
+  /// In en, this message translates to:
+  /// **'New group'**
+  String get messagesNewGroup;
+
   /// No description provided for @messagesNoChatsFound.
   ///
   /// In en, this message translates to:
@@ -2323,6 +2437,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open capsule {title}'**
   String messagesOpenCapsule(String title);
+
+  /// Screen reader label of a group in the chat list.
+  ///
+  /// In en, this message translates to:
+  /// **'Open group {name}'**
+  String messagesOpenGroup(String name);
 
   /// Screen reader label of a photo in a chat bubble.
   ///
@@ -2455,6 +2575,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'typing'**
   String get messagesTyping;
+
+  /// Group header while several people type (animated dots follow).
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people are typing'**
+  String messagesTypingMany(int count);
+
+  /// Group header while one person types (animated dots follow).
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is typing'**
+  String messagesTypingName(String name);
 
   /// No description provided for @messagesUnmutedToast.
   ///

@@ -13,101 +13,103 @@ import 'chats_store.dart';
 /// What to show under the user's newest message.
 enum ReceiptStatus { sending, failed, sent, read }
 
-/// State of one open conversation: messages (newest [pageSize] first, older
-/// pages on demand), messages being sent, read receipts, the in-chat search
-/// and whether either side blocked the other.
+/// State of one open conversation, with one friend or in a group: messages
+/// (newest [pageSize] first, older pages on demand), messages being sent,
+/// read receipts, who is typing, the in-chat search and, with a friend,
+/// whether either side blocked the other.
 class ChatController extends ChangeNotifier {
+  /// The conversation with [friendUid].
   ChatController({
-    required this.friendUid,
+    required String friendUid,
     required ChatsStore chats,
     required FriendsStore friends,
-    this.pageSize = 50,
+    int pageSize = 50,
     bool Function()? readReceipts,
-    this.typingRefresh = const Duration(seconds: 4),
-    this.typingShown = const Duration(seconds: 6),
+    Duration typingRefresh = const Duration(seconds: 4),
+    Duration typingShown = const Duration(seconds: 6),
+  }) : this._(
+         friendUid: friendUid,
+         groupId: null,
+         chats: chats,
+         friends: friends,
+         pageSize: pageSize,
+         readReceipts: readReceipts,
+         typingRefresh: typingRefresh,
+         typingShown: typingShown,
+       );
+
+  /// The group [groupId].
+  ChatController.group({
+    required String groupId,
+    required ChatsStore chats,
+    required FriendsStore friends,
+    int pageSize = 50,
+    bool Function()? readReceipts,
+    Duration typingRefresh = const Duration(seconds: 4),
+    Duration typingShown = const Duration(seconds: 6),
+  }) : this._(
+         friendUid: null,
+         groupId: groupId,
+         chats: chats,
+         friends: friends,
+         pageSize: pageSize,
+         readReceipts: readReceipts,
+         typingRefresh: typingRefresh,
+         typingShown: typingShown,
+       );
+
+  ChatController._({
+    required this.friendUid,
+    required this.groupId,
+    required ChatsStore chats,
+    required FriendsStore friends,
+    required this.pageSize,
+    required bool Function()? readReceipts,
+    required this.typingRefresh,
+    required this.typingShown,
   }) : _chats = chats,
        _friends = friends,
        _readReceipts = readReceipts ?? (() => true) {
     _chats.addListener(_onChatsChanged);
+    _seenGroup = isGroup && chat != null;
+    final id = chatId;
     // Opened before: start from what it showed; the stream refreshes it.
-    final recent = _chats.recentWith(friendUid);
+    final recent = id == null ? null : _chats.recentIn(id);
     if (recent != null) {
       _server = recent;
       _loaded = true;
     }
     _subscribe();
-    _typingSub = _chats.typingOf(friendUid).listen(_onFriendTyping);
-    unawaited(_checkBlockedByFriend());
+    if (id != null) _typingSub = _chats.typingIn(id).listen(_onTyping);
+    if (!isGroup) unawaited(_checkBlockedByFriend());
   }
 
-  /// While the user types, the friend is told at most this often.
-  final Duration typingRefresh;
+  /// The friend of a two-person chat; null in a group.
+  final String? friendUid;
 
-  /// The friend counts as typing for this long after each hint (a hint
-  /// that stops coming means they stopped, also when their app died).
-  final Duration typingShown;
+  /// The group's id; null in a two-person chat.
+  final String? groupId;
 
-  StreamSubscription<DateTime?>? _typingSub;
-  Timer? _typingTimer;
-  DateTime? _friendTypingUntil;
-  bool _firstTypingHint = true;
-  DateTime? _typingSentAt;
+  bool get isGroup => groupId != null;
 
-  /// The friend is typing to the user right now.
-  bool get friendTyping {
-    final until = _friendTypingUntil;
-    return until != null && DateTime.now().isBefore(until);
-  }
-
-  void _onFriendTyping(DateTime? at) {
-    _typingTimer?.cancel();
-    final first = _firstTypingHint;
-    _firstTypingHint = false;
-    // A hint left behind long ago (their app stopped mid-sentence) when the
-    // chat opens: not typing. Later hints are live, whatever the clocks say.
-    if (at == null ||
-        (first && DateTime.now().difference(at).abs() > typingShown * 3)) {
-      if (_friendTypingUntil == null) return;
-      _friendTypingUntil = null;
-      _notify();
-      return;
-    }
-    _friendTypingUntil = DateTime.now().add(typingShown);
-    _typingTimer = Timer(typingShown, _notify);
-    _notify();
-  }
-
-  /// The text in the message field changed: the friend learns the user is
-  /// typing (at most every [typingRefresh]), or that they stopped.
-  void onInputChanged(String text) {
-    if (_disposed || !canSend) return;
-    if (text.trim().isEmpty) {
-      _stopTyping();
-      return;
-    }
-    final now = DateTime.now();
-    final last = _typingSentAt;
-    if (last != null && now.difference(last) < typingRefresh) return;
-    _typingSentAt = now;
-    unawaited(_chats.setTyping(friendUid, typing: true));
-  }
-
-  void _stopTyping() {
-    if (_typingSentAt == null) return;
-    _typingSentAt = null;
-    unawaited(_chats.setTyping(friendUid, typing: false));
-  }
-
-  final String friendUid;
   final int pageSize;
   final ChatsStore _chats;
   final FriendsStore _friends;
+
+  /// While the user types, the others are told at most this often.
+  final Duration typingRefresh;
+
+  /// Someone counts as typing for this long after each hint (a hint that
+  /// stops coming means they stopped, also when their app died).
+  final Duration typingShown;
 
   /// Settings > Privacy > Read receipts: off, the friend does not learn when
   /// the user read their messages, and the user does not see it either.
   final bool Function() _readReceipts;
 
   StreamSubscription<List<ChatMessage>>? _sub;
+  StreamSubscription<Map<String, DateTime>>? _typingSub;
+  Timer? _typingTimer;
   late int _limit = pageSize;
   List<ChatMessage> _server = const [];
 
@@ -127,6 +129,13 @@ class ChatController extends ChangeNotifier {
 
   /// Reactions set here and not confirmed yet (null: removed), by message.
   final Map<String, ReactionType?> _reacting = {};
+
+  /// The last typing hint seen from each person, and until when they count
+  /// as typing.
+  final Map<String, DateTime> _hintAt = {};
+  final Map<String, DateTime> _typingUntil = {};
+  bool _firstTypingHint = true;
+  DateTime? _typingSentAt;
 
   MessageReply? _replyTo;
 
@@ -152,12 +161,16 @@ class ChatController extends ChangeNotifier {
   bool get canLoadOlder => _server.length >= _limit;
   bool get isLoadingOlder => _loadingOlder;
 
-  Chat? get chat => _chats.chatWith(friendUid);
-
   /// The chat's id, also before its first message.
   String? get chatId {
-    final me = myUid;
-    return me == null ? null : Chat.idBetween(me, friendUid);
+    final group = groupId;
+    if (group != null) return group;
+    return _chats.chatIdWith(friendUid!);
+  }
+
+  Chat? get chat {
+    final id = chatId;
+    return id == null ? null : _chats.chatById(id);
   }
 
   bool get isMuted {
@@ -189,14 +202,32 @@ class ChatController extends ChangeNotifier {
     return all.where((m) => m.text.toLowerCase().contains(q)).toList();
   }
 
-  bool get iBlockedThem => _friends.isBlocked(friendUid);
+  bool get iBlockedThem {
+    final friend = friendUid;
+    return friend != null && _friends.isBlocked(friend);
+  }
+
   bool get blockedByThem => _blockedByFriend;
-  bool get canSend => !iBlockedThem && !_blockedByFriend;
+
+  /// The group was listed for the user once (so no longer listed means they
+  /// left, not that it was just created).
+  bool _seenGroup = false;
+
+  /// Whether the user may write here: not blocked either way with the
+  /// friend; still a member of the group (it may not be listed yet just
+  /// after creating it).
+  bool get canSend {
+    if (!isGroup) return !iBlockedThem && !_blockedByFriend;
+    final group = chat;
+    final me = myUid;
+    if (group == null) return !_seenGroup;
+    return me != null && group.members.contains(me);
+  }
 
   bool isMine(ChatMessage message) => message.senderId == myUid;
 
-  /// Receipt for the user's newest message, or null when the friend wrote
-  /// last (or nothing was sent yet).
+  /// Receipt for the user's newest message, or null when someone else wrote
+  /// last (or nothing was sent yet). In a group, "read" once everyone has.
   ReceiptStatus? get receipt {
     final all = messages;
     if (all.isEmpty || !isMine(all.last)) return null;
@@ -205,16 +236,98 @@ class ChatController extends ChangeNotifier {
       MessageDelivery.sending => ReceiptStatus.sending,
       MessageDelivery.failed => ReceiptStatus.failed,
       MessageDelivery.sent =>
-        _readReceipts() && last.readBy(chat?.readAtOf(friendUid))
+        _readReceipts() && _readByEveryone(last)
             ? ReceiptStatus.read
             : ReceiptStatus.sent,
     };
   }
 
+  bool _readByEveryone(ChatMessage message) {
+    final c = chat;
+    final me = myUid;
+    if (me == null) return false;
+    if (!isGroup) return message.readBy(c?.readAtOf(friendUid!));
+    final others = c?.othersThan(me) ?? const <String>[];
+    return others.isNotEmpty &&
+        others.every((uid) => message.readBy(c!.readAtOf(uid)));
+  }
+
+  // ---- typing --------------------------------------------------------------
+
+  /// The others typing right now, in the order they started.
+  List<String> get typingPeople {
+    final now = DateTime.now();
+    return [
+      for (final e in _typingUntil.entries)
+        if (now.isBefore(e.value)) e.key,
+    ];
+  }
+
+  /// Someone else is typing (the friend, in a two-person chat).
+  bool get friendTyping => typingPeople.isNotEmpty;
+
+  void _onTyping(Map<String, DateTime> hints) {
+    final first = _firstTypingHint;
+    _firstTypingHint = false;
+    final now = DateTime.now();
+    _typingUntil.removeWhere((uid, _) => !hints.containsKey(uid));
+    _hintAt.removeWhere((uid, _) => !hints.containsKey(uid));
+    for (final MapEntry(key: uid, value: at) in hints.entries) {
+      if (_hintAt[uid] == at) continue;
+      _hintAt[uid] = at;
+      // A hint left behind long ago (their app stopped mid-sentence) when
+      // the chat opens: not typing. Later hints are live, whatever the
+      // clocks say.
+      if (first && now.difference(at).abs() > typingShown * 3) continue;
+      _typingUntil[uid] = now.add(typingShown);
+    }
+    _scheduleTypingExpiry();
+    _notify();
+  }
+
+  void _scheduleTypingExpiry() {
+    _typingTimer?.cancel();
+    final now = DateTime.now();
+    _typingUntil.removeWhere((_, until) => !now.isBefore(until));
+    if (_typingUntil.isEmpty) return;
+    final next = _typingUntil.values.reduce((a, b) => a.isBefore(b) ? a : b);
+    _typingTimer = Timer(next.difference(now), () {
+      _scheduleTypingExpiry();
+      _notify();
+    });
+  }
+
+  /// The text in the message field changed: the others learn the user is
+  /// typing (at most every [typingRefresh]), or that they stopped.
+  void onInputChanged(String text) {
+    final id = chatId;
+    if (_disposed || !canSend || id == null) return;
+    if (text.trim().isEmpty) {
+      _stopTyping();
+      return;
+    }
+    final now = DateTime.now();
+    final last = _typingSentAt;
+    if (last != null && now.difference(last) < typingRefresh) return;
+    _typingSentAt = now;
+    unawaited(_chats.setTyping(id, typing: true));
+  }
+
+  void _stopTyping() {
+    final id = chatId;
+    if (_typingSentAt == null || id == null) return;
+    _typingSentAt = null;
+    unawaited(_chats.setTyping(id, typing: false));
+  }
+
+  // ---- messages ------------------------------------------------------------
+
   void _subscribe() {
+    final id = chatId;
+    if (id == null) return;
     unawaited(_sub?.cancel());
     _sub = _chats
-        .messagesWith(friendUid, limit: _limit)
+        .messagesIn(id, limit: _limit)
         .listen(
           _onMessages,
           onError: (Object e, StackTrace st) {
@@ -232,15 +345,14 @@ class ChatController extends ChangeNotifier {
   }
 
   void _onMessages(List<ChatMessage> messages) {
-    // A new message from the friend: they are done typing it.
+    // A new message from someone: they are done typing it.
     final newest = messages.lastOrNull;
-    if (newest != null &&
-        newest.senderId == friendUid &&
-        newest.id != _server.lastOrNull?.id) {
-      _friendTypingUntil = null;
+    if (newest != null && newest.id != _server.lastOrNull?.id) {
+      _typingUntil.remove(newest.senderId);
     }
     _server = messages;
-    _chats.rememberMessages(friendUid, messages);
+    final id = chatId;
+    if (id != null) _chats.rememberMessages(id, messages);
     _loaded = true;
     _failed = false;
     _loadingOlder = false;
@@ -261,22 +373,30 @@ class ChatController extends ChangeNotifier {
   }
 
   void _onChatsChanged() {
+    if (isGroup && chat != null) _seenGroup = true;
     _notify();
     _markReadIfNeeded();
   }
+
+  /// The chat as it was when last marked read here: the same state is not
+  /// marked twice while the change is on its way back.
+  (DateTime?, String, int)? _markedState;
 
   /// One write per batch of new messages while the chat is open.
   void _markReadIfNeeded() {
     final me = myUid;
     final c = chat;
     if (_disposed || _markingRead || me == null || c == null) return;
-    if (c.unreadFor(me) == 0) return;
+    final unread = c.unreadFor(me);
+    if (unread == 0) return;
+    final state = (c.lastUpdated, c.lastMessage, unread);
+    if (state == _markedState) return;
+    _markedState = state;
     _markingRead = true;
-    unawaited(
-      _chats
-          .markRead(friendUid, receipt: _readReceipts())
-          .whenComplete(() => _markingRead = false),
-    );
+    final marking = isGroup
+        ? _chats.markGroupRead(groupId!)
+        : _chats.markRead(friendUid!, receipt: _readReceipts());
+    unawaited(marking.whenComplete(() => _markingRead = false));
   }
 
   /// Subscribes again after the messages failed to load.
@@ -299,7 +419,9 @@ class ChatController extends ChangeNotifier {
   }
 
   Future<void> _checkBlockedByFriend() async {
-    final blocked = await _friends.isBlockedBy(friendUid);
+    final friend = friendUid;
+    if (friend == null) return;
+    final blocked = await _friends.isBlockedBy(friend);
     if (_disposed || blocked == _blockedByFriend) return;
     _blockedByFriend = blocked;
     _notify();
@@ -326,7 +448,8 @@ class ChatController extends ChangeNotifier {
       return ValidationFailure(AppL10n.current.messagesTooLong);
     }
     final me = myUid;
-    final id = _chats.newMessageId(friendUid);
+    final chat = chatId;
+    final id = chat == null ? null : _chats.newMessageIdIn(chat);
     if (me == null || id == null) {
       return AuthFailure(AppL10n.current.messagesSignedOut);
     }
@@ -343,15 +466,20 @@ class ChatController extends ChangeNotifier {
     return _deliver(id);
   }
 
+  /// Photos can be sent to a friend (not yet in groups).
+  bool get canSendPhotos => !isGroup;
+
   /// Shows the photo at [localPath] at once as "sending", uploads it and
   /// sends it with [caption]; a failure keeps it as "not sent" to retry.
   Future<AppFailure?> sendPhoto(String localPath, {String caption = ''}) async {
+    if (!canSendPhotos) return null;
     final trimmed = caption.trim();
     if (trimmed.length > Chat.maxMessageLength) {
       return ValidationFailure(AppL10n.current.messagesTooLong);
     }
     final me = myUid;
-    final id = _chats.newMessageId(friendUid);
+    final chat = chatId;
+    final id = chat == null ? null : _chats.newMessageIdIn(chat);
     if (me == null || id == null) {
       return AuthFailure(AppL10n.current.messagesSignedOut);
     }
@@ -410,10 +538,18 @@ class ChatController extends ChangeNotifier {
   Future<AppFailure?> _deliver(String id) async {
     final pending = _outbox[id];
     if (pending == null) return null;
-    final failure = pending.type == ChatMessageType.image
+    final group = groupId;
+    final failure = group != null
+        ? await _chats.sendToGroup(
+            group,
+            pending.text,
+            messageId: id,
+            replyTo: pending.replyTo,
+          )
+        : pending.type == ChatMessageType.image
         ? await _deliverPhoto(pending)
         : await _chats.sendText(
-            friendUid,
+            friendUid!,
             pending.text,
             messageId: id,
             replyTo: pending.replyTo,
@@ -425,7 +561,7 @@ class ChatController extends ChangeNotifier {
     _outbox[id] = (_outbox[id] ?? pending).withDelivery(MessageDelivery.failed);
     _notify();
     if (failure is PermissionFailure) {
-      // Most likely blocked since the chat was opened.
+      // Most likely blocked (or out of the group) since the chat was opened.
       unawaited(_checkBlockedByFriend());
       return PermissionFailure(AppL10n.current.messagesCantSend);
     }
@@ -434,13 +570,15 @@ class ChatController extends ChangeNotifier {
 
   /// Uploads [pending]'s picture (once) and sends the message.
   Future<AppFailure?> _deliverPhoto(ChatMessage pending) async {
+    final friend = friendUid;
+    if (friend == null) return null;
     final id = pending.id;
     var photo = _uploaded[id];
     if (photo == null) {
       final local = pending.localPath;
       if (local == null) return null;
       final (uploaded, failure) = await _chats.uploadPhoto(
-        friendUid,
+        friend,
         local,
         messageId: id,
       );
@@ -448,7 +586,7 @@ class ChatController extends ChangeNotifier {
       photo = _uploaded[id] = uploaded;
     }
     final failure = await _chats.sendPhoto(
-      friendUid,
+      friend,
       photo,
       messageId: id,
       caption: pending.caption,
@@ -458,21 +596,25 @@ class ChatController extends ChangeNotifier {
     return failure;
   }
 
-  Future<AppFailure?> clearHistory() => _chats.clearHistory(friendUid);
+  /// Clears a two-person chat for both (groups have no shared clear).
+  Future<AppFailure?> clearHistory() async {
+    final friend = friendUid;
+    if (friend == null) return null;
+    return _chats.clearHistory(friend);
+  }
 
   /// The user's reaction to [message]: tapping the same one again removes
   /// it. Shown at once, undone if the server refuses.
   Future<AppFailure?> react(ChatMessage message, ReactionType type) async {
     final me = myUid;
-    if (me == null || message.delivery != MessageDelivery.sent) return null;
+    final id = chatId;
+    if (me == null || id == null || message.delivery != MessageDelivery.sent) {
+      return null;
+    }
     final next = message.reactions[me] == type ? null : type;
     _reacting[message.id] = next;
     _notify();
-    final failure = await _chats.setMessageReaction(
-      friendUid,
-      message.id,
-      next,
-    );
+    final failure = await _chats.setMessageReaction(id, message.id, next);
     if (failure != null && !_disposed) {
       _reacting.remove(message.id);
       _notify();
@@ -484,11 +626,12 @@ class ChatController extends ChangeNotifier {
   bool canDelete(ChatMessage message) =>
       isMine(message) && message.delivery != MessageDelivery.sending;
 
-  /// Deletes the user's [message] for both: it disappears at once and comes
-  /// back if the server refuses. One that never arrived (not sent) is only
-  /// dropped from this phone.
+  /// Deletes the user's [message] for everyone: it disappears at once and
+  /// comes back if the server refuses. One that never arrived (not sent) is
+  /// only dropped from this phone.
   Future<AppFailure?> deleteMessage(ChatMessage message) async {
-    if (!canDelete(message)) return null;
+    final id = chatId;
+    if (!canDelete(message) || id == null) return null;
     final pending = _outbox[message.id];
     if (pending != null && pending.delivery == MessageDelivery.failed) {
       _outbox.remove(message.id);
@@ -498,7 +641,7 @@ class ChatController extends ChangeNotifier {
     _deleting.add(message.id);
     _notify();
     final failure = await _chats.deleteMessage(
-      friendUid,
+      id,
       message.id,
       imagePath: message.imagePath,
     );
@@ -507,6 +650,32 @@ class ChatController extends ChangeNotifier {
       _notify();
     }
     return failure;
+  }
+
+  // ---- group -----------------------------------------------------------------
+
+  Future<AppFailure?> renameGroup(String name) async {
+    final group = groupId;
+    final trimmed = name.trim();
+    if (group == null || trimmed.isEmpty) return null;
+    if (trimmed.length > Chat.maxGroupName) {
+      return ValidationFailure(AppL10n.current.messagesGroupNameTooLong);
+    }
+    return _chats.renameGroup(group, trimmed);
+  }
+
+  /// Invites [uids] (the server adds those who are the user's friends).
+  Future<AppFailure?> invite(List<String> uids) async {
+    final group = groupId;
+    if (group == null || uids.isEmpty) return null;
+    return _chats.inviteToGroup(group, uids);
+  }
+
+  Future<AppFailure?> leaveGroup() async {
+    final group = groupId;
+    if (group == null) return null;
+    _stopTyping();
+    return _chats.leaveGroup(group);
   }
 
   void _notify() {

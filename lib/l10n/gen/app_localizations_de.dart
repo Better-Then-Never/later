@@ -1304,6 +1304,73 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesFindChatsHint => 'Chats suchen';
 
   @override
+  String get messagesGroupAddPeople => 'Personen hinzufügen';
+
+  @override
+  String get messagesGroupCreate => 'Erstellen';
+
+  @override
+  String get messagesGroupFailed =>
+      'Bei der Gruppe ist etwas schiefgegangen. Versuch es noch einmal.';
+
+  @override
+  String get messagesGroupHello => 'Sag allen Hallo';
+
+  @override
+  String get messagesGroupInvited =>
+      'Eingeladen. Deine Freunde sind gleich dabei.';
+
+  @override
+  String get messagesGroupLeave => 'Gruppe verlassen';
+
+  @override
+  String messagesGroupLeaveConfirm(String name) {
+    return '„$name“ verlassen? Ihre Nachrichten werden hier nicht mehr angezeigt.';
+  }
+
+  @override
+  String get messagesGroupLeft => 'Du bist nicht mehr in dieser Gruppe';
+
+  @override
+  String messagesGroupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Mitglieder',
+      one: '1 Mitglied',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesGroupMembersTitle => 'Mitglieder';
+
+  @override
+  String get messagesGroupName => 'Gruppenname';
+
+  @override
+  String get messagesGroupNameTooLong =>
+      'Ein Gruppenname hat höchstens 60 Zeichen';
+
+  @override
+  String get messagesGroupNeedsName => 'Gib der Gruppe einen Namen';
+
+  @override
+  String get messagesGroupNeedsPeople => 'Wähle mindestens einen Freund aus';
+
+  @override
+  String get messagesGroupRename => 'Gruppe umbenennen';
+
+  @override
+  String get messagesGroupSave => 'Speichern';
+
+  @override
+  String get messagesGroupTooMany => 'Eine Gruppe hat höchstens 20 Personen';
+
+  @override
+  String get messagesGroupWho => 'Wer ist dabei?';
+
+  @override
   String get messagesInputHint => 'Schreib eine Nachricht...';
 
   @override
@@ -1351,6 +1418,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesNewChatTitle => 'Neuer Chat';
 
   @override
+  String get messagesNewGroup => 'Neue Gruppe';
+
+  @override
   String get messagesNoChatsFound => 'Keine Chats gefunden';
 
   @override
@@ -1374,6 +1444,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String messagesOpenCapsule(String title) {
     return 'Kapsel „$title“ öffnen';
+  }
+
+  @override
+  String messagesOpenGroup(String name) {
+    return 'Gruppe $name öffnen';
   }
 
   @override
@@ -1445,6 +1520,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesTyping => 'schreibt';
+
+  @override
+  String messagesTypingMany(int count) {
+    return '$count Personen schreiben';
+  }
+
+  @override
+  String messagesTypingName(String name) {
+    return '$name schreibt';
+  }
 
   @override
   String get messagesUnmutedToast => 'Stummschaltung aufgehoben';

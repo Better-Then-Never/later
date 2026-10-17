@@ -21,8 +21,11 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   final ChatRepository _chats;
 
   StreamSubscription<List<Chat>>? _sub;
+  StreamSubscription<List<Chat>>? _groupSub;
   String? _uid;
   List<Chat> _list = const [];
+  List<Chat> _groups = const [];
+  List<Chat>? _merged;
   bool _loaded = false;
   bool _failed = false;
   Set<String> _muted = const {};
@@ -33,7 +36,15 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   static const _recentChats = 12;
 
   String? get uid => _uid;
-  List<Chat> get chats => _list;
+
+  /// Two-person chats with messages and every group, most recently active
+  /// first.
+  List<Chat> get chats => _merged ??= [..._list, ..._groups]
+    ..sort(
+      (a, b) => (b.lastUpdated ?? DateTime(0)).compareTo(
+        a.lastUpdated ?? DateTime(0),
+      ),
+    );
   bool get isLoaded => _loaded;
   bool get hasError => _failed;
 
@@ -51,7 +62,7 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   int get totalUnread {
     final me = _uid;
     if (me == null) return 0;
-    return _list
+    return chats
         .where((c) => !_muted.contains(c.id))
         .fold(0, (sum, c) => sum + c.unreadFor(me));
   }
@@ -65,6 +76,21 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
       if (c.id == id) return c;
     }
     return null;
+  }
+
+  /// The chat (two-person or group) with id [chatId], once listed.
+  Chat? chatById(String chatId) {
+    for (final c in chats) {
+      if (c.id == chatId) return c;
+    }
+    return null;
+  }
+
+  /// The id of the conversation with [friendUid], also before it exists.
+  String? chatIdWith(String friendUid) {
+    final me = _uid;
+    if (me == null || me == friendUid) return null;
+    return Chat.idBetween(me, friendUid);
   }
 
   @override
@@ -84,12 +110,23 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   }
 
   void _listen(String uid) {
+    unawaited(_groupSub?.cancel());
+    _groupSub = _chats.watchGroups(uid).listen(
+      (groups) {
+        _groups = groups;
+        _merged = null;
+        notifyListeners();
+      },
+      onError: (Object e, StackTrace st) =>
+          AppLogger.warning('Groups stream failed', error: e, stackTrace: st),
+    );
     unawaited(_sub?.cancel());
     _sub = _chats
         .watchChats(uid)
         .listen(
           (chats) {
             _list = chats;
+            _merged = null;
             _loaded = true;
             _failed = false;
             notifyListeners();
@@ -107,8 +144,12 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   void detach() {
     unawaited(_sub?.cancel());
     _sub = null;
+    unawaited(_groupSub?.cancel());
+    _groupSub = null;
     _uid = null;
     _list = const [];
+    _groups = const [];
+    _merged = null;
     _loaded = false;
     _failed = false;
     _muted = const {};
@@ -116,51 +157,112 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     notifyListeners();
   }
 
-  /// What the chat with [friendUid] showed when it was last open.
-  List<ChatMessage>? recentWith(String friendUid) => _recent[friendUid];
+  /// What chat [chatId] showed when it was last open.
+  List<ChatMessage>? recentIn(String chatId) => _recent[chatId];
 
-  void rememberMessages(String friendUid, List<ChatMessage> messages) {
+  void rememberMessages(String chatId, List<ChatMessage> messages) {
     // Most recently used last; the oldest chat is forgotten first.
-    _recent.remove(friendUid);
-    _recent[friendUid] = messages;
+    _recent.remove(chatId);
+    _recent[chatId] = messages;
     if (_recent.length > _recentChats) _recent.remove(_recent.keys.first);
   }
 
   @override
   Future<void> beforeSignOut(String uid) async {}
 
-  /// The newest [limit] messages exchanged with [friendUid].
-  Stream<List<ChatMessage>> messagesWith(String friendUid, {int limit = 50}) {
-    final me = _uid;
-    if (me == null || me == friendUid) return Stream.value(const []);
-    return _chats.watchMessages(Chat.idBetween(me, friendUid), limit: limit);
+  /// The newest [limit] messages of [chatId].
+  Stream<List<ChatMessage>> messagesIn(String chatId, {int limit = 50}) =>
+      _uid == null
+      ? Stream.value(const [])
+      : _chats.watchMessages(chatId, limit: limit);
+
+  /// An id for a new message in [chatId] (made on the device).
+  String? newMessageIdIn(String chatId) =>
+      _uid == null ? null : _chats.newMessageId(chatId);
+
+  /// Sends [text] to group [groupId].
+  Future<AppFailure?> sendToGroup(
+    String groupId,
+    String text, {
+    required String messageId,
+    MessageReply? replyTo,
+  }) => _run(
+    'Failed to send to a group',
+    AppL10n.current.messagesSendFailed,
+    (me) => _chats.sendToGroup(
+      groupId: groupId,
+      from: me,
+      text: text,
+      messageId: messageId,
+      replyTo: replyTo,
+    ),
+  );
+
+  /// A new group named [name], inviting [invitees]: its id, or why not.
+  Future<(String?, AppFailure?)> createGroup(
+    String name,
+    List<String> invitees,
+  ) async {
+    String? id;
+    final failure = await _run(
+      'Failed to create a group',
+      AppL10n.current.messagesGroupFailed,
+      (me) async => id = await _chats.createGroup(
+        creator: me,
+        name: name,
+        invitees: invitees,
+      ),
+    );
+    return (id, failure);
   }
 
-  /// Tells [friendUid] the user is typing to them, or stopped; failures
-  /// are only logged (it is a hint).
-  Future<void> setTyping(String friendUid, {required bool typing}) async {
+  Future<AppFailure?> inviteToGroup(String groupId, List<String> invitees) =>
+      _run(
+        'Failed to invite to a group',
+        AppL10n.current.messagesGroupFailed,
+        (me) => _chats.inviteToGroup(groupId, by: me, invitees: invitees),
+      );
+
+  Future<AppFailure?> renameGroup(String groupId, String name) => _run(
+    'Failed to rename a group',
+    AppL10n.current.messagesGroupFailed,
+    (_) => _chats.renameGroup(groupId, name),
+  );
+
+  Future<AppFailure?> leaveGroup(String groupId) => _run(
+    'Failed to leave a group',
+    AppL10n.current.messagesGroupFailed,
+    (me) => _chats.leaveGroup(groupId, me),
+  );
+
+  /// The user has read group [groupId]; failures are only logged.
+  Future<void> markGroupRead(String groupId) async {
     final me = _uid;
-    if (me == null || me == friendUid) return;
+    if (me == null) return;
     try {
-      await _chats.setTyping(Chat.idBetween(me, friendUid), me, typing: typing);
+      await _chats.markGroupRead(groupId, me);
+    } catch (e) {
+      AppLogger.debug('Marking the group read failed: $e');
+    }
+  }
+
+  /// Tells the others in [chatId] the user is typing, or stopped; failures
+  /// are only logged (it is a hint).
+  Future<void> setTyping(String chatId, {required bool typing}) async {
+    final me = _uid;
+    if (me == null) return;
+    try {
+      await _chats.setTyping(chatId, me, typing: typing);
     } catch (e) {
       AppLogger.debug('Typing hint not sent: $e');
     }
   }
 
-  /// When [friendUid] last said they were typing to the user; null once
-  /// they stopped.
-  Stream<DateTime?> typingOf(String friendUid) {
+  /// Who else says they are typing in [chatId], and since when.
+  Stream<Map<String, DateTime>> typingIn(String chatId) {
     final me = _uid;
-    if (me == null || me == friendUid) return const Stream.empty();
-    return _chats.watchTyping(Chat.idBetween(me, friendUid), friendUid);
-  }
-
-  /// An id for a new message to [friendUid] (made on the device).
-  String? newMessageId(String friendUid) {
-    final me = _uid;
-    if (me == null || me == friendUid) return null;
-    return _chats.newMessageId(Chat.idBetween(me, friendUid));
+    if (me == null) return const Stream.empty();
+    return _chats.watchTyping(chatId).map((all) => {...all}..remove(me));
   }
 
   Future<AppFailure?> sendText(
@@ -230,32 +332,23 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   );
 
   Future<AppFailure?> setMessageReaction(
-    String friendUid,
+    String chatId,
     String messageId,
     ReactionType? type,
   ) => _run(
     'Failed to react to a message',
     AppL10n.current.messagesReactFailed,
-    (me) => _chats.setMessageReaction(
-      Chat.idBetween(me, friendUid),
-      messageId,
-      uid: me,
-      type: type,
-    ),
+    (me) => _chats.setMessageReaction(chatId, messageId, uid: me, type: type),
   );
 
   Future<AppFailure?> deleteMessage(
-    String friendUid,
+    String chatId,
     String messageId, {
     String? imagePath,
   }) => _run(
     'Failed to delete a message',
     AppL10n.current.messagesDeleteFailed,
-    (me) => _chats.deleteMessage(
-      Chat.idBetween(me, friendUid),
-      messageId,
-      imagePath: imagePath,
-    ),
+    (_) => _chats.deleteMessage(chatId, messageId, imagePath: imagePath),
   );
 
   Future<AppFailure?> clearHistory(String friendUid) => _run(

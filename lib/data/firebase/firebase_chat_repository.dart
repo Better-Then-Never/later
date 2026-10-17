@@ -86,12 +86,112 @@ class FirebaseChatRepository implements ChatRepository {
       : _typing(chatId, uid).delete();
 
   @override
-  Stream<DateTime?> watchTyping(String chatId, String uid) =>
-      _typing(chatId, uid).snapshots().map((doc) {
-        if (!doc.exists) return null;
-        final at = doc.data()?['at'];
-        return at is Timestamp ? at.toDate() : DateTime.now();
+  Stream<Map<String, DateTime>> watchTyping(String chatId) => _chats
+      .doc(chatId)
+      .collection('typing')
+      .snapshots()
+      .map(
+        (snap) => {
+          for (final d in snap.docs)
+            d.id: switch (d.data()['at']) {
+              final Timestamp at => at.toDate(),
+              _ => DateTime.now(),
+            },
+        },
+      );
+
+  @override
+  Stream<List<Chat>> watchGroups(String uid) => _chats
+      .where('members', arrayContains: uid)
+      .orderBy('lastUpdated', descending: true)
+      .limit(100)
+      .snapshots()
+      .map(
+        (snap) => snap.docs
+            .map((d) => FirestoreMappers.chat(d.id, d.data()))
+            .toList(),
+      );
+
+  @override
+  Future<String> createGroup({
+    required String creator,
+    required String name,
+    required List<String> invitees,
+  }) async {
+    final ref = _chats.doc('g_${_chats.doc().id}');
+    // The group first: the rules let members invite only once it exists.
+    await ref.set({
+      'members': [creator],
+      'name': name.trim(),
+      'createdBy': creator,
+      'createdAt': FieldValue.serverTimestamp(),
+      'lastMessage': '',
+      'lastUpdated': FieldValue.serverTimestamp(),
+    });
+    await inviteToGroup(ref.id, by: creator, invitees: invitees);
+    return ref.id;
+  }
+
+  @override
+  Future<void> inviteToGroup(
+    String groupId, {
+    required String by,
+    required List<String> invitees,
+  }) {
+    final batch = _db.batch();
+    for (final uid in invitees.toSet()) {
+      if (uid == by) continue;
+      batch.set(_chats.doc(groupId).collection('invites').doc(uid), {
+        'by': by,
+        'at': FieldValue.serverTimestamp(),
       });
+    }
+    return batch.commit();
+  }
+
+  @override
+  Future<void> renameGroup(String groupId, String name) =>
+      _chats.doc(groupId).update({'name': name.trim()});
+
+  @override
+  Future<void> leaveGroup(String groupId, String uid) =>
+      _chats.doc(groupId).update({
+        'members': FieldValue.arrayRemove([uid]),
+        'lastReadAt.$uid': FieldValue.delete(),
+      });
+
+  @override
+  Future<void> markGroupRead(String groupId, String uid) => _chats
+      .doc(groupId)
+      .update({'lastReadAt.$uid': FieldValue.serverTimestamp()});
+
+  @override
+  Future<void> sendToGroup({
+    required String groupId,
+    required String from,
+    required String text,
+    required String messageId,
+    MessageReply? replyTo,
+  }) async {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return;
+    final ref = _chats.doc(groupId);
+    final batch = _db.batch()
+      ..update(ref, {
+        'lastMessage': trimmed,
+        'lastUpdated': FieldValue.serverTimestamp(),
+        'lastSenderId': from,
+      })
+      ..set(ref.collection(FirestorePaths.messages).doc(messageId), {
+        'senderId': from,
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'sent',
+        'text': trimmed,
+        if (replyTo != null)
+          'replyTo': FirestoreMappers.newMessageReply(replyTo),
+      });
+    return batch.commit();
+  }
 
   @override
   Future<void> sendText({

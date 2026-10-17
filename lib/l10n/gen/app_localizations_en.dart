@@ -1273,6 +1273,72 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesFindChatsHint => 'Find chats';
 
   @override
+  String get messagesGroupAddPeople => 'Add people';
+
+  @override
+  String get messagesGroupCreate => 'Create';
+
+  @override
+  String get messagesGroupFailed =>
+      'Something went wrong with the group. Try again.';
+
+  @override
+  String get messagesGroupHello => 'Say hello to everyone';
+
+  @override
+  String get messagesGroupInvited => 'Invited. Your friends join in a moment.';
+
+  @override
+  String get messagesGroupLeave => 'Leave group';
+
+  @override
+  String messagesGroupLeaveConfirm(String name) {
+    return 'Leave “$name”? Its messages will no longer show here.';
+  }
+
+  @override
+  String get messagesGroupLeft => 'You are no longer in this group';
+
+  @override
+  String messagesGroupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count members',
+      one: '1 member',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesGroupMembersTitle => 'Members';
+
+  @override
+  String get messagesGroupName => 'Group name';
+
+  @override
+  String get messagesGroupNameTooLong =>
+      'A group name can have at most 60 characters';
+
+  @override
+  String get messagesGroupNeedsName => 'Give the group a name';
+
+  @override
+  String get messagesGroupNeedsPeople => 'Choose at least one friend';
+
+  @override
+  String get messagesGroupRename => 'Rename group';
+
+  @override
+  String get messagesGroupSave => 'Save';
+
+  @override
+  String get messagesGroupTooMany => 'A group has at most 20 people';
+
+  @override
+  String get messagesGroupWho => 'Who is in it?';
+
+  @override
   String get messagesInputHint => 'Write a message...';
 
   @override
@@ -1319,6 +1385,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesNewChatTitle => 'New Chat';
 
   @override
+  String get messagesNewGroup => 'New group';
+
+  @override
   String get messagesNoChatsFound => 'No chats found';
 
   @override
@@ -1342,6 +1411,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String messagesOpenCapsule(String title) {
     return 'Open capsule $title';
+  }
+
+  @override
+  String messagesOpenGroup(String name) {
+    return 'Open group $name';
   }
 
   @override
@@ -1411,6 +1485,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesTyping => 'typing';
+
+  @override
+  String messagesTypingMany(int count) {
+    return '$count people are typing';
+  }
+
+  @override
+  String messagesTypingName(String name) {
+    return '$name is typing';
+  }
 
   @override
   String get messagesUnmutedToast => 'Chat unmuted';

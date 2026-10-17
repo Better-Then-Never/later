@@ -23,9 +23,17 @@ class ChatListItem extends StatelessWidget {
     this.timestamp,
     this.unread = 0,
     this.muted = false,
+    this.avatar,
+    this.semanticsLabel,
   });
 
   final String friendUid;
+
+  /// Instead of the friend's picture (a group's).
+  final Widget? avatar;
+
+  /// Read by a screen reader instead of the name.
+  final String? semanticsLabel;
   final String name;
 
   /// Last message, already prefixed with "You: " for the user's own.
@@ -50,12 +58,15 @@ class ChatListItem extends StatelessWidget {
             horizontal: screen.width * 0.02,
             vertical: 2,
           ),
-          leading: UserRoundAvatar(
-            userId: friendUid,
-            radius: UserRoundAvatar.listRadius(screen.width),
-          ),
+          leading:
+              avatar ??
+              UserRoundAvatar(
+                userId: friendUid,
+                radius: UserRoundAvatar.listRadius(screen.width),
+              ),
           title: Text(
             name,
+            semanticsLabel: semanticsLabel,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.listName(context),

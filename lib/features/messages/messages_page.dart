@@ -13,10 +13,12 @@ import '../../shared/widgets/buttons/default_icon_button.dart';
 import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/page_header.dart';
+import '../../shared/widgets/user/user_round_avatar.dart';
 import '../../shared/widgets/user/user_row_skeleton.dart';
 import '../users/user_directory.dart';
 import 'chats_store.dart';
 import 'widgets/chat_list_item.dart';
+import 'widgets/group_avatar.dart';
 import 'widgets/new_chat_sheet.dart';
 
 /// The "Messages" tab: the user's chats, most recent first, with search.
@@ -98,6 +100,10 @@ class _ChatList extends StatelessWidget {
     } else {
       bool matches(Chat chat) {
         if (query.isEmpty) return true;
+        if (chat.isGroup) {
+          return chat.name.toLowerCase().contains(query) ||
+              chat.lastMessage.toLowerCase().contains(query);
+        }
         final friend = directory.profile(chat.otherThan(me));
         return chat.lastMessage.toLowerCase().contains(query) ||
             (friend?.name.toLowerCase().contains(query) ?? false) ||
@@ -126,12 +132,40 @@ class _ChatList extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final chat = chats[index];
-                final friendUid = chat.otherThan(me);
                 final mine = chat.lastSenderId == me;
                 // A photo without a caption says what it is.
                 final last = chat.lastMessage == ChatMessage.photoSign
                     ? '${ChatMessage.photoSign} ${l10n.messagesPhoto}'
                     : chat.lastMessage;
+                if (chat.isGroup) {
+                  final sender = chat.lastSenderId;
+                  return ChatListItem(
+                    key: ValueKey(chat.id),
+                    friendUid: '',
+                    avatar: GroupAvatar(
+                      groupId: chat.id,
+                      name: chat.name,
+                      radius: UserRoundAvatar.listRadius(
+                        MediaQuery.sizeOf(context).width,
+                      ),
+                    ),
+                    name: chat.name,
+                    semanticsLabel: l10n.messagesOpenGroup(chat.name),
+                    // "You: …", "Anna: …", or how many are in it.
+                    preview: !chat.hasMessages
+                        ? l10n.messagesGroupMembers(chat.members.length)
+                        : mine
+                        ? l10n.messagesYouPrefix(last)
+                        : sender == null
+                        ? last
+                        : '${directory.profile(sender)?.name ?? ''}: $last',
+                    timestamp: chat.lastUpdated,
+                    unread: chat.unreadFor(me),
+                    muted: store.isMuted(chat.id),
+                    onTap: () => AppRoutes.toGroupChat(context, chat.id),
+                  );
+                }
+                final friendUid = chat.otherThan(me);
                 return ChatListItem(
                   key: ValueKey(chat.id),
                   friendUid: friendUid,

@@ -284,7 +284,7 @@ void main() {
       again.dispose();
 
       chats.detach();
-      expect(chats.recentWith('bob'), isNull, reason: 'forgotten on sign-out');
+      expect(chats.recentIn('bob_me'), isNull, reason: 'forgotten on sign-out');
     });
 
     test('with read receipts off nothing is told and nothing shown', () async {
@@ -700,6 +700,122 @@ void main() {
       final c = open();
       await pumpEventQueue();
       expect(c.friendTyping, isFalse);
+      c.dispose();
+    });
+  });
+
+  group('Groups', () {
+    Future<String> makeGroup({
+      List<String> invite = const ['bob', 'carol'],
+    }) async {
+      final (id, failure) = await chats.createGroup('Trip', invite);
+      expect(failure, isNull);
+      await pumpEventQueue();
+      return id!;
+    }
+
+    ChatController open(String id) => ChatController.group(
+      groupId: id,
+      chats: chats,
+      friends: friends,
+      typingShown: const Duration(milliseconds: 150),
+    );
+
+    test(
+      'a new group is listed with its members, before any message',
+      () async {
+        chatRepo.refusedInvites.add('carol');
+        final id = await makeGroup();
+        final group = chats.chatById(id)!;
+        expect(group.isGroup, isTrue);
+        expect(group.name, 'Trip');
+        expect(group.members, ['me', 'bob'], reason: 'carol was not accepted');
+        expect(chats.chats.map((c) => c.id), contains(id));
+        expect(group.unreadFor('me'), 0);
+      },
+    );
+
+    test(
+      'members write to it; it is unread for the others until they read',
+      () async {
+        final id = await makeGroup();
+        final c = open(id);
+        await pumpEventQueue();
+        expect(c.canSend, isTrue);
+        expect(c.canSendPhotos, isFalse, reason: 'text only in groups for now');
+
+        expect(await c.send('Tomorrow at 9?'), isNull);
+        await pumpEventQueue();
+        expect(c.messages.single.text, 'Tomorrow at 9?');
+        expect(chatRepo.calls, contains('grouptext:$id:me:Tomorrow at 9?'));
+        final group = chats.chatById(id)!;
+        expect(group.lastMessage, 'Tomorrow at 9?');
+        expect(group.unreadFor('me'), 0, reason: 'my own message');
+        expect(group.unreadFor('bob'), 1);
+        expect(c.receipt, ReceiptStatus.sent);
+
+        // Read by Bob only: not yet "read"; by Carol too: "read".
+        chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+        await chatRepo.markGroupRead(id, 'bob');
+        await pumpEventQueue();
+        expect(c.receipt, ReceiptStatus.sent);
+        await chatRepo.markGroupRead(id, 'carol');
+        await pumpEventQueue();
+        expect(c.receipt, ReceiptStatus.read);
+
+        // Bob answers: the group is unread for the user, and opening it reads.
+        chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+        await chatRepo.sendToGroup(
+          groupId: id,
+          from: 'bob',
+          text: 'Yes',
+          messageId: 'b1',
+        );
+        await pumpEventQueue();
+        expect(chatRepo.calls, contains('groupread:$id:me'));
+        expect(chats.chatById(id)!.unreadFor('me'), 0);
+        c.dispose();
+      },
+    );
+
+    test('two people typing at once; each fades on their own', () async {
+      final id = await makeGroup();
+      final c = open(id);
+      await pumpEventQueue();
+      chatRepo
+        ..hint(id, 'bob', DateTime.now())
+        ..hint(id, 'carol', DateTime.now());
+      await pumpEventQueue();
+      expect(c.typingPeople, ['bob', 'carol']);
+      chatRepo.hint(id, 'bob', null);
+      await pumpEventQueue();
+      expect(c.typingPeople, ['carol']);
+      await Future<void>.delayed(const Duration(milliseconds: 170));
+      expect(c.typingPeople, isEmpty);
+
+      // The user's own hints go to the group.
+      c.onInputChanged('hi');
+      await pumpEventQueue();
+      expect(chatRepo.calls, contains('typing:$id:me:true'));
+      c.dispose();
+    });
+
+    test('rename, invite, leave; after leaving, the field is gone', () async {
+      final id = await makeGroup(invite: ['bob']);
+      final c = open(id);
+      await pumpEventQueue();
+      expect(await c.renameGroup('  Trip 2026 '), isNull);
+      expect(await c.renameGroup('x' * 61), isA<ValidationFailure>());
+      expect(await c.invite(['carol']), isNull);
+      await pumpEventQueue();
+      expect(chats.chatById(id)!.name, 'Trip 2026');
+      expect(chats.chatById(id)!.members, ['me', 'bob', 'carol']);
+
+      expect(await c.leaveGroup(), isNull);
+      await pumpEventQueue();
+      expect(chats.chatById(id), isNull, reason: 'no longer listed');
+      expect(c.canSend, isFalse);
+      expect(chatRepo.groups[id]!.members, ['bob', 'carol']);
       c.dispose();
     });
   });
