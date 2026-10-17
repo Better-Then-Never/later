@@ -90,3 +90,6 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   (Bob's long question → swipe → reply with quote). Found why the dev emulators crashed twice: the rules-test run
   shares `%TEMP%\firebase\storage` with them (TEST_REPORT has the fix). The Android emulator was cold-restarted once
   (launcher ANR after hours of reinstalls). Flutter 239.
+- **Creation choices, done:** privacy, colour and open date open `showChoiceMenu` (current in green, colour pins,
+  date presets with calendar-correct months, "open right away"); the cycling pills are gone. Verified on the
+  emulator. Flutter 241.

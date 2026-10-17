@@ -32,6 +32,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Description limit 2000 (F-25 bug) | on | creation | – |
 | Offline capsules: kept on the phone, "Waiting for connection" in My Capsules, uploaded at sign-in/resume/every minute with a fixed id; refused ones tried 3× per sign-in (F-26) | on | `capsules/outbox/`, `own_capsules_store.dart` | tests, emulator (airplane mode → pending → uploaded) |
 | Creation asks for location itself when onboarding skipped it (fix) | on | `capsule_creation_controller.dart` | emulator |
+| Creation: privacy, colour and open date chosen from the menu card (current in green) instead of cycling pills; open date presets (tomorrow, week, month, year, pick, open right away); locale date format (F-27 part, F-28 part) | on | `capsule_creation_page.dart`, `showChoiceMenu` | tests, emulator |
 | Chat: hold a message to copy it or delete your own for both (the chat list falls back to the previous message with its sender and time) | on | `chat_page.dart`, `ChatRepository.deleteMessage`, rules `isUndo` | tests, rules tests, emulator |
 | Chat replies: swipe a message right (tick at the threshold, spring back) or hold > Reply; bar above the composer; quote in the bubble | on | `reply_bar.dart`, `message_bubble.dart`, `MessageReply`, rules `validReply` | tests, rules tests, emulator |
 
