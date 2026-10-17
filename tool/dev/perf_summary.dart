@@ -139,8 +139,12 @@ double _median(Iterable<num> values) {
 /// Main-thread stalls in a run's log: Android reports each time its main
 /// thread missed 30 or more frames.
 String _stalls(String log) {
+  // After the last test the driver collects the timelines, which stalls the
+  // phone's main thread on its own: not the app's doing.
+  final end = log.indexOf('(tearDownAll)');
+  final during = end < 0 ? log : log.substring(0, end);
   final skipped = [
-    for (final m in RegExp(r'Skipped (\d+) frames').allMatches(log))
+    for (final m in RegExp(r'Skipped (\d+) frames').allMatches(during))
       int.parse(m.group(1)!),
   ];
   if (skipped.isEmpty) return 'none';
