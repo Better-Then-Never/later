@@ -92,10 +92,14 @@ class _CommentsOnOpen extends StatefulWidget {
 }
 
 class _CommentsOnOpenState extends State<_CommentsOnOpen> {
+  bool _started = false;
+
+  // Not initState: the wait reads the motion setting from MediaQuery.
   @override
-  void initState() {
-    super.initState();
-    if (!widget.open) return;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started || !widget.open) return;
+    _started = true;
     final controller = context.read<CapsuleSocialController>();
     if (!(FeatureFlags.comments && controller.capsule.allowComments)) return;
     // After the card has risen (its route animation).

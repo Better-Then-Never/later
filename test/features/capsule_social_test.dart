@@ -6,7 +6,11 @@ import 'package:later/shared/widgets/capsule/capsule_author_row.dart';
 import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/services/profile_image_cache.dart';
+import 'package:later/app/session/session_controller.dart';
+import 'package:later/data/repositories/repositories.dart';
+import 'package:later/data/services/geocoding_service.dart';
 import 'package:later/features/capsules/social/capsule_comments_sheet.dart';
+import 'package:later/features/capsules/social/capsule_detail_dialog.dart';
 import 'package:later/features/capsules/social/capsule_social_controller.dart';
 import 'package:later/features/capsules/social/capsule_social_panel.dart';
 import 'package:later/features/users/user_directory.dart';
@@ -22,6 +26,14 @@ const _capsule = Capsule(
   privacy: CapsulePrivacy.public,
   color: CapsuleColor.blue,
 );
+
+class _Session extends ChangeNotifier implements SessionController {
+  @override
+  String? get uid => 'me';
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   late FakeSocialRepository social;
@@ -221,6 +233,54 @@ void main() {
         ),
       );
     }
+
+    testWidgets('opened from a comment notification, the thread opens too', (
+      tester,
+    ) async {
+      social.comments['cap'] = [
+        const CapsuleComment(
+          id: 'c1',
+          capsuleId: 'cap',
+          authorId: 'zoe',
+          text: 'Lovely place',
+        ),
+      ];
+      final users = FakeUserRepository()
+        ..put(const UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe'));
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SessionController>.value(value: _Session()),
+            Provider<SocialRepository>.value(value: social),
+            Provider(create: (_) => GeocodingService()),
+            ChangeNotifierProvider(create: (_) => UserDirectory(users)),
+            ChangeNotifierProvider(
+              create: (_) => ProfileImageCache(
+                FakeImageStorageRepository(),
+                evict: (_) async {},
+              ),
+            ),
+          ],
+          child: testApp(
+            home: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => CapsuleDetailDialog.show(
+                  context,
+                  _capsule,
+                  openComments: true,
+                ),
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byType(CapsuleCommentsSheet), findsOneWidget);
+      expect(find.text('Lovely place'), findsOneWidget);
+    });
 
     testWidgets('the panel reacts and opens the comments', (tester) async {
       social.comments['cap'] = [
