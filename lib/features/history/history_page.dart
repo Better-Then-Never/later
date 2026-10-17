@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/shell/navbar_widget.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/config/feature_flags.dart';
@@ -263,7 +264,9 @@ class _HistoryPageState extends State<HistoryPage> {
         0,
         screenHeight * 0.01,
         0,
-        screenHeight * 0.15,
+        // Clear of the floating navbar (15 % of the height left the last
+        // capsule partly under it on 3-button navigation).
+        NavbarWidget.coveredHeight(context) + 16,
       ),
       itemCount: shown.length + lead,
       itemBuilder: (context, index) {

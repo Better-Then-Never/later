@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/shell/navbar_widget.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/l10n/l10n.dart';
@@ -113,8 +114,14 @@ class _ChatList extends StatelessWidget {
             )
           : ListView.separated(
               key: const ValueKey('list'),
-              // Clear of the floating navbar.
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
+              // Clear of the floating navbar, whatever the phone's bottom
+              // inset (120 dp hid the last chat on 3-button navigation).
+              padding: EdgeInsets.fromLTRB(
+                16,
+                12,
+                16,
+                NavbarWidget.coveredHeight(context) + 16,
+              ),
               itemCount: chats.length,
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
