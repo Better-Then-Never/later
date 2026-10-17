@@ -79,3 +79,9 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   reset rises above the keyboard; pinned-friend menu on `OptionsMenu`. Verified on the emulator (screens in the
   session, not kept). Found on the way: two friend-menu entries that did nothing (removed), silent icon buttons
   (labelled), empty place pills after a system restart (fallback text). Flutter 235.
+- **Chat message actions, done:** hold a message → menu card (Copy; Delete for own messages after a
+  confirmation). Optimistic removal, restored on failure; unsent ones dropped locally. Summary rollback to the
+  previous message (sender and time) via the new additive rule `isUndo` (rules 54/54), with a text-only fallback for
+  the old rules. Verified on the emulator with a message from Bob injected by an emulator-only admin script.
+  The dev emulators crashed once because the post-build cleanup killed every big `java.exe` (the storage
+  emulator's too): the cleanup now targets Gradle/Kotlin daemons only. Emulators restarted and re-seeded.
