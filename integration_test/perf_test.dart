@@ -491,5 +491,14 @@ void main() {
     await home(tester);
 
     measured.forEach((key, values) => binding.reportData![key] = values);
+    // The language is saved on the phone: back to following the phone, so
+    // the next run starts as usual.
+    if (_language.isNotEmpty) {
+      await tester
+          .element(find.byType(NavbarWidget))
+          .read<AppearanceController>()
+          .setLanguage(null);
+      await wait(tester, const Duration(seconds: 1));
+    }
   });
 }
