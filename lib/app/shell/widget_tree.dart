@@ -5,6 +5,7 @@ import 'package:later/features/map/map_page.dart';
 import 'package:later/features/messages/messages_page.dart';
 import 'package:later/features/profile/profile_page.dart';
 import 'package:later/app/shell/navbar_widget.dart';
+import 'package:later/app/shell/tab_stack.dart';
 import 'package:later/core/theme/app_palette.dart';
 
 List<Widget> pages = [
@@ -26,7 +27,7 @@ class WidgetTree extends StatelessWidget {
           backgroundColor: context.palette.background,
           body: Stack(
             children: [
-              IndexedStack(index: selectedPage, children: pages),
+              TabStack(index: selectedPage, children: pages),
               Positioned(
                 left: 0,
                 right: 0,
