@@ -95,3 +95,7 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   emulator. Flutter 241.
 - **Heatmap (F-16), done:** single brand green, 40 px, 70 %, hidden at marker zoom (D-19). Verified on the
   emulator at three zoom levels. DECISIONS D-19, D-20 (chat deletes/replies) written.
+- **One short date format, done:** `AppDates.short` (dd.MM.yyyy, the pills' format) replaces five formats (list,
+  pills, map card, notifications, chat list, creation). CI's format check had failed on cad27e1 (an unformatted
+  test file, hidden by cancelled runs before); fixed, and `dart format --set-exit-if-changed` is now part of the
+  pre-commit checks.

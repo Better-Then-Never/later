@@ -72,6 +72,8 @@ Everything is a token in `lib/core/theme/app_colors.dart`; `tool/check_design_to
 - **Sheets:** lists and threads come from the bottom edge (`showEdgeSheet` + `EdgeSheet`): rounded top 25, grab
   handle, page background. No stock `AlertDialog`s; the only `showDialog` is the capsule viewer
   (`CapsuleDetailDialog`), which fades in like opening a photo.
+- **Dates:** short dates are `dd.MM.yyyy` everywhere (`AppDates.short`); worded dates only for the chat's day
+  separators.
 - **Toasts:** rounded 10, coloured (green success, red error, blue info), slide and fade in at top, centre or bottom.
 - **Avatars:** circles for people in lists and chat, rounded squares (radius 12) on profiles.
 - **Empty states:** hand-drawn icon (72), bold title, grey subtitle, optional green action.
