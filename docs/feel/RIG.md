@@ -73,3 +73,15 @@ dart run tool/dev/perf_summary.dart build/perf/<label>
 - **ffmpeg** is not installed, so screenrecord videos cannot be cut into stills on this machine. Stills for
   `docs/feel/after/` come from `screencap` at chosen moments instead (see BLOCKERS.md).
 - **Dart MCP server**: not available; replaced by the control-file loop above.
+
+## 5. Gotchas met on this rig (Windows)
+- **Rules tests next to the dev emulators**: the Functions emulator's workers listen on dynamic ports and can hold
+  the rules tests' ports (8180, 9299). The rules tests then fail to start, and stopping "whatever holds 9299" took the
+  dev emulators down mid-measurement. Run the rules tests with the dev emulators stopped (or before starting them).
+- **Stopping a `flutter drive` run by force** can leave the adb server hung (`adb devices` never returns; dozens of
+  adb processes). Kill every `adb.exe` and `adb start-server` again.
+- **Re-seeding** (`node tool/seed_heavy.js`) makes new accounts with new ids: the app on the phone is signed out on
+  its next start, and the perf test signs in again.
+- **Background emulators**: stopping the shell that started them leaves `node` (the Firebase CLI) and the Firestore
+  `java` running; stop those two processes before starting again.
+- The app keeps its language and theme on the phone between runs; the perf test sets a `PERF_LANG` back when it ends.
