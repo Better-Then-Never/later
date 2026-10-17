@@ -612,12 +612,26 @@ service cloud.firestore {
           && (!changed().hasAny(['unreadCounts']) || d.unreadCounts == {});
       }
 
+      // The sender took back a message the other had not read yet: one
+      // fewer unread for the other (never below zero, never your own).
+      function unreadDroppedByOne() {
+        return unreadChanged().hasOnly([other()])
+          && unreadAfter(other()) == unreadBefore(other()) - 1
+          && unreadAfter(other()) >= 0;
+      }
+
+      function isUnreadDrop() {
+        return changed().hasOnly(['unreadCounts']) && unreadDroppedByOne();
+      }
+
       // Deleting the newest message: the summary shows the one before it
-      // again, by either participant and with its own time; unread counts
-      // stay as they are.
+      // again, by either participant and with its own time; the unread count
+      // drops by one if the other had not read it.
       function isUndo() {
         let d = request.resource.data;
-        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId',
+            'unreadCounts'])
+          && (!changed().hasAny(['unreadCounts']) || unreadDroppedByOne())
           && d.lastMessage is string && d.lastMessage != ''
           && d.lastMessage.size() <= 2000
           && d.lastUpdated is timestamp && d.lastUpdated <= request.time
@@ -647,7 +661,7 @@ service cloud.firestore {
           || (request.resource.data.unreadCounts.keys().hasOnly([other()])
             && request.resource.data.unreadCounts[other()] == 1));
       allow update: if (isMember()
-          && (isSend() || isRead() || isClear() || isUndo()))
+          && (isSend() || isRead() || isClear() || isUndo() || isUnreadDrop()))
         || (inThisGroup()
           && (isGroupSend() || isGroupRead() || isGroupRename()
             || isGroupUndo() || isGroupLeave()));

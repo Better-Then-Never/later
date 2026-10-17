@@ -413,10 +413,16 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     String chatId,
     String messageId, {
     String? imagePath,
+    String? unreadFor,
   }) => _run(
     'Failed to delete a message',
     AppL10n.current.messagesDeleteFailed,
-    (_) => _chats.deleteMessage(chatId, messageId, imagePath: imagePath),
+    (_) => _chats.deleteMessage(
+      chatId,
+      messageId,
+      imagePath: imagePath,
+      unreadFor: unreadFor,
+    ),
   );
 
   Future<AppFailure?> clearHistory(String friendUid) => _run(

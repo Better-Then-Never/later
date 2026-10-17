@@ -828,6 +828,7 @@ class FakeChatRepository implements ChatRepository {
     String chatId,
     String messageId, {
     String? imagePath,
+    String? unreadFor,
   }) async {
     calls.add(
       imagePath == null
@@ -850,6 +851,21 @@ class FakeChatRepository implements ChatRepository {
         lastSenderId: previous?.senderId ?? chat.lastSenderId,
         unreadCounts: chat.unreadCounts,
         lastReadAt: chat.lastReadAt,
+      );
+    }
+    final after = chats[chatId];
+    if (unreadFor != null && after != null && after.unreadFor(unreadFor) > 0) {
+      chats[chatId] = Chat(
+        id: after.id,
+        participants: after.participants,
+        lastMessage: after.lastMessage,
+        lastUpdated: after.lastUpdated,
+        lastSenderId: after.lastSenderId,
+        unreadCounts: {
+          ...after.unreadCounts,
+          unreadFor: after.unreadFor(unreadFor) - 1,
+        },
+        lastReadAt: after.lastReadAt,
       );
     }
     _notify();

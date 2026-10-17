@@ -858,6 +858,33 @@ void main() {
       },
     );
 
+    test(
+      'taking back a message the friend has not read lowers their count',
+      () async {
+        final c = ChatController(
+          friendUid: 'bob',
+          chats: chats,
+          friends: friends,
+        );
+        await pumpEventQueue();
+        await c.send('one');
+        await c.send('two');
+        await pumpEventQueue();
+        expect(chats.chatWith('bob')!.unreadFor('bob'), 2);
+        expect(await c.deleteMessage(c.messages.last), isNull);
+        await pumpEventQueue();
+        expect(chats.chatWith('bob')!.unreadFor('bob'), 1);
+
+        // Once Bob has read it, deleting leaves his count alone.
+        chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+        await chatRepo.markRead('bob_me', reader: 'bob');
+        await pumpEventQueue();
+        expect(await c.deleteMessage(c.messages.last), isNull);
+        expect(chatRepo.calls.last, isNot(contains('unread')));
+        c.dispose();
+      },
+    );
+
     test('deleting for me hides it here and keeps it hidden', () async {
       SharedPreferences.setMockInitialValues({});
       final hidden = HiddenMessages(PreferencesStore());

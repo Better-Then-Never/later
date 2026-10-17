@@ -252,11 +252,13 @@ abstract interface class ChatRepository {
 
   /// Deletes one message of [chatId] for both participants. When it was the
   /// newest, the chat list shows the one before it again (or nothing). A
-  /// photo's file ([imagePath]) goes too.
+  /// photo's file ([imagePath]) goes too. [unreadFor]: the participant who
+  /// had not read it yet gets one fewer unread.
   Future<void> deleteMessage(
     String chatId,
     String messageId, {
     String? imagePath,
+    String? unreadFor,
   });
 }
 

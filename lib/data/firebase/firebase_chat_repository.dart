@@ -481,6 +481,7 @@ class FirebaseChatRepository implements ChatRepository {
     String chatId,
     String messageId, {
     String? imagePath,
+    String? unreadFor,
   }) async {
     final chatRef = _chats.doc(chatId);
     final newest = await _messages(
@@ -492,17 +493,27 @@ class FirebaseChatRepository implements ChatRepository {
         ? FirestoreMappers.chatMessage(docs[1].id, docs[1].data())
         : null;
 
-    Future<void> commit({required bool exactSummary}) {
+    Future<void> commit({required bool exactSummary, required bool drop}) {
       final batch = _db.batch()..delete(_messages(chatId).doc(messageId));
+      // Taken back before they read it: one fewer unread for them.
+      final unread = drop && unreadFor != null
+          ? {'unreadCounts.$unreadFor': FieldValue.increment(-1)}
+          : const <String, Object>{};
+      if (!wasNewest && unread.isNotEmpty) batch.update(chatRef, unread);
       if (wasNewest) {
         final sentAt = previous?.sentAt;
-        batch.update(
-          chatRef,
-          previous == null
-              // Nothing left: the chat leaves the list, like a cleared one.
-              ? {'lastMessage': '', 'lastUpdated': FieldValue.serverTimestamp()}
+        batch.update(chatRef, {
+          ...previous == null
+              // Nothing left: the chat leaves the list, like a cleared one
+              // (nothing unread either).
+              ? {
+                  'lastMessage': '',
+                  'lastUpdated': FieldValue.serverTimestamp(),
+                  if (unread.isNotEmpty) 'unreadCounts': <String, int>{},
+                }
               : exactSummary
               ? {
+                  ...unread,
                   'lastMessage': previous.text,
                   'lastUpdated': sentAt == null
                       ? FieldValue.serverTimestamp()
@@ -514,20 +525,35 @@ class FirebaseChatRepository implements ChatRepository {
                   'lastMessage': previous.text,
                   'lastUpdated': FieldValue.serverTimestamp(),
                 },
-        );
+        });
       }
       return batch.commit();
     }
 
     try {
-      await commit(exactSummary: true);
+      await commit(exactSummary: true, drop: true);
     } on FirebaseException catch (e) {
-      if (e.code != 'permission-denied' || previous == null) rethrow;
+      if (e.code != 'permission-denied') rethrow;
+      // Rules from before the unread drop, then from before `isUndo`.
+      if (unreadFor != null) {
+        try {
+          AppLogger.warning('Unread drop refused, deleting without it');
+          await commit(exactSummary: true, drop: false);
+          return _deleteFile(imagePath);
+        } on FirebaseException catch (e) {
+          if (e.code != 'permission-denied') rethrow;
+        }
+      }
+      if (previous == null) rethrow;
       AppLogger.warning('Summary rollback refused, writing the text only');
-      await commit(exactSummary: false);
+      await commit(exactSummary: false, drop: false);
     }
-    // The photo's file; a server function deletes it too (and for "Clear
-    // history"), so a failure here only leaves it for that.
+    await _deleteFile(imagePath);
+  }
+
+  Future<void> _deleteFile(String? imagePath) async {
+    // The photo's or recording's file; a server function deletes it too
+    // (and for "Clear history"), so a failure here only leaves it for that.
     if (imagePath != null) {
       try {
         await _storage.ref(imagePath).delete();

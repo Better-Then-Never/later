@@ -549,6 +549,20 @@ describe('chats', () => {
     await assertSucceeds(deleteDoc(hint(as('alice'), 'alice')));
   });
 
+  test("taking back an unread message drops the other's count by exactly one", async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    assert.equal(await unreadOf('bob'), 2);
+    const alice = as('alice');
+    await assertSucceeds(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-1) }));
+    assert.equal(await unreadOf('bob'), 1);
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-2) }));
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.alice': increment(-1) }));
+    await assertSucceeds(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-1) }));
+    // Never below zero.
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-1) }));
+  });
+
   test('deleting the newest message puts the one before it back in the summary', async () => {
     await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'from bob' }));
     await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'oops' }));

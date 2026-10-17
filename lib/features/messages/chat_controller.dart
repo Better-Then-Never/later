@@ -785,10 +785,21 @@ class ChatController extends ChangeNotifier {
     }
     _deleting.add(message.id);
     _notify();
+    // The friend had not read it: their unread count drops by one.
+    final friend = friendUid;
+    final c = chat;
+    final unreadFor =
+        friend != null &&
+            c != null &&
+            c.unreadFor(friend) > 0 &&
+            !message.readBy(c.readAtOf(friend))
+        ? friend
+        : null;
     final failure = await _chats.deleteMessage(
       id,
       message.id,
       imagePath: message.imagePath ?? message.audioPath,
+      unreadFor: unreadFor,
     );
     if (failure != null && !_disposed) {
       _deleting.remove(message.id);
