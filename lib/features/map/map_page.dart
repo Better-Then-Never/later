@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' show Geolocator;
@@ -9,12 +8,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/session/session_controller.dart';
+import '../../app/shell/selected_page.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../app/shell/navbar_widget.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_palette.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
@@ -104,7 +105,10 @@ class _MapViewState extends State<_MapView> {
   /// place the user was looking at.
   bool? _builtDark;
   CameraPosition? _lastCamera;
-  final _infoWindow = CustomInfoWindowController();
+
+  /// The capsule whose card is open (F-17: our own card replaces the
+  /// info-window package, which re-opened itself after being closed).
+  Capsule? _selected;
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
 
@@ -117,12 +121,23 @@ class _MapViewState extends State<_MapView> {
   void initState() {
     super.initState();
     _focus = context.read<MapFocus>()..addListener(_onFocusRequested);
+    selectedPageNotifier.addListener(_onTabChanged);
+  }
+
+  /// Leaving the map tab closes the card.
+  void _onTabChanged() {
+    if (selectedPageNotifier.value != AppTabs.map) _select(null);
+  }
+
+  void _select(Capsule? capsule) {
+    if (!mounted || capsule?.id == _selected?.id) return;
+    setState(() => _selected = capsule);
   }
 
   @override
   void dispose() {
     _focus.removeListener(_onFocusRequested);
-    _infoWindow.dispose();
+    selectedPageNotifier.removeListener(_onTabChanged);
     super.dispose();
   }
 
@@ -139,13 +154,12 @@ class _MapViewState extends State<_MapView> {
     final capsule = _focus.take();
     final location = capsule?.location;
     if (capsule == null || location == null || !mounted) return;
-    _infoWindow.hideInfoWindow?.call();
+    _select(null);
     final target = LatLng(location.latitude, location.longitude);
     AppLogger.debug('Map focus: ${capsule.id}');
     await controller.animateCamera(CameraUpdate.newLatLngZoom(target, 18));
     AppLogger.debug('Map focus: camera moved');
-    if (!mounted) return;
-    _infoWindow.addInfoWindow?.call(_infoPanel(capsule), target);
+    _select(capsule);
   }
 
   Widget _infoPanel(Capsule capsule) => CapsuleInfoPanel(
@@ -243,8 +257,7 @@ class _MapViewState extends State<_MapView> {
           markerId: MarkerId(capsule.id),
           position: position,
           icon: icons.forColor(capsule.color),
-          onTap: () =>
-              _infoWindow.addInfoWindow?.call(_infoPanel(capsule), position),
+          onTap: () => _select(capsule),
         ),
       );
     }
@@ -290,75 +303,131 @@ class _MapViewState extends State<_MapView> {
     final dark = Theme.of(context).brightness == Brightness.dark;
     if (_builtDark != null && _builtDark != dark) {
       _mapController = Completer<GoogleMapController>();
-      _infoWindow.hideInfoWindow?.call();
       unawaited(map.setDarkIcons(dark));
     }
     _builtDark = dark;
-    return Stack(
-      children: [
-        GoogleMap(
-          key: ValueKey(dark),
-          mapId: dark ? null : _mapId,
-          style: dark ? MapStyles.dark : null,
-          // The Google logo and the map toolbar stay visible above the
-          // floating navigation bar and below the status bar (F-12); the
-          // zoom buttons were hidden under the bar (pinch zooms).
-          padding: EdgeInsets.only(
-            top: MediaQuery.viewPaddingOf(context).top,
-            bottom: NavbarWidget.coveredHeight(context) + 4,
+    final selected = _selected;
+    final bottom = NavbarWidget.coveredHeight(context) + 12;
+    final cardHeight = (screen.height * 0.171).clamp(
+      CapsuleInfoPanel.minHeight,
+      220.0,
+    );
+    final motion = AppMotion.of(context, AppMotion.emphasized);
+    return PopScope(
+      // Back closes the card first.
+      canPop: selected == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _select(null);
+      },
+      child: Stack(
+        children: [
+          GoogleMap(
+            key: ValueKey(dark),
+            mapId: dark ? null : _mapId,
+            style: dark ? MapStyles.dark : null,
+            // The Google logo stays visible above the floating navigation
+            // bar, above the capsule card while it is open, and below the
+            // status bar: it is never covered (F-12, F-14). The zoom buttons
+            // were hidden under the bar (pinch zooms).
+            padding: EdgeInsets.only(
+              top: MediaQuery.viewPaddingOf(context).top,
+              bottom:
+                  NavbarWidget.coveredHeight(context) +
+                  4 +
+                  (selected == null ? 0 : cardHeight + 12),
+            ),
+            zoomControlsEnabled: false,
+            // The capsule card replaces Google's marker toolbar.
+            mapToolbarEnabled: false,
+            mapType: switch (look) {
+              MapLook.standard => MapType.normal,
+              MapLook.satellite => MapType.satellite,
+              MapLook.hybrid => MapType.hybrid,
+            },
+            initialCameraPosition:
+                _lastCamera ??
+                CameraPosition(
+                  target: LatLng(start.latitude, start.longitude),
+                  zoom: map.initialCameraZoom,
+                ),
+            onMapCreated: (controller) {
+              if (!_mapController.isCompleted) {
+                _mapController.complete(controller);
+              }
+              if (_focus.pending != null) unawaited(_showFocusedCapsule());
+            },
+            markers: _markers(map),
+            heatmaps: _heatmaps(map),
+            onTap: (_) => _select(null),
+            onCameraMove: (position) {
+              _lastCamera = position;
+              // Zoomed out past the markers: their card goes too.
+              if (position.zoom < MapController.markerZoomThreshold) {
+                _select(null);
+              }
+              map.onCameraMove(position.zoom);
+            },
+            onCameraIdle: () async {
+              final controller = await _mapController.future;
+              final bounds = await controller.getVisibleRegion();
+              final center = GeoPosition(
+                (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+                (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+              );
+              map.onCameraIdle(center, await controller.getZoomLevel());
+            },
           ),
-          zoomControlsEnabled: false,
-          mapType: switch (look) {
-            MapLook.standard => MapType.normal,
-            MapLook.satellite => MapType.satellite,
-            MapLook.hybrid => MapType.hybrid,
-          },
-          initialCameraPosition:
-              _lastCamera ??
-              CameraPosition(
-                target: LatLng(start.latitude, start.longitude),
-                zoom: map.initialCameraZoom,
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            right: 16,
+            // Moves up while a capsule card is open.
+            bottom: bottom + (selected == null ? 0 : cardHeight + 12),
+            child: _MyLocationButton(onTap: () => _goToMe(map)),
+          ),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: bottom,
+            child: AnimatedSwitcher(
+              duration: motion,
+              switchInCurve: AppMotion.emphasizedCurve,
+              switchOutCurve: AppMotion.exit,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween(
+                    begin: const Offset(0, 0.3),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
               ),
-          onMapCreated: (controller) {
-            _infoWindow.googleMapController = controller;
-            if (!_mapController.isCompleted) {
-              _mapController.complete(controller);
-            }
-            if (_focus.pending != null) unawaited(_showFocusedCapsule());
-          },
-          markers: _markers(map),
-          heatmaps: _heatmaps(map),
-          onTap: (_) => _infoWindow.hideInfoWindow?.call(),
-          onCameraMove: (position) {
-            _lastCamera = position;
-            _infoWindow.onCameraMove?.call();
-            map.onCameraMove(position.zoom);
-          },
-          onCameraIdle: () async {
-            final controller = await _mapController.future;
-            final bounds = await controller.getVisibleRegion();
-            final center = GeoPosition(
-              (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
-              (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
-            );
-            map.onCameraIdle(center, await controller.getZoomLevel());
-          },
-        ),
-        Positioned(
-          right: 16,
-          bottom: NavbarWidget.coveredHeight(context) + 12,
-          child: _MyLocationButton(onTap: () => _goToMe(map)),
-        ),
-        CustomInfoWindow(
-          controller: _infoWindow,
-          height: (screen.height * 0.171).clamp(
-            CapsuleInfoPanel.minHeight,
-            double.infinity,
+              child: selected == null
+                  ? const SizedBox(
+                      key: ValueKey('none'),
+                      width: double.infinity,
+                    )
+                  : GestureDetector(
+                      key: ValueKey(selected.id),
+                      // Swipe down to close.
+                      onVerticalDragEnd: (details) {
+                        if ((details.primaryVelocity ?? 0) > 150) _select(null);
+                      },
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 440),
+                          child: SizedBox(
+                            height: cardHeight,
+                            child: _infoPanel(selected),
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
           ),
-          width: screen.width * 0.58,
-          offset: 60,
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
