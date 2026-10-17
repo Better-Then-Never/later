@@ -216,14 +216,22 @@ class PushMessagingService implements TopicSubscriber {
     }
   }
 
-  /// Topic pushes (announcements, see NewsTopics).
+  /// Topic pushes (announcements, see NewsTopics). Skipped in builds that
+  /// talk to the local emulators: FCM topics are not emulated, so the phone
+  /// would join the real project's topics.
   @override
-  Future<void> subscribeToTopic(String topic) =>
-      _messaging.subscribeToTopic(topic);
+  Future<void> subscribeToTopic(String topic) async {
+    if (_usesEmulator) return;
+    await _messaging.subscribeToTopic(topic);
+  }
 
   @override
-  Future<void> unsubscribeFromTopic(String topic) =>
-      _messaging.unsubscribeFromTopic(topic);
+  Future<void> unsubscribeFromTopic(String topic) async {
+    if (_usesEmulator) return;
+    await _messaging.unsubscribeFromTopic(topic);
+  }
+
+  static const _usesEmulator = bool.fromEnvironment('USE_FIREBASE_EMULATOR');
 
   /// Revokes this device's token so the previous user stops receiving pushes.
   Future<void> deleteToken() async {

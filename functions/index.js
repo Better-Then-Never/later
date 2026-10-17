@@ -29,9 +29,27 @@ setGlobalOptions({
   serviceAccount: 'later-functions@later-da778.iam.gserviceaccount.com',
 });
 
+// In the Functions emulator pushes are logged, not sent: FCM is not emulated,
+// and a real send would go out with this machine's credentials
+// (docs/feel/RIG.md).
+const loggedMessaging = {
+  async send(message) {
+    logger.info('push not sent (emulator)', { message });
+    return 'emulator';
+  },
+  async sendEach(messages) {
+    logger.info('pushes not sent (emulator)', { messages });
+    return {
+      successCount: messages.length,
+      failureCount: 0,
+      responses: messages.map(() => ({ success: true })),
+    };
+  },
+};
+
 const services = () => ({
   db: admin.firestore(),
-  messaging: admin.messaging(),
+  messaging: process.env.FUNCTIONS_EMULATOR === 'true' ? loggedMessaging : admin.messaging(),
   bucket: admin.storage().bucket(),
 });
 

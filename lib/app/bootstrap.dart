@@ -53,14 +53,23 @@ Future<void> bootstrap() async {
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   if (_useFirebaseEmulator) {
-    await FirebaseAuth.instance.useAuthEmulator(_firebaseEmulatorHost, 9099);
+    // No automatic host mapping: FlutterFire would turn 127.0.0.1 into
+    // 10.0.2.2 on Android, but a USB phone reaches this computer at
+    // 127.0.0.1 through `adb reverse` (docs/feel/RIG.md).
+    await FirebaseAuth.instance.useAuthEmulator(
+      _firebaseEmulatorHost,
+      9099,
+      automaticHostMapping: false,
+    );
     FirebaseFirestore.instance.useFirestoreEmulator(
       _firebaseEmulatorHost,
       8080,
+      automaticHostMapping: false,
     );
     await FirebaseStorage.instance.useStorageEmulator(
       _firebaseEmulatorHost,
       9199,
+      automaticHostMapping: false,
     );
   }
 
