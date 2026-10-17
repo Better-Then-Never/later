@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:later/app/appearance/appearance_controller.dart';
 import 'package:later/app/bootstrap.dart';
 import 'package:later/app/shell/navbar_widget.dart';
 import 'package:later/core/assets/app_assets.dart';
@@ -48,6 +49,9 @@ const _password = String.fromEnvironment(
   defaultValue: 'emulator-only-123',
 );
 const _only = String.fromEnvironment('PERF_FLOWS');
+
+/// The app's language for the run ('' keeps it; e.g. en, ru).
+const _language = String.fromEnvironment('PERF_LANG');
 
 /// Where tool/seed_heavy.js put most capsules (its SEED_CENTER default).
 const _seedLatitude = 52.2297;
@@ -217,6 +221,13 @@ void main() {
     }, reportKey: 'startup');
     binding.reportData ??= {};
     binding.reportData!['startup_ms_to_home'] = launch.elapsedMilliseconds;
+    if (_language.isNotEmpty) {
+      await tester
+          .element(find.byType(NavbarWidget))
+          .read<AppearanceController>()
+          .setLanguage(_language);
+      await wait(tester, const Duration(seconds: 2));
+    }
 
     await flow('tab_switches', () async {
       for (final asset in [
