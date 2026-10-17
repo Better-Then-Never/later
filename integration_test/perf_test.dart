@@ -24,6 +24,7 @@ import 'dart:developer' show Timeline;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:later/app/bootstrap.dart';
@@ -55,6 +56,13 @@ const _seedLongitude = 21.0122;
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   binding.framePolicy = LiveTestWidgetsFlutterBindingFramePolicy.fullyLive;
+  // An event per widget build, layout and paint in the timeline, to name
+  // the cause of a slow frame (tool/dev/slow_frames.dart). Slows frames.
+  if (const bool.fromEnvironment('PERF_DETAIL')) {
+    debugProfileBuildsEnabled = true;
+    debugProfileLayoutsEnabled = true;
+    debugProfilePaintsEnabled = true;
+  }
 
   /// Real time passes with frames pumped (pumpAndSettle never settles on
   /// screens with endless animations such as the loading logo).
@@ -81,6 +89,12 @@ void main() {
   }
 
   Finder icon(String asset) => find.image(AssetImage(asset));
+
+  /// A control by its screen reader label, without building the semantics
+  /// tree.
+  Finder labelled(String label) => find.byWidgetPredicate(
+    (w) => w is Semantics && w.properties.label == label,
+  );
   AppLocalizations l10n() => AppL10n.current;
 
   Future<void> tap(WidgetTester tester, Finder finder) async {
@@ -143,7 +157,9 @@ void main() {
     if (ms != null) measured.putIfAbsent(key, () => []).add(ms);
   }
 
-  testWidgets('key flows', (tester) async {
+  // Semantics off: the accessibility tree is built only for people using a
+  // screen reader, and testWidgets would otherwise build it on every frame.
+  testWidgets('key flows', semanticsEnabled: false, (tester) async {
     /// Runs [body] as the traced flow [name] when it was asked for, after
     /// [setup] (not traced).
     Future<void> flow(
@@ -332,10 +348,7 @@ void main() {
       },
       () async {
         for (var i = 0; i < 2; i++) {
-          await tapAndWait(
-            tester,
-            find.bySemanticsLabel(l10n().messagesChatOptions),
-          );
+          await tapAndWait(tester, labelled(l10n().messagesChatOptions));
           await back(tester);
         }
       },
@@ -444,10 +457,7 @@ void main() {
       },
       () async {
         final watch = Stopwatch()..start();
-        await tap(
-          tester,
-          find.bySemanticsLabel(l10n().capsulesCameraTakePhoto),
-        );
+        await tap(tester, labelled(l10n().capsulesCameraTakePhoto));
         await waitFor(tester, find.byType(CapsuleCreationPage));
         record('camera_tap_to_creation_test_ms', watch.elapsedMilliseconds);
         await wait(tester, const Duration(seconds: 2));

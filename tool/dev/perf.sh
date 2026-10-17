@@ -4,6 +4,10 @@
 #
 #   tool/dev/perf.sh <label> [runs]      # e.g. tool/dev/perf.sh baseline 3
 #   FLOWS=chat_open,map_pan tool/dev/perf.sh chat 3   # only these flows
+#   KEEP_TIMELINE=1 DETAIL=1 FLOWS=theme_switch tool/dev/perf.sh why 1
+#       # keeps <flow>.timeline.json with an event per widget build, layout
+#       # and paint, for tool/dev/slow_frames.dart (DETAIL slows frames down:
+#       # its numbers are for finding causes, not for PERFORMANCE.md)
 #
 # Each run lands in build/perf/<label>/run_<n>/: one
 # <flow>.timeline_summary.json per flow (per-frame build and raster times),
@@ -37,6 +41,7 @@ for n in $(seq "$runs"); do
     --keep-app-running --no-dds \
     "${DEFINES[@]}" \
     ${FLOWS:+--dart-define=PERF_FLOWS=$FLOWS} \
+    ${DETAIL:+--dart-define=PERF_DETAIL=true} \
     >"$dir/drive.log" 2>&1
   status=$?
   # flutter drive can exit 0 although the test on the phone failed.
@@ -47,7 +52,11 @@ for n in $(seq "$runs"); do
   adbs shell am force-stop "$APP_ID"
   mv build/*.timeline_summary.json "$dir/" 2>/dev/null
   mv build/perf_numbers.json "$dir/" 2>/dev/null
-  rm -f build/*.timeline.json
+  if [ -n "$KEEP_TIMELINE" ]; then
+    mv build/*.timeline.json "$dir/" 2>/dev/null
+  else
+    rm -f build/*.timeline.json
+  fi
   if [ $status -ne 0 ]; then
     echo "run $n failed (exit $status); see $dir/drive.log" >&2
     tail -n 20 "$dir/drive.log" >&2
