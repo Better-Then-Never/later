@@ -31,5 +31,15 @@
   "achievementNightOwl": "Nocny marek",
   "achievementNightOwlGoal": "{count, plural, one{Utwórz {count} kapsułę między północą a 5 rano} few{Utwórz {count} kapsuły między północą a 5 rano} many{Utwórz {count} kapsuł między północą a 5 rano} other{Utwórz {count} kapsuły między północą a 5 rano}}",
   "achievementEarlyBird": "Ranny ptaszek",
-  "achievementEarlyBirdGoal": "{count, plural, one{Utwórz {count} kapsułę między 5 a 8 rano} few{Utwórz {count} kapsuły między 5 a 8 rano} many{Utwórz {count} kapsuł między 5 a 8 rano} other{Utwórz {count} kapsuły między 5 a 8 rano}}"
+  "achievementEarlyBirdGoal": "{count, plural, one{Utwórz {count} kapsułę między 5 a 8 rano} few{Utwórz {count} kapsuły między 5 a 8 rano} many{Utwórz {count} kapsuł między 5 a 8 rano} other{Utwórz {count} kapsuły między 5 a 8 rano}}",
+  "streakAtRisk": "Dzisiaj jeszcze się nie liczy: zostaw kapsułę przed północą, aby utrzymać serię.",
+  "streakSafe": "Dzisiaj się liczy. Do jutra!",
+  "streakLongest": "Najdłuższa: {count, plural, one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dnia}}",
+  "streakMakeCapsule": "Utwórz kapsułę",
+  "momentsAchievementLabel": "Nowe osiągnięcie",
+  "momentsAchievementMore": "{count, plural, one{i jeszcze {count}} few{i jeszcze {count}} many{i jeszcze {count}} other{i jeszcze {count}}}",
+  "momentsStreakLabel": "Seria rośnie",
+  "momentsStreakBody": "Kapsuła każdego dnia. Do jutra!",
+  "achievementCurious": "Ciekawski",
+  "achievementCuriousGoal": "{count, plural, one{Otwórz {count} cudzą kapsułę} few{Otwórz {count} cudze kapsuły} many{Otwórz {count} cudzych kapsuł} other{Otwórz {count} cudzej kapsuły}}"
 }

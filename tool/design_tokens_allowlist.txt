@@ -43,6 +43,7 @@ material-icon lib/features/achievements/achievement_catalog.dart Icons.chat_bubb
 material-icon lib/features/achievements/achievement_catalog.dart Icons.group  # achievement badge
 material-icon lib/features/achievements/achievement_catalog.dart Icons.nightlight  # achievement badge
 material-icon lib/features/achievements/achievement_catalog.dart Icons.wb_twilight  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.visibility  # achievement badge
 # The verified mark is the platform's standard badge (no custom artwork).
 material-icon lib/shared/widgets/user/user_name_and_username.dart Icons.verified  # verified badge
 material-icon lib/shared/widgets/user/verified_name.dart Icons.verified  # verified badge

@@ -65,6 +65,20 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get achievementCurious => 'Neugierig';
+
+  @override
+  String achievementCuriousGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Öffne $count Kapseln von anderen',
+      one: 'Öffne 1 Kapsel von anderen',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get achievementEarlyBird => 'Frühaufsteher';
 
   @override
@@ -1895,6 +1909,26 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get momentsAchievementLabel => 'Erfolg freigeschaltet';
+
+  @override
+  String momentsAchievementMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'und $count weitere',
+      one: 'und 1 weiterer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get momentsStreakBody => 'Jeden Tag eine Kapsel. Bis morgen!';
+
+  @override
+  String get momentsStreakLabel => 'Deine Serie wächst';
+
+  @override
   String get navMap => 'Karte';
 
   @override
@@ -3222,4 +3256,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Dein Passwort';
+
+  @override
+  String get streakAtRisk =>
+      'Heute zählt noch nicht: Hinterlasse vor Mitternacht eine Kapsel, um deine Serie zu halten.';
+
+  @override
+  String streakLongest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage',
+      one: '1 Tag',
+    );
+    return 'Längste: $_temp0';
+  }
+
+  @override
+  String get streakMakeCapsule => 'Kapsel erstellen';
+
+  @override
+  String get streakSafe => 'Heute zählt. Bis morgen!';
 }

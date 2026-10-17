@@ -352,6 +352,10 @@ abstract interface class SocialRepository {
   /// Achievements [uid] unlocked (own, or a friend's when they share them).
   Stream<List<UnlockedAchievement>> watchAchievements(String uid);
 
+  /// [uid] opened someone else's [capsuleId] (B7): a marker a function
+  /// counts once ("Curious"). Never throws.
+  Future<void> markViewed(String uid, String capsuleId);
+
   /// Messages from the Later team, newest first.
   Stream<List<Announcement>> watchAnnouncements({int limit});
 }

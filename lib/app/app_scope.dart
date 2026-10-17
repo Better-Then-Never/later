@@ -21,6 +21,9 @@ import '../data/services/preferences_store.dart';
 import '../data/services/voice_service.dart';
 import '../data/services/profile_image_cache.dart';
 import '../data/services/push_messaging_service.dart';
+import '../core/config/feature_flags.dart';
+import '../features/achievements/moment_toast.dart';
+import '../features/achievements/moments.dart';
 import '../features/history/favorites_store.dart';
 import '../features/capsules/outbox/capsule_outbox.dart';
 import '../features/history/own_capsules_store.dart';
@@ -109,6 +112,7 @@ class _AppScopeState extends State<AppScope> {
     notifications: _notifications,
   );
   late final NotificationRouter _notificationRouter;
+  late final MomentsController _moments;
   late final SearchNameSync _searchName;
   late final _newsTopics = NewsTopics(
     push: _push,
@@ -153,6 +157,15 @@ class _AppScopeState extends State<AppScope> {
       capsules: _capsules,
       mapFocus: _mapFocus,
     )..start();
+    // Unlocks and streak milestones are celebrated in the app (B7); their
+    // pushes are not shown again while it runs.
+    _moments = MomentsController(
+      session: _session,
+      social: _social,
+      prefs: _prefs,
+      show: MomentToast.show,
+    )..start();
+    _push.achievementsInApp = FeatureFlags.achievements;
     // Push setup never blocks or breaks startup (BUG-001).
     WidgetsBinding.instance.addPostFrameCallback((_) => _push.initialize());
     _prefs.purgeLegacyGlobalKeys();
@@ -167,6 +180,7 @@ class _AppScopeState extends State<AppScope> {
     _settingsStore.removeListener(_syncMutedChats);
     _newsTopics.dispose();
     _searchName.dispose();
+    _moments.dispose();
     _session.dispose();
     _notificationRouter.dispose();
     _push.dispose();

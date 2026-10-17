@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +18,7 @@ import '../../shared/widgets/buttons/go_back_button.dart';
 import '../../shared/widgets/page_header.dart';
 import 'achievement_catalog.dart';
 import 'achievement_icon.dart';
+import 'streak_flame.dart';
 
 /// An achievement as one user stands with it: the level the server
 /// unlocked or the stats already reach (whichever is higher), and the next
@@ -175,7 +174,8 @@ class AchievementsPanel extends StatelessWidget {
   }
 }
 
-/// "🔥 4-day streak", and whether today already counts.
+/// "🔥 4-day streak", and whether today already counts. At risk (today not
+/// counted yet) the flame is grey and the chip has an orange ring.
 class StreakChip extends StatelessWidget {
   const StreakChip({super.key, required this.profile});
 
@@ -192,13 +192,16 @@ class StreakChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.warningOrange.withValues(alpha: 0.15),
         borderRadius: AppRadii.lCircular,
+        border: today
+            ? null
+            : Border.all(color: AppColors.warningOrange, width: 1.5),
       ),
       child: Text.rich(
         TextSpan(
           children: [
-            const WidgetSpan(
+            WidgetSpan(
               alignment: PlaceholderAlignment.middle,
-              child: _Flicker(child: Text('🔥')),
+              child: StreakFlame(size: 13, greyed: !today),
             ),
             TextSpan(
               text: ' ${l10n.achievementsStreakDays(streak)}',
@@ -349,61 +352,4 @@ class _AchievementRow extends StatelessWidget {
       ),
     );
   }
-}
-
-/// The streak's flame flickers twice when it appears, then rests (a scale
-/// transform; still with reduced motion).
-class _Flicker extends StatefulWidget {
-  const _Flicker({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_Flicker> createState() => _FlickerState();
-}
-
-class _FlickerState extends State<_Flicker>
-    with SingleTickerProviderStateMixin {
-  // Created up front: a first use in dispose() would look up TickerMode on
-  // a deactivated element (with reduced motion it never runs).
-  late final AnimationController _flicker;
-  bool _started = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Two swells of two slow beats each.
-    _flicker = AnimationController(vsync: this, duration: AppMotion.slow * 4);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_started && !AppMotion.reduced(context)) {
-      _started = true;
-      _flicker.forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _flicker.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _flicker,
-    child: widget.child,
-    builder: (context, child) {
-      // Two quick swells, back to rest at the end.
-      final t = _flicker.value;
-      final swell = math.pow(math.sin(t * 2 * math.pi), 2).toDouble();
-      return Transform.scale(
-        scale: 1 + 0.18 * swell,
-        alignment: Alignment.bottomCenter,
-        child: child,
-      );
-    },
-  );
 }

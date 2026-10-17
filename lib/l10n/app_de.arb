@@ -8,6 +8,8 @@
   "achievementCollectorGoal": "{count, plural, =1{Erstelle 1 Kapsel} other{Erstelle {count} Kapseln}}",
   "achievementCrowdPleaser": "Publikumsliebling",
   "achievementCrowdPleaserGoal": "{count, plural, =1{Erhalte 1 Reaktion} other{Erhalte {count} Reaktionen}}",
+  "achievementCurious": "Neugierig",
+  "achievementCuriousGoal": "{count, plural, =1{Öffne 1 Kapsel von anderen} other{Öffne {count} Kapseln von anderen}}",
   "achievementEarlyBird": "Frühaufsteher",
   "achievementEarlyBirdGoal": "{count, plural, =1{Erstelle eine Kapsel zwischen 5 und 8 Uhr} other{Erstelle {count} Kapseln zwischen 5 und 8 Uhr}}",
   "achievementExplorer": "Entdecker",
@@ -515,6 +517,10 @@
   "messagesVoiceTooShort": "Zu kurz zum Senden",
   "messagesYesterday": "Gestern",
   "messagesYouPrefix": "Du: {message}",
+  "momentsAchievementLabel": "Erfolg freigeschaltet",
+  "momentsAchievementMore": "{count, plural, =1{und 1 weiterer} other{und {count} weitere}}",
+  "momentsStreakBody": "Jeden Tag eine Kapsel. Bis morgen!",
+  "momentsStreakLabel": "Deine Serie wächst",
   "navMap": "Karte",
   "navMessages": "Nachrichten",
   "navMyCapsules": "Meine Kapseln",
@@ -870,5 +876,9 @@
   "settingsVisibilityPrivateHint": "Nur du",
   "settingsVisibilityPublic": "Öffentlich",
   "settingsVisibilityPublicHint": "Alle auf der Karte",
-  "settingsYourPassword": "Dein Passwort"
+  "settingsYourPassword": "Dein Passwort",
+  "streakAtRisk": "Heute zählt noch nicht: Hinterlasse vor Mitternacht eine Kapsel, um deine Serie zu halten.",
+  "streakLongest": "Längste: {count, plural, =1{1 Tag} other{{count} Tage}}",
+  "streakMakeCapsule": "Kapsel erstellen",
+  "streakSafe": "Heute zählt. Bis morgen!"
 }

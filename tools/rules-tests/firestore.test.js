@@ -891,6 +891,23 @@ describe('suggestions from contacts', () => {
   });
 });
 
+describe('capsules viewed (B7)', () => {
+  const mark = (db, uid, id) => doc(db, `users/${uid}/viewed/${id}`);
+
+  test('the owner writes each marker once, with the server time', async () => {
+    const alice = as('alice');
+    await assertSucceeds(setDoc(mark(alice, 'alice', 'c1'), { at: serverTimestamp() }));
+    // Seen before: refused (the function counted it already).
+    await assertFails(setDoc(mark(alice, 'alice', 'c1'), { at: serverTimestamp() }));
+    await assertFails(deleteDoc(mark(alice, 'alice', 'c1')));
+    await assertFails(setDoc(mark(alice, 'alice', 'c2'), { at: serverTimestamp(), counted: true }));
+    await assertFails(setDoc(mark(alice, 'alice', 'c3'), { at: new Date(2020, 1, 1) }));
+    await assertFails(setDoc(mark(as('bob'), 'alice', 'c4'), { at: serverTimestamp() }));
+    await assertSucceeds(getDoc(mark(alice, 'alice', 'c1')));
+    await assertFails(getDoc(mark(as('bob'), 'alice', 'c1')));
+  });
+});
+
 describe('settings', () => {
   const settingsRef = (db, uid = 'alice') => doc(db, `users/${uid}/settings/app`);
   const valid = {

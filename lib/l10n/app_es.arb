@@ -8,6 +8,8 @@
   "achievementCollectorGoal": "{count, plural, =1{Crea 1 cápsula} other{Crea {count} cápsulas}}",
   "achievementCrowdPleaser": "Favorito del público",
   "achievementCrowdPleaserGoal": "{count, plural, =1{Recibe 1 reacción} other{Recibe {count} reacciones}}",
+  "achievementCurious": "Curioso",
+  "achievementCuriousGoal": "{count, plural, =1{Abre 1 cápsula de otra persona} other{Abre {count} cápsulas de otras personas}}",
   "achievementEarlyBird": "Madrugador",
   "achievementEarlyBirdGoal": "{count, plural, =1{Crea una cápsula entre las 5 y las 8} other{Crea {count} cápsulas entre las 5 y las 8}}",
   "achievementExplorer": "Explorador",
@@ -515,6 +517,10 @@
   "messagesVoiceTooShort": "Demasiado corto para enviar",
   "messagesYesterday": "Ayer",
   "messagesYouPrefix": "Tú: {message}",
+  "momentsAchievementLabel": "Logro desbloqueado",
+  "momentsAchievementMore": "{count, plural, =1{y 1 más} other{y {count} más}}",
+  "momentsStreakBody": "Una cápsula cada día. ¡Hasta mañana!",
+  "momentsStreakLabel": "Tu racha crece",
   "navMap": "Mapa",
   "navMessages": "Mensajes",
   "navMyCapsules": "Mis cápsulas",
@@ -870,5 +876,9 @@
   "settingsVisibilityPrivateHint": "Solo tú",
   "settingsVisibilityPublic": "Pública",
   "settingsVisibilityPublicHint": "Todos en el mapa",
-  "settingsYourPassword": "Tu contraseña"
+  "settingsYourPassword": "Tu contraseña",
+  "streakAtRisk": "Hoy aún no cuenta: deja una cápsula antes de medianoche para mantener tu racha.",
+  "streakLongest": "La más larga: {count, plural, =1{1 día} other{{count} días}}",
+  "streakMakeCapsule": "Crear una cápsula",
+  "streakSafe": "Hoy cuenta. ¡Hasta mañana!"
 }

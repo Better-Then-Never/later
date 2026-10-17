@@ -152,6 +152,18 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{Receive 1 reaction} other{Receive {count} reactions}}'**
   String achievementCrowdPleaserGoal(int count);
 
+  /// Achievement for opening capsules other people left (B7).
+  ///
+  /// In en, this message translates to:
+  /// **'Curious'**
+  String get achievementCurious;
+
+  /// Goal of the Curious achievement level.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Open 1 capsule left by someone else} other{Open {count} capsules left by others}}'**
+  String achievementCuriousGoal(int count);
+
   /// No description provided for @achievementEarlyBird.
   ///
   /// In en, this message translates to:
@@ -3194,6 +3206,30 @@ abstract class AppLocalizations {
   /// **'You: {message}'**
   String messagesYouPrefix(String message);
 
+  /// Small label of the in-app card shown when the server unlocks an achievement.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement unlocked'**
+  String get momentsAchievementLabel;
+
+  /// After the level on the unlock card: other achievements unlocked at the same time.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{and 1 more} other{and {count} more}}'**
+  String momentsAchievementMore(int count);
+
+  /// Text of the streak milestone card.
+  ///
+  /// In en, this message translates to:
+  /// **'A capsule every day. See you tomorrow!'**
+  String get momentsStreakBody;
+
+  /// Small label of the in-app card when the streak reaches a milestone (3, 7, 14... days).
+  ///
+  /// In en, this message translates to:
+  /// **'Your streak grows'**
+  String get momentsStreakLabel;
+
   /// No description provided for @navMap.
   ///
   /// In en, this message translates to:
@@ -5329,6 +5365,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your password'**
   String get settingsYourPassword;
+
+  /// Streak card while today is not counted yet (the streak ends tonight without a capsule).
+  ///
+  /// In en, this message translates to:
+  /// **'Today isn\'t counted yet: leave a capsule before midnight to keep your streak.'**
+  String get streakAtRisk;
+
+  /// Streak card: the longest streak so far, in days.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest: {count, plural, =1{1 day} other{{count} days}}'**
+  String streakLongest(int count);
+
+  /// Streak card button (at risk): opens the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule'**
+  String get streakMakeCapsule;
+
+  /// Streak card once today counts.
+  ///
+  /// In en, this message translates to:
+  /// **'Today counts. See you tomorrow!'**
+  String get streakSafe;
 }
 
 class _AppLocalizationsDelegate

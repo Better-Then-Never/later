@@ -1176,6 +1176,13 @@ class FakeSocialRepository implements SocialRepository {
   @override
   Stream<List<Announcement>> watchAnnouncements({int limit = 20}) =>
       seeded(() => announcements.take(limit).toList(), _changes.stream);
+
+  /// "uid/capsuleId" of every marker written.
+  final List<String> viewed = [];
+
+  @override
+  Future<void> markViewed(String uid, String capsuleId) async =>
+      viewed.add('$uid/$capsuleId');
 }
 
 class FakeImageStorageRepository implements ImageStorageRepository {

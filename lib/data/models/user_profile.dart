@@ -16,6 +16,7 @@ class UserStats {
     this.commentsWritten = 0,
     this.nightCapsules = 0,
     this.morningCapsules = 0,
+    this.capsulesViewed = 0,
   });
 
   final int capsules;
@@ -35,6 +36,9 @@ class UserStats {
   final int nightCapsules;
   final int morningCapsules;
 
+  /// Capsules of others the user opened, each counted once (B7).
+  final int capsulesViewed;
+
   /// The streak as of [now] (local time): it ends when a whole day passed
   /// without a capsule, even before the server notices.
   int streakAt(DateTime now) {
@@ -47,6 +51,9 @@ class UserStats {
 
   /// Whether today already counts for the streak.
   bool extendedToday(DateTime now) => streakLastDay == _day(now);
+
+  /// A streak that ends tonight unless a capsule counts today (B7).
+  bool atRisk(DateTime now) => streakAt(now) > 0 && !extendedToday(now);
 
   static String _day(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-'
@@ -67,7 +74,8 @@ class UserStats {
       other.reactionsReceived == reactionsReceived &&
       other.commentsWritten == commentsWritten &&
       other.nightCapsules == nightCapsules &&
-      other.morningCapsules == morningCapsules;
+      other.morningCapsules == morningCapsules &&
+      other.capsulesViewed == capsulesViewed;
 
   @override
   int get hashCode => Object.hash(
@@ -83,6 +91,7 @@ class UserStats {
     commentsWritten,
     nightCapsules,
     morningCapsules,
+    capsulesViewed,
   );
 }
 

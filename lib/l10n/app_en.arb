@@ -36,6 +36,19 @@
       }
     }
   },
+  "achievementCurious": "Curious",
+  "@achievementCurious": {
+    "description": "Achievement for opening capsules other people left (B7)."
+  },
+  "achievementCuriousGoal": "{count, plural, =1{Open 1 capsule left by someone else} other{Open {count} capsules left by others}}",
+  "@achievementCuriousGoal": {
+    "description": "Goal of the Curious achievement level.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "achievementEarlyBird": "Early bird",
   "achievementEarlyBirdGoal": "{count, plural, =1{Create a capsule between 5 and 8 am} other{Create {count} capsules between 5 and 8 am}}",
   "@achievementEarlyBirdGoal": {
@@ -1799,6 +1812,27 @@
       }
     }
   },
+  "momentsAchievementLabel": "Achievement unlocked",
+  "@momentsAchievementLabel": {
+    "description": "Small label of the in-app card shown when the server unlocks an achievement."
+  },
+  "momentsAchievementMore": "{count, plural, =1{and 1 more} other{and {count} more}}",
+  "@momentsAchievementMore": {
+    "description": "After the level on the unlock card: other achievements unlocked at the same time.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "momentsStreakBody": "A capsule every day. See you tomorrow!",
+  "@momentsStreakBody": {
+    "description": "Text of the streak milestone card."
+  },
+  "momentsStreakLabel": "Your streak grows",
+  "@momentsStreakLabel": {
+    "description": "Small label of the in-app card when the streak reaches a milestone (3, 7, 14... days)."
+  },
   "navMap": "Map",
   "navMessages": "Messages",
   "navMyCapsules": "My capsules",
@@ -2829,5 +2863,26 @@
   "settingsYourPassword": "Your password",
   "@settingsYourPassword": {
     "description": "Hint of the password field that confirms an account change."
+  },
+  "streakAtRisk": "Today isn't counted yet: leave a capsule before midnight to keep your streak.",
+  "@streakAtRisk": {
+    "description": "Streak card while today is not counted yet (the streak ends tonight without a capsule)."
+  },
+  "streakLongest": "Longest: {count, plural, =1{1 day} other{{count} days}}",
+  "@streakLongest": {
+    "description": "Streak card: the longest streak so far, in days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakMakeCapsule": "Make a capsule",
+  "@streakMakeCapsule": {
+    "description": "Streak card button (at risk): opens the camera."
+  },
+  "streakSafe": "Today counts. See you tomorrow!",
+  "@streakSafe": {
+    "description": "Streak card once today counts."
   }
 }

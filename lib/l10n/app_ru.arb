@@ -8,6 +8,8 @@
   "achievementCollectorGoal": "{count, plural, one{Создайте {count} капсулу} few{Создайте {count} капсулы} many{Создайте {count} капсул} other{Создайте {count} капсулы}}",
   "achievementCrowdPleaser": "Любимец публики",
   "achievementCrowdPleaserGoal": "{count, plural, one{Получите {count} реакцию} few{Получите {count} реакции} many{Получите {count} реакций} other{Получите {count} реакции}}",
+  "achievementCurious": "Любопытный",
+  "achievementCuriousGoal": "{count, plural, one{Откройте {count} чужую капсулу} few{Откройте {count} чужие капсулы} many{Откройте {count} чужих капсул} other{Откройте {count} чужой капсулы}}",
   "achievementEarlyBird": "Жаворонок",
   "achievementEarlyBirdGoal": "{count, plural, one{Создайте {count} капсулу с 5 до 8 утра} few{Создайте {count} капсулы с 5 до 8 утра} many{Создайте {count} капсул с 5 до 8 утра} other{Создайте {count} капсулы с 5 до 8 утра}}",
   "achievementExplorer": "Исследователь",
@@ -515,6 +517,10 @@
   "messagesVoiceTooShort": "Слишком коротко, чтобы отправить",
   "messagesYesterday": "Вчера",
   "messagesYouPrefix": "Вы: {message}",
+  "momentsAchievementLabel": "Новое достижение",
+  "momentsAchievementMore": "{count, plural, one{и ещё {count}} few{и ещё {count}} many{и ещё {count}} other{и ещё {count}}}",
+  "momentsStreakBody": "Капсула каждый день. До завтра!",
+  "momentsStreakLabel": "Серия растёт",
   "navMap": "Карта",
   "navMessages": "Сообщения",
   "navMyCapsules": "Мои капсулы",
@@ -870,5 +876,9 @@
   "settingsVisibilityPrivateHint": "Только вы",
   "settingsVisibilityPublic": "Публичная",
   "settingsVisibilityPublicHint": "Все на карте",
-  "settingsYourPassword": "Ваш пароль"
+  "settingsYourPassword": "Ваш пароль",
+  "streakAtRisk": "Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.",
+  "streakLongest": "Рекорд: {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}",
+  "streakMakeCapsule": "Создать капсулу",
+  "streakSafe": "Сегодня засчитано. До завтра!"
 }

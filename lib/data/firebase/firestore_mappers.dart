@@ -27,6 +27,7 @@ abstract final class FirestorePaths {
   static const reactions = 'reactions';
   static const comments = 'comments';
   static const achievements = 'achievements';
+  static const viewed = 'viewed';
   static const announcements = 'announcements';
   static const reports = 'reports';
 
@@ -103,6 +104,7 @@ abstract final class FirestoreMappers {
     commentsWritten: _count(s['commentsWritten']),
     nightCapsules: _count(s['nightCapsules']),
     morningCapsules: _count(s['morningCapsules']),
+    capsulesViewed: _count(s['capsulesViewed']),
   );
 
   static Capsule capsule(String id, Map<String, dynamic> data) {

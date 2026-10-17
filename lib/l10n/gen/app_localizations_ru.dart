@@ -73,6 +73,22 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get achievementCurious => 'Любопытный';
+
+  @override
+  String achievementCuriousGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Откройте $count чужой капсулы',
+      many: 'Откройте $count чужих капсул',
+      few: 'Откройте $count чужие капсулы',
+      one: 'Откройте $count чужую капсулу',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get achievementEarlyBird => 'Жаворонок';
 
   @override
@@ -1908,6 +1924,28 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get momentsAchievementLabel => 'Новое достижение';
+
+  @override
+  String momentsAchievementMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'и ещё $count',
+      many: 'и ещё $count',
+      few: 'и ещё $count',
+      one: 'и ещё $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get momentsStreakBody => 'Капсула каждый день. До завтра!';
+
+  @override
+  String get momentsStreakLabel => 'Серия растёт';
+
+  @override
   String get navMap => 'Карта';
 
   @override
@@ -3255,4 +3293,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Ваш пароль';
+
+  @override
+  String get streakAtRisk =>
+      'Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.';
+
+  @override
+  String streakLongest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count дней',
+      few: '$count дня',
+      one: '$count день',
+    );
+    return 'Рекорд: $_temp0';
+  }
+
+  @override
+  String get streakMakeCapsule => 'Создать капсулу';
+
+  @override
+  String get streakSafe => 'Сегодня засчитано. До завтра!';
 }

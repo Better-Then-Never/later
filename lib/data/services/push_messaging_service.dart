@@ -134,6 +134,10 @@ class PushMessagingService implements TopicSubscriber {
   /// foreground (set by the chat page).
   String? activeChatId;
 
+  /// The app celebrates achievements itself while it runs (B7): their
+  /// pushes are not shown in the foreground.
+  bool achievementsInApp = false;
+
   final _taps = StreamController<NotificationTap>.broadcast();
   final List<StreamSubscription<RemoteMessage>> _subscriptions = [];
   NotificationTap? _initialTap;
@@ -275,6 +279,7 @@ class PushMessagingService implements TopicSubscriber {
     final chatId = tap.type == NotificationType.message ? tap.chatId : null;
     // The user is reading this chat right now.
     if (chatId != null && chatId == activeChatId) return;
+    if (achievementsInApp && tap.type == NotificationType.achievement) return;
     final channel = channels.firstWhere(
       (c) => c.id == notification.android?.channelId,
       orElse: () => channels.last,

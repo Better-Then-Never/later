@@ -316,6 +316,14 @@ exports.updateCapsuleStats = onDocumentCreated(
   }),
 );
 
+// The app opened someone else's capsule for the first time (B7).
+exports.onCapsuleViewed = onDocumentCreated(
+  'users/{uid}/viewed/{capsuleId}',
+  logged('Capsule viewed', (e) =>
+    gamification.onCapsuleViewed(services(), e.params.uid, e.params.capsuleId),
+  ),
+);
+
 exports.sendStreakReminders = onSchedule(
   'every 60 minutes',
   logged('Streak reminders', () => gamification.sendStreakReminders(services())),

@@ -205,6 +205,18 @@ service cloud.firestore {
         allow write: if false;
       }
 
+      // Capsules of others the user opened (B7): one marker each, written
+      // once by the app (never changed); a function counts it
+      // (stats.capsulesViewed) and records that it did.
+      match /viewed/{capsuleId} {
+        allow read: if isMe(uid);
+        allow create: if isMe(uid)
+          && capsuleId.size() <= 64
+          && request.resource.data.keys().hasOnly(['at'])
+          && isServerTime(request.resource.data.at);
+        allow update, delete: if false;
+      }
+
       // Server-side bookkeeping (place cells, last position): owner only.
       match /private/{doc} {
         allow read: if isMe(uid);

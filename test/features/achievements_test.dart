@@ -35,6 +35,7 @@ void main() {
       'friendly': [1, 10, 50],
       'night_owl': [1, 10],
       'early_bird': [1, 10],
+      'curious': [10, 50, 250, 1000],
     };
     expect({for (final a in AchievementCatalog.all) a.id: a.tiers}, server);
   });

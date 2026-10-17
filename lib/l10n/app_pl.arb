@@ -8,6 +8,8 @@
   "achievementCollectorGoal": "{count, plural, one{Utwórz {count} kapsułę} few{Utwórz {count} kapsuły} many{Utwórz {count} kapsuł} other{Utwórz {count} kapsuły}}",
   "achievementCrowdPleaser": "Ulubieniec publiczności",
   "achievementCrowdPleaserGoal": "{count, plural, one{Zdobądź {count} reakcję} few{Zdobądź {count} reakcje} many{Zdobądź {count} reakcji} other{Zdobądź {count} reakcji}}",
+  "achievementCurious": "Ciekawski",
+  "achievementCuriousGoal": "{count, plural, one{Otwórz {count} cudzą kapsułę} few{Otwórz {count} cudze kapsuły} many{Otwórz {count} cudzych kapsuł} other{Otwórz {count} cudzej kapsuły}}",
   "achievementEarlyBird": "Ranny ptaszek",
   "achievementEarlyBirdGoal": "{count, plural, one{Utwórz {count} kapsułę między 5 a 8 rano} few{Utwórz {count} kapsuły między 5 a 8 rano} many{Utwórz {count} kapsuł między 5 a 8 rano} other{Utwórz {count} kapsuły między 5 a 8 rano}}",
   "achievementExplorer": "Odkrywca",
@@ -515,6 +517,10 @@
   "messagesVoiceTooShort": "Za krótka, by wysłać",
   "messagesYesterday": "Wczoraj",
   "messagesYouPrefix": "Ty: {message}",
+  "momentsAchievementLabel": "Nowe osiągnięcie",
+  "momentsAchievementMore": "{count, plural, one{i jeszcze {count}} few{i jeszcze {count}} many{i jeszcze {count}} other{i jeszcze {count}}}",
+  "momentsStreakBody": "Kapsuła każdego dnia. Do jutra!",
+  "momentsStreakLabel": "Seria rośnie",
   "navMap": "Mapa",
   "navMessages": "Wiadomości",
   "navMyCapsules": "Moje kapsuły",
@@ -870,5 +876,9 @@
   "settingsVisibilityPrivateHint": "Tylko ty",
   "settingsVisibilityPublic": "Publiczna",
   "settingsVisibilityPublicHint": "Wszyscy na mapie",
-  "settingsYourPassword": "Twoje hasło"
+  "settingsYourPassword": "Twoje hasło",
+  "streakAtRisk": "Dzisiaj jeszcze się nie liczy: zostaw kapsułę przed północą, aby utrzymać serię.",
+  "streakLongest": "Najdłuższa: {count, plural, one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dnia}}",
+  "streakMakeCapsule": "Utwórz kapsułę",
+  "streakSafe": "Dzisiaj się liczy. Do jutra!"
 }

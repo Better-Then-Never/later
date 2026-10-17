@@ -37,6 +37,7 @@ import 'widgets/first_capsule_hint.dart';
 import 'widgets/map_compass.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
 import 'widgets/map_filter_sheet.dart';
+import '../achievements/streak_pill.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
@@ -645,6 +646,13 @@ class _MapViewState extends State<_MapView> {
                 onChanged: map.setFilter,
               ),
             ),
+          ),
+          // The streak (B7), top right: grey with an orange ring while
+          // today is not counted yet.
+          Positioned(
+            top: MediaQuery.viewPaddingOf(context).top + 12,
+            right: 16,
+            child: const StreakPill(height: _MyLocationButton.size),
           ),
           AnimatedPositioned(
             duration: motion,

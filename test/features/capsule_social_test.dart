@@ -280,6 +280,8 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.byType(CapsuleCommentsSheet), findsOneWidget);
       expect(find.text('Lovely place'), findsOneWidget);
+      // Someone else's open capsule counts for "Curious" (B7).
+      expect(social.viewed, ['me/cap']);
     });
 
     testWidgets('the panel reacts and opens the comments', (tester) async {

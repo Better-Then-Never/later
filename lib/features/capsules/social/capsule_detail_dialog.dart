@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +30,14 @@ abstract final class CapsuleDetailDialog {
         uid != null &&
         capsule.isOpen(DateTime.now()) &&
         CapsuleSocialPanel.showsAnything(capsule);
+    // Someone else's open capsule counts for "Curious" (B7), once.
+    if (FeatureFlags.achievements &&
+        uid != null &&
+        capsule.ownerId != uid &&
+        !capsule.coAuthors.contains(uid) &&
+        capsule.isOpen(DateTime.now())) {
+      unawaited(social.markViewed(uid, capsule.id));
+    }
     // The card route: rises and grows in, closes on a tap outside or a drag
     // down (MOTION_CATALOG.md).
     return Navigator.of(context).push(
