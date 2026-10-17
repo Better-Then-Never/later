@@ -57,9 +57,9 @@ class MessageBubble extends StatelessWidget {
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
     final failed = message.delivery == MessageDelivery.failed;
-    // A reply's quote spans the bubble: the column is laid out at its
-    // natural width and every line stretches to it.
-    final quoted = message.replyTo != null;
+    // A reply's quote and a sender's name span the bubble from the left:
+    // the column is laid out at its natural width and every line stretches.
+    final quoted = message.replyTo != null || senderName != null;
     // A photo fills its bubble but for a thin frame.
     final photo = message.type == ChatMessageType.image;
     final photoWidth = photo
