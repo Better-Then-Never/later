@@ -18,10 +18,18 @@ import '../../../shared/motion/app_motion_widgets.dart';
 /// The text is cleared as soon as it is sent: the message itself appears in
 /// the conversation at once and can be retried there if it fails.
 class MessageInput extends StatefulWidget {
-  const MessageInput({super.key, required this.onSend, this.onCapsuleTap});
+  const MessageInput({
+    super.key,
+    required this.onSend,
+    this.onCapsuleTap,
+    this.focusNode,
+  });
 
   final void Function(String text) onSend;
   final VoidCallback? onCapsuleTap;
+
+  /// Lets the page put the cursor here (e.g. after choosing Reply).
+  final FocusNode? focusNode;
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -93,6 +101,7 @@ class _MessageInputState extends State<MessageInput> {
                 ),
                 child: TextField(
                   controller: _controller,
+                  focusNode: widget.focusNode,
                   textCapitalization: TextCapitalization.sentences,
                   keyboardType: TextInputType.multiline,
                   minLines: 1,

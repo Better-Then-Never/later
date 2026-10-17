@@ -60,16 +60,29 @@ class FirebaseChatRepository implements ChatRepository {
     required String to,
     required String text,
     required String messageId,
-  }) {
+    MessageReply? replyTo,
+  }) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty) return Future.value();
-    return _send(
+    if (trimmed.isEmpty) return;
+    Future<void> send({required bool quote}) => _send(
       from: from,
       to: to,
       preview: trimmed,
       messageId: messageId,
-      message: {'text': trimmed},
+      message: {
+        'text': trimmed,
+        if (quote && replyTo != null)
+          'replyTo': FirestoreMappers.newMessageReply(replyTo),
+      },
     );
+    try {
+      await send(quote: true);
+    } on FirebaseException catch (e) {
+      // Rules from before replies: the answer still goes, without its quote.
+      if (replyTo == null || e.code != 'permission-denied') rethrow;
+      AppLogger.warning('Reply refused with its quote, sending it without');
+      await send(quote: false);
+    }
   }
 
   @override

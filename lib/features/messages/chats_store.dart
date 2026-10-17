@@ -146,10 +146,17 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     String to,
     String text, {
     required String messageId,
+    MessageReply? replyTo,
   }) => _run(
     'Failed to send message',
     AppL10n.current.messagesSendFailed,
-    (me) => _chats.sendText(from: me, to: to, text: text, messageId: messageId),
+    (me) => _chats.sendText(
+      from: me,
+      to: to,
+      text: text,
+      messageId: messageId,
+      replyTo: replyTo,
+    ),
   );
 
   Future<AppFailure?> deleteMessage(String friendUid, String messageId) => _run(

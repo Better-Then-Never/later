@@ -36,6 +36,7 @@ import 'chats_store.dart';
 import 'widgets/chat_options_sheet.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
+import 'widgets/reply_bar.dart';
 
 /// A conversation with one friend.
 class ChatPage extends StatelessWidget {
@@ -68,6 +69,7 @@ class _ChatViewState extends State<_ChatView> {
   /// The list is reversed: offset 0 is the newest message.
   final _scroll = ScrollController();
   final _searchController = TextEditingController();
+  final _inputFocus = FocusNode();
   bool _showScrollToLatest = false;
 
   /// Messages already on screen: only messages that arrive later animate in.
@@ -95,6 +97,7 @@ class _ChatViewState extends State<_ChatView> {
     _push.activeChatId = _previousActiveChat;
     _scroll.dispose();
     _searchController.dispose();
+    _inputFocus.dispose();
     super.dispose();
   }
 
@@ -136,15 +139,24 @@ class _ChatViewState extends State<_ChatView> {
     final controller = context.read<ChatController>();
     final l10n = context.l10n;
     final canDelete = controller.canDelete(message);
+    final canReply = controller.canReply(message);
     unawaited(HapticFeedback.selectionClick());
     final action = await showCenteredSheet<_MessageAction>(
       context,
       Builder(
         builder: (sheet) => OptionsMenu(
           children: [
+            if (canReply) ...[
+              OptionsMenuItem(
+                text: l10n.capsulesReply,
+                isFirst: true,
+                onPressed: () => Navigator.pop(sheet, _MessageAction.reply),
+              ),
+              const OptionsMenuDivider(),
+            ],
             OptionsMenuItem(
               text: l10n.messagesCopy,
-              isFirst: true,
+              isFirst: !canReply,
               isLast: !canDelete,
               onPressed: () => Navigator.pop(sheet, _MessageAction.copy),
             ),
@@ -163,6 +175,8 @@ class _ChatViewState extends State<_ChatView> {
     );
     if (!mounted || action == null) return;
     switch (action) {
+      case _MessageAction.reply:
+        _reply(message);
       case _MessageAction.copy:
         await Clipboard.setData(ClipboardData(text: message.text));
         if (!mounted) return;
@@ -185,6 +199,12 @@ class _ChatViewState extends State<_ChatView> {
               unawaited(controller.deleteMessage(message).then(_report)),
         );
     }
+  }
+
+  /// The next message answers [message]; the keyboard opens for it.
+  void _reply(ChatMessage message) {
+    context.read<ChatController>().replyTo(message);
+    _inputFocus.requestFocus();
   }
 
   void _report(Object? failure) {
@@ -260,16 +280,33 @@ class _ChatViewState extends State<_ChatView> {
               ],
             ),
           ),
-          if (controller.canSend)
+          if (controller.canSend) ...[
+            AnimatedSize(
+              duration: AppMotion.of(context, AppMotion.standard),
+              curve: AppMotion.emphasizedCurve,
+              alignment: Alignment.bottomCenter,
+              child: switch (controller.replyingTo) {
+                final reply? => ReplyBar(
+                  key: ValueKey(reply.id),
+                  name: reply.senderId == controller.myUid
+                      ? context.l10n.capsulesYou
+                      : friendName,
+                  text: reply.text,
+                  onCancel: controller.cancelReply,
+                ),
+                null => const SizedBox(width: double.infinity),
+              },
+            ),
             MessageInput(
               onSend: _send,
+              focusNode: _inputFocus,
               onCapsuleTap: () => AppRoutes.toCamera(
                 context,
                 privacy: CapsulePrivacy.private,
                 recipientId: friendUid,
               ),
-            )
-          else
+            ),
+          ] else
             _BlockedNotice(iBlockedThem: controller.iBlockedThem),
         ],
       ),
@@ -367,16 +404,25 @@ class _ChatViewState extends State<_ChatView> {
                 _DaySeparator(
                   ChatTime.dayLabel(message.sentAt, now, l10n: l10n),
                 ),
-              GestureDetector(
-                onTap: failed ? () => _retry(message.id) : null,
-                onLongPress: () => _showMessageMenu(message),
-                child: MessageBubble(
-                  message: message,
-                  isMine: controller.isMine(message),
-                  showTail: lastOfGroup,
-                  onCapsuleTap: message.isCapsule && capsuleId != null
-                      ? () => _openCapsule(capsuleId)
-                      : null,
+              _SwipeToReply(
+                enabled: controller.canReply(message),
+                onReply: () => _reply(message),
+                child: GestureDetector(
+                  onTap: failed ? () => _retry(message.id) : null,
+                  onLongPress: () => _showMessageMenu(message),
+                  child: MessageBubble(
+                    message: message,
+                    isMine: controller.isMine(message),
+                    showTail: lastOfGroup,
+                    replyName: message.replyTo == null
+                        ? null
+                        : message.replyTo!.senderId == controller.myUid
+                        ? l10n.capsulesYou
+                        : friendName,
+                    onCapsuleTap: message.isCapsule && capsuleId != null
+                        ? () => _openCapsule(capsuleId)
+                        : null,
+                  ),
                 ),
               ),
               if (index == 0 && receipt != null)
@@ -649,4 +695,75 @@ class _BlockedNotice extends StatelessWidget {
   }
 }
 
-enum _MessageAction { copy, delete }
+enum _MessageAction { reply, copy, delete }
+
+/// Drag a message to the right to answer it: it follows the finger, a light
+/// tick says "far enough", and it springs back on release.
+class _SwipeToReply extends StatefulWidget {
+  const _SwipeToReply({
+    required this.enabled,
+    required this.onReply,
+    required this.child,
+  });
+
+  final bool enabled;
+  final VoidCallback onReply;
+  final Widget child;
+
+  @override
+  State<_SwipeToReply> createState() => _SwipeToReplyState();
+}
+
+class _SwipeToReplyState extends State<_SwipeToReply>
+    with SingleTickerProviderStateMixin {
+  static const _threshold = 56.0;
+  static const _max = 72.0;
+
+  late final AnimationController _back = AnimationController(vsync: this)
+    ..addListener(_onBack);
+  double _dx = 0;
+  double _releasedAt = 0;
+  bool _armed = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _back.duration = AppMotion.of(context, AppMotion.fast);
+  }
+
+  @override
+  void dispose() {
+    _back.dispose();
+    super.dispose();
+  }
+
+  void _onBack() => setState(
+    () => _dx = _releasedAt * (1 - AppMotion.exit.transform(_back.value)),
+  );
+
+  void _onUpdate(DragUpdateDetails details) {
+    _back.stop();
+    setState(() => _dx = (_dx + details.delta.dx).clamp(0, _max));
+    final armed = _dx >= _threshold;
+    if (armed && !_armed) unawaited(HapticFeedback.selectionClick());
+    _armed = armed;
+  }
+
+  void _onEnd() {
+    if (_armed) widget.onReply();
+    _armed = false;
+    _releasedAt = _dx;
+    unawaited(_back.forward(from: 0));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!widget.enabled) return widget.child;
+    return GestureDetector(
+      onHorizontalDragUpdate: _onUpdate,
+      onHorizontalDragEnd: (_) => _onEnd(),
+      onHorizontalDragCancel: _onEnd,
+      child: Transform.translate(offset: Offset(_dx, 0), child: widget.child),
+    );
+  }
+}

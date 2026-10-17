@@ -23,12 +23,16 @@ class MessageBubble extends StatelessWidget {
     required this.isMine,
     this.showTail = false,
     this.onCapsuleTap,
+    this.replyName,
   });
 
   final ChatMessage message;
   final bool isMine;
   final bool showTail;
   final VoidCallback? onCapsuleTap;
+
+  /// Whose message [ChatMessage.replyTo] quotes ("You" or the friend).
+  final String? replyName;
 
   static const _radius = Radius.circular(AppRadii.m);
   static const _tail = Radius.circular(6);
@@ -62,6 +66,8 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
+          if (message.replyTo case final reply?)
+            _Quote(name: replyName ?? '', text: reply.text, onGreen: isMine),
           if (message.isCapsule) ...[
             if (imageUrl != null)
               Semantics(
@@ -117,6 +123,86 @@ class MessageBubble extends StatelessWidget {
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Opacity(opacity: failed ? 0.5 : 1, child: bubble),
+    );
+  }
+}
+
+/// The answered message inside a reply: a coloured edge, the name and the
+/// start of its text.
+class _Quote extends StatelessWidget {
+  const _Quote({required this.name, required this.text, required this.onGreen});
+
+  final String name;
+  final String text;
+
+  /// On the user's own (green) bubble: white tones instead of green.
+  final bool onGreen;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final accent = onGreen ? AppColors.onAccent : AppColors.brandGreen;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: onGreen
+              ? AppColors.onAccent.withAlpha(0x2E)
+              : palette.surfaceMuted,
+          borderRadius: BorderRadius.circular(AppRadii.xxs),
+        ),
+        child: IntrinsicHeight(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: 3,
+                decoration: BoxDecoration(
+                  color: accent,
+                  borderRadius: const BorderRadius.horizontal(
+                    left: Radius.circular(AppRadii.xxs),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 10, 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold,
+                          color: accent,
+                        ),
+                      ),
+                      Text(
+                        text,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 13,
+                          color: onGreen
+                              ? AppColors.onMediaMuted
+                              : palette.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

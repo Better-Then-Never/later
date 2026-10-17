@@ -330,6 +330,49 @@ void main() {
       c.dispose();
     });
 
+    test('a reply quotes the message, also after a failed send', () async {
+      await say('bob', 'me', 'Coming tonight?');
+      final c = open();
+      await pumpEventQueue();
+      final question = c.messages.single;
+      expect(c.canReply(question), isTrue);
+
+      c.replyTo(question);
+      expect(c.replyingTo?.text, 'Coming tonight?');
+      c.cancelReply();
+      expect(c.replyingTo, isNull);
+
+      c.replyTo(question);
+      chatRepo.failSends = true;
+      expect(await c.send('Yes'), isNotNull);
+      expect(c.replyingTo, isNull, reason: 'the bar closes once sent');
+      final failed = c.messages.last;
+      expect(failed.replyTo?.id, question.id, reason: 'shown with its quote');
+      expect(c.canReply(failed), isFalse, reason: 'not on the server');
+
+      chatRepo.failSends = false;
+      expect(await c.retry(failed.id), isNull);
+      await pumpEventQueue();
+      final sent = chatRepo.messages[Chat.idBetween('me', 'bob')]!.last;
+      expect(sent.replyTo, MessageReply.of(question));
+      c.dispose();
+    });
+
+    test('a quote keeps the start of a long message', () {
+      final long = ChatMessage(id: 'x', senderId: 'bob', text: '🙂' * 200);
+      final quote = MessageReply.of(long);
+      expect(quote.text.runes.length, MessageReply.maxText + 1);
+      expect(quote.text.endsWith('…'), isTrue);
+      expect(
+        FirestoreMappers.messageReply(
+          FirestoreMappers.newMessageReply(quote),
+        ),
+        quote,
+      );
+      expect(FirestoreMappers.messageReply({'id': 'x'}), isNull);
+      expect(FirestoreMappers.messageReply('x'), isNull);
+    });
+
     test('refuses empty and too long messages', () async {
       final c = open();
       await pumpEventQueue();

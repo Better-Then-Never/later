@@ -504,12 +504,19 @@ class FakeChatRepository implements ChatRepository {
     required String to,
     required String text,
     required String messageId,
+    MessageReply? replyTo,
   }) async {
     calls.add('text:$from->$to:$text');
     _add(
       from,
       to,
-      ChatMessage(id: messageId, senderId: from, text: text, sentAt: now),
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: text,
+        sentAt: now,
+        replyTo: replyTo,
+      ),
     );
   }
 

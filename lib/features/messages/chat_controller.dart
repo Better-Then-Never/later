@@ -54,6 +54,11 @@ class ChatController extends ChangeNotifier {
 
   /// Deleted here, hidden until the server's list no longer has them.
   final Set<String> _deleting = {};
+
+  MessageReply? _replyTo;
+
+  /// The message the next one answers (shown above the composer).
+  MessageReply? get replyingTo => _replyTo;
   bool _loaded = false;
   bool _failed = false;
   bool _loadingOlder = false;
@@ -238,9 +243,29 @@ class ChatController extends ChangeNotifier {
       senderId: me,
       text: trimmed,
       delivery: MessageDelivery.sending,
+      replyTo: _replyTo,
     );
+    _replyTo = null;
     _notify();
     return _deliver(id);
+  }
+
+  /// Whether [message] can be answered: it is on the server and the user
+  /// may write here.
+  bool canReply(ChatMessage message) =>
+      canSend && message.delivery == MessageDelivery.sent;
+
+  /// The next message answers [message].
+  void replyTo(ChatMessage message) {
+    if (!canReply(message)) return;
+    _replyTo = MessageReply.of(message);
+    _notify();
+  }
+
+  void cancelReply() {
+    if (_replyTo == null) return;
+    _replyTo = null;
+    _notify();
   }
 
   /// Sends a failed message again (same id: it cannot arrive twice).
@@ -261,6 +286,7 @@ class ChatController extends ChangeNotifier {
       friendUid,
       pending.text,
       messageId: id,
+      replyTo: pending.replyTo,
     );
     if (_disposed) return failure;
     if (failure == null) return null;

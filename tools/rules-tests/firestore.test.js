@@ -530,6 +530,18 @@ describe('chats', () => {
     await assertFails(updateDoc(chatRef(as('carol')), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob' }));
   });
 
+  test('a reply quotes a message of the chat, briefly', async () => {
+    await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'question?' }));
+    const quote = { id: 'm1', senderId: 'bob', text: 'question?' };
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'answer', replyTo: quote }));
+    // Only participants can be quoted; the quote is short and has no extras.
+    await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: { ...quote, senderId: 'carol' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: { ...quote, text: 'x'.repeat(201) } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: { ...quote, extra: 1 } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: { ...quote, id: '' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: 'm1' }));
+  });
+
   test("sending like main's app (no unread counts) is still allowed", async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob', {}, undefined, { legacy: true }));
     await assertSucceeds(send(as('bob'), 'bob', 'alice', {}, undefined, { legacy: true }));

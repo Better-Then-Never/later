@@ -229,7 +229,24 @@ abstract final class FirestoreMappers {
         type: ChatMessageType.parse(data['type']),
         capsuleId: _nonEmptyString(data['capsuleId']),
         imageUrl: _nonEmptyString(data['imageUrl']),
+        replyTo: messageReply(data['replyTo']),
       );
+
+  /// A quoted message; null when missing or malformed.
+  static MessageReply? messageReply(Object? value) {
+    if (value is! Map) return null;
+    final id = _nonEmptyString(value['id']);
+    final senderId = _nonEmptyString(value['senderId']);
+    final text = value['text'];
+    if (id == null || senderId == null || text is! String) return null;
+    return MessageReply(id: id, senderId: senderId, text: text);
+  }
+
+  static Map<String, Object> newMessageReply(MessageReply reply) => {
+    'id': reply.id,
+    'senderId': reply.senderId,
+    'text': reply.text,
+  };
 
   static bool _bool(Object? value, bool fallback) =>
       value is bool ? value : fallback;

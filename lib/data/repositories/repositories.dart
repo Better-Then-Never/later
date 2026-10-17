@@ -131,12 +131,13 @@ abstract interface class ChatRepository {
 
   /// Sends [text] as message [messageId] from [from] to [to], creating the
   /// chat on first use and counting it as unread for [to]. Sending an id that
-  /// already arrived does nothing.
+  /// already arrived does nothing. [replyTo] quotes the message it answers.
   Future<void> sendText({
     required String from,
     required String to,
     required String text,
     required String messageId,
+    MessageReply? replyTo,
   });
 
   /// Posts [capsule] (already shared with [to]) into the chat.

@@ -576,13 +576,23 @@ service cloud.firestore {
 
         function validMessage(d) {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
-              'type', 'capsuleId', 'imageUrl'])
+              'type', 'capsuleId', 'imageUrl', 'replyTo'])
+            && (!d.keys().hasAny(['replyTo']) || validReply(d.replyTo))
             && d.senderId == me()
             && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
             && isServerTime(d.timestamp)
             && d.status == 'sent'
             && (!d.keys().hasAny(['type']) || d.type == 'text'
               || (d.type == 'capsule' && validCapsuleMessage(d)));
+        }
+
+        // A reply quotes a message of this chat: its id, its sender and a
+        // short piece of its text.
+        function validReply(r) {
+          return r is map && r.keys().hasOnly(['id', 'senderId', 'text'])
+            && r.id is string && r.id.size() > 0 && r.id.size() <= 200
+            && r.senderId in members()
+            && r.text is string && r.text.size() <= 200;
         }
 
         // Only your own capsule, shared with this chat's other participant.

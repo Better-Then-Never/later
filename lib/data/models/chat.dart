@@ -82,6 +82,43 @@ enum MessageDelivery {
   sent,
 }
 
+/// The message a reply quotes: enough to show it without loading it.
+class MessageReply {
+  const MessageReply({
+    required this.id,
+    required this.senderId,
+    required this.text,
+  });
+
+  /// The quote keeps this many characters of the original.
+  static const maxText = 140;
+
+  factory MessageReply.of(ChatMessage message) {
+    final runes = message.text.runes;
+    return MessageReply(
+      id: message.id,
+      senderId: message.senderId,
+      text: runes.length <= maxText
+          ? message.text
+          : '${String.fromCharCodes(runes.take(maxText))}…',
+    );
+  }
+
+  final String id;
+  final String senderId;
+  final String text;
+
+  @override
+  bool operator ==(Object other) =>
+      other is MessageReply &&
+      other.id == id &&
+      other.senderId == senderId &&
+      other.text == text;
+
+  @override
+  int get hashCode => Object.hash(id, senderId, text);
+}
+
 /// One message (`chats/{chatId}/messages/{id}`).
 class ChatMessage {
   const ChatMessage({
@@ -94,11 +131,15 @@ class ChatMessage {
     this.capsuleId,
     this.imageUrl,
     this.delivery = MessageDelivery.sent,
+    this.replyTo,
   });
 
   final String id;
   final String senderId;
   final String text;
+
+  /// The message this one answers, quoted.
+  final MessageReply? replyTo;
 
   /// Null while the server timestamp of a message just sent is pending.
   final DateTime? sentAt;
@@ -130,6 +171,7 @@ class ChatMessage {
     capsuleId: capsuleId,
     imageUrl: imageUrl,
     delivery: value,
+    replyTo: replyTo,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
@@ -145,7 +187,8 @@ class ChatMessage {
       other.type == type &&
       other.capsuleId == capsuleId &&
       other.imageUrl == imageUrl &&
-      other.delivery == delivery;
+      other.delivery == delivery &&
+      other.replyTo == replyTo;
 
   @override
   int get hashCode => Object.hash(id, sentAt, isRead, delivery);
