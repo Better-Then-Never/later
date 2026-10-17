@@ -217,5 +217,18 @@
   "settingsAboutUpdated": "Zaktualizowano opis",
   "settingsAboutTooLong": "Najwyżej {count} znaków",
   "settingsPrivacyFindByName": "Znajdź mnie po imieniu",
-  "settingsPrivacyFindByNameHint": "Można cię wyszukać po imieniu. Po nazwie użytkownika zawsze."
+  "settingsPrivacyFindByNameHint": "Można cię wyszukać po imieniu. Po nazwie użytkownika zawsze.",
+  "settingsSectionDistances": "ODLEGŁOŚCI",
+  "settingsUnitsKilometres": "Kilometry",
+  "settingsUnitsMiles": "Mile",
+  "settingsSectionPhotos": "ZDJĘCIA",
+  "settingsPhotoQualityStandard": "Standardowa (szybsze wysyłanie)",
+  "settingsPhotoQualityHigh": "Wysoka (ostrzejsza, większa)",
+  "settingsSaveToGallery": "Zapisuj zdjęcia kapsuł w galerii",
+  "settingsSaveToGalleryHint": "W folderze Pictures/Later, gdy kapsuła powstanie.",
+  "settingsSignInMethods": "Metody logowania",
+  "settingsSignInEmail": "E-mail i hasło",
+  "settingsDownloadData": "Pobierz moje dane",
+  "settingsDownloadDataHint": "Profil, ustawienia, kapsuły, znajomi i czaty w jednym pliku (zdjęcia jako linki).",
+  "settingsDownloadDataFailed": "Nie udało się przygotować danych"
 }

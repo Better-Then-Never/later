@@ -286,10 +286,14 @@ class CapsuleDraft {
     this.frameDelayMs = Capsule.defaultFrameDelayMs,
     this.placeName,
     this.coAuthors = const [],
+    this.highQuality = false,
   });
 
   /// Friends who made it with the owner (at most [Capsule.maxCoAuthors]).
   final List<String> coAuthors;
+
+  /// The photo goes up larger and sharper (Settings > Map and camera).
+  final bool highQuality;
 
   final String ownerId;
   final String title;
@@ -343,6 +347,7 @@ class CapsuleDraft {
     frameDelayMs: frameDelayMs,
     placeName: placeName,
     coAuthors: coAuthors,
+    highQuality: highQuality,
   );
 
   /// Local files of a loop capsule, in order; [imagePath] is the first.

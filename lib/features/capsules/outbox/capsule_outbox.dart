@@ -268,6 +268,7 @@ class CapsuleOutbox extends ChangeNotifier
       'utcOffsetMinutes': d.utcOffsetMinutes,
       'showAuthor': d.showAuthor,
       if (d.coAuthors.isNotEmpty) 'coAuthors': d.coAuthors,
+      if (d.highQuality) 'highQuality': true,
       'allowComments': d.allowComments,
       'allowReactions': d.allowReactions,
       'locationPrecision': d.locationPrecision.name,
@@ -303,6 +304,7 @@ class CapsuleOutbox extends ChangeNotifier
           for (final uid in (j['coAuthors'] as List?) ?? const [])
             if (uid is String) uid,
         ],
+        highQuality: j['highQuality'] == true,
         allowComments: j['allowComments'] as bool? ?? true,
         allowReactions: j['allowReactions'] as bool? ?? true,
         locationPrecision: LocationPrecision.parse(j['locationPrecision']),

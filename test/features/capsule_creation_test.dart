@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -11,6 +13,8 @@ import 'package:later/features/capsules/creation/capsule_creation_controller.dar
 import 'package:later/features/map/current_location.dart';
 
 import '../fakes/fake_repositories.dart';
+import 'package:flutter/services.dart';
+import 'package:later/data/services/gallery_service.dart';
 
 class _FakeLocation extends LocationService {
   _FakeLocation(this.position);
@@ -35,6 +39,8 @@ class _SlowCapsules extends FakeCapsuleRepository {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   CapsuleCreationController build(
     FakeCapsuleRepository repo, {
     GeoPosition? known,
@@ -109,6 +115,41 @@ void main() {
     expect(draft.utcOffsetMinutes, taken.timeZoneOffset.inMinutes);
     c.dispose();
   });
+
+  test(
+    'high quality reaches the draft; the photo goes to the gallery',
+    () async {
+      final dir = await Directory.systemTemp.createTemp('later_gallery_test');
+      addTearDown(() => dir.delete(recursive: true));
+      final photo = File('${dir.path}/photo.jpg')..writeAsBytesSync([1, 2, 3]);
+      final saved = <String>[];
+      const channel = MethodChannel('test/gallery');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            final path = (call.arguments as Map)['path'] as String;
+            // Still there: the gallery copy comes before the clean-up.
+            if (File(path).existsSync()) saved.add(path);
+            return true;
+          });
+      final repo = FakeCapsuleRepository();
+      final c = CapsuleCreationController(
+        ownerId: 'me',
+        imagePath: photo.path,
+        capsules: repo,
+        location: _FakeLocation(null),
+        currentLocation: CurrentLocation()..update(const GeoPosition(1, 2)),
+        highQuality: true,
+        saveToGallery: true,
+        gallery: GalleryService(channel: channel),
+      );
+      expect(await c.save(), isNull);
+      expect(repo.created.single.highQuality, isTrue);
+      await pumpEventQueue();
+      expect(saved, [photo.path]);
+      expect(photo.existsSync(), isFalse, reason: 'temp photo deleted after');
+      c.dispose();
+    },
+  );
 
   test('co-authors reach the draft, five at most', () async {
     final repo = FakeCapsuleRepository();

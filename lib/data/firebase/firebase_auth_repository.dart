@@ -122,6 +122,13 @@ class FirebaseAuthRepository implements AuthRepository {
       ) ??
       false;
 
+  @override
+  bool get hasGoogle =>
+      _auth.currentUser?.providerData.any(
+        (p) => p.providerId == GoogleAuthProvider.PROVIDER_ID,
+      ) ??
+      false;
+
   User get _user {
     final user = _auth.currentUser;
     if (user == null) throw AuthFailure(AppL10n.current.authSignInAgain);

@@ -217,5 +217,18 @@
   "settingsAboutUpdated": "„Über mich“ aktualisiert",
   "settingsAboutTooLong": "Höchstens {count} Zeichen",
   "settingsPrivacyFindByName": "Per Name auffindbar",
-  "settingsPrivacyFindByNameHint": "Man kann nach deinem Namen suchen. Nach dem Benutzernamen immer."
+  "settingsPrivacyFindByNameHint": "Man kann nach deinem Namen suchen. Nach dem Benutzernamen immer.",
+  "settingsSectionDistances": "ENTFERNUNGEN",
+  "settingsUnitsKilometres": "Kilometer",
+  "settingsUnitsMiles": "Meilen",
+  "settingsSectionPhotos": "FOTOS",
+  "settingsPhotoQualityStandard": "Standard (schneller gesendet)",
+  "settingsPhotoQualityHigh": "Hoch (schärfer, größer)",
+  "settingsSaveToGallery": "Kapselfotos in der Galerie speichern",
+  "settingsSaveToGalleryHint": "In Pictures/Later, sobald die Kapsel erstellt ist.",
+  "settingsSignInMethods": "Anmeldemethoden",
+  "settingsSignInEmail": "E-Mail und Passwort",
+  "settingsDownloadData": "Meine Daten herunterladen",
+  "settingsDownloadDataHint": "Profil, Einstellungen, Kapseln, Freunde und Chats als eine Datei (Fotos als Links).",
+  "settingsDownloadDataFailed": "Daten konnten nicht vorbereitet werden"
 }

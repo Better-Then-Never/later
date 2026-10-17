@@ -85,14 +85,21 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   final List<String> _frames = [];
   _CameraError? _error;
 
+  /// 720p, or 1080p for high-quality photos (they go up at up to 2560 px).
+  ResolutionPreset _preset = ResolutionPreset.high;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // The camera chosen in Settings > Map and camera.
-    if (context.read<DeviceSettingsStore>().startCamera == StartCamera.front) {
+    // The camera and the photo size chosen in Settings > Map and camera.
+    final device = context.read<DeviceSettingsStore>();
+    if (device.startCamera == StartCamera.front) {
       _lens = CameraLensDirection.front;
     }
+    _preset = device.photoQuality == PhotoQuality.high
+        ? ResolutionPreset.veryHigh
+        : ResolutionPreset.high;
     unawaited(_setup());
   }
 
@@ -160,7 +167,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     if (_cameras.isEmpty) return;
     final controller = CameraController(
       _cameraFor(_lens),
-      ResolutionPreset.high,
+      _preset,
       enableAudio: false,
     );
     final old = _controller;

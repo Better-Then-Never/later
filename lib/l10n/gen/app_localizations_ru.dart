@@ -1126,6 +1126,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String historyDistanceFromYouMiles(String distance) {
+    return '$distance миль от вас';
+  }
+
+  @override
   String get historyDistanceUnknown => 'Расстояние неизвестно';
 
   @override
@@ -2384,6 +2389,16 @@ class AppLocalizationsRu extends AppLocalizations {
       'Как Later выглядит и работает на этом телефоне';
 
   @override
+  String get settingsDownloadData => 'Скачать мои данные';
+
+  @override
+  String get settingsDownloadDataFailed => 'Не удалось собрать данные';
+
+  @override
+  String get settingsDownloadDataHint =>
+      'Профиль, настройки, капсулы, друзья и чаты в одном файле (фото — ссылками).';
+
+  @override
   String get settingsEmail => 'Электронная почта';
 
   @override
@@ -2801,6 +2816,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'К чему у Later есть доступ на этом телефоне';
 
   @override
+  String get settingsPhotoQualityHigh => 'Высокое (чётче, тяжелее)';
+
+  @override
+  String get settingsPhotoQualityStandard => 'Обычное (отправка быстрее)';
+
+  @override
   String get settingsPrivacy => 'Приватность';
 
   @override
@@ -2859,6 +2880,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsQuietUntil => 'Тишина до';
 
   @override
+  String get settingsSaveToGallery => 'Сохранять фото капсул в галерею';
+
+  @override
+  String get settingsSaveToGalleryHint =>
+      'В папку Pictures/Later, когда капсула создана.';
+
+  @override
   String get settingsSectionAccount => 'МОЙ АККАУНТ';
 
   @override
@@ -2866,6 +2894,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionContact => 'СВЯЗЬ С НАМИ';
+
+  @override
+  String get settingsSectionDistances => 'РАССТОЯНИЯ';
 
   @override
   String get settingsSectionHow => 'КАК';
@@ -2884,6 +2915,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionNotifyAbout => 'О ЧЁМ УВЕДОМЛЯТЬ';
+
+  @override
+  String get settingsSectionPhotos => 'ФОТО';
 
   @override
   String get settingsSectionQuestions => 'ВОПРОСЫ';
@@ -2905,6 +2939,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionVisibility => 'ЧТО ВИДЯТ ДРУГИЕ';
+
+  @override
+  String get settingsSignInEmail => 'Почта и пароль';
+
+  @override
+  String get settingsSignInMethods => 'Способы входа';
 
   @override
   String get settingsSignedInWithGoogle => 'Вход через Google';
@@ -2981,6 +3021,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsUnblocking => 'Разблокируем...';
+
+  @override
+  String get settingsUnitsKilometres => 'Километры';
+
+  @override
+  String get settingsUnitsMiles => 'Мили';
 
   @override
   String get settingsUsername => 'Имя пользователя';

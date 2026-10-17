@@ -1119,6 +1119,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String historyDistanceFromYouMiles(String distance) {
+    return '$distance Meilen von dir';
+  }
+
+  @override
   String get historyDistanceUnknown => 'Entfernung unbekannt';
 
   @override
@@ -2343,6 +2348,17 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wie Later auf diesem Handy aussieht und funktioniert';
 
   @override
+  String get settingsDownloadData => 'Meine Daten herunterladen';
+
+  @override
+  String get settingsDownloadDataFailed =>
+      'Daten konnten nicht vorbereitet werden';
+
+  @override
+  String get settingsDownloadDataHint =>
+      'Profil, Einstellungen, Kapseln, Freunde und Chats als eine Datei (Fotos als Links).';
+
+  @override
   String get settingsEmail => 'E-Mail';
 
   @override
@@ -2767,6 +2783,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Was Later auf diesem Handy nutzen darf';
 
   @override
+  String get settingsPhotoQualityHigh => 'Hoch (schärfer, größer)';
+
+  @override
+  String get settingsPhotoQualityStandard => 'Standard (schneller gesendet)';
+
+  @override
   String get settingsPrivacy => 'Datenschutz';
 
   @override
@@ -2825,6 +2847,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsQuietUntil => 'Ruhe bis';
 
   @override
+  String get settingsSaveToGallery => 'Kapselfotos in der Galerie speichern';
+
+  @override
+  String get settingsSaveToGalleryHint =>
+      'In Pictures/Later, sobald die Kapsel erstellt ist.';
+
+  @override
   String get settingsSectionAccount => 'MEIN KONTO';
 
   @override
@@ -2832,6 +2861,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSectionContact => 'KONTAKT';
+
+  @override
+  String get settingsSectionDistances => 'ENTFERNUNGEN';
 
   @override
   String get settingsSectionHow => 'WIE';
@@ -2853,6 +2885,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsSectionNotifyAbout => 'BENACHRICHTIGEN BEI';
 
   @override
+  String get settingsSectionPhotos => 'FOTOS';
+
+  @override
   String get settingsSectionQuestions => 'FRAGEN';
 
   @override
@@ -2872,6 +2907,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSectionVisibility => 'WAS ANDERE SEHEN';
+
+  @override
+  String get settingsSignInEmail => 'E-Mail und Passwort';
+
+  @override
+  String get settingsSignInMethods => 'Anmeldemethoden';
 
   @override
   String get settingsSignedInWithGoogle => 'Angemeldet mit Google';
@@ -2948,6 +2989,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsUnblocking => 'Wird aufgehoben...';
+
+  @override
+  String get settingsUnitsKilometres => 'Kilometer';
+
+  @override
+  String get settingsUnitsMiles => 'Meilen';
 
   @override
   String get settingsUsername => 'Benutzername';

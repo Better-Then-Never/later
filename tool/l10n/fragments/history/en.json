@@ -225,5 +225,15 @@
   "historyEmptySubtitle": "Take a photo, leave it at a place and choose when it opens.",
   "historyCreateFirst": "Create a capsule",
   "historyNoMatchesSubtitle": "Try another word, or reset the filters.",
-  "historyLoadError": "Your capsules could not be loaded"
+  "historyLoadError": "Your capsules could not be loaded",
+  "historyDistanceFromYouMiles": "{distance} mi from you",
+  "@historyDistanceFromYouMiles": {
+    "description": "Distance to a capsule in miles (Settings > Map and camera > Distances).",
+    "placeholders": {
+      "distance": {
+        "type": "String",
+        "example": "3.4"
+      }
+    }
+  }
 }

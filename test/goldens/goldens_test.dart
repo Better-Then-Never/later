@@ -26,6 +26,9 @@ import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
 import 'package:later/core/l10n/l10n.dart';
+import 'package:later/features/settings/device_settings_store.dart';
+import 'package:later/data/services/preferences_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _loadFont(String family, List<String> paths) async {
   final loader = FontLoader(family);
@@ -83,6 +86,9 @@ Widget _app(Widget child) => MultiProvider(
     ChangeNotifierProvider(
       create: (_) => ProfileImageCache(FakeImageStorageRepository()),
     ),
+    ChangeNotifierProvider(
+      create: (_) => DeviceSettingsStore(PreferencesStore()),
+    ),
   ],
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -103,6 +109,7 @@ Widget _app(Widget child) => MultiProvider(
 
 void main() {
   setUpAll(_loadFonts);
+  setUp(() => SharedPreferences.setMockInitialValues({}));
 
   Future<void> phone(WidgetTester tester) async {
     tester.view

@@ -50,5 +50,6 @@
   "historyEmptySubtitle": "Сделайте фото, оставьте его в месте и выберите, когда оно откроется.",
   "historyCreateFirst": "Создать капсулу",
   "historyNoMatchesSubtitle": "Попробуйте другое слово или сбросьте фильтры.",
-  "historyLoadError": "Не удалось загрузить ваши капсулы"
+  "historyLoadError": "Не удалось загрузить ваши капсулы",
+  "historyDistanceFromYouMiles": "{distance} миль от вас"
 }

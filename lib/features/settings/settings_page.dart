@@ -95,6 +95,16 @@ class SettingsPage extends StatelessWidget {
               navigateTo: const PasswordSettingsPage(),
             ),
             OptionsSettingsRow(
+              title: l10n.settingsSignInMethods,
+              subtitle: _value(
+                [
+                  if (hasPassword) l10n.settingsSignInEmail,
+                  if (context.read<AuthRepository>().hasGoogle) 'Google',
+                ].join(' · '),
+              ),
+              trailing: const SizedBox.shrink(),
+            ),
+            OptionsSettingsRow(
               title: l10n.settingsCustomizeProfile,
               withDivider: false,
               navigateTo: const ProfileCustomizationSettingsPage(),

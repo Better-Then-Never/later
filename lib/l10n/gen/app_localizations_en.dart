@@ -1093,6 +1093,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String historyDistanceFromYouMiles(String distance) {
+    return '$distance mi from you';
+  }
+
+  @override
   String get historyDistanceUnknown => 'Distance unknown';
 
   @override
@@ -2302,6 +2307,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'How Later looks and works on this phone';
 
   @override
+  String get settingsDownloadData => 'Download my data';
+
+  @override
+  String get settingsDownloadDataFailed => 'Could not prepare your data';
+
+  @override
+  String get settingsDownloadDataHint =>
+      'Your profile, settings, capsules, friends and chats as one file (photos as links).';
+
+  @override
   String get settingsEmail => 'Email';
 
   @override
@@ -2715,6 +2730,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'What Later may use on this phone';
 
   @override
+  String get settingsPhotoQualityHigh => 'High (sharper, larger)';
+
+  @override
+  String get settingsPhotoQualityStandard => 'Standard (sent faster)';
+
+  @override
   String get settingsPrivacy => 'Privacy';
 
   @override
@@ -2773,6 +2794,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsQuietUntil => 'Quiet until';
 
   @override
+  String get settingsSaveToGallery => 'Save capsule photos to the gallery';
+
+  @override
+  String get settingsSaveToGalleryHint =>
+      'In Pictures/Later, once the capsule is made.';
+
+  @override
   String get settingsSectionAccount => 'MY ACCOUNT';
 
   @override
@@ -2780,6 +2808,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSectionContact => 'CONTACT';
+
+  @override
+  String get settingsSectionDistances => 'DISTANCES';
 
   @override
   String get settingsSectionHow => 'HOW';
@@ -2798,6 +2829,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSectionNotifyAbout => 'NOTIFY ME ABOUT';
+
+  @override
+  String get settingsSectionPhotos => 'PHOTOS';
 
   @override
   String get settingsSectionQuestions => 'QUESTIONS';
@@ -2819,6 +2853,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSectionVisibility => 'WHAT OTHERS SEE';
+
+  @override
+  String get settingsSignInEmail => 'Email and password';
+
+  @override
+  String get settingsSignInMethods => 'Sign-in methods';
 
   @override
   String get settingsSignedInWithGoogle => 'Signed in with Google';
@@ -2894,6 +2934,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsUnblocking => 'Unblocking...';
+
+  @override
+  String get settingsUnitsKilometres => 'Kilometres';
+
+  @override
+  String get settingsUnitsMiles => 'Miles';
 
   @override
   String get settingsUsername => 'Username';

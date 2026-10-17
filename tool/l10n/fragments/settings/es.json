@@ -217,5 +217,18 @@
   "settingsAboutUpdated": "Se actualizó «Sobre mí»",
   "settingsAboutTooLong": "Como máximo {count} caracteres",
   "settingsPrivacyFindByName": "Encontrarme por nombre",
-  "settingsPrivacyFindByNameHint": "Pueden buscar tu nombre. Por nombre de usuario, siempre."
+  "settingsPrivacyFindByNameHint": "Pueden buscar tu nombre. Por nombre de usuario, siempre.",
+  "settingsSectionDistances": "DISTANCIAS",
+  "settingsUnitsKilometres": "Kilómetros",
+  "settingsUnitsMiles": "Millas",
+  "settingsSectionPhotos": "FOTOS",
+  "settingsPhotoQualityStandard": "Estándar (se envía más rápido)",
+  "settingsPhotoQualityHigh": "Alta (más nítida, más pesada)",
+  "settingsSaveToGallery": "Guardar las fotos de las cápsulas en la galería",
+  "settingsSaveToGalleryHint": "En Pictures/Later, una vez creada la cápsula.",
+  "settingsSignInMethods": "Métodos de inicio de sesión",
+  "settingsSignInEmail": "Correo y contraseña",
+  "settingsDownloadData": "Descargar mis datos",
+  "settingsDownloadDataHint": "Tu perfil, ajustes, cápsulas, amigos y chats en un archivo (fotos como enlaces).",
+  "settingsDownloadDataFailed": "No se pudieron preparar tus datos"
 }

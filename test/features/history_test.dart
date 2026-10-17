@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
 import '../helpers/test_app.dart';
+import 'package:later/features/settings/device_settings_store.dart';
+import 'package:later/data/services/preferences_store.dart';
 
 Capsule _c(
   String id, {
@@ -263,6 +265,9 @@ void main() {
         MultiProvider(
           providers: [
             Provider(create: (_) => GeocodingService()),
+            ChangeNotifierProvider(
+              create: (_) => DeviceSettingsStore(PreferencesStore()),
+            ),
             ChangeNotifierProvider(create: (_) => CurrentLocation()),
           ],
           child: testApp(
@@ -298,6 +303,9 @@ void main() {
       MultiProvider(
         providers: [
           Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
           ChangeNotifierProvider(
             create: (_) => CurrentLocation()..update(const GeoPosition(0, 0)),
           ),
@@ -377,6 +385,9 @@ void main() {
           ChangeNotifierProvider(create: (_) => CurrentLocation()),
           ChangeNotifierProvider(create: (_) => MapFocus()),
           Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
         ],
         child: testApp(home: const Scaffold(body: HistoryPage())),
       ),

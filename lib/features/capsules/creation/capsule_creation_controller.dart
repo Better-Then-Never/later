@@ -10,6 +10,7 @@ import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../../data/services/gallery_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../map/current_location.dart';
 import '../outbox/capsule_outbox.dart';
@@ -36,8 +37,12 @@ class CapsuleCreationController extends ChangeNotifier {
     DateTime? capturedAt,
     CapsuleOutbox? outbox,
     this.uploadTimeout = const Duration(seconds: 20),
+    this.highQuality = false,
+    this.saveToGallery = false,
+    GalleryService? gallery,
   }) : assert(recipientId == null || chats != null),
        _outbox = outbox,
+       _gallery = gallery,
        _precision = locationPrecision,
        capturedAt = capturedAt ?? DateTime.now(),
        _capsules = capsules,
@@ -67,6 +72,14 @@ class CapsuleCreationController extends ChangeNotifier {
 
   /// How long an upload may take before the capsule goes to the outbox.
   final Duration uploadTimeout;
+
+  /// The photo goes up larger (Settings > Map and camera).
+  final bool highQuality;
+
+  /// The photo also goes to the phone's gallery once the capsule is made
+  /// (or kept for later): the phone's own copy is deleted afterwards.
+  final bool saveToGallery;
+  final GalleryService? _gallery;
 
   /// Fixed before the first attempt, so a retry (here or from the outbox)
   /// writes the same capsule.
@@ -234,6 +247,7 @@ class CapsuleCreationController extends ChangeNotifier {
         allowReactions: _allowReactions,
         showAuthor: _showAuthor,
         coAuthors: _coAuthors,
+        highQuality: highQuality,
         imagePath: imagePath,
         framePaths: framePaths,
         openAt: _openAt,
@@ -258,7 +272,7 @@ class CapsuleCreationController extends ChangeNotifier {
         AppLogger.info('No connection: capsule $_id kept for later');
         await outbox.enqueue(draft);
         _queued = true;
-        unawaited(_deleteTempPhoto());
+        unawaited(_keepInGallery().whenComplete(_deleteTempPhoto));
         return null;
       }
       final to = recipientId;
@@ -277,7 +291,7 @@ class CapsuleCreationController extends ChangeNotifier {
           );
         }
       }
-      unawaited(_deleteTempPhoto());
+      unawaited(_keepInGallery().whenComplete(_deleteTempPhoto));
       return null;
     } catch (e, st) {
       AppLogger.error('Saving the capsule failed', error: e, stackTrace: st);
@@ -289,6 +303,14 @@ class CapsuleCreationController extends ChangeNotifier {
       _saving = false;
       if (!_disposed) notifyListeners();
     }
+  }
+
+  /// The photo into the gallery when the user wants it, before the phone's
+  /// own copy is deleted (a waiting capsule's outbox has its own copy).
+  Future<void> _keepInGallery() async {
+    final gallery = _gallery;
+    if (!saveToGallery || gallery == null) return;
+    await gallery.save(imagePath, name: 'Later_$_id');
   }
 
   Future<void> _deleteTempPhoto() async {

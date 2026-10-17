@@ -42,6 +42,9 @@ abstract interface class AuthRepository {
   /// accounts confirm their identity with Google instead.
   bool get hasPassword;
 
+  /// The account can also sign in with Google.
+  bool get hasGoogle;
+
   /// Confirms the signed-in user's identity right before a sensitive change
   /// (Firebase requires a recent sign-in): with [password] for email
   /// accounts, with the Google account picker otherwise. Returns false when

@@ -89,6 +89,9 @@ class FakeAuthRepository implements AuthRepository {
   @override
   bool hasPassword = true;
 
+  @override
+  bool hasGoogle = false;
+
   /// What the Google picker does on re-authentication: null = cancelled.
   bool? googleReauth = true;
 

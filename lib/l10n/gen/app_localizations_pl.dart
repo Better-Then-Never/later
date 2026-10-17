@@ -1134,6 +1134,11 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String historyDistanceFromYouMiles(String distance) {
+    return '$distance mil od ciebie';
+  }
+
+  @override
   String get historyDistanceUnknown => 'Odległość nieznana';
 
   @override
@@ -2386,6 +2391,16 @@ class AppLocalizationsPl extends AppLocalizations {
       'Jak Later wygląda i działa na tym telefonie';
 
   @override
+  String get settingsDownloadData => 'Pobierz moje dane';
+
+  @override
+  String get settingsDownloadDataFailed => 'Nie udało się przygotować danych';
+
+  @override
+  String get settingsDownloadDataHint =>
+      'Profil, ustawienia, kapsuły, znajomi i czaty w jednym pliku (zdjęcia jako linki).';
+
+  @override
   String get settingsEmail => 'E-mail';
 
   @override
@@ -2806,6 +2821,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Z czego Later może korzystać na tym telefonie';
 
   @override
+  String get settingsPhotoQualityHigh => 'Wysoka (ostrzejsza, większa)';
+
+  @override
+  String get settingsPhotoQualityStandard => 'Standardowa (szybsze wysyłanie)';
+
+  @override
   String get settingsPrivacy => 'Prywatność';
 
   @override
@@ -2864,6 +2885,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsQuietUntil => 'Cisza do';
 
   @override
+  String get settingsSaveToGallery => 'Zapisuj zdjęcia kapsuł w galerii';
+
+  @override
+  String get settingsSaveToGalleryHint =>
+      'W folderze Pictures/Later, gdy kapsuła powstanie.';
+
+  @override
   String get settingsSectionAccount => 'MOJE KONTO';
 
   @override
@@ -2871,6 +2899,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsSectionContact => 'KONTAKT';
+
+  @override
+  String get settingsSectionDistances => 'ODLEGŁOŚCI';
 
   @override
   String get settingsSectionHow => 'JAK';
@@ -2892,6 +2923,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsSectionNotifyAbout => 'O CZYM POWIADAMIAĆ';
 
   @override
+  String get settingsSectionPhotos => 'ZDJĘCIA';
+
+  @override
   String get settingsSectionQuestions => 'PYTANIA';
 
   @override
@@ -2911,6 +2945,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsSectionVisibility => 'CO WIDZĄ INNI';
+
+  @override
+  String get settingsSignInEmail => 'E-mail i hasło';
+
+  @override
+  String get settingsSignInMethods => 'Metody logowania';
 
   @override
   String get settingsSignedInWithGoogle => 'Logowanie przez Google';
@@ -2987,6 +3027,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsUnblocking => 'Odblokowywanie...';
+
+  @override
+  String get settingsUnitsKilometres => 'Kilometry';
+
+  @override
+  String get settingsUnitsMiles => 'Mile';
 
   @override
   String get settingsUsername => 'Nazwa użytkownika';

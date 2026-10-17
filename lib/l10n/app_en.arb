@@ -934,6 +934,16 @@
       }
     }
   },
+  "historyDistanceFromYouMiles": "{distance} mi from you",
+  "@historyDistanceFromYouMiles": {
+    "description": "Distance to a capsule in miles (Settings > Map and camera > Distances).",
+    "placeholders": {
+      "distance": {
+        "type": "String",
+        "example": "3.4"
+      }
+    }
+  },
   "historyDistanceUnknown": "Distance unknown",
   "@historyDistanceUnknown": {
     "description": "Distance row when the capsule or the user has no location."
@@ -2186,6 +2196,18 @@
     "description": "Name shown for a blocked user whose account no longer exists."
   },
   "settingsDeviceDescription": "How Later looks and works on this phone",
+  "settingsDownloadData": "Download my data",
+  "@settingsDownloadData": {
+    "description": "Data and storage row: export the user's data as a file."
+  },
+  "settingsDownloadDataFailed": "Could not prepare your data",
+  "@settingsDownloadDataFailed": {
+    "description": "Error when the data export could not be made."
+  },
+  "settingsDownloadDataHint": "Your profile, settings, capsules, friends and chats as one file (photos as links).",
+  "@settingsDownloadDataHint": {
+    "description": "Explains what the data export contains."
+  },
   "settingsEmail": "Email",
   "settingsEmailDescription": "You sign in to Later with {email}",
   "@settingsEmailDescription": {
@@ -2407,6 +2429,14 @@
   "settingsPermissionRevokeBody": "To revoke this permission, you need to go to your device settings. This will disable the related features in the app.",
   "settingsPermissionRevokeTitle": "Revoke Permission",
   "settingsPermissionsDescription": "What Later may use on this phone",
+  "settingsPhotoQualityHigh": "High (sharper, larger)",
+  "@settingsPhotoQualityHigh": {
+    "description": "Photo quality choice: 2560 px, sharper and larger."
+  },
+  "settingsPhotoQualityStandard": "Standard (sent faster)",
+  "@settingsPhotoQualityStandard": {
+    "description": "Photo quality choice: 1600 px, quicker to upload."
+  },
   "settingsPrivacy": "Privacy",
   "settingsPrivacyAchievements": "Show my achievements",
   "settingsPrivacyAchievementsHint": "Friends see them on your profile",
@@ -2442,12 +2472,24 @@
   "@settingsQuietUntil": {
     "description": "Title of the time picker for the end of quiet hours."
   },
+  "settingsSaveToGallery": "Save capsule photos to the gallery",
+  "@settingsSaveToGallery": {
+    "description": "Switch: also save capsule photos to the phone gallery (Android)."
+  },
+  "settingsSaveToGalleryHint": "In Pictures/Later, once the capsule is made.",
+  "@settingsSaveToGalleryHint": {
+    "description": "Explains where the gallery copy goes (folder names stay in English: Android shows them so)."
+  },
   "settingsSectionAccount": "MY ACCOUNT",
   "@settingsSectionAccount": {
     "description": "Upper-case label above a card of rows on the Settings page."
   },
   "settingsSectionCamera": "CAMERA",
   "settingsSectionContact": "CONTACT",
+  "settingsSectionDistances": "DISTANCES",
+  "@settingsSectionDistances": {
+    "description": "Settings section: the unit distances are shown in."
+  },
   "settingsSectionHow": "HOW",
   "@settingsSectionHow": {
     "description": "Label above the switches that shape how pushes look and sound."
@@ -2460,6 +2502,10 @@
   "@settingsSectionNotifyAbout": {
     "description": "Label above the switches Messages / New followers / New capsules."
   },
+  "settingsSectionPhotos": "PHOTOS",
+  "@settingsSectionPhotos": {
+    "description": "Settings section: how capsule photos are sent and kept."
+  },
   "settingsSectionQuestions": "QUESTIONS",
   "settingsSectionQuietHours": "QUIET HOURS",
   "settingsSectionSize": "SIZE",
@@ -2467,6 +2513,14 @@
   "settingsSectionTheme": "THEME",
   "settingsSectionThisPhone": "THIS PHONE",
   "settingsSectionVisibility": "WHAT OTHERS SEE",
+  "settingsSignInEmail": "Email and password",
+  "@settingsSignInEmail": {
+    "description": "Sign-in method: email address and password."
+  },
+  "settingsSignInMethods": "Sign-in methods",
+  "@settingsSignInMethods": {
+    "description": "Account row: how the user can sign in (email, Google)."
+  },
   "settingsSignedInWithGoogle": "Signed in with Google",
   "@settingsSignedInWithGoogle": {
     "description": "Under the Password row for accounts that sign in with Google only."
@@ -2516,6 +2570,14 @@
   "settingsTitle": "Settings",
   "settingsUnblock": "Unblock",
   "settingsUnblocking": "Unblocking...",
+  "settingsUnitsKilometres": "Kilometres",
+  "@settingsUnitsKilometres": {
+    "description": "Distance unit choice."
+  },
+  "settingsUnitsMiles": "Miles",
+  "@settingsUnitsMiles": {
+    "description": "Distance unit choice."
+  },
   "settingsUsername": "Username",
   "settingsUsernameDescription": "This is how your friends find and add you on Later",
   "settingsUsernameHint": "Enter new username",

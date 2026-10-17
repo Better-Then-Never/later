@@ -1868,6 +1868,12 @@ abstract class AppLocalizations {
   /// **'{distance} km from you'**
   String historyDistanceFromYou(String distance);
 
+  /// Distance to a capsule in miles (Settings > Map and camera > Distances).
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} mi from you'**
+  String historyDistanceFromYouMiles(String distance);
+
   /// Distance row when the capsule or the user has no location.
   ///
   /// In en, this message translates to:
@@ -3806,6 +3812,24 @@ abstract class AppLocalizations {
   /// **'How Later looks and works on this phone'**
   String get settingsDeviceDescription;
 
+  /// Data and storage row: export the user's data as a file.
+  ///
+  /// In en, this message translates to:
+  /// **'Download my data'**
+  String get settingsDownloadData;
+
+  /// Error when the data export could not be made.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not prepare your data'**
+  String get settingsDownloadDataFailed;
+
+  /// Explains what the data export contains.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile, settings, capsules, friends and chats as one file (photos as links).'**
+  String get settingsDownloadDataHint;
+
   /// No description provided for @settingsEmail.
   ///
   /// In en, this message translates to:
@@ -4508,6 +4532,18 @@ abstract class AppLocalizations {
   /// **'What Later may use on this phone'**
   String get settingsPermissionsDescription;
 
+  /// Photo quality choice: 2560 px, sharper and larger.
+  ///
+  /// In en, this message translates to:
+  /// **'High (sharper, larger)'**
+  String get settingsPhotoQualityHigh;
+
+  /// Photo quality choice: 1600 px, quicker to upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard (sent faster)'**
+  String get settingsPhotoQualityStandard;
+
   /// No description provided for @settingsPrivacy.
   ///
   /// In en, this message translates to:
@@ -4610,6 +4646,18 @@ abstract class AppLocalizations {
   /// **'Quiet until'**
   String get settingsQuietUntil;
 
+  /// Switch: also save capsule photos to the phone gallery (Android).
+  ///
+  /// In en, this message translates to:
+  /// **'Save capsule photos to the gallery'**
+  String get settingsSaveToGallery;
+
+  /// Explains where the gallery copy goes (folder names stay in English: Android shows them so).
+  ///
+  /// In en, this message translates to:
+  /// **'In Pictures/Later, once the capsule is made.'**
+  String get settingsSaveToGalleryHint;
+
   /// Upper-case label above a card of rows on the Settings page.
   ///
   /// In en, this message translates to:
@@ -4627,6 +4675,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CONTACT'**
   String get settingsSectionContact;
+
+  /// Settings section: the unit distances are shown in.
+  ///
+  /// In en, this message translates to:
+  /// **'DISTANCES'**
+  String get settingsSectionDistances;
 
   /// Label above the switches that shape how pushes look and sound.
   ///
@@ -4663,6 +4717,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'NOTIFY ME ABOUT'**
   String get settingsSectionNotifyAbout;
+
+  /// Settings section: how capsule photos are sent and kept.
+  ///
+  /// In en, this message translates to:
+  /// **'PHOTOS'**
+  String get settingsSectionPhotos;
 
   /// No description provided for @settingsSectionQuestions.
   ///
@@ -4705,6 +4765,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'WHAT OTHERS SEE'**
   String get settingsSectionVisibility;
+
+  /// Sign-in method: email address and password.
+  ///
+  /// In en, this message translates to:
+  /// **'Email and password'**
+  String get settingsSignInEmail;
+
+  /// Account row: how the user can sign in (email, Google).
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in methods'**
+  String get settingsSignInMethods;
 
   /// Under the Password row for accounts that sign in with Google only.
   ///
@@ -4837,6 +4909,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unblocking...'**
   String get settingsUnblocking;
+
+  /// Distance unit choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Kilometres'**
+  String get settingsUnitsKilometres;
+
+  /// Distance unit choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Miles'**
+  String get settingsUnitsMiles;
 
   /// No description provided for @settingsUsername.
   ///

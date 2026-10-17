@@ -217,5 +217,18 @@
   "settingsAboutUpdated": "Раздел «О себе» обновлён",
   "settingsAboutTooLong": "Не больше {count} символов",
   "settingsPrivacyFindByName": "Искать меня по имени",
-  "settingsPrivacyFindByNameHint": "Вас можно найти поиском по имени. По имени пользователя — всегда."
+  "settingsPrivacyFindByNameHint": "Вас можно найти поиском по имени. По имени пользователя — всегда.",
+  "settingsSectionDistances": "РАССТОЯНИЯ",
+  "settingsUnitsKilometres": "Километры",
+  "settingsUnitsMiles": "Мили",
+  "settingsSectionPhotos": "ФОТО",
+  "settingsPhotoQualityStandard": "Обычное (отправка быстрее)",
+  "settingsPhotoQualityHigh": "Высокое (чётче, тяжелее)",
+  "settingsSaveToGallery": "Сохранять фото капсул в галерею",
+  "settingsSaveToGalleryHint": "В папку Pictures/Later, когда капсула создана.",
+  "settingsSignInMethods": "Способы входа",
+  "settingsSignInEmail": "Почта и пароль",
+  "settingsDownloadData": "Скачать мои данные",
+  "settingsDownloadDataHint": "Профиль, настройки, капсулы, друзья и чаты в одном файле (фото — ссылками).",
+  "settingsDownloadDataFailed": "Не удалось собрать данные"
 }

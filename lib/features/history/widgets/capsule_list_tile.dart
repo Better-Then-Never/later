@@ -22,6 +22,7 @@ import '../../../shared/widgets/profile_page_divider.dart';
 import '../capsule_labels.dart';
 import '../history_controller.dart';
 import '../../../core/l10n/app_dates.dart';
+import '../../settings/device_settings_store.dart';
 
 /// One capsule in the History list.
 ///
@@ -433,16 +434,27 @@ class _Distance extends StatelessWidget {
     );
     final meters = HistoryController.distanceMeters(here, capsule.location);
     final l10n = context.l10n;
+    final miles =
+        context.select<DeviceSettingsStore, DistanceUnit>(
+          (s) => s.distanceUnit,
+        ) ==
+        DistanceUnit.miles;
+    if (meters == null) return _ellipsized(l10n.historyDistanceUnknown);
+    // One decimal with the language's separator ("12.3", "12,3").
+    final number = NumberFormat(
+      '0.0',
+      l10n.localeName,
+    ).format(miles ? meters / metersPerMile : meters / 1000);
     return _ellipsized(
-      meters == null
-          ? l10n.historyDistanceUnknown
-          : l10n.historyDistanceFromYou(
-              // One decimal with the language's separator ("12.3", "12,3").
-              NumberFormat('0.0', l10n.localeName).format(meters / 1000),
-            ),
+      miles
+          ? l10n.historyDistanceFromYouMiles(number)
+          : l10n.historyDistanceFromYou(number),
     );
   }
 }
+
+/// Metres in a statute mile.
+const metersPerMile = 1609.344;
 
 /// "Capsule is opened!" or the time left until it opens.
 class CapsuleCountdown extends StatefulWidget {

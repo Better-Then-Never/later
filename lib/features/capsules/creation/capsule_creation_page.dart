@@ -10,6 +10,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../../data/services/gallery_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
@@ -26,6 +27,7 @@ import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
 import '../../messages/widgets/group_friends_picker.dart';
+import '../../settings/device_settings_store.dart';
 import '../../settings/settings_store.dart';
 import '../outbox/capsule_outbox.dart';
 import 'capsule_creation_controller.dart';
@@ -77,6 +79,14 @@ class CapsuleCreationPage extends StatelessWidget {
             .privacy
             .locationPrecision,
         outbox: context.read<CapsuleOutbox>(),
+        // Settings > Map and camera: photo size and the gallery copy.
+        highQuality:
+            context.read<DeviceSettingsStore>().photoQuality ==
+            PhotoQuality.high,
+        saveToGallery:
+            GalleryService.isSupported &&
+            context.read<DeviceSettingsStore>().saveToGallery,
+        gallery: GalleryService(),
       ),
       child: _CapsuleCreationView(
         initialPrivacy: initialPrivacy,

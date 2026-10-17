@@ -10,6 +10,7 @@ class MainActivity : FlutterActivity() {
     private val channelName = "later.app/deeplink"
     private var initialLink: String? = null
     private var voice: VoiceChannel? = null
+    private var gallery: GalleryChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +45,8 @@ class MainActivity : FlutterActivity() {
             }
         // Voice messages: record and play (VoiceChannel.kt).
         voice = VoiceChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        // Capsule photos into the gallery (GalleryChannel.kt).
+        gallery = GalleryChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         // The signed-in home screen drew its first frame (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->
@@ -60,6 +63,8 @@ class MainActivity : FlutterActivity() {
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         voice?.dispose()
         voice = null
+        gallery?.dispose()
+        gallery = null
         super.cleanUpFlutterEngine(flutterEngine)
     }
 }

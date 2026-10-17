@@ -165,7 +165,11 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
     // the outbox) must not keep uploading for the default 10 minutes.
     _storage.setMaxUploadRetryTime(const Duration(seconds: 45));
     final imageRef = _imageRef(draft.ownerId, doc.id);
-    final bytes = await _processor.capsuleJpegFromFile(draft.imagePath);
+    final bytes = await _processor.capsuleJpegFromFile(
+      draft.imagePath,
+      maxDimension: draft.highQuality ? 2560 : 1600,
+      quality: draft.highQuality ? 90 : 85,
+    );
     await imageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
     final imageUrl = await imageRef.getDownloadURL();
     // A loop capsule: its frames too, smaller than the photo (they are
