@@ -275,9 +275,12 @@ class _MapViewState extends State<_MapView> {
   /// The native heatmap throws on an empty point list (BUG-048), so the
   /// layer is only added when there is something to show.
   Set<Heatmap> _heatmaps(MapController map) {
-    if (_heatmapsKey == map.capsulesVersion) return _heatmapsCache;
-    _heatmapsKey = map.capsulesVersion;
-    return _heatmapsCache = _buildHeatmaps(map);
+    final key = (map.capsulesVersion, map.showMarkers);
+    if (_heatmapsKey == key) return _heatmapsCache;
+    _heatmapsKey = key;
+    // Zoomed in the markers say where capsules are; the glow is only the
+    // overview from afar (F-16).
+    return _heatmapsCache = map.showMarkers ? const {} : _buildHeatmaps(map);
   }
 
   Set<Heatmap> _buildHeatmaps(MapController map) {
@@ -293,10 +296,10 @@ class _MapViewState extends State<_MapView> {
       Heatmap(
         heatmapId: const HeatmapId('capsules_heatmap'),
         data: points,
-        radius: const HeatmapRadius.fromPixels(50),
+        radius: const HeatmapRadius.fromPixels(40),
+        opacity: 0.7,
         gradient: const HeatmapGradient([
           HeatmapGradientColor(AppColors.heatmapLow, 0.2),
-          HeatmapGradientColor(AppColors.heatmapMid, 0.5),
           HeatmapGradientColor(AppColors.heatmapHigh, 1.0),
         ]),
       ),
