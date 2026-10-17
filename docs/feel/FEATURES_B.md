@@ -286,3 +286,64 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
 - **To switch on**: add `READ_CONTACTS` to the Android manifest (and the Play data safety form), run the look-up
   on a test phone, deploy the rules and the two functions (BACKEND_CHANGES.md §7), then set the flag. iOS needs a
   native reader (only the Android one exists).
+
+## B4. Creation
+
+### Loop capsules: ON (flag switched on after the phone check)
+- **What**: a Photo | Loop switch above the shutter (Loop: a tap starts, a second tap ends; Photo: a long press
+  still records one). Creation shows the frames in a strip (hold and drag to reorder, a cross takes one out, two
+  stay at least) and a Speed row (slow 500, normal 300, fast 150 ms per frame); the preview plays at that speed.
+  Loops carry a loop mark on their picture in My capsules and on the map card; they play in the capsule and full
+  screen as before.
+- **How**: frames upload as before (≤ 10, 1080 px). The emulator's http download links are now accepted for frames
+  in emulator builds (only https was, so loops never showed on the rig).
+- **Tests**: `capsule_creation_test.dart` (remove, move, speed, two at least), `achievements_test.dart` (the
+  Animator follows the flag), `loop_picture_test.dart`.
+- **Phone**: a loop recorded by taps (4 frames), one removed, speed set to fast, sent: 3 frames, 150 ms and a
+  thumbnail in Firestore; the loop mark in the list and on the map card; a loop of three different seed photos
+  changed frames in the capsule (screenshots 1.6 s apart). Not judged: motion from the real camera (it saw only
+  black at the time).
+- **Not done**: loops in chat bubbles (the chat message carries only the picture).
+
+### Thumbnails: ON
+- Every capsule uploads a 400 px `thumb.jpg` next to its photo (storage rule added; refused by older rules, the
+  capsule is then saved without one). Lists, the map card and chat bubbles use it. **Phone**: `thumbUrl` set on new
+  capsules; **Tests**: storage rules.
+
+### Drafts (autosave): ON
+- **What**: a capsule being made is kept as left: its photo or frames are copied into the documents folder and what
+  was typed and chosen is saved a second after each change and when the page closes. The camera then shows
+  "Unfinished capsule: Continue / ×"; made or kept for later, the draft goes.
+- **Tests**: `capsule_creation_test.dart` (left, taken up again with title, colour and pin, gone once made).
+- **Phone**: a title typed, the page closed; the camera offered "Draft test · Продолжить"; continued, the pin moved
+  (the draft JSON on the phone had the pin), saved: the capsule at the pin, the draft folder gone.
+
+### Own calendar: ON (F-27)
+- "Pick a date…" opens the app's calendar: a month at a time (arrows or a swipe), the language's first weekday,
+  days before tomorrow greyed, today ringed; a tap chooses. **Tests**: `open_date_calendar_test.dart` (choice, greyed
+  days, Russian week). **Phone**: Russian (weeks from Monday), November 4 chosen.
+
+### Pin on a map: ON
+- A tap on the place opens a map under a fixed pin; dragging the map moves the capsule's spot, at most 1 km from
+  the phone (the places a user has been count for the Explorer achievement); "Back to where I am". **Tests**: the
+  1 km limit and the pin reaching the draft. **Phone**: the sheet, a drag, "Поставить здесь", the capsule saved at
+  the pin.
+
+### Steps, composer, hero: ON
+- The settings title and cards come in one after another; the description opens a composer sheet (large field,
+  2000 counter) instead of the narrow column; the camera's frozen photo is a hero into the capsule card.
+- **Phone**: the cards caught mid-entrance; the composer with "23/2000" and the text live behind it; the photo in
+  the card after the shutter. The hero flight itself is too quick for screenshots (not seen).
+
+### Uploads: friends, backoff, Wi-Fi only, in the background: ON
+- **What**: a capsule for a friend made offline waits too and goes to the chat after its upload. Waits grow: 30 s,
+  doubling to 15 min, back to the start when the app returns. Map and camera > "Upload on Wi-Fi only" ("Waiting for
+  Wi-Fi" in My capsules). In the background (and with the app closed) Android's WorkManager runs the outbox in an
+  engine of its own with its own backoff; leaving the app hands the uploads over, returning takes them back.
+- **Tests**: `capsule_outbox_test.dart` (friend's capsule kept across a restart and posted, the waits and the cap,
+  Wi-Fi only, the hand-over).
+- **Phone**: emulator ports blocked, a capsule queued, the app sent to the background: the job tried (1 still
+  waiting), the ports came back, a minute later the job uploaded it ("0 still waiting"). The first try, before the
+  hand-over existed, showed the app and the job racing (the job's create was refused): that race is gone. Not seen:
+  the job with the app process killed (Android keeps WorkManager jobs across process death by design; `am kill`
+  could not kill the app while the job ran).

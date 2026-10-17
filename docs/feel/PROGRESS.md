@@ -12,7 +12,7 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
 | Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
-| Part B (B1..B7) | B1, B2, B3 done (FEATURES_B.md; contacts flagged); B4 next |
+| Part B (B1..B7) | B1..B4 done (FEATURES_B.md; contacts flagged); B5 next |
 
 ## Log
 ### 2026-10-17
@@ -90,3 +90,7 @@ on #78. Never merged, never deployed. Resume here.
   command ran). Nothing of it was undone; the pin check had already passed (Bob and Hugo) before the change.
 - Mistake caught: a test file of the same name already existed (profile_test.dart) and was overwritten; restored from
   git, the new tests live in profile_tab_test.dart.
+- B4 done: loop capsules finished and switched on (mode switch, frame strip, speed, loop mark), thumbnails, drafts,
+  own calendar, pin on a map, creation steps, composer, camera hero, friend capsules queued, backoff, Wi-Fi only,
+  uploads in the background (WorkManager). Rules 78/78 before the thumbnail rule (its test runs with the next rules
+  run), Flutter 374.

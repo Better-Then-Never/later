@@ -14,6 +14,7 @@ written for the owner.
 | 5 | Voice messages (rules, `.m4a` storage, cleanup), forwarded mark, unread drop on delete, `pinnedChats`, `sendMessageReactionNotification` | rules, storage rules, functions | unaffected | rules + functions | rules, one new function (gcloud), functions |
 | 6 | Capsules: quick reply (`capsuleRef` on messages), co-authors (rules, index, notifications), share links on the web page; the groups index | rules, indexes, functions, hosting | unaffected (see section 6) | rules 75/75, functions 52/52 | rules, indexes, functions, hosting |
 | 7 | Profiles: about, name search (nameLower), pinned friends, privacy switches; contacts index and requests (flagged) | rules, functions, data | unaffected | rules, functions 55/55 | rules; two new functions (gcloud) only with the contacts flag; optional backfill |
+| 8 | Creation: thumb.jpg storage rule; WorkManager (app build only) | storage rules | unaffected | storage rules test | storage rules |
 
 ## 1. Pushes are logged, not sent, in the Functions emulator
 `functions/index.js`: when `FUNCTIONS_EMULATOR === 'true'` (set only by the Firebase emulator), `services()`
@@ -232,3 +233,17 @@ count is in FEEL_QA.md), functions 55/55.
 3. Optional: `cd tools/admin && node backfill-name-search.js --dry-run --project later-da778 --production`, then
    without `--dry-run`.
 4. Release the app.
+
+## 8. Creation (Part B4)
+**Storage rules**: `userdata/{uid}/capsules/{capsuleId}/thumb.jpg`, an image of at most 512 KB, written by the
+owner (the 400 px thumbnail of every capsule). The app tolerates rules without it (the capsule is saved without a
+thumbnail).
+
+**App build**: `androidx.work:work-runtime-ktx:2.9.1` (Google AndroidX) for uploads while the app is closed; no
+server side.
+
+**Old apps**: unaffected (they never write `thumb.jpg`; capsules without `thumbUrl` show their photo as before).
+
+**Tests**: storage rules (thumbnail: owner, size).
+
+**Deploy (owner)**: `firebase deploy --only storage --project later-da778`, then release the app.
