@@ -93,3 +93,5 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **Creation choices, done:** privacy, colour and open date open `showChoiceMenu` (current in green, colour pins,
   date presets with calendar-correct months, "open right away"); the cycling pills are gone. Verified on the
   emulator. Flutter 241.
+- **Heatmap (F-16), done:** single brand green, 40 px, 70 %, hidden at marker zoom (D-19). Verified on the
+  emulator at three zoom levels. DECISIONS D-19, D-20 (chat deletes/replies) written.

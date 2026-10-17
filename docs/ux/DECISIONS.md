@@ -77,3 +77,13 @@ No per-user fan-out, so the cost does not grow with the user base.
 
 **D-18 Reports go to a write-only collection** `reports/{id}` (reporter, target path, reason); nobody can read it
 from the app; the owner reviews them in the console.
+
+**D-19 Heatmap (F-16):** one brand green that deepens with density (`heatmapLow` 35 % → `brandGreen`), 40 px,
+70 % opacity, shown only below the marker zoom. Red was dropped (it means danger here) and yellow too (it turns
+olive over the dark map). Clusters in brand colours (the audit's other option) would need custom cluster icons,
+which google_maps_flutter cannot draw yet; revisit when it can.
+
+**D-20 Chat deletes and replies:** deleting removes the message for both (no "deleted" placeholder, which would
+need a sender-only update rule); the summary rolls back to the previous message through `isUndo`. Replies carry a
+short quote (`replyTo`: id, sender, ≤140 characters) instead of a reference, so they render without loading the
+original and survive its deletion.

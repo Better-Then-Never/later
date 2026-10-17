@@ -8,7 +8,7 @@ Checked by hand on the emulator (dark theme, English and Russian). ✓ = good, �
 | Launch | ✓ | Splash = first frame, no white flash, logo does not jump. |
 | Welcome / Login | ✓ | Dark looks native; fields readable; "Get Started" button text scales down in long languages. |
 | Permission steps | ✓ | Three, each skippable; no longer a wall before the app. |
-| Map | ✓ | Dark style calm and on-brand; markers memoized (no re-send on position updates); logo always visible; my-location button flies smoothly. △ heatmap glow still bright (F-16). |
+| Map | ✓ | Dark style calm and on-brand; markers memoized (no re-send on position updates); logo always visible; my-location button flies smoothly. Zoomed out, a calm brand-green density glow; zoomed in, markers only (D-19). |
 | Capsule card | ✓ | Slides up, closes the way people expect (tap, swipe, back, tab, zoom-out). |
 | Capsule dialog | ✓ | Reactions respond instantly (optimistic), green tint on the chosen one. △ the card itself is the old 45%-height layout. |
 | Comments | ✓ | Sheet with grab handle, composer above the keyboard, "Just now" times, replies indented. |

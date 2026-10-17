@@ -14,7 +14,7 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
 - **Chat (F-70..F-76)**: reactions on messages, tapping a quote to jump to the original, photos, voice notes (would need the microphone
   permission back); "deleted" placeholders instead of removing (needs a sender-only update rule); lowering the
   friend's unread count when an unread message is deleted (rules allow only +1 from the sender today).
-- **Map clusters instead of the heatmap (F-16)** in brand colours; viewport-bounded public queries (F-10 part 2).
+- **Map clusters instead of the heatmap** (the heatmap is restyled, D-19; brand-coloured cluster icons need plugin support); viewport-bounded public queries (F-10 part 2).
 - **Co-authored capsules (F-51)**, quick reply from a capsule (F-52), share deep link for a capsule (F-50 part).
 - **People from contacts (F-57 part 2)**: opt-in, hashed phone numbers; the `contactSuggestions` privacy switch
   exists in the data model but is not shown.
