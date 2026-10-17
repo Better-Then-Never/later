@@ -35,22 +35,6 @@ class FriendOptionsModal extends StatelessWidget {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: context.l10n.friendsChatSettings,
-          onPressed: () {
-            Navigator.pop(context);
-            // TODO: Handle chat settings action
-          },
-        ),
-        const OptionsMenuDivider(),
-        OptionsMenuItem(
-          text: context.l10n.friendsCapsulesSettings,
-          onPressed: () {
-            Navigator.pop(context);
-            // TODO: Handle capsules settings action
-          },
-        ),
-        const OptionsMenuDivider(),
-        OptionsMenuItem(
           text: context.l10n.friendsShareProfileTo,
           onPressed: () {
             Navigator.pop(context);

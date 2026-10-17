@@ -693,12 +693,6 @@ class AppLocalizationsEs extends AppLocalizations {
       '¿Seguro que quieres bloquear a este usuario?';
 
   @override
-  String get friendsCapsulesSettings => 'Ajustes de cápsulas';
-
-  @override
-  String get friendsChatSettings => 'Ajustes del chat';
-
-  @override
   String get friendsEmpty => 'Aún no has añadido amigos';
 
   @override

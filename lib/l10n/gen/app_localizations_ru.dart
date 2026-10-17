@@ -712,12 +712,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsBlockConfirm => 'Точно заблокировать этого пользователя?';
 
   @override
-  String get friendsCapsulesSettings => 'Настройки капсул';
-
-  @override
-  String get friendsChatSettings => 'Настройки чата';
-
-  @override
   String get friendsEmpty => 'Вы пока не добавили друзей';
 
   @override

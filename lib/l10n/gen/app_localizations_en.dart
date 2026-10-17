@@ -685,12 +685,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsBlockConfirm => 'Are you sure you want to block this user?';
 
   @override
-  String get friendsCapsulesSettings => 'Capsules settings';
-
-  @override
-  String get friendsChatSettings => 'Chat settings';
-
-  @override
   String get friendsEmpty => 'No friends added yet';
 
   @override

@@ -715,12 +715,6 @@ class AppLocalizationsPl extends AppLocalizations {
       'Na pewno chcesz zablokować tego użytkownika?';
 
   @override
-  String get friendsCapsulesSettings => 'Ustawienia kapsuł';
-
-  @override
-  String get friendsChatSettings => 'Ustawienia czatu';
-
-  @override
   String get friendsEmpty => 'Nie masz jeszcze znajomych';
 
   @override

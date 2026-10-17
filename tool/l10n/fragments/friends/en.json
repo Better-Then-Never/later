@@ -17,8 +17,6 @@
     "description": "Menu item and confirm button that block a user."
   },
   "friendsBlockConfirm": "Are you sure you want to block this user?",
-  "friendsCapsulesSettings": "Capsules settings",
-  "friendsChatSettings": "Chat settings",
   "friendsEmpty": "No friends added yet",
   "friendsErrorAcceptRequest": "Failed to accept request",
   "friendsErrorBlock": "Failed to block user",

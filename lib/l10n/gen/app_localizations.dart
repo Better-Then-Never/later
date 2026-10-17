@@ -1202,18 +1202,6 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to block this user?'**
   String get friendsBlockConfirm;
 
-  /// No description provided for @friendsCapsulesSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Capsules settings'**
-  String get friendsCapsulesSettings;
-
-  /// No description provided for @friendsChatSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Chat settings'**
-  String get friendsChatSettings;
-
   /// No description provided for @friendsEmpty.
   ///
   /// In en, this message translates to:

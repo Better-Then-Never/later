@@ -183,8 +183,6 @@
   "friendsAddTitle": "Añadir amigos",
   "friendsBlock": "Bloquear",
   "friendsBlockConfirm": "¿Seguro que quieres bloquear a este usuario?",
-  "friendsCapsulesSettings": "Ajustes de cápsulas",
-  "friendsChatSettings": "Ajustes del chat",
   "friendsEmpty": "Aún no has añadido amigos",
   "friendsErrorAcceptRequest": "No se pudo aceptar la solicitud",
   "friendsErrorBlock": "No se pudo bloquear al usuario",

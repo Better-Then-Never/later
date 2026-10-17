@@ -183,8 +183,6 @@
   "friendsAddTitle": "Добавить друзей",
   "friendsBlock": "Заблокировать",
   "friendsBlockConfirm": "Точно заблокировать этого пользователя?",
-  "friendsCapsulesSettings": "Настройки капсул",
-  "friendsChatSettings": "Настройки чата",
   "friendsEmpty": "Вы пока не добавили друзей",
   "friendsErrorAcceptRequest": "Не удалось принять заявку",
   "friendsErrorBlock": "Не удалось заблокировать пользователя",

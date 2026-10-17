@@ -704,12 +704,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Möchtest du diese Person wirklich blockieren?';
 
   @override
-  String get friendsCapsulesSettings => 'Kapsel-Einstellungen';
-
-  @override
-  String get friendsChatSettings => 'Chat-Einstellungen';
-
-  @override
   String get friendsEmpty => 'Du hast noch keine Freunde hinzugefügt';
 
   @override
