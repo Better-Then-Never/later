@@ -10,6 +10,7 @@ import '../core/logging/app_logger.dart';
 import '../core/theme/themed_asset_bundle.dart';
 import '../data/services/preferences_store.dart';
 import '../core/theme/font_warmup.dart';
+import '../features/achievements/achievement_icon.dart';
 import '../firebase_options.dart';
 import 'app_scope.dart';
 import 'appearance/appearance_controller.dart';
@@ -46,6 +47,7 @@ Future<void> bootstrap() async {
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
     preferences.init(),
     ThemedAssetBundle.preload(),
+    AchievementIcon.preloadArt(),
   ]);
   // Fonts loaded and shaped now, not on the first frame of a page.
   FontWarmup.run();

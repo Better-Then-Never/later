@@ -156,6 +156,7 @@ class AchievementsPanel extends StatelessWidget {
                         child: Tooltip(
                           message: unlocked[i].def.title(l10n),
                           child: AchievementIcon(
+                            id: unlocked[i].def.id,
                             icon: unlocked[i].def.icon,
                             tier: unlocked[i].tier,
                             tiers: unlocked[i].def.tiers.length,
@@ -282,6 +283,7 @@ class _AchievementRow extends StatelessWidget {
       child: Row(
         children: [
           AchievementIcon(
+            id: def.id,
             icon: def.icon,
             tier: standing.tier,
             tiers: def.tiers.length,

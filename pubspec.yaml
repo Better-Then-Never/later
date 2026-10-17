@@ -82,6 +82,8 @@ flutter:
   # Typed accessors: lib/core/assets/app_assets.dart
   assets:
     - assets/images/
+    # Achievement artwork: <id>.png replaces the Material icon (ACHIEVEMENTS.md).
+    - assets/achievements/
     - assets/animations/
     - assets/icons/auth/
     - assets/icons/camera/
