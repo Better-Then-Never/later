@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart' show Geolocator;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/router/app_routes.dart';
 import '../../app/session/session_controller.dart';
 import '../../app/shell/selected_page.dart';
 import '../../core/l10n/l10n.dart';
@@ -21,6 +22,7 @@ import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
+import '../../data/services/preferences_store.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/later_loading_bar.dart';
@@ -29,7 +31,9 @@ import 'current_location.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
+import '../history/own_capsules_store.dart';
 import 'widgets/capsule_info_panel.dart';
+import 'widgets/first_capsule_hint.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
 
 class MapPage extends StatelessWidget {
@@ -112,6 +116,11 @@ class _MapViewState extends State<_MapView> {
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
 
+  /// "Leave your first capsule" was closed on this phone for this account
+  /// (hidden until that is known).
+  bool _hintClosed = true;
+  static const _hintKey = 'first_capsule_hint';
+
   /// Cloud-based map styles (Google Cloud Console "Map Management").
   static final _mapId = Platform.isAndroid
       ? '12b4f975aba292b65ac044ea'
@@ -122,6 +131,26 @@ class _MapViewState extends State<_MapView> {
     super.initState();
     _focus = context.read<MapFocus>()..addListener(_onFocusRequested);
     selectedPageNotifier.addListener(_onTabChanged);
+    unawaited(_loadHint());
+  }
+
+  Future<void> _loadHint() async {
+    final uid = context.read<SessionController>().uid;
+    if (uid == null) return;
+    final closed =
+        await context.read<PreferencesStore>().string(uid, _hintKey) ==
+        'closed';
+    if (mounted && !closed) setState(() => _hintClosed = false);
+  }
+
+  void _closeHint() {
+    setState(() => _hintClosed = true);
+    final uid = context.read<SessionController>().uid;
+    if (uid != null) {
+      unawaited(
+        context.read<PreferencesStore>().setString(uid, _hintKey, 'closed'),
+      );
+    }
   }
 
   /// Leaving the map tab closes the card.
@@ -330,6 +359,17 @@ class _MapViewState extends State<_MapView> {
       220.0,
     );
     final motion = AppMotion.of(context, AppMotion.emphasized);
+    // A new user: nothing of theirs yet (a capsule waiting to upload counts).
+    final noCapsules = context.select<OwnCapsulesStore, bool>(
+      (s) => s.isLoaded && s.capsules.isEmpty,
+    );
+    final showHint = selected == null && noCapsules && !_hintClosed;
+    // What floats above the bar: the capsule card or the hint.
+    final raised = selected != null
+        ? cardHeight + 12
+        : showHint
+        ? FirstCapsuleHint.height + 12
+        : 0.0;
     return PopScope(
       // Back closes the card first.
       canPop: selected == null,
@@ -348,10 +388,7 @@ class _MapViewState extends State<_MapView> {
             // were hidden under the bar (pinch zooms).
             padding: EdgeInsets.only(
               top: MediaQuery.viewPaddingOf(context).top,
-              bottom:
-                  NavbarWidget.coveredHeight(context) +
-                  4 +
-                  (selected == null ? 0 : cardHeight + 12),
+              bottom: NavbarWidget.coveredHeight(context) + 4 + raised,
             ),
             zoomControlsEnabled: false,
             // The capsule card replaces Google's marker toolbar.
@@ -398,8 +435,8 @@ class _MapViewState extends State<_MapView> {
             duration: motion,
             curve: AppMotion.emphasizedCurve,
             right: 16,
-            // Moves up while a capsule card is open.
-            bottom: bottom + (selected == null ? 0 : cardHeight + 12),
+            // Moves up while a capsule card (or the hint) is shown.
+            bottom: bottom + raised,
             child: _MyLocationButton(onTap: () => _goToMe(map)),
           ),
           Positioned(
@@ -421,10 +458,21 @@ class _MapViewState extends State<_MapView> {
                 ),
               ),
               child: selected == null
-                  ? const SizedBox(
-                      key: ValueKey('none'),
-                      width: double.infinity,
-                    )
+                  ? showHint
+                        ? Center(
+                            key: const ValueKey('hint'),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 440),
+                              child: FirstCapsuleHint(
+                                onTap: () => AppRoutes.toCamera(context),
+                                onClose: _closeHint,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(
+                            key: ValueKey('none'),
+                            width: double.infinity,
+                          )
                   : GestureDetector(
                       key: ValueKey(selected.id),
                       // Swipe down to close.

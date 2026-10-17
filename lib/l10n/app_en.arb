@@ -947,6 +947,8 @@
       }
     }
   },
+  "mapFirstCapsuleBody": "Take a photo here and choose when it opens.",
+  "mapFirstCapsuleTitle": "Leave your first capsule",
   "mapLocationDenied": "Allow location access to see capsules near you",
   "@mapLocationDenied": {
     "description": "Toast on the map when location permission was denied."

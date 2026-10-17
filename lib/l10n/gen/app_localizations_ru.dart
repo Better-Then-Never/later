@@ -1176,6 +1176,13 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get mapFirstCapsuleBody =>
+      'Сделайте фото здесь и выберите, когда оно откроется.';
+
+  @override
+  String get mapFirstCapsuleTitle => 'Оставьте первую капсулу';
+
+  @override
   String get mapLocationDenied =>
       'Разрешите доступ к геопозиции, чтобы видеть капсулы рядом с вами';
 

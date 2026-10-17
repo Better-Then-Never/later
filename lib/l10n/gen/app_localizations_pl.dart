@@ -1184,6 +1184,13 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get mapFirstCapsuleBody =>
+      'Zrób tu zdjęcie i wybierz, kiedy się otworzy.';
+
+  @override
+  String get mapFirstCapsuleTitle => 'Zostaw pierwszą kapsułę';
+
+  @override
   String get mapLocationDenied =>
       'Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu';
 

@@ -1970,6 +1970,18 @@ abstract class AppLocalizations {
   /// **'{count}s'**
   String mapDurationSeconds(int count);
 
+  /// No description provided for @mapFirstCapsuleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo here and choose when it opens.'**
+  String get mapFirstCapsuleBody;
+
+  /// No description provided for @mapFirstCapsuleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave your first capsule'**
+  String get mapFirstCapsuleTitle;
+
   /// Toast on the map when location permission was denied.
   ///
   /// In en, this message translates to:

@@ -77,5 +77,7 @@
   "@mapCapsuleNoDescription": {
     "description": "Shown in the capsule card opened from the map when the capsule has no description."
   },
-  "mapMyLocation": "My location"
+  "mapMyLocation": "My location",
+  "mapFirstCapsuleTitle": "Leave your first capsule",
+  "mapFirstCapsuleBody": "Take a photo here and choose when it opens."
 }

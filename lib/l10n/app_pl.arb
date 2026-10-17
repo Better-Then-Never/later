@@ -311,6 +311,8 @@
   "mapDurationHours": "{count}h",
   "mapDurationMinutes": "{count}min",
   "mapDurationSeconds": "{count}s",
+  "mapFirstCapsuleBody": "Zrób tu zdjęcie i wybierz, kiedy się otworzy.",
+  "mapFirstCapsuleTitle": "Zostaw pierwszą kapsułę",
   "mapLocationDenied": "Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu",
   "mapLocationServiceOff": "Włącz lokalizację, żeby widzieć kapsuły w pobliżu",
   "mapLocationUnknown": "Nie udało się ustalić twojej lokalizacji",

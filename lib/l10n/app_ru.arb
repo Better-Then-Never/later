@@ -311,6 +311,8 @@
   "mapDurationHours": "{count}ч",
   "mapDurationMinutes": "{count}мин",
   "mapDurationSeconds": "{count}с",
+  "mapFirstCapsuleBody": "Сделайте фото здесь и выберите, когда оно откроется.",
+  "mapFirstCapsuleTitle": "Оставьте первую капсулу",
   "mapLocationDenied": "Разрешите доступ к геопозиции, чтобы видеть капсулы рядом с вами",
   "mapLocationServiceOff": "Включите геолокацию, чтобы видеть капсулы рядом с вами",
   "mapLocationUnknown": "Не удалось определить вашу геопозицию",

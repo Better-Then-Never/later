@@ -11,5 +11,7 @@
   "mapCapsuleOpen": "Abrir",
   "mapCapsuleLocked": "Bloqueada",
   "mapCapsuleNoDescription": "Esta cápsula no tiene descripción.",
-  "mapMyLocation": "Mi ubicación"
+  "mapMyLocation": "Mi ubicación",
+  "mapFirstCapsuleTitle": "Deja tu primera cápsula",
+  "mapFirstCapsuleBody": "Haz una foto aquí y elige cuándo se abre."
 }

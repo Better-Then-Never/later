@@ -11,5 +11,7 @@
   "mapCapsuleOpen": "Otwórz",
   "mapCapsuleLocked": "Zamknięta",
   "mapCapsuleNoDescription": "Ta kapsuła nie ma opisu.",
-  "mapMyLocation": "Moja lokalizacja"
+  "mapMyLocation": "Moja lokalizacja",
+  "mapFirstCapsuleTitle": "Zostaw pierwszą kapsułę",
+  "mapFirstCapsuleBody": "Zrób tu zdjęcie i wybierz, kiedy się otworzy."
 }

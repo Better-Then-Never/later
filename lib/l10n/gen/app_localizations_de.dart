@@ -1169,6 +1169,13 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mapFirstCapsuleBody =>
+      'Mach hier ein Foto und wähle, wann es sich öffnet.';
+
+  @override
+  String get mapFirstCapsuleTitle => 'Hinterlasse deine erste Kapsel';
+
+  @override
   String get mapLocationDenied =>
       'Erlaube den Standortzugriff, um Kapseln in deiner Nähe zu sehen';
 

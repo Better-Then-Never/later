@@ -1154,6 +1154,12 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get mapFirstCapsuleBody => 'Haz una foto aquí y elige cuándo se abre.';
+
+  @override
+  String get mapFirstCapsuleTitle => 'Deja tu primera cápsula';
+
+  @override
   String get mapLocationDenied =>
       'Permite el acceso a tu ubicación para ver cápsulas cerca de ti';
 
