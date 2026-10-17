@@ -11,6 +11,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/gallery_service.dart';
+import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
@@ -96,6 +97,8 @@ class CapsuleCreationPage extends StatelessWidget {
             GalleryService.isSupported &&
             context.read<DeviceSettingsStore>().saveToGallery,
         gallery: GalleryService(),
+        // Town and country for the passport (B7).
+        geocoding: context.read<GeocodingService>(),
         // Kept as left until it is made (B4).
         drafts: CreationDraftStore(),
         draft: draft,

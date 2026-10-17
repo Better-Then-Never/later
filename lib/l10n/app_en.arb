@@ -2884,5 +2884,57 @@
   "streakSafe": "Today counts. See you tomorrow!",
   "@streakSafe": {
     "description": "Streak card once today counts."
+  },
+  "worldCapsules": "{count, plural, =1{1 capsule} other{{count} capsules}}",
+  "@worldCapsules": {
+    "description": "On a country stamp: capsules left there.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
+  "@worldCountriesLabel": {
+    "description": "Under the number of countries in the passport and on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldDescription": "Countries and towns of your capsules",
+  "@worldDescription": {
+    "description": "Under the passport title."
+  },
+  "worldEmpty": "Leave a capsule somewhere new and its country gets a stamp here.",
+  "@worldEmpty": {
+    "description": "Passport without stamps."
+  },
+  "worldFirst": "First: {date}",
+  "@worldFirst": {
+    "description": "On a country stamp: the month of the first capsule there (\"Oct 2026\").",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "worldNote": "Stamps come from capsules made since this update.",
+  "@worldNote": {
+    "description": "Footnote: older capsules have no country, so they are not in the passport."
+  },
+  "worldTitle": "Passport",
+  "@worldTitle": {
+    "description": "The world view (B7): a passport of the countries where the user left capsules."
+  },
+  "worldTownsLabel": "{count, plural, =1{town} other{towns}}",
+  "@worldTownsLabel": {
+    "description": "Under the number of towns in the passport and on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

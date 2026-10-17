@@ -880,5 +880,13 @@
   "streakAtRisk": "Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.",
   "streakLongest": "Рекорд: {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}",
   "streakMakeCapsule": "Создать капсулу",
-  "streakSafe": "Сегодня засчитано. До завтра!"
+  "streakSafe": "Сегодня засчитано. До завтра!",
+  "worldCapsules": "{count, plural, one{{count} капсула} few{{count} капсулы} many{{count} капсул} other{{count} капсулы}}",
+  "worldCountriesLabel": "{count, plural, one{страна} few{страны} many{стран} other{страны}}",
+  "worldDescription": "Страны и города ваших капсул",
+  "worldEmpty": "Оставьте капсулу в новом месте, и здесь появится штамп её страны.",
+  "worldFirst": "Впервые: {date}",
+  "worldNote": "Штампы получают капсулы, созданные после этого обновления.",
+  "worldTitle": "Паспорт",
+  "worldTownsLabel": "{count, plural, one{город} few{города} many{городов} other{города}}"
 }

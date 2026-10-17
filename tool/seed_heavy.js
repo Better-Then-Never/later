@@ -165,6 +165,20 @@ const CITIES = [
   [-22.9068, -43.1729], [19.4326, -99.1332], [1.3521, 103.8198], [25.2048, 55.2708], [-33.9249, 18.4241],
 ];
 
+// Country and town of each city above (the world view, B7), in order.
+const CITY_PLACES = [
+  ['FR', 'Paris'], ['GB', 'London'], ['ES', 'Madrid'], ['IT', 'Roma'], ['DE', 'Berlin'],
+  ['CZ', 'Praha'], ['HU', 'Budapest'], ['AT', 'Wien'], ['SE', 'Stockholm'], ['FI', 'Helsinki'],
+  ['DK', 'København'], ['NL', 'Amsterdam'], ['BE', 'Bruxelles'], ['PT', 'Lisboa'], ['GR', 'Athína'],
+  ['TR', 'İstanbul'], ['RU', 'Moskva'], ['UA', 'Kyiv'], ['LT', 'Vilnius'], ['LV', 'Rīga'],
+  ['EE', 'Tallinn'], ['BY', 'Minsk'], ['PL', 'Kraków'], ['PL', 'Wrocław'], ['PL', 'Gdańsk'],
+  ['IT', 'Milano'], ['IT', 'Firenze'], ['FR', 'Lyon'], ['FR', 'Marseille'], ['CH', 'Genève'],
+  ['CH', 'Zürich'], ['US', 'New York'], ['US', 'Los Angeles'], ['JP', 'Tokyo'], ['AU', 'Sydney'],
+  ['BR', 'Rio de Janeiro'], ['MX', 'Ciudad de México'], ['SG', 'Singapore'], ['AE', 'Dubai'], ['ZA', 'Cape Town'],
+];
+// The default centre is Warsaw; another centre gets no place names.
+const CENTER_PLACE = process.env.SEED_CENTER ? null : ['PL', 'Warszawa'];
+
 const TITLES = ['First snow', 'Morning coffee', 'Lake day', 'Old town walk', 'Birthday', 'Concert night', 'Graduation',
   'Road trip', 'Sunset', 'Picnic', 'Museum', 'Rainy Sunday', 'Market', 'Bike ride', 'Mountains', 'Beach', 'Rooftop',
   'New flat', 'Football', 'Dinner with friends', 'Train window', 'Night city', 'Garden', 'Ferry', 'Festival'];
@@ -324,7 +338,10 @@ async function main() {
     const owner = owners[i];
     const ref = db.collection('capsules').doc();
     const local = i % 4 !== 0; // 1,500 near the centre
-    const [lat, lng] = local ? [CENTER_LAT, CENTER_LNG] : pick(CITIES);
+    // An index drawn like pick() did, so the rest of the data stays the same.
+    const city = local ? -1 : Math.floor(rand() * CITIES.length);
+    const [lat, lng] = local ? [CENTER_LAT, CENTER_LNG] : CITIES[city];
+    const place = local ? CENTER_PLACE : CITY_PLACES[city];
     const created = now - between(1, 700) * DAY;
     const opened = rand() < 0.62;
     const color = pick(colorNames);
@@ -345,6 +362,10 @@ async function main() {
       openAt: ts(opened ? created + between(0, 3) * DAY : now + between(1, 300) * DAY),
       color,
     };
+    if (place) {
+      doc.countryCode = place[0];
+      doc.placeName = place[1];
+    }
     if (rand() < 0.3) {
       doc.reactionTotal = Math.floor(between(1, 40));
       doc.reactionCounts = { heart: doc.reactionTotal };
@@ -477,6 +498,28 @@ async function main() {
     await w.set(db.collection(`users/${uid.alice}/notifications`).doc(), n);
   }
 
+  // The app's limits (B7): today's numbers, no weekly limit.
+  await w.set(db.doc('entitlements/limits'), {
+    capsulesPerWeek: null, loopFrames: 10, coAuthors: 5, groupMembers: 20, pinnedFriends: 3,
+  });
+
+  // Alice's world summary (B7), as the functions would keep it.
+  const countries = {};
+  for (const c of aliceCapsules) {
+    if (!c.countryCode) continue;
+    const at = c.capturedAt.toDate();
+    const entry = (countries[c.countryCode] ||= { capsules: 0, cities: {}, first: at, last: at });
+    entry.capsules += 1;
+    entry.cities[c.placeName] = (entry.cities[c.placeName] || 0) + 1;
+    if (at < entry.first) entry.first = at;
+    if (at > entry.last) entry.last = at;
+  }
+  const countryCount = Object.keys(countries).length;
+  const cityCount = Object.values(countries).reduce((n, c) => n + Object.keys(c.cities).length, 0);
+  await w.set(db.doc(`users/${uid.alice}/world/summary`), {
+    countries, countryCount, cityCount, updatedAt: ts(now),
+  });
+
   // Alice's counters and stats, as the functions would keep them.
   await w.flush();
   await db.doc(`users/${uid.alice}`).update({
@@ -486,6 +529,7 @@ async function main() {
     stats: {
       capsules: 102, publicCapsules: 35, streakCurrent: 4, streakLongest: 12,
       streakLastDay: new Date(now).toISOString().slice(0, 10), places: 31, distanceKm: 1240, reactionsReceived: 140, commentsWritten: 12,
+      capsulesViewed: 7, countries: countryCount, cities: cityCount,
     },
   });
   for (const [id, tier, tiers, value] of [['first_capsule', 0, 1, 102], ['collector', 2, 4, 102], ['streak', 1, 5, 12], ['explorer', 2, 4, 31]]) {

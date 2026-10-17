@@ -53,5 +53,13 @@
   "profileStatTogether": "z przyjaciółmi",
   "profileNewCapsule": "Nowa kapsuła",
   "profileNewForFriends": "Dla znajomych",
-  "profileNewForEveryone": "Dla wszystkich"
+  "profileNewForEveryone": "Dla wszystkich",
+  "worldTitle": "Paszport",
+  "worldDescription": "Kraje i miasta twoich kapsuł",
+  "worldCountriesLabel": "{count, plural, one{kraj} few{kraje} many{krajów} other{kraju}}",
+  "worldTownsLabel": "{count, plural, one{miasto} few{miasta} many{miast} other{miasta}}",
+  "worldCapsules": "{count, plural, one{{count} kapsuła} few{{count} kapsuły} many{{count} kapsuł} other{{count} kapsuły}}",
+  "worldFirst": "Pierwszy raz: {date}",
+  "worldEmpty": "Zostaw kapsułę w nowym miejscu, a jej kraj dostanie tu pieczątkę.",
+  "worldNote": "Pieczątki dostają kapsuły utworzone po tej aktualizacji."
 }

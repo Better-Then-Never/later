@@ -3220,4 +3220,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get streakSafe => 'Today counts. See you tomorrow!';
+
+  @override
+  String worldCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count capsules',
+      one: '1 capsule',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String worldCountriesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'countries',
+      one: 'country',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get worldDescription => 'Countries and towns of your capsules';
+
+  @override
+  String get worldEmpty =>
+      'Leave a capsule somewhere new and its country gets a stamp here.';
+
+  @override
+  String worldFirst(String date) {
+    return 'First: $date';
+  }
+
+  @override
+  String get worldNote => 'Stamps come from capsules made since this update.';
+
+  @override
+  String get worldTitle => 'Passport';
+
+  @override
+  String worldTownsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'towns',
+      one: 'town',
+    );
+    return '$_temp0';
+  }
 }

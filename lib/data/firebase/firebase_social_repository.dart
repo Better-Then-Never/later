@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/capsule.dart';
 import '../models/social.dart';
+import '../models/world.dart';
 import '../repositories/repositories.dart';
 import 'firestore_mappers.dart';
 
@@ -137,6 +138,15 @@ class FirebaseSocialRepository implements SocialRepository {
       // Seen before (refused), or offline: nothing to count again.
     }
   }
+
+  @override
+  Stream<WorldSummary> watchWorld(String uid) => _db
+      .collection(FirestorePaths.users)
+      .doc(uid)
+      .collection(FirestorePaths.world)
+      .doc(FirestorePaths.worldSummary)
+      .snapshots()
+      .map((snap) => FirestoreMappers.world(snap.data()));
 
   @override
   Stream<List<Announcement>> watchAnnouncements({int limit = 20}) => _db

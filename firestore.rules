@@ -205,6 +205,16 @@ service cloud.firestore {
         allow write: if false;
       }
 
+      // Countries and towns of the user's capsules (B7), kept by the
+      // functions; seen like the achievements.
+      match /world/{doc} {
+        allow read: if isMe(uid)
+          || (signedIn()
+            && get(/databases/$(database)/documents/users/$(uid)).data.get('showAchievements', true) == true
+            && me() in get(/databases/$(database)/documents/users/$(uid)).data.get('friends', []));
+        allow write: if false;
+      }
+
       // Capsules of others the user opened (B7): one marker each, written
       // once by the app (never changed); a function counts it
       // (stats.capsulesViewed) and records that it did.
@@ -407,7 +417,7 @@ service cloud.firestore {
             'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
             'sharedWith', 'capturedAt', 'utcOffsetMinutes', 'showAuthor',
             'allowComments', 'allowReactions', 'locationPrecision', 'frames',
-            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors'])
+            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors', 'countryCode'])
           && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
             'privacy', 'createdAt', 'color'])
           && d.ownerId == me()
@@ -434,6 +444,8 @@ service cloud.firestore {
           && d.get('frameDelayMs', 300) >= 80 && d.get('frameDelayMs', 300) <= 2000
           && (d.get('thumbUrl', '') is string && d.get('thumbUrl', '').size() <= 2048)
           && (d.get('placeName', '') is string && d.get('placeName', '').size() <= 200)
+          && (d.get('countryCode', 'XX') is string
+            && d.get('countryCode', 'XX').matches('^[A-Z]{2}$'))
           && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
           && isServerTime(d.createdAt)
           && (d.get('isScheduled', false) is bool)
@@ -515,6 +527,13 @@ service cloud.firestore {
     }
 
     // Announcements: written by the admin-only sendAnnouncement function.
+    // The app's limits (B7, entitlements/limits): read by every signed-in
+    // app, written from the console or by the team's tools only.
+    match /entitlements/{doc} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
     match /announcements/{announcementId} {
       allow read: if signedIn();
       allow write: if false;

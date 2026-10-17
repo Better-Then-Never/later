@@ -3323,4 +3323,62 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get streakSafe => 'Dzisiaj się liczy. Do jutra!';
+
+  @override
+  String worldCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kapsuły',
+      many: '$count kapsuł',
+      few: '$count kapsuły',
+      one: '$count kapsuła',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String worldCountriesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'kraju',
+      many: 'krajów',
+      few: 'kraje',
+      one: 'kraj',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get worldDescription => 'Kraje i miasta twoich kapsuł';
+
+  @override
+  String get worldEmpty =>
+      'Zostaw kapsułę w nowym miejscu, a jej kraj dostanie tu pieczątkę.';
+
+  @override
+  String worldFirst(String date) {
+    return 'Pierwszy raz: $date';
+  }
+
+  @override
+  String get worldNote =>
+      'Pieczątki dostają kapsuły utworzone po tej aktualizacji.';
+
+  @override
+  String get worldTitle => 'Paszport';
+
+  @override
+  String worldTownsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'miasta',
+      many: 'miast',
+      few: 'miasta',
+      one: 'miasto',
+    );
+    return '$_temp0';
+  }
 }

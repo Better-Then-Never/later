@@ -229,6 +229,15 @@ void main() {
       );
       expect(legacy['title'], 'T');
       expect(legacy['imageUrl'], 'https://i');
+      // First only the newest go; the frames stay.
+      final latest = FirestoreMappers.withoutLatest(m);
+      expect(latest['frames'], ['https://1', 'https://2']);
+      expect(
+        latest.keys.toSet().intersection(
+          FirestoreMappers.capsuleFieldsAddedLatest,
+        ),
+        isEmpty,
+      );
     });
   });
 

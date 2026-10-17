@@ -891,6 +891,28 @@ describe('suggestions from contacts', () => {
   });
 });
 
+describe('entitlements (B7)', () => {
+  test('every signed-in app reads the limits; nobody writes them', async () => {
+    await seed((db) => setDoc(doc(db, 'entitlements/limits'), { loopFrames: 10 }));
+    await assertSucceeds(getDoc(doc(as('alice'), 'entitlements/limits')));
+    await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), 'entitlements/limits')));
+    await assertFails(setDoc(doc(as('alice'), 'entitlements/limits'), { loopFrames: 99 }));
+  });
+});
+
+describe('world (B7)', () => {
+  test('the summary is read like achievements, written by nobody', async () => {
+    await seed(async (db) => {
+      await setDoc(doc(db, 'users/alice'), { uid: 'alice', name: 'Alice', username: 'alice', friends: ['bob'] });
+      await setDoc(doc(db, 'users/alice/world/summary'), { countries: {} });
+    });
+    await assertSucceeds(getDoc(doc(as('alice'), 'users/alice/world/summary')));
+    await assertSucceeds(getDoc(doc(as('bob'), 'users/alice/world/summary')));
+    await assertFails(getDoc(doc(as('carol'), 'users/alice/world/summary')));
+    await assertFails(setDoc(doc(as('alice'), 'users/alice/world/summary'), { countries: {} }));
+  });
+});
+
 describe('capsules viewed (B7)', () => {
   const mark = (db, uid, id) => doc(db, `users/${uid}/viewed/${id}`);
 
@@ -1042,7 +1064,11 @@ describe('social and gamification (night session)', () => {
       frameDelayMs: 250,
       thumbUrl: 'https://thumb',
       placeName: 'Grindelwald',
+      countryCode: 'CH',
     })));
+    // The country is an ISO code (B7).
+    await assertFails(setDoc(doc(db, 'capsules/a6'), fresh({ countryCode: 'che' })));
+    await assertFails(setDoc(doc(db, 'capsules/a7'), fresh({ countryCode: 7 })));
     await assertFails(setDoc(doc(db, 'capsules/a2'), fresh({ location: new GeoPoint(0, 0) })));
     await assertFails(setDoc(doc(db, 'capsules/a3'), fresh({ capturedAt: Timestamp.fromMillis(Date.now() + 3600 * 1000) })));
     await assertFails(setDoc(doc(db, 'capsules/a4'), fresh({ frames: Array(11).fill('https://f') })));

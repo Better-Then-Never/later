@@ -6,6 +6,7 @@ import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/social.dart';
 import '../models/user_profile.dart';
+import '../models/world.dart';
 import '../models/user_settings.dart';
 
 /// Result of a Google sign-in, or null when the user cancelled.
@@ -355,6 +356,10 @@ abstract interface class SocialRepository {
   /// [uid] opened someone else's [capsuleId] (B7): a marker a function
   /// counts once ("Curious"). Never throws.
   Future<void> markViewed(String uid, String capsuleId);
+
+  /// Countries and towns of [uid]'s capsules (B7; own, or a friend's when
+  /// they share their achievements). Empty when there is none yet.
+  Stream<WorldSummary> watchWorld(String uid);
 
   /// Messages from the Later team, newest first.
   Stream<List<Announcement>> watchAnnouncements({int limit});

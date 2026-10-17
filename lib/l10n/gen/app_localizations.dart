@@ -5389,6 +5389,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Today counts. See you tomorrow!'**
   String get streakSafe;
+
+  /// On a country stamp: capsules left there.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 capsule} other{{count} capsules}}'**
+  String worldCapsules(int count);
+
+  /// Under the number of countries in the passport and on the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{country} other{countries}}'**
+  String worldCountriesLabel(int count);
+
+  /// Under the passport title.
+  ///
+  /// In en, this message translates to:
+  /// **'Countries and towns of your capsules'**
+  String get worldDescription;
+
+  /// Passport without stamps.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a capsule somewhere new and its country gets a stamp here.'**
+  String get worldEmpty;
+
+  /// On a country stamp: the month of the first capsule there ("Oct 2026").
+  ///
+  /// In en, this message translates to:
+  /// **'First: {date}'**
+  String worldFirst(String date);
+
+  /// Footnote: older capsules have no country, so they are not in the passport.
+  ///
+  /// In en, this message translates to:
+  /// **'Stamps come from capsules made since this update.'**
+  String get worldNote;
+
+  /// The world view (B7): a passport of the countries where the user left capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'Passport'**
+  String get worldTitle;
+
+  /// Under the number of towns in the passport and on the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{town} other{towns}}'**
+  String worldTownsLabel(int count);
 }
 
 class _AppLocalizationsDelegate

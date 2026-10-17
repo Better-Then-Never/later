@@ -270,20 +270,27 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
   }
 
   /// Rules deployed before the added capsule fields reject them: the capsule
-  /// is then saved without them, once, so the app may ship before the rules.
+  /// is then saved without the newest ones, and failing that without any,
+  /// so the app may ship before the rules.
   Future<void> _setNew(
     DocumentReference<Map<String, dynamic>> doc,
     Map<String, dynamic> data,
   ) async {
-    try {
-      await doc.set(data);
-    } on FirebaseException catch (e) {
-      final legacy = FirestoreMappers.legacyCapsule(data);
-      if (e.code != 'permission-denied' || legacy.length == data.length) {
-        rethrow;
+    final tries = [
+      data,
+      FirestoreMappers.withoutLatest(data),
+      FirestoreMappers.legacyCapsule(data),
+    ];
+    for (var i = 0; i < tries.length; i++) {
+      // A shape no smaller than the last one would be refused again.
+      if (i > 0 && tries[i].length == tries[i - 1].length) continue;
+      try {
+        await doc.set(tries[i]);
+        return;
+      } on FirebaseException catch (e) {
+        if (e.code != 'permission-denied' || i == tries.length - 1) rethrow;
+        AppLogger.warning('Capsule rejected with the added fields, retrying');
       }
-      AppLogger.warning('Capsule rejected with the added fields, retrying');
-      await doc.set(legacy);
     }
   }
 

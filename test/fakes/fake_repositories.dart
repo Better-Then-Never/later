@@ -9,6 +9,7 @@ import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/friend_request.dart';
 import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
+import 'package:later/data/models/world.dart';
 import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/repositories/repositories.dart';
 
@@ -1176,6 +1177,12 @@ class FakeSocialRepository implements SocialRepository {
   @override
   Stream<List<Announcement>> watchAnnouncements({int limit = 20}) =>
       seeded(() => announcements.take(limit).toList(), _changes.stream);
+
+  final Map<String, WorldSummary> worlds = {};
+
+  @override
+  Stream<WorldSummary> watchWorld(String uid) =>
+      seeded(() => worlds[uid] ?? WorldSummary.empty, _changes.stream);
 
   /// "uid/capsuleId" of every marker written.
   final List<String> viewed = [];

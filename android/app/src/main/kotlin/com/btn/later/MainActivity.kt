@@ -80,6 +80,25 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // Country names in the app's language (the world view, B7): the
+        // platform knows them for every language, no table in the app.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/locale")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "countryNames" -> {
+                        val codes = call.argument<List<String>>("codes") ?: emptyList()
+                        val language = java.util.Locale.forLanguageTag(
+                            call.argument<String>("language") ?: "en",
+                        )
+                        result.success(
+                            codes.associateWith { code ->
+                                java.util.Locale("", code).getDisplayCountry(language)
+                            },
+                        )
+                    }
+                    else -> result.notImplemented()
+                }
+            }
         // The signed-in home screen drew its first frame (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->

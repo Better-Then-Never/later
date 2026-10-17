@@ -3316,4 +3316,62 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get streakSafe => 'Сегодня засчитано. До завтра!';
+
+  @override
+  String worldCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count капсулы',
+      many: '$count капсул',
+      few: '$count капсулы',
+      one: '$count капсула',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String worldCountriesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'страны',
+      many: 'стран',
+      few: 'страны',
+      one: 'страна',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get worldDescription => 'Страны и города ваших капсул';
+
+  @override
+  String get worldEmpty =>
+      'Оставьте капсулу в новом месте, и здесь появится штамп её страны.';
+
+  @override
+  String worldFirst(String date) {
+    return 'Впервые: $date';
+  }
+
+  @override
+  String get worldNote =>
+      'Штампы получают капсулы, созданные после этого обновления.';
+
+  @override
+  String get worldTitle => 'Паспорт';
+
+  @override
+  String worldTownsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'города',
+      many: 'городов',
+      few: 'города',
+      one: 'город',
+    );
+    return '$_temp0';
+  }
 }

@@ -371,6 +371,7 @@ class CapsuleOutbox extends ChangeNotifier
       'allowReactions': d.allowReactions,
       'locationPrecision': d.locationPrecision.name,
       'placeName': d.placeName,
+      if (d.countryCode case final code?) 'countryCode': code,
       // Frame files are named after the capsule; only their number is kept.
       if (d.framePaths.isNotEmpty) 'frames': d.framePaths.length,
       if (d.framePaths.isNotEmpty) 'frameDelayMs': d.frameDelayMs,
@@ -408,6 +409,7 @@ class CapsuleOutbox extends ChangeNotifier
         allowReactions: j['allowReactions'] as bool? ?? true,
         locationPrecision: LocationPrecision.parse(j['locationPrecision']),
         placeName: j['placeName'] as String?,
+        countryCode: j['countryCode'] as String?,
         framePaths: [
           for (var i = 0; i < ((j['frames'] as num?)?.toInt() ?? 0); i++)
             '$folder/${id}_frame_$i.jpg',

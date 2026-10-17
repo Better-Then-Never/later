@@ -53,5 +53,13 @@
   "profileStatTogether": "con amigos",
   "profileNewCapsule": "Nueva cápsula",
   "profileNewForFriends": "Para amigos",
-  "profileNewForEveryone": "Para todos"
+  "profileNewForEveryone": "Para todos",
+  "worldTitle": "Pasaporte",
+  "worldDescription": "Países y ciudades de tus cápsulas",
+  "worldCountriesLabel": "{count, plural, =1{país} other{países}}",
+  "worldTownsLabel": "{count, plural, =1{ciudad} other{ciudades}}",
+  "worldCapsules": "{count, plural, =1{1 cápsula} other{{count} cápsulas}}",
+  "worldFirst": "Primera vez: {date}",
+  "worldEmpty": "Deja una cápsula en un lugar nuevo y su país tendrá aquí un sello.",
+  "worldNote": "Los sellos son para las cápsulas creadas desde esta actualización."
 }

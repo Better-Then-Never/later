@@ -8,6 +8,7 @@ import '../models/friend_request.dart';
 import '../models/geo_position.dart';
 import '../models/social.dart';
 import '../models/user_profile.dart';
+import '../models/world.dart';
 import '../models/user_settings.dart';
 
 /// Collection and field names in one place.
@@ -28,6 +29,10 @@ abstract final class FirestorePaths {
   static const comments = 'comments';
   static const achievements = 'achievements';
   static const viewed = 'viewed';
+  static const world = 'world';
+
+  /// The one document in users/{uid}/world.
+  static const worldSummary = 'summary';
   static const announcements = 'announcements';
   static const reports = 'reports';
 
@@ -105,7 +110,33 @@ abstract final class FirestoreMappers {
     nightCapsules: _count(s['nightCapsules']),
     morningCapsules: _count(s['morningCapsules']),
     capsulesViewed: _count(s['capsulesViewed']),
+    countries: _count(s['countries']),
+    cities: _count(s['cities']),
   );
+
+  static final _countryCode = RegExp(r'^[A-Z]{2}$');
+
+  /// users/{uid}/world/summary (B7); a missing or odd document is empty.
+  static WorldSummary world(Map<String, Object?>? data) {
+    final countries = <CountryVisit>[
+      for (final e in _map(data?['countries']).entries)
+        if (_countryCode.hasMatch(e.key))
+          CountryVisit(
+            code: e.key,
+            capsules: _count(_map(e.value)['capsules']),
+            cities: {
+              for (final t in _map(_map(e.value)['cities']).entries)
+                if (t.key.isNotEmpty && t.value is num && (t.value as num) > 0)
+                  t.key: (t.value as num).toInt(),
+            },
+            first: _date(_map(e.value)['first']),
+            last: _date(_map(e.value)['last']),
+          ),
+    ];
+    final never = DateTime(9999);
+    countries.sort((a, b) => (a.first ?? never).compareTo(b.first ?? never));
+    return WorldSummary(countries: countries);
+  }
 
   static Capsule capsule(String id, Map<String, dynamic> data) {
     final location = data['location'];
@@ -169,6 +200,22 @@ abstract final class FirestoreMappers {
     'thumbUrl',
     'placeName',
     'coAuthors',
+    'countryCode',
+  };
+
+  /// The newest of them (co-authors, thumbnails, the country: this
+  /// session's rules). Dropped first, so a backend that has the earlier
+  /// rules keeps the rest (capture day, settings, frames).
+  static const capsuleFieldsAddedLatest = {
+    'thumbUrl',
+    'coAuthors',
+    'countryCode',
+  };
+
+  /// [capsule] without [capsuleFieldsAddedLatest].
+  static Map<String, dynamic> withoutLatest(Map<String, dynamic> capsule) => {
+    for (final e in capsule.entries)
+      if (!capsuleFieldsAddedLatest.contains(e.key)) e.key: e.value,
   };
 
   /// [capsule] without the added fields, for a backend whose rules predate
@@ -216,6 +263,9 @@ abstract final class FirestoreMappers {
     if (thumbUrl != null) 'thumbUrl': thumbUrl,
     if (draft.placeName case final String place when place.trim().isNotEmpty)
       'placeName': place.length > 200 ? place.substring(0, 200) : place,
+    if (draft.countryCode case final String code
+        when _countryCode.hasMatch(code))
+      'countryCode': code,
   };
 
   static Chat chat(String id, Map<String, dynamic> data) => Chat(

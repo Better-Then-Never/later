@@ -17,6 +17,8 @@ class UserStats {
     this.nightCapsules = 0,
     this.morningCapsules = 0,
     this.capsulesViewed = 0,
+    this.countries = 0,
+    this.cities = 0,
   });
 
   final int capsules;
@@ -38,6 +40,10 @@ class UserStats {
 
   /// Capsules of others the user opened, each counted once (B7).
   final int capsulesViewed;
+
+  /// Countries and towns with a capsule (the world view, B7).
+  final int countries;
+  final int cities;
 
   /// The streak as of [now] (local time): it ends when a whole day passed
   /// without a capsule, even before the server notices.
@@ -75,7 +81,9 @@ class UserStats {
       other.commentsWritten == commentsWritten &&
       other.nightCapsules == nightCapsules &&
       other.morningCapsules == morningCapsules &&
-      other.capsulesViewed == capsulesViewed;
+      other.capsulesViewed == capsulesViewed &&
+      other.countries == countries &&
+      other.cities == cities;
 
   @override
   int get hashCode => Object.hash(
@@ -92,6 +100,8 @@ class UserStats {
     nightCapsules,
     morningCapsules,
     capsulesViewed,
+    countries,
+    cities,
   );
 }
 

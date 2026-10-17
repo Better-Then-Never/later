@@ -53,5 +53,13 @@
   "profileStatTogether": "mit Freunden",
   "profileNewCapsule": "Neue Kapsel",
   "profileNewForFriends": "Für Freunde",
-  "profileNewForEveryone": "Für alle"
+  "profileNewForEveryone": "Für alle",
+  "worldTitle": "Reisepass",
+  "worldDescription": "Länder und Orte deiner Kapseln",
+  "worldCountriesLabel": "{count, plural, =1{Land} other{Länder}}",
+  "worldTownsLabel": "{count, plural, =1{Ort} other{Orte}}",
+  "worldCapsules": "{count, plural, =1{1 Kapsel} other{{count} Kapseln}}",
+  "worldFirst": "Zuerst: {date}",
+  "worldEmpty": "Hinterlasse eine Kapsel an einem neuen Ort, und ihr Land bekommt hier einen Stempel.",
+  "worldNote": "Stempel gibt es für Kapseln ab diesem Update."
 }

@@ -285,6 +285,7 @@ class CapsuleDraft {
     this.framePaths = const [],
     this.frameDelayMs = Capsule.defaultFrameDelayMs,
     this.placeName,
+    this.countryCode,
     this.coAuthors = const [],
     this.highQuality = false,
   });
@@ -346,6 +347,7 @@ class CapsuleDraft {
     framePaths: framePaths ?? this.framePaths,
     frameDelayMs: frameDelayMs,
     placeName: placeName,
+    countryCode: countryCode,
     coAuthors: coAuthors,
     highQuality: highQuality,
   );
@@ -353,5 +355,9 @@ class CapsuleDraft {
   /// Local files of a loop capsule, in order; [imagePath] is the first.
   final List<String> framePaths;
   final int frameDelayMs;
+
+  /// The town and country (ISO "PL") from the phone's geocoder, for the
+  /// world view (B7); either may be missing.
   final String? placeName;
+  final String? countryCode;
 }

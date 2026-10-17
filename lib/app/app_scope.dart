@@ -13,6 +13,7 @@ import '../data/firebase/firebase_settings_repository.dart';
 import '../data/firebase/firebase_social_repository.dart';
 import '../data/firebase/firebase_user_repository.dart';
 import '../data/repositories/repositories.dart';
+import '../data/services/country_names.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/services/location_service.dart';
 import '../data/services/network_service.dart';
@@ -80,6 +81,7 @@ class _AppScopeState extends State<AppScope> {
       FirebaseContactMatchRepository();
   final _location = const LocationService();
   final _geocoding = GeocodingService();
+  final _countryNames = CountryNames();
   final _voice = VoiceService();
   late final _prefs = widget.preferences;
   final _links = AppLinkHandler(
@@ -204,6 +206,7 @@ class _AppScopeState extends State<AppScope> {
         Provider<ContactMatchRepository>.value(value: _contactMatches),
         Provider<LocationService>.value(value: _location),
         Provider<GeocodingService>.value(value: _geocoding),
+        Provider<CountryNames>.value(value: _countryNames),
         Provider<VoiceService>.value(value: _voice),
         Provider<PreferencesStore>.value(value: _prefs),
         ChangeNotifierProvider<AppearanceController>.value(

@@ -53,5 +53,13 @@
   "profileStatTogether": "с друзьями",
   "profileNewCapsule": "Новая капсула",
   "profileNewForFriends": "Для друзей",
-  "profileNewForEveryone": "Для всех"
+  "profileNewForEveryone": "Для всех",
+  "worldTitle": "Паспорт",
+  "worldDescription": "Страны и города ваших капсул",
+  "worldCountriesLabel": "{count, plural, one{страна} few{страны} many{стран} other{страны}}",
+  "worldTownsLabel": "{count, plural, one{город} few{города} many{городов} other{города}}",
+  "worldCapsules": "{count, plural, one{{count} капсула} few{{count} капсулы} many{{count} капсул} other{{count} капсулы}}",
+  "worldFirst": "Впервые: {date}",
+  "worldEmpty": "Оставьте капсулу в новом месте, и здесь появится штамп её страны.",
+  "worldNote": "Штампы получают капсулы, созданные после этого обновления."
 }

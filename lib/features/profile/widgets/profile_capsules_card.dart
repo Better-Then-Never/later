@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/router/app_page_route.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../app/shell/selected_page.dart';
@@ -12,6 +13,7 @@ import '../../../data/models/capsule.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/styles/box_decorations.dart';
 import '../../history/own_capsules_store.dart';
+import '../../world/world_page.dart';
 
 /// What the user's capsules add up to: how many, in how many places, how
 /// many made with friends (a tap opens My capsules); and a new capsule for
@@ -69,6 +71,8 @@ class ProfileCapsulesCard extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 8),
+          const _PassportRow(),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -94,6 +98,79 @@ class ProfileCapsulesCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// "🌍 Passport · 3 countries · 7 towns ›": opens the world view (B7).
+class _PassportRow extends StatelessWidget {
+  const _PassportRow();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final palette = context.palette;
+    final session = context.read<SessionController>();
+    final (countries, towns) = context.select<SessionController, (int, int)>(
+      (s) => (s.profile?.stats.countries ?? 0, s.profile?.stats.cities ?? 0),
+    );
+    final detail = countries == 0
+        ? ''
+        : '$countries ${l10n.worldCountriesLabel(countries)} · '
+              '$towns ${l10n.worldTownsLabel(towns)}';
+    return Semantics(
+      button: true,
+      label: detail.isEmpty ? l10n.worldTitle : '${l10n.worldTitle}: $detail',
+      excludeSemantics: true,
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: () {
+            final uid = session.uid;
+            if (uid == null) return;
+            Navigator.of(context).push(appRoute<void>(WorldPage(uid: uid)));
+          },
+          child: Container(
+            height: 44,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecorations.greyCard(context, borderRadius: 22),
+            child: Row(
+              children: [
+                const Text('🌍', style: TextStyle(fontSize: 18)),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.worldTitle,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: palette.textPrimary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    detail,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.body.copyWith(
+                      fontSize: 13,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ),
+                Text(
+                  '›',
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 20,
+                    color: palette.textMuted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -880,5 +880,13 @@
   "streakAtRisk": "Heute zählt noch nicht: Hinterlasse vor Mitternacht eine Kapsel, um deine Serie zu halten.",
   "streakLongest": "Längste: {count, plural, =1{1 Tag} other{{count} Tage}}",
   "streakMakeCapsule": "Kapsel erstellen",
-  "streakSafe": "Heute zählt. Bis morgen!"
+  "streakSafe": "Heute zählt. Bis morgen!",
+  "worldCapsules": "{count, plural, =1{1 Kapsel} other{{count} Kapseln}}",
+  "worldCountriesLabel": "{count, plural, =1{Land} other{Länder}}",
+  "worldDescription": "Länder und Orte deiner Kapseln",
+  "worldEmpty": "Hinterlasse eine Kapsel an einem neuen Ort, und ihr Land bekommt hier einen Stempel.",
+  "worldFirst": "Zuerst: {date}",
+  "worldNote": "Stempel gibt es für Kapseln ab diesem Update.",
+  "worldTitle": "Reisepass",
+  "worldTownsLabel": "{count, plural, =1{Ort} other{Orte}}"
 }

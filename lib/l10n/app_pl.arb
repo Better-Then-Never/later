@@ -880,5 +880,13 @@
   "streakAtRisk": "Dzisiaj jeszcze się nie liczy: zostaw kapsułę przed północą, aby utrzymać serię.",
   "streakLongest": "Najdłuższa: {count, plural, one{{count} dzień} few{{count} dni} many{{count} dni} other{{count} dnia}}",
   "streakMakeCapsule": "Utwórz kapsułę",
-  "streakSafe": "Dzisiaj się liczy. Do jutra!"
+  "streakSafe": "Dzisiaj się liczy. Do jutra!",
+  "worldCapsules": "{count, plural, one{{count} kapsuła} few{{count} kapsuły} many{{count} kapsuł} other{{count} kapsuły}}",
+  "worldCountriesLabel": "{count, plural, one{kraj} few{kraje} many{krajów} other{kraju}}",
+  "worldDescription": "Kraje i miasta twoich kapsuł",
+  "worldEmpty": "Zostaw kapsułę w nowym miejscu, a jej kraj dostanie tu pieczątkę.",
+  "worldFirst": "Pierwszy raz: {date}",
+  "worldNote": "Pieczątki dostają kapsuły utworzone po tej aktualizacji.",
+  "worldTitle": "Paszport",
+  "worldTownsLabel": "{count, plural, one{miasto} few{miasta} many{miast} other{miasta}}"
 }

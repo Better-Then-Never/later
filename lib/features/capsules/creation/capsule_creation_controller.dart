@@ -11,6 +11,7 @@ import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/gallery_service.dart';
+import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../map/current_location.dart';
 import '../outbox/capsule_outbox.dart';
@@ -41,6 +42,7 @@ class CapsuleCreationController extends ChangeNotifier {
     this.highQuality = false,
     this.saveToGallery = false,
     GalleryService? gallery,
+    GeocodingService? geocoding,
     CreationDraftStore? drafts,
     CreationDraft? draft,
   }) : assert(recipientId == null || chats != null),
@@ -50,6 +52,7 @@ class CapsuleCreationController extends ChangeNotifier {
        _taken = {imagePath, ...framePaths},
        _outbox = outbox,
        _gallery = gallery,
+       _geocoding = geocoding,
        _precision = locationPrecision,
        capturedAt = capturedAt ?? DateTime.now(),
        _capsules = capsules,
@@ -65,6 +68,7 @@ class CapsuleCreationController extends ChangeNotifier {
        _position = currentLocation.position {
     if (draft != null) _restore(draft);
     if (_position == null) unawaited(_locate());
+    _askPlace();
     if (_drafts != null) {
       addListener(_draftChanged);
       titleController.addListener(_draftChanged);
@@ -130,6 +134,39 @@ class CapsuleCreationController extends ChangeNotifier {
   /// (or kept for later): the phone's own copy is deleted afterwards.
   final bool saveToGallery;
   final GalleryService? _gallery;
+
+  /// The town and country for the world view (B7).
+  final GeocodingService? _geocoding;
+
+  /// Where the capsule will be stored: rounded when approximate.
+  GeoPosition? get _stored {
+    final position = _position;
+    if (position == null) return null;
+    return _precision == LocationPrecision.approximate
+        ? position.approximate
+        : position;
+  }
+
+  /// Asks the geocoder early (it caches), so saving rarely waits for it.
+  void _askPlace() {
+    final spot = _stored;
+    final geocoding = _geocoding;
+    if (spot != null && geocoding != null) unawaited(geocoding.place(spot));
+  }
+
+  /// The place of [spot], waiting at most 2 s; null when unknown (offline,
+  /// no geocoder): the capsule is then saved without it.
+  Future<GeoPlace?> _placeOf(GeoPosition spot) async {
+    final geocoding = _geocoding;
+    if (geocoding == null) return null;
+    try {
+      return await geocoding
+          .place(spot)
+          .timeout(const Duration(seconds: 2), onTimeout: () => null);
+    } catch (_) {
+      return null;
+    }
+  }
 
   /// Fixed before the first attempt, so a retry (here or from the outbox)
   /// writes the same capsule.
@@ -319,6 +356,7 @@ class CapsuleCreationController extends ChangeNotifier {
     _here ??= _position;
     if (spot == _position) return;
     _position = spot;
+    _askPlace();
     notifyListeners();
   }
 
@@ -372,6 +410,7 @@ class CapsuleCreationController extends ChangeNotifier {
     if (_disposed || position == null || !position.isValid) return;
     _currentLocation.update(position);
     _position = position;
+    _askPlace();
     notifyListeners();
   }
 
@@ -389,6 +428,10 @@ class CapsuleCreationController extends ChangeNotifier {
       }
       final title = titleController.text.trim();
       final description = descriptionController.text.trim();
+      final stored = locationPrecision == LocationPrecision.approximate
+          ? position.approximate
+          : position;
+      final place = await _placeOf(stored);
       final draft = CapsuleDraft(
         id: _id,
         ownerId: ownerId,
@@ -396,10 +439,10 @@ class CapsuleCreationController extends ChangeNotifier {
         description: description.isEmpty ? null : description,
         privacy: _privacy,
         color: _color,
-        location: locationPrecision == LocationPrecision.approximate
-            ? position.approximate
-            : position,
+        location: stored,
         locationPrecision: locationPrecision,
+        placeName: place?.name,
+        countryCode: place?.countryCode,
         allowComments: _allowComments,
         allowReactions: _allowReactions,
         showAuthor: _showAuthor,

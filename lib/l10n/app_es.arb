@@ -880,5 +880,13 @@
   "streakAtRisk": "Hoy aún no cuenta: deja una cápsula antes de medianoche para mantener tu racha.",
   "streakLongest": "La más larga: {count, plural, =1{1 día} other{{count} días}}",
   "streakMakeCapsule": "Crear una cápsula",
-  "streakSafe": "Hoy cuenta. ¡Hasta mañana!"
+  "streakSafe": "Hoy cuenta. ¡Hasta mañana!",
+  "worldCapsules": "{count, plural, =1{1 cápsula} other{{count} cápsulas}}",
+  "worldCountriesLabel": "{count, plural, =1{país} other{países}}",
+  "worldDescription": "Países y ciudades de tus cápsulas",
+  "worldEmpty": "Deja una cápsula en un lugar nuevo y su país tendrá aquí un sello.",
+  "worldFirst": "Primera vez: {date}",
+  "worldNote": "Los sellos son para las cápsulas creadas desde esta actualización.",
+  "worldTitle": "Pasaporte",
+  "worldTownsLabel": "{count, plural, =1{ciudad} other{ciudades}}"
 }
