@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -12,6 +13,7 @@ import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
 import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_motion.dart';
 
 /// Why the camera cannot be shown. The message is chosen when the error view
 /// is built, so it follows the app's language.
@@ -39,6 +41,19 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   List<CameraDescription> _cameras = const [];
   CameraLensDirection _lens = CameraLensDirection.back;
   bool _flashOn = false;
+
+  // Pinch to zoom and tap to focus (F-20/F-21).
+  double _minZoom = 1;
+  double _maxZoom = 1;
+  double _zoom = 1;
+  double _zoomAtStart = 1;
+  bool _showZoom = false;
+  Timer? _zoomHint;
+  Offset? _focusAt;
+  int _focusTick = 0;
+
+  /// The white blink when the shutter fires (F-22: instant feedback).
+  bool _shutterBlink = false;
   bool _capturing = false;
   _CameraError? _error;
 
@@ -55,6 +70,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _zoomHint?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_controller?.dispose());
     super.dispose();
@@ -125,7 +141,17 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       await controller.setFlashMode(
         _flashOn ? FlashMode.always : FlashMode.off,
       );
-      if (mounted) setState(() => _error = null);
+      final minZoom = await controller.getMinZoomLevel();
+      final maxZoom = await controller.getMaxZoomLevel();
+      if (mounted) {
+        setState(() {
+          _error = null;
+          _minZoom = minZoom;
+          // Beyond 8x the preview is mostly noise.
+          _maxZoom = maxZoom.clamp(minZoom, 8.0);
+          _zoom = minZoom;
+        });
+      }
     } on CameraException catch (e) {
       AppLogger.warning('Camera init failed', error: e);
       if (!mounted) return;
@@ -169,7 +195,14 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     if (_capturing || controller == null || !controller.value.isInitialized) {
       return;
     }
-    setState(() => _capturing = true);
+    unawaited(HapticFeedback.mediumImpact());
+    setState(() {
+      _capturing = true;
+      _shutterBlink = true;
+    });
+    Future<void>.delayed(const Duration(milliseconds: 120), () {
+      if (mounted) setState(() => _shutterBlink = false);
+    });
     try {
       final picture = await controller.takePicture();
       if (!mounted) return;
@@ -183,6 +216,52 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     } on CameraException catch (e) {
       AppLogger.warning('Taking the picture failed', error: e);
       if (mounted) setState(() => _capturing = false);
+    }
+  }
+
+  void _onScaleStart(ScaleStartDetails _) => _zoomAtStart = _zoom;
+
+  Future<void> _onScaleUpdate(ScaleUpdateDetails details) async {
+    final controller = _controller;
+    if (controller == null || details.pointerCount < 2) return;
+    final next = (_zoomAtStart * details.scale).clamp(_minZoom, _maxZoom);
+    if ((next - _zoom).abs() < 0.01) return;
+    setState(() {
+      _zoom = next;
+      _showZoom = true;
+    });
+    _zoomHint?.cancel();
+    _zoomHint = Timer(const Duration(milliseconds: 900), () {
+      if (mounted) setState(() => _showZoom = false);
+    });
+    try {
+      await controller.setZoomLevel(next);
+    } on CameraException catch (e) {
+      AppLogger.debug('Zoom failed: ${e.code}');
+    }
+  }
+
+  Future<void> _onTapToFocus(TapUpDetails details, Size size) async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
+    final point = Offset(
+      (details.localPosition.dx / size.width).clamp(0.0, 1.0),
+      (details.localPosition.dy / size.height).clamp(0.0, 1.0),
+    );
+    setState(() {
+      _focusAt = details.localPosition;
+      _focusTick++;
+    });
+    unawaited(HapticFeedback.selectionClick());
+    try {
+      if (controller.value.focusPointSupported) {
+        await controller.setFocusPoint(point);
+      }
+      if (controller.value.exposurePointSupported) {
+        await controller.setExposurePoint(point);
+      }
+    } on CameraException catch (e) {
+      AppLogger.debug('Focus failed: ${e.code}');
     }
   }
 
@@ -218,7 +297,61 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                child: CameraPreview(controller),
+                child: CameraPreview(
+                  controller,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onScaleStart: _onScaleStart,
+                      onScaleUpdate: _onScaleUpdate,
+                      onTapUp: (d) => _onTapToFocus(d, constraints.biggest),
+                      child: Stack(
+                        children: [
+                          if (_focusAt case final Offset at)
+                            Positioned(
+                              left: at.dx - 32,
+                              top: at.dy - 32,
+                              child: _FocusRing(key: ValueKey(_focusTick)),
+                            ),
+                          Align(
+                            alignment: const Alignment(0, 0.85),
+                            child: AnimatedOpacity(
+                              opacity: _showZoom ? 1 : 0,
+                              duration: AppMotion.of(context, AppMotion.fast),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.mediaScrim,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${_zoom.toStringAsFixed(1)}×',
+                                  style: const TextStyle(
+                                    color: AppColors.onMedia,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          IgnorePointer(
+                            child: AnimatedOpacity(
+                              opacity: _shutterBlink ? 0.85 : 0,
+                              duration: AppMotion.quick,
+                              child: const ColoredBox(
+                                color: AppColors.onMedia,
+                                child: SizedBox.expand(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -337,6 +470,58 @@ class _ErrorView extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The ring where the user tapped to focus: shrinks in, then fades out.
+class _FocusRing extends StatefulWidget {
+  const _FocusRing({super.key});
+
+  @override
+  State<_FocusRing> createState() => _FocusRingState();
+}
+
+class _FocusRingState extends State<_FocusRing>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(
+    vsync: this,
+    // Shrinks in, holds, fades: three slow steps.
+    duration: AppMotion.slow * 3,
+  )..forward();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (context, _) {
+          final t = _c.value;
+          final scale =
+              1.25 - 0.25 * Curves.easeOut.transform((t * 3).clamp(0, 1));
+          final opacity = t < 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
+          return Opacity(
+            opacity: opacity,
+            child: Transform.scale(
+              scale: scale,
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.onMedia, width: 2),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
