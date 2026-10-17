@@ -160,7 +160,8 @@ class _HistoryPageState extends State<HistoryPage> {
                         child: DefaultButtonWithIcon(
                           height: screenHeight * 0.05,
                           onTap: _controller.resetAll,
-                          assetPath: AppIcons.historySort,
+                          // Clear, not sort (F-31: it reused the sort icon).
+                          assetPath: AppIcons.friendsDeleteReset,
                           text: l10n.historyReset,
                         ),
                       ),
