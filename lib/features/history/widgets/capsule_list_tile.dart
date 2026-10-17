@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
@@ -151,27 +152,56 @@ class CapsuleListTile extends StatelessWidget {
                             child: _PlaceName(capsule: capsule),
                           ),
                           SizedBox(height: screen.height * 0.005),
-                          if (capsule.pending)
-                            _Pill(
-                              color: AppColors.warningOrange,
-                              child: _pillText(
+                          // Waiting → uploaded morphs in place (the capsule
+                          // keeps its id): the pill crossfades and resizes.
+                          AnimatedSize(
+                            duration: AppMotion.of(context, AppMotion.standard),
+                            curve: AppMotion.standardCurve,
+                            alignment: Alignment.centerRight,
+                            child: AnimatedSwitcher(
+                              duration: AppMotion.of(
                                 context,
-                                context.l10n.historyWaitingUpload,
+                                AppMotion.standard,
                               ),
-                            )
-                          else if (createdAt != null)
-                            _Pill(
-                              color: AppColors.brandGreen,
-                              // Day.month.year like the app's other date
-                              // pills, in the app's language.
-                              child: _pillText(
-                                context,
-                                AppDates.short(
-                                  createdAt,
-                                  context.l10n.localeName,
-                                ),
-                              ),
+                              switchInCurve: AppMotion.enter,
+                              switchOutCurve: AppMotion.exit,
+                              transitionBuilder: (child, animation) =>
+                                  FadeTransition(
+                                    opacity: animation,
+                                    child: ScaleTransition(
+                                      scale: Tween(
+                                        begin: 0.85,
+                                        end: 1.0,
+                                      ).animate(animation),
+                                      child: child,
+                                    ),
+                                  ),
+                              child: capsule.pending
+                                  ? _Pill(
+                                      key: const ValueKey('pending'),
+                                      color: AppColors.warningOrange,
+                                      child: _pillText(
+                                        context,
+                                        context.l10n.historyWaitingUpload,
+                                      ),
+                                    )
+                                  : createdAt != null
+                                  ? _Pill(
+                                      key: const ValueKey('date'),
+                                      color: AppColors.brandGreen,
+                                      // Day.month.year like the app's other
+                                      // date pills, in the app's language.
+                                      child: _pillText(
+                                        context,
+                                        AppDates.short(
+                                          createdAt,
+                                          context.l10n.localeName,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink(),
                             ),
+                          ),
                         ],
                       ),
                     ],
@@ -219,7 +249,7 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.color, required this.child});
+  const _Pill({super.key, required this.color, required this.child});
 
   final Color color;
   final Widget child;
