@@ -80,4 +80,48 @@ void main() {
     expect(AppMotion.fast, const Duration(milliseconds: 150));
     expect(AppMotion.emphasized, const Duration(milliseconds: 250));
   });
+
+  testWidgets('the first rows of a list come in one after another, later ones '
+      'simply appear', (tester) async {
+    double opacity(String key) => tester
+        .widget<FadeTransition>(
+          find
+              .descendant(
+                of: find.byKey(ValueKey(key)),
+                matching: find.byType(FadeTransition),
+              )
+              .first,
+        )
+        .opacity
+        .value;
+
+    Widget list(int rows) => _app(
+      AppStaggerScope(
+        child: Column(
+          children: [
+            for (var i = 0; i < rows; i++)
+              AppStaggerItem(
+                key: ValueKey('row$i'),
+                index: i,
+                child: Text('row $i'),
+              ),
+          ],
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(list(3));
+    await tester.pump(const Duration(milliseconds: 60));
+    expect(opacity('row0'), greaterThan(0));
+    expect(opacity('row2'), 0, reason: 'its turn comes 70 ms in');
+    await tester.pumpAndSettle();
+    expect(opacity('row2'), 1);
+
+    // Well after the list appeared: a new row does not animate.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 700)),
+    );
+    await tester.pumpWidget(list(4));
+    expect(opacity('row3'), 1);
+  });
 }

@@ -11,6 +11,7 @@ import '../notification_router.dart';
 import '../notifications_selection_controller.dart';
 import '../notifications_store.dart';
 import 'notification_item.dart';
+import '../../../shared/motion/app_motion_widgets.dart';
 
 /// The tabs of the notifications page. "Replies" and "Comments" exist in the
 /// design but no feature produces those types yet (see IDEAS_NOT_DONE.md).
@@ -50,26 +51,31 @@ class NotificationsList extends StatelessWidget {
           color: context.palette.icon,
           // The list is live; the gesture is kept from the original design.
           onRefresh: () async {},
-          child: ListView.builder(
-            padding: const EdgeInsets.only(top: 8, bottom: 16),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final n = items[index];
-              return NotificationItem(
-                key: ValueKey(n.id),
-                notification: n,
-                isSelected: selection.isSelected(n.id),
-                selectionMode: selection.isSelectionMode,
-                onTap: () {
-                  if (selection.isSelectionMode) {
-                    selection.toggleSelection(n.id);
-                  } else {
-                    _open(context, n);
-                  }
-                },
-                onLongPress: () => selection.toggleSelection(n.id),
-              );
-            },
+          child: AppStaggerScope(
+            child: ListView.builder(
+              padding: const EdgeInsets.only(top: 8, bottom: 16),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final n = items[index];
+                return AppStaggerItem(
+                  key: ValueKey(n.id),
+                  index: index,
+                  child: NotificationItem(
+                    notification: n,
+                    isSelected: selection.isSelected(n.id),
+                    selectionMode: selection.isSelectionMode,
+                    onTap: () {
+                      if (selection.isSelectionMode) {
+                        selection.toggleSelection(n.id);
+                      } else {
+                        _open(context, n);
+                      }
+                    },
+                    onLongPress: () => selection.toggleSelection(n.id),
+                  ),
+                );
+              },
+            ),
           ),
         );
       },
