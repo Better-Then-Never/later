@@ -6,7 +6,8 @@ import 'package:later/features/friends/friends_store.dart';
 import 'package:later/features/friends/pinned_friends_controller.dart';
 import 'package:later/shared/widgets/buttons/default_text_button.dart';
 import 'package:later/shared/styles/box_decorations.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/features/profile/widgets/pinned_friends/pinned_friends_row.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,8 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final edge = BorderSide(color: palette.cardBorder);
     return Stack(
       children: [
         Container(
@@ -50,12 +53,17 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
           child: Container(
             width: screenWidth - 32,
             height: 45,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.only(
+            decoration: BoxDecoration(
+              color: palette.surface,
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(25),
                 bottomRight: Radius.circular(25),
               ),
+              // This strip covers the bottom of the card: repeat the card's
+              // dark-mode hairline edge so it does not stop halfway.
+              border: palette.isDark
+                  ? Border(left: edge, right: edge, bottom: edge)
+                  : null,
             ),
           ),
         ),
@@ -81,7 +89,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
                 height: 40,
                 child: DefaultTextButton(
                   onTap: () => AppRoutes.toMyFriends(context),
-                  text: 'My friends',
+                  text: context.l10n.profileMyFriends,
                 ),
               ),
             ],

@@ -6,6 +6,7 @@ import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/buttons/default_text_button.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class ProfilePageMyCapsulesPanel extends StatelessWidget {
   const ProfilePageMyCapsulesPanel({super.key});
@@ -13,13 +14,14 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final l10n = context.l10n;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Center(
+        Center(
           child: DefaultText(
-            'My capsules',
+            l10n.profileMyCapsules,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -60,7 +62,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                         privacy: CapsulePrivacy.friends,
                       );
                     },
-                    text: 'Add to map | Only for friends',
+                    text: l10n.profileAddToMapFriends,
                   ),
                 ),
               ),
@@ -85,7 +87,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                         privacy: CapsulePrivacy.public,
                       );
                     },
-                    text: 'Add to map | Everyone',
+                    text: l10n.profileAddToMapEveryone,
                   ),
                 ),
               ),

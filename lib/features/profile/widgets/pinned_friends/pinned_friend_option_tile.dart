@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 class PinnedFriendOptionTile extends StatelessWidget {
@@ -20,7 +20,7 @@ class PinnedFriendOptionTile extends StatelessWidget {
       child: TextButton(
         onPressed: onTap,
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.black,
+          foregroundColor: context.palette.textPrimary,
           textStyle: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,

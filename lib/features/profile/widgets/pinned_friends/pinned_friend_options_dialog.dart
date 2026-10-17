@@ -6,6 +6,8 @@ import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
 import 'package:later/features/profile/widgets/pinned_friends/pinned_friend_option_tile.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class PinnedFriendOptionsDialog extends StatelessWidget {
   final String friendUid;
@@ -21,6 +23,10 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final name = context.select<UserDirectory, String?>(
+      (d) => d.profile(friendUid)?.name,
+    );
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.pop(context),
@@ -32,26 +38,25 @@ class PinnedFriendOptionsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               DefaultText(
-                context.select<UserDirectory, String>(
-                  (d) => d.profile(friendUid)?.name ?? 'Unknown',
-                ),
+                name ?? l10n.commonUnknownUser,
                 fontSize: 22,
                 color: AppColors.brandGreen,
                 fontWeight: FontWeight.bold,
                 padding: const EdgeInsets.symmetric(vertical: 4),
               ),
-              const ProfilePageDivider(
+              // The text colour at 45 %: black45 in light, as before.
+              ProfilePageDivider(
                 width: double.infinity,
-                color: AppColors.black45,
+                color: context.palette.textPrimary.withAlpha(0x73),
               ),
               PinnedFriendOptionTile(
                 onTap: onViewProfile,
-                text: 'View profile page',
+                text: l10n.profileViewProfile,
               ),
               const ProfilePageDivider(width: double.infinity),
               PinnedFriendOptionTile(
                 onTap: onChoosePinned,
-                text: 'Choose pinned friends',
+                text: l10n.profileChoosePinned,
               ),
             ],
           ),

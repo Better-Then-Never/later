@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 
 enum ImageOption { gallery, camera, delete }
@@ -26,7 +28,7 @@ class ImageOptionsSheet extends StatelessWidget {
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: AppColors.barrier,
+    barrierColor: context.palette.scrim,
     builder: (context) => GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(context).pop(),
@@ -44,11 +46,12 @@ class ImageOptionsSheet extends StatelessWidget {
   static const _green = AppColors.brandGreen;
   static const _red = AppColors.danger;
 
+  /// [foreground] is the theme's text colour when null.
   Widget _option(
     BuildContext context,
     String text,
     ImageOption value, {
-    Color foreground = AppColors.black,
+    Color? foreground,
     BorderRadius borderRadius = BorderRadius.zero,
   }) => SizedBox(
     height: _rowHeight,
@@ -56,7 +59,7 @@ class ImageOptionsSheet extends StatelessWidget {
     child: TextButton(
       onPressed: () => Navigator.pop(context, value),
       style: TextButton.styleFrom(
-        foregroundColor: foreground,
+        foregroundColor: foreground ?? context.palette.textPrimary,
         textStyle: const TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.bold,
@@ -68,16 +71,17 @@ class ImageOptionsSheet extends StatelessWidget {
     ),
   );
 
-  static Widget _divider() =>
-      Container(width: _width, height: 2, color: AppColors.divider);
+  static Widget _divider(BuildContext context) =>
+      Container(width: _width, height: 2, color: context.palette.divider);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       width: _width,
       height: 153,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
@@ -99,10 +103,10 @@ class ImageOptionsSheet extends StatelessWidget {
             ),
           ),
           Container(width: _width, height: 1, color: _green),
-          _option(context, 'Choose from gallery', ImageOption.gallery),
-          _divider(),
-          _option(context, 'Take a photo', ImageOption.camera),
-          _divider(),
+          _option(context, l10n.profileImageFromGallery, ImageOption.gallery),
+          _divider(context),
+          _option(context, l10n.profileImageTakePhoto, ImageOption.camera),
+          _divider(context),
           _option(
             context,
             deleteLabel,

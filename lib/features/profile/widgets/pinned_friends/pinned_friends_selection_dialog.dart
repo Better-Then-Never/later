@@ -7,7 +7,9 @@ import '../../../../shared/widgets/user/user_round_avatar.dart';
 import '../../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../../shared/widgets/default_text.dart';
 import 'pinned_friends_selection_dialog_header.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_palette.dart';
 
 /// Lets the user pick up to three pinned friends. Pops with the chosen
 /// uids on "Save" (null when dismissed).
@@ -57,7 +59,7 @@ class _PinnedFriendsSelectionDialogState
     return Container(
       height: MediaQuery.sizeOf(context).height * 0.7,
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(25),
       ),
       child: SafeArea(
@@ -91,7 +93,7 @@ class _PinnedFriendsSelectionDialogState
                     subtitle: DefaultText(
                       '@${info?.username ?? ''}',
                       fontSize: 14,
-                      color: AppColors.grey500,
+                      color: context.palette.iconMuted,
                     ),
                     trailing: Checkbox(
                       value: isPinned,
@@ -108,7 +110,7 @@ class _PinnedFriendsSelectionDialogState
             DefaultGreenButton(
               padding: const EdgeInsets.all(16.0),
               onTap: () => Navigator.pop(context, List.of(tempPinned)),
-              text: 'Save',
+              text: context.l10n.commonSave,
             ),
           ],
         ),
@@ -121,7 +123,7 @@ class _PinnedFriendsSelectionDialogState
       if (tempPinned.length >= 3) {
         PopupNotificationService.showError(
           context: context,
-          message: 'You can only pin up to 3 friends',
+          message: context.l10n.profilePinnedLimit,
           position: NotificationPosition.top,
         );
         return;

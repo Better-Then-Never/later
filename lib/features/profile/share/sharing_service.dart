@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:flutter/services.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/features/users/user_directory.dart';
 import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 import 'package:provider/provider.dart';
@@ -15,22 +16,24 @@ class SharingService {
     required BuildContext context,
     required String userId,
   }) async {
+    // Read before the lookup: the context may be gone after it.
+    final l10n = context.l10n;
     try {
       final profiles = await context.read<UserDirectory>().resolveAll([userId]);
-      final friendName = profiles[userId]?.name ?? 'Unknown User';
+      final friendName = profiles[userId]?.name ?? l10n.commonUnknownUser;
       final link = generateProfileLink(userId);
 
       await SharePlus.instance.share(
         ShareParams(
-          text: 'Check out $friendName on Later! \n$link',
-          subject: 'Connect with $friendName on Later',
+          text: l10n.profileShareMessage(friendName, link),
+          subject: l10n.profileShareSubject(friendName),
         ),
       );
     } catch (e) {
       if (context.mounted) {
         PopupNotificationService.showError(
           context: context,
-          message: 'Failed to share profile',
+          message: context.l10n.profileErrorShare,
           position: NotificationPosition.bottom,
         );
       }
@@ -48,7 +51,7 @@ class SharingService {
       if (context.mounted) {
         PopupNotificationService.showSuccess(
           context: context,
-          message: 'Link copied to clipboard!',
+          message: context.l10n.profileLinkCopied,
           position: NotificationPosition.bottom,
         );
       }
@@ -56,7 +59,7 @@ class SharingService {
       if (context.mounted) {
         PopupNotificationService.showError(
           context: context,
-          message: 'Failed to copy link',
+          message: context.l10n.profileErrorCopyLink,
           position: NotificationPosition.bottom,
         );
       }

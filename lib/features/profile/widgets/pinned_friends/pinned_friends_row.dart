@@ -8,7 +8,8 @@ import '../../../../shared/widgets/popup/popup_notification_service.dart';
 import 'pinned_friend_avatar.dart';
 import 'pinned_friend_options_dialog.dart';
 import 'pinned_friends_selection_dialog.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class PinnedFriendsRow extends StatelessWidget {
   const PinnedFriendsRow({super.key});
@@ -26,7 +27,7 @@ class PinnedFriendsRow extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: AppColors.barrier,
+      barrierColor: context.palette.scrim,
       builder: (_) => PinnedFriendsSelectionDialog(
         pinnedUids: controller.pinnedUids,
         allFriends: friends,
@@ -39,7 +40,7 @@ class PinnedFriendsRow extends StatelessWidget {
     if (!context.mounted) return;
     PopupNotificationService.showSuccess(
       context: context,
-      message: 'Pinned friends updated successfully!',
+      message: context.l10n.profilePinnedUpdated,
       position: NotificationPosition.top,
     );
   }
@@ -54,12 +55,12 @@ class PinnedFriendsRow extends StatelessWidget {
     }
 
     if (controller.allFriends.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 70,
         child: Center(
           child: Text(
-            'You have no friends yet',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            context.l10n.profileNoFriends,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
       );
@@ -78,7 +79,7 @@ class PinnedFriendsRow extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 isScrollControlled: true,
-                barrierColor: AppColors.barrier,
+                barrierColor: context.palette.scrim,
                 builder: (_) => PinnedFriendOptionsDialog(
                   friendUid: uid,
                   onViewProfile: () {

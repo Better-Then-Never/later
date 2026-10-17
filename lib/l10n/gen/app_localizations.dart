@@ -943,6 +943,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown location'**
   String get placeUnknown;
+
+  /// Card on the own profile page that opens Add Friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Add friends'**
+  String get profileAddFriends;
+
+  /// Row in My capsules on the profile page: opens the camera for a public capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to map | Everyone'**
+  String get profileAddToMapEveryone;
+
+  /// Row in My capsules on the profile page: opens the camera for a friends-only capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to map | Only for friends'**
+  String get profileAddToMapFriends;
+
+  /// Red option in the background picture menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete background picture'**
+  String get profileBackgroundDelete;
+
+  /// Title of the menu shown when the user taps their profile background (narrow, large bold text).
+  ///
+  /// In en, this message translates to:
+  /// **'Background picture'**
+  String get profileBackgroundTitle;
+
+  /// No description provided for @profileBackgroundUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Background picture updated successfully!'**
+  String get profileBackgroundUpdated;
+
+  /// Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose pinned friends'**
+  String get profileChoosePinned;
+
+  /// Button on Share Profile that copies the profile link (half-width button with an icon: keep it short).
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Link'**
+  String get profileCopyLink;
+
+  /// No description provided for @profileErrorCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to copy link'**
+  String get profileErrorCopyLink;
+
+  /// No description provided for @profileErrorDeleteBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete background picture'**
+  String get profileErrorDeleteBackground;
+
+  /// No description provided for @profileErrorDeletePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete profile picture'**
+  String get profileErrorDeletePicture;
+
+  /// No description provided for @profileErrorShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to share profile'**
+  String get profileErrorShare;
+
+  /// No description provided for @profileErrorUploadBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload background picture'**
+  String get profileErrorUploadBackground;
+
+  /// No description provided for @profileErrorUploadPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload profile picture'**
+  String get profileErrorUploadPicture;
+
+  /// Option in the profile / background picture menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get profileImageFromGallery;
+
+  /// Option in the profile / background picture menu: opens the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get profileImageTakePhoto;
+
+  /// No description provided for @profileLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied to clipboard!'**
+  String get profileLinkCopied;
+
+  /// Section title on the own profile page.
+  ///
+  /// In en, this message translates to:
+  /// **'My capsules'**
+  String get profileMyCapsules;
+
+  /// Row under the pinned friends on the profile page: opens the friends list.
+  ///
+  /// In en, this message translates to:
+  /// **'My friends'**
+  String get profileMyFriends;
+
+  /// Shown instead of the pinned friends on the profile page when the user has no friends.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no friends yet'**
+  String get profileNoFriends;
+
+  /// Red option in the profile picture menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete profile icon'**
+  String get profilePictureDelete;
+
+  /// Title of the menu shown when the user taps their profile picture (narrow, large bold text).
+  ///
+  /// In en, this message translates to:
+  /// **'Profile picture'**
+  String get profilePictureTitle;
+
+  /// No description provided for @profilePictureUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile picture updated successfully!'**
+  String get profilePictureUpdated;
+
+  /// Explanation under the title of the pinned friends chooser.
+  ///
+  /// In en, this message translates to:
+  /// **'If you choose fewer than 3, random friends from your list will be shown'**
+  String get profilePinnedHint;
+
+  /// Error when the user ticks a fourth pinned friend.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only pin up to 3 friends'**
+  String get profilePinnedLimit;
+
+  /// Title of the sheet where the user picks the friends pinned to their profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose up to 3 pinned friends'**
+  String get profilePinnedTitle;
+
+  /// No description provided for @profilePinnedUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned friends updated successfully!'**
+  String get profilePinnedUpdated;
+
+  /// Shown in place of the QR code on Share Profile if it cannot be drawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong...'**
+  String get profileQrError;
+
+  /// Button on Share Profile that opens the system share sheet (half-width button with an icon: keep it short).
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get profileShare;
+
+  /// Heading above the QR code on Share Profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Your Profile'**
+  String get profileShareHeading;
+
+  /// Blue info card at the bottom of Share Profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Others can scan this code with their camera or the app to add you as a friend'**
+  String get profileShareHint;
+
+  /// Text passed to the system share sheet when sharing a profile (the user's own or a friend's).
+  ///
+  /// In en, this message translates to:
+  /// **'Check out {name} on Later!\n{link}'**
+  String profileShareMessage(String name, String link);
+
+  /// Subject passed to the system share sheet (used by e-mail apps) when sharing a profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect with {name} on Later'**
+  String profileShareSubject(String name);
+
+  /// Grey line under the heading on Share Profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Let others scan this QR code to add you as a friend'**
+  String get profileShareSubtitle;
+
+  /// Page title of Share Profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Profile'**
+  String get profileShareTitle;
+
+  /// Shown on the profile or background picture while it uploads or is deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating...'**
+  String get profileUpdating;
+
+  /// Option in the menu of a pinned friend: opens that friend's profile.
+  ///
+  /// In en, this message translates to:
+  /// **'View profile page'**
+  String get profileViewProfile;
 }
 
 class _AppLocalizationsDelegate
