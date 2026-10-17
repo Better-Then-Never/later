@@ -1196,6 +1196,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapCapsuleReady => 'Посмотрите, что внутри!';
 
   @override
+  String get mapCompass => 'Повернуть карту на север';
+
+  @override
   String mapDurationDays(int count) {
     return '$countд';
   }

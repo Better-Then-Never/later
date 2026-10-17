@@ -15,5 +15,6 @@
   "mapFirstCapsuleTitle": "Оставьте первую капсулу",
   "mapFirstCapsuleBody": "Сделайте фото здесь и выберите, когда оно откроется.",
   "mapZoomIn": "Приблизить",
-  "mapZoomOut": "Отдалить"
+  "mapZoomOut": "Отдалить",
+  "mapCompass": "Повернуть карту на север"
 }

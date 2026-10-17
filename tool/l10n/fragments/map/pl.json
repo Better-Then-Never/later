@@ -15,5 +15,6 @@
   "mapFirstCapsuleTitle": "Zostaw pierwszą kapsułę",
   "mapFirstCapsuleBody": "Zrób tu zdjęcie i wybierz, kiedy się otworzy.",
   "mapZoomIn": "Przybliż",
-  "mapZoomOut": "Oddal"
+  "mapZoomOut": "Oddal",
+  "mapCompass": "Obróć mapę na północ"
 }

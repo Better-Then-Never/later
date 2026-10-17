@@ -34,6 +34,7 @@ import 'map_styles.dart';
 import '../history/own_capsules_store.dart';
 import 'widgets/capsule_info_panel.dart';
 import 'widgets/first_capsule_hint.dart';
+import 'widgets/map_compass.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
 
 class MapPage extends StatelessWidget {
@@ -182,6 +183,10 @@ class _MyLocationButton extends StatelessWidget {
 class _MapViewState extends State<_MapView> {
   final _mapController = Completer<GoogleMapController>();
 
+  /// Which way the map is turned, in degrees (0 = north up); only the compass
+  /// listens, so turning the map does not rebuild the page.
+  final _bearing = ValueNotifier<double>(0);
+
   /// The theme the marker icons were drawn for. A theme switch restyles the
   /// map in place (two local styles, no map ID) and redraws the icons.
   bool? _builtDark;
@@ -239,6 +244,7 @@ class _MapViewState extends State<_MapView> {
   void dispose() {
     _focus.removeListener(_onFocusRequested);
     selectedPageNotifier.removeListener(_onTabChanged);
+    _bearing.dispose();
     super.dispose();
   }
 
@@ -267,6 +273,19 @@ class _MapViewState extends State<_MapView> {
     unawaited(HapticFeedback.selectionClick());
     final controller = await _mapController.future;
     await controller.animateCamera(update);
+  }
+
+  /// The compass: the map turns back to north (and flat), staying where it is.
+  Future<void> _faceNorth() async {
+    final camera = _lastCamera;
+    if (camera == null) return;
+    unawaited(HapticFeedback.selectionClick());
+    final controller = await _mapController.future;
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: camera.target, zoom: camera.zoom),
+      ),
+    );
   }
 
   /// A tap on a numbered bubble: the camera moves in on its capsules.
@@ -500,6 +519,8 @@ class _MapViewState extends State<_MapView> {
               bottom: NavbarWidget.coveredHeight(context) + 4 + raised,
             ),
             zoomControlsEnabled: false,
+            // Our compass sits with the zoom and location buttons.
+            compassEnabled: false,
             // The capsule card replaces Google's marker toolbar.
             mapToolbarEnabled: false,
             mapType: switch (look) {
@@ -524,6 +545,7 @@ class _MapViewState extends State<_MapView> {
             onTap: (_) => _select(null),
             onCameraMove: (position) {
               _lastCamera = position;
+              _bearing.value = position.bearing;
               // Zoomed out past the markers: their card goes too.
               if (position.zoom < MapController.markerZoomThreshold) {
                 _select(null);
@@ -570,6 +592,18 @@ class _MapViewState extends State<_MapView> {
             child: _ZoomButtons(
               onZoomIn: () => unawaited(_zoomBy(CameraUpdate.zoomIn())),
               onZoomOut: () => unawaited(_zoomBy(CameraUpdate.zoomOut())),
+            ),
+          ),
+          // Compass, above the zoom pill while the map is turned.
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            right: 16,
+            bottom: bottom + raised + _MyLocationButton.size * 3 + 1 + 12 * 2,
+            child: MapCompass(
+              size: _MyLocationButton.size,
+              bearing: _bearing,
+              onTap: () => unawaited(_faceNorth()),
             ),
           ),
           Positioned(

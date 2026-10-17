@@ -316,6 +316,7 @@
   "mapCapsuleOpen": "Открыть",
   "mapCapsuleOpensIn": "Откроется через {time}",
   "mapCapsuleReady": "Посмотрите, что внутри!",
+  "mapCompass": "Повернуть карту на север",
   "mapDurationDays": "{count}д",
   "mapDurationHours": "{count}ч",
   "mapDurationMinutes": "{count}мин",

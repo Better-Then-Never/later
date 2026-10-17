@@ -15,5 +15,6 @@
   "mapFirstCapsuleTitle": "Hinterlasse deine erste Kapsel",
   "mapFirstCapsuleBody": "Mach hier ein Foto und wähle, wann es sich öffnet.",
   "mapZoomIn": "Vergrößern",
-  "mapZoomOut": "Verkleinern"
+  "mapZoomOut": "Verkleinern",
+  "mapCompass": "Karte nach Norden drehen"
 }

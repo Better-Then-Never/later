@@ -21,6 +21,7 @@
 // TEST_ACCOUNT_EMAIL / TEST_ACCOUNT_PASSWORD (--dart-define), defaulting to
 // the seeded emulator account.
 import 'dart:developer' show Timeline;
+import 'dart:math' as math;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +37,7 @@ import 'package:later/features/capsules/creation/capsule_creation_page.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/map/map_focus.dart';
 import 'package:later/features/map/widgets/capsule_preview_card.dart';
+import 'package:later/features/map/widgets/map_compass.dart';
 import 'package:later/features/messages/widgets/chat_list_item.dart';
 import 'package:later/features/messages/widgets/message_bubble.dart';
 import 'package:provider/provider.dart';
@@ -149,6 +151,24 @@ void main() {
       final d = from + (to - from) * i / steps;
       await a.moveTo(center - Offset(d / 2, 0));
       await b.moveTo(center + Offset(d / 2, 0));
+      await tester.pump(const Duration(milliseconds: 12));
+    }
+    await a.up();
+    await b.up();
+    await wait(tester, const Duration(milliseconds: 900));
+  }
+
+  /// Two fingers turning the map by [degrees] (clockwise) around [center].
+  Future<void> twist(WidgetTester tester, Offset center, double degrees) async {
+    const radius = 150.0;
+    Offset at(double angle) => center + Offset.fromDirection(angle, radius);
+    final a = await tester.startGesture(at(0));
+    final b = await tester.startGesture(at(math.pi));
+    const steps = 24;
+    for (var i = 1; i <= steps; i++) {
+      final turn = degrees * math.pi / 180 * i / steps;
+      await a.moveTo(at(turn));
+      await b.moveTo(at(math.pi + turn));
       await tester.pump(const Duration(milliseconds: 12));
     }
     await a.up();
@@ -387,6 +407,7 @@ void main() {
       'map_pan_heatmap',
       'map_zoom_in',
       'map_pan_markers',
+      'map_compass',
     ];
     if (_only.isEmpty || mapFlows.any(_only.split(',').contains)) {
       await tab(tester, AppIcons.navbarMap);
@@ -461,6 +482,17 @@ void main() {
           await tester.dragFrom(center, const Offset(250, -120));
           await wait(tester, const Duration(milliseconds: 700));
         }
+      });
+      // Two fingers turn the map, the compass shows; a tap on it turns the
+      // map back to north. Recorded: the map's bearing after each, in degrees.
+      await flow('map_compass', () async {
+        double bearing() =>
+            tester.widget<MapCompass>(find.byType(MapCompass)).bearing.value;
+        await twist(tester, center, 70);
+        record('map_compass_bearing_turned', bearing().round());
+        await tester.tap(find.byType(MapCompass), warnIfMissed: false);
+        await wait(tester, const Duration(seconds: 2));
+        record('map_compass_bearing_after_tap', bearing().round());
       });
     }
 

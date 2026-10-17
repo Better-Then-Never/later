@@ -954,6 +954,10 @@
   "@mapCapsuleReady": {
     "description": "Line in the small window above a capsule pin when the capsule is already open."
   },
+  "mapCompass": "Turn the map to north",
+  "@mapCompass": {
+    "description": "Screen reader label of the map compass, shown while the map is turned; a tap points it north."
+  },
   "mapDurationDays": "{count}d",
   "@mapDurationDays": {
     "description": "Days part of the compact countdown. Keep it as short as possible.",

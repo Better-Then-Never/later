@@ -2000,6 +2000,12 @@ abstract class AppLocalizations {
   /// **'Check out what\'s inside!'**
   String get mapCapsuleReady;
 
+  /// Screen reader label of the map compass, shown while the map is turned; a tap points it north.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn the map to north'**
+  String get mapCompass;
+
   /// Days part of the compact countdown. Keep it as short as possible.
   ///
   /// In en, this message translates to:

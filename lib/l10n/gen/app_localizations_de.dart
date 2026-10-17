@@ -1187,6 +1187,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapCapsuleReady => 'Schau, was drin ist!';
 
   @override
+  String get mapCompass => 'Karte nach Norden drehen';
+
+  @override
   String mapDurationDays(int count) {
     return '${count}T';
   }

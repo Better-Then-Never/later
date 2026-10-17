@@ -316,6 +316,7 @@
   "mapCapsuleOpen": "Öffnen",
   "mapCapsuleOpensIn": "Öffnet sich in {time}",
   "mapCapsuleReady": "Schau, was drin ist!",
+  "mapCompass": "Karte nach Norden drehen",
   "mapDurationDays": "{count}T",
   "mapDurationHours": "{count}h",
   "mapDurationMinutes": "{count}min",
