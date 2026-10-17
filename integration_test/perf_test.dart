@@ -385,17 +385,27 @@ void main() {
       final capsule = own.isEmpty ? null : own.first;
       final center = tester.getCenter(find.byType(Scaffold).first);
 
+      /// The capsule's card, focused first when map_focus did not run.
+      Future<void> card() async {
+        if (find.text(l10n().mapCapsuleOpen).evaluate().isNotEmpty) return;
+        if (capsule != null) context.read<MapFocus>().focus(capsule);
+        await wait(tester, const Duration(seconds: 3));
+      }
+
       await flow('map_focus', () async {
         if (capsule != null) context.read<MapFocus>().focus(capsule);
         await wait(tester, const Duration(seconds: 3));
       });
-      await flow('capsule_dialog', () async {
+      await flow('capsule_dialog', setup: card, () async {
         await tapAndWait(tester, find.text(l10n().mapCapsuleOpen));
         await back(tester);
       });
       await flow(
         'photo_viewer',
-        setup: () => tapAndWait(tester, find.text(l10n().mapCapsuleOpen)),
+        setup: () async {
+          await card();
+          await tapAndWait(tester, find.text(l10n().mapCapsuleOpen));
+        },
         () async {
           await tapAndWait(
             tester,
