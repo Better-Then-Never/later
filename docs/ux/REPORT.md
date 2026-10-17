@@ -48,8 +48,8 @@ removed from Android; friends-of-friends suggestions; feature flags for anything
 
 ## Not done (IDEAS_NOT_DONE.md)
 Loop capsules, offline outbox, flash auto/torch, own date picker and composer, chat reactions/replies/photos/voice,
-map clusters, friend's capsules list, co-authors, some consistency items (history controls, one sheet system,
-requests toggle, share icon) and transition polish.
+map clusters, co-authors, some consistency items (history control sizes, one sheet system, share icon) and
+transition polish (hero, stagger).
 
 ## Read next
 MORNING_SUMMARY.md (what to do first), DEPLOY.md, BLOCKERS.md, FEATURES.md, TEST_REPORT.md, FEEL_QA.md,
