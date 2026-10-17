@@ -66,5 +66,7 @@
   "capsulesOpenPickDate": "Выбрать дату…",
   "capsulesOpenNow": "Открыть сразу",
   "capsulesCameraFlashAuto": "Вспышка: авто",
-  "capsulesCameraFlashAutoBadge": "A"
+  "capsulesCameraFlashAutoBadge": "A",
+  "capsulesCameraHoldForLoop": "Удерживайте для лупа",
+  "capsulesCameraTakePhotoOrLoop": "Сделать фото. Удерживайте, чтобы снять луп"
 }

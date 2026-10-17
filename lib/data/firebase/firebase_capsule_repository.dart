@@ -34,6 +34,13 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
   Reference _imageRef(String ownerId, String capsuleId) =>
       _storage.ref('userdata/$ownerId/capsules/$capsuleId/image.jpg');
 
+  /// Frame [index] of a loop capsule (storage.rules allow frame_0..9).
+  Reference _frameRef(String ownerId, String capsuleId, int index) =>
+      _storage.ref('userdata/$ownerId/capsules/$capsuleId/frame_$index.jpg');
+
+  /// At most this many frames are kept (storage.rules, firestore.rules).
+  static const maxFrames = 10;
+
   List<Capsule> _map(QuerySnapshot<Map<String, dynamic>> snap) =>
       snap.docs.map((d) => FirestoreMappers.capsule(d.id, d.data())).toList();
 
@@ -147,14 +154,46 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
     final bytes = await _processor.capsuleJpegFromFile(draft.imagePath);
     await imageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
     final imageUrl = await imageRef.getDownloadURL();
+    // A loop capsule: its frames too, smaller than the photo (they are
+    // shown at card size), all at once.
+    final framePaths = draft.framePaths.take(maxFrames).toList();
+    final frameRefs = framePaths.length > 1
+        ? [
+            for (var i = 0; i < framePaths.length; i++)
+              _frameRef(draft.ownerId, doc.id, i),
+          ]
+        : const <Reference>[];
+    var frameUrls = const <String>[];
     try {
+      frameUrls = await Future.wait([
+        for (var i = 0; i < frameRefs.length; i++)
+          () async {
+            final frame = await _processor.capsuleJpegFromFile(
+              framePaths[i],
+              maxDimension: 1080,
+              quality: 80,
+            );
+            await frameRefs[i].putData(
+              frame,
+              SettableMetadata(contentType: 'image/jpeg'),
+            );
+            return frameRefs[i].getDownloadURL();
+          }(),
+      ]);
       await _setNew(
         doc,
-        FirestoreMappers.newCapsule(draft, imageUrl: imageUrl),
+        FirestoreMappers.newCapsule(
+          draft,
+          imageUrl: imageUrl,
+          frameUrls: frameUrls,
+        ),
       );
     } catch (_) {
-      // Do not leave an orphaned image behind.
-      await _deleteImage(imageRef);
+      // Do not leave orphaned images behind.
+      await Future.wait([
+        _deleteImage(imageRef),
+        ...frameRefs.map(_deleteImage),
+      ]);
       rethrow;
     }
     return Capsule(
@@ -179,6 +218,8 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       allowReactions: draft.allowReactions,
       locationPrecision: draft.locationPrecision,
       placeName: draft.placeName,
+      frames: frameUrls,
+      frameDelayMs: draft.frameDelayMs,
     );
   }
 
@@ -210,9 +251,13 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       }
       await batch.commit();
     }
-    await Future.wait(
-      list.map((c) => _deleteImage(_imageRef(c.ownerId, c.id))),
-    );
+    await Future.wait([
+      for (final c in list) ...[
+        _deleteImage(_imageRef(c.ownerId, c.id)),
+        for (var i = 0; i < c.frames.length && i < maxFrames; i++)
+          _deleteImage(_frameRef(c.ownerId, c.id, i)),
+      ],
+    ]);
   }
 
   Future<void> _deleteImage(Reference ref) async {

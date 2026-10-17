@@ -25,6 +25,7 @@ class CapsuleCreationController extends ChangeNotifier {
   CapsuleCreationController({
     required this.ownerId,
     required this.imagePath,
+    this.framePaths = const [],
     required CapsuleRepository capsules,
     required LocationService location,
     required CurrentLocation currentLocation,
@@ -55,6 +56,11 @@ class CapsuleCreationController extends ChangeNotifier {
 
   final String ownerId;
   final String imagePath;
+
+  /// The frames of a loop capsule (the first is [imagePath]); empty for a
+  /// photo.
+  final List<String> framePaths;
+  bool get isLoop => framePaths.length > 1;
 
   /// Keeps the capsule on the phone when there is no connection (F-26).
   final CapsuleOutbox? _outbox;
@@ -209,6 +215,7 @@ class CapsuleCreationController extends ChangeNotifier {
         allowComments: _allowComments,
         allowReactions: _allowReactions,
         imagePath: imagePath,
+        framePaths: framePaths,
         openAt: _openAt,
         recipientId: recipientId,
         capturedAt: capturedAt,
@@ -265,11 +272,13 @@ class CapsuleCreationController extends ChangeNotifier {
   }
 
   Future<void> _deleteTempPhoto() async {
-    try {
-      final file = File(imagePath);
-      if (await file.exists()) await file.delete();
-    } catch (_) {
-      // The OS cleans the cache directory eventually.
+    for (final path in {imagePath, ...framePaths}) {
+      try {
+        final file = File(path);
+        if (await file.exists()) await file.delete();
+      } catch (_) {
+        // The OS cleans the cache directory eventually.
+      }
     }
   }
 

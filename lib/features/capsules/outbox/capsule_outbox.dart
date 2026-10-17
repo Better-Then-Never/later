@@ -33,6 +33,8 @@ class PendingCapsule {
     color: draft.color,
     // The photo on the phone until it is uploaded.
     imageUrl: Uri.file(draft.imagePath).toString(),
+    frames: [for (final f in draft.framePaths) Uri.file(f).toString()],
+    frameDelayMs: draft.frameDelayMs,
     createdAt: queuedAt,
     capturedAt: draft.capturedAt,
     openAt: draft.openAt,
@@ -164,8 +166,15 @@ class CapsuleOutbox extends ChangeNotifier
     final dir = await _folder(uid);
     final photo = '${dir.path}/$id.jpg';
     await File(draft.imagePath).copy(photo);
+    // A loop capsule's frames come along.
+    final frames = <String>[];
+    for (var i = 0; i < draft.framePaths.length; i++) {
+      final frame = '${dir.path}/${id}_frame_$i.jpg';
+      await File(draft.framePaths[i]).copy(frame);
+      frames.add(frame);
+    }
     final entry = PendingCapsule(
-      draft: draft.copyWith(imagePath: photo),
+      draft: draft.copyWith(imagePath: photo, framePaths: frames),
       queuedAt: DateTime.now(),
     );
     await File(
@@ -221,7 +230,12 @@ class CapsuleOutbox extends ChangeNotifier
     notifyListeners();
     try {
       final dir = await _folder(uid);
-      for (final name in ['${entry.id}.json', '${entry.id}.jpg']) {
+      for (final name in [
+        '${entry.id}.json',
+        '${entry.id}.jpg',
+        for (var i = 0; i < entry.draft.framePaths.length; i++)
+          '${entry.id}_frame_$i.jpg',
+      ]) {
         final f = File('${dir.path}/$name');
         if (await f.exists()) await f.delete();
       }
@@ -257,6 +271,9 @@ class CapsuleOutbox extends ChangeNotifier
       'allowReactions': d.allowReactions,
       'locationPrecision': d.locationPrecision.name,
       'placeName': d.placeName,
+      // Frame files are named after the capsule; only their number is kept.
+      if (d.framePaths.isNotEmpty) 'frames': d.framePaths.length,
+      if (d.framePaths.isNotEmpty) 'frameDelayMs': d.frameDelayMs,
     };
   }
 
@@ -285,6 +302,12 @@ class CapsuleOutbox extends ChangeNotifier
         allowReactions: j['allowReactions'] as bool? ?? true,
         locationPrecision: LocationPrecision.parse(j['locationPrecision']),
         placeName: j['placeName'] as String?,
+        framePaths: [
+          for (var i = 0; i < ((j['frames'] as num?)?.toInt() ?? 0); i++)
+            '$folder/${id}_frame_$i.jpg',
+        ],
+        frameDelayMs:
+            (j['frameDelayMs'] as num?)?.toInt() ?? Capsule.defaultFrameDelayMs,
       ),
     );
   }

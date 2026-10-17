@@ -432,6 +432,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesCameraFlashOn => 'Flesz włączony';
 
   @override
+  String get capsulesCameraHoldForLoop => 'Przytrzymaj, by nagrać pętlę';
+
+  @override
   String get capsulesCameraStartFailed => 'Nie udało się uruchomić aparatu';
 
   @override
@@ -439,6 +442,10 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesCameraTakePhoto => 'Zrób zdjęcie';
+
+  @override
+  String get capsulesCameraTakePhotoOrLoop =>
+      'Zrób zdjęcie. Przytrzymaj, by nagrać pętlę';
 
   @override
   String get capsulesCameraUnavailable => 'Brak dostępnego aparatu';

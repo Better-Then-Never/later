@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
@@ -58,6 +59,12 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   /// The white blink when the shutter fires (F-22: instant feedback).
   bool _shutterBlink = false;
   bool _capturing = false;
+
+  /// Holding the shutter records a loop: frames one after another until
+  /// it is released or [_maxFrames] are taken.
+  static const _maxFrames = 10;
+  bool _looping = false;
+  final List<String> _frames = [];
   _CameraError? _error;
 
   @override
@@ -223,6 +230,51 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       AppLogger.warning('Taking the picture failed', error: e);
       if (mounted) setState(() => _capturing = false);
     }
+  }
+
+  /// Records frames while the shutter is held (loop capsules).
+  Future<void> _startLoop() async {
+    final controller = _controller;
+    if (_capturing || controller == null || !controller.value.isInitialized) {
+      return;
+    }
+    unawaited(HapticFeedback.mediumImpact());
+    setState(() {
+      _capturing = true;
+      _looping = true;
+      _frames.clear();
+    });
+    try {
+      while (_looping && _frames.length < _maxFrames) {
+        final picture = await controller.takePicture();
+        if (!mounted) return;
+        setState(() => _frames.add(picture.path));
+        unawaited(HapticFeedback.selectionClick());
+      }
+    } on CameraException catch (e) {
+      AppLogger.warning('Recording the loop failed', error: e);
+    }
+    if (!mounted) return;
+    _looping = false;
+    final frames = List.of(_frames);
+    if (frames.isEmpty) {
+      setState(() => _capturing = false);
+      return;
+    }
+    // One frame is simply a photo.
+    await AppRoutes.toCapsuleCreation(
+      context,
+      imagePath: frames.first,
+      framePaths: frames.length > 1 ? frames : const [],
+      privacy: widget.initialPrivacy,
+      recipientId: widget.recipientId,
+      replace: true,
+    );
+  }
+
+  /// Releasing the shutter: the frame being taken is the last one.
+  void _stopLoop() {
+    if (_looping) setState(() => _looping = false);
   }
 
   void _onScaleStart(ScaleStartDetails _) => _zoomAtStart = _zoom;
@@ -426,6 +478,28 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   ],
                 ),
               ),
+              // How to record a loop, until one is being recorded.
+              if (FeatureFlags.loopCapsules && !_capturing)
+                Positioned(
+                  bottom: 112,
+                  left: 0,
+                  right: 0,
+                  child: ExcludeSemantics(
+                    child: Text(
+                      l10n.capsulesCameraHoldForLoop,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onMedia,
+                        shadows: [
+                          Shadow(color: AppColors.mediaScrim, blurRadius: 6),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               Positioned(
                 bottom: 5,
                 left: 0,
@@ -433,13 +507,37 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 child: Center(
                   child: Semantics(
                     button: true,
-                    label: l10n.capsulesCameraTakePhoto,
+                    label: FeatureFlags.loopCapsules
+                        ? l10n.capsulesCameraTakePhotoOrLoop
+                        : l10n.capsulesCameraTakePhoto,
                     child: GestureDetector(
                       onTap: _capture,
-                      child: Image.asset(
-                        AppIcons.cameraShutter,
-                        width: 100,
-                        height: 100,
+                      onLongPressStart: FeatureFlags.loopCapsules
+                          ? (_) => unawaited(_startLoop())
+                          : null,
+                      onLongPressEnd: FeatureFlags.loopCapsules
+                          ? (_) => _stopLoop()
+                          : null,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Image.asset(
+                            AppIcons.cameraShutter,
+                            width: 100,
+                            height: 100,
+                          ),
+                          // How much of the loop is recorded.
+                          if (_looping || _frames.isNotEmpty)
+                            SizedBox(
+                              width: 108,
+                              height: 108,
+                              child: CircularProgressIndicator(
+                                value: _frames.length / _maxFrames,
+                                strokeWidth: 5,
+                                color: AppColors.brandGreen,
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ),

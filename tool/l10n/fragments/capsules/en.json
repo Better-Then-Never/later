@@ -167,5 +167,13 @@
   "capsulesCameraFlashAutoBadge": "A",
   "@capsulesCameraFlashAutoBadge": {
     "description": "One letter on the flash icon for 'automatic'"
+  },
+  "capsulesCameraHoldForLoop": "Hold for a loop",
+  "@capsulesCameraHoldForLoop": {
+    "description": "Under the shutter: hold it to record several frames played as a loop"
+  },
+  "capsulesCameraTakePhotoOrLoop": "Take photo. Hold to record a loop",
+  "@capsulesCameraTakePhotoOrLoop": {
+    "description": "Screen reader label of the shutter when loops are on"
   }
 }

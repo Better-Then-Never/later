@@ -416,6 +416,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesCameraFlashOn => 'Blitz an';
 
   @override
+  String get capsulesCameraHoldForLoop => 'Halten für einen Loop';
+
+  @override
   String get capsulesCameraStartFailed =>
       'Die Kamera konnte nicht gestartet werden';
 
@@ -424,6 +427,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get capsulesCameraTakePhoto => 'Foto aufnehmen';
+
+  @override
+  String get capsulesCameraTakePhotoOrLoop =>
+      'Foto aufnehmen. Halten für einen Loop';
 
   @override
   String get capsulesCameraUnavailable => 'Keine Kamera verfügbar';

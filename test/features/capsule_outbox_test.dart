@@ -178,6 +178,46 @@ void main() {
     c.dispose();
   });
 
+  test(
+    'a loop capsule keeps its frames on the phone and after a restart',
+    () async {
+      final first = outbox()..attach('me');
+      await first.loading;
+      repo.offline = true;
+      final frames = [await photo(), await photo(), await photo()];
+      final c = CapsuleCreationController(
+        ownerId: 'me',
+        imagePath: frames.first,
+        framePaths: frames,
+        capsules: repo,
+        location: const _NoLocation(),
+        currentLocation: CurrentLocation()..update(const GeoPosition(52, 21)),
+        outbox: first,
+      );
+      expect(c.isLoop, isTrue);
+      expect(await c.save(), isNull);
+      final queued = first.pending.single;
+      expect(queued.draft.framePaths, hasLength(3));
+      expect(queued.toCapsule().isLoop, isTrue, reason: 'plays from the phone');
+      for (final f in queued.draft.framePaths) {
+        expect(File(f).existsSync(), isTrue);
+      }
+      first.dispose();
+
+      // Restarted, still offline: the frames are read back from the folder.
+      final again = outbox()..attach('me');
+      await again.loading;
+      final restored = again.pending.single.draft;
+      expect(restored.framePaths, queued.draft.framePaths);
+      await again.discard(again.pending.single.id);
+      for (final f in restored.framePaths) {
+        expect(File(f).existsSync(), isFalse, reason: 'frames cleaned too');
+      }
+      again.dispose();
+      c.dispose();
+    },
+  );
+
   test('connection errors are told apart from refusals', () {
     expect(CapsuleOutbox.isOffline(const SocketException('x')), isTrue);
     expect(CapsuleOutbox.isOffline(StateError('x')), isFalse);

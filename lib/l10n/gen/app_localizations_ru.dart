@@ -431,6 +431,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCameraFlashOn => 'Вспышка включена';
 
   @override
+  String get capsulesCameraHoldForLoop => 'Удерживайте для лупа';
+
+  @override
   String get capsulesCameraStartFailed => 'Не удалось запустить камеру';
 
   @override
@@ -438,6 +441,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesCameraTakePhoto => 'Сделать фото';
+
+  @override
+  String get capsulesCameraTakePhotoOrLoop =>
+      'Сделать фото. Удерживайте, чтобы снять луп';
 
   @override
   String get capsulesCameraUnavailable => 'Камера недоступна';

@@ -66,5 +66,7 @@
   "capsulesOpenPickDate": "Datum wählen…",
   "capsulesOpenNow": "Sofort öffnen",
   "capsulesCameraFlashAuto": "Blitz automatisch",
-  "capsulesCameraFlashAutoBadge": "A"
+  "capsulesCameraFlashAutoBadge": "A",
+  "capsulesCameraHoldForLoop": "Halten für einen Loop",
+  "capsulesCameraTakePhotoOrLoop": "Foto aufnehmen. Halten für einen Loop"
 }

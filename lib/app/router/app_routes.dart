@@ -60,6 +60,7 @@ abstract final class AppRoutes {
   static Future<void> toCapsuleCreation(
     BuildContext context, {
     required String imagePath,
+    List<String> framePaths = const [],
     CapsulePrivacy? privacy,
     String? recipientId,
     bool replace = false,
@@ -67,6 +68,7 @@ abstract final class AppRoutes {
     final route = fadeRoute<void>(
       CapsuleCreationPage(
         imagePath: imagePath,
+        framePaths: framePaths,
         initialPrivacy: privacy,
         recipientId: recipientId,
       ),

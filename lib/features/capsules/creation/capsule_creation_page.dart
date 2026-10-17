@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/theme/app_dimens.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
@@ -18,6 +19,7 @@ import '../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/page_header.dart';
+import '../../../shared/widgets/loop_picture.dart';
 import '../../../shared/widgets/photo_viewer.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
@@ -37,11 +39,15 @@ class CapsuleCreationPage extends StatelessWidget {
   const CapsuleCreationPage({
     super.key,
     required this.imagePath,
+    this.framePaths = const [],
     this.initialPrivacy,
     this.recipientId,
   });
 
   final String imagePath;
+
+  /// A loop capsule's frames (empty for a photo).
+  final List<String> framePaths;
   final CapsulePrivacy? initialPrivacy;
 
   /// The friend the capsule is sent to (it also lands in your chat).
@@ -53,6 +59,7 @@ class CapsuleCreationPage extends StatelessWidget {
       create: (context) => CapsuleCreationController(
         ownerId: context.read<SessionController>().uid!,
         imagePath: imagePath,
+        framePaths: framePaths,
         capsules: context.read<CapsuleRepository>(),
         location: context.read<LocationService>(),
         currentLocation: context.read<CurrentLocation>(),
@@ -253,9 +260,22 @@ class _CapsuleCreationView extends StatelessWidget {
                                     context,
                                     Uri.file(controller.imagePath).toString(),
                                   ),
-                                  child: CapsuleImagePreview(
-                                    imagePath: controller.imagePath,
-                                  ),
+                                  child: controller.isLoop
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            AppRadii.l,
+                                          ),
+                                          child: LoopPicture(
+                                            sources: controller.framePaths,
+                                            frameDelay: const Duration(
+                                              milliseconds:
+                                                  Capsule.defaultFrameDelayMs,
+                                            ),
+                                          ),
+                                        )
+                                      : CapsuleImagePreview(
+                                          imagePath: controller.imagePath,
+                                        ),
                                 ),
                               ),
                               const SizedBox(width: 12),

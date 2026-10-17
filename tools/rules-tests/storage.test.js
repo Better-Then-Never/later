@@ -76,6 +76,16 @@ describe('capsule images', () => {
     await assertSucceeds(getBytes(ref(storage('alice'), 'userdata/alice/capsules/c1/image.jpg')));
   });
 
+  test('a loop capsule stores up to ten small frames', async () => {
+    const frame = (n, who = 'alice') => ref(storage(who), `userdata/alice/capsules/c3/frame_${n}.jpg`);
+    await assertSucceeds(uploadBytes(frame(0), bytes(), jpeg));
+    await assertSucceeds(uploadBytes(frame(9), bytes(), jpeg));
+    await assertFails(uploadBytes(frame(10), bytes(), jpeg));
+    await assertFails(uploadBytes(frame('a'), bytes(), jpeg));
+    await assertFails(uploadBytes(frame(1, 'bob'), bytes(), jpeg));
+    await assertFails(uploadBytes(frame(2), new Uint8Array(3 * 1024 * 1024 + 1), jpeg));
+  });
+
   test('everything else is closed', async () => {
     await assertFails(uploadBytes(ref(storage('alice'), 'public/x.jpg'), bytes(), jpeg));
   });

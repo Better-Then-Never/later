@@ -303,7 +303,11 @@ class CapsuleDraft {
   /// writes the same document instead of a second one. Null: a new id.
   final String? id;
 
-  CapsuleDraft copyWith({String? id, String? imagePath}) => CapsuleDraft(
+  CapsuleDraft copyWith({
+    String? id,
+    String? imagePath,
+    List<String>? framePaths,
+  }) => CapsuleDraft(
     ownerId: ownerId,
     title: title,
     privacy: privacy,
@@ -320,7 +324,7 @@ class CapsuleDraft {
     allowComments: allowComments,
     allowReactions: allowReactions,
     locationPrecision: locationPrecision,
-    framePaths: framePaths,
+    framePaths: framePaths ?? this.framePaths,
     frameDelayMs: frameDelayMs,
     placeName: placeName,
   );

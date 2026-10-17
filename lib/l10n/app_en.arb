@@ -311,6 +311,10 @@
   "@capsulesCameraFlashOn": {
     "description": "Accessibility label of the flash button while the flash is on."
   },
+  "capsulesCameraHoldForLoop": "Hold for a loop",
+  "@capsulesCameraHoldForLoop": {
+    "description": "Under the shutter: hold it to record several frames played as a loop"
+  },
   "capsulesCameraStartFailed": "The camera could not be started",
   "capsulesCameraSwitch": "Switch camera",
   "@capsulesCameraSwitch": {
@@ -319,6 +323,10 @@
   "capsulesCameraTakePhoto": "Take photo",
   "@capsulesCameraTakePhoto": {
     "description": "Accessibility label of the shutter button."
+  },
+  "capsulesCameraTakePhotoOrLoop": "Take photo. Hold to record a loop",
+  "@capsulesCameraTakePhotoOrLoop": {
+    "description": "Screen reader label of the shutter when loops are on"
   },
   "capsulesCameraUnavailable": "No camera available",
   "@capsulesCameraUnavailable": {

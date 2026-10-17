@@ -66,5 +66,7 @@
   "capsulesOpenPickDate": "Wybierz datę…",
   "capsulesOpenNow": "Otwórz od razu",
   "capsulesCameraFlashAuto": "Lampa błyskowa: auto",
-  "capsulesCameraFlashAutoBadge": "A"
+  "capsulesCameraFlashAutoBadge": "A",
+  "capsulesCameraHoldForLoop": "Przytrzymaj, by nagrać pętlę",
+  "capsulesCameraTakePhotoOrLoop": "Zrób zdjęcie. Przytrzymaj, by nagrać pętlę"
 }

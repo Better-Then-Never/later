@@ -66,5 +66,7 @@
   "capsulesOpenPickDate": "Elegir fecha…",
   "capsulesOpenNow": "Abrir ya",
   "capsulesCameraFlashAuto": "Flash automático",
-  "capsulesCameraFlashAutoBadge": "A"
+  "capsulesCameraFlashAutoBadge": "A",
+  "capsulesCameraHoldForLoop": "Mantén para un bucle",
+  "capsulesCameraTakePhotoOrLoop": "Hacer foto. Mantén para grabar un bucle"
 }

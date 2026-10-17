@@ -698,6 +698,12 @@ abstract class AppLocalizations {
   /// **'Flash on'**
   String get capsulesCameraFlashOn;
 
+  /// Under the shutter: hold it to record several frames played as a loop
+  ///
+  /// In en, this message translates to:
+  /// **'Hold for a loop'**
+  String get capsulesCameraHoldForLoop;
+
   /// No description provided for @capsulesCameraStartFailed.
   ///
   /// In en, this message translates to:
@@ -715,6 +721,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Take photo'**
   String get capsulesCameraTakePhoto;
+
+  /// Screen reader label of the shutter when loops are on
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo. Hold to record a loop'**
+  String get capsulesCameraTakePhotoOrLoop;
 
   /// Shown on the camera screen when the phone has no camera.
   ///

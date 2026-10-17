@@ -8,23 +8,39 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../data/services/app_image_cache.dart';
 import 'buttons/default_icon_button.dart';
+import 'loop_picture.dart';
 
 /// A capsule's photo on its own, full screen: pinch or double-tap to zoom,
 /// drag down (when not zoomed) or Back to close. [url] is a network photo or
 /// a `file:` one (a capsule still on the phone).
 class PhotoViewer extends StatefulWidget {
-  const PhotoViewer({super.key, required this.url});
+  const PhotoViewer({
+    super.key,
+    required this.url,
+    this.frames = const [],
+    this.frameDelay = const Duration(milliseconds: 300),
+  });
 
   final String url;
 
-  static Future<void> show(BuildContext context, String url) {
+  /// A loop capsule's frames: played instead of [url].
+  final List<String> frames;
+  final Duration frameDelay;
+
+  static Future<void> show(
+    BuildContext context,
+    String url, {
+    List<String> frames = const [],
+    Duration frameDelay = const Duration(milliseconds: 300),
+  }) {
     final duration = AppMotion.of(context, AppMotion.standard);
     return Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: false,
         transitionDuration: duration,
         reverseTransitionDuration: duration,
-        pageBuilder: (_, _, _) => PhotoViewer(url: url),
+        pageBuilder: (_, _, _) =>
+            PhotoViewer(url: url, frames: frames, frameDelay: frameDelay),
         transitionsBuilder: (_, animation, _, child) {
           final curved = CurvedAnimation(
             parent: animation,
@@ -165,12 +181,19 @@ class _PhotoViewerState extends State<PhotoViewer>
                 minScale: 1,
                 maxScale: 4,
                 onInteractionEnd: (_) => setState(() {}),
-                child: Image(
-                  image: image,
-                  fit: BoxFit.contain,
-                  gaplessPlayback: true,
-                  errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                ),
+                child: widget.frames.length > 1
+                    ? LoopPicture(
+                        sources: widget.frames,
+                        frameDelay: widget.frameDelay,
+                        fit: BoxFit.contain,
+                        decodeWidth: size.width * 2,
+                      )
+                    : Image(
+                        image: image,
+                        fit: BoxFit.contain,
+                        gaplessPlayback: true,
+                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                      ),
               ),
             ),
           ),
