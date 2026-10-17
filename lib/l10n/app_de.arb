@@ -123,6 +123,7 @@
   "capsulesCommentTooLong": "Kommentare dürfen höchstens 500 Zeichen lang sein",
   "capsulesComments": "Kommentare",
   "capsulesCommentsCount": "{count, plural, =0{Kommentieren} =1{1 Kommentar} other{{count} Kommentare}}",
+  "capsulesCommentsEarlier": "Frühere Kommentare zeigen",
   "capsulesCommentsEmpty": "Noch keine Kommentare",
   "capsulesCommentsEmptyHint": "Schreib als Erstes etwas.",
   "capsulesCreationAllowComments": "Kommentare erlauben",

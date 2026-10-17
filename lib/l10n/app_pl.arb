@@ -123,6 +123,7 @@
   "capsulesCommentTooLong": "Komentarz może mieć najwyżej 500 znaków",
   "capsulesComments": "Komentarze",
   "capsulesCommentsCount": "{count, plural, =0{Skomentuj} one{1 komentarz} few{{count} komentarze} many{{count} komentarzy} other{{count} komentarza}}",
+  "capsulesCommentsEarlier": "Pokaż wcześniejsze komentarze",
   "capsulesCommentsEmpty": "Nie ma jeszcze komentarzy",
   "capsulesCommentsEmptyHint": "Napisz coś jako pierwszy.",
   "capsulesCreationAllowComments": "Pozwól komentować",

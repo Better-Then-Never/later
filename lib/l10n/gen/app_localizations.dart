@@ -842,6 +842,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}'**
   String capsulesCommentsCount(int count);
 
+  /// First row of a long comment thread: loads older comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Show earlier comments'**
+  String get capsulesCommentsEarlier;
+
   /// No description provided for @capsulesCommentsEmpty.
   ///
   /// In en, this message translates to:

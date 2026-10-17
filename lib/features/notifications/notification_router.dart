@@ -8,6 +8,7 @@ import '../../data/models/chat.dart';
 import '../../app/shell/selected_page.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/push_messaging_service.dart';
+import '../capsules/social/capsule_detail_dialog.dart';
 import '../map/map_focus.dart';
 
 /// Turns notification taps (system notifications in every app state, local
@@ -79,7 +80,17 @@ class NotificationRouter {
           if (capsule == null) return;
           AppRoutes.backToRoot();
           selectedPageNotifier.value = AppTabs.map;
-          _mapFocus.focus(capsule);
+          if (capsule.location != null) _mapFocus.focus(capsule);
+          if (tap.type == NotificationType.capsule) return;
+          // A reaction, comment or reply: the capsule itself, and for
+          // comments the thread, over the map.
+          final root = AppRoutes.navigatorKey.currentContext;
+          if (root == null || !root.mounted) return;
+          await CapsuleDetailDialog.show(
+            root,
+            capsule,
+            openComments: tap.type != NotificationType.reaction,
+          );
         } catch (e) {
           AppLogger.warning('Could not open capsule $capsuleId', error: e);
         }

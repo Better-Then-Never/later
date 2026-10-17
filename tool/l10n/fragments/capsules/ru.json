@@ -72,5 +72,6 @@
   "capsulesCameraFlashTorch": "Фонарик включён",
   "capsulesCameraFlashTorchBadge": "Ф",
   "capsulesCameraExposure": "Яркость",
-  "capsulesCameraZoomTo": "Увеличение {zoom}×"
+  "capsulesCameraZoomTo": "Увеличение {zoom}×",
+  "capsulesCommentsEarlier": "Показать более ранние"
 }

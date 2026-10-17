@@ -72,5 +72,6 @@
   "capsulesCameraFlashTorch": "Linterna encendida",
   "capsulesCameraFlashTorchBadge": "L",
   "capsulesCameraExposure": "Brillo",
-  "capsulesCameraZoomTo": "Zoom {zoom}×"
+  "capsulesCameraZoomTo": "Zoom {zoom}×",
+  "capsulesCommentsEarlier": "Ver comentarios anteriores"
 }

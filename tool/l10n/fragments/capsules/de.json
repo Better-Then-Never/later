@@ -72,5 +72,6 @@
   "capsulesCameraFlashTorch": "Licht an",
   "capsulesCameraFlashTorchBadge": "L",
   "capsulesCameraExposure": "Helligkeit",
-  "capsulesCameraZoomTo": "Zoom {zoom}×"
+  "capsulesCameraZoomTo": "Zoom {zoom}×",
+  "capsulesCommentsEarlier": "Frühere Kommentare zeigen"
 }

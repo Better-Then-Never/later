@@ -518,6 +518,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get capsulesCommentsEarlier => 'Показать более ранние';
+
+  @override
   String get capsulesCommentsEmpty => 'Комментариев пока нет';
 
   @override

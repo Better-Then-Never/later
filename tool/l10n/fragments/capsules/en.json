@@ -197,5 +197,9 @@
         "example": "2"
       }
     }
+  },
+  "capsulesCommentsEarlier": "Show earlier comments",
+  "@capsulesCommentsEarlier": {
+    "description": "First row of a long comment thread: loads older comments."
   }
 }

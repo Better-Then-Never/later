@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/session/session_controller.dart';
+import '../../../core/config/feature_flags.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/app_sheets.dart';
 import '../../map/widgets/capsule_preview_card.dart';
+import 'capsule_comments_sheet.dart';
 import 'capsule_social_controller.dart';
 import 'capsule_social_panel.dart';
 
@@ -17,6 +20,7 @@ abstract final class CapsuleDetailDialog {
     BuildContext context,
     Capsule capsule, {
     VoidCallback? onPlaceTap,
+    bool openComments = false,
   }) {
     final uid = context.read<SessionController>().uid;
     final social = context.read<SocialRepository>();
@@ -57,8 +61,11 @@ abstract final class CapsuleDetailDialog {
                       social: social,
                     ),
                     child: Builder(
-                      builder: (context) => CapsuleSocialPanel(
-                        controller: context.read<CapsuleSocialController>(),
+                      builder: (context) => _CommentsOnOpen(
+                        open: openComments,
+                        child: CapsuleSocialPanel(
+                          controller: context.read<CapsuleSocialController>(),
+                        ),
                       ),
                     ),
                   ),
@@ -70,4 +77,33 @@ abstract final class CapsuleDetailDialog {
       ),
     );
   }
+}
+
+/// Opens the comments once the dialog is up, when it was opened for them
+/// (a tap on a comment or reply notification).
+class _CommentsOnOpen extends StatefulWidget {
+  const _CommentsOnOpen({required this.open, required this.child});
+
+  final bool open;
+  final Widget child;
+
+  @override
+  State<_CommentsOnOpen> createState() => _CommentsOnOpenState();
+}
+
+class _CommentsOnOpenState extends State<_CommentsOnOpen> {
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.open) return;
+    final controller = context.read<CapsuleSocialController>();
+    if (!(FeatureFlags.comments && controller.capsule.allowComments)) return;
+    // After the card has risen (its route animation).
+    Future<void>.delayed(AppMotion.of(context, AppMotion.emphasized), () {
+      if (mounted) CapsuleCommentsSheet.show(context, controller);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

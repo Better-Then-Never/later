@@ -504,6 +504,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get capsulesCommentsEarlier => 'Frühere Kommentare zeigen';
+
+  @override
   String get capsulesCommentsEmpty => 'Noch keine Kommentare';
 
   @override

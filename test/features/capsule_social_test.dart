@@ -35,6 +35,35 @@ void main() {
       );
 
   group('CapsuleSocialController', () {
+    test('comments load a page at a time, older ones on request', () async {
+      social.comments['cap'] = [
+        for (var i = 0; i < 250; i++)
+          CapsuleComment(
+            id: 'c$i',
+            capsuleId: 'cap',
+            authorId: 'zoe',
+            text: '$i',
+          ),
+      ];
+      final c = CapsuleSocialController(
+        capsule: _capsule,
+        uid: 'me',
+        social: social,
+        commentPage: 200,
+      );
+      await pumpEventQueue();
+      expect(c.comments.length, 200);
+      expect(c.comments.first.id, 'c50', reason: 'the newest 200');
+      expect(c.canLoadMoreComments, isTrue);
+      c.loadMoreComments();
+      expect(c.isLoadingMoreComments, isTrue);
+      await pumpEventQueue();
+      expect(c.comments.length, 250);
+      expect(c.canLoadMoreComments, isFalse);
+      expect(c.isLoadingMoreComments, isFalse);
+      c.dispose();
+    });
+
     test('a reaction toggles and replaces; counts include everyone', () async {
       social.reactions['cap'] = {
         'a': ReactionType.heart,

@@ -123,6 +123,7 @@
   "capsulesCommentTooLong": "Комментарий может быть не длиннее 500 символов",
   "capsulesComments": "Комментарии",
   "capsulesCommentsCount": "{count, plural, =0{Комментировать} one{{count} комментарий} few{{count} комментария} many{{count} комментариев} other{{count} комментария}}",
+  "capsulesCommentsEarlier": "Показать более ранние",
   "capsulesCommentsEmpty": "Комментариев пока нет",
   "capsulesCommentsEmptyHint": "Напишите первым.",
   "capsulesCreationAllowComments": "Разрешить комментарии",

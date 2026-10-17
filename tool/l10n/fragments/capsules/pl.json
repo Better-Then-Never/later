@@ -72,5 +72,6 @@
   "capsulesCameraFlashTorch": "Latarka włączona",
   "capsulesCameraFlashTorchBadge": "L",
   "capsulesCameraExposure": "Jasność",
-  "capsulesCameraZoomTo": "Powiększenie {zoom}×"
+  "capsulesCameraZoomTo": "Powiększenie {zoom}×",
+  "capsulesCommentsEarlier": "Pokaż wcześniejsze komentarze"
 }

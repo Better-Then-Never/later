@@ -123,6 +123,7 @@
   "capsulesCommentTooLong": "Los comentarios pueden tener hasta 500 caracteres",
   "capsulesComments": "Comentarios",
   "capsulesCommentsCount": "{count, plural, =0{Comentar} =1{1 comentario} other{{count} comentarios}}",
+  "capsulesCommentsEarlier": "Ver comentarios anteriores",
   "capsulesCommentsEmpty": "Aún no hay comentarios",
   "capsulesCommentsEmptyHint": "Sé el primero en decir algo.",
   "capsulesCreationAllowComments": "Permitir comentarios",
