@@ -279,6 +279,10 @@ describe('message notifications', () => {
   test('long texts are shortened; capsules say so', () => {
     assert.equal(notify.messageBody({ text: 'x'.repeat(200) }, true).length, 150);
     assert.equal(notify.messageBody({ type: 'capsule', text: 'Trip' }, true), 'Sent you a capsule: Trip');
+    // Photos: the caption after a camera sign, or a line saying what it is.
+    assert.equal(notify.messageBody({ type: 'image', text: '📷' }, true), 'Sent you a photo');
+    assert.equal(notify.messageBody({ type: 'image', text: 'Look!' }, true), '📷 Look!');
+    assert.equal(notify.messageBody({ type: 'image', text: 'Look!' }, false, 'ru'), 'Фото для вас');
   });
 
   test('no preview, no sound: neutral text on the silent channel', async () => {
@@ -355,6 +359,8 @@ describe('account deletion cleanup', () => {
     await setSettings('gone', { mutedChats: [] });
     await bucket.file('userdata/gone/assets/images/profile_image').save('x');
     await bucket.file('userdata/bob/assets/images/profile_image').save('y');
+    await bucket.file('chats/bob_gone/bob/p1.jpg').save('z');
+    await bucket.file('chats/bob_carol/bob/p2.jpg').save('z');
 
     const report = await account.deleteUserData({ db, bucket }, 'gone');
     assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1, reactions: 0, comments: 0 });
@@ -373,6 +379,8 @@ describe('account deletion cleanup', () => {
     assert.equal((await db.doc('chats/bob_gone/messages/m1').get()).exists, false);
     assert.equal((await bucket.file('userdata/gone/assets/images/profile_image').exists())[0], false);
     assert.equal((await bucket.file('userdata/bob/assets/images/profile_image').exists())[0], true);
+    assert.equal((await bucket.file('chats/bob_gone/bob/p1.jpg').exists())[0], false);
+    assert.equal((await bucket.file('chats/bob_carol/bob/p2.jpg').exists())[0], true);
 
     // Running it again is harmless.
     await account.deleteUserData({ db, bucket }, 'gone');

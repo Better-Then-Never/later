@@ -39,6 +39,26 @@ service firebase.storage {
             && imageUpload(3 * 1024 * 1024)));
     }
 
+    // Photos sent in a chat (chats/{uidA_uidB}/{sender}/{id}.jpg): the
+    // sender uploads and may delete them; both participants may read. The
+    // app shows them through download URLs, like capsule photos.
+    match /chats/{chatId}/{senderId}/{name} {
+      function members() {
+        return chatId.split('_');
+      }
+
+      allow read: if signedIn() && members().size() == 2
+        && request.auth.uid in members();
+      // resource == null: a sent photo is never replaced (the emulator treats
+      // writing over an existing file as a create too).
+      allow create: if resource == null && isMe(senderId)
+        && members().size() == 2
+        && senderId in members()
+        && name.matches('[A-Za-z0-9]{1,40}[.]jpg')
+        && imageUpload(5 * 1024 * 1024);
+      allow delete: if isMe(senderId);
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

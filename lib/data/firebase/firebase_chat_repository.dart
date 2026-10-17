@@ -113,7 +113,17 @@ class FirebaseChatRepository implements ChatRepository {
     // Offline, the message waits in the outbox instead of the upload
     // retrying in the background for the default 10 minutes.
     _storage.setMaxUploadRetryTime(const Duration(seconds: 45));
-    await ref.putData(photo.bytes, SettableMetadata(contentType: 'image/jpeg'));
+    try {
+      await ref.putData(
+        photo.bytes,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+    } on FirebaseException catch (e) {
+      // A sent photo cannot be replaced (storage.rules): an earlier attempt
+      // whose answer was lost already put it there, so that one is used.
+      if (e.code != 'unauthorized') rethrow;
+      AppLogger.debug('Chat photo already uploaded, using it: $path');
+    }
     final url = await ref.getDownloadURL();
     // Shown from the disk cache from now on: never downloaded by the sender.
     await AppImageCache.seed(url, photo.bytes);

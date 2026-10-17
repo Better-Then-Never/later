@@ -561,6 +561,36 @@ describe('chats', () => {
     await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: 'm1' }));
   });
 
+  test('a photo message points at a file of this chat sent by its sender', async () => {
+    const photo = (who, extra = {}) => ({
+      type: 'image',
+      text: '📷',
+      imageUrl: 'https://firebasestorage.googleapis.com/v0/b/x/o/p?alt=media&token=t',
+      imagePath: `chats/alice_bob/${who}/m1.jpg`,
+      width: 1200,
+      height: 1600,
+      ...extra,
+    });
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', photo('alice')));
+    await assertSucceeds(send(as('bob'), 'bob', 'alice', photo('bob', { text: 'Look!' })));
+    // Size is optional (older drafts); the caption may be the camera sign.
+    const { width, height, ...noSize } = photo('alice');
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', noSize));
+    // Someone else's file, another chat's folder, odd names, no file at all.
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('bob')));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imagePath: 'chats/alice_carol/alice/m1.jpg' })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imagePath: 'chats/alice_bob/alice/../x.jpg' })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imagePath: 'chats/alice_bob/alice/m1.png' })));
+    const { imagePath, ...noFile } = photo('alice');
+    await assertFails(send(as('alice'), 'alice', 'bob', noFile));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imageUrl: 'x'.repeat(2049) })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { width: 0 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { height: 20000 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { width: '1200' })));
+    // Still a message: the text cannot be empty.
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { text: '' })));
+  });
+
   test("sending like main's app (no unread counts) is still allowed", async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob', {}, undefined, { legacy: true }));
     await assertSucceeds(send(as('bob'), 'bob', 'alice', {}, undefined, { legacy: true }));

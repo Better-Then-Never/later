@@ -128,11 +128,20 @@ function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true
   };
 }
 
+/** What a photo message without a caption carries as its text. */
+const PHOTO_SIGN = '📷';
+
 /** Body of a message push: the text, or a neutral line without preview. */
 function messageBody(message, preview, lang = 'en') {
   const capsule = message.type === 'capsule';
-  if (!preview) return i18n.t(lang, capsule ? 'messageCapsule' : 'messageNoPreview');
+  const photo = message.type === 'image';
+  if (!preview) {
+    return i18n.t(lang, capsule ? 'messageCapsule' : photo ? 'messagePhoto' : 'messageNoPreview');
+  }
   const short = shorten(String(message.text || ''));
+  if (photo) {
+    return short && short !== PHOTO_SIGN ? `${PHOTO_SIGN} ${short}` : i18n.t(lang, 'messagePhoto');
+  }
   return capsule ? i18n.t(lang, 'messageCapsuleTitled', { title: short }) : short;
 }
 

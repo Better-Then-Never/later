@@ -587,14 +587,30 @@ service cloud.firestore {
 
         function validMessage(d) {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
-              'type', 'capsuleId', 'imageUrl', 'replyTo'])
+              'type', 'capsuleId', 'imageUrl', 'replyTo', 'imagePath', 'width',
+              'height'])
             && (!d.keys().hasAny(['replyTo']) || validReply(d.replyTo))
             && d.senderId == me()
             && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
             && isServerTime(d.timestamp)
             && d.status == 'sent'
             && (!d.keys().hasAny(['type']) || d.type == 'text'
-              || (d.type == 'capsule' && validCapsuleMessage(d)));
+              || (d.type == 'capsule' && validCapsuleMessage(d))
+              || (d.type == 'image' && validImageMessage(d)));
+        }
+
+        // A photo: a file the sender uploaded to this chat's folder in
+        // Storage (storage.rules), its download URL and its size in pixels
+        // (so the bubble has its shape before the picture arrives). The text
+        // is the caption, or a camera sign for older app versions to show.
+        function validImageMessage(d) {
+          return d.imageUrl is string && d.imageUrl.size() <= 2048
+            && d.imagePath is string
+            && d.imagePath.matches('chats/' + chatId + '/' + me() + '/[A-Za-z0-9]{1,40}[.]jpg')
+            && d.get('width', 1) is int && d.get('width', 1) > 0
+            && d.get('width', 1) <= 10000
+            && d.get('height', 1) is int && d.get('height', 1) > 0
+            && d.get('height', 1) <= 10000;
         }
 
         // A reply quotes a message of this chat: its id, its sender and a

@@ -17,6 +17,7 @@ const account = require('./lib/account');
 const social = require('./lib/social');
 const gamification = require('./lib/gamification');
 const broadcast = require('./lib/broadcast');
+const chats = require('./lib/chats');
 
 admin.initializeApp();
 
@@ -156,6 +157,12 @@ function logged(name, work) {
 }
 
 const data = (snapshot) => (snapshot && snapshot.exists ? snapshot.data() : undefined);
+
+// A chat photo's file is deleted with its message (functions/lib/chats.js).
+exports.deleteChatPhoto = onDocumentDeleted(
+  'chats/{chatId}/messages/{messageId}',
+  logged('Chat photo', (e) => chats.onMessageDeleted(services(), e.params.chatId, data(e.data))),
+);
 
 exports.countFollowerAdded = onDocumentCreated(
   'users/{uid}/followers/{follower}',

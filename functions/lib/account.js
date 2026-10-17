@@ -86,6 +86,8 @@ async function deleteUserData({ db, bucket }, uid) {
   const chats = await db.collection('chats').where('participants', 'array-contains', uid).get();
   for (const chat of chats.docs) {
     await db.recursiveDelete(chat.ref);
+    // Photos sent in the chat, by either participant.
+    await bucket.deleteFiles({ prefix: `chats/${chat.id}/` });
   }
   report.chats = chats.size;
 

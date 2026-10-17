@@ -67,6 +67,36 @@ describe('profile images', () => {
   });
 });
 
+describe('chat photos', () => {
+  const photo = (who, path = 'chats/alice_bob/alice/m1.jpg') => ref(storage(who), path);
+
+  test('the sender uploads to their folder of the chat; both participants read', async () => {
+    await assertSucceeds(uploadBytes(photo('alice'), bytes(), jpeg));
+    await assertSucceeds(getBytes(photo('alice')));
+    await assertSucceeds(getBytes(photo('bob')));
+    await assertFails(getBytes(photo('carol')));
+    await assertFails(getBytes(photo(null)));
+  });
+
+  test('not in your name, not in a chat you are not part of, only small jpegs', async () => {
+    await assertFails(uploadBytes(photo('bob'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('carol', 'chats/alice_bob/carol/m1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice/alice/m1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob_carol/alice/m1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m1.png'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m-1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice'), bytes(), { contentType: 'text/plain' }));
+    await assertFails(uploadBytes(photo('alice'), new Uint8Array(5 * 1024 * 1024 + 1), jpeg));
+  });
+
+  test('only the sender deletes; nobody replaces a sent photo', async () => {
+    await assertSucceeds(uploadBytes(photo('alice', 'chats/alice_bob/alice/m2.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m2.jpg'), bytes(), jpeg));
+    await assertFails(deleteObject(photo('bob', 'chats/alice_bob/alice/m2.jpg')));
+    await assertSucceeds(deleteObject(photo('alice', 'chats/alice_bob/alice/m2.jpg')));
+  });
+});
+
 describe('capsule images', () => {
   test('owner writes image.jpg; others cannot read or write', async () => {
     await assertSucceeds(uploadBytes(ref(storage('alice'), 'userdata/alice/capsules/c1/image.jpg'), bytes(), jpeg));
@@ -87,6 +117,7 @@ describe('capsule images', () => {
   });
 
   test('everything else is closed', async () => {
+    await assertFails(uploadBytes(ref(storage('alice'), 'chats/x.jpg'), bytes(), jpeg));
     await assertFails(uploadBytes(ref(storage('alice'), 'public/x.jpg'), bytes(), jpeg));
   });
 });
