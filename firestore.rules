@@ -714,8 +714,10 @@ service cloud.firestore {
         function validMessage(d) {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
               'type', 'capsuleId', 'imageUrl', 'replyTo', 'imagePath', 'width',
-              'height', 'audioUrl', 'audioPath', 'durationMs', 'waveform'])
+              'height', 'audioUrl', 'audioPath', 'durationMs', 'waveform',
+              'forwarded'])
             && (!d.keys().hasAny(['replyTo']) || validReply(d.replyTo))
+            && d.get('forwarded', true) == true
             && d.senderId == me()
             && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
             && isServerTime(d.timestamp)

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/feature_flags.dart';
+import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -124,6 +125,36 @@ Future<void> reportFlow(
   required ReportTarget target,
   required String targetPath,
 }) async {
+  final reason = await pickReportReason(context);
+  if (reason == null || !context.mounted) return;
+  final failure = await controller.report(
+    target: target,
+    targetPath: targetPath,
+    reason: reason,
+  );
+  if (context.mounted) showReportResult(context, failure);
+}
+
+/// Thanks the user, or says why the report did not go.
+void showReportResult(BuildContext context, AppFailure? failure) {
+  if (failure != null) {
+    PopupNotificationService.showError(
+      context: context,
+      message: failure.message,
+      position: NotificationPosition.bottom,
+    );
+  } else {
+    PopupNotificationService.showSuccess(
+      context: context,
+      message: context.l10n.capsulesReportSent,
+      position: NotificationPosition.bottom,
+    );
+  }
+}
+
+/// Why the user reports something (a capsule, a comment, a message), or
+/// null when they back out.
+Future<ReportReason?> pickReportReason(BuildContext context) {
   final l10n = context.l10n;
   final reasons = {
     ReportReason.spam: l10n.capsulesReportSpam,
@@ -133,7 +164,7 @@ Future<void> reportFlow(
     ReportReason.privacy: l10n.capsulesReportPrivacy,
     ReportReason.other: l10n.capsulesReportOther,
   };
-  final reason = await showCenteredSheet<ReportReason>(
+  return showCenteredSheet<ReportReason>(
     context,
     OptionsMenu(
       children: [
@@ -161,26 +192,6 @@ Future<void> reportFlow(
       ],
     ),
   );
-  if (reason == null || !context.mounted) return;
-  final failure = await controller.report(
-    target: target,
-    targetPath: targetPath,
-    reason: reason,
-  );
-  if (!context.mounted) return;
-  if (failure != null) {
-    PopupNotificationService.showError(
-      context: context,
-      message: failure.message,
-      position: NotificationPosition.bottom,
-    );
-  } else {
-    PopupNotificationService.showSuccess(
-      context: context,
-      message: l10n.capsulesReportSent,
-      position: NotificationPosition.bottom,
-    );
-  }
 }
 
 /// The six reactions in equal slots; the user's choice is tinted green and

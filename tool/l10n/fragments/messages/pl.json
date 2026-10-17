@@ -103,5 +103,14 @@
   "messagesStickersHands": "Gesty",
   "messagesStickersHearts": "Serca i święta",
   "messagesStickersPlaces": "Miejsca i rzeczy",
-  "messagesStickersNature": "Natura"
+  "messagesStickersNature": "Natura",
+  "messagesUnreadDivider": "Nieprzeczytane wiadomości",
+  "messagesDeleteForMe": "Usuń u mnie",
+  "messagesDeleteForEveryone": "Usuń u wszystkich",
+  "messagesForward": "Przekaż dalej",
+  "messagesForwarded": "Przekazana dalej",
+  "messagesForwardTo": "Przekaż do",
+  "messagesForwardedTo": "Przekazano: {name}",
+  "messagesReport": "Zgłoś",
+  "messagesReportFailed": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
 }

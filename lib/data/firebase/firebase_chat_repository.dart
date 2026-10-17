@@ -174,6 +174,7 @@ class FirebaseChatRepository implements ChatRepository {
     required String text,
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -191,6 +192,7 @@ class FirebaseChatRepository implements ChatRepository {
         'text': trimmed,
         if (replyTo != null)
           'replyTo': FirestoreMappers.newMessageReply(replyTo),
+        if (forwarded) 'forwarded': true,
       });
     return batch.commit();
   }
@@ -202,6 +204,7 @@ class FirebaseChatRepository implements ChatRepository {
     required String text,
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -214,6 +217,7 @@ class FirebaseChatRepository implements ChatRepository {
         'text': trimmed,
         if (quote && replyTo != null)
           'replyTo': FirestoreMappers.newMessageReply(replyTo),
+        if (forwarded) 'forwarded': true,
       },
     );
     try {

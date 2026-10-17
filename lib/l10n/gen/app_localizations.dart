@@ -2174,6 +2174,18 @@ abstract class AppLocalizations {
   /// **'Could not delete the message'**
   String get messagesDeleteFailed;
 
+  /// Message menu: delete the user's own message for everyone in the chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete for everyone'**
+  String get messagesDeleteForEveryone;
+
+  /// Message menu: hide it on this phone only.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete for me'**
+  String get messagesDeleteForMe;
+
   /// Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.
   ///
   /// In en, this message translates to:
@@ -2191,6 +2203,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Find chats'**
   String get messagesFindChatsHint;
+
+  /// Message menu item.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward'**
+  String get messagesForward;
+
+  /// Title of the sheet that picks where to forward a message.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward to'**
+  String get messagesForwardTo;
+
+  /// Small label over a forwarded message.
+  ///
+  /// In en, this message translates to:
+  /// **'Forwarded'**
+  String get messagesForwarded;
+
+  /// Shown after forwarding a message.
+  ///
+  /// In en, this message translates to:
+  /// **'Forwarded to {name}'**
+  String messagesForwardedTo(String name);
 
   /// Group menu item and title of the page that invites friends.
   ///
@@ -2522,6 +2558,18 @@ abstract class AppLocalizations {
   /// **'Record a voice message'**
   String get messagesRecordVoice;
 
+  /// Message menu item (someone else's message).
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get messagesReport;
+
+  /// Shown when reporting a message fails.
+  ///
+  /// In en, this message translates to:
+  /// **'The report could not be sent. Try again.'**
+  String get messagesReportFailed;
+
   /// Accessibility label of the round button that jumps to the newest message.
   ///
   /// In en, this message translates to:
@@ -2659,6 +2707,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat unmuted'**
   String get messagesUnmutedToast;
+
+  /// Line above the first message that was unread when the chat opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread messages'**
+  String get messagesUnreadDivider;
 
   /// A voice message: chat list preview and quotes (after a microphone sign).
   ///

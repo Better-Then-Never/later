@@ -138,6 +138,7 @@ abstract interface class ChatRepository {
     required String text,
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   });
 
   /// Uploads the photo at [localPath] (resized, JPEG) for message
@@ -200,6 +201,7 @@ abstract interface class ChatRepository {
     required String text,
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   });
 
   /// Uploads the recording at [localPath] (AAC, .m4a) for message

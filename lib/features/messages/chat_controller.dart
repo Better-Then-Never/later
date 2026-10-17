@@ -7,8 +7,11 @@ import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
+import '../../data/models/social.dart';
+import '../../data/repositories/repositories.dart';
 import '../friends/friends_store.dart';
 import 'chats_store.dart';
+import 'hidden_messages.dart';
 
 /// What to show under the user's newest message.
 enum ReceiptStatus { sending, failed, sent, read }
@@ -27,6 +30,8 @@ class ChatController extends ChangeNotifier {
     bool Function()? readReceipts,
     Duration typingRefresh = const Duration(seconds: 4),
     Duration typingShown = const Duration(seconds: 6),
+    HiddenMessages? hidden,
+    SocialRepository? social,
   }) : this._(
          friendUid: friendUid,
          groupId: null,
@@ -36,6 +41,8 @@ class ChatController extends ChangeNotifier {
          readReceipts: readReceipts,
          typingRefresh: typingRefresh,
          typingShown: typingShown,
+         hidden: hidden,
+         social: social,
        );
 
   /// The group [groupId].
@@ -47,6 +54,8 @@ class ChatController extends ChangeNotifier {
     bool Function()? readReceipts,
     Duration typingRefresh = const Duration(seconds: 4),
     Duration typingShown = const Duration(seconds: 6),
+    HiddenMessages? hidden,
+    SocialRepository? social,
   }) : this._(
          friendUid: null,
          groupId: groupId,
@@ -56,6 +65,8 @@ class ChatController extends ChangeNotifier {
          readReceipts: readReceipts,
          typingRefresh: typingRefresh,
          typingShown: typingShown,
+         hidden: hidden,
+         social: social,
        );
 
   ChatController._({
@@ -67,12 +78,29 @@ class ChatController extends ChangeNotifier {
     required bool Function()? readReceipts,
     required this.typingRefresh,
     required this.typingShown,
+    required HiddenMessages? hidden,
+    required SocialRepository? social,
   }) : _chats = chats,
        _friends = friends,
+       _hiddenStore = hidden,
+       _social = social,
        _readReceipts = readReceipts ?? (() => true) {
     _chats.addListener(_onChatsChanged);
     _seenGroup = isGroup && chat != null;
     final id = chatId;
+    // What was unread when the chat opened (reading it resets the count).
+    final me = myUid;
+    final opened = chat;
+    _unreadAtOpen = me == null || opened == null ? 0 : opened.unreadFor(me);
+    _readAtOpen = me == null ? null : opened?.readAtOf(me);
+    if (id != null && me != null && hidden != null) {
+      unawaited(
+        hidden.load(me, id).then((ids) {
+          _hidden.addAll(ids);
+          _notify();
+        }),
+      );
+    }
     // Opened before: start from what it showed; the stream refreshes it.
     final recent = id == null ? null : _chats.recentIn(id);
     if (recent != null) {
@@ -95,6 +123,20 @@ class ChatController extends ChangeNotifier {
   final int pageSize;
   final ChatsStore _chats;
   final FriendsStore _friends;
+  final HiddenMessages? _hiddenStore;
+  final SocialRepository? _social;
+
+  /// Deleted for this user only (kept on this phone).
+  final Set<String> _hidden = {};
+
+  late final int _unreadAtOpen;
+  late final DateTime? _readAtOpen;
+  String? _firstUnreadId;
+  bool _unreadMarked = false;
+
+  /// The first message the user had not read when the chat opened (a line
+  /// marks it until they leave); null when everything was read.
+  String? get firstUnreadId => _firstUnreadId;
 
   /// While the user types, the others are told at most this often.
   final Duration typingRefresh;
@@ -186,15 +228,15 @@ class ChatController extends ChangeNotifier {
   List<ChatMessage> get messages {
     final ids = {for (final m in _server) m.id};
     final me = myUid;
-    return [
-      ..._server,
-      ..._outbox.values.where((m) => !ids.contains(m.id)),
-    ].where((m) => !_deleting.contains(m.id)).map((m) {
-      final local = _localPhotos[m.id];
-      if (local != null && m.localPath == null) m = m.withLocalPath(local);
-      if (me == null || !_reacting.containsKey(m.id)) return m;
-      return m.withReaction(me, _reacting[m.id]);
-    }).toList();
+    return [..._server, ..._outbox.values.where((m) => !ids.contains(m.id))]
+        .where((m) => !_deleting.contains(m.id) && !_hidden.contains(m.id))
+        .map((m) {
+          final local = _localPhotos[m.id];
+          if (local != null && m.localPath == null) m = m.withLocalPath(local);
+          if (me == null || !_reacting.containsKey(m.id)) return m;
+          return m.withReaction(me, _reacting[m.id]);
+        })
+        .toList();
   }
 
   /// [messages], or the search matches.
@@ -354,6 +396,10 @@ class ChatController extends ChangeNotifier {
       _typingUntil.remove(newest.senderId);
     }
     _server = messages;
+    if (!_unreadMarked) {
+      _unreadMarked = true;
+      _firstUnreadId = _findFirstUnread(messages);
+    }
     final id = chatId;
     if (id != null) _chats.rememberMessages(id, messages);
     _loaded = true;
@@ -373,6 +419,31 @@ class ChatController extends ChangeNotifier {
     });
     _notify();
     _markReadIfNeeded();
+  }
+
+  /// In a two-person chat, the unread count says how many of the newest
+  /// messages from the friend are new; in a group, those after the user's
+  /// read mark are.
+  String? _findFirstUnread(List<ChatMessage> messages) {
+    if (_unreadAtOpen <= 0) return null;
+    final me = myUid;
+    if (isGroup) {
+      final readAt = _readAtOpen;
+      return messages
+          .where(
+            (m) =>
+                m.senderId != me &&
+                (readAt == null || (m.sentAt?.isAfter(readAt) ?? false)),
+          )
+          .firstOrNull
+          ?.id;
+    }
+    var left = _unreadAtOpen;
+    for (final m in messages.reversed) {
+      if (m.senderId == me) continue;
+      if (--left == 0) return m.id;
+    }
+    return messages.where((m) => m.senderId != me).firstOrNull?.id;
   }
 
   void _onChatsChanged() {
@@ -724,6 +795,50 @@ class ChatController extends ChangeNotifier {
       _notify();
     }
     return failure;
+  }
+
+  /// Hides [message] for this user only (on this phone); the others keep
+  /// it.
+  Future<void> deleteForMe(ChatMessage message) async {
+    final id = chatId;
+    final me = myUid;
+    if (id == null || me == null) return;
+    _hidden.add(message.id);
+    _outbox.remove(message.id);
+    _notify();
+    await _hiddenStore?.hide(me, id, message.id);
+  }
+
+  /// Can be reported: someone else's message, on the server.
+  bool canReport(ChatMessage message) =>
+      !isMine(message) &&
+      message.delivery == MessageDelivery.sent &&
+      _social != null;
+
+  /// Reports [message] for [reason] (moderators read it).
+  Future<AppFailure?> reportMessage(
+    ChatMessage message,
+    ReportReason reason,
+  ) async {
+    final social = _social;
+    final me = myUid;
+    final id = chatId;
+    if (social == null || me == null || id == null) return null;
+    try {
+      await social.report(
+        reporterId: me,
+        target: ReportTarget.message,
+        targetPath: 'chats/$id/messages/${message.id}',
+        reason: reason,
+      );
+      return null;
+    } catch (e, st) {
+      AppLogger.warning('Reporting a message failed', error: e, stackTrace: st);
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.messagesReportFailed,
+      );
+    }
   }
 
   // ---- group -----------------------------------------------------------------

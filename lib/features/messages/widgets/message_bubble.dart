@@ -61,7 +61,8 @@ class MessageBubble extends StatelessWidget {
     final failed = message.delivery == MessageDelivery.failed;
     // A reply's quote and a sender's name span the bubble from the left:
     // the column is laid out at its natural width and every line stretches.
-    final quoted = message.replyTo != null || senderName != null;
+    final quoted =
+        message.replyTo != null || senderName != null || message.forwarded;
     // A photo fills its bubble but for a thin frame.
     final photo = message.type == ChatMessageType.image;
     final photoWidth = photo
@@ -137,6 +138,19 @@ class MessageBubble extends StatelessWidget {
               : CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (message.forwarded)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: Text(
+                  context.l10n.messagesForwarded,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: isMine ? AppColors.onMediaMuted : palette.textMuted,
+                  ),
+                ),
+              ),
             if (senderName case final name?)
               Padding(
                 padding: EdgeInsets.fromLTRB(photo ? 6 : 0, 0, 0, 2),

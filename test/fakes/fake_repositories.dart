@@ -592,6 +592,7 @@ class FakeChatRepository implements ChatRepository {
     required String text,
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   }) async {
     calls.add('grouptext:$groupId:$from:$text');
     if (failSends) throw StateError('send failed');
@@ -606,6 +607,7 @@ class FakeChatRepository implements ChatRepository {
         text: text,
         sentAt: now,
         replyTo: replyTo,
+        forwarded: forwarded,
       ),
     );
     _putGroup(
@@ -663,8 +665,9 @@ class FakeChatRepository implements ChatRepository {
     required String text,
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   }) async {
-    calls.add('text:$from->$to:$text');
+    calls.add(forwarded ? 'forward:$from->$to:$text' : 'text:$from->$to:$text');
     _add(
       from,
       to,
@@ -674,6 +677,7 @@ class FakeChatRepository implements ChatRepository {
         text: text,
         sentAt: now,
         replyTo: replyTo,
+        forwarded: forwarded,
       ),
     );
   }

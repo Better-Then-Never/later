@@ -1262,6 +1262,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesDeleteFailed => 'Could not delete the message';
 
   @override
+  String get messagesDeleteForEveryone => 'Delete for everyone';
+
+  @override
+  String get messagesDeleteForMe => 'Delete for me';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return 'Say hello to $name!';
   }
@@ -1271,6 +1277,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Find chats';
+
+  @override
+  String get messagesForward => 'Forward';
+
+  @override
+  String get messagesForwardTo => 'Forward to';
+
+  @override
+  String get messagesForwarded => 'Forwarded';
+
+  @override
+  String messagesForwardedTo(String name) {
+    return 'Forwarded to $name';
+  }
 
   @override
   String get messagesGroupAddPeople => 'Add people';
@@ -1459,6 +1479,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesRecordVoice => 'Record a voice message';
 
   @override
+  String get messagesReport => 'Report';
+
+  @override
+  String get messagesReportFailed => 'The report could not be sent. Try again.';
+
+  @override
   String get messagesScrollToLatest => 'Scroll to the latest message';
 
   @override
@@ -1532,6 +1558,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Chat unmuted';
+
+  @override
+  String get messagesUnreadDivider => 'Unread messages';
 
   @override
   String get messagesVoice => 'Voice message';

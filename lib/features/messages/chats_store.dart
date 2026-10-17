@@ -270,6 +270,7 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     String text, {
     required String messageId,
     MessageReply? replyTo,
+    bool forwarded = false,
   }) => _run(
     'Failed to send message',
     AppL10n.current.messagesSendFailed,
@@ -279,8 +280,34 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
       text: text,
       messageId: messageId,
       replyTo: replyTo,
+      forwarded: forwarded,
     ),
   );
+
+  /// Sends [text] on, marked "Forwarded", to a friend or a group.
+  Future<AppFailure?> forward(
+    String text, {
+    String? friendUid,
+    String? groupId,
+  }) async {
+    final chatId =
+        groupId ?? (friendUid == null ? null : chatIdWith(friendUid));
+    final id = chatId == null ? null : newMessageIdIn(chatId);
+    if (id == null) return AuthFailure(AppL10n.current.messagesSignedOut);
+    return groupId != null
+        ? _run(
+            'Failed to forward to a group',
+            AppL10n.current.messagesSendFailed,
+            (me) => _chats.sendToGroup(
+              groupId: groupId,
+              from: me,
+              text: text,
+              messageId: id,
+              forwarded: true,
+            ),
+          )
+        : sendText(friendUid!, text, messageId: id, forwarded: true);
+  }
 
   /// Uploads the photo at [localPath] for message [messageId] to [to]:
   /// the stored photo, or why it failed.

@@ -14,6 +14,10 @@ import 'package:later/features/map/current_location.dart';
 import 'package:later/features/messages/chat_controller.dart';
 import 'package:later/features/messages/chat_time.dart';
 import 'package:later/features/messages/chats_store.dart';
+import 'package:later/data/models/social.dart';
+import 'package:later/data/services/preferences_store.dart';
+import 'package:later/features/messages/hidden_messages.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../fakes/fake_repositories.dart';
 
@@ -818,6 +822,103 @@ void main() {
       expect(chatRepo.groups[id]!.members, ['bob', 'carol']);
       c.dispose();
     });
+  });
+
+  group('Small chat things', () {
+    test(
+      'a line marks the first message unread when the chat opened',
+      () async {
+        await say('bob', 'me', 'One');
+        await chatRepo.markRead(Chat.idBetween('me', 'bob'), reader: 'me');
+        await say('me', 'bob', 'Mine');
+        await say('bob', 'me', 'Two');
+        await say('bob', 'me', 'Three');
+        await pumpEventQueue();
+        final c = ChatController(
+          friendUid: 'bob',
+          chats: chats,
+          friends: friends,
+        );
+        await pumpEventQueue();
+        final two = c.messages.firstWhere((m) => m.text == 'Two');
+        expect(c.firstUnreadId, two.id);
+        // Read now, but the line stays while the chat is open.
+        expect(chats.chatWith('bob')!.unreadFor('me'), 0);
+        expect(c.firstUnreadId, two.id);
+        c.dispose();
+
+        final again = ChatController(
+          friendUid: 'bob',
+          chats: chats,
+          friends: friends,
+        );
+        await pumpEventQueue();
+        expect(again.firstUnreadId, isNull, reason: 'all read now');
+        again.dispose();
+      },
+    );
+
+    test('deleting for me hides it here and keeps it hidden', () async {
+      SharedPreferences.setMockInitialValues({});
+      final hidden = HiddenMessages(PreferencesStore());
+      await say('bob', 'me', 'Hello');
+      final c = ChatController(
+        friendUid: 'bob',
+        chats: chats,
+        friends: friends,
+        hidden: hidden,
+      );
+      await pumpEventQueue();
+      await c.deleteForMe(c.messages.single);
+      expect(c.messages, isEmpty);
+      expect(
+        chatRepo.messages['bob_me']!.single.text,
+        'Hello',
+        reason: 'still there for Bob',
+      );
+      c.dispose();
+
+      final reopened = ChatController(
+        friendUid: 'bob',
+        chats: chats,
+        friends: friends,
+        hidden: hidden,
+      );
+      await pumpEventQueue();
+      expect(reopened.messages, isEmpty);
+      reopened.dispose();
+    });
+
+    test(
+      'forwarding goes to a friend or a group, marked; reports go to moderators',
+      () async {
+        await say('bob', 'me', 'Look at this');
+        expect(await chats.forward('Look at this', friendUid: 'carol'), isNull);
+        expect(chatRepo.calls.last, 'forward:me->carol:Look at this');
+        expect(chatRepo.messages['carol_me']!.single.forwarded, isTrue);
+
+        final (group, _) = await chats.createGroup('Trip', ['bob']);
+        expect(await chats.forward('Look at this', groupId: group), isNull);
+        expect(chatRepo.messages[group]!.single.forwarded, isTrue);
+
+        final social = FakeSocialRepository();
+        final c = ChatController(
+          friendUid: 'bob',
+          chats: chats,
+          friends: friends,
+          social: social,
+        );
+        await pumpEventQueue();
+        final bobs = c.messages.single;
+        expect(c.canReport(bobs), isTrue);
+        expect(await c.reportMessage(bobs, ReportReason.spam), isNull);
+        expect(
+          social.reports.single['targetPath'],
+          'chats/bob_me/messages/${bobs.id}',
+        );
+        c.dispose();
+      },
+    );
   });
 
   group('Send a capsule to a friend', () {

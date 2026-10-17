@@ -103,5 +103,14 @@
   "messagesStickersHands": "Gestos",
   "messagesStickersHearts": "Corazones y fiestas",
   "messagesStickersPlaces": "Lugares y cosas",
-  "messagesStickersNature": "Naturaleza"
+  "messagesStickersNature": "Naturaleza",
+  "messagesUnreadDivider": "Mensajes sin leer",
+  "messagesDeleteForMe": "Eliminar para mí",
+  "messagesDeleteForEveryone": "Eliminar para todos",
+  "messagesForward": "Reenviar",
+  "messagesForwarded": "Reenviado",
+  "messagesForwardTo": "Reenviar a",
+  "messagesForwardedTo": "Reenviado a {name}",
+  "messagesReport": "Denunciar",
+  "messagesReportFailed": "No se pudo enviar la denuncia. Inténtalo de nuevo."
 }

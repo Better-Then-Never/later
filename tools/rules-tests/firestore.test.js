@@ -655,6 +655,12 @@ describe('chats', () => {
     await assertFails(send(as('alice'), 'alice', 'bob', noLength));
   });
 
+  test('a forwarded message says so, and nothing else', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: true }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: false }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: 'yes' }));
+  });
+
   test("sending like main's app (no unread counts) is still allowed", async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob', {}, undefined, { legacy: true }));
     await assertSucceeds(send(as('bob'), 'bob', 'alice', {}, undefined, { legacy: true }));

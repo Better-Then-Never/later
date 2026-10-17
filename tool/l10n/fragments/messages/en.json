@@ -365,5 +365,47 @@
   "messagesStickersNature": "Nature",
   "@messagesStickersNature": {
     "description": "Sticker panel group (flowers, weather, animals)."
+  },
+  "messagesUnreadDivider": "Unread messages",
+  "@messagesUnreadDivider": {
+    "description": "Line above the first message that was unread when the chat opened."
+  },
+  "messagesDeleteForMe": "Delete for me",
+  "@messagesDeleteForMe": {
+    "description": "Message menu: hide it on this phone only."
+  },
+  "messagesDeleteForEveryone": "Delete for everyone",
+  "@messagesDeleteForEveryone": {
+    "description": "Message menu: delete the user's own message for everyone in the chat."
+  },
+  "messagesForward": "Forward",
+  "@messagesForward": {
+    "description": "Message menu item."
+  },
+  "messagesForwarded": "Forwarded",
+  "@messagesForwarded": {
+    "description": "Small label over a forwarded message."
+  },
+  "messagesForwardTo": "Forward to",
+  "@messagesForwardTo": {
+    "description": "Title of the sheet that picks where to forward a message."
+  },
+  "messagesForwardedTo": "Forwarded to {name}",
+  "@messagesForwardedTo": {
+    "description": "Shown after forwarding a message.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesReport": "Report",
+  "@messagesReport": {
+    "description": "Message menu item (someone else's message)."
+  },
+  "messagesReportFailed": "The report could not be sent. Try again.",
+  "@messagesReportFailed": {
+    "description": "Shown when reporting a message fails."
   }
 }

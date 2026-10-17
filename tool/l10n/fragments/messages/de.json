@@ -103,5 +103,14 @@
   "messagesStickersHands": "Gesten",
   "messagesStickersHearts": "Herzen und Feste",
   "messagesStickersPlaces": "Orte und Dinge",
-  "messagesStickersNature": "Natur"
+  "messagesStickersNature": "Natur",
+  "messagesUnreadDivider": "Ungelesene Nachrichten",
+  "messagesDeleteForMe": "Für mich löschen",
+  "messagesDeleteForEveryone": "Für alle löschen",
+  "messagesForward": "Weiterleiten",
+  "messagesForwarded": "Weitergeleitet",
+  "messagesForwardTo": "Weiterleiten an",
+  "messagesForwardedTo": "Weitergeleitet an {name}",
+  "messagesReport": "Melden",
+  "messagesReportFailed": "Die Meldung konnte nicht gesendet werden. Versuch es noch einmal."
 }

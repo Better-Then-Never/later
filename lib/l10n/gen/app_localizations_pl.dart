@@ -1304,6 +1304,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get messagesDeleteFailed => 'Nie udało się usunąć wiadomości';
 
   @override
+  String get messagesDeleteForEveryone => 'Usuń u wszystkich';
+
+  @override
+  String get messagesDeleteForMe => 'Usuń u mnie';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return '$name czeka na twoje „cześć”!';
   }
@@ -1313,6 +1319,20 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Szukaj czatów';
+
+  @override
+  String get messagesForward => 'Przekaż dalej';
+
+  @override
+  String get messagesForwardTo => 'Przekaż do';
+
+  @override
+  String get messagesForwarded => 'Przekazana dalej';
+
+  @override
+  String messagesForwardedTo(String name) {
+    return 'Przekazano: $name';
+  }
 
   @override
   String get messagesGroupAddPeople => 'Dodaj osoby';
@@ -1504,6 +1524,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get messagesRecordVoice => 'Nagraj wiadomość głosową';
 
   @override
+  String get messagesReport => 'Zgłoś';
+
+  @override
+  String get messagesReportFailed =>
+      'Nie udało się wysłać zgłoszenia. Spróbuj ponownie.';
+
+  @override
   String get messagesScrollToLatest => 'Przewiń do najnowszej wiadomości';
 
   @override
@@ -1585,6 +1612,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Wyciszenie czatu wyłączone';
+
+  @override
+  String get messagesUnreadDivider => 'Nieprzeczytane wiadomości';
 
   @override
   String get messagesVoice => 'Wiadomość głosowa';

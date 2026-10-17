@@ -238,6 +238,7 @@ abstract final class FirestoreMappers {
         audioPath: _nonEmptyString(data['audioPath']),
         durationMs: _positiveInt(data['durationMs']),
         waveform: _waveform(data['waveform']),
+        forwarded: data['forwarded'] == true,
         replyTo: messageReply(data['replyTo']),
         reactions: messageReactions(data['reactions']),
       );

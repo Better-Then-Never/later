@@ -21,6 +21,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
 import '../../data/repositories/repositories.dart';
+import '../../data/services/preferences_store.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../data/services/voice_service.dart';
 import '../../shared/motion/app_motion_widgets.dart';
@@ -37,11 +38,15 @@ import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../friends/friends_store.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
+import '../capsules/social/capsule_social_panel.dart'
+    show pickReportReason, showReportResult;
 import '../settings/settings_store.dart';
 import '../users/user_directory.dart';
 import 'chat_controller.dart';
 import 'chat_time.dart';
 import 'chats_store.dart';
+import 'hidden_messages.dart';
+import 'widgets/forward_sheet.dart';
 import 'widgets/chat_options_sheet.dart';
 import 'widgets/group_avatar.dart';
 import 'widgets/message_bubble.dart';
@@ -73,18 +78,24 @@ class ChatPage extends StatelessWidget {
         bool readReceipts() =>
             context.read<SettingsStore>().privacy.readReceipts;
         final group = groupId;
+        final hidden = HiddenMessages(context.read<PreferencesStore>());
+        final social = context.read<SocialRepository>();
         return group != null
             ? ChatController.group(
                 groupId: group,
                 chats: chats,
                 friends: friends,
                 readReceipts: readReceipts,
+                hidden: hidden,
+                social: social,
               )
             : ChatController(
                 friendUid: friendUid!,
                 chats: chats,
                 friends: friends,
                 readReceipts: readReceipts,
+                hidden: hidden,
+                social: social,
               );
       },
       child: ChangeNotifierProvider(
@@ -276,11 +287,31 @@ class _ChatViewState extends State<_ChatView> {
     // A photo without a caption has no text to copy.
     final canCopy =
         message.type != ChatMessageType.image || message.caption.isNotEmpty;
+    // Text (and big emoji) can be sent on; photos and recordings live in
+    // this chat's folder.
+    final canForward =
+        message.type == ChatMessageType.text &&
+        message.delivery == MessageDelivery.sent;
     final items = [
       if (canReply) (l10n.capsulesReply, _MessageAction.reply, null),
+      if (canForward) (l10n.messagesForward, _MessageAction.forward, null),
       if (canCopy) (l10n.messagesCopy, _MessageAction.copy, null),
+      if (controller.canReport(message))
+        (l10n.messagesReport, _MessageAction.report, AppColors.danger),
+      if (message.delivery == MessageDelivery.sent)
+        (
+          l10n.messagesDeleteForMe,
+          _MessageAction.deleteForMe,
+          AppColors.danger,
+        ),
       if (canDelete)
-        (l10n.commonDelete, _MessageAction.delete, AppColors.danger),
+        (
+          message.delivery == MessageDelivery.failed
+              ? l10n.commonDelete
+              : l10n.messagesDeleteForEveryone,
+          _MessageAction.delete,
+          AppColors.danger,
+        ),
     ];
     if (items.isEmpty && !canReact) return;
     final mine = message.reactions[controller.myUid];
@@ -332,6 +363,15 @@ class _ChatViewState extends State<_ChatView> {
           message: l10n.messagesCopied,
           position: NotificationPosition.bottom,
         );
+      case _MessageAction.forward:
+        await _forward(message);
+      case _MessageAction.report:
+        final reason = await pickReportReason(context);
+        if (reason == null || !mounted) return;
+        final failure = await controller.reportMessage(message, reason);
+        if (mounted) showReportResult(context, failure);
+      case _MessageAction.deleteForMe:
+        await controller.deleteForMe(message);
       case _MessageAction.delete:
         // Never arrived: only this phone has it, nothing to confirm.
         if (message.delivery == MessageDelivery.failed) {
@@ -346,6 +386,27 @@ class _ChatViewState extends State<_ChatView> {
               unawaited(controller.deleteMessage(message).then(_report)),
         );
     }
+  }
+
+  /// Sends [message]'s text on to a friend or a group, marked "Forwarded".
+  Future<void> _forward(ChatMessage message) async {
+    final target = await ForwardSheet.show(context);
+    if (target == null || !mounted) return;
+    final failure = await context.read<ChatsStore>().forward(
+      message.text,
+      friendUid: target.friendUid,
+      groupId: target.groupId,
+    );
+    if (!mounted) return;
+    if (failure != null) {
+      _report(failure);
+      return;
+    }
+    PopupNotificationService.showSuccess(
+      context: context,
+      message: context.l10n.messagesForwardedTo(target.name),
+      position: NotificationPosition.bottom,
+    );
   }
 
   /// Scrolls to the answered message [id] and lights it up for a moment.
@@ -664,6 +725,9 @@ class _ChatViewState extends State<_ChatView> {
                 _DaySeparator(
                   ChatTime.dayLabel(message.sentAt, now, l10n: l10n),
                 ),
+              if (message.id == controller.firstUnreadId &&
+                  !controller.isSearching)
+                _UnreadDivider(l10n.messagesUnreadDivider),
               AnimatedContainer(
                 key: _keyFor(message.id),
                 duration: AppMotion.of(context, AppMotion.slow),
@@ -1016,7 +1080,39 @@ class _BlockedNotice extends StatelessWidget {
   }
 }
 
-enum _MessageAction { reply, copy, delete }
+/// The line over the first message that was unread when the chat opened.
+class _UnreadDivider extends StatelessWidget {
+  const _UnreadDivider(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Expanded(child: Container(height: 1, color: palette.divider)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              label,
+              style: AppTextStyles.body.copyWith(
+                color: AppColors.brandGreen,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          Expanded(child: Container(height: 1, color: palette.divider)),
+        ],
+      ),
+    );
+  }
+}
+
+enum _MessageAction { reply, forward, copy, report, deleteForMe, delete }
 
 /// The six reactions in a row at the top of the message menu; the user's
 /// current one is ringed in green.

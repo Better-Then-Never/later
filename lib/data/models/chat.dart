@@ -218,7 +218,11 @@ class ChatMessage {
     this.audioPath,
     this.durationMs,
     this.waveform = const [],
+    this.forwarded = false,
   });
+
+  /// Sent on from another conversation (marked "Forwarded").
+  final bool forwarded;
 
   /// The text of a photo without a caption (older app versions show it).
   static const photoSign = '📷';
@@ -332,6 +336,7 @@ class ChatMessage {
     audioPath: audioPath ?? this.audioPath,
     durationMs: durationMs,
     waveform: waveform,
+    forwarded: forwarded,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
@@ -367,6 +372,7 @@ class ChatMessage {
       other.audioUrl == audioUrl &&
       other.audioPath == audioPath &&
       other.durationMs == durationMs &&
+      other.forwarded == forwarded &&
       listEquals(other.waveform, waveform) &&
       _mapEquals(other.reactions, reactions);
 

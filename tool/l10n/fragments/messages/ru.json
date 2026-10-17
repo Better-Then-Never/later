@@ -103,5 +103,14 @@
   "messagesStickersHands": "Жесты",
   "messagesStickersHearts": "Сердца и праздники",
   "messagesStickersPlaces": "Места и вещи",
-  "messagesStickersNature": "Природа"
+  "messagesStickersNature": "Природа",
+  "messagesUnreadDivider": "Непрочитанные сообщения",
+  "messagesDeleteForMe": "Удалить у меня",
+  "messagesDeleteForEveryone": "Удалить у всех",
+  "messagesForward": "Переслать",
+  "messagesForwarded": "Пересланное",
+  "messagesForwardTo": "Переслать",
+  "messagesForwardedTo": "Переслано: {name}",
+  "messagesReport": "Пожаловаться",
+  "messagesReportFailed": "Жалобу не удалось отправить. Попробуйте ещё раз."
 }

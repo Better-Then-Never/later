@@ -1296,6 +1296,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesDeleteFailed => 'Не удалось удалить сообщение';
 
   @override
+  String get messagesDeleteForEveryone => 'Удалить у всех';
+
+  @override
+  String get messagesDeleteForMe => 'Удалить у меня';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return '$name ждёт вашего привета!';
   }
@@ -1305,6 +1311,20 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Поиск чатов';
+
+  @override
+  String get messagesForward => 'Переслать';
+
+  @override
+  String get messagesForwardTo => 'Переслать';
+
+  @override
+  String get messagesForwarded => 'Пересланное';
+
+  @override
+  String messagesForwardedTo(String name) {
+    return 'Переслано: $name';
+  }
 
   @override
   String get messagesGroupAddPeople => 'Добавить людей';
@@ -1497,6 +1517,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesRecordVoice => 'Записать голосовое';
 
   @override
+  String get messagesReport => 'Пожаловаться';
+
+  @override
+  String get messagesReportFailed =>
+      'Жалобу не удалось отправить. Попробуйте ещё раз.';
+
+  @override
   String get messagesScrollToLatest => 'К последнему сообщению';
 
   @override
@@ -1578,6 +1605,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Уведомления чата включены';
+
+  @override
+  String get messagesUnreadDivider => 'Непрочитанные сообщения';
 
   @override
   String get messagesVoice => 'Голосовое сообщение';

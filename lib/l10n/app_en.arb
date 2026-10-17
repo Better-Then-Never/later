@@ -1058,6 +1058,14 @@
   },
   "messagesDeleteConfirmTitle": "Delete this message for both of you?",
   "messagesDeleteFailed": "Could not delete the message",
+  "messagesDeleteForEveryone": "Delete for everyone",
+  "@messagesDeleteForEveryone": {
+    "description": "Message menu: delete the user's own message for everyone in the chat."
+  },
+  "messagesDeleteForMe": "Delete for me",
+  "@messagesDeleteForMe": {
+    "description": "Message menu: hide it on this phone only."
+  },
   "messagesEmptySubtitle": "Say hello to {name}!",
   "@messagesEmptySubtitle": {
     "description": "Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.",
@@ -1070,6 +1078,28 @@
   },
   "messagesEmptyTitle": "No messages yet",
   "messagesFindChatsHint": "Find chats",
+  "messagesForward": "Forward",
+  "@messagesForward": {
+    "description": "Message menu item."
+  },
+  "messagesForwardTo": "Forward to",
+  "@messagesForwardTo": {
+    "description": "Title of the sheet that picks where to forward a message."
+  },
+  "messagesForwarded": "Forwarded",
+  "@messagesForwarded": {
+    "description": "Small label over a forwarded message."
+  },
+  "messagesForwardedTo": "Forwarded to {name}",
+  "@messagesForwardedTo": {
+    "description": "Shown after forwarding a message.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
   "messagesGroupAddPeople": "Add people",
   "@messagesGroupAddPeople": {
     "description": "Group menu item and title of the page that invites friends."
@@ -1256,6 +1286,14 @@
   "@messagesRecordVoice": {
     "description": "Screen reader label of the microphone button in the chat input."
   },
+  "messagesReport": "Report",
+  "@messagesReport": {
+    "description": "Message menu item (someone else's message)."
+  },
+  "messagesReportFailed": "The report could not be sent. Try again.",
+  "@messagesReportFailed": {
+    "description": "Shown when reporting a message fails."
+  },
   "messagesScrollToLatest": "Scroll to the latest message",
   "@messagesScrollToLatest": {
     "description": "Accessibility label of the round button that jumps to the newest message."
@@ -1350,6 +1388,10 @@
     }
   },
   "messagesUnmutedToast": "Chat unmuted",
+  "messagesUnreadDivider": "Unread messages",
+  "@messagesUnreadDivider": {
+    "description": "Line above the first message that was unread when the chat opened."
+  },
   "messagesVoice": "Voice message",
   "@messagesVoice": {
     "description": "A voice message: chat list preview and quotes (after a microphone sign)."
