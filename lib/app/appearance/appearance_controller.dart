@@ -52,6 +52,10 @@ class AppearanceController extends ChangeNotifier {
   Locale? get locale => _language == null ? null : Locale(_language!);
   UiSize get uiSize => _uiSize;
 
+  /// Called just before the theme, language or size changes, while the old
+  /// look is still on screen (`AppearanceCrossfade` takes its picture).
+  VoidCallback? willChange;
+
   Future<void> load() async {
     _themeMode = ThemeMode.values.firstWhere(
       (m) => m.name == _prefs.deviceStringSync(_themeKey),
@@ -64,6 +68,7 @@ class AppearanceController extends ChangeNotifier {
 
   Future<void> setThemeMode(ThemeMode mode) async {
     if (mode == _themeMode) return;
+    willChange?.call();
     _themeMode = mode;
     notifyListeners();
     await _prefs.setDeviceString(_themeKey, mode.name);
@@ -73,6 +78,7 @@ class AppearanceController extends ChangeNotifier {
   Future<void> setLanguage(String? code) async {
     final next = supportedLanguages.contains(code) ? code : null;
     if (next == _language) return;
+    willChange?.call();
     _language = next;
     notifyListeners();
     await _prefs.setDeviceString(_languageKey, next);
@@ -80,6 +86,7 @@ class AppearanceController extends ChangeNotifier {
 
   Future<void> setUiSize(UiSize size) async {
     if (size == _uiSize) return;
+    willChange?.call();
     _uiSize = size;
     notifyListeners();
     await _prefs.setDeviceString(_uiSizeKey, size.name);
