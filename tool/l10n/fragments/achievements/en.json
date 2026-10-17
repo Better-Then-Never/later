@@ -1,0 +1,140 @@
+{
+  "achievementsTitle": "Achievements",
+  "achievementsDescription": "Unlocked by using Later, never by paying",
+  "achievementsSeeAll": "See all",
+  "achievementsNoneYet": "Your first one is a capsule away.",
+  "achievementsLocked": "Locked",
+  "achievementsTier": "Level {tier} of {tiers}",
+  "@achievementsTier": {
+    "placeholders": {
+      "tier": {
+        "type": "int"
+      },
+      "tiers": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsProgress": "{value} of {goal}",
+  "@achievementsProgress": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
+  "@achievementsStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsStreakTodayDone": "Today counts already",
+  "achievementsStreakKeep": "Make a capsule today to keep it",
+  "achievementFirstCapsule": "First capsule",
+  "achievementFirstCapsuleGoal": "Create your first capsule",
+  "achievementCollector": "Collector",
+  "achievementCollectorGoal": "{count, plural, =1{Create 1 capsule} other{Create {count} capsules}}",
+  "@achievementCollectorGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementOpenBook": "Open book",
+  "achievementOpenBookGoal": "{count, plural, =1{Share 1 public capsule} other{Share {count} public capsules}}",
+  "@achievementOpenBookGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementAnimator": "Animator",
+  "achievementAnimatorGoal": "{count, plural, =1{Make 1 loop capsule} other{Make {count} loop capsules}}",
+  "@achievementAnimatorGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementStreak": "On fire",
+  "achievementStreakGoal": "Keep a {count}-day streak",
+  "@achievementStreakGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementExplorer": "Explorer",
+  "achievementExplorerGoal": "{count, plural, =1{Leave a capsule in 1 place} other{Leave capsules in {count} different places}}",
+  "@achievementExplorerGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementTraveler": "Traveler",
+  "achievementTravelerGoal": "Travel {km} km between your capsules",
+  "@achievementTravelerGoal": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementCrowdPleaser": "Crowd pleaser",
+  "achievementCrowdPleaserGoal": "{count, plural, =1{Receive 1 reaction} other{Receive {count} reactions}}",
+  "@achievementCrowdPleaserGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementChatterbox": "Chatterbox",
+  "achievementChatterboxGoal": "{count, plural, =1{Write 1 comment} other{Write {count} comments}}",
+  "@achievementChatterboxGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementFriendly": "Friendly",
+  "achievementFriendlyGoal": "{count, plural, =1{Make 1 friend} other{Make {count} friends}}",
+  "@achievementFriendlyGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementNightOwl": "Night owl",
+  "achievementNightOwlGoal": "{count, plural, =1{Create a capsule between midnight and 5 am} other{Create {count} capsules between midnight and 5 am}}",
+  "@achievementNightOwlGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementEarlyBird": "Early bird",
+  "achievementEarlyBirdGoal": "{count, plural, =1{Create a capsule between 5 and 8 am} other{Create {count} capsules between 5 and 8 am}}",
+  "@achievementEarlyBirdGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

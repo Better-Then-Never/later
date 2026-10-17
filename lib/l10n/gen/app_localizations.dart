@@ -104,6 +104,210 @@ abstract class AppLocalizations {
     Locale('ru'),
   ];
 
+  /// No description provided for @achievementAnimator.
+  ///
+  /// In en, this message translates to:
+  /// **'Animator'**
+  String get achievementAnimator;
+
+  /// No description provided for @achievementAnimatorGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Make 1 loop capsule} other{Make {count} loop capsules}}'**
+  String achievementAnimatorGoal(int count);
+
+  /// No description provided for @achievementChatterbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Chatterbox'**
+  String get achievementChatterbox;
+
+  /// No description provided for @achievementChatterboxGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Write 1 comment} other{Write {count} comments}}'**
+  String achievementChatterboxGoal(int count);
+
+  /// No description provided for @achievementCollector.
+  ///
+  /// In en, this message translates to:
+  /// **'Collector'**
+  String get achievementCollector;
+
+  /// No description provided for @achievementCollectorGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Create 1 capsule} other{Create {count} capsules}}'**
+  String achievementCollectorGoal(int count);
+
+  /// No description provided for @achievementCrowdPleaser.
+  ///
+  /// In en, this message translates to:
+  /// **'Crowd pleaser'**
+  String get achievementCrowdPleaser;
+
+  /// No description provided for @achievementCrowdPleaserGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Receive 1 reaction} other{Receive {count} reactions}}'**
+  String achievementCrowdPleaserGoal(int count);
+
+  /// No description provided for @achievementEarlyBird.
+  ///
+  /// In en, this message translates to:
+  /// **'Early bird'**
+  String get achievementEarlyBird;
+
+  /// No description provided for @achievementEarlyBirdGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Create a capsule between 5 and 8 am} other{Create {count} capsules between 5 and 8 am}}'**
+  String achievementEarlyBirdGoal(int count);
+
+  /// No description provided for @achievementExplorer.
+  ///
+  /// In en, this message translates to:
+  /// **'Explorer'**
+  String get achievementExplorer;
+
+  /// No description provided for @achievementExplorerGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Leave a capsule in 1 place} other{Leave capsules in {count} different places}}'**
+  String achievementExplorerGoal(int count);
+
+  /// No description provided for @achievementFirstCapsule.
+  ///
+  /// In en, this message translates to:
+  /// **'First capsule'**
+  String get achievementFirstCapsule;
+
+  /// No description provided for @achievementFirstCapsuleGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first capsule'**
+  String get achievementFirstCapsuleGoal;
+
+  /// No description provided for @achievementFriendly.
+  ///
+  /// In en, this message translates to:
+  /// **'Friendly'**
+  String get achievementFriendly;
+
+  /// No description provided for @achievementFriendlyGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Make 1 friend} other{Make {count} friends}}'**
+  String achievementFriendlyGoal(int count);
+
+  /// No description provided for @achievementNightOwl.
+  ///
+  /// In en, this message translates to:
+  /// **'Night owl'**
+  String get achievementNightOwl;
+
+  /// No description provided for @achievementNightOwlGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Create a capsule between midnight and 5 am} other{Create {count} capsules between midnight and 5 am}}'**
+  String achievementNightOwlGoal(int count);
+
+  /// No description provided for @achievementOpenBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Open book'**
+  String get achievementOpenBook;
+
+  /// No description provided for @achievementOpenBookGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Share 1 public capsule} other{Share {count} public capsules}}'**
+  String achievementOpenBookGoal(int count);
+
+  /// No description provided for @achievementStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'On fire'**
+  String get achievementStreak;
+
+  /// No description provided for @achievementStreakGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a {count}-day streak'**
+  String achievementStreakGoal(int count);
+
+  /// No description provided for @achievementTraveler.
+  ///
+  /// In en, this message translates to:
+  /// **'Traveler'**
+  String get achievementTraveler;
+
+  /// No description provided for @achievementTravelerGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Travel {km} km between your capsules'**
+  String achievementTravelerGoal(String km);
+
+  /// No description provided for @achievementsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlocked by using Later, never by paying'**
+  String get achievementsDescription;
+
+  /// No description provided for @achievementsLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get achievementsLocked;
+
+  /// No description provided for @achievementsNoneYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first one is a capsule away.'**
+  String get achievementsNoneYet;
+
+  /// No description provided for @achievementsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} of {goal}'**
+  String achievementsProgress(String value, String goal);
+
+  /// No description provided for @achievementsSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get achievementsSeeAll;
+
+  /// No description provided for @achievementsStreakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
+  String achievementsStreakDays(int count);
+
+  /// No description provided for @achievementsStreakKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule today to keep it'**
+  String get achievementsStreakKeep;
+
+  /// No description provided for @achievementsStreakTodayDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Today counts already'**
+  String get achievementsStreakTodayDone;
+
+  /// No description provided for @achievementsTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {tier} of {tiers}'**
+  String achievementsTier(int tier, int tiers);
+
+  /// No description provided for @achievementsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get achievementsTitle;
+
   /// The app's name. Never translated.
   ///
   /// In en, this message translates to:

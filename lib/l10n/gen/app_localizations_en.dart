@@ -9,6 +9,197 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get achievementAnimator => 'Animator';
+
+  @override
+  String achievementAnimatorGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Make $count loop capsules',
+      one: 'Make 1 loop capsule',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementChatterbox => 'Chatterbox';
+
+  @override
+  String achievementChatterboxGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Write $count comments',
+      one: 'Write 1 comment',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementCollector => 'Collector';
+
+  @override
+  String achievementCollectorGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Create $count capsules',
+      one: 'Create 1 capsule',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementCrowdPleaser => 'Crowd pleaser';
+
+  @override
+  String achievementCrowdPleaserGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Receive $count reactions',
+      one: 'Receive 1 reaction',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementEarlyBird => 'Early bird';
+
+  @override
+  String achievementEarlyBirdGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Create $count capsules between 5 and 8 am',
+      one: 'Create a capsule between 5 and 8 am',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementExplorer => 'Explorer';
+
+  @override
+  String achievementExplorerGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Leave capsules in $count different places',
+      one: 'Leave a capsule in 1 place',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementFirstCapsule => 'First capsule';
+
+  @override
+  String get achievementFirstCapsuleGoal => 'Create your first capsule';
+
+  @override
+  String get achievementFriendly => 'Friendly';
+
+  @override
+  String achievementFriendlyGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Make $count friends',
+      one: 'Make 1 friend',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementNightOwl => 'Night owl';
+
+  @override
+  String achievementNightOwlGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Create $count capsules between midnight and 5 am',
+      one: 'Create a capsule between midnight and 5 am',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementOpenBook => 'Open book';
+
+  @override
+  String achievementOpenBookGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Share $count public capsules',
+      one: 'Share 1 public capsule',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementStreak => 'On fire';
+
+  @override
+  String achievementStreakGoal(int count) {
+    return 'Keep a $count-day streak';
+  }
+
+  @override
+  String get achievementTraveler => 'Traveler';
+
+  @override
+  String achievementTravelerGoal(String km) {
+    return 'Travel $km km between your capsules';
+  }
+
+  @override
+  String get achievementsDescription =>
+      'Unlocked by using Later, never by paying';
+
+  @override
+  String get achievementsLocked => 'Locked';
+
+  @override
+  String get achievementsNoneYet => 'Your first one is a capsule away.';
+
+  @override
+  String achievementsProgress(String value, String goal) {
+    return '$value of $goal';
+  }
+
+  @override
+  String get achievementsSeeAll => 'See all';
+
+  @override
+  String achievementsStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count-day streak',
+      one: '1-day streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementsStreakKeep => 'Make a capsule today to keep it';
+
+  @override
+  String get achievementsStreakTodayDone => 'Today counts already';
+
+  @override
+  String achievementsTier(int tier, int tiers) {
+    return 'Level $tier of $tiers';
+  }
+
+  @override
+  String get achievementsTitle => 'Achievements';
+
+  @override
   String get appName => 'Later';
 
   @override

@@ -9,11 +9,14 @@ abstract final class FeatureFlags {
   static const comments = true;
 
   /// Achievements on profiles and their pushes.
-  static const achievements = false;
+  static const achievements = true;
 
   /// Daily streak and its evening reminder.
-  static const streaks = false;
+  static const streaks = true;
 
   /// Announcements from the Later team (topic pushes).
   static const news = true;
+
+  /// Loop capsules (several frames played as a loop) and their achievement.
+  static const loopCapsules = false;
 }

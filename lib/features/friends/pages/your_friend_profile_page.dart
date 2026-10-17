@@ -15,6 +15,11 @@ import 'package:later/features/friends/widgets/friend_options_modal.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/l10n/l10n.dart';
+import 'package:later/core/config/feature_flags.dart';
+import 'package:later/data/models/user_profile.dart';
+import 'package:later/features/achievements/achievements_view.dart';
+import 'package:later/features/users/user_directory.dart';
+import 'package:provider/provider.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;
@@ -25,6 +30,9 @@ class YourFriendProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final friend = context.select<UserDirectory, UserProfile?>(
+      (d) => d.profile(friendUid),
+    );
 
     return Scaffold(
       backgroundColor: context.palette.background,
@@ -131,6 +139,13 @@ class YourFriendProfilePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Shown when the friend shares them (Settings > Privacy).
+                  if (FeatureFlags.achievements &&
+                      friend != null &&
+                      friend.showAchievements) ...[
+                    AchievementsPanel(profile: friend),
+                    const SizedBox(height: 16),
+                  ],
                 ],
               ),
             ),

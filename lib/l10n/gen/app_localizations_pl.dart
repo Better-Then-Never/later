@@ -9,6 +9,218 @@ class AppLocalizationsPl extends AppLocalizations {
   AppLocalizationsPl([String locale = 'pl']) : super(locale);
 
   @override
+  String get achievementAnimator => 'Animator';
+
+  @override
+  String achievementAnimatorGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Zrób $count ruchomej kapsuły',
+      many: 'Zrób $count ruchomych kapsuł',
+      few: 'Zrób $count ruchome kapsuły',
+      one: 'Zrób $count ruchomą kapsułę',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementChatterbox => 'Gaduła';
+
+  @override
+  String achievementChatterboxGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Napisz $count komentarza',
+      many: 'Napisz $count komentarzy',
+      few: 'Napisz $count komentarze',
+      one: 'Napisz $count komentarz',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementCollector => 'Kolekcjoner';
+
+  @override
+  String achievementCollectorGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Utwórz $count kapsuły',
+      many: 'Utwórz $count kapsuł',
+      few: 'Utwórz $count kapsuły',
+      one: 'Utwórz $count kapsułę',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementCrowdPleaser => 'Ulubieniec publiczności';
+
+  @override
+  String achievementCrowdPleaserGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Zdobądź $count reakcji',
+      many: 'Zdobądź $count reakcji',
+      few: 'Zdobądź $count reakcje',
+      one: 'Zdobądź $count reakcję',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementEarlyBird => 'Ranny ptaszek';
+
+  @override
+  String achievementEarlyBirdGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Utwórz $count kapsuły między 5 a 8 rano',
+      many: 'Utwórz $count kapsuł między 5 a 8 rano',
+      few: 'Utwórz $count kapsuły między 5 a 8 rano',
+      one: 'Utwórz $count kapsułę między 5 a 8 rano',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementExplorer => 'Odkrywca';
+
+  @override
+  String achievementExplorerGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Zostaw kapsuły w $count różnych miejscach',
+      many: 'Zostaw kapsuły w $count różnych miejscach',
+      few: 'Zostaw kapsuły w $count różnych miejscach',
+      one: 'Zostaw kapsułę w $count miejscu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementFirstCapsule => 'Pierwsza kapsuła';
+
+  @override
+  String get achievementFirstCapsuleGoal => 'Utwórz pierwszą kapsułę';
+
+  @override
+  String get achievementFriendly => 'Towarzyski';
+
+  @override
+  String achievementFriendlyGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Zdobądź $count znajomego',
+      many: 'Zdobądź $count znajomych',
+      few: 'Zdobądź $count znajomych',
+      one: 'Zdobądź $count znajomego',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementNightOwl => 'Nocny marek';
+
+  @override
+  String achievementNightOwlGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Utwórz $count kapsuły między północą a 5 rano',
+      many: 'Utwórz $count kapsuł między północą a 5 rano',
+      few: 'Utwórz $count kapsuły między północą a 5 rano',
+      one: 'Utwórz $count kapsułę między północą a 5 rano',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementOpenBook => 'Otwarta księga';
+
+  @override
+  String achievementOpenBookGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Udostępnij $count publicznej kapsuły',
+      many: 'Udostępnij $count publicznych kapsuł',
+      few: 'Udostępnij $count publiczne kapsuły',
+      one: 'Udostępnij $count publiczną kapsułę',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementStreak => 'W formie';
+
+  @override
+  String achievementStreakGoal(int count) {
+    return 'Utrzymaj serię przez $count dni';
+  }
+
+  @override
+  String get achievementTraveler => 'Podróżnik';
+
+  @override
+  String achievementTravelerGoal(String km) {
+    return 'Pokonaj $km km między swoimi kapsułami';
+  }
+
+  @override
+  String get achievementsDescription =>
+      'Zdobywasz je, korzystając z Later, nigdy za pieniądze';
+
+  @override
+  String get achievementsLocked => 'Zablokowane';
+
+  @override
+  String get achievementsNoneYet => 'Do pierwszego dzieli cię jedna kapsuła.';
+
+  @override
+  String achievementsProgress(String value, String goal) {
+    return '$value z $goal';
+  }
+
+  @override
+  String get achievementsSeeAll => 'Wszystkie';
+
+  @override
+  String achievementsStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Seria: $count dnia',
+      many: 'Seria: $count dni',
+      few: 'Seria: $count dni',
+      one: 'Seria: $count dzień',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get achievementsStreakKeep =>
+      'Utwórz dziś kapsułę, żeby utrzymać serię';
+
+  @override
+  String get achievementsStreakTodayDone => 'Dzisiejszy dzień już się liczy';
+
+  @override
+  String achievementsTier(int tier, int tiers) {
+    return 'Poziom $tier z $tiers';
+  }
+
+  @override
+  String get achievementsTitle => 'Osiągnięcia';
+
+  @override
   String get appName => 'Later';
 
   @override
