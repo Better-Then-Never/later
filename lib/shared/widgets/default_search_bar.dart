@@ -32,9 +32,8 @@ class DefaultSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
-        // A full tap target (D-24).
+        // A full tap target (D-24): the field itself is 44 dp tall.
         constraints: const BoxConstraints(minHeight: 44),
-        padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: color ?? context.palette.surfaceMuted,
           borderRadius: BorderRadius.circular(25),
@@ -57,6 +56,7 @@ class DefaultSearchBar extends StatelessWidget {
                   hintText: hintText ?? context.l10n.commonSearchHint,
                   border: InputBorder.none,
                   isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 // Body size (F-31: it was 22 sp, bigger than the titles of
                 // the rows it searches).

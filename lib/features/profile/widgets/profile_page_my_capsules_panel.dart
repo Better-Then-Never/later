@@ -29,7 +29,8 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
         const SizedBox(height: 2),
         Container(
           width: screenWidth - 32,
-          height: 80,
+          // Two 44 dp rows and the line between them (D-24).
+          height: 89,
           decoration: BoxDecorations.whiteCard(context),
           child: Stack(
             children: [
@@ -54,7 +55,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                 top: 0,
                 right: 20,
                 child: SizedBox(
-                  height: 39,
+                  height: 44,
                   child: DefaultTextButton(
                     onTap: () {
                       AppRoutes.toCamera(
@@ -69,7 +70,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
 
               Positioned(
                 left: 65,
-                top: 39,
+                top: 44,
                 right: 20,
                 child: ProfilePageDivider(width: screenWidth - 32),
               ),
@@ -79,7 +80,7 @@ class ProfilePageMyCapsulesPanel extends StatelessWidget {
                 bottom: 0,
                 right: 20,
                 child: SizedBox(
-                  height: 41,
+                  height: 44,
                   child: DefaultTextButton(
                     onTap: () {
                       AppRoutes.toCamera(

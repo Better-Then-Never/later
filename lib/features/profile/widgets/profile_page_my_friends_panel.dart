@@ -86,7 +86,7 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
         ),
 
         Positioned(
-          bottom: 3,
+          bottom: 0,
           left: 0,
           right: 0,
           child: Row(
@@ -103,7 +103,8 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
               const SizedBox(width: 5),
               SizedBox(
                 width: screenWidth - 95,
-                height: 40,
+                // A full tap target (D-24).
+                height: 44,
                 child: DefaultTextButton(
                   onTap: () => AppRoutes.toMyFriends(context),
                   text: context.l10n.profileMyFriends,

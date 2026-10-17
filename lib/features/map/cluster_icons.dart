@@ -8,7 +8,9 @@ import '../../core/theme/app_text_styles.dart';
 
 /// The numbered bubbles of capsule clusters: a brand-green disc in a white
 /// ring, the count in white. Each label is drawn once per app run and kept,
-/// so a camera stop costs no drawing.
+/// so a camera stop costs no drawing. The bitmap is at least 44 dp across
+/// with the disc centred: Google Maps takes a marker's taps on its whole
+/// bitmap, so the small bubbles are full tap targets too (D-24).
 abstract final class ClusterIcons {
   static final Map<String, Future<BitmapDescriptor>> _cache = {};
 
@@ -26,15 +28,16 @@ abstract final class ClusterIcons {
       2 => 40.0,
       _ => 46.0,
     };
-    final size = diameter * ratio;
+    final disc = diameter * ratio;
+    final size = (diameter < 44 ? 44 : diameter) * ratio;
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     final center = Offset(size / 2, size / 2);
     canvas
-      ..drawCircle(center, size / 2, Paint()..color = AppColors.onAccent)
+      ..drawCircle(center, disc / 2, Paint()..color = AppColors.onAccent)
       ..drawCircle(
         center,
-        size / 2 - 2.5 * ratio,
+        disc / 2 - 2.5 * ratio,
         Paint()..color = AppColors.brandGreen,
       );
     final painter = TextPainter(
