@@ -1707,6 +1707,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get profileFriendsSection => 'Amigos';
+
+  @override
   String get profileImageFromGallery => 'Elegir de la galería';
 
   @override
@@ -1723,6 +1726,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileNoFriends => 'Aún no tienes amigos';
+
+  @override
+  String get profileNoFriendsAction => 'Encuentra a gente que conoces';
 
   @override
   String get profilePictureDelete => 'Eliminar foto de perfil';

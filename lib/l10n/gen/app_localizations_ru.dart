@@ -1755,6 +1755,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get profileFriendsSection => 'Друзья';
+
+  @override
   String get profileImageFromGallery => 'Выбрать из галереи';
 
   @override
@@ -1771,6 +1774,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileNoFriends => 'У вас пока нет друзей';
+
+  @override
+  String get profileNoFriendsAction => 'Найдите знакомых';
 
   @override
   String get profilePictureDelete => 'Удалить фото профиля';

@@ -38,5 +38,7 @@
   "profileViewProfile": "Открыть профиль",
   "profileFollowers": "{count, plural, one{{count} подписчик} few{{count} подписчика} many{{count} подписчиков} other{{count} подписчика}}",
   "profileFollowing": "{count, plural, one{{count} подписка} few{{count} подписки} many{{count} подписок} other{{count} подписки}}",
-  "profileVerified": "Подтверждённый аккаунт"
+  "profileVerified": "Подтверждённый аккаунт",
+  "profileFriendsSection": "Друзья",
+  "profileNoFriendsAction": "Найдите знакомых"
 }

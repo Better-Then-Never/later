@@ -2810,6 +2810,12 @@ abstract class AppLocalizations {
   /// **'{count} following'**
   String profileFollowing(int count);
 
+  /// Small title at the top of the friends card on the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get profileFriendsSection;
+
   /// Option in the profile / background picture menu.
   ///
   /// In en, this message translates to:
@@ -2845,6 +2851,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have no friends yet'**
   String get profileNoFriends;
+
+  /// Under "You have no friends yet" on the profile: tap to open Add friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Find people you know'**
+  String get profileNoFriendsAction;
 
   /// Red option in the profile picture menu.
   ///

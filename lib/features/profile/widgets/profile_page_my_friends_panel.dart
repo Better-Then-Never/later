@@ -7,6 +7,7 @@ import 'package:later/features/friends/pinned_friends_controller.dart';
 import 'package:later/shared/widgets/buttons/default_text_button.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 import 'package:later/core/l10n/l10n.dart';
 import 'package:later/features/profile/widgets/pinned_friends/pinned_friends_row.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
@@ -30,8 +31,24 @@ class ProfilePageMyFriendsPanel extends StatelessWidget {
       children: [
         Container(
           width: screenWidth - 32,
-          height: 150,
+          // Room for the section name above the friends (F-39).
+          height: 176,
           decoration: BoxDecorations.whiteCard(context),
+        ),
+
+        // The section's name (F-39: the card had none).
+        Positioned(
+          top: 10,
+          left: 18,
+          child: Text(
+            context.l10n.profileFriendsSection,
+            style: TextStyle(
+              fontFamily: kAppFontFamily,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: palette.textSecondary,
+            ),
+          ),
         ),
 
         Positioned(

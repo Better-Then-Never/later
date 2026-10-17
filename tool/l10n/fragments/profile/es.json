@@ -38,5 +38,7 @@
   "profileViewProfile": "Ver perfil",
   "profileFollowers": "{count, plural, =1{1 seguidor} other{{count} seguidores}}",
   "profileFollowing": "{count} seguidos",
-  "profileVerified": "Cuenta verificada"
+  "profileVerified": "Cuenta verificada",
+  "profileFriendsSection": "Amigos",
+  "profileNoFriendsAction": "Encuentra a gente que conoces"
 }

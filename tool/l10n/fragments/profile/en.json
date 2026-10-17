@@ -149,5 +149,13 @@
       }
     }
   },
-  "profileVerified": "Verified account"
+  "profileVerified": "Verified account",
+  "profileFriendsSection": "Friends",
+  "profileNoFriendsAction": "Find people you know",
+  "@profileFriendsSection": {
+    "description": "Small title at the top of the friends card on the profile."
+  },
+  "@profileNoFriendsAction": {
+    "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
+  }
 }

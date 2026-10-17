@@ -1438,6 +1438,10 @@
       }
     }
   },
+  "profileFriendsSection": "Friends",
+  "@profileFriendsSection": {
+    "description": "Small title at the top of the friends card on the profile."
+  },
   "profileImageFromGallery": "Choose from gallery",
   "@profileImageFromGallery": {
     "description": "Option in the profile / background picture menu."
@@ -1458,6 +1462,10 @@
   "profileNoFriends": "You have no friends yet",
   "@profileNoFriends": {
     "description": "Shown instead of the pinned friends on the profile page when the user has no friends."
+  },
+  "profileNoFriendsAction": "Find people you know",
+  "@profileNoFriendsAction": {
+    "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
   },
   "profilePictureDelete": "Delete profile icon",
   "@profilePictureDelete": {

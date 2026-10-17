@@ -38,5 +38,7 @@
   "profileViewProfile": "Zobacz profil",
   "profileFollowers": "{count, plural, one{{count} obserwujący} few{{count} obserwujących} many{{count} obserwujących} other{{count} obserwującego}}",
   "profileFollowing": "{count} obserwowanych",
-  "profileVerified": "Zweryfikowane konto"
+  "profileVerified": "Zweryfikowane konto",
+  "profileFriendsSection": "Znajomi",
+  "profileNoFriendsAction": "Znajdź osoby, które znasz"
 }
