@@ -56,5 +56,13 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   permission steps (mic/contacts removed incl. manifest), F-18 invalid places, F-25 description 2000, privacy
   defaults applied in creation (+ capturedAt/utcOffset), F-13 my-location button (dark user figure), F-17 own
   capsule card (closes on tap/swipe/back/tab/zoom-out; logo never covered; package removed).
-- Next: F-10 marker memoization, then capsule detail with reactions/comments (flip FeatureFlags), achievements
-  UI, news topic subscription, consistency items (F-31..F-41), motion, docs.
+- **Done since:** F-10 memoized markers (perf mid-run in docs/ux/perf/mid), reactions + comments + reports
+  (capsule detail dialog; flags on), per-capsule switches in creation, camera permission fix, pinned creation
+  header, news topics (flag on), achievements + streak on profiles (flags on; loop capsules flag off), verified
+  badge + follower counts, nav tab labels, admin count backfill (self-test), all docs (REPORT, MORNING_SUMMARY,
+  DEPLOY, MIGRATIONS_NEEDED, COST_NOTES, PRIVACY, ACHIEVEMENTS, FEATURES, COMPONENTS, BLOCKERS, IDEAS_NOT_DONE,
+  TEST_REPORT, FEEL_QA). Functions 43/43, rules 53/53, flutter 224.
+- Dev Firebase emulators were stopped to run the functions/rules suites; restart with the command above and
+  re-seed (tools/emulator: npm run seed) before more on-device checks.
+- Next candidates (IDEAS_NOT_DONE.md): friend's capsules list (F-54), history controls (F-31), one sheet system
+  (F-32), requests toggle (F-41), share icon (F-43), Add Friends transition (F-38), camera controls, loop capsules.

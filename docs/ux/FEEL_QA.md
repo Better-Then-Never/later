@@ -1,0 +1,25 @@
+# FEEL_QA.md: how it feels, screen by screen
+
+Checked by hand on the emulator (dark theme, English and Russian). ✓ = good, △ = acceptable with a note,
+✗ = still rough (in IDEAS_NOT_DONE.md).
+
+| Screen | Feel | Notes |
+|---|---|---|
+| Launch | ✓ | Splash = first frame, no white flash, logo does not jump. |
+| Welcome / Login | ✓ | Dark looks native; fields readable; "Get Started" button text scales down in long languages. |
+| Permission steps | ✓ | Three, each skippable; no longer a wall before the app. |
+| Map | ✓ | Dark style calm and on-brand; markers memoized (no re-send on position updates); logo always visible; my-location button flies smoothly. △ heatmap glow still bright (F-16). |
+| Capsule card | ✓ | Slides up, closes the way people expect (tap, swipe, back, tab, zoom-out). |
+| Capsule dialog | ✓ | Reactions respond instantly (optimistic), green tint on the chosen one. △ the card itself is the old 45%-height layout. |
+| Comments | ✓ | Sheet with grab handle, composer above the keyboard, "Just now" times, replies indented. |
+| Creation | △ | Header pinned, new switches clear; still the cycling pills and stock date picker (F-27/F-28). |
+| Camera | △ | Starts on first use now; no zoom/focus yet (F-20). |
+| History | ✓ | Photos from disk after restart; labels fit in all languages. △ Reset still uses the sort icon (F-31). |
+| Messages / Chat | ✓ | Re-entering a chat shows the last messages at once; read receipts respect the privacy switch. |
+| Profile | ✓ | Scrolls now; counts and verified badge; achievements card with streak. |
+| Achievements | ✓ | Clear levels and progress bars; goals written as actions. |
+| Add friends | ✓ | Suggestions from friends of friends with mutual counts; no list of strangers. △ transition (F-38). |
+| Settings | ✓ | Appearance, Language, Privacy pages follow the existing settings look; theme switch crossfades. |
+| Russian / German | △ | Texts fit (several shortened after checks); Cyrillic uses the system font (BLOCKERS.md). |
+
+Reduced motion: the app's motion widgets honour the system setting (`AppMotion.of`, `AppPressable`).
