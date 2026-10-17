@@ -42,15 +42,31 @@ class NotificationsList extends StatelessWidget {
     final store = context.watch<NotificationsStore>();
     final items = store.notifications.where(filter.accepts).toList();
 
-    if (items.isEmpty) return _EmptyState(filter: filter);
+    if (items.isEmpty) {
+      // Pullable too: an empty list is when a fresh look helps most.
+      return RefreshIndicator(
+        color: context.palette.icon,
+        onRefresh: () => context.read<NotificationsStore>().refresh(),
+        child: LayoutBuilder(
+          builder: (context, box) => SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: SizedBox(
+              height: box.maxHeight,
+              child: _EmptyState(filter: filter),
+            ),
+          ),
+        ),
+      );
+    }
 
     return ListenableBuilder(
       listenable: selection,
       builder: (context, _) {
         return RefreshIndicator(
           color: context.palette.icon,
-          // The list is live; the gesture is kept from the original design.
-          onRefresh: () async {},
+          // The list is live; pulling listens again from scratch (a fresh
+          // read, and the way out of a failed stream).
+          onRefresh: () => context.read<NotificationsStore>().refresh(),
           child: AppStaggerScope(
             child: ListView.builder(
               padding: const EdgeInsets.only(top: 8, bottom: 16),
