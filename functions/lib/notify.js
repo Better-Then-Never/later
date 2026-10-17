@@ -4,6 +4,7 @@
 
 const { FieldValue } = require('firebase-admin/firestore');
 const prefs = require('./prefs');
+const i18n = require('./i18n');
 
 /** Longest message text shown in a push. */
 const PREVIEW_LENGTH = 150;
@@ -90,13 +91,13 @@ function delivery(category, sound, { tag } = {}) {
   };
 }
 
-function followMessage(notification, token, sound = true) {
-  const userName = notification.fromUserName || 'Someone';
+function followMessage(notification, token, sound = true, lang = 'en') {
+  const userName = notification.fromUserName || i18n.t(lang, 'someone');
   return {
     token,
     notification: {
-      title: 'New Follower',
-      body: `${userName} started following you`,
+      title: i18n.t(lang, 'followTitle'),
+      body: i18n.t(lang, 'followBody', { name: userName }),
     },
     data: {
       type: 'follow',
@@ -109,12 +110,12 @@ function followMessage(notification, token, sound = true) {
   };
 }
 
-function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true) {
+function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true, lang = 'en') {
   return {
     token,
     notification: {
-      title: 'New Capsule',
-      body: `${creatorName} created a new capsule`,
+      title: i18n.t(lang, 'capsuleTitle'),
+      body: i18n.t(lang, 'capsuleBody', { name: creatorName }),
     },
     data: {
       type: 'capsule',
@@ -128,12 +129,16 @@ function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true
 }
 
 /** Body of a message push: the text, or a neutral line without preview. */
-function messageBody(message, preview) {
+function messageBody(message, preview, lang = 'en') {
   const capsule = message.type === 'capsule';
-  if (!preview) return capsule ? 'Sent you a capsule' : 'New message';
-  const text = String(message.text || '');
-  const short = text.length > PREVIEW_LENGTH ? `${text.slice(0, PREVIEW_LENGTH - 1)}…` : text;
-  return capsule ? `Sent you a capsule: ${short}` : short;
+  if (!preview) return i18n.t(lang, capsule ? 'messageCapsule' : 'messageNoPreview');
+  const short = shorten(String(message.text || ''));
+  return capsule ? i18n.t(lang, 'messageCapsuleTitled', { title: short }) : short;
+}
+
+/** [text] shortened to the preview length of a push. */
+function shorten(text) {
+  return text.length > PREVIEW_LENGTH ? `${text.slice(0, PREVIEW_LENGTH - 1)}…` : text;
 }
 
 function chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound = true) {
@@ -163,7 +168,8 @@ async function onNotificationCreated(services, uid, notification) {
   const blocked = prefs.blockedReason(settings, 'follows', now(services));
   if (blocked) return { skipped: blocked };
   const sound = settings.notifications.sound;
-  return sendToUser(services, uid, (token) => followMessage(notification, token, sound));
+  const lang = i18n.languageOf(settings);
+  return sendToUser(services, uid, (token) => followMessage(notification, token, sound, lang));
 }
 
 /**
@@ -184,8 +190,11 @@ async function onMessageCreated(services, chatId, messageId, message) {
   if (blocked) return { skipped: blocked };
 
   const sender = await db.collection('users').doc(senderId).get();
-  const senderName = (sender.exists && (sender.get('name') || sender.get('username'))) || 'New message';
-  const body = messageBody(message, settings.notifications.preview);
+  const lang = i18n.languageOf(settings);
+  const senderName =
+    (sender.exists && (sender.get('name') || sender.get('username'))) ||
+    i18n.t(lang, 'messageNoPreview');
+  const body = messageBody(message, settings.notifications.preview, lang);
   const sound = settings.notifications.sound;
   return sendToUser(services, to, (token) =>
     chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound),
@@ -261,8 +270,9 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
       const settings = await prefs.loadSettings(db, uid);
       if (prefs.blockedReason(settings, 'capsules', at)) return { sent: 0, pruned: 0 };
       const sound = settings.notifications.sound;
+      const lang = i18n.languageOf(settings);
       return sendToUser(services, uid, (token) =>
-        capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound),
+        capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound, lang),
       );
     }),
   );
@@ -312,6 +322,9 @@ module.exports = {
   capsuleMessage,
   onNotificationCreated,
   messageBody,
+  shorten,
+  delivery,
+  now,
   chatMessage,
   onMessageCreated,
   capsuleRecipients,

@@ -79,6 +79,7 @@ service cloud.firestore {
         let keys = changed();
         return isMe(uid)
           && keys.hasOnly(['name', 'username', 'friends', 'favorites',
+            'showAchievements',
             // Legacy fields of older app versions may only be removed.
             'email', 'fcmToken', 'fcmTokenUpdatedAt', 'blockedUsers'])
           && (!keys.hasAny(['name']) || validName(d.name))
@@ -87,6 +88,7 @@ service cloud.firestore {
           && (!keys.hasAny(['favorites'])
             || (d.favorites is list && d.favorites.size() <= 1000))
           && (!keys.hasAny(['friends']) || ownFriendsChange(uid))
+          && (!keys.hasAny(['showAchievements']) || d.showAchievements is bool)
           && !(keys.hasAny(['email']) && d.keys().hasAny(['email']))
           && !(keys.hasAny(['fcmToken']) && d.keys().hasAny(['fcmToken']))
           && !(keys.hasAny(['fcmTokenUpdatedAt'])
@@ -142,9 +144,14 @@ service cloud.firestore {
           let q = n.get('quietHours', {});
           return n is map
             && n.keys().hasOnly(['enabled', 'messages', 'follows', 'capsules',
-              'preview', 'sound', 'quietHours', 'utcOffsetMinutes'])
+              'friendRequests', 'reactions', 'comments', 'achievements', 'news',
+              'streakReminder', 'preview', 'sound', 'quietHours',
+              'utcOffsetMinutes'])
             && isBool(n, 'enabled') && isBool(n, 'messages')
             && isBool(n, 'follows') && isBool(n, 'capsules')
+            && isBool(n, 'friendRequests') && isBool(n, 'reactions')
+            && isBool(n, 'comments') && isBool(n, 'achievements')
+            && isBool(n, 'news') && isBool(n, 'streakReminder')
             && isBool(n, 'preview') && isBool(n, 'sound')
             && q is map && q.keys().hasOnly(['enabled', 'start', 'end'])
             && isBool(q, 'enabled') && isMinute(q, 'start') && isMinute(q, 'end')
@@ -153,12 +160,40 @@ service cloud.firestore {
             && n.get('utcOffsetMinutes', 0) <= 840;
         }
 
+        function validPrivacy(p) {
+          return p is map
+            && p.keys().hasOnly(['defaultVisibility', 'readReceipts',
+              'locationPrecision', 'contactSuggestions'])
+            && p.get('defaultVisibility', 'public') in ['public', 'friends', 'private']
+            && isBool(p, 'readReceipts') && isBool(p, 'contactSuggestions')
+            && p.get('locationPrecision', 'exact') in ['exact', 'approximate'];
+        }
+
         function validSettings(d) {
-          return d.keys().hasOnly(['notifications', 'mutedChats'])
+          return d.keys().hasOnly(['notifications', 'mutedChats', 'language',
+              'privacy'])
             && validNotifications(d.get('notifications', {}))
+            && d.get('language', 'en') in ['en', 'ru', 'pl', 'de', 'es']
+            && validPrivacy(d.get('privacy', {}))
             && d.get('mutedChats', []) is list
             && d.get('mutedChats', []).size() <= 500;
         }
+      }
+
+      // Unlocked by the Cloud Functions only. Friends see them unless the
+      // owner turned showAchievements off.
+      match /achievements/{achievementId} {
+        allow read: if isMe(uid)
+          || (signedIn()
+            && get(/databases/$(database)/documents/users/$(uid)).data.get('showAchievements', true) == true
+            && me() in get(/databases/$(database)/documents/users/$(uid)).data.get('friends', []));
+        allow write: if false;
+      }
+
+      // Server-side bookkeeping (place cells, last position): owner only.
+      match /private/{doc} {
+        allow read: if isMe(uid);
+        allow write: if false;
       }
 
       // users/{uid}/blocked/{other}: uid blocked other. Only the two of them
@@ -293,11 +328,51 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.ownerId == me();
       allow update: if false;
 
+      // Reactions: one per person (document id = uid), counted by a function.
+      match /reactions/{uid} {
+        allow read: if signedIn() && canSeeCapsule(capsuleId);
+        allow create, update: if isMe(uid) && canSeeCapsule(capsuleId)
+          && capsuleData(capsuleId).get('allowReactions', true) == true
+          && !blocked(capsuleData(capsuleId).ownerId, me())
+          && request.resource.data.keys().hasOnly(['type', 'uid', 'updatedAt'])
+          && request.resource.data.type in ['heart', 'laugh', 'wow', 'sad', 'fire', 'clap']
+          && request.resource.data.uid == me()
+          && isServerTime(request.resource.data.updatedAt);
+        allow delete: if isMe(uid);
+      }
+
+      // Comments: one level of replies, never edited; the author or the
+      // capsule owner deletes them.
+      match /comments/{commentId} {
+        allow read: if signedIn() && canSeeCapsule(capsuleId);
+        allow create: if signedIn() && canSeeCapsule(capsuleId)
+          && capsuleData(capsuleId).get('allowComments', true) == true
+          && !blocked(capsuleData(capsuleId).ownerId, me())
+          && validComment(request.resource.data);
+        allow delete: if signedIn() && (resource.data.authorId == me()
+          || capsuleData(capsuleId).ownerId == me());
+        allow update: if false;
+
+        function validComment(d) {
+          return d.keys().hasOnly(['authorId', 'text', 'createdAt', 'replyTo'])
+            && d.authorId == me()
+            && d.text is string && d.text.size() > 0 && d.text.size() <= 500
+            && isServerTime(d.createdAt)
+            && (!d.keys().hasAny(['replyTo'])
+              || (d.replyTo is string
+                && exists(/databases/$(database)/documents/capsules/$(capsuleId)/comments/$(d.replyTo))
+                && get(/databases/$(database)/documents/capsules/$(capsuleId)/comments/$(d.replyTo))
+                  .data.get('replyTo', null) == null));
+        }
+      }
+
       function validCapsule() {
         let d = request.resource.data;
         return d.keys().hasOnly(['ownerId', 'imageUrl', 'title', 'description',
             'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
-            'sharedWith'])
+            'sharedWith', 'capturedAt', 'utcOffsetMinutes', 'showAuthor',
+            'allowComments', 'allowReactions', 'locationPrecision', 'frames',
+            'frameDelayMs', 'thumbUrl', 'placeName'])
           && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
             'privacy', 'createdAt', 'color'])
           && d.ownerId == me()
@@ -306,7 +381,24 @@ service cloud.firestore {
           && (d.get('description', null) == null
             || (d.description is string && d.description.size() <= 2000))
           && d.location is latlng
+          // 0,0 is what a failed location fix looks like, not a real place.
+          && (math.abs(d.location.latitude()) > 0.0001
+            || math.abs(d.location.longitude()) > 0.0001)
           && d.privacy in ['private', 'friends', 'public']
+          && (d.get('capturedAt', request.time) is timestamp)
+          && d.get('capturedAt', request.time) <= request.time + duration.value(5, 'm')
+          && d.get('utcOffsetMinutes', 0) is int
+          && d.get('utcOffsetMinutes', 0) >= -840
+          && d.get('utcOffsetMinutes', 0) <= 840
+          && d.get('showAuthor', true) is bool
+          && d.get('allowComments', true) is bool
+          && d.get('allowReactions', true) is bool
+          && d.get('locationPrecision', 'exact') in ['exact', 'approximate']
+          && d.get('frames', []) is list && d.get('frames', []).size() <= 10
+          && d.get('frameDelayMs', 300) is int
+          && d.get('frameDelayMs', 300) >= 80 && d.get('frameDelayMs', 300) <= 2000
+          && (d.get('thumbUrl', '') is string && d.get('thumbUrl', '').size() <= 2048)
+          && (d.get('placeName', '') is string && d.get('placeName', '').size() <= 200)
           && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
           && isServerTime(d.createdAt)
           && (d.get('isScheduled', false) is bool)
@@ -317,6 +409,43 @@ service cloud.firestore {
               && d.sharedWith[0] == me() && d.sharedWith[1] is string
               && d.sharedWith[1] != me()));
       }
+    }
+
+    function capsuleData(id) {
+      return get(/databases/$(database)/documents/capsules/$(id)).data;
+    }
+
+    // The same visibility as capsules/{id} reads (canSee), for subcollections.
+    function canSeeCapsule(id) {
+      let c = capsuleData(id);
+      return c.ownerId == me()
+        || c.privacy == 'public'
+        || (c.privacy == 'friends' && c.ownerId in myFriends())
+        || me() in c.get('sharedWith', []);
+    }
+
+    // ---- reports and announcements -------------------------------------------
+
+    // Reports: write-only; the owner reviews them in the console.
+    match /reports/{reportId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['reporterId', 'targetType',
+          'targetPath', 'reason', 'details', 'createdAt'])
+        && request.resource.data.reporterId == me()
+        && request.resource.data.targetType in ['capsule', 'comment', 'user', 'message', 'sticker']
+        && request.resource.data.targetPath is string
+        && request.resource.data.targetPath.size() <= 300
+        && request.resource.data.reason in ['spam', 'abuse', 'nudity', 'violence', 'privacy', 'other']
+        && request.resource.data.get('details', '') is string
+        && request.resource.data.get('details', '').size() <= 1000
+        && isServerTime(request.resource.data.createdAt);
+      allow read, update, delete: if false;
+    }
+
+    // Announcements: written by the admin-only sendAnnouncement function.
+    match /announcements/{announcementId} {
+      allow read: if signedIn();
+      allow write: if false;
     }
 
     // ---- chats -------------------------------------------------------------

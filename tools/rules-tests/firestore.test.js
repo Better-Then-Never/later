@@ -677,3 +677,144 @@ describe('settings', () => {
     await assertFails(setDoc(settingsRef(alice), { mutedChats: 'alice_bob' }));
   });
 });
+
+describe('social and gamification (night session)', () => {
+  const capsule = (owner, privacy, extra = {}) => ({
+    ownerId: owner,
+    imageUrl: 'https://img',
+    title: 'T',
+    location: new GeoPoint(46.5, 8.1),
+    privacy,
+    createdAt: Timestamp.now(),
+    color: 'red',
+    ...extra,
+  });
+
+  beforeEach(() =>
+    seed(async (db) => {
+      await setDoc(doc(db, 'capsules/bobFriends'), capsule('bob', 'friends'));
+      await setDoc(doc(db, 'capsules/bobPrivate'), capsule('bob', 'private'));
+      await setDoc(doc(db, 'capsules/carolPublic'), capsule('carol', 'public'));
+      await setDoc(doc(db, 'capsules/carolQuiet'), capsule('carol', 'public', { allowComments: false, allowReactions: false }));
+      await setDoc(doc(db, 'capsules/bobFriends/comments/top'), { authorId: 'bob', text: 'hi', createdAt: Timestamp.now() });
+      await setDoc(doc(db, 'capsules/bobFriends/comments/reply'), { authorId: 'alice', text: 'yo', createdAt: Timestamp.now(), replyTo: 'top' });
+      await setDoc(doc(db, 'users/bob/achievements/first_capsule'), { id: 'first_capsule', tier: 0 });
+      await setDoc(doc(db, 'users/bob/private/gamification'), { cells: ['u33dc'] });
+      await setDoc(doc(db, 'announcements/a1'), { title: { en: 'Hi' } });
+    }),
+  );
+
+  test('counters, stats and the verified badge are server-only', async () => {
+    const alice = as('alice');
+    for (const field of [
+      { verified: true },
+      { followerCount: 1000 },
+      { followingCount: 3 },
+      { stats: { capsules: 999 } },
+    ]) {
+      await assertFails(updateDoc(doc(alice, 'users/alice'), field));
+    }
+    await assertSucceeds(updateDoc(doc(alice, 'users/alice'), { showAchievements: false }));
+    await assertFails(updateDoc(doc(alice, 'users/alice'), { showAchievements: 'no' }));
+  });
+
+  test('achievements: the owner and friends read them, nobody writes', async () => {
+    await assertSucceeds(getDoc(doc(as('bob'), 'users/bob/achievements/first_capsule')));
+    await assertSucceeds(getDoc(doc(as('alice'), 'users/bob/achievements/first_capsule')));
+    await assertFails(getDoc(doc(as('carol'), 'users/bob/achievements/first_capsule')));
+    await assertFails(setDoc(doc(as('bob'), 'users/bob/achievements/x'), { tier: 9 }));
+    await seed((db) => updateDoc(doc(db, 'users/bob'), { showAchievements: false }));
+    await assertFails(getDoc(doc(as('alice'), 'users/bob/achievements/first_capsule')));
+  });
+
+  test('private stats: owner reads, nobody writes', async () => {
+    await assertSucceeds(getDoc(doc(as('bob'), 'users/bob/private/gamification')));
+    await assertFails(getDoc(doc(as('alice'), 'users/bob/private/gamification')));
+    await assertFails(setDoc(doc(as('bob'), 'users/bob/private/gamification'), { cells: [] }));
+  });
+
+  test('settings: language, new categories and privacy are validated', async () => {
+    const ref = doc(as('alice'), 'users/alice/settings/app');
+    await assertSucceeds(setDoc(ref, {
+      language: 'pl',
+      notifications: { reactions: false, comments: true, friendRequests: true, achievements: true, news: false, streakReminder: true },
+      privacy: { defaultVisibility: 'friends', readReceipts: false, locationPrecision: 'approximate', contactSuggestions: false },
+    }));
+    await assertFails(setDoc(ref, { language: 'fr' }));
+    await assertFails(setDoc(ref, { notifications: { reactions: 'yes' } }));
+    await assertFails(setDoc(ref, { privacy: { defaultVisibility: 'everyone' } }));
+    await assertFails(setDoc(ref, { privacy: { tracking: true } }));
+  });
+
+  test('capsules: new optional fields; no 0,0; no future capture', async () => {
+    const db = as('alice');
+    const fresh = (extra) => ({ ...capsule('alice', 'public'), createdAt: serverTimestamp(), ...extra });
+    await assertSucceeds(setDoc(doc(db, 'capsules/a1'), fresh({
+      capturedAt: Timestamp.fromMillis(Date.now() - 3600 * 1000),
+      utcOffsetMinutes: 120,
+      showAuthor: false,
+      allowComments: false,
+      allowReactions: true,
+      locationPrecision: 'approximate',
+      frames: ['https://f1', 'https://f2'],
+      frameDelayMs: 250,
+      thumbUrl: 'https://thumb',
+      placeName: 'Grindelwald',
+    })));
+    await assertFails(setDoc(doc(db, 'capsules/a2'), fresh({ location: new GeoPoint(0, 0) })));
+    await assertFails(setDoc(doc(db, 'capsules/a3'), fresh({ capturedAt: Timestamp.fromMillis(Date.now() + 3600 * 1000) })));
+    await assertFails(setDoc(doc(db, 'capsules/a4'), fresh({ frames: Array(11).fill('https://f') })));
+    await assertFails(setDoc(doc(db, 'capsules/a5'), fresh({ locationPrecision: 'fuzzy' })));
+  });
+
+  test('reactions: whoever sees the capsule, as themselves, allowed types only', async () => {
+    const react = (uid, path, type = 'heart', extra = {}) =>
+      setDoc(doc(as(uid), path), { type, uid, updatedAt: serverTimestamp(), ...extra });
+    await assertSucceeds(react('alice', 'capsules/bobFriends/reactions/alice')); // friend
+    await assertSucceeds(react('alice', 'capsules/bobFriends/reactions/alice', 'fire')); // change
+    await assertSucceeds(react('alice', 'capsules/carolPublic/reactions/alice')); // public
+    await assertFails(react('carol', 'capsules/bobFriends/reactions/carol')); // not a friend
+    await assertFails(react('alice', 'capsules/bobPrivate/reactions/alice')); // private
+    await assertFails(react('alice', 'capsules/carolPublic/reactions/bob')); // as someone else
+    await assertFails(react('alice', 'capsules/carolPublic/reactions/alice', 'poop'));
+    await assertFails(react('alice', 'capsules/carolQuiet/reactions/alice')); // reactions off
+    await assertSucceeds(getDoc(doc(as('carol'), 'capsules/carolPublic/reactions/alice')));
+    await assertFails(getDoc(doc(as('carol'), 'capsules/bobFriends/reactions/alice')));
+    await assertFails(deleteDoc(doc(as('bob'), 'capsules/bobFriends/reactions/alice')));
+    await assertSucceeds(deleteDoc(doc(as('alice'), 'capsules/bobFriends/reactions/alice')));
+    // Blocked by the owner.
+    await seed((db) => setDoc(doc(db, 'users/carol/blocked/alice'), { blockedAt: Timestamp.now() }));
+    await assertFails(react('alice', 'capsules/carolPublic/reactions/alice', 'wow'));
+  });
+
+  test('comments: one level of replies, author or owner deletes, nobody edits', async () => {
+    const comment = (uid, path, extra = {}) =>
+      setDoc(doc(as(uid), path), { authorId: uid, text: 'Nice', createdAt: serverTimestamp(), ...extra });
+    await assertSucceeds(comment('alice', 'capsules/bobFriends/comments/c1'));
+    await assertSucceeds(comment('alice', 'capsules/bobFriends/comments/c2', { replyTo: 'top' }));
+    await assertFails(comment('alice', 'capsules/bobFriends/comments/c3', { replyTo: 'reply' })); // reply to a reply
+    await assertFails(comment('alice', 'capsules/bobFriends/comments/c4', { replyTo: 'missing' }));
+    await assertFails(comment('alice', 'capsules/bobFriends/comments/c5', { text: 'x'.repeat(501) }));
+    await assertFails(comment('alice', 'capsules/bobFriends/comments/c6', { authorId: 'bob' }));
+    await assertFails(comment('carol', 'capsules/bobFriends/comments/c7')); // cannot see it
+    await assertFails(comment('alice', 'capsules/carolQuiet/comments/c8')); // comments off
+    await assertFails(updateDoc(doc(as('alice'), 'capsules/bobFriends/comments/c1'), { text: 'Edited' }));
+    // On a public capsule, a third person who can see it still cannot delete.
+    await assertSucceeds(comment('alice', 'capsules/carolPublic/comments/p1'));
+    await assertFails(deleteDoc(doc(as('bob'), 'capsules/carolPublic/comments/p1')));
+    await assertSucceeds(deleteDoc(doc(as('carol'), 'capsules/carolPublic/comments/p1'))); // owner
+    await assertSucceeds(deleteDoc(doc(as('bob'), 'capsules/bobFriends/comments/c1'))); // owner
+    await assertSucceeds(deleteDoc(doc(as('alice'), 'capsules/bobFriends/comments/c2'))); // author
+  });
+
+  test('reports are write-only; announcements read-only', async () => {
+    const report = { reporterId: 'alice', targetType: 'comment', targetPath: 'capsules/x/comments/y', reason: 'abuse', createdAt: serverTimestamp() };
+    await assertSucceeds(setDoc(doc(as('alice'), 'reports/r1'), report));
+    await assertFails(setDoc(doc(as('alice'), 'reports/r2'), { ...report, reporterId: 'bob' }));
+    await assertFails(setDoc(doc(as('alice'), 'reports/r3'), { ...report, reason: 'boring' }));
+    await assertFails(getDoc(doc(as('alice'), 'reports/r1')));
+    await assertSucceeds(getDoc(doc(as('carol'), 'announcements/a1')));
+    await assertFails(getDoc(doc(anon(), 'announcements/a1')));
+    await assertFails(setDoc(doc(as('alice'), 'announcements/a2'), { title: { en: 'Fake' } }));
+  });
+});

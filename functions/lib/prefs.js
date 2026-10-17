@@ -8,6 +8,14 @@ const DEFAULT_NOTIFICATIONS = Object.freeze({
   messages: true,
   follows: true,
   capsules: true,
+  friendRequests: true,
+  reactions: true,
+  comments: true,
+  achievements: true,
+  // Announcements from the Later team (topic pushes, see broadcast.js).
+  news: true,
+  // Evening reminder when the streak is at risk: opt-in.
+  streakReminder: false,
   preview: true,
   sound: true,
   quietHours: Object.freeze({ enabled: false, start: 22 * 60, end: 7 * 60 }),
@@ -31,6 +39,12 @@ function normalize(data) {
       messages: bool(n.messages, d.messages),
       follows: bool(n.follows, d.follows),
       capsules: bool(n.capsules, d.capsules),
+      friendRequests: bool(n.friendRequests, d.friendRequests),
+      reactions: bool(n.reactions, d.reactions),
+      comments: bool(n.comments, d.comments),
+      achievements: bool(n.achievements, d.achievements),
+      news: bool(n.news, d.news),
+      streakReminder: bool(n.streakReminder, d.streakReminder),
       preview: bool(n.preview, d.preview),
       sound: bool(n.sound, d.sound),
       quietHours: {
@@ -42,6 +56,8 @@ function normalize(data) {
         ? Math.max(-14 * 60, Math.min(14 * 60, n.utcOffsetMinutes))
         : d.utcOffsetMinutes,
     },
+    // The app's language, for localized pushes (i18n.js); null = English.
+    language: typeof (data && data.language) === 'string' ? data.language : null,
     mutedChats: Array.isArray(data && data.mutedChats)
       ? data.mutedChats.filter((c) => typeof c === 'string')
       : [],
@@ -66,7 +82,9 @@ function inQuietHours(notifications, now) {
 }
 
 /**
- * Whether a push of [category] ('messages' | 'follows' | 'capsules') may be
+ * Whether a push of [category] (a notification setting: 'messages',
+ * 'follows', 'capsules', 'friendRequests', 'reactions', 'comments',
+ * 'achievements', 'streakReminder') may be
  * sent now. Returns null when it may, otherwise the reason (for logs/tests).
  */
 function blockedReason(settings, category, now = new Date()) {

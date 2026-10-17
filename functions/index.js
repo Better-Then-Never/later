@@ -1,13 +1,22 @@
 'use strict';
 
 const { setGlobalOptions } = require('firebase-functions/v2');
-const { onRequest } = require('firebase-functions/v2/https');
-const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onRequest, onCall, HttpsError } = require('firebase-functions/v2/https');
+const {
+  onDocumentCreated,
+  onDocumentDeleted,
+  onDocumentUpdated,
+  onDocumentWritten,
+} = require('firebase-functions/v2/firestore');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 const logger = require('firebase-functions/logger');
 const admin = require('firebase-admin');
 const functionsV1 = require('firebase-functions/v1');
 const notify = require('./lib/notify');
 const account = require('./lib/account');
+const social = require('./lib/social');
+const gamification = require('./lib/gamification');
+const broadcast = require('./lib/broadcast');
 
 admin.initializeApp();
 
@@ -113,3 +122,118 @@ exports.cleanupDeletedAccount = functionsV1
       throw error; // retried by the platform when retries are enabled
     }
   });
+
+// ---- social: counters and notifications (functions/lib/social.js) -----------
+
+/** Runs [work] and logs; a failing trigger never throws into a retry storm. */
+function logged(name, work) {
+  return async (event) => {
+    try {
+      const result = await work(event);
+      if (result) logger.info(name, result);
+    } catch (error) {
+      logger.error(`${name} failed`, error);
+    }
+  };
+}
+
+const data = (snapshot) => (snapshot && snapshot.exists ? snapshot.data() : undefined);
+
+exports.countFollowerAdded = onDocumentCreated(
+  'users/{uid}/followers/{follower}',
+  logged('Follower count', (e) => social.onFollowerChanged(services(), e.params.uid, 1)),
+);
+exports.countFollowerRemoved = onDocumentDeleted(
+  'users/{uid}/followers/{follower}',
+  logged('Follower count', (e) => social.onFollowerChanged(services(), e.params.uid, -1)),
+);
+exports.countFollowingAdded = onDocumentCreated(
+  'users/{uid}/following/{target}',
+  logged('Following count', (e) => social.onFollowingChanged(services(), e.params.uid, 1)),
+);
+exports.countFollowingRemoved = onDocumentDeleted(
+  'users/{uid}/following/{target}',
+  logged('Following count', (e) => social.onFollowingChanged(services(), e.params.uid, -1)),
+);
+
+exports.onReactionWritten = onDocumentWritten(
+  'capsules/{capsuleId}/reactions/{uid}',
+  logged('Reaction', (e) =>
+    social.onReactionWritten(
+      services(),
+      e.params.capsuleId,
+      e.params.uid,
+      data(e.data && e.data.before),
+      data(e.data && e.data.after),
+    ),
+  ),
+);
+
+exports.onCommentCreated = onDocumentCreated(
+  'capsules/{capsuleId}/comments/{commentId}',
+  logged('Comment', (e) =>
+    social.onCommentCreated(services(), e.params.capsuleId, e.params.commentId, data(e.data)),
+  ),
+);
+exports.onCommentDeleted = onDocumentDeleted(
+  'capsules/{capsuleId}/comments/{commentId}',
+  logged('Comment deleted', (e) => social.onCommentDeleted(services(), e.params.capsuleId)),
+);
+
+exports.onFriendRequestCreated = onDocumentCreated(
+  'friend_requests/{requestId}',
+  logged('Friend request', (e) =>
+    social.onFriendRequestCreated(services(), e.params.requestId, data(e.data)),
+  ),
+);
+exports.onFriendRequestUpdated = onDocumentUpdated(
+  'friend_requests/{requestId}',
+  logged('Friend request accepted', (e) =>
+    social.onFriendRequestUpdated(
+      services(),
+      e.params.requestId,
+      data(e.data && e.data.before),
+      data(e.data && e.data.after),
+    ),
+  ),
+);
+
+// ---- gamification: stats, streaks, achievements (functions/lib/gamification.js)
+
+exports.updateCapsuleStats = onDocumentCreated(
+  'capsules/{capsuleId}',
+  logged('Capsule stats', (e) =>
+    gamification.onCapsuleCreated(services(), e.params.capsuleId, data(e.data)),
+  ),
+);
+
+exports.unlockAchievements = onDocumentUpdated(
+  'users/{uid}',
+  logged('Achievements', (e) =>
+    gamification.onUserUpdated(
+      services(),
+      e.params.uid,
+      data(e.data && e.data.before),
+      data(e.data && e.data.after),
+    ),
+  ),
+);
+
+exports.sendStreakReminders = onSchedule(
+  'every 60 minutes',
+  logged('Streak reminders', () => gamification.sendStreakReminders(services())),
+);
+
+// ---- announcements (functions/lib/broadcast.js, docs/ux/ADMIN.md) ------------
+
+exports.sendAnnouncement = onCall(async (request) => {
+  try {
+    return await broadcast.sendAnnouncement(services(), request.auth, request.data);
+  } catch (error) {
+    if (error instanceof broadcast.AnnouncementError) {
+      throw new HttpsError(error.code, error.message);
+    }
+    logger.error('Announcement failed', error);
+    throw new HttpsError('internal', 'Sending the announcement failed.');
+  }
+});

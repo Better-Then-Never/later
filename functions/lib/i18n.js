@@ -1,0 +1,140 @@
+// Push texts in the recipient's language (users/{uid}/settings/app.language),
+// English when unknown. Terms follow docs/ux/GLOSSARY.md.
+'use strict';
+
+const LANGUAGES = ['en', 'ru', 'pl', 'de', 'es'];
+
+const MESSAGES = {
+  en: {
+    followTitle: 'New follower',
+    followBody: '{name} started following you',
+    capsuleTitle: 'New capsule',
+    capsuleBody: '{name} created a new capsule',
+    messageNoPreview: 'New message',
+    messageCapsule: 'Sent you a capsule',
+    messageCapsuleTitled: 'Sent you a capsule: {title}',
+    requestTitle: 'Friend request',
+    requestBody: '{name} wants to be your friend',
+    acceptedTitle: 'New friend',
+    acceptedBody: '{name} accepted your friend request',
+    reactionTitle: 'New reaction',
+    reactionBody: '{name} reacted {emoji} to your capsule',
+    commentTitle: 'New comment',
+    commentBody: '{name}: {text}',
+    replyTitle: 'New reply',
+    achievementTitle: 'Achievement unlocked',
+    achievementBody: '{title}',
+    streakTitle: 'Keep your streak',
+    streakBody: 'Your {days}-day streak ends tonight. Make a capsule!',
+    someone: 'Someone',
+  },
+  ru: {
+    followTitle: 'Новый подписчик',
+    followBody: '{name} — ваш новый подписчик',
+    capsuleTitle: 'Новая капсула',
+    capsuleBody: 'Новая капсула от {name}',
+    messageNoPreview: 'Новое сообщение',
+    messageCapsule: 'Капсула для вас',
+    messageCapsuleTitled: 'Капсула для вас: {title}',
+    requestTitle: 'Заявка в друзья',
+    requestBody: '{name} хочет добавить вас в друзья',
+    acceptedTitle: 'Новый друг',
+    acceptedBody: '{name} теперь у вас в друзьях',
+    reactionTitle: 'Новая реакция',
+    reactionBody: '{emoji} от {name} на вашу капсулу',
+    commentTitle: 'Новый комментарий',
+    commentBody: '{name}: {text}',
+    replyTitle: 'Новый ответ',
+    achievementTitle: 'Новое достижение',
+    achievementBody: '{title}',
+    streakTitle: 'Сохраните серию',
+    streakBody: 'Ваша серия из {days} дн. прервётся сегодня ночью. Создайте капсулу!',
+    someone: 'Кто-то',
+  },
+  pl: {
+    followTitle: 'Nowy obserwujący',
+    followBody: '{name} zaczyna cię obserwować',
+    capsuleTitle: 'Nowa kapsuła',
+    capsuleBody: '{name} tworzy nową kapsułę',
+    messageNoPreview: 'Nowa wiadomość',
+    messageCapsule: 'Wysyła ci kapsułę',
+    messageCapsuleTitled: 'Wysyła ci kapsułę: {title}',
+    requestTitle: 'Zaproszenie do znajomych',
+    requestBody: '{name} chce dodać cię do znajomych',
+    acceptedTitle: 'Nowy znajomy',
+    acceptedBody: '{name} przyjmuje twoje zaproszenie',
+    reactionTitle: 'Nowa reakcja',
+    reactionBody: '{name} reaguje {emoji} na twoją kapsułę',
+    commentTitle: 'Nowy komentarz',
+    commentBody: '{name}: {text}',
+    replyTitle: 'Nowa odpowiedź',
+    achievementTitle: 'Nowe osiągnięcie',
+    achievementBody: '{title}',
+    streakTitle: 'Nie przerywaj serii',
+    streakBody: 'Twoja seria ({days} dni) skończy się dziś w nocy. Stwórz kapsułę!',
+    someone: 'Ktoś',
+  },
+  de: {
+    followTitle: 'Neuer Follower',
+    followBody: '{name} folgt dir jetzt',
+    capsuleTitle: 'Neue Kapsel',
+    capsuleBody: '{name} hat eine neue Kapsel erstellt',
+    messageNoPreview: 'Neue Nachricht',
+    messageCapsule: 'Hat dir eine Kapsel geschickt',
+    messageCapsuleTitled: 'Hat dir eine Kapsel geschickt: {title}',
+    requestTitle: 'Freundschaftsanfrage',
+    requestBody: '{name} möchte mit dir befreundet sein',
+    acceptedTitle: 'Neuer Freund',
+    acceptedBody: '{name} hat deine Freundschaftsanfrage angenommen',
+    reactionTitle: 'Neue Reaktion',
+    reactionBody: '{name} hat mit {emoji} auf deine Kapsel reagiert',
+    commentTitle: 'Neuer Kommentar',
+    commentBody: '{name}: {text}',
+    replyTitle: 'Neue Antwort',
+    achievementTitle: 'Erfolg freigeschaltet',
+    achievementBody: '{title}',
+    streakTitle: 'Halte deine Serie',
+    streakBody: 'Deine Serie von {days} Tagen endet heute Nacht. Erstelle eine Kapsel!',
+    someone: 'Jemand',
+  },
+  es: {
+    followTitle: 'Nuevo seguidor',
+    followBody: '{name} empezó a seguirte',
+    capsuleTitle: 'Nueva cápsula',
+    capsuleBody: '{name} creó una nueva cápsula',
+    messageNoPreview: 'Nuevo mensaje',
+    messageCapsule: 'Te envió una cápsula',
+    messageCapsuleTitled: 'Te envió una cápsula: {title}',
+    requestTitle: 'Solicitud de amistad',
+    requestBody: '{name} quiere ser tu amigo',
+    acceptedTitle: 'Nuevo amigo',
+    acceptedBody: '{name} aceptó tu solicitud de amistad',
+    reactionTitle: 'Nueva reacción',
+    reactionBody: '{name} reaccionó {emoji} a tu cápsula',
+    commentTitle: 'Nuevo comentario',
+    commentBody: '{name}: {text}',
+    replyTitle: 'Nueva respuesta',
+    achievementTitle: 'Logro desbloqueado',
+    achievementBody: '{title}',
+    streakTitle: 'Mantén tu racha',
+    streakBody: 'Tu racha de {days} días termina esta noche. ¡Crea una cápsula!',
+    someone: 'Alguien',
+  },
+};
+
+function languageOf(settings) {
+  const lang = settings && settings.language;
+  return LANGUAGES.includes(lang) ? lang : 'en';
+}
+
+/** The message [key] in [lang] with {placeholders} filled in. */
+function t(lang, key, values = {}) {
+  const table = MESSAGES[LANGUAGES.includes(lang) ? lang : 'en'];
+  const text = table[key] !== undefined ? table[key] : MESSAGES.en[key];
+  if (text === undefined) throw new Error(`unknown message ${key}`);
+  return text.replace(/\{(\w+)\}/g, (_, name) =>
+    values[name] !== undefined ? String(values[name]) : `{${name}}`,
+  );
+}
+
+module.exports = { LANGUAGES, MESSAGES, languageOf, t };

@@ -357,7 +357,7 @@ describe('account deletion cleanup', () => {
     await bucket.file('userdata/bob/assets/images/profile_image').save('y');
 
     const report = await account.deleteUserData({ db, bucket }, 'gone');
-    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1 });
+    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1, reactions: 0, comments: 0 });
 
     assert.equal((await users().doc('gone').get()).exists, false);
     assert.equal((await users().doc('gone').collection('settings').doc('app').get()).exists, false);
