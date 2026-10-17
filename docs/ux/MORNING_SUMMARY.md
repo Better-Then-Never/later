@@ -11,7 +11,7 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 - Reactions and comments on capsules, reports, friends-of-friends suggestions, follower counts, verified badge,
   achievements with streaks, announcements you can send (`tools/admin/announce.js`).
 - Capsules made without a connection wait on the phone and upload by themselves.
-- Hold a chat message to copy it or delete it for both.
+- Chat: swipe a message to reply; hold it to copy or delete it for both.
 - Settings: Appearance, Language, Privacy (default visibility, approximate location, read receipts).
 
 ## Needs you
@@ -21,5 +21,5 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 4. Look at the screenshots in `docs/ux/after` and the dark palette sheet in `docs/ux/dark_candidates/sheet.png`.
 
 ## Health
-`flutter analyze` clean · `flutter test` 237 passing · functions 43/43 · rules 54/54 · nothing deployed, no tags,
+`flutter analyze` clean · `flutter test` 239 passing · functions 43/43 · rules 55/55 · nothing deployed, no tags,
 no version bump, no secrets committed.

@@ -85,3 +85,8 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   the old rules. Verified on the emulator with a message from Bob injected by an emulator-only admin script.
   The dev emulators crashed once because the post-build cleanup killed every big `java.exe` (the storage
   emulator's too): the cleanup now targets Gradle/Kotlin daemons only. Emulators restarted and re-seeded.
+- **Chat replies, done:** `MessageReply` quote on messages (rules `validReply`, 55/55; fallback without the quote
+  for the old rules), reply bar, quote in bubbles, swipe-to-reply with a haptic tick. Verified on the emulator
+  (Bob's long question → swipe → reply with quote). Found why the dev emulators crashed twice: the rules-test run
+  shares `%TEMP%\firebase\storage` with them (TEST_REPORT has the fix). The Android emulator was cold-restarted once
+  (launcher ANR after hours of reinstalls). Flutter 239.

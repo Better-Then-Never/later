@@ -5,11 +5,11 @@
 |---|---|---|
 | Static analysis | `flutter analyze` | No issues found |
 | Format | `dart format --output=none --set-exit-if-changed lib test tool` | clean |
-| Unit + widget + golden | `flutter test` | **237 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
+| Unit + widget + golden | `flutter test` | **239 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
 | Translations | `test/l10n` (part of the above) | every message in 5 languages with the same placeholders; ARBs built from the fragments |
 | Design tokens | `dart run tool/check_design_tokens.dart` | no violations |
 | Cloud Functions | `cd functions && npm run test:emulate` | **43/43** |
-| Security rules | `cd tools/rules-tests && npm run emulate` | **54/54** |
+| Security rules | `cd tools/rules-tests && npm run emulate` | **55/55** |
 | Admin scripts | `tools/admin/selftest.js` against emulators | all checks passed (admin claim, verified, backfill) |
 | Performance (profile mode) | `integration_test/perf_test.dart` | all flows ran; numbers in PERFORMANCE.md (mid-mission run) |
 
@@ -18,6 +18,9 @@ CI runs `flutter test --exclude-tags golden` (goldens are rendered on Windows on
 On Windows, `firebase emulators:exec` can leave the Firestore emulator's Java process running after the
 suite (and always does when its output is piped into `head`); the next run then fails with "port taken".
 Stop the leftover `java.exe` that listens on 8180 (rules) or 828x (functions) before running again.
+Run the rules tests with their own `TEMP`/`TMP` while the dev emulators run: both storage emulators keep blobs
+in `%TEMP%\firebase\storage`, the test instance wipes it on exit, and the dev storage emulator then crashes on
+its next photo read ("ENOENT ... storage\blobs").
 
 ### New tests in this branch (selection)
 Data mappers for every new field and the legacy fallbacks; settings store (privacy, language sync, offset);
