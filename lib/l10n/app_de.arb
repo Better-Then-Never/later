@@ -351,6 +351,7 @@
   "messagesNothingMatches": "Keine Treffer für „{query}“",
   "messagesNotificationsMuted": "Stummgeschaltet",
   "messagesOpenCapsule": "Kapsel „{title}“ öffnen",
+  "messagesReactFailed": "Deine Reaktion konnte nicht gespeichert werden",
   "messagesReceiptFailed": "Nicht gesendet · Tippen zum Wiederholen",
   "messagesReceiptRead": "Gelesen",
   "messagesReceiptSending": "Wird gesendet…",

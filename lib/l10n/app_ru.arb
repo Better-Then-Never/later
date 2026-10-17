@@ -351,6 +351,7 @@
   "messagesNothingMatches": "По запросу «{query}» ничего не найдено",
   "messagesNotificationsMuted": "Уведомления отключены",
   "messagesOpenCapsule": "Открыть капсулу «{title}»",
+  "messagesReactFailed": "Не удалось сохранить реакцию",
   "messagesReceiptFailed": "Не отправлено · Нажмите, чтобы повторить",
   "messagesReceiptRead": "Прочитано",
   "messagesReceiptSending": "Отправка…",

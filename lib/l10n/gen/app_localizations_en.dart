@@ -1274,6 +1274,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get messagesReactFailed => 'Could not save your reaction';
+
+  @override
   String get messagesReceiptFailed => 'Not sent · Tap to retry';
 
   @override

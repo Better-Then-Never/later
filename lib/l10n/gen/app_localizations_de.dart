@@ -1306,6 +1306,10 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get messagesReactFailed =>
+      'Deine Reaktion konnte nicht gespeichert werden';
+
+  @override
   String get messagesReceiptFailed => 'Nicht gesendet · Tippen zum Wiederholen';
 
   @override

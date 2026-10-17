@@ -160,6 +160,16 @@ class FirebaseChatRepository implements ChatRepository {
   });
 
   @override
+  Future<void> setMessageReaction(
+    String chatId,
+    String messageId, {
+    required String uid,
+    ReactionType? type,
+  }) => _messages(chatId).doc(messageId).update({
+    'reactions.$uid': type?.name ?? FieldValue.delete(),
+  });
+
+  @override
   Future<void> deleteMessage(String chatId, String messageId) async {
     final chatRef = _chats.doc(chatId);
     final newest = await _messages(

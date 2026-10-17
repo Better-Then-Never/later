@@ -358,6 +358,45 @@ void main() {
       c.dispose();
     });
 
+    test('reacting: shown at once, the same emoji again takes it back, '
+        'refused ones roll back', () async {
+      await say('bob', 'me', 'Look at this');
+      final c = open();
+      await pumpEventQueue();
+      final m = c.messages.single;
+
+      final reacting = c.react(m, ReactionType.heart);
+      expect(c.messages.single.reactions['me'], ReactionType.heart);
+      expect(await reacting, isNull);
+      await pumpEventQueue();
+      expect(
+        chatRepo.messages[Chat.idBetween('me', 'bob')]!.single.reactions,
+        {'me': ReactionType.heart},
+      );
+
+      // Another emoji replaces it; the same one again removes it.
+      await c.react(c.messages.single, ReactionType.fire);
+      await pumpEventQueue();
+      expect(c.messages.single.reactions['me'], ReactionType.fire);
+      await c.react(c.messages.single, ReactionType.fire);
+      await pumpEventQueue();
+      expect(c.messages.single.reactions, isEmpty);
+
+      chatRepo.failSends = true;
+      expect(await c.react(c.messages.single, ReactionType.wow), isNotNull);
+      expect(c.messages.single.reactions, isEmpty, reason: 'rolled back');
+      c.dispose();
+    });
+
+    test('reactions are read from the document; unknown ones skipped', () {
+      final m = FirestoreMappers.chatMessage('m', {
+        'senderId': 'bob',
+        'text': 'hi',
+        'reactions': {'me': 'heart', 'bob': 'laser', 'x': 3},
+      });
+      expect(m.reactions, {'me': ReactionType.heart});
+    });
+
     test('a quote keeps the start of a long message', () {
       final long = ChatMessage(id: 'x', senderId: 'bob', text: '🙂' * 200);
       final quote = MessageReply.of(long);

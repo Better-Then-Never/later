@@ -351,6 +351,7 @@
   "messagesNothingMatches": "Brak wyników dla „{query}”",
   "messagesNotificationsMuted": "Czat wyciszony",
   "messagesOpenCapsule": "Otwórz kapsułę „{title}”",
+  "messagesReactFailed": "Nie udało się zapisać reakcji",
   "messagesReceiptFailed": "Nie wysłano · Dotknij, aby ponowić",
   "messagesReceiptRead": "Przeczytano",
   "messagesReceiptSending": "Wysyłanie…",

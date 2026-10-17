@@ -1314,6 +1314,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get messagesReactFailed => 'Nie udało się zapisać reakcji';
+
+  @override
   String get messagesReceiptFailed => 'Nie wysłano · Dotknij, aby ponowić';
 
   @override

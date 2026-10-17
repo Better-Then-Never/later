@@ -23,6 +23,7 @@ import '../../shared/widgets/buttons/go_back_button.dart';
 import '../../shared/widgets/confirm_dialog.dart';
 import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
+import '../../shared/widgets/app_sheets.dart';
 import '../../shared/widgets/options_menu.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
@@ -150,23 +151,34 @@ class _ChatViewState extends State<_ChatView> {
     final l10n = context.l10n;
     final canDelete = controller.canDelete(message);
     final canReply = controller.canReply(message);
+    // Reacting needs the message on the server, like replying.
+    final canReact = canReply;
+    final mine = message.reactions[controller.myUid];
     unawaited(HapticFeedback.selectionClick());
-    final action = await showCenteredSheet<_MessageAction>(
+    // A _MessageAction, or the ReactionType tapped in the top row.
+    final action = await showCenteredSheet<Object>(
       context,
       Builder(
         builder: (sheet) => OptionsMenu(
           children: [
+            if (canReact) ...[
+              _ReactionPicker(
+                selected: mine,
+                onPick: (type) => Navigator.pop(sheet, type),
+              ),
+              const OptionsMenuDivider(),
+            ],
             if (canReply) ...[
               OptionsMenuItem(
                 text: l10n.capsulesReply,
-                isFirst: true,
+                isFirst: !canReact,
                 onPressed: () => Navigator.pop(sheet, _MessageAction.reply),
               ),
               const OptionsMenuDivider(),
             ],
             OptionsMenuItem(
               text: l10n.messagesCopy,
-              isFirst: !canReply,
+              isFirst: !canReply && !canReact,
               isLast: !canDelete,
               onPressed: () => Navigator.pop(sheet, _MessageAction.copy),
             ),
@@ -184,7 +196,11 @@ class _ChatViewState extends State<_ChatView> {
       ),
     );
     if (!mounted || action == null) return;
-    switch (action) {
+    if (action is ReactionType) {
+      unawaited(controller.react(message, action).then(_report));
+      return;
+    }
+    switch (action as _MessageAction) {
       case _MessageAction.reply:
         _reply(message);
       case _MessageAction.copy:
@@ -460,29 +476,49 @@ class _ChatViewState extends State<_ChatView> {
                       : context.palette.selectedHighlight.withAlpha(0),
                   borderRadius: BorderRadius.circular(AppRadii.m),
                 ),
-                child: _SwipeToReply(
-                  enabled: controller.canReply(message),
-                  onReply: () => _reply(message),
-                  child: GestureDetector(
-                    onTap: failed ? () => _retry(message.id) : null,
-                    onLongPress: () => _showMessageMenu(message),
-                    child: MessageBubble(
-                      message: message,
-                      isMine: controller.isMine(message),
-                      showTail: lastOfGroup,
-                      replyName: message.replyTo == null
-                          ? null
-                          : message.replyTo!.senderId == controller.myUid
-                          ? l10n.capsulesYou
-                          : friendName,
-                      onQuoteTap: message.replyTo == null
-                          ? null
-                          : () => _showQuoted(message.replyTo!.id),
-                      onCapsuleTap: message.isCapsule && capsuleId != null
-                          ? () => _openCapsule(capsuleId)
-                          : null,
+                child: Column(
+                  crossAxisAlignment: controller.isMine(message)
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    _SwipeToReply(
+                      enabled: controller.canReply(message),
+                      onReply: () => _reply(message),
+                      child: GestureDetector(
+                        onTap: failed ? () => _retry(message.id) : null,
+                        onLongPress: () => _showMessageMenu(message),
+                        child: MessageBubble(
+                          message: message,
+                          isMine: controller.isMine(message),
+                          showTail: lastOfGroup,
+                          replyName: message.replyTo == null
+                              ? null
+                              : message.replyTo!.senderId == controller.myUid
+                              ? l10n.capsulesYou
+                              : friendName,
+                          onQuoteTap: message.replyTo == null
+                              ? null
+                              : () => _showQuoted(message.replyTo!.id),
+                          onCapsuleTap: message.isCapsule && capsuleId != null
+                              ? () => _openCapsule(capsuleId)
+                              : null,
+                        ),
+                      ),
                     ),
-                  ),
+                    if (message.reactions.isNotEmpty)
+                      _ReactionsPill(
+                        reactions: message.reactions,
+                        myUid: controller.myUid,
+                        // Tapping takes the user's own reaction back.
+                        onTap: () {
+                          final mine = message.reactions[controller.myUid];
+                          if (mine == null) return;
+                          unawaited(
+                            controller.react(message, mine).then(_report),
+                          );
+                        },
+                      ),
+                  ],
                 ),
               ),
               if (index == 0 && receipt != null)
@@ -756,6 +792,114 @@ class _BlockedNotice extends StatelessWidget {
 }
 
 enum _MessageAction { reply, copy, delete }
+
+/// The six reactions in a row at the top of the message menu; the user's
+/// current one is ringed in green.
+class _ReactionPicker extends StatelessWidget {
+  const _ReactionPicker({required this.selected, required this.onPick});
+
+  final ReactionType? selected;
+  final ValueChanged<ReactionType> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: AppSheets.cardWidth,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            for (final type in ReactionType.values)
+              Semantics(
+                button: true,
+                selected: selected == type,
+                label: context.l10n.capsulesReactWith(type.emoji),
+                child: AppPressable(
+                  child: GestureDetector(
+                    onTap: () => onPick(type),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: selected == type
+                            ? AppColors.brandGreen.withValues(alpha: 0.18)
+                            : null,
+                        border: Border.all(
+                          color: selected == type
+                              ? AppColors.brandGreen
+                              : Colors.transparent,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        type.emoji,
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Under a message: the reactions on it (one emoji each, or "❤️ 2" when both
+/// chose the same), ringed in green when one is the user's.
+class _ReactionsPill extends StatelessWidget {
+  const _ReactionsPill({
+    required this.reactions,
+    required this.myUid,
+    required this.onTap,
+  });
+
+  final Map<String, ReactionType> reactions;
+  final String? myUid;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final counts = <ReactionType, int>{};
+    for (final type in reactions.values) {
+      counts[type] = (counts[type] ?? 0) + 1;
+    }
+    final mine = reactions.containsKey(myUid);
+    return Padding(
+      padding: const EdgeInsets.only(top: 3, left: 6, right: 6),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+          decoration: BoxDecoration(
+            color: palette.surface,
+            borderRadius: AppRadii.lCircular,
+            border: Border.all(
+              color: mine ? AppColors.brandGreen : palette.divider,
+              width: 1.2,
+            ),
+          ),
+          child: Text(
+            [
+              for (final e in counts.entries)
+                e.value > 1 ? '${e.key.emoji} ${e.value}' : e.key.emoji,
+            ].join(' '),
+            style: TextStyle(
+              fontFamily: kAppFontFamily,
+              fontSize: 14,
+              color: palette.textPrimary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 /// Drag a message to the right to answer it: it follows the finger, a light
 /// tick says "far enough", and it springs back on release.

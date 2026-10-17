@@ -1,3 +1,5 @@
+import 'capsule.dart';
+
 /// A conversation between two users (`chats/{uidA}_{uidB}`, uids sorted so
 /// both sides compute the same id).
 class Chat {
@@ -132,6 +134,7 @@ class ChatMessage {
     this.imageUrl,
     this.delivery = MessageDelivery.sent,
     this.replyTo,
+    this.reactions = const {},
   });
 
   final String id;
@@ -140,6 +143,27 @@ class ChatMessage {
 
   /// The message this one answers, quoted.
   final MessageReply? replyTo;
+
+  /// Each participant's reaction, by uid.
+  final Map<String, ReactionType> reactions;
+
+  ChatMessage withReaction(String uid, ReactionType? type) => ChatMessage(
+    id: id,
+    senderId: senderId,
+    text: text,
+    sentAt: sentAt,
+    isRead: isRead,
+    type: this.type,
+    capsuleId: capsuleId,
+    imageUrl: imageUrl,
+    delivery: delivery,
+    replyTo: replyTo,
+    reactions: {
+      for (final e in reactions.entries)
+        if (e.key != uid) e.key: e.value,
+      if (type != null) uid: type,
+    },
+  );
 
   /// Null while the server timestamp of a message just sent is pending.
   final DateTime? sentAt;
@@ -172,6 +196,7 @@ class ChatMessage {
     imageUrl: imageUrl,
     delivery: value,
     replyTo: replyTo,
+    reactions: reactions,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
@@ -188,7 +213,8 @@ class ChatMessage {
       other.capsuleId == capsuleId &&
       other.imageUrl == imageUrl &&
       other.delivery == delivery &&
-      other.replyTo == replyTo;
+      other.replyTo == replyTo &&
+      _mapEquals(other.reactions, reactions);
 
   @override
   int get hashCode => Object.hash(id, sentAt, isRead, delivery);

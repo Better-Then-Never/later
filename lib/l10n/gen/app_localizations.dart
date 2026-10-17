@@ -2210,6 +2210,12 @@ abstract class AppLocalizations {
   /// **'Open capsule {title}'**
   String messagesOpenCapsule(String title);
 
+  /// No description provided for @messagesReactFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your reaction'**
+  String get messagesReactFailed;
+
   /// No description provided for @messagesReceiptFailed.
   ///
   /// In en, this message translates to:

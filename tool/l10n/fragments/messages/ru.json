@@ -55,5 +55,6 @@
   "messagesCopy": "Копировать",
   "messagesCopied": "Скопировано",
   "messagesDeleteConfirmTitle": "Удалить это сообщение у вас обоих?",
-  "messagesDeleteFailed": "Не удалось удалить сообщение"
+  "messagesDeleteFailed": "Не удалось удалить сообщение",
+  "messagesReactFailed": "Не удалось сохранить реакцию"
 }

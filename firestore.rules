@@ -565,11 +565,22 @@ service cloud.firestore {
           && existsAfter(/databases/$(database)/documents/chats/$(chatId))
           && validMessage(request.resource.data);
 
-        // The recipient marks messages read.
+        // The recipient marks messages read; either participant sets or
+        // removes their own reaction (reactions {uid: type}).
         allow update: if isMember()
-          && resource.data.senderId != me()
-          && changed().hasOnly(['status'])
-          && request.resource.data.status == 'read';
+          && ((resource.data.senderId != me()
+              && changed().hasOnly(['status'])
+              && request.resource.data.status == 'read')
+            || (changed().hasOnly(['reactions']) && validReactionChange()));
+
+        function validReactionChange() {
+          let after = request.resource.data.get('reactions', {});
+          return after is map
+            && after.diff(resource.data.get('reactions', {}))
+              .affectedKeys().hasOnly([me()])
+            && (!after.keys().hasAny([me()])
+              || after[me()] in ['heart', 'laugh', 'wow', 'sad', 'fire', 'clap']);
+        }
 
         // "Clear history" clears the chat for both participants.
         allow delete: if isMember();

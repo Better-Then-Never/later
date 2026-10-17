@@ -55,5 +55,6 @@
   "messagesCopy": "Kopieren",
   "messagesCopied": "Kopiert",
   "messagesDeleteConfirmTitle": "Diese Nachricht für euch beide löschen?",
-  "messagesDeleteFailed": "Die Nachricht konnte nicht gelöscht werden"
+  "messagesDeleteFailed": "Die Nachricht konnte nicht gelöscht werden",
+  "messagesReactFailed": "Deine Reaktion konnte nicht gespeichert werden"
 }

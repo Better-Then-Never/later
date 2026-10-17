@@ -230,7 +230,18 @@ abstract final class FirestoreMappers {
         capsuleId: _nonEmptyString(data['capsuleId']),
         imageUrl: _nonEmptyString(data['imageUrl']),
         replyTo: messageReply(data['replyTo']),
+        reactions: messageReactions(data['reactions']),
       );
+
+  /// {uid: type}; unknown types are skipped.
+  static Map<String, ReactionType> messageReactions(Object? value) {
+    if (value is! Map) return const {};
+    return {
+      for (final e in value.entries)
+        if (e.key is String && ReactionType.parse(e.value) != null)
+          e.key as String: ReactionType.parse(e.value)!,
+    };
+  }
 
   /// A quoted message; null when missing or malformed.
   static MessageReply? messageReply(Object? value) {

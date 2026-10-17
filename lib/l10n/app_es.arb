@@ -351,6 +351,7 @@
   "messagesNothingMatches": "Nada coincide con «{query}»",
   "messagesNotificationsMuted": "Chat silenciado",
   "messagesOpenCapsule": "Abrir la cápsula «{title}»",
+  "messagesReactFailed": "No se pudo guardar tu reacción",
   "messagesReceiptFailed": "No enviado · Toca para reintentar",
   "messagesReceiptRead": "Leído",
   "messagesReceiptSending": "Enviando…",

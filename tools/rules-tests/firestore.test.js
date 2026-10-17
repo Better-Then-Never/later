@@ -530,6 +530,25 @@ describe('chats', () => {
     await assertFails(updateDoc(chatRef(as('carol')), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob' }));
   });
 
+  test('each participant reacts to a message with one emoji of their own', async () => {
+    await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'look' }));
+    let id;
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      id = (await getDocs(collection(ctx.firestore(), 'chats/alice_bob/messages'))).docs[0].id;
+    });
+    const msg = (db) => doc(db, `chats/alice_bob/messages/${id}`);
+    // On a friend's message and on your own.
+    await assertSucceeds(updateDoc(msg(as('alice')), { 'reactions.alice': 'heart' }));
+    await assertSucceeds(updateDoc(msg(as('bob')), { 'reactions.bob': 'fire' }));
+    await assertSucceeds(updateDoc(msg(as('alice')), { 'reactions.alice': 'laugh' }));
+    await assertSucceeds(updateDoc(msg(as('alice')), { 'reactions.alice': deleteField() }));
+    // Not someone else's, not an unknown emoji, not other fields, not outsiders.
+    await assertFails(updateDoc(msg(as('alice')), { 'reactions.bob': 'sad' }));
+    await assertFails(updateDoc(msg(as('alice')), { 'reactions.alice': 'poop' }));
+    await assertFails(updateDoc(msg(as('alice')), { 'reactions.alice': 'wow', text: 'edited' }));
+    await assertFails(updateDoc(msg(as('carol')), { 'reactions.carol': 'wow' }));
+  });
+
   test('a reply quotes a message of the chat, briefly', async () => {
     await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'question?' }));
     const quote = { id: 'm1', senderId: 'bob', text: 'question?' };

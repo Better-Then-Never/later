@@ -6,6 +6,7 @@ import '../../core/errors/app_failure.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
+import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
 import '../../data/repositories/repositories.dart';
 
@@ -156,6 +157,21 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
       text: text,
       messageId: messageId,
       replyTo: replyTo,
+    ),
+  );
+
+  Future<AppFailure?> setMessageReaction(
+    String friendUid,
+    String messageId,
+    ReactionType? type,
+  ) => _run(
+    'Failed to react to a message',
+    AppL10n.current.messagesReactFailed,
+    (me) => _chats.setMessageReaction(
+      Chat.idBetween(me, friendUid),
+      messageId,
+      uid: me,
+      type: type,
     ),
   );
 

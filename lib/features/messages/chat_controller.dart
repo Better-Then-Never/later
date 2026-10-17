@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
+import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
 import '../friends/friends_store.dart';
 import 'chats_store.dart';
@@ -55,6 +56,9 @@ class ChatController extends ChangeNotifier {
   /// Deleted here, hidden until the server's list no longer has them.
   final Set<String> _deleting = {};
 
+  /// Reactions set here and not confirmed yet (null: removed), by message.
+  final Map<String, ReactionType?> _reacting = {};
+
   MessageReply? _replyTo;
 
   /// The message the next one answers (shown above the composer).
@@ -96,10 +100,14 @@ class ChatController extends ChangeNotifier {
   /// still sending or failed.
   List<ChatMessage> get messages {
     final ids = {for (final m in _server) m.id};
+    final me = myUid;
     return [
       ..._server,
       ..._outbox.values.where((m) => !ids.contains(m.id)),
-    ].where((m) => !_deleting.contains(m.id)).toList();
+    ].where((m) => !_deleting.contains(m.id)).map((m) {
+      if (me == null || !_reacting.containsKey(m.id)) return m;
+      return m.withReaction(me, _reacting[m.id]);
+    }).toList();
   }
 
   /// [messages], or the search matches.
@@ -164,6 +172,12 @@ class ChatController extends ChangeNotifier {
     }
     final ids = {for (final m in messages) m.id};
     _deleting.retainWhere(ids.contains);
+    // Confirmed: the server's list shows the reaction now.
+    final me = myUid;
+    _reacting.removeWhere((id, type) {
+      final m = messages.where((m) => m.id == id).firstOrNull;
+      return m == null || me == null || m.reactions[me] == type;
+    });
     _notify();
     _markReadIfNeeded();
   }
@@ -304,6 +318,26 @@ class ChatController extends ChangeNotifier {
   }
 
   Future<AppFailure?> clearHistory() => _chats.clearHistory(friendUid);
+
+  /// The user's reaction to [message]: tapping the same one again removes
+  /// it. Shown at once, undone if the server refuses.
+  Future<AppFailure?> react(ChatMessage message, ReactionType type) async {
+    final me = myUid;
+    if (me == null || message.delivery != MessageDelivery.sent) return null;
+    final next = message.reactions[me] == type ? null : type;
+    _reacting[message.id] = next;
+    _notify();
+    final failure = await _chats.setMessageReaction(
+      friendUid,
+      message.id,
+      next,
+    );
+    if (failure != null && !_disposed) {
+      _reacting.remove(message.id);
+      _notify();
+    }
+    return failure;
+  }
 
   /// Whether [message] can be deleted here: the user's own, sent or not.
   bool canDelete(ChatMessage message) =>

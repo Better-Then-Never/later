@@ -564,6 +564,22 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
+  Future<void> setMessageReaction(
+    String chatId,
+    String messageId, {
+    required String uid,
+    ReactionType? type,
+  }) async {
+    calls.add('react:$messageId:$uid:${type?.name}');
+    if (failSends) throw StateError('react failed');
+    final list = messages[chatId];
+    final i = list?.indexWhere((m) => m.id == messageId) ?? -1;
+    if (i < 0) return;
+    list![i] = list[i].withReaction(uid, type);
+    _notify();
+  }
+
+  @override
   Future<void> deleteMessage(String chatId, String messageId) async {
     calls.add('delete:$chatId:$messageId');
     if (failSends) throw StateError('delete failed');

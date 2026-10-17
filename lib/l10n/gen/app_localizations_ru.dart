@@ -1306,6 +1306,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get messagesReactFailed => 'Не удалось сохранить реакцию';
+
+  @override
   String get messagesReceiptFailed =>
       'Не отправлено · Нажмите, чтобы повторить';
 
