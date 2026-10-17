@@ -35,5 +35,8 @@
   "profileShareSubtitle": "Pokaż ten kod QR, aby inni mogli dodać cię do znajomych",
   "profileShareTitle": "Udostępnij profil",
   "profileUpdating": "Aktualizacja...",
-  "profileViewProfile": "Zobacz profil"
+  "profileViewProfile": "Zobacz profil",
+  "profileFollowers": "{count, plural, one{{count} obserwujący} few{{count} obserwujących} many{{count} obserwujących} other{{count} obserwującego}}",
+  "profileFollowing": "{count} obserwowanych",
+  "profileVerified": "Zweryfikowane konto"
 }

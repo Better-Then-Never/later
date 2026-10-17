@@ -1583,6 +1583,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileErrorUploadPicture => 'Failed to upload profile picture';
 
   @override
+  String profileFollowers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count followers',
+      one: '1 follower',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowing(int count) {
+    return '$count following';
+  }
+
+  @override
   String get profileImageFromGallery => 'Choose from gallery';
 
   @override
@@ -1654,6 +1670,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileUpdating => 'Updating...';
+
+  @override
+  String get profileVerified => 'Verified account';
 
   @override
   String get profileViewProfile => 'View profile page';

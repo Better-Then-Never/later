@@ -1363,6 +1363,22 @@
   "profileErrorShare": "Failed to share profile",
   "profileErrorUploadBackground": "Failed to upload background picture",
   "profileErrorUploadPicture": "Failed to upload profile picture",
+  "profileFollowers": "{count, plural, =1{1 follower} other{{count} followers}}",
+  "@profileFollowers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowing": "{count} following",
+  "@profileFollowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "profileImageFromGallery": "Choose from gallery",
   "@profileImageFromGallery": {
     "description": "Option in the profile / background picture menu."
@@ -1458,6 +1474,7 @@
   "@profileUpdating": {
     "description": "Shown on the profile or background picture while it uploads or is deleted."
   },
+  "profileVerified": "Verified account",
   "profileViewProfile": "View profile page",
   "@profileViewProfile": {
     "description": "Option in the menu of a pinned friend: opens that friend's profile."

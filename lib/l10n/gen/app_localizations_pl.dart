@@ -1639,6 +1639,24 @@ class AppLocalizationsPl extends AppLocalizations {
       'Nie udało się przesłać zdjęcia profilowego';
 
   @override
+  String profileFollowers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count obserwującego',
+      many: '$count obserwujących',
+      few: '$count obserwujących',
+      one: '$count obserwujący',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowing(int count) {
+    return '$count obserwowanych';
+  }
+
+  @override
   String get profileImageFromGallery => 'Wybierz z galerii';
 
   @override
@@ -1710,6 +1728,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get profileUpdating => 'Aktualizacja...';
+
+  @override
+  String get profileVerified => 'Zweryfikowane konto';
 
   @override
   String get profileViewProfile => 'Zobacz profil';

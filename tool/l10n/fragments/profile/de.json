@@ -35,5 +35,8 @@
   "profileShareSubtitle": "Lass andere diesen QR-Code scannen, damit sie dich als Freund hinzufügen können",
   "profileShareTitle": "Profil teilen",
   "profileUpdating": "Aktualisiere...",
-  "profileViewProfile": "Profil ansehen"
+  "profileViewProfile": "Profil ansehen",
+  "profileFollowers": "{count, plural, =1{1 Follower} other{{count} Follower}}",
+  "profileFollowing": "{count} folgt",
+  "profileVerified": "Verifiziertes Konto"
 }

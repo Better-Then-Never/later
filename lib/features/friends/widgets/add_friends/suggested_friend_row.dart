@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/assets/app_assets.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/user/user_round_avatar.dart';
+import '../../../../shared/widgets/user/verified_name.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
@@ -51,10 +52,9 @@ class SuggestedFriendRow extends StatelessWidget {
             userId: userId,
             radius: UserRoundAvatar.listRadius(screenWidth),
           ),
-          title: Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          title: VerifiedName(
+            uid: userId,
+            name: name,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,

@@ -1615,6 +1615,22 @@ class AppLocalizationsDe extends AppLocalizations {
       'Profilbild konnte nicht hochgeladen werden';
 
   @override
+  String profileFollowers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Follower',
+      one: '1 Follower',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowing(int count) {
+    return '$count folgt';
+  }
+
+  @override
   String get profileImageFromGallery => 'Aus Galerie wählen';
 
   @override
@@ -1686,6 +1702,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileUpdating => 'Aktualisiere...';
+
+  @override
+  String get profileVerified => 'Verifiziertes Konto';
 
   @override
   String get profileViewProfile => 'Profil ansehen';

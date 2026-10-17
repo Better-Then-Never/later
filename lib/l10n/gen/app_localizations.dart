@@ -2642,6 +2642,18 @@ abstract class AppLocalizations {
   /// **'Failed to upload profile picture'**
   String get profileErrorUploadPicture;
 
+  /// No description provided for @profileFollowers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 follower} other{{count} followers}}'**
+  String profileFollowers(int count);
+
+  /// No description provided for @profileFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} following'**
+  String profileFollowing(int count);
+
   /// Option in the profile / background picture menu.
   ///
   /// In en, this message translates to:
@@ -2773,6 +2785,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Updating...'**
   String get profileUpdating;
+
+  /// No description provided for @profileVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified account'**
+  String get profileVerified;
 
   /// Option in the menu of a pinned friend: opens that friend's profile.
   ///

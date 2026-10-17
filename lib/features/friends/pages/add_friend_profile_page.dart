@@ -92,6 +92,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                 ),
                 const SizedBox(height: 110),
                 UserNameAndUsername(
+                  showCounts: true,
                   userId: userId,
                   crossAxisAlignment: CrossAxisAlignment.center,
                 ),

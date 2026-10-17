@@ -35,5 +35,8 @@
   "profileShareSubtitle": "Deja que otros escaneen este código QR para añadirte como amigo",
   "profileShareTitle": "Compartir perfil",
   "profileUpdating": "Actualizando...",
-  "profileViewProfile": "Ver perfil"
+  "profileViewProfile": "Ver perfil",
+  "profileFollowers": "{count, plural, =1{1 seguidor} other{{count} seguidores}}",
+  "profileFollowing": "{count} seguidos",
+  "profileVerified": "Cuenta verificada"
 }

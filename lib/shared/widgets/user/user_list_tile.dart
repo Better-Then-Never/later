@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'user_round_avatar.dart';
+import 'verified_name.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 import '../../../core/theme/app_palette.dart';
 
@@ -29,8 +30,9 @@ class UserListTile extends StatelessWidget {
         userId: uid,
         radius: UserRoundAvatar.listRadius(screenWidth),
       ),
-      title: Text(
-        name,
+      title: VerifiedName(
+        uid: uid,
+        name: name,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: screenWidth * 0.045,
@@ -38,7 +40,6 @@ class UserListTile extends StatelessWidget {
           color: context.palette.textPrimary,
         ),
         maxLines: 2,
-        overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         '@$username',

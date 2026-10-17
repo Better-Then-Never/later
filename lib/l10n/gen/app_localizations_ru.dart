@@ -1628,6 +1628,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileErrorUploadPicture => 'Не удалось загрузить фото профиля';
 
   @override
+  String profileFollowers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count подписчика',
+      many: '$count подписчиков',
+      few: '$count подписчика',
+      one: '$count подписчик',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count подписки',
+      many: '$count подписок',
+      few: '$count подписки',
+      one: '$count подписка',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get profileImageFromGallery => 'Выбрать из галереи';
 
   @override
@@ -1699,6 +1725,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileUpdating => 'Секунду...';
+
+  @override
+  String get profileVerified => 'Подтверждённый аккаунт';
 
   @override
   String get profileViewProfile => 'Открыть профиль';

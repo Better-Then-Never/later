@@ -69,6 +69,7 @@ class YourFriendProfilePage extends StatelessWidget {
                         SizedBox(width: screenWidth * 0.04),
                         Expanded(
                           child: UserNameAndUsername(
+                            showCounts: true,
                             userId: friendUid,
                             nameFontSize: screenWidth * 0.07,
                             usernameFontSize: screenWidth * 0.05,

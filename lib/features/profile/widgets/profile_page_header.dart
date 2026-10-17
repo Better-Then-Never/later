@@ -47,6 +47,7 @@ class ProfilePageHeader extends StatelessWidget {
                 SizedBox(width: screenWidth * 0.04),
                 Expanded(
                   child: UserNameAndUsername(
+                    showCounts: true,
                     userId: userId,
                     nameFontSize: 32,
                     usernameFontSize: 20,
