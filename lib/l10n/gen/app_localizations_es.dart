@@ -250,6 +250,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesColorYellow => 'Amarillo';
 
   @override
+  String get capsulesCommentDelete => 'Eliminar comentario';
+
+  @override
+  String get capsulesCommentDeleteConfirm => '¿Eliminar este comentario?';
+
+  @override
+  String get capsulesCommentDeleteFailed => 'No se pudo eliminar el comentario';
+
+  @override
+  String get capsulesCommentFailed => 'No se pudo publicar tu comentario';
+
+  @override
+  String get capsulesCommentHint => 'Escribe un comentario...';
+
+  @override
+  String get capsulesCommentTooLong =>
+      'Los comentarios pueden tener hasta 500 caracteres';
+
+  @override
+  String get capsulesComments => 'Comentarios';
+
+  @override
+  String capsulesCommentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count comentarios',
+      one: '1 comentario',
+      zero: 'Comentar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCommentsEmpty => 'Aún no hay comentarios';
+
+  @override
+  String get capsulesCommentsEmptyHint => 'Sé el primero en decir algo.';
+
+  @override
   String get capsulesCreationColor => 'Color';
 
   @override
@@ -300,6 +340,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get capsulesPrivacyPublic => 'Pública';
+
+  @override
+  String capsulesReactWith(String emoji) {
+    return 'Reaccionar con $emoji';
+  }
+
+  @override
+  String get capsulesReactionFailed => 'No se pudo guardar tu reacción';
+
+  @override
+  String get capsulesReply => 'Responder';
+
+  @override
+  String capsulesReplyHint(String name) {
+    return 'Responder a $name...';
+  }
+
+  @override
+  String get capsulesReport => 'Denunciar';
+
+  @override
+  String get capsulesReportAbuse => 'Acoso u odio';
+
+  @override
+  String get capsulesReportCapsule => 'Denunciar cápsula';
+
+  @override
+  String get capsulesReportNudity => 'Desnudos';
+
+  @override
+  String get capsulesReportOther => 'Otra cosa';
+
+  @override
+  String get capsulesReportPrivacy => 'Información privada';
+
+  @override
+  String get capsulesReportSent =>
+      'Gracias por avisarnos. El equipo de Later lo revisará.';
+
+  @override
+  String get capsulesReportSpam => 'Spam';
+
+  @override
+  String get capsulesReportTitle => '¿Qué tiene de malo?';
+
+  @override
+  String get capsulesReportViolence => 'Violencia';
+
+  @override
+  String get capsulesYou => 'Tú';
 
   @override
   String get commonBack => 'Atrás';

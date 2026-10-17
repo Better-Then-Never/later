@@ -198,6 +198,24 @@
     "description": "Colour of the capsule's map pin. Agrees with the word 'colour'."
   },
   "capsulesColorYellow": "Yellow",
+  "capsulesCommentDelete": "Delete comment",
+  "capsulesCommentDeleteConfirm": "Delete this comment?",
+  "capsulesCommentDeleteFailed": "Could not delete the comment",
+  "capsulesCommentFailed": "Could not post your comment",
+  "capsulesCommentHint": "Add a comment...",
+  "capsulesCommentTooLong": "Comments can be up to 500 characters",
+  "capsulesComments": "Comments",
+  "capsulesCommentsCount": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
+  "@capsulesCommentsCount": {
+    "description": "Button under a capsule that opens its comments.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCommentsEmpty": "No comments yet",
+  "capsulesCommentsEmptyHint": "Be the first to say something.",
   "capsulesCreationColor": "Color",
   "@capsulesCreationColor": {
     "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
@@ -260,6 +278,36 @@
   "@capsulesPrivacyPublic": {
     "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
   },
+  "capsulesReactWith": "React with {emoji}",
+  "@capsulesReactWith": {
+    "description": "Accessibility label of a reaction button.",
+    "placeholders": {
+      "emoji": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesReactionFailed": "Could not save your reaction",
+  "capsulesReply": "Reply",
+  "capsulesReplyHint": "Reply to {name}...",
+  "@capsulesReplyHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesReport": "Report",
+  "capsulesReportAbuse": "Harassment or hate",
+  "capsulesReportCapsule": "Report capsule",
+  "capsulesReportNudity": "Nudity",
+  "capsulesReportOther": "Something else",
+  "capsulesReportPrivacy": "Private information",
+  "capsulesReportSent": "Thanks for telling us. The Later team will look at it.",
+  "capsulesReportSpam": "Spam",
+  "capsulesReportTitle": "What is wrong with it?",
+  "capsulesReportViolence": "Violence",
+  "capsulesYou": "You",
   "commonBack": "Back",
   "@commonBack": {
     "description": "Accessibility label of the back arrow."

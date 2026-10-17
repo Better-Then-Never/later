@@ -30,7 +30,7 @@ import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
 import 'widgets/capsule_info_panel.dart';
-import 'widgets/capsule_preview_card.dart';
+import '../capsules/social/capsule_detail_dialog.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
@@ -164,20 +164,11 @@ class _MapViewState extends State<_MapView> {
 
   Widget _infoPanel(Capsule capsule) => CapsuleInfoPanel(
     capsule: capsule,
-    onMoreInfo: () => showDialog<void>(
-      context: context,
-      builder: (dialogContext) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(16),
-        child: CapsulePreviewCard(
-          capsule: capsule,
-          // Back to the capsule's place on the map.
-          onPlaceTap: () {
-            Navigator.of(dialogContext).pop();
-            _focus.focus(capsule);
-          },
-        ),
-      ),
+    onMoreInfo: () => CapsuleDetailDialog.show(
+      context,
+      capsule,
+      // Back to the capsule's place on the map.
+      onPlaceTap: () => _focus.focus(capsule),
     ),
   );
 

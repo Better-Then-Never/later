@@ -3,10 +3,10 @@
 /// switched on once it is finished and verified; see docs/ux/FEATURES.md.
 abstract final class FeatureFlags {
   /// Emoji reactions on capsules.
-  static const reactions = false;
+  static const reactions = true;
 
   /// Comments (with one level of replies) on capsules.
-  static const comments = false;
+  static const comments = true;
 
   /// Achievements on profiles and their pushes.
   static const achievements = false;

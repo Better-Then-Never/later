@@ -24,7 +24,7 @@ import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../friends/friends_store.dart';
-import '../map/widgets/capsule_preview_card.dart';
+import '../capsules/social/capsule_detail_dialog.dart';
 import '../settings/settings_store.dart';
 import '../users/user_directory.dart';
 import 'chat_controller.dart';
@@ -151,15 +151,7 @@ class _ChatViewState extends State<_ChatView> {
       );
       return;
     }
-    await showDialog<void>(
-      context: context,
-      barrierColor: context.palette.scrim,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.symmetric(horizontal: 16),
-        child: CapsulePreviewCard(capsule: capsule),
-      ),
-    );
+    await CapsuleDetailDialog.show(context, capsule);
   }
 
   @override

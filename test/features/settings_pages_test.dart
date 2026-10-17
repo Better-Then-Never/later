@@ -154,6 +154,8 @@ void main() {
       expect(find.text('From'), findsNothing);
 
       await tester.scrollUntilVisible(find.text('Quiet hours'), 100);
+      await tester.ensureVisible(find.text('Quiet hours'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Quiet hours'));
       await tester.pumpAndSettle();
       expect(repo.docs['alice']!.notifications.quietHours.enabled, isTrue);

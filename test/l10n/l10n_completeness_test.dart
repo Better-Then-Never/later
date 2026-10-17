@@ -11,8 +11,11 @@ Map<String, Object?> _arb(String lang) =>
     (jsonDecode(File('lib/l10n/app_$lang.arb').readAsStringSync()) as Map)
         .cast<String, Object?>();
 
-Set<String> _placeholders(String message) =>
-    RegExp(r'\{(\w+)[,}]').allMatches(message).map((m) => m.group(1)!).toSet();
+/// Names in {name} and {name, plural, ...}. Plural and select branch bodies
+/// (=0{...}, one{...}) follow a word character or '=', placeholders do not.
+Set<String> _placeholders(String message) => RegExp(
+  r'(?<![=\w])\{(\w+)[,}]',
+).allMatches(message).map((m) => m.group(1)!).toSet();
 
 void main() {
   final english = _arb('en');

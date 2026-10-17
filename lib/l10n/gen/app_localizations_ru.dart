@@ -248,6 +248,48 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesColorYellow => 'Жёлтый';
 
   @override
+  String get capsulesCommentDelete => 'Удалить комментарий';
+
+  @override
+  String get capsulesCommentDeleteConfirm => 'Удалить этот комментарий?';
+
+  @override
+  String get capsulesCommentDeleteFailed => 'Не удалось удалить комментарий';
+
+  @override
+  String get capsulesCommentFailed => 'Не удалось отправить комментарий';
+
+  @override
+  String get capsulesCommentHint => 'Напишите комментарий...';
+
+  @override
+  String get capsulesCommentTooLong =>
+      'Комментарий может быть не длиннее 500 символов';
+
+  @override
+  String get capsulesComments => 'Комментарии';
+
+  @override
+  String capsulesCommentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count комментария',
+      many: '$count комментариев',
+      few: '$count комментария',
+      one: '$count комментарий',
+      zero: 'Комментировать',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCommentsEmpty => 'Комментариев пока нет';
+
+  @override
+  String get capsulesCommentsEmptyHint => 'Напишите первым.';
+
+  @override
   String get capsulesCreationColor => 'Цвет';
 
   @override
@@ -298,6 +340,56 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesPrivacyPublic => 'Публичная';
+
+  @override
+  String capsulesReactWith(String emoji) {
+    return 'Реакция $emoji';
+  }
+
+  @override
+  String get capsulesReactionFailed => 'Не удалось сохранить реакцию';
+
+  @override
+  String get capsulesReply => 'Ответить';
+
+  @override
+  String capsulesReplyHint(String name) {
+    return 'Ответ для $name...';
+  }
+
+  @override
+  String get capsulesReport => 'Пожаловаться';
+
+  @override
+  String get capsulesReportAbuse => 'Оскорбления или ненависть';
+
+  @override
+  String get capsulesReportCapsule => 'Пожаловаться на капсулу';
+
+  @override
+  String get capsulesReportNudity => 'Обнажённость';
+
+  @override
+  String get capsulesReportOther => 'Другое';
+
+  @override
+  String get capsulesReportPrivacy => 'Личная информация';
+
+  @override
+  String get capsulesReportSent =>
+      'Спасибо, что сообщили. Команда Later посмотрит.';
+
+  @override
+  String get capsulesReportSpam => 'Спам';
+
+  @override
+  String get capsulesReportTitle => 'Что не так?';
+
+  @override
+  String get capsulesReportViolence => 'Насилие';
+
+  @override
+  String get capsulesYou => 'Вы';
 
   @override
   String get commonBack => 'Назад';

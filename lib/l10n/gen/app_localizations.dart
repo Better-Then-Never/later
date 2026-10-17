@@ -548,6 +548,66 @@ abstract class AppLocalizations {
   /// **'Yellow'**
   String get capsulesColorYellow;
 
+  /// No description provided for @capsulesCommentDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete comment'**
+  String get capsulesCommentDelete;
+
+  /// No description provided for @capsulesCommentDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this comment?'**
+  String get capsulesCommentDeleteConfirm;
+
+  /// No description provided for @capsulesCommentDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the comment'**
+  String get capsulesCommentDeleteFailed;
+
+  /// No description provided for @capsulesCommentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not post your comment'**
+  String get capsulesCommentFailed;
+
+  /// No description provided for @capsulesCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment...'**
+  String get capsulesCommentHint;
+
+  /// No description provided for @capsulesCommentTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments can be up to 500 characters'**
+  String get capsulesCommentTooLong;
+
+  /// No description provided for @capsulesComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get capsulesComments;
+
+  /// Button under a capsule that opens its comments.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}'**
+  String capsulesCommentsCount(int count);
+
+  /// No description provided for @capsulesCommentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet'**
+  String get capsulesCommentsEmpty;
+
+  /// No description provided for @capsulesCommentsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Be the first to say something.'**
+  String get capsulesCommentsEmptyHint;
+
   /// Row title: the colour of the capsule's map pin (tapping cycles the colours).
   ///
   /// In en, this message translates to:
@@ -649,6 +709,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public'**
   String get capsulesPrivacyPublic;
+
+  /// Accessibility label of a reaction button.
+  ///
+  /// In en, this message translates to:
+  /// **'React with {emoji}'**
+  String capsulesReactWith(String emoji);
+
+  /// No description provided for @capsulesReactionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your reaction'**
+  String get capsulesReactionFailed;
+
+  /// No description provided for @capsulesReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get capsulesReply;
+
+  /// No description provided for @capsulesReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to {name}...'**
+  String capsulesReplyHint(String name);
+
+  /// No description provided for @capsulesReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get capsulesReport;
+
+  /// No description provided for @capsulesReportAbuse.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment or hate'**
+  String get capsulesReportAbuse;
+
+  /// No description provided for @capsulesReportCapsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Report capsule'**
+  String get capsulesReportCapsule;
+
+  /// No description provided for @capsulesReportNudity.
+  ///
+  /// In en, this message translates to:
+  /// **'Nudity'**
+  String get capsulesReportNudity;
+
+  /// No description provided for @capsulesReportOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get capsulesReportOther;
+
+  /// No description provided for @capsulesReportPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Private information'**
+  String get capsulesReportPrivacy;
+
+  /// No description provided for @capsulesReportSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for telling us. The Later team will look at it.'**
+  String get capsulesReportSent;
+
+  /// No description provided for @capsulesReportSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get capsulesReportSpam;
+
+  /// No description provided for @capsulesReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What is wrong with it?'**
+  String get capsulesReportTitle;
+
+  /// No description provided for @capsulesReportViolence.
+  ///
+  /// In en, this message translates to:
+  /// **'Violence'**
+  String get capsulesReportViolence;
+
+  /// No description provided for @capsulesYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get capsulesYou;
 
   /// Accessibility label of the back arrow.
   ///

@@ -249,6 +249,48 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesColorYellow => 'Żółty';
 
   @override
+  String get capsulesCommentDelete => 'Usuń komentarz';
+
+  @override
+  String get capsulesCommentDeleteConfirm => 'Usunąć ten komentarz?';
+
+  @override
+  String get capsulesCommentDeleteFailed => 'Nie udało się usunąć komentarza';
+
+  @override
+  String get capsulesCommentFailed => 'Nie udało się dodać komentarza';
+
+  @override
+  String get capsulesCommentHint => 'Dodaj komentarz...';
+
+  @override
+  String get capsulesCommentTooLong =>
+      'Komentarz może mieć najwyżej 500 znaków';
+
+  @override
+  String get capsulesComments => 'Komentarze';
+
+  @override
+  String capsulesCommentsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count komentarza',
+      many: '$count komentarzy',
+      few: '$count komentarze',
+      one: '1 komentarz',
+      zero: 'Skomentuj',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCommentsEmpty => 'Nie ma jeszcze komentarzy';
+
+  @override
+  String get capsulesCommentsEmptyHint => 'Napisz coś jako pierwszy.';
+
+  @override
   String get capsulesCreationColor => 'Kolor';
 
   @override
@@ -300,6 +342,56 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesPrivacyPublic => 'Publiczna';
+
+  @override
+  String capsulesReactWith(String emoji) {
+    return 'Zareaguj: $emoji';
+  }
+
+  @override
+  String get capsulesReactionFailed => 'Nie udało się zapisać reakcji';
+
+  @override
+  String get capsulesReply => 'Odpowiedz';
+
+  @override
+  String capsulesReplyHint(String name) {
+    return 'Odpowiedz: $name...';
+  }
+
+  @override
+  String get capsulesReport => 'Zgłoś';
+
+  @override
+  String get capsulesReportAbuse => 'Nękanie lub nienawiść';
+
+  @override
+  String get capsulesReportCapsule => 'Zgłoś kapsułę';
+
+  @override
+  String get capsulesReportNudity => 'Nagość';
+
+  @override
+  String get capsulesReportOther => 'Coś innego';
+
+  @override
+  String get capsulesReportPrivacy => 'Prywatne informacje';
+
+  @override
+  String get capsulesReportSent =>
+      'Dzięki za zgłoszenie. Zespół Later się temu przyjrzy.';
+
+  @override
+  String get capsulesReportSpam => 'Spam';
+
+  @override
+  String get capsulesReportTitle => 'Co jest nie tak?';
+
+  @override
+  String get capsulesReportViolence => 'Przemoc';
+
+  @override
+  String get capsulesYou => 'Ty';
 
   @override
   String get commonBack => 'Wstecz';
