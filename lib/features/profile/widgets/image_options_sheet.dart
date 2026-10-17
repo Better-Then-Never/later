@@ -4,6 +4,8 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../shared/widgets/app_sheets.dart';
+import '../../../shared/widgets/options_menu.dart';
 
 enum ImageOption { gallery, camera, delete }
 
@@ -24,26 +26,13 @@ class ImageOptionsSheet extends StatelessWidget {
     BuildContext context, {
     required String title,
     required String deleteLabel,
-  }) => showModalBottomSheet<ImageOption>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    barrierColor: context.palette.scrim,
-    builder: (context) => GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => Navigator.of(context).pop(),
-      child: Center(
-        child: GestureDetector(
-          onTap: () {},
-          child: ImageOptionsSheet(title: title, deleteLabel: deleteLabel),
-        ),
-      ),
-    ),
+  }) => showCenteredSheet<ImageOption>(
+    context,
+    ImageOptionsSheet(title: title, deleteLabel: deleteLabel),
   );
 
-  static const _width = 264.0;
+  static const _width = AppSheets.cardWidth;
   static const _rowHeight = 37.0;
-  static const _green = AppColors.brandGreen;
   static const _red = AppColors.danger;
 
   /// [foreground] is the theme's text colour when null.
@@ -82,27 +71,12 @@ class ImageOptionsSheet extends StatelessWidget {
       height: 153,
       decoration: BoxDecoration(
         color: context.palette.surface,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(AppSheets.radius),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(
-            height: _rowHeight,
-            width: _width,
-            child: Center(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: _green,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: kAppFontFamily,
-                ),
-              ),
-            ),
-          ),
-          Container(width: _width, height: 1, color: _green),
+          OptionsMenuTitle(title),
           _option(context, l10n.profileImageFromGallery, ImageOption.gallery),
           _divider(context),
           _option(context, l10n.profileImageTakePhoto, ImageOption.camera),
@@ -113,8 +87,8 @@ class ImageOptionsSheet extends StatelessWidget {
             ImageOption.delete,
             foreground: _red,
             borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(25),
-              bottomRight: Radius.circular(25),
+              bottomLeft: Radius.circular(AppSheets.radius),
+              bottomRight: Radius.circular(AppSheets.radius),
             ),
           ),
         ],

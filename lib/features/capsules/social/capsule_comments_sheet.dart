@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/social.dart';
+import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../../../shared/widgets/options_menu.dart';
@@ -30,12 +31,9 @@ class CapsuleCommentsSheet extends StatefulWidget {
   static Future<void> show(
     BuildContext context,
     CapsuleSocialController controller,
-  ) => showModalBottomSheet<void>(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    barrierColor: context.palette.scrim,
-    builder: (_) => CapsuleCommentsSheet(controller: controller),
+  ) => showEdgeSheet<void>(
+    context,
+    (_) => CapsuleCommentsSheet(controller: controller),
   );
 
   @override
@@ -171,22 +169,15 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
         ),
         decoration: BoxDecoration(
           color: palette.background,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppSheets.radius),
+          ),
         ),
         child: Column(
           children: [
-            const SizedBox(height: 8),
-            // Grab handle: the sheet can be dragged down to close.
-            Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: palette.disabled,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
+            const SheetHandle(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
               child: Text(
                 l10n.capsulesComments,
                 style: TextStyle(

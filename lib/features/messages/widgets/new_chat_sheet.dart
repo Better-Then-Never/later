@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/user_profile.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/styles/box_decorations.dart';
+import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../../../shared/widgets/default_search_bar.dart';
@@ -21,13 +22,8 @@ import '../../users/user_directory.dart';
 class NewChatSheet extends StatefulWidget {
   const NewChatSheet({super.key});
 
-  static Future<void> show(BuildContext context) => showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    isScrollControlled: true,
-    barrierColor: context.palette.scrim,
-    builder: (_) => const NewChatSheet(),
-  );
+  static Future<void> show(BuildContext context) =>
+      showEdgeSheet<void>(context, (_) => const NewChatSheet());
 
   @override
   State<NewChatSheet> createState() => _NewChatSheetState();
@@ -143,7 +139,9 @@ class _NewChatSheetState extends State<NewChatSheet> {
       height: screen.height * 0.7,
       decoration: BoxDecoration(
         color: palette.background,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppSheets.radius),
+        ),
       ),
       child: Column(
         children: [
@@ -151,16 +149,20 @@ class _NewChatSheetState extends State<NewChatSheet> {
           Container(
             decoration: BoxDecoration(
               color: palette.surface,
-              borderRadius: const BorderRadius.all(Radius.circular(25)),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AppSheets.radius),
+              ),
             ),
             padding: EdgeInsets.fromLTRB(
               screen.width * 0.04,
-              screen.height * 0.02,
+              0,
               screen.width * 0.04,
               0,
             ),
             child: Column(
               children: [
+                const SheetHandle(),
+                SizedBox(height: screen.height * 0.008),
                 Stack(
                   alignment: Alignment.center,
                   children: [

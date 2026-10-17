@@ -6,6 +6,7 @@ import '../../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../../shared/widgets/user/user_round_avatar.dart';
 import '../../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../../shared/widgets/default_text.dart';
+import '../../../../shared/widgets/app_sheets.dart';
 import 'pinned_friends_selection_dialog_header.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -56,12 +57,9 @@ class _PinnedFriendsSelectionDialogState
       return aPinned.compareTo(bPinned);
     });
 
-    return Container(
+    return EdgeSheet(
       height: MediaQuery.sizeOf(context).height * 0.7,
-      decoration: BoxDecoration(
-        color: context.palette.surface,
-        borderRadius: BorderRadius.circular(25),
-      ),
+      color: context.palette.surface,
       child: SafeArea(
         top: false,
         child: Column(

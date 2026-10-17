@@ -8,7 +8,7 @@ import '../../../../shared/widgets/popup/popup_notification_service.dart';
 import 'pinned_friend_avatar.dart';
 import 'pinned_friend_options_dialog.dart';
 import 'pinned_friends_selection_dialog.dart';
-import 'package:later/core/theme/app_palette.dart';
+import '../../../../shared/widgets/app_sheets.dart';
 import 'package:later/core/l10n/l10n.dart';
 
 class PinnedFriendsRow extends StatelessWidget {
@@ -23,12 +23,9 @@ class PinnedFriendsRow extends StatelessWidget {
     // One batched lookup for the names shown in the dialog.
     await context.read<UserDirectory>().resolveAll(friends);
     if (!context.mounted) return;
-    final chosen = await showModalBottomSheet<List<String>>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: context.palette.scrim,
-      builder: (_) => PinnedFriendsSelectionDialog(
+    final chosen = await showEdgeSheet<List<String>>(
+      context,
+      (_) => PinnedFriendsSelectionDialog(
         pinnedUids: controller.pinnedUids,
         allFriends: friends,
       ),
@@ -75,12 +72,9 @@ class PinnedFriendsRow extends StatelessWidget {
             uid: uid,
             size: size,
             onTap: () {
-              showModalBottomSheet<void>(
-                context: context,
-                backgroundColor: Colors.transparent,
-                isScrollControlled: true,
-                barrierColor: context.palette.scrim,
-                builder: (_) => PinnedFriendOptionsDialog(
+              showCenteredSheet<void>(
+                context,
+                PinnedFriendOptionsDialog(
                   friendUid: uid,
                   onViewProfile: () {
                     Navigator.pop(context);

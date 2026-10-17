@@ -8,6 +8,7 @@ import '../../data/models/geo_position.dart';
 import '../../app/shell/selected_page.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/buttons/default_button_with_icon.dart';
+import '../../shared/widgets/app_sheets.dart';
 import '../../shared/widgets/confirm_dialog.dart';
 import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/page_header.dart';
@@ -247,52 +248,52 @@ class _HistoryPageState extends State<HistoryPage> {
     final l10n = context.l10n;
     _searchFocusNode.unfocus();
     FocusScope.of(context).unfocus();
-    showDialog<void>(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: NestedMenu(
-          title: l10n.historyFilterBy,
-          rootItems: [
-            MenuItemNode(
-              label: l10n.historyReset,
-              onTap: controller.resetFilters,
-            ),
-            MenuItemNode(
-              label: l10n.historyFilterColor,
-              children: [
-                for (final color in CapsuleColor.values)
-                  MenuItemNode(
-                    label: color.localizedLabel(l10n),
-                    onTap: () => controller.setColorFilter(color),
-                  ),
-              ],
-            ),
-            MenuItemNode(
-              label: l10n.historyFilterVisibility,
-              children: [
-                for (final privacy in CapsulePrivacy.values)
-                  MenuItemNode(
-                    label: privacy.localizedLabel(l10n),
-                    onTap: () => controller.setPrivacyFilter(privacy),
-                  ),
-              ],
-            ),
-            MenuItemNode(
-              label: l10n.historyFilterCapsule,
-              children: [
+    showCenteredSheet<void>(
+      context,
+      NestedMenu(
+        title: l10n.historyFilterBy,
+        rootItems: [
+          MenuItemNode(
+            label: l10n.historyReset,
+            onTap: controller.resetFilters,
+          ),
+          MenuItemNode(
+            label: l10n.historyFilterColor,
+            children: [
+              for (final color in CapsuleColor.values)
                 MenuItemNode(
-                  label: l10n.historyFilterFavorite,
-                  onTap: () => controller.setFavoritesOnly(true),
+                  label: color.localizedLabel(l10n),
+                  onTap: () => controller.setColorFilter(color),
+                  selected: controller.colorFilter == color,
                 ),
+            ],
+          ),
+          MenuItemNode(
+            label: l10n.historyFilterVisibility,
+            children: [
+              for (final privacy in CapsulePrivacy.values)
                 MenuItemNode(
-                  label: l10n.historyFilterAny,
-                  onTap: () => controller.setFavoritesOnly(false),
+                  label: privacy.localizedLabel(l10n),
+                  onTap: () => controller.setPrivacyFilter(privacy),
+                  selected: controller.privacyFilter == privacy,
                 ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+          MenuItemNode(
+            label: l10n.historyFilterCapsule,
+            children: [
+              MenuItemNode(
+                label: l10n.historyFilterFavorite,
+                onTap: () => controller.setFavoritesOnly(true),
+                selected: controller.favoritesOnly,
+              ),
+              MenuItemNode(
+                label: l10n.historyFilterAny,
+                onTap: () => controller.setFavoritesOnly(false),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -305,25 +306,23 @@ class _HistoryPageState extends State<HistoryPage> {
     MenuItemNode item(HistorySort sort) => MenuItemNode(
       label: sort.label(l10n)!,
       onTap: () => controller.setSort(sort),
+      selected: controller.sort == sort,
     );
-    showDialog<void>(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: NestedMenu(
-          title: l10n.historySortBy,
-          rootItems: [
-            MenuItemNode(label: l10n.historyReset, onTap: controller.resetSort),
-            MenuItemNode(
-              label: l10n.historySortRelevance,
-              children: [item(HistorySort.oldest), item(HistorySort.newest)],
-            ),
-            MenuItemNode(
-              label: l10n.historySortDistance,
-              children: [item(HistorySort.closest), item(HistorySort.farthest)],
-            ),
-          ],
-        ),
+    showCenteredSheet<void>(
+      context,
+      NestedMenu(
+        title: l10n.historySortBy,
+        rootItems: [
+          MenuItemNode(label: l10n.historyReset, onTap: controller.resetSort),
+          MenuItemNode(
+            label: l10n.historySortRelevance,
+            children: [item(HistorySort.oldest), item(HistorySort.newest)],
+          ),
+          MenuItemNode(
+            label: l10n.historySortDistance,
+            children: [item(HistorySort.closest), item(HistorySort.farthest)],
+          ),
+        ],
       ),
     );
   }

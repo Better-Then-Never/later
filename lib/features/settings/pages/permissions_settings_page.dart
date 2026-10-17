@@ -7,6 +7,7 @@ import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 import 'package:later/shared/widgets/buttons/go_back_button.dart';
+import 'package:later/shared/widgets/confirm_dialog.dart';
 import 'package:later/shared/widgets/options/options_section.dart';
 import 'package:later/shared/widgets/page_header.dart';
 
@@ -82,7 +83,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
 
     if (currentStatus?.isGranted ?? false) {
       // Permission is granted, show dialog to revoke
-      _showRevokePermissionDialog(permission);
+      _showSettingsDialog(revoke: true);
     } else {
       // Permission is not granted, request it
       await _requestPermission(permission);
@@ -94,110 +95,28 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
     if (!mounted) return; // BUG-090
 
     if (status.isPermanentlyDenied) {
-      _showPermissionDialog(permission);
+      _showSettingsDialog(revoke: false);
     } else {
       _permissionStatuses[permission] = status;
       if (mounted) setState(() {});
     }
   }
 
-  void _showRevokePermissionDialog(Permission permission) {
-    showDialog(
+  /// Revoking, or asking again after "Don't ask again", happens in the
+  /// system settings.
+  void _showSettingsDialog({required bool revoke}) {
+    final l10n = context.l10n;
+    ConfirmDialog.show(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Text(
-            context.l10n.settingsPermissionRevokeTitle,
-            style: const TextStyle(
-              fontFamily: kAppFontFamily,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            context.l10n.settingsPermissionRevokeBody,
-            style: const TextStyle(fontFamily: kAppFontFamily),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                context.l10n.commonCancel,
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: context.palette.iconMuted,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: Text(
-                context.l10n.settingsPermissionOpenSettings,
-                style: const TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.infoBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showPermissionDialog(Permission permission) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: Text(
-            context.l10n.settingsPermissionRequiredTitle,
-            style: const TextStyle(
-              fontFamily: kAppFontFamily,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            context.l10n.settingsPermissionRequiredBody,
-            style: const TextStyle(fontFamily: kAppFontFamily),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                context.l10n.commonCancel,
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: context.palette.iconMuted,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: Text(
-                context.l10n.settingsPermissionOpenSettings,
-                style: const TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.infoBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      title: revoke
+          ? l10n.settingsPermissionRevokeTitle
+          : l10n.settingsPermissionRequiredTitle,
+      message: revoke
+          ? l10n.settingsPermissionRevokeBody
+          : l10n.settingsPermissionRequiredBody,
+      confirmText: l10n.settingsPermissionOpenSettings,
+      confirmButtonColor: AppColors.brandGreen,
+      onConfirm: openAppSettings,
     );
   }
 
