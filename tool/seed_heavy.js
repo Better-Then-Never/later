@@ -494,6 +494,9 @@ async function main() {
     `600 + 240 messages, 40 notifications.`);
   console.log(`Sign in as ${people[0].email} (password: TEST_ACCOUNT_PASSWORD or the emulator-only default).`);
   console.log(`Long chat id: ${chatId}`);
+  // The phone's Firestore cache still holds the previous seed; the SDK would
+  // check each of those documents again (minutes of extra snapshots).
+  console.log("Before measuring, clear the app's data: adb shell pm clear com.btn.later");
 }
 
 backgroundTriggers(false)

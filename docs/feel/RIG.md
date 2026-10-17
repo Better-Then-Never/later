@@ -81,7 +81,12 @@ dart run tool/dev/perf_summary.dart build/perf/<label>
 - **Stopping a `flutter drive` run by force** can leave the adb server hung (`adb devices` never returns; dozens of
   adb processes). Kill every `adb.exe` and `adb start-server` again.
 - **Re-seeding** (`node tool/seed_heavy.js`) makes new accounts with new ids: the app on the phone is signed out on
-  its next start, and the perf test signs in again.
+  its next start, and the perf test signs in again. **Clear the app's data after a re-seed**
+  (`adb shell pm clear com.btn.later`): the phone's Firestore cache still holds the old seed's capsules, and the SDK
+  checks one by one each cached document that a query no longer returns ("limbo" documents). For 1–2 minutes after
+  the start the map then re-sorted its capsules ~3 times a second and the first chat open waited over 10 s. Seen in
+  the final run (run 1, first chat open) and reproduced; with the data cleared the same open took 176 ms. A real
+  backend never deletes thousands of documents at once, so this is the rig, not the app.
 - **Background emulators**: stopping the shell that started them leaves `node` (the Firebase CLI) and the Firestore
   `java` running; stop those two processes before starting again.
 - The app keeps its language and theme on the phone between runs; the perf test sets a `PERF_LANG` back when it ends.
