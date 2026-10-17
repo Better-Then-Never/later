@@ -1,0 +1,11 @@
+{
+  "name": "later-admin-tools",
+  "private": true,
+  "description": "Owner-only admin scripts (docs/ux/ADMIN.md). Emulator by default; a real project only with --project <id> --production.",
+  "scripts": {
+    "selftest": "firebase emulators:exec --config firebase.json --project demo-later-admin --only auth,firestore \"node selftest.js\""
+  },
+  "dependencies": {
+    "firebase-admin": "^12.6.0"
+  }
+}

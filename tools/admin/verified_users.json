@@ -1,0 +1,4 @@
+{
+  "comment": "Usernames that get the verified badge (F-58). The third was dictated as 'amo b3' and its exact spelling is unknown: run with --dry-run against the real project to see which names are missing (docs/ux/BLOCKERS.md).",
+  "usernames": ["temka_ink", "m9", "amob3"]
+}
