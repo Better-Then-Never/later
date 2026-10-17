@@ -114,15 +114,16 @@ class AppCardRoute<T> extends PageRoute<T> {
       curve: AppMotion.emphasizedCurve,
       reverseCurve: AppMotion.exit,
     );
-    // Transforms only: fading the card was an offscreen layer of the
-    // whole card every frame (the capsule dialog went 20 % janky).
+    // A rise only. Fading the card was an offscreen layer of the whole card
+    // every frame (the capsule dialog went 20 % janky); scaling it made
+    // Impeller draw its letters again at every new size (glyph atlas).
     final travel = MediaQuery.sizeOf(context).height * 0.6;
     return AnimatedBuilder(
       animation: curve,
       child: child,
       builder: (context, child) => Transform.translate(
         offset: Offset(0, travel * (1 - curve.value)),
-        child: Transform.scale(scale: 0.96 + 0.04 * curve.value, child: child),
+        child: child,
       ),
     );
   }
