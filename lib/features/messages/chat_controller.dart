@@ -53,6 +53,14 @@ class ChatController extends ChangeNotifier {
   /// Messages typed here that the server has not confirmed yet, by id.
   final Map<String, ChatMessage> _outbox = {};
 
+  /// Photos sent from here: the picture on the phone, by message id. Kept
+  /// after the server confirms, so the bubble never reloads its picture.
+  final Map<String, String> _localPhotos = {};
+
+  /// Photos uploaded whose message is not sent yet: a retry sends, it does
+  /// not upload again.
+  final Map<String, ChatPhoto> _uploaded = {};
+
   /// Deleted here, hidden until the server's list no longer has them.
   final Set<String> _deleting = {};
 
@@ -105,6 +113,8 @@ class ChatController extends ChangeNotifier {
       ..._server,
       ..._outbox.values.where((m) => !ids.contains(m.id)),
     ].where((m) => !_deleting.contains(m.id)).map((m) {
+      final local = _localPhotos[m.id];
+      if (local != null && m.localPath == null) m = m.withLocalPath(local);
       if (me == null || !_reacting.containsKey(m.id)) return m;
       return m.withReaction(me, _reacting[m.id]);
     }).toList();
@@ -264,6 +274,33 @@ class ChatController extends ChangeNotifier {
     return _deliver(id);
   }
 
+  /// Shows the photo at [localPath] at once as "sending", uploads it and
+  /// sends it with [caption]; a failure keeps it as "not sent" to retry.
+  Future<AppFailure?> sendPhoto(String localPath, {String caption = ''}) async {
+    final trimmed = caption.trim();
+    if (trimmed.length > Chat.maxMessageLength) {
+      return ValidationFailure(AppL10n.current.messagesTooLong);
+    }
+    final me = myUid;
+    final id = _chats.newMessageId(friendUid);
+    if (me == null || id == null) {
+      return AuthFailure(AppL10n.current.messagesSignedOut);
+    }
+    _localPhotos[id] = localPath;
+    _outbox[id] = ChatMessage(
+      id: id,
+      senderId: me,
+      text: trimmed.isEmpty ? ChatMessage.photoSign : trimmed,
+      type: ChatMessageType.image,
+      localPath: localPath,
+      delivery: MessageDelivery.sending,
+      replyTo: _replyTo,
+    );
+    _replyTo = null;
+    _notify();
+    return _deliver(id);
+  }
+
   /// Whether [message] can be answered: it is on the server and the user
   /// may write here.
   bool canReply(ChatMessage message) =>
@@ -272,7 +309,14 @@ class ChatController extends ChangeNotifier {
   /// The next message answers [message].
   void replyTo(ChatMessage message) {
     if (!canReply(message)) return;
-    _replyTo = MessageReply.of(message);
+    _replyTo = message.type == ChatMessageType.image
+        ? MessageReply.of(
+            message,
+            text:
+                '${ChatMessage.photoSign} '
+                '${message.caption.isEmpty ? AppL10n.current.messagesPhoto : message.caption}',
+          )
+        : MessageReply.of(message);
     _notify();
   }
 
@@ -296,12 +340,14 @@ class ChatController extends ChangeNotifier {
   Future<AppFailure?> _deliver(String id) async {
     final pending = _outbox[id];
     if (pending == null) return null;
-    final failure = await _chats.sendText(
-      friendUid,
-      pending.text,
-      messageId: id,
-      replyTo: pending.replyTo,
-    );
+    final failure = pending.type == ChatMessageType.image
+        ? await _deliverPhoto(pending)
+        : await _chats.sendText(
+            friendUid,
+            pending.text,
+            messageId: id,
+            replyTo: pending.replyTo,
+          );
     if (_disposed) return failure;
     if (failure == null) return null;
     final still = _outbox[id];
@@ -314,6 +360,32 @@ class ChatController extends ChangeNotifier {
       unawaited(_checkBlockedByFriend());
       return PermissionFailure(AppL10n.current.messagesCantSend);
     }
+    return failure;
+  }
+
+  /// Uploads [pending]'s picture (once) and sends the message.
+  Future<AppFailure?> _deliverPhoto(ChatMessage pending) async {
+    final id = pending.id;
+    var photo = _uploaded[id];
+    if (photo == null) {
+      final local = pending.localPath;
+      if (local == null) return null;
+      final (uploaded, failure) = await _chats.uploadPhoto(
+        friendUid,
+        local,
+        messageId: id,
+      );
+      if (uploaded == null) return failure;
+      photo = _uploaded[id] = uploaded;
+    }
+    final failure = await _chats.sendPhoto(
+      friendUid,
+      photo,
+      messageId: id,
+      caption: pending.caption,
+      replyTo: pending.replyTo,
+    );
+    if (failure == null) _uploaded.remove(id);
     return failure;
   }
 
@@ -356,7 +428,11 @@ class ChatController extends ChangeNotifier {
     }
     _deleting.add(message.id);
     _notify();
-    final failure = await _chats.deleteMessage(friendUid, message.id);
+    final failure = await _chats.deleteMessage(
+      friendUid,
+      message.id,
+      imagePath: message.imagePath,
+    );
     if (failure != null && !_disposed) {
       _deleting.remove(message.id);
       _notify();

@@ -2126,6 +2126,12 @@ abstract class AppLocalizations {
   /// **'Check your connection and try again'**
   String get messagesCheckConnection;
 
+  /// Menu item: pick a photo from the phone's gallery for the chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get messagesChoosePhoto;
+
   /// Confirm button of the clear-history dialog.
   ///
   /// In en, this message translates to:
@@ -2318,6 +2324,30 @@ abstract class AppLocalizations {
   /// **'Open capsule {title}'**
   String messagesOpenCapsule(String title);
 
+  /// Screen reader label of a photo in a chat bubble.
+  ///
+  /// In en, this message translates to:
+  /// **'Open photo'**
+  String get messagesOpenPhoto;
+
+  /// A photo message: chat list preview and quotes (after a camera sign).
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get messagesPhoto;
+
+  /// Hint of the caption field under a photo about to be sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a caption…'**
+  String get messagesPhotoCaption;
+
+  /// Shown when the chosen file cannot be read as a picture.
+  ///
+  /// In en, this message translates to:
+  /// **'This picture can\'t be sent'**
+  String get messagesPhotoUnreadable;
+
   /// No description provided for @messagesReactFailed.
   ///
   /// In en, this message translates to:
@@ -2378,6 +2408,12 @@ abstract class AppLocalizations {
   /// **'Failed to send message'**
   String get messagesSendFailed;
 
+  /// Screen reader label and title of the chat input's photo button.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a photo'**
+  String get messagesSendPhoto;
+
   /// No description provided for @messagesSignedOut.
   ///
   /// In en, this message translates to:
@@ -2389,6 +2425,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start chat with {name}'**
   String messagesStartChatWith(String name);
+
+  /// Menu item: take a photo with the camera for the chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get messagesTakePhoto;
 
   /// Title of the messages tab (the list of chats).
   ///

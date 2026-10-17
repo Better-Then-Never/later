@@ -12,8 +12,9 @@ import '../../../data/models/chat.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 
 /// Text field in the app's white input card, with a send button (disabled
-/// while empty) and, when [onCapsuleTap] is set, a button that sends the
-/// friend a capsule. The field grows to five lines.
+/// while empty), when [onPhotoTap] is set a photo button inside the field,
+/// and when [onCapsuleTap] is set a button that sends the friend a capsule.
+/// The field grows to five lines.
 ///
 /// The text is cleared as soon as it is sent: the message itself appears in
 /// the conversation at once and can be retried there if it fails.
@@ -22,11 +23,13 @@ class MessageInput extends StatefulWidget {
     super.key,
     required this.onSend,
     this.onCapsuleTap,
+    this.onPhotoTap,
     this.focusNode,
   });
 
   final void Function(String text) onSend;
   final VoidCallback? onCapsuleTap;
+  final VoidCallback? onPhotoTap;
 
   /// Lets the page put the cursor here (e.g. after choosing Reply).
   final FocusNode? focusNode;
@@ -126,6 +129,28 @@ class _MessageInputState extends State<MessageInput> {
                       horizontal: screen.width * 0.045,
                       vertical: screen.height * 0.015,
                     ),
+                    suffixIcon: switch (widget.onPhotoTap) {
+                      final onPhotoTap? => Semantics(
+                        button: true,
+                        label: context.l10n.messagesSendPhoto,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: onPhotoTap,
+                          child: SizedBox(
+                            width: 48,
+                            height: 44,
+                            child: Center(
+                              child: Image.asset(
+                                AppIcons.cameraFull,
+                                width: 24,
+                                height: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      null => null,
+                    },
                   ),
                 ),
               ),

@@ -66,10 +66,32 @@ class Chat {
 
 enum ChatMessageType {
   text,
-  capsule;
+  capsule,
 
-  static ChatMessageType parse(Object? value) =>
-      value == 'capsule' ? capsule : text;
+  /// A photo (with an optional caption as its text).
+  image;
+
+  static ChatMessageType parse(Object? value) => switch (value) {
+    'capsule' => capsule,
+    'image' => image,
+    _ => text,
+  };
+}
+
+/// A photo of a message, uploaded: its download URL, its file in Storage
+/// (`chats/{chatId}/{sender}/{messageId}.jpg`) and its size in pixels.
+class ChatPhoto {
+  const ChatPhoto({
+    required this.url,
+    required this.path,
+    required this.width,
+    required this.height,
+  });
+
+  final String url;
+  final String path;
+  final int width;
+  final int height;
 }
 
 /// Where a message of this user is on its way to the server.
@@ -95,13 +117,15 @@ class MessageReply {
   /// The quote keeps this many characters of the original.
   static const maxText = 140;
 
-  factory MessageReply.of(ChatMessage message) {
-    final runes = message.text.runes;
+  /// [text] replaces the message's own (e.g. "📷 Photo" for a photo).
+  factory MessageReply.of(ChatMessage message, {String? text}) {
+    final source = text ?? message.text;
+    final runes = source.runes;
     return MessageReply(
       id: message.id,
       senderId: message.senderId,
       text: runes.length <= maxText
-          ? message.text
+          ? source
           : '${String.fromCharCodes(runes.take(maxText))}…',
     );
   }
@@ -135,7 +159,14 @@ class ChatMessage {
     this.delivery = MessageDelivery.sent,
     this.replyTo,
     this.reactions = const {},
+    this.imagePath,
+    this.width,
+    this.height,
+    this.localPath,
   });
+
+  /// The text of a photo without a caption (older app versions show it).
+  static const photoSign = '📷';
 
   final String id;
   final String senderId;
@@ -147,17 +178,7 @@ class ChatMessage {
   /// Each participant's reaction, by uid.
   final Map<String, ReactionType> reactions;
 
-  ChatMessage withReaction(String uid, ReactionType? type) => ChatMessage(
-    id: id,
-    senderId: senderId,
-    text: text,
-    sentAt: sentAt,
-    isRead: isRead,
-    type: this.type,
-    capsuleId: capsuleId,
-    imageUrl: imageUrl,
-    delivery: delivery,
-    replyTo: replyTo,
+  ChatMessage withReaction(String uid, ReactionType? type) => _copy(
     reactions: {
       for (final e in reactions.entries)
         if (e.key != uid) e.key: e.value,
@@ -170,9 +191,20 @@ class ChatMessage {
   final bool isRead;
   final ChatMessageType type;
 
-  /// For capsule messages: the shared capsule and its photo.
+  /// For capsule messages: the shared capsule and its photo. For photos:
+  /// [imageUrl] and the file in Storage ([imagePath]).
   final String? capsuleId;
   final String? imageUrl;
+  final String? imagePath;
+
+  /// A photo's size in pixels (its shape before it arrives); null for older
+  /// messages and other types.
+  final int? width;
+  final int? height;
+
+  /// A photo sent from this phone: the picture on the phone, shown until
+  /// (and after) the server has it, so it never reloads.
+  final String? localPath;
   final MessageDelivery delivery;
 
   /// Read by the recipient: from the chat's `lastReadAt` (current app) or the
@@ -185,7 +217,26 @@ class ChatMessage {
         !at.isAfter(recipientReadAt);
   }
 
-  ChatMessage withDelivery(MessageDelivery value) => ChatMessage(
+  ChatMessage withDelivery(MessageDelivery value) => _copy(delivery: value);
+
+  ChatMessage withLocalPath(String? path) => _copy(localPath: path);
+
+  ChatMessage withPhoto(ChatPhoto photo) => _copy(
+    imageUrl: photo.url,
+    imagePath: photo.path,
+    width: photo.width,
+    height: photo.height,
+  );
+
+  ChatMessage _copy({
+    MessageDelivery? delivery,
+    Map<String, ReactionType>? reactions,
+    String? imageUrl,
+    String? imagePath,
+    int? width,
+    int? height,
+    String? localPath,
+  }) => ChatMessage(
     id: id,
     senderId: senderId,
     text: text,
@@ -193,13 +244,24 @@ class ChatMessage {
     isRead: isRead,
     type: type,
     capsuleId: capsuleId,
-    imageUrl: imageUrl,
-    delivery: value,
+    imageUrl: imageUrl ?? this.imageUrl,
+    delivery: delivery ?? this.delivery,
     replyTo: replyTo,
-    reactions: reactions,
+    reactions: reactions ?? this.reactions,
+    imagePath: imagePath ?? this.imagePath,
+    width: width ?? this.width,
+    height: height ?? this.height,
+    localPath: localPath ?? this.localPath,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
+
+  /// A photo message (its picture may still be on its way).
+  bool get isPhoto =>
+      type == ChatMessageType.image && (imageUrl != null || localPath != null);
+
+  /// What was written with a photo; empty for none.
+  String get caption => text == photoSign ? '' : text;
 
   @override
   bool operator ==(Object other) =>
@@ -214,6 +276,10 @@ class ChatMessage {
       other.imageUrl == imageUrl &&
       other.delivery == delivery &&
       other.replyTo == replyTo &&
+      other.imagePath == imagePath &&
+      other.width == width &&
+      other.height == height &&
+      other.localPath == localPath &&
       _mapEquals(other.reactions, reactions);
 
   @override

@@ -149,5 +149,33 @@
   },
   "messagesDeleteConfirmTitle": "Delete this message for both of you?",
   "messagesDeleteFailed": "Could not delete the message",
-  "messagesReactFailed": "Could not save your reaction"
+  "messagesReactFailed": "Could not save your reaction",
+  "messagesPhoto": "Photo",
+  "@messagesPhoto": {
+    "description": "A photo message: chat list preview and quotes (after a camera sign)."
+  },
+  "messagesSendPhoto": "Send a photo",
+  "@messagesSendPhoto": {
+    "description": "Screen reader label and title of the chat input's photo button."
+  },
+  "messagesChoosePhoto": "Choose from gallery",
+  "@messagesChoosePhoto": {
+    "description": "Menu item: pick a photo from the phone's gallery for the chat."
+  },
+  "messagesTakePhoto": "Take a photo",
+  "@messagesTakePhoto": {
+    "description": "Menu item: take a photo with the camera for the chat."
+  },
+  "messagesPhotoCaption": "Add a caption…",
+  "@messagesPhotoCaption": {
+    "description": "Hint of the caption field under a photo about to be sent."
+  },
+  "messagesPhotoUnreadable": "This picture can't be sent",
+  "@messagesPhotoUnreadable": {
+    "description": "Shown when the chosen file cannot be read as a picture."
+  },
+  "messagesOpenPhoto": "Open photo",
+  "@messagesOpenPhoto": {
+    "description": "Screen reader label of a photo in a chat bubble."
+  }
 }

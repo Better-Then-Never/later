@@ -1038,6 +1038,10 @@
   },
   "messagesChatsLoadError": "Couldn't load your chats",
   "messagesCheckConnection": "Check your connection and try again",
+  "messagesChoosePhoto": "Choose from gallery",
+  "@messagesChoosePhoto": {
+    "description": "Menu item: pick a photo from the phone's gallery for the chat."
+  },
   "messagesClearConfirm": "Clear",
   "@messagesClearConfirm": {
     "description": "Confirm button of the clear-history dialog."
@@ -1112,6 +1116,22 @@
       }
     }
   },
+  "messagesOpenPhoto": "Open photo",
+  "@messagesOpenPhoto": {
+    "description": "Screen reader label of a photo in a chat bubble."
+  },
+  "messagesPhoto": "Photo",
+  "@messagesPhoto": {
+    "description": "A photo message: chat list preview and quotes (after a camera sign)."
+  },
+  "messagesPhotoCaption": "Add a caption…",
+  "@messagesPhotoCaption": {
+    "description": "Hint of the caption field under a photo about to be sent."
+  },
+  "messagesPhotoUnreadable": "This picture can't be sent",
+  "@messagesPhotoUnreadable": {
+    "description": "Shown when the chosen file cannot be read as a picture."
+  },
   "messagesReactFailed": "Could not save your reaction",
   "messagesReceiptFailed": "Not sent · Tap to retry",
   "messagesReceiptRead": "Read",
@@ -1137,6 +1157,10 @@
     "description": "Accessibility label of the capsule button next to the message field."
   },
   "messagesSendFailed": "Failed to send message",
+  "messagesSendPhoto": "Send a photo",
+  "@messagesSendPhoto": {
+    "description": "Screen reader label and title of the chat input's photo button."
+  },
   "messagesSignedOut": "You are signed out",
   "messagesStartChatWith": "Start chat with {name}",
   "@messagesStartChatWith": {
@@ -1147,6 +1171,10 @@
         "example": "Anna"
       }
     }
+  },
+  "messagesTakePhoto": "Take a photo",
+  "@messagesTakePhoto": {
+    "description": "Menu item: take a photo with the camera for the chat."
   },
   "messagesTitle": "My Laters",
   "@messagesTitle": {

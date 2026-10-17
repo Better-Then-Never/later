@@ -1271,6 +1271,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Проверьте подключение и попробуйте ещё раз';
 
   @override
+  String get messagesChoosePhoto => 'Выбрать из галереи';
+
+  @override
   String get messagesClearConfirm => 'Очистить';
 
   @override
@@ -1376,6 +1379,18 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get messagesOpenPhoto => 'Открыть фото';
+
+  @override
+  String get messagesPhoto => 'Фото';
+
+  @override
+  String get messagesPhotoCaption => 'Добавьте подпись…';
+
+  @override
+  String get messagesPhotoUnreadable => 'Эту картинку нельзя отправить';
+
+  @override
   String get messagesReactFailed => 'Не удалось сохранить реакцию';
 
   @override
@@ -1407,12 +1422,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesSendFailed => 'Не удалось отправить сообщение';
 
   @override
+  String get messagesSendPhoto => 'Отправить фото';
+
+  @override
   String get messagesSignedOut => 'Вы вышли из аккаунта';
 
   @override
   String messagesStartChatWith(String name) {
     return 'Начать чат: $name';
   }
+
+  @override
+  String get messagesTakePhoto => 'Сделать фото';
 
   @override
   String get messagesTitle => 'Мои Laters';

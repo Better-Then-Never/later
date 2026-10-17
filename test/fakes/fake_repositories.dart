@@ -455,6 +455,9 @@ class FakeChatRepository implements ChatRepository {
   final List<String> calls = [];
   bool failSends = false;
 
+  /// Photo uploads fail (no connection).
+  bool failUploads = false;
+
   /// Clock used for message times and read receipts.
   DateTime now = DateTime(2026, 10, 16, 12);
   int _ids = 0;
@@ -521,6 +524,48 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
+  Future<ChatPhoto> uploadPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  }) async {
+    calls.add('upload:$messageId:$localPath');
+    if (failUploads) throw StateError('upload failed');
+    final path = 'chats/${Chat.idBetween(from, to)}/$from/$messageId.jpg';
+    return ChatPhoto(
+      url: 'https://storage.test/$path',
+      path: path,
+      width: 1200,
+      height: 1600,
+    );
+  }
+
+  @override
+  Future<void> sendPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatPhoto photo,
+    String caption = '',
+    MessageReply? replyTo,
+  }) async {
+    calls.add('photo:$from->$to:${photo.path}:$caption');
+    _add(
+      from,
+      to,
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: caption.trim().isEmpty ? ChatMessage.photoSign : caption.trim(),
+        sentAt: now,
+        type: ChatMessageType.image,
+        replyTo: replyTo,
+      ).withPhoto(photo),
+    );
+  }
+
+  @override
   Future<void> sendCapsule({
     required String from,
     required String to,
@@ -580,8 +625,16 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> deleteMessage(String chatId, String messageId) async {
-    calls.add('delete:$chatId:$messageId');
+  Future<void> deleteMessage(
+    String chatId,
+    String messageId, {
+    String? imagePath,
+  }) async {
+    calls.add(
+      imagePath == null
+          ? 'delete:$chatId:$messageId'
+          : 'delete:$chatId:$messageId:$imagePath',
+    );
     if (failSends) throw StateError('delete failed');
     final list = messages[chatId];
     if (list == null) return;

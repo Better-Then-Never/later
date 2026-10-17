@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../core/logging/app_logger.dart';
 import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../repositories/repositories.dart';
+import '../services/app_image_cache.dart';
+import '../services/image_processor.dart';
 import 'firestore_mappers.dart';
 
 /// Chats in the shape the app on main created them, so conversations
@@ -12,11 +15,23 @@ import 'firestore_mappers.dart';
 /// `chats/{uidA}_{uidB}`: participants, lastMessage, lastUpdated, createdAt,
 /// lastSenderId. `messages/{id}`: senderId, text, timestamp, status
 /// ("sent"/"read"), and for capsules type "capsule", capsuleId, imageUrl.
+/// Photos: type "image", imageUrl, imagePath, width, height; the file is
+/// `chats/{chatId}/{sender}/{messageId}.jpg` in Storage.
 class FirebaseChatRepository implements ChatRepository {
-  FirebaseChatRepository({FirebaseFirestore? firestore})
-    : _db = firestore ?? FirebaseFirestore.instance;
+  FirebaseChatRepository({
+    FirebaseFirestore? firestore,
+    FirebaseStorage? storage,
+    ImageProcessor processor = const ImageProcessor(),
+  }) : _db = firestore ?? FirebaseFirestore.instance,
+       _storageOverride = storage,
+       _processor = processor;
 
   final FirebaseFirestore _db;
+  final FirebaseStorage? _storageOverride;
+  final ImageProcessor _processor;
+
+  // Looked up on first use (tests without Storage never touch it).
+  FirebaseStorage get _storage => _storageOverride ?? FirebaseStorage.instance;
 
   static const _batchSize = 450;
 
@@ -81,6 +96,69 @@ class FirebaseChatRepository implements ChatRepository {
       // Rules from before replies: the answer still goes, without its quote.
       if (replyTo == null || e.code != 'permission-denied') rethrow;
       AppLogger.warning('Reply refused with its quote, sending it without');
+      await send(quote: false);
+    }
+  }
+
+  @override
+  Future<ChatPhoto> uploadPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  }) async {
+    final photo = await _processor.chatJpegFromFile(localPath);
+    final path = 'chats/${Chat.idBetween(from, to)}/$from/$messageId.jpg';
+    final ref = _storage.ref(path);
+    // Offline, the message waits in the outbox instead of the upload
+    // retrying in the background for the default 10 minutes.
+    _storage.setMaxUploadRetryTime(const Duration(seconds: 45));
+    await ref.putData(photo.bytes, SettableMetadata(contentType: 'image/jpeg'));
+    final url = await ref.getDownloadURL();
+    // Shown from the disk cache from now on: never downloaded by the sender.
+    await AppImageCache.seed(url, photo.bytes);
+    return ChatPhoto(
+      url: url,
+      path: path,
+      width: photo.width,
+      height: photo.height,
+    );
+  }
+
+  @override
+  Future<void> sendPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatPhoto photo,
+    String caption = '',
+    MessageReply? replyTo,
+  }) async {
+    final trimmed = caption.trim();
+    final text = trimmed.isEmpty ? ChatMessage.photoSign : trimmed;
+    Future<void> send({required bool quote}) => _send(
+      from: from,
+      to: to,
+      preview: text,
+      messageId: messageId,
+      message: {
+        'text': text,
+        'type': ChatMessageType.image.name,
+        'imageUrl': photo.url,
+        'imagePath': photo.path,
+        'width': photo.width,
+        'height': photo.height,
+        if (quote && replyTo != null)
+          'replyTo': FirestoreMappers.newMessageReply(replyTo),
+      },
+    );
+    try {
+      await send(quote: true);
+    } on FirebaseException catch (e) {
+      if (replyTo == null || e.code != 'permission-denied') rethrow;
+      AppLogger.warning(
+        'Photo reply refused with its quote, sending it without',
+      );
       await send(quote: false);
     }
   }
@@ -170,7 +248,11 @@ class FirebaseChatRepository implements ChatRepository {
   });
 
   @override
-  Future<void> deleteMessage(String chatId, String messageId) async {
+  Future<void> deleteMessage(
+    String chatId,
+    String messageId, {
+    String? imagePath,
+  }) async {
     final chatRef = _chats.doc(chatId);
     final newest = await _messages(
       chatId,
@@ -214,6 +296,15 @@ class FirebaseChatRepository implements ChatRepository {
       if (e.code != 'permission-denied' || previous == null) rethrow;
       AppLogger.warning('Summary rollback refused, writing the text only');
       await commit(exactSummary: false);
+    }
+    // The photo's file; a server function deletes it too (and for "Clear
+    // history"), so a failure here only leaves it for that.
+    if (imagePath != null) {
+      try {
+        await _storage.ref(imagePath).delete();
+      } catch (e) {
+        AppLogger.debug('Chat photo file not deleted here: $e');
+      }
     }
   }
 

@@ -106,6 +106,46 @@ void main() {
     });
   });
 
+  group('Photo messages', () {
+    test('read from the server, tolerant of missing or odd sizes', () {
+      final photo = FirestoreMappers.chatMessage('p', {
+        'senderId': 'a',
+        'text': ChatMessage.photoSign,
+        'status': 'sent',
+        'type': 'image',
+        'imageUrl': 'https://x/p.jpg',
+        'imagePath': 'chats/a_b/a/p.jpg',
+        'width': 1200,
+        'height': 1600,
+      });
+      expect(photo.type, ChatMessageType.image);
+      expect(photo.isPhoto, isTrue);
+      expect(photo.caption, '', reason: 'the camera sign is not a caption');
+      expect((photo.width, photo.height), (1200, 1600));
+      expect(photo.imagePath, 'chats/a_b/a/p.jpg');
+
+      final odd = FirestoreMappers.chatMessage('q', {
+        'senderId': 'a',
+        'text': 'Look',
+        'type': 'image',
+        'imageUrl': 'https://x/q.jpg',
+        'width': 0,
+        'height': 'big',
+      });
+      expect(odd.caption, 'Look');
+      expect((odd.width, odd.height), (null, null));
+
+      // A type this version does not know reads as text.
+      expect(
+        FirestoreMappers.chatMessage('r', {
+          'text': 'hi',
+          'type': 'sticker',
+        }).type,
+        ChatMessageType.text,
+      );
+    });
+  });
+
   group('ChatTime', () {
     final now = DateTime(2026, 10, 16, 12);
 
@@ -482,6 +522,99 @@ void main() {
       expect(blocked.canSend, isFalse);
       blocked.dispose();
     });
+  });
+
+  group('ChatController photos', () {
+    ChatController open() =>
+        ChatController(friendUid: 'bob', chats: chats, friends: friends);
+
+    test(
+      'a photo shows at once, uploads, sends; the phone keeps its file',
+      () async {
+        final c = open();
+        await pumpEventQueue();
+
+        final sending = c.sendPhoto('/phone/p.jpg', caption: '  Look  ');
+        final shown = c.messages.single;
+        expect(shown.type, ChatMessageType.image);
+        expect(shown.localPath, '/phone/p.jpg');
+        expect(shown.delivery, MessageDelivery.sending);
+        expect(shown.caption, 'Look');
+
+        expect(await sending, isNull);
+        await pumpEventQueue();
+        final sent = c.messages.single;
+        expect(sent.delivery, MessageDelivery.sent);
+        expect(
+          sent.imageUrl,
+          startsWith('https://storage.test/chats/bob_me/me/'),
+        );
+        expect((sent.width, sent.height), (1200, 1600));
+        expect(sent.localPath, '/phone/p.jpg', reason: 'never reloads here');
+        expect(chatRepo.calls.where((x) => x.startsWith('upload:')).length, 1);
+        expect(
+          chatRepo.calls.last,
+          startsWith('photo:me->bob:chats/bob_me/me/'),
+        );
+        expect(chats.chatWith('bob')!.lastMessage, 'Look');
+        c.dispose();
+      },
+    );
+
+    test(
+      'a failed upload is retried; a failed send does not upload twice',
+      () async {
+        final c = open();
+        await pumpEventQueue();
+
+        chatRepo.failUploads = true;
+        expect(await c.sendPhoto('/phone/p.jpg'), isNotNull);
+        final failed = c.messages.single;
+        expect(failed.delivery, MessageDelivery.failed);
+        expect(c.receipt, ReceiptStatus.failed);
+
+        // Uploaded on the retry, but the message itself is refused.
+        chatRepo
+          ..failUploads = false
+          ..failSends = true;
+        expect(await c.retry(failed.id), isNotNull);
+        expect(chatRepo.calls.where((x) => x.startsWith('upload:')).length, 2);
+
+        chatRepo.failSends = false;
+        expect(await c.retry(failed.id), isNull);
+        await pumpEventQueue();
+        expect(
+          chatRepo.calls.where((x) => x.startsWith('upload:')).length,
+          2,
+          reason: 'the photo was already uploaded',
+        );
+        expect(c.messages.single.delivery, MessageDelivery.sent);
+        expect(c.messages.single.caption, '');
+        expect(chats.chatWith('bob')!.lastMessage, ChatMessage.photoSign);
+        c.dispose();
+      },
+    );
+
+    test(
+      'a reply to a photo quotes it in words; deleting takes the file',
+      () async {
+        final c = open();
+        await pumpEventQueue();
+        await c.sendPhoto('/phone/p.jpg');
+        await pumpEventQueue();
+        final photo = c.messages.single;
+
+        c.replyTo(photo);
+        expect(c.replyingTo!.text, '${ChatMessage.photoSign} Photo');
+
+        expect(await c.deleteMessage(photo), isNull);
+        expect(
+          chatRepo.calls.last,
+          'delete:bob_me:${photo.id}:${photo.imagePath}',
+        );
+        c.dispose();
+      },
+    );
   });
 
   group('Send a capsule to a friend', () {

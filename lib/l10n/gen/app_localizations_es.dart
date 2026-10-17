@@ -1246,6 +1246,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Revisa tu conexión e inténtalo de nuevo';
 
   @override
+  String get messagesChoosePhoto => 'Elegir de la galería';
+
+  @override
   String get messagesClearConfirm => 'Borrar';
 
   @override
@@ -1352,6 +1355,18 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get messagesOpenPhoto => 'Abrir foto';
+
+  @override
+  String get messagesPhoto => 'Foto';
+
+  @override
+  String get messagesPhotoCaption => 'Añade un texto…';
+
+  @override
+  String get messagesPhotoUnreadable => 'No se puede enviar esta imagen';
+
+  @override
   String get messagesReactFailed => 'No se pudo guardar tu reacción';
 
   @override
@@ -1382,12 +1397,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get messagesSendFailed => 'No se pudo enviar el mensaje';
 
   @override
+  String get messagesSendPhoto => 'Enviar una foto';
+
+  @override
   String get messagesSignedOut => 'Has cerrado sesión';
 
   @override
   String messagesStartChatWith(String name) {
     return 'Empezar un chat con $name';
   }
+
+  @override
+  String get messagesTakePhoto => 'Hacer una foto';
 
   @override
   String get messagesTitle => 'Mis Laters';

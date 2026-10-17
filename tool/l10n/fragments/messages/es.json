@@ -56,5 +56,12 @@
   "messagesCopied": "Copiado",
   "messagesDeleteConfirmTitle": "¿Eliminar este mensaje para los dos?",
   "messagesDeleteFailed": "No se pudo eliminar el mensaje",
-  "messagesReactFailed": "No se pudo guardar tu reacción"
+  "messagesReactFailed": "No se pudo guardar tu reacción",
+  "messagesPhoto": "Foto",
+  "messagesSendPhoto": "Enviar una foto",
+  "messagesChoosePhoto": "Elegir de la galería",
+  "messagesTakePhoto": "Hacer una foto",
+  "messagesPhotoCaption": "Añade un texto…",
+  "messagesPhotoUnreadable": "No se puede enviar esta imagen",
+  "messagesOpenPhoto": "Abrir foto"
 }

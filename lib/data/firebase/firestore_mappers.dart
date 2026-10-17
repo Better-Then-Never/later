@@ -229,9 +229,15 @@ abstract final class FirestoreMappers {
         type: ChatMessageType.parse(data['type']),
         capsuleId: _nonEmptyString(data['capsuleId']),
         imageUrl: _nonEmptyString(data['imageUrl']),
+        imagePath: _nonEmptyString(data['imagePath']),
+        width: _positiveInt(data['width']),
+        height: _positiveInt(data['height']),
         replyTo: messageReply(data['replyTo']),
         reactions: messageReactions(data['reactions']),
       );
+
+  static int? _positiveInt(Object? value) =>
+      value is num && value > 0 ? value.toInt() : null;
 
   /// {uid: type}; unknown types are skipped.
   static Map<String, ReactionType> messageReactions(Object? value) {

@@ -3,11 +3,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
+import '../../core/errors/app_failure.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/logging/app_logger.dart';
 import '../../core/logging/perf_marks.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
@@ -27,6 +30,7 @@ import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/app_sheets.dart';
 import '../../shared/widgets/options_menu.dart';
+import '../../shared/widgets/photo_viewer.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../friends/friends_store.dart';
@@ -39,6 +43,8 @@ import 'chats_store.dart';
 import 'widgets/chat_options_sheet.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
+import 'widgets/photo_message.dart';
+import 'widgets/photo_send_card.dart';
 import 'widgets/reply_bar.dart';
 
 /// A conversation with one friend.
@@ -141,6 +147,49 @@ class _ChatViewState extends State<_ChatView> {
     _scrollToLatest();
   }
 
+  /// The photo button: gallery or camera, then the caption card, then the
+  /// photo goes (shown at once, uploaded in the background).
+  Future<void> _sendPhoto() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final l10n = context.l10n;
+    final source = await showChoiceMenu<ImageSource>(
+      context,
+      title: l10n.messagesSendPhoto,
+      choices: [
+        MenuChoice(ImageSource.gallery, l10n.messagesChoosePhoto),
+        MenuChoice(ImageSource.camera, l10n.messagesTakePhoto),
+      ],
+    );
+    if (source == null || !mounted) return;
+    final XFile? file;
+    try {
+      file = await ImagePicker().pickImage(
+        source: source,
+        requestFullMetadata: false,
+      );
+    } catch (e) {
+      AppLogger.warning('Picking a chat photo failed', error: e);
+      if (mounted) _report(UnknownFailure(l10n.messagesPhotoUnreadable));
+      return;
+    }
+    if (file == null || !mounted) return;
+    final caption = await PhotoSendCard.show(context, file.path);
+    if (caption == null || !mounted) return;
+    final controller = context.read<ChatController>();
+    unawaited(controller.sendPhoto(file.path, caption: caption).then(_report));
+    _scrollToLatest();
+  }
+
+  Future<void> _openPhoto(ChatMessage message) async {
+    final source = PhotoMessage.source(message);
+    if (source == null) return;
+    await PhotoViewer.show(
+      context,
+      source,
+      heroTag: PhotoMessage.heroTag(message),
+    );
+  }
+
   void _retry(String messageId) {
     unawaited(context.read<ChatController>().retry(messageId).then(_report));
   }
@@ -155,6 +204,16 @@ class _ChatViewState extends State<_ChatView> {
     final canReply = controller.canReply(message);
     // Reacting needs the message on the server, like replying.
     final canReact = canReply;
+    // A photo without a caption has no text to copy.
+    final canCopy =
+        message.type != ChatMessageType.image || message.caption.isNotEmpty;
+    final items = [
+      if (canReply) (l10n.capsulesReply, _MessageAction.reply, null),
+      if (canCopy) (l10n.messagesCopy, _MessageAction.copy, null),
+      if (canDelete)
+        (l10n.commonDelete, _MessageAction.delete, AppColors.danger),
+    ];
+    if (items.isEmpty && !canReact) return;
     final mine = message.reactions[controller.myUid];
     unawaited(HapticFeedback.selectionClick());
     // A _MessageAction, or the ReactionType tapped in the top row.
@@ -163,34 +222,19 @@ class _ChatViewState extends State<_ChatView> {
       Builder(
         builder: (sheet) => OptionsMenu(
           children: [
-            if (canReact) ...[
+            if (canReact)
               _ReactionPicker(
                 selected: mine,
                 onPick: (type) => Navigator.pop(sheet, type),
               ),
-              const OptionsMenuDivider(),
-            ],
-            if (canReply) ...[
+            for (final (i, (text, action, color)) in items.indexed) ...[
+              if (i > 0 || canReact) const OptionsMenuDivider(),
               OptionsMenuItem(
-                text: l10n.capsulesReply,
-                isFirst: !canReact,
-                onPressed: () => Navigator.pop(sheet, _MessageAction.reply),
-              ),
-              const OptionsMenuDivider(),
-            ],
-            OptionsMenuItem(
-              text: l10n.messagesCopy,
-              isFirst: !canReply && !canReact,
-              isLast: !canDelete,
-              onPressed: () => Navigator.pop(sheet, _MessageAction.copy),
-            ),
-            if (canDelete) ...[
-              const OptionsMenuDivider(),
-              OptionsMenuItem(
-                text: l10n.commonDelete,
-                textColor: AppColors.danger,
-                isLast: true,
-                onPressed: () => Navigator.pop(sheet, _MessageAction.delete),
+                text: text,
+                textColor: color,
+                isFirst: i == 0 && !canReact,
+                isLast: i == items.length - 1,
+                onPressed: () => Navigator.pop(sheet, action),
               ),
             ],
           ],
@@ -206,7 +250,13 @@ class _ChatViewState extends State<_ChatView> {
       case _MessageAction.reply:
         _reply(message);
       case _MessageAction.copy:
-        await Clipboard.setData(ClipboardData(text: message.text));
+        await Clipboard.setData(
+          ClipboardData(
+            text: message.type == ChatMessageType.image
+                ? message.caption
+                : message.text,
+          ),
+        );
         if (!mounted) return;
         PopupNotificationService.showSuccess(
           context: context,
@@ -363,6 +413,7 @@ class _ChatViewState extends State<_ChatView> {
             ),
             MessageInput(
               onSend: _send,
+              onPhotoTap: _sendPhoto,
               focusNode: _inputFocus,
               onCapsuleTap: () => AppRoutes.toCamera(
                 context,
@@ -504,6 +555,9 @@ class _ChatViewState extends State<_ChatView> {
                               : () => _showQuoted(message.replyTo!.id),
                           onCapsuleTap: message.isCapsule && capsuleId != null
                               ? () => _openCapsule(capsuleId)
+                              : null,
+                          onPhotoTap: message.isPhoto && !failed
+                              ? () => _openPhoto(message)
                               : null,
                         ),
                       ),

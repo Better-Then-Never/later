@@ -128,13 +128,15 @@ class _ChatList extends StatelessWidget {
                 final chat = chats[index];
                 final friendUid = chat.otherThan(me);
                 final mine = chat.lastSenderId == me;
+                // A photo without a caption says what it is.
+                final last = chat.lastMessage == ChatMessage.photoSign
+                    ? '${ChatMessage.photoSign} ${l10n.messagesPhoto}'
+                    : chat.lastMessage;
                 return ChatListItem(
                   key: ValueKey(chat.id),
                   friendUid: friendUid,
                   name: directory.profile(friendUid)?.name ?? '',
-                  preview: mine
-                      ? l10n.messagesYouPrefix(chat.lastMessage)
-                      : chat.lastMessage,
+                  preview: mine ? l10n.messagesYouPrefix(last) : last,
                   timestamp: chat.lastUpdated,
                   unread: chat.unreadFor(me),
                   muted: store.isMuted(chat.id),

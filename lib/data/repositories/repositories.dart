@@ -140,6 +140,26 @@ abstract interface class ChatRepository {
     MessageReply? replyTo,
   });
 
+  /// Uploads the photo at [localPath] (resized, JPEG) for message
+  /// [messageId] from [from] to [to]; returns where it is stored.
+  Future<ChatPhoto> uploadPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  });
+
+  /// Sends [photo] (from [uploadPhoto]) as message [messageId], with
+  /// [caption] under it. Like [sendText] otherwise.
+  Future<void> sendPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatPhoto photo,
+    String caption = '',
+    MessageReply? replyTo,
+  });
+
   /// Posts [capsule] (already shared with [to]) into the chat.
   Future<void> sendCapsule({
     required String from,
@@ -167,8 +187,13 @@ abstract interface class ChatRepository {
   });
 
   /// Deletes one message of [chatId] for both participants. When it was the
-  /// newest, the chat list shows the one before it again (or nothing).
-  Future<void> deleteMessage(String chatId, String messageId);
+  /// newest, the chat list shows the one before it again (or nothing). A
+  /// photo's file ([imagePath]) goes too.
+  Future<void> deleteMessage(
+    String chatId,
+    String messageId, {
+    String? imagePath,
+  });
 }
 
 abstract interface class CapsuleRepository {

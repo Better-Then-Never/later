@@ -160,6 +160,55 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     ),
   );
 
+  /// Uploads the photo at [localPath] for message [messageId] to [to]:
+  /// the stored photo, or why it failed.
+  Future<(ChatPhoto?, AppFailure?)> uploadPhoto(
+    String to,
+    String localPath, {
+    required String messageId,
+  }) async {
+    ChatPhoto? photo;
+    final failure = await _run(
+      'Failed to upload a chat photo',
+      AppL10n.current.messagesSendFailed,
+      (me) async {
+        try {
+          photo = await _chats.uploadPhoto(
+            from: me,
+            to: to,
+            messageId: messageId,
+            localPath: localPath,
+          );
+        } on FormatException catch (e) {
+          throw ValidationFailure(
+            AppL10n.current.messagesPhotoUnreadable,
+            cause: e,
+          );
+        }
+      },
+    );
+    return (photo, failure);
+  }
+
+  Future<AppFailure?> sendPhoto(
+    String to,
+    ChatPhoto photo, {
+    required String messageId,
+    String caption = '',
+    MessageReply? replyTo,
+  }) => _run(
+    'Failed to send a photo',
+    AppL10n.current.messagesSendFailed,
+    (me) => _chats.sendPhoto(
+      from: me,
+      to: to,
+      messageId: messageId,
+      photo: photo,
+      caption: caption,
+      replyTo: replyTo,
+    ),
+  );
+
   Future<AppFailure?> setMessageReaction(
     String friendUid,
     String messageId,
@@ -175,10 +224,18 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     ),
   );
 
-  Future<AppFailure?> deleteMessage(String friendUid, String messageId) => _run(
+  Future<AppFailure?> deleteMessage(
+    String friendUid,
+    String messageId, {
+    String? imagePath,
+  }) => _run(
     'Failed to delete a message',
     AppL10n.current.messagesDeleteFailed,
-    (me) => _chats.deleteMessage(Chat.idBetween(me, friendUid), messageId),
+    (me) => _chats.deleteMessage(
+      Chat.idBetween(me, friendUid),
+      messageId,
+      imagePath: imagePath,
+    ),
   );
 
   Future<AppFailure?> clearHistory(String friendUid) => _run(

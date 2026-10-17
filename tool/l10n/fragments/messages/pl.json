@@ -56,5 +56,12 @@
   "messagesCopied": "Skopiowano",
   "messagesDeleteConfirmTitle": "Usunąć tę wiadomość u was obojga?",
   "messagesDeleteFailed": "Nie udało się usunąć wiadomości",
-  "messagesReactFailed": "Nie udało się zapisać reakcji"
+  "messagesReactFailed": "Nie udało się zapisać reakcji",
+  "messagesPhoto": "Zdjęcie",
+  "messagesSendPhoto": "Wyślij zdjęcie",
+  "messagesChoosePhoto": "Wybierz z galerii",
+  "messagesTakePhoto": "Zrób zdjęcie",
+  "messagesPhotoCaption": "Dodaj podpis…",
+  "messagesPhotoUnreadable": "Nie można wysłać tego obrazu",
+  "messagesOpenPhoto": "Otwórz zdjęcie"
 }
