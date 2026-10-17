@@ -259,6 +259,9 @@ class _CapsuleCreationView extends StatelessWidget {
                                   onTap: () => PhotoViewer.show(
                                     context,
                                     Uri.file(controller.imagePath).toString(),
+                                    heroTag: controller.isLoop
+                                        ? null
+                                        : 'creation-photo',
                                   ),
                                   child: controller.isLoop
                                       ? ClipRRect(
@@ -273,8 +276,11 @@ class _CapsuleCreationView extends StatelessWidget {
                                             ),
                                           ),
                                         )
-                                      : CapsuleImagePreview(
-                                          imagePath: controller.imagePath,
+                                      : Hero(
+                                          tag: 'creation-photo',
+                                          child: CapsuleImagePreview(
+                                            imagePath: controller.imagePath,
+                                          ),
                                         ),
                                 ),
                               ),

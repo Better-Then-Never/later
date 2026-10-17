@@ -21,6 +21,10 @@ class CapsulePreviewCard extends StatelessWidget {
   final Capsule capsule;
   final VoidCallback? onPlaceTap;
 
+  /// The photo's [Hero] tag (by capsule, not URL: capsules may share one).
+  /// Only one widget per route may carry it.
+  static Object photoHeroTag(Capsule capsule) => 'capsule-photo:${capsule.id}';
+
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
@@ -47,18 +51,22 @@ class CapsulePreviewCard extends StatelessWidget {
                   imageUrl,
                   frames: capsule.frames,
                   frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+                  heroTag: CapsulePreviewCard.photoHeroTag(capsule),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadii.m),
-                  // A loop capsule plays its frames.
-                  child: capsule.isLoop
-                      ? LoopPicture(
-                          sources: capsule.frames,
-                          frameDelay: Duration(
-                            milliseconds: capsule.frameDelayMs,
-                          ),
-                        )
-                      : AppNetworkImage(url: imageUrl),
+                child: Hero(
+                  tag: CapsulePreviewCard.photoHeroTag(capsule),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadii.m),
+                    // A loop capsule plays its frames.
+                    child: capsule.isLoop
+                        ? LoopPicture(
+                            sources: capsule.frames,
+                            frameDelay: Duration(
+                              milliseconds: capsule.frameDelayMs,
+                            ),
+                          )
+                        : AppNetworkImage(url: imageUrl),
+                  ),
                 ),
               ),
             ),
