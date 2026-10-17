@@ -522,6 +522,177 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsViewProfile => 'Ver perfil';
 
   @override
+  String get historyAddToFavorites => 'Añadir a favoritos';
+
+  @override
+  String get historyCapsuleOpened => '¡Cápsula abierta!';
+
+  @override
+  String get historyColorBlue => 'Azul';
+
+  @override
+  String get historyColorGreen => 'Verde';
+
+  @override
+  String get historyColorOrange => 'Naranja';
+
+  @override
+  String get historyColorPurple => 'Morado';
+
+  @override
+  String get historyColorRed => 'Rojo';
+
+  @override
+  String get historyColorYellow => 'Amarillo';
+
+  @override
+  String historyCountdown(int days, int hours, int minutes, int seconds) {
+    return '${days}d ${hours}h ${minutes}m ${seconds}s';
+  }
+
+  @override
+  String historyCountdownYears(int years, int days, int hours, int minutes) {
+    return '${years}a ${days}d ${hours}h ${minutes}m';
+  }
+
+  @override
+  String historyDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '¿Eliminar $count cápsulas?',
+      one: '¿Eliminar $count cápsula?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String historyDeleteSelected(int count) {
+    return 'Eliminar ($count)';
+  }
+
+  @override
+  String historyDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cápsulas eliminadas',
+      one: '$count cápsula eliminada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String historyDistanceFromYou(String distance) {
+    return 'A $distance km de ti';
+  }
+
+  @override
+  String get historyDistanceUnknown => 'Distancia desconocida';
+
+  @override
+  String get historyEmpty => 'Aún no tienes cápsulas';
+
+  @override
+  String get historyErrorDelete => 'No se pudieron eliminar las cápsulas';
+
+  @override
+  String get historyErrorFavorites => 'No se pudieron actualizar los favoritos';
+
+  @override
+  String historyFavoriteAdded(String title) {
+    return '«$title» se añadió a favoritos';
+  }
+
+  @override
+  String historyFavoriteRemoved(String title) {
+    return '«$title» se quitó de favoritos';
+  }
+
+  @override
+  String get historyFilterAny => 'Todas';
+
+  @override
+  String get historyFilterBy => 'Filtrar';
+
+  @override
+  String get historyFilterCapsule => 'Cápsulas';
+
+  @override
+  String get historyFilterColor => 'Color';
+
+  @override
+  String get historyFilterFavorite => 'Favoritas';
+
+  @override
+  String get historyFilterVisibility => 'Visibilidad';
+
+  @override
+  String get historyNoMatches => 'Ninguna cápsula coincide con tu búsqueda';
+
+  @override
+  String get historyPrivacyFriends => 'Amigos';
+
+  @override
+  String get historyPrivacyPrivate => 'Privada';
+
+  @override
+  String get historyPrivacyPublic => 'Pública';
+
+  @override
+  String get historyRemoveFromFavorites => 'Quitar de favoritos';
+
+  @override
+  String get historyReset => 'Restablecer';
+
+  @override
+  String get historySearchHint => 'Buscar cápsulas...';
+
+  @override
+  String historySelectedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seleccionadas',
+      one: '$count seleccionada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get historySortBy => 'Ordenar';
+
+  @override
+  String get historySortClosest => 'Más cercanas';
+
+  @override
+  String get historySortDistance => 'Distancia';
+
+  @override
+  String get historySortFarthest => 'Más lejanas';
+
+  @override
+  String get historySortNewest => 'Más recientes';
+
+  @override
+  String get historySortOldest => 'Más antiguas';
+
+  @override
+  String get historySortRelevance => 'Relevancia';
+
+  @override
+  String get historyTitle => 'Mis cápsulas';
+
+  @override
+  String get historyVisibilityFriends => 'Cápsula para amigos';
+
+  @override
+  String get historyVisibilityPrivate => 'Cápsula privada';
+
+  @override
+  String get historyVisibilityPublic => 'Cápsula pública';
+
+  @override
   String get messagesBlockedByYou => 'Has bloqueado a este usuario';
 
   @override
@@ -692,6 +863,177 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String messagesYouPrefix(String message) {
     return 'Tú: $message';
+  }
+
+  @override
+  String notificationsCapsuleBody(String name) {
+    return '$name creó una nueva cápsula';
+  }
+
+  @override
+  String notificationsCommentBody(String name) {
+    return '$name comentó tu cápsula';
+  }
+
+  @override
+  String notificationsCommentBodyWithText(String name, String text) {
+    return '$name comentó: $text';
+  }
+
+  @override
+  String notificationsDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'hace $count días',
+      one: 'hace $count día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '¿Eliminar $count notificaciones?',
+      one: '¿Eliminar $count notificación?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count notificaciones eliminadas',
+      one: '$count notificación eliminada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsEmptyAll =>
+      'Aquí aparecerán tus notificaciones y tu actividad';
+
+  @override
+  String get notificationsEmptyComments =>
+      'Aquí aparecerán los comentarios en tus cápsulas';
+
+  @override
+  String get notificationsEmptyReplies =>
+      'Aquí aparecerán las respuestas a tus mensajes';
+
+  @override
+  String notificationsFollowBody(String name) {
+    return '$name empezó a seguirte';
+  }
+
+  @override
+  String notificationsHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'hace $count horas',
+      one: 'hace $count hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsJustNow => 'Ahora mismo';
+
+  @override
+  String get notificationsMarkAsRead => 'Marcar como leídas';
+
+  @override
+  String notificationsMarkedRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count notificaciones marcadas como leídas',
+      one: '$count notificación marcada como leída',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsMessageBody(String name) {
+    return '$name te envió un mensaje';
+  }
+
+  @override
+  String notificationsMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'hace $count minutos',
+      one: 'hace $count minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsReplyBody(String name) {
+    return '$name te respondió';
+  }
+
+  @override
+  String notificationsReplyBodyWithText(String name, String text) {
+    return '$name respondió: $text';
+  }
+
+  @override
+  String notificationsSelectedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count seleccionadas',
+      one: '$count seleccionada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsTabAll => 'Todas';
+
+  @override
+  String get notificationsTabComments => 'Comentarios';
+
+  @override
+  String get notificationsTabReplies => 'Respuestas';
+
+  @override
+  String get notificationsTitle => 'Notificaciones';
+
+  @override
+  String get notificationsTypeCapsule => 'Nueva cápsula';
+
+  @override
+  String get notificationsTypeComment => 'Nuevo comentario';
+
+  @override
+  String get notificationsTypeFollow => 'Nuevo seguidor';
+
+  @override
+  String get notificationsTypeMessage => 'Nuevo mensaje';
+
+  @override
+  String get notificationsTypeOther => 'Notificación';
+
+  @override
+  String get notificationsTypeReply => 'Nueva respuesta';
+
+  @override
+  String notificationsUnreadBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count notificaciones sin leer',
+      one: '$count notificación sin leer',
+    );
+    return '$_temp0';
   }
 
   @override

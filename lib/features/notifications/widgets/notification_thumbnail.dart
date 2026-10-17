@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
 
 class NotificationThumbnail extends StatelessWidget {
   final String? thumbnailImage;
@@ -25,24 +25,27 @@ class NotificationThumbnail extends StatelessWidget {
               width: size,
               height: size,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildErrorWidget(context),
             )
           : Image.asset(
               thumbnailImage!,
               width: size,
               height: size,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+              errorBuilder: (context, error, stackTrace) =>
+                  _buildErrorWidget(context),
             ),
     );
   }
 
-  Widget _buildErrorWidget() {
+  Widget _buildErrorWidget(BuildContext context) {
+    final palette = context.palette;
     return Container(
       width: size,
       height: size,
-      color: AppColors.grey300,
-      child: const Icon(Icons.image, color: AppColors.grey500),
+      color: palette.skeleton,
+      child: Icon(Icons.image, color: palette.iconMuted),
     );
   }
 }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/app_notification.dart';
+import 'package:later/features/notifications/notification_texts.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/features/notifications/widgets/notification_avatar.dart';
 import 'package:later/features/notifications/widgets/notification_thumbnail.dart';
 import 'package:later/features/notifications/widgets/notification_timestamp.dart';
 import 'package:later/features/notifications/widgets/notification_unread_indicator.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 class NotificationItem extends StatelessWidget {
@@ -33,11 +36,12 @@ class NotificationItem extends StatelessWidget {
   }
 
   Widget _buildNotificationContent(BuildContext context) {
+    final palette = context.palette;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: isSelected
           ? BoxDecoration(
-              color: AppColors.selectedNotification,
+              color: palette.selectedHighlight,
               borderRadius: BorderRadius.circular(25),
               boxShadow: [
                 BoxShadow(
@@ -49,8 +53,8 @@ class NotificationItem extends StatelessWidget {
             )
           : BoxDecorations.whiteCard(context, borderRadius: 25).copyWith(
               color: notification.isRead
-                  ? AppColors.white
-                  : AppColors.unreadNotification,
+                  ? palette.surface
+                  : palette.unreadHighlight,
             ),
       child: InkWell(
         onTap: onTap,
@@ -68,7 +72,7 @@ class NotificationItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildMessageRow(),
+                  _buildMessageRow(context),
                   const SizedBox(height: 4),
                   NotificationTimestamp(
                     // Null only while the server timestamp is pending.
@@ -89,24 +93,30 @@ class NotificationItem extends StatelessWidget {
     );
   }
 
-  Widget _buildMessageRow() {
+  Widget _buildMessageRow(BuildContext context) {
+    // The sentence comes from the notification type in the app's language;
+    // the sender's name stays bold wherever the language puts it.
+    final sentence = NotificationTexts.sentence(
+      notification,
+      l10n: context.l10n,
+    );
     return Row(
       children: [
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: kAppFontFamily,
                 fontSize: 14,
-                color: AppColors.black,
+                color: context.palette.textPrimary,
               ),
               children: [
+                if (sentence.before.isNotEmpty) TextSpan(text: sentence.before),
                 TextSpan(
                   text: notification.fromUserName,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                const TextSpan(text: ' '),
-                TextSpan(text: notification.message),
+                TextSpan(text: sentence.after),
               ],
             ),
           ),

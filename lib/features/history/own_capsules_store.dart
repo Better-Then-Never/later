@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/models/capsule.dart';
@@ -75,7 +76,10 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
       return null;
     } catch (e, st) {
       AppLogger.error('Deleting capsules failed', error: e, stackTrace: st);
-      return AppFailure.from(e, fallbackMessage: 'Could not delete capsules');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.historyErrorDelete,
+      );
     }
   }
 }

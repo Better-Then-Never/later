@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/profile_image_cache.dart';
 
@@ -30,7 +30,7 @@ class NotificationAvatar extends StatelessWidget {
     final url = avatarUrl ?? cached;
     return CircleAvatar(
       radius: radius,
-      backgroundColor: AppColors.placeholderGrey,
+      backgroundColor: context.palette.skeleton,
       backgroundImage: url != null
           ? NetworkImage(url)
           : const AssetImage(AppIcons.profileNoPhoto) as ImageProvider,

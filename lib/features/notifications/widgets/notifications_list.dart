@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../data/models/app_notification.dart';
 import '../../../data/services/push_messaging_service.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
@@ -9,7 +11,6 @@ import '../notification_router.dart';
 import '../notifications_selection_controller.dart';
 import '../notifications_store.dart';
 import 'notification_item.dart';
-import 'package:later/core/theme/app_colors.dart';
 
 /// The tabs of the notifications page. "Replies" and "Comments" exist in the
 /// design but no feature produces those types yet (see IDEAS_NOT_DONE.md).
@@ -46,7 +47,7 @@ class NotificationsList extends StatelessWidget {
       listenable: selection,
       builder: (context, _) {
         return RefreshIndicator(
-          color: AppColors.black,
+          color: context.palette.icon,
           // The list is live; the gesture is kept from the original design.
           onRefresh: () async {},
           child: ListView.builder(
@@ -90,20 +91,21 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return switch (filter) {
-      NotificationFilter.replies => const DefaultEmptyInboxInfo(
-        message: 'Replies',
-        subtitle: 'Replies to your messages will appear here',
+      NotificationFilter.replies => DefaultEmptyInboxInfo(
+        message: l10n.notificationsTabReplies,
+        subtitle: l10n.notificationsEmptyReplies,
         assetPath: AppIcons.reply,
       ),
-      NotificationFilter.comments => const DefaultEmptyInboxInfo(
-        message: 'Comments',
-        subtitle: 'Comments on your Capsules will appear here',
+      NotificationFilter.comments => DefaultEmptyInboxInfo(
+        message: l10n.notificationsTabComments,
+        subtitle: l10n.notificationsEmptyComments,
         assetPath: AppIcons.sendMessage,
       ),
-      NotificationFilter.all => const DefaultEmptyInboxInfo(
-        message: 'Notifications',
-        subtitle: 'Your notifications and activity will appear here',
+      NotificationFilter.all => DefaultEmptyInboxInfo(
+        message: l10n.notificationsTitle,
+        subtitle: l10n.notificationsEmptyAll,
         assetPath: AppIcons.notificationsBlack,
       ),
     };

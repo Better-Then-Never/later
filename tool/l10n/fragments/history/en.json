@@ -1,0 +1,211 @@
+{
+  "historyTitle": "My Capsules",
+  "@historyTitle": {
+    "description": "Title of the History tab: the user's own capsules."
+  },
+  "historySearchHint": "Find Capsules...",
+  "historySortBy": "Sort By",
+  "@historySortBy": {
+    "description": "Sort button (when no sort is chosen) and title of the sort menu. Short: the button is a third of the screen."
+  },
+  "historyFilterBy": "Filter By",
+  "@historyFilterBy": {
+    "description": "Filter button (when no filter is chosen) and title of the filter menu. Short."
+  },
+  "historyReset": "Reset",
+  "@historyReset": {
+    "description": "Button and menu item that clear the sort and/or the filters. Short."
+  },
+  "historySortRelevance": "Relevance",
+  "@historySortRelevance": {
+    "description": "Sort menu group that holds 'From Oldest' and 'From Newest'."
+  },
+  "historySortDistance": "Distance",
+  "@historySortDistance": {
+    "description": "Sort menu group that holds 'From Closest' and 'From Farthest'."
+  },
+  "historySortOldest": "From Oldest",
+  "@historySortOldest": {
+    "description": "Sort option (also shown on the sort button): oldest capsules first."
+  },
+  "historySortNewest": "From Newest",
+  "historySortClosest": "From Closest",
+  "@historySortClosest": {
+    "description": "Sort option: capsules closest to the user first."
+  },
+  "historySortFarthest": "From Farthest",
+  "historyFilterColor": "Color",
+  "@historyFilterColor": {
+    "description": "Filter menu group: the colour of the capsule pin."
+  },
+  "historyFilterVisibility": "Visibility",
+  "@historyFilterVisibility": {
+    "description": "Filter menu group: who can see the capsule (public, private, friends)."
+  },
+  "historyFilterCapsule": "Capsule",
+  "@historyFilterCapsule": {
+    "description": "Filter menu group with 'Favorite' and 'Any'."
+  },
+  "historyFilterFavorite": "Favorite",
+  "@historyFilterFavorite": {
+    "description": "Filter option (also on the filter button): only capsules marked as favourite."
+  },
+  "historyFilterAny": "Any",
+  "@historyFilterAny": {
+    "description": "Filter option: every capsule, favourite or not."
+  },
+  "historyColorRed": "Red",
+  "@historyColorRed": {
+    "description": "Capsule pin colour in the filter menu and on the filter button."
+  },
+  "historyColorBlue": "Blue",
+  "historyColorGreen": "Green",
+  "historyColorYellow": "Yellow",
+  "historyColorOrange": "Orange",
+  "historyColorPurple": "Purple",
+  "historyPrivacyPublic": "Public",
+  "@historyPrivacyPublic": {
+    "description": "Capsule visibility in the filter menu and on the filter button."
+  },
+  "historyPrivacyPrivate": "Private",
+  "historyPrivacyFriends": "Friends",
+  "@historyPrivacyFriends": {
+    "description": "Capsule visibility: only friends can see it."
+  },
+  "historyVisibilityPublic": "Public visibility",
+  "@historyVisibilityPublic": {
+    "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
+  },
+  "historyVisibilityPrivate": "Private visibility",
+  "historyVisibilityFriends": "Friends visibility",
+  "historyEmpty": "No capsules yet",
+  "historyNoMatches": "No capsules match your search",
+  "historyCapsuleOpened": "Capsule is opened!",
+  "@historyCapsuleOpened": {
+    "description": "Countdown row of a capsule whose opening time has passed."
+  },
+  "historyCountdown": "{days}d {hours}h {minutes}m {seconds}s",
+  "@historyCountdown": {
+    "description": "Time left until a capsule opens, ticking every second. One short line: use compact unit abbreviations.",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "2"
+      },
+      "hours": {
+        "type": "int",
+        "example": "3"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "4"
+      },
+      "seconds": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "historyCountdownYears": "{years}y {days}d {hours}h {minutes}m",
+  "@historyCountdownYears": {
+    "description": "Time left until a capsule opens when it is a year or more away. One short line: compact unit abbreviations.",
+    "placeholders": {
+      "years": {
+        "type": "int",
+        "example": "1"
+      },
+      "days": {
+        "type": "int",
+        "example": "35"
+      },
+      "hours": {
+        "type": "int",
+        "example": "0"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "historyDistanceFromYou": "{distance} km from you",
+  "@historyDistanceFromYou": {
+    "description": "Distance between the user and the capsule. One short line.",
+    "placeholders": {
+      "distance": {
+        "type": "String",
+        "example": "12.3"
+      }
+    }
+  },
+  "historyDistanceUnknown": "Distance unknown",
+  "@historyDistanceUnknown": {
+    "description": "Distance row when the capsule or the user has no location."
+  },
+  "historyAddToFavorites": "Add to favorites",
+  "@historyAddToFavorites": {
+    "description": "Accessibility label of the heart on a capsule that is not a favourite."
+  },
+  "historyRemoveFromFavorites": "Remove from favorites",
+  "@historyRemoveFromFavorites": {
+    "description": "Accessibility label of the heart on a favourite capsule."
+  },
+  "historyFavoriteAdded": "{title} added to favorites",
+  "@historyFavoriteAdded": {
+    "description": "Toast after the heart is tapped.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach day"
+      }
+    }
+  },
+  "historyFavoriteRemoved": "{title} removed from favorites",
+  "@historyFavoriteRemoved": {
+    "description": "Toast after the heart is tapped again.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach day"
+      }
+    }
+  },
+  "historySelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
+  "@historySelectedCount": {
+    "description": "Selection bar: how many capsules are selected.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleteSelected": "Delete ({count})",
+  "@historyDeleteSelected": {
+    "description": "Selection bar button that deletes the selected capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleteConfirm": "{count, plural, one{Delete {count} capsule?} other{Delete {count} capsules?}}",
+  "@historyDeleteConfirm": {
+    "description": "Title of the dialog that confirms deleting the selected capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleted": "{count, plural, one{{count} capsule deleted} other{{count} capsules deleted}}",
+  "@historyDeleted": {
+    "description": "Toast after the selected capsules were deleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyErrorFavorites": "Could not update favorites",
+  "historyErrorDelete": "Could not delete capsules"
+}

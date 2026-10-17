@@ -9,6 +9,7 @@ import 'package:later/features/history/favorites_store.dart';
 import 'package:later/features/history/history_controller.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/history/widgets/capsule_list_tile.dart';
+import 'package:later/features/history/widgets/capsule_selection_action_bar.dart';
 import 'package:later/features/map/current_location.dart';
 import 'package:provider/provider.dart';
 
@@ -79,7 +80,7 @@ void main() {
         ..resetFilters()
         ..setFavoritesOnly(true);
       expect(ids(c.apply(list, favorites: {'b'})), ['b']);
-      expect(c.activeFilterLabel, 'Favorite');
+      expect(c.activeFilterLabel(), 'Favorite');
     });
 
     test('date sorts put a pending timestamp (null) as newest', () {
@@ -87,7 +88,7 @@ void main() {
       expect(ids(c.apply(list)), ['a', 'b', 'n']);
       c.setSort(HistorySort.newest);
       expect(ids(c.apply(list)), ['n', 'b', 'a']);
-      expect(c.activeSortLabel, 'From Newest');
+      expect(c.activeSortLabel(), 'From Newest');
     });
 
     test('distance sorts keep capsules without a location last', () {
@@ -101,6 +102,22 @@ void main() {
         'a',
         'n',
       ], reason: 'unknown position: unchanged order');
+    });
+
+    test('button labels name the active sort and filters', () {
+      final c = HistoryController();
+      expect(c.activeSortLabel(), 'Sort By');
+      expect(c.activeFilterLabel(), 'Filter By');
+      c
+        ..setSort(HistorySort.farthest)
+        ..setColorFilter(CapsuleColor.purple)
+        ..setPrivacyFilter(CapsulePrivacy.friends)
+        ..setFavoritesOnly(true);
+      expect(c.activeSortLabel(), 'From Farthest');
+      expect(c.activeFilterLabel(), 'Purple · Friends · Favorite');
+      c.resetAll();
+      expect(c.activeSortLabel(), 'Sort By');
+      expect(c.activeFilterLabel(), 'Filter By');
     });
 
     test('selection drops capsules that disappeared', () {
@@ -228,4 +245,65 @@ void main() {
       expect(find.byIcon(Icons.lock_clock), findsOneWidget);
     },
   );
+
+  testWidgets('a capsule shows its countdown, distance and date', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => CurrentLocation()..update(const GeoPosition(0, 0)),
+          ),
+        ],
+        child: testApp(
+          home: Scaffold(
+            body: CapsuleListTile(
+              capsule: _c(
+                'x',
+                title: 'Trip',
+                privacy: CapsulePrivacy.private,
+                location: const GeoPosition(0, 0.1),
+                createdAt: DateTime(2026, 1, 5),
+                openAt: DateTime.now().add(
+                  const Duration(days: 3, hours: 1, minutes: 30),
+                ),
+              ),
+              isFavorite: true,
+              onFavoriteTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining(RegExp(r'^3d 1h \d+m \d+s$')), findsOneWidget);
+    expect(find.text('Private visibility'), findsOneWidget);
+    expect(find.text('11.1 km from you'), findsOneWidget);
+    expect(find.text('5.1.2026'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.label == 'Remove from favorites',
+      ),
+      findsOneWidget,
+    );
+    // Stop the countdown's timer before the test ends.
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('the selection bar counts the capsules', (tester) async {
+    await tester.pumpWidget(
+      testApp(
+        home: Scaffold(
+          body: SelectionActionBar(count: 2, onCancel: () {}, onDelete: () {}),
+        ),
+      ),
+    );
+
+    expect(find.text('2 selected'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
+    expect(find.text('Delete (2)'), findsOneWidget);
+  });
 }
