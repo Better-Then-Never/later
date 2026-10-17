@@ -24,6 +24,7 @@ class MessageBubble extends StatelessWidget {
     this.showTail = false,
     this.onCapsuleTap,
     this.replyName,
+    this.onQuoteTap,
   });
 
   final ChatMessage message;
@@ -33,6 +34,9 @@ class MessageBubble extends StatelessWidget {
 
   /// Whose message [ChatMessage.replyTo] quotes ("You" or the friend).
   final String? replyName;
+
+  /// Tapping the quote (shows the answered message).
+  final VoidCallback? onQuoteTap;
 
   static const _radius = Radius.circular(AppRadii.m);
   static const _tail = Radius.circular(6);
@@ -74,7 +78,14 @@ class MessageBubble extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (message.replyTo case final reply?)
-              _Quote(name: replyName ?? '', text: reply.text, onGreen: isMine),
+              GestureDetector(
+                onTap: onQuoteTap,
+                child: _Quote(
+                  name: replyName ?? '',
+                  text: reply.text,
+                  onGreen: isMine,
+                ),
+              ),
             if (message.isCapsule) ...[
               if (imageUrl != null)
                 Semantics(

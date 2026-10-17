@@ -74,6 +74,15 @@ class _ChatViewState extends State<_ChatView> {
 
   /// Messages already on screen: only messages that arrive later animate in.
   final Set<String> _shown = {};
+
+  /// Keys of the messages built so far, to scroll to one (a quote's tap).
+  final Map<String, GlobalKey> _keys = {};
+
+  /// The message briefly highlighted after jumping to it.
+  String? _flash;
+  Timer? _flashTimer;
+
+  GlobalKey _keyFor(String id) => _keys.putIfAbsent(id, GlobalKey.new);
   bool _firstBuild = true;
 
   /// Pushes of this chat are not shown while it is open; the chat under
@@ -98,6 +107,7 @@ class _ChatViewState extends State<_ChatView> {
     _scroll.dispose();
     _searchController.dispose();
     _inputFocus.dispose();
+    _flashTimer?.cancel();
     super.dispose();
   }
 
@@ -199,6 +209,42 @@ class _ChatViewState extends State<_ChatView> {
               unawaited(controller.deleteMessage(message).then(_report)),
         );
     }
+  }
+
+  /// Scrolls to the answered message [id] and lights it up for a moment.
+  /// It may not be built yet (the list is lazy): first an estimate, then
+  /// the exact position. Older than the loaded page or deleted: nothing.
+  Future<void> _showQuoted(String id) async {
+    final messages = context.read<ChatController>().visibleMessages;
+    final duration = AppMotion.of(context, AppMotion.slow);
+    final i = messages.indexWhere((m) => m.id == id);
+    if (i < 0) return;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      final target = _keys[id]?.currentContext;
+      if (target != null && target.mounted) {
+        await Scrollable.ensureVisible(
+          target,
+          alignment: 0.4,
+          duration: duration,
+          curve: AppMotion.standardCurve,
+        );
+        break;
+      }
+      if (!_scroll.hasClients) return;
+      // Reversed list: offset 0 is the newest message.
+      final fromNewest = messages.length - 1 - i;
+      _scroll.jumpTo(
+        _scroll.position.maxScrollExtent * fromNewest / messages.length,
+      );
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+    if (!mounted) return;
+    setState(() => _flash = id);
+    _flashTimer?.cancel();
+    _flashTimer = Timer(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _flash = null);
+    });
   }
 
   /// The next message answers [message]; the keyboard opens for it.
@@ -404,24 +450,38 @@ class _ChatViewState extends State<_ChatView> {
                 _DaySeparator(
                   ChatTime.dayLabel(message.sentAt, now, l10n: l10n),
                 ),
-              _SwipeToReply(
-                enabled: controller.canReply(message),
-                onReply: () => _reply(message),
-                child: GestureDetector(
-                  onTap: failed ? () => _retry(message.id) : null,
-                  onLongPress: () => _showMessageMenu(message),
-                  child: MessageBubble(
-                    message: message,
-                    isMine: controller.isMine(message),
-                    showTail: lastOfGroup,
-                    replyName: message.replyTo == null
-                        ? null
-                        : message.replyTo!.senderId == controller.myUid
-                        ? l10n.capsulesYou
-                        : friendName,
-                    onCapsuleTap: message.isCapsule && capsuleId != null
-                        ? () => _openCapsule(capsuleId)
-                        : null,
+              AnimatedContainer(
+                key: _keyFor(message.id),
+                duration: AppMotion.of(context, AppMotion.slow),
+                decoration: BoxDecoration(
+                  // Fades from the same colour, never through grey.
+                  color: _flash == message.id
+                      ? context.palette.selectedHighlight
+                      : context.palette.selectedHighlight.withAlpha(0),
+                  borderRadius: BorderRadius.circular(AppRadii.m),
+                ),
+                child: _SwipeToReply(
+                  enabled: controller.canReply(message),
+                  onReply: () => _reply(message),
+                  child: GestureDetector(
+                    onTap: failed ? () => _retry(message.id) : null,
+                    onLongPress: () => _showMessageMenu(message),
+                    child: MessageBubble(
+                      message: message,
+                      isMine: controller.isMine(message),
+                      showTail: lastOfGroup,
+                      replyName: message.replyTo == null
+                          ? null
+                          : message.replyTo!.senderId == controller.myUid
+                          ? l10n.capsulesYou
+                          : friendName,
+                      onQuoteTap: message.replyTo == null
+                          ? null
+                          : () => _showQuoted(message.replyTo!.id),
+                      onCapsuleTap: message.isCapsule && capsuleId != null
+                          ? () => _openCapsule(capsuleId)
+                          : null,
+                    ),
                   ),
                 ),
               ),
