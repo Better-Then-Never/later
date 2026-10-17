@@ -87,6 +87,6 @@ on #78. Never merged, never deployed. Resume here.
   camera, save to gallery, sign-in methods, download my data), contacts suggestions behind a flag. Functions 55/55,
   Flutter 366.
 - Someone else used the phone during B3 (a group "Debils" created at 20:15 and pins changed at 20:27 while no adb
-  command ran). Nothing of it was undone; the checks above were repeated where they overlapped.
+  command ran). Nothing of it was undone; the pin check had already passed (Bob and Hugo) before the change.
 - Mistake caught: a test file of the same name already existed (profile_test.dart) and was overwritten; restored from
   git, the new tests live in profile_tab_test.dart.
