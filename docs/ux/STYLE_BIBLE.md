@@ -65,8 +65,12 @@ Everything is a token in `lib/core/theme/app_colors.dart`; `tool/check_design_to
   arrow (`goHere` at 30 % opacity) on the right; dividers `#D3D3D3`.
 - **Segmented control:** the notifications filter: a brand-green pill slides behind the selected label, label turns
   white and bold, others black regular. **This is the motion reference.**
-- **Menus and confirmations:** centred white cards (`showCenteredSheet`) with 17 px bold options separated by
-  dividers, destructive options in danger red; confirm dialog = title, red confirm pill, grey "Cancel" text.
+- **Menus and confirmations:** centred white cards (`showCenteredSheet`, 264 wide, radius 25) with 17 px bold
+  options separated by dividers, an optional green title with a green rule (`OptionsMenuTitle`), destructive
+  options in danger red, the current choice in green, a chevron for a submenu; confirm dialog = title, optional
+  message, coloured confirm pill (red when destructive, green otherwise), grey "Cancel" text.
+- **Sheets:** lists and threads come from the bottom edge (`showEdgeSheet` + `EdgeSheet`): rounded top 25, grab
+  handle, page background. Nothing uses a stock `AlertDialog`/`showDialog` any more.
 - **Toasts:** rounded 10, coloured (green success, red error, blue info), slide and fade in at top, centre or bottom.
 - **Avatars:** circles for people in lists and chat, rounded squares (radius 12) on profiles.
 - **Empty states:** hand-drawn icon (72), bold title, grey subtitle, optional green action.

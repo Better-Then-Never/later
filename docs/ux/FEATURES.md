@@ -14,6 +14,9 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Optional permission onboarding (3 steps, "Not now") (F-42) | on | `auth/permission_gate_page.dart` | emulator |
 | Round list avatars (F-30), nav tab labels (F-34), pinned headers | on | shared widgets | goldens, emulator |
 | One segmented control (requests = notifications tabs, F-41); Reset icon (F-31); lazy suggestions (F-38); readable header without a background (F-40) | on | `app_segmented_tabs.dart` and others | emulator |
+| One sheet system (F-32/F-37): centred cards and edge sheets share barrier, animation and shapes; grab handle on every bottom sheet; history Sort/Filter in the menu card with the current choice in green; permission dialogs use the confirmation card; centred forms rise above the keyboard | on | `shared/widgets/app_sheets.dart`, `options_menu.dart`, `nested_menu.dart` | tests (`test/shared/sheets_test.dart`), emulator |
+| Screen-reader labels on icon-only buttons (new chat, close, back, QR, share, menu, notifications, settings) | on | `DefaultIconButton.semanticLabel` | test |
+| No dead ends: the friend menu's "Chat settings"/"Capsules settings" (did nothing) removed; place pills never empty | on | `friend_options_modal.dart`, `capsule_list_tile.dart` | tests, emulator |
 
 ## Map and creation (Tier 1)
 | Feature | Status | Where | Verified |

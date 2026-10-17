@@ -73,3 +73,9 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   the device: skipped onboarding left "No location"). Verified on the emulator: airplane mode → saved instantly as
   pending → network back → uploaded on the next retry (the first one hit the emulator's after-reconnect denial,
   BLOCKERS.md). Unused strings `achievementsProgress`, `commonClose`, `commonDone` removed. Flutter 231.
+- **One sheet system (F-32/F-37), done:** `app_sheets.dart` (centred cards + edge sheets), every launcher moved
+  onto it; grab handles on new chat and the pinned-friends picker; history Sort/Filter rebuilt on the menu card
+  (current choice in green, animated levels); permission dialogs → confirmation card with a message; password
+  reset rises above the keyboard; pinned-friend menu on `OptionsMenu`. Verified on the emulator (screens in the
+  session, not kept). Found on the way: two friend-menu entries that did nothing (removed), silent icon buttons
+  (labelled), empty place pills after a system restart (fallback text). Flutter 235.

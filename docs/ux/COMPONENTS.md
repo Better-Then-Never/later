@@ -18,6 +18,13 @@
   show the skeleton while the URL lookup runs, the placeholder drawing only when there is no picture.
 - `UserRoundAvatar.listRadius(width)`: list avatars that stay round inside `ListTile`.
 
+## Sheets and menus (F-32)
+- `showCenteredSheet` / `showEdgeSheet` (`shared/widgets/app_sheets.dart`): the only two ways to open an overlay;
+  `EdgeSheet`, `SheetHandle`, `AppSheets.radius` / `cardWidth`.
+- `OptionsMenuTitle`; `OptionsMenuItem.trailing`; `ConfirmDialog.message`; `MenuItemNode.selected`;
+  `NestedMenu` rebuilt on the menu card (animated size between levels).
+- `DefaultIconButton.semanticLabel`.
+
 ## Settings
 - `SettingsChoiceRow` gained `subtitle`.
 - `AppearanceSettingsPage`, `LanguageSettingsPage`, `PrivacySettingsPage`.

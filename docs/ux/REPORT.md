@@ -40,7 +40,7 @@ streak reminders, announcements), localized pushes, rules for every new document
 removes the user's reactions and comments. Functions 43/43, rules 53/53.
 
 ## Numbers
-Flutter tests 231 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
+Flutter tests 235 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
 PERFORMANCE.md (build p90 within a frame except first builds of tabs/pages at 17-18 ms).
 
 ## Decisions (DECISIONS.md)
@@ -49,7 +49,7 @@ removed from Android; friends-of-friends suggestions; feature flags for anything
 
 ## Not done (IDEAS_NOT_DONE.md)
 Loop capsules, flash auto/torch, own date picker and composer, chat reactions/replies/photos/voice,
-map clusters, co-authors, some consistency items (history control sizes, one sheet system, share icon) and
+map clusters, co-authors, some consistency items (history control sizes, share icon) and
 transition polish (hero, stagger).
 
 ## Read next

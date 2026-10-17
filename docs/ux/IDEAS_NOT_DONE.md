@@ -19,9 +19,9 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
   exists in the data model but is not shown.
 
 ## Consistency and motion still open
-- F-31 history control sizes (the Reset icon is fixed), F-32/F-37 one sheet/dialog system (the comments sheet
-  introduces a grab handle; other sheets do not have one yet), F-43 share icon (no artwork besides the paper plane),
-  hero transitions for avatars and capsule photos (tags must stay unique per route), list entrance stagger.
+- F-31 history control sizes (the Reset icon is fixed), F-43 share icon (no artwork besides the paper plane),
+  hero transitions for avatars and capsule photos (tags must stay unique per route; the capsule dialog is not a
+  page route, so it needs its own transition), list entrance stagger.
 
 ## Tier 3 (not started)
 Onboarding tour, "On this day" memories, a friends feed.
