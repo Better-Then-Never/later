@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// "Or connect with" + Google | Facebook icons.
 class SocialLoginButtons extends StatelessWidget {
@@ -11,28 +12,30 @@ class SocialLoginButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text('Or connect with'),
+        Text(l10n.authOrConnectWith),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton(
-              tooltip: 'Continue with Google',
+              tooltip: l10n.authContinueWithGoogle,
               onPressed: onGoogle,
               icon: Image.asset(AppIcons.authGoogle, height: 40.0, width: 40.0),
             ),
-            const SizedBox(
+            SizedBox(
               height: 40,
               child: VerticalDivider(
-                color: AppColors.black,
+                // The same ink as the auth fields' outlines.
+                color: context.palette.textPrimary,
                 width: 20,
                 thickness: 2,
               ),
             ),
             IconButton(
-              tooltip: 'Facebook (coming soon)',
+              tooltip: l10n.authFacebookSoon,
               // Facebook login is not implemented (see IDEAS_NOT_DONE.md).
               onPressed: () {},
               icon: Image.asset(

@@ -110,6 +110,390 @@ abstract class AppLocalizations {
   /// **'Later'**
   String get appName;
 
+  /// Accessibility label of the Google sign-in icon.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get authContinueWithGoogle;
+
+  /// Placeholder of the email field (login, sign-up, password reset).
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authEmailHint;
+
+  /// No description provided for @authEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get authEnterEmail;
+
+  /// No description provided for @authErrorEmailInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'The account already exists for that email.'**
+  String get authErrorEmailInUse;
+
+  /// No description provided for @authErrorEmailTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Another account already uses this email.'**
+  String get authErrorEmailTaken;
+
+  /// No description provided for @authErrorInvalidCredential.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong email or password.'**
+  String get authErrorInvalidCredential;
+
+  /// No description provided for @authErrorInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'The email address is not valid.'**
+  String get authErrorInvalidEmail;
+
+  /// No description provided for @authErrorMethodDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in method is not enabled.'**
+  String get authErrorMethodDisabled;
+
+  /// No description provided for @authErrorPickGoogleAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please pick the Google account you sign in with.'**
+  String get authErrorPickGoogleAccount;
+
+  /// No description provided for @authErrorRecentLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm it is you and try again.'**
+  String get authErrorRecentLogin;
+
+  /// No description provided for @authErrorTooManyRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please try again later.'**
+  String get authErrorTooManyRequests;
+
+  /// No description provided for @authErrorUserDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has been disabled.'**
+  String get authErrorUserDisabled;
+
+  /// No description provided for @authErrorUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found with this email.'**
+  String get authErrorUserNotFound;
+
+  /// No description provided for @authErrorWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The password provided is too weak.'**
+  String get authErrorWeakPassword;
+
+  /// Snack bar when the password reset email could not be sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {message}'**
+  String authErrorWithMessage(String message);
+
+  /// Changing the password, email or deleting the account: the current password is wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong password.'**
+  String get authErrorWrongPassword;
+
+  /// No description provided for @authErrorWrongPasswordProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong password provided.'**
+  String get authErrorWrongPasswordProvided;
+
+  /// Accessibility label of the Facebook icon (not available yet).
+  ///
+  /// In en, this message translates to:
+  /// **'Facebook (coming soon)'**
+  String get authFacebookSoon;
+
+  /// No description provided for @authFillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields'**
+  String get authFillAllFields;
+
+  /// No description provided for @authForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authForgotPassword;
+
+  /// Big green button on the welcome page that opens the login page.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get authGetStarted;
+
+  /// Bold link after authHaveAccount that opens the login page.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In'**
+  String get authGoToLogIn;
+
+  /// Bold link after authNoAccount that opens the sign-up page.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get authGoToSignUp;
+
+  /// No description provided for @authGoogleFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed. Please try again.'**
+  String get authGoogleFailed;
+
+  /// Sign-up page, followed by the authGoToLogIn link.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you have an account?'**
+  String get authHaveAccount;
+
+  /// No description provided for @authHidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide password'**
+  String get authHidePassword;
+
+  /// Small print on the sign-up page. {terms} and {privacy} are tappable links (authTermsOfUse, authPrivacyPolicy).
+  ///
+  /// In en, this message translates to:
+  /// **'By signing up you agree to the {terms} and {privacy}'**
+  String authLegalNotice(String terms, String privacy);
+
+  /// No description provided for @authLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the page.'**
+  String get authLinkOpenFailed;
+
+  /// Big green button that signs in. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In'**
+  String get authLogInButton;
+
+  /// No description provided for @authLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to continue using our app'**
+  String get authLoginSubtitle;
+
+  /// Large heading of the login page.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In Now'**
+  String get authLoginTitle;
+
+  /// Placeholder of the display name field on the sign-up page.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get authNameHint;
+
+  /// Login page, followed by the authGoToSignUp link.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get authNoAccount;
+
+  /// Google sign-in could not choose a free username automatically; the user should use the sign-up form.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not pick a username. Please sign up.'**
+  String get authNoFreeUsername;
+
+  /// Above the Google and Facebook sign-in icons.
+  ///
+  /// In en, this message translates to:
+  /// **'Or connect with'**
+  String get authOrConnectWith;
+
+  /// Placeholder of the password field.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPasswordHint;
+
+  /// No description provided for @authPermissionCameraText.
+  ///
+  /// In en, this message translates to:
+  /// **'And you will be able to create time capsules!'**
+  String get authPermissionCameraText;
+
+  /// Title of a permission page shown after sign-in (shrinks to fit one line).
+  ///
+  /// In en, this message translates to:
+  /// **'Share Camera access with Later'**
+  String get authPermissionCameraTitle;
+
+  /// No description provided for @authPermissionContactsText.
+  ///
+  /// In en, this message translates to:
+  /// **'Find and invite friends from your contacts!'**
+  String get authPermissionContactsText;
+
+  /// No description provided for @authPermissionContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access contacts'**
+  String get authPermissionContactsTitle;
+
+  /// Button on a permission page that asks for the permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get authPermissionEnable;
+
+  /// The same button once the permission is granted (disabled).
+  ///
+  /// In en, this message translates to:
+  /// **'Granted'**
+  String get authPermissionGranted;
+
+  /// No description provided for @authPermissionLocationText.
+  ///
+  /// In en, this message translates to:
+  /// **'And you will be able to find capsules near you!'**
+  String get authPermissionLocationText;
+
+  /// No description provided for @authPermissionLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share geolocation with us'**
+  String get authPermissionLocationTitle;
+
+  /// "it" is the microphone: video capsules need sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera won\'t work without it'**
+  String get authPermissionMicrophoneText;
+
+  /// No description provided for @authPermissionMicrophoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide Later with microphone access'**
+  String get authPermissionMicrophoneTitle;
+
+  /// No description provided for @authPermissionNotificationsText.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated with new followers and capsules!'**
+  String get authPermissionNotificationsText;
+
+  /// No description provided for @authPermissionNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable notifications'**
+  String get authPermissionNotificationsTitle;
+
+  /// Link inside authLegalNotice: use the grammatical form that fits that sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get authPrivacyPolicy;
+
+  /// No description provided for @authResetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to receive a password reset link'**
+  String get authResetDescription;
+
+  /// No description provided for @authResetInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email address'**
+  String get authResetInvalidEmail;
+
+  /// Button of the password reset dialog. Keep it short (narrow button).
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get authResetSend;
+
+  /// No description provided for @authResetSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email sent! Check your inbox.'**
+  String get authResetSent;
+
+  /// Title of the password reset dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get authResetTitle;
+
+  /// No description provided for @authResetUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No account found with this email'**
+  String get authResetUserNotFound;
+
+  /// No description provided for @authShowPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show password'**
+  String get authShowPassword;
+
+  /// No description provided for @authSignInAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in again.'**
+  String get authSignInAgain;
+
+  /// Big green button that creates the account. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get authSignUpButton;
+
+  /// No description provided for @authSignupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in the details to create your account'**
+  String get authSignupSubtitle;
+
+  /// Large heading of the sign-up page.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up Now'**
+  String get authSignupTitle;
+
+  /// Link inside authLegalNotice: use the grammatical form that fits that sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get authTermsOfUse;
+
+  /// Placeholder of the username field on the sign-up page (the unique @name).
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname'**
+  String get authUsernameHint;
+
+  /// Welcome page text under the title. The line break splits it into two balanced lines.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account to see your capsules\nand your friends\''**
+  String get authWelcomeSubtitle;
+
+  /// First line of the welcome page title; the next line is the app name "Later" in bold. Keep it short: one line in a large font.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to'**
+  String get authWelcomeTo;
+
   /// Accessibility label of the back arrow.
   ///
   /// In en, this message translates to:

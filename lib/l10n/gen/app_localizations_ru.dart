@@ -12,6 +12,216 @@ class AppLocalizationsRu extends AppLocalizations {
   String get appName => 'Later';
 
   @override
+  String get authContinueWithGoogle => 'Войти через Google';
+
+  @override
+  String get authEmailHint => 'Электронная почта';
+
+  @override
+  String get authEnterEmail => 'Введите адрес электронной почты';
+
+  @override
+  String get authErrorEmailInUse => 'Аккаунт с этим адресом уже существует.';
+
+  @override
+  String get authErrorEmailTaken =>
+      'Этот адрес уже используется другим аккаунтом.';
+
+  @override
+  String get authErrorInvalidCredential => 'Неверная почта или пароль.';
+
+  @override
+  String get authErrorInvalidEmail => 'Некорректный адрес электронной почты.';
+
+  @override
+  String get authErrorMethodDisabled => 'Этот способ входа недоступен.';
+
+  @override
+  String get authErrorPickGoogleAccount =>
+      'Выберите аккаунт Google, через который вы входите.';
+
+  @override
+  String get authErrorRecentLogin =>
+      'Подтвердите, что это вы, и попробуйте ещё раз.';
+
+  @override
+  String get authErrorTooManyRequests =>
+      'Слишком много попыток. Попробуйте позже.';
+
+  @override
+  String get authErrorUserDisabled => 'Этот аккаунт отключён.';
+
+  @override
+  String get authErrorUserNotFound => 'Пользователь с этим адресом не найден.';
+
+  @override
+  String get authErrorWeakPassword => 'Слишком простой пароль.';
+
+  @override
+  String authErrorWithMessage(String message) {
+    return 'Ошибка: $message';
+  }
+
+  @override
+  String get authErrorWrongPassword => 'Неверный пароль.';
+
+  @override
+  String get authErrorWrongPasswordProvided => 'Неверный пароль.';
+
+  @override
+  String get authFacebookSoon => 'Facebook (скоро)';
+
+  @override
+  String get authFillAllFields => 'Заполните все поля';
+
+  @override
+  String get authForgotPassword => 'Забыли пароль?';
+
+  @override
+  String get authGetStarted => 'Начать';
+
+  @override
+  String get authGoToLogIn => 'Войти';
+
+  @override
+  String get authGoToSignUp => 'Регистрация';
+
+  @override
+  String get authGoogleFailed =>
+      'Не удалось войти через Google. Попробуйте ещё раз.';
+
+  @override
+  String get authHaveAccount => 'Уже есть аккаунт?';
+
+  @override
+  String get authHidePassword => 'Скрыть пароль';
+
+  @override
+  String authLegalNotice(String terms, String privacy) {
+    return 'Регистрируясь, вы принимаете $terms и $privacy';
+  }
+
+  @override
+  String get authLinkOpenFailed => 'Не удалось открыть страницу.';
+
+  @override
+  String get authLogInButton => 'Войти';
+
+  @override
+  String get authLoginSubtitle => 'Войдите в аккаунт, чтобы продолжить';
+
+  @override
+  String get authLoginTitle => 'Вход';
+
+  @override
+  String get authNameHint => 'Имя';
+
+  @override
+  String get authNoAccount => 'Нет аккаунта?';
+
+  @override
+  String get authNoFreeUsername =>
+      'Не удалось подобрать имя пользователя. Пожалуйста, зарегистрируйтесь.';
+
+  @override
+  String get authOrConnectWith => 'Или войдите через';
+
+  @override
+  String get authPasswordHint => 'Пароль';
+
+  @override
+  String get authPermissionCameraText =>
+      'И вы сможете создавать капсулы времени!';
+
+  @override
+  String get authPermissionCameraTitle => 'Дайте Later доступ к камере';
+
+  @override
+  String get authPermissionContactsText =>
+      'Находите друзей из контактов и приглашайте их!';
+
+  @override
+  String get authPermissionContactsTitle => 'Доступ к контактам';
+
+  @override
+  String get authPermissionEnable => 'Разрешить';
+
+  @override
+  String get authPermissionGranted => 'Разрешено';
+
+  @override
+  String get authPermissionLocationText =>
+      'И вы сможете находить капсулы рядом с собой!';
+
+  @override
+  String get authPermissionLocationTitle => 'Поделитесь с нами геопозицией';
+
+  @override
+  String get authPermissionMicrophoneText =>
+      'Без него камера не будет работать';
+
+  @override
+  String get authPermissionMicrophoneTitle => 'Дайте Later доступ к микрофону';
+
+  @override
+  String get authPermissionNotificationsText =>
+      'Узнавайте о новых подписчиках и капсулах!';
+
+  @override
+  String get authPermissionNotificationsTitle => 'Включите уведомления';
+
+  @override
+  String get authPrivacyPolicy => 'Политику конфиденциальности';
+
+  @override
+  String get authResetDescription =>
+      'Введите адрес электронной почты, и мы пришлём ссылку для сброса пароля';
+
+  @override
+  String get authResetInvalidEmail => 'Некорректный адрес электронной почты';
+
+  @override
+  String get authResetSend => 'Отправить ссылку';
+
+  @override
+  String get authResetSent =>
+      'Письмо для сброса пароля отправлено! Проверьте почту.';
+
+  @override
+  String get authResetTitle => 'Сброс пароля';
+
+  @override
+  String get authResetUserNotFound => 'Аккаунт с этим адресом не найден';
+
+  @override
+  String get authShowPassword => 'Показать пароль';
+
+  @override
+  String get authSignInAgain => 'Войдите в аккаунт ещё раз.';
+
+  @override
+  String get authSignUpButton => 'Создать аккаунт';
+
+  @override
+  String get authSignupSubtitle => 'Заполните данные, чтобы создать аккаунт';
+
+  @override
+  String get authSignupTitle => 'Регистрация';
+
+  @override
+  String get authTermsOfUse => 'Условия использования';
+
+  @override
+  String get authUsernameHint => 'Имя пользователя';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'Создайте аккаунт и смотрите\nсвои капсулы и капсулы друзей';
+
+  @override
+  String get authWelcomeTo => 'Добро пожаловать в';
+
+  @override
   String get commonBack => 'Назад';
 
   @override

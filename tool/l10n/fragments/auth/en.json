@@ -1,0 +1,172 @@
+{
+  "authWelcomeTo": "Welcome to",
+  "@authWelcomeTo": {
+    "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
+  },
+  "authWelcomeSubtitle": "Create an account to see your capsules\nand your friends'",
+  "@authWelcomeSubtitle": {
+    "description": "Welcome page text under the title. The line break splits it into two balanced lines."
+  },
+  "authGetStarted": "Get Started",
+  "@authGetStarted": {
+    "description": "Big green button on the welcome page that opens the login page."
+  },
+  "authLoginTitle": "Log In Now",
+  "@authLoginTitle": {
+    "description": "Large heading of the login page."
+  },
+  "authLoginSubtitle": "Please log in to continue using our app",
+  "authEmailHint": "Email",
+  "@authEmailHint": {
+    "description": "Placeholder of the email field (login, sign-up, password reset)."
+  },
+  "authPasswordHint": "Password",
+  "@authPasswordHint": {
+    "description": "Placeholder of the password field."
+  },
+  "authForgotPassword": "Forgot password?",
+  "authLogInButton": "Log In",
+  "@authLogInButton": {
+    "description": "Big green button that signs in. Keep it short."
+  },
+  "authNoAccount": "Don't have an account?",
+  "@authNoAccount": {
+    "description": "Login page, followed by the authGoToSignUp link."
+  },
+  "authGoToSignUp": "Sign Up",
+  "@authGoToSignUp": {
+    "description": "Bold link after authNoAccount that opens the sign-up page."
+  },
+  "authSignupTitle": "Sign Up Now",
+  "@authSignupTitle": {
+    "description": "Large heading of the sign-up page."
+  },
+  "authSignupSubtitle": "Please fill in the details to create your account",
+  "authNameHint": "Name",
+  "@authNameHint": {
+    "description": "Placeholder of the display name field on the sign-up page."
+  },
+  "authUsernameHint": "Nickname",
+  "@authUsernameHint": {
+    "description": "Placeholder of the username field on the sign-up page (the unique @name)."
+  },
+  "authSignUpButton": "Sign Up",
+  "@authSignUpButton": {
+    "description": "Big green button that creates the account. Keep it short."
+  },
+  "authHaveAccount": "Do you have an account?",
+  "@authHaveAccount": {
+    "description": "Sign-up page, followed by the authGoToLogIn link."
+  },
+  "authGoToLogIn": "Log In",
+  "@authGoToLogIn": {
+    "description": "Bold link after authHaveAccount that opens the login page."
+  },
+  "authLegalNotice": "By signing up you agree to the {terms} and {privacy}",
+  "@authLegalNotice": {
+    "description": "Small print on the sign-up page. {terms} and {privacy} are tappable links (authTermsOfUse, authPrivacyPolicy).",
+    "placeholders": {
+      "terms": {
+        "type": "String",
+        "example": "Terms of Use"
+      },
+      "privacy": {
+        "type": "String",
+        "example": "Privacy Policy"
+      }
+    }
+  },
+  "authTermsOfUse": "Terms of Use",
+  "@authTermsOfUse": {
+    "description": "Link inside authLegalNotice: use the grammatical form that fits that sentence."
+  },
+  "authPrivacyPolicy": "Privacy Policy",
+  "@authPrivacyPolicy": {
+    "description": "Link inside authLegalNotice: use the grammatical form that fits that sentence."
+  },
+  "authLinkOpenFailed": "Could not open the page.",
+  "authOrConnectWith": "Or connect with",
+  "@authOrConnectWith": {
+    "description": "Above the Google and Facebook sign-in icons."
+  },
+  "authContinueWithGoogle": "Continue with Google",
+  "@authContinueWithGoogle": {
+    "description": "Accessibility label of the Google sign-in icon."
+  },
+  "authFacebookSoon": "Facebook (coming soon)",
+  "@authFacebookSoon": {
+    "description": "Accessibility label of the Facebook icon (not available yet)."
+  },
+  "authShowPassword": "Show password",
+  "authHidePassword": "Hide password",
+  "authResetTitle": "Reset Password",
+  "@authResetTitle": {
+    "description": "Title of the password reset dialog."
+  },
+  "authResetDescription": "Enter your email to receive a password reset link",
+  "authResetSend": "Send Reset Link",
+  "@authResetSend": {
+    "description": "Button of the password reset dialog. Keep it short (narrow button)."
+  },
+  "authResetSent": "Password reset email sent! Check your inbox.",
+  "authErrorWithMessage": "Error: {message}",
+  "@authErrorWithMessage": {
+    "description": "Snack bar when the password reset email could not be sent.",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "Invalid email address"
+      }
+    }
+  },
+  "authEnterEmail": "Please enter your email",
+  "authFillAllFields": "Please fill in all fields",
+  "authNoFreeUsername": "Could not pick a username. Please sign up.",
+  "@authNoFreeUsername": {
+    "description": "Google sign-in could not choose a free username automatically; the user should use the sign-up form."
+  },
+  "authPermissionCameraTitle": "Share Camera access with Later",
+  "@authPermissionCameraTitle": {
+    "description": "Title of a permission page shown after sign-in (shrinks to fit one line)."
+  },
+  "authPermissionCameraText": "And you will be able to create time capsules!",
+  "authPermissionMicrophoneTitle": "Provide Later with microphone access",
+  "authPermissionMicrophoneText": "Camera won't work without it",
+  "@authPermissionMicrophoneText": {
+    "description": "\"it\" is the microphone: video capsules need sound."
+  },
+  "authPermissionLocationTitle": "Share geolocation with us",
+  "authPermissionLocationText": "And you will be able to find capsules near you!",
+  "authPermissionNotificationsTitle": "Enable notifications",
+  "authPermissionNotificationsText": "Stay updated with new followers and capsules!",
+  "authPermissionContactsTitle": "Access contacts",
+  "authPermissionContactsText": "Find and invite friends from your contacts!",
+  "authPermissionEnable": "Enable",
+  "@authPermissionEnable": {
+    "description": "Button on a permission page that asks for the permission."
+  },
+  "authPermissionGranted": "Granted",
+  "@authPermissionGranted": {
+    "description": "The same button once the permission is granted (disabled)."
+  },
+  "authGoogleFailed": "Google sign-in failed. Please try again.",
+  "authResetUserNotFound": "No account found with this email",
+  "authResetInvalidEmail": "Invalid email address",
+  "authSignInAgain": "Please sign in again.",
+  "authErrorWrongPassword": "Wrong password.",
+  "@authErrorWrongPassword": {
+    "description": "Changing the password, email or deleting the account: the current password is wrong."
+  },
+  "authErrorPickGoogleAccount": "Please pick the Google account you sign in with.",
+  "authErrorRecentLogin": "Please confirm it is you and try again.",
+  "authErrorEmailTaken": "Another account already uses this email.",
+  "authErrorUserNotFound": "No user found with this email.",
+  "authErrorWrongPasswordProvided": "Wrong password provided.",
+  "authErrorInvalidCredential": "Wrong email or password.",
+  "authErrorEmailInUse": "The account already exists for that email.",
+  "authErrorWeakPassword": "The password provided is too weak.",
+  "authErrorInvalidEmail": "The email address is not valid.",
+  "authErrorUserDisabled": "This account has been disabled.",
+  "authErrorTooManyRequests": "Too many attempts. Please try again later.",
+  "authErrorMethodDisabled": "This sign-in method is not enabled."
+}

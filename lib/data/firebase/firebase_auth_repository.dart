@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../repositories/repositories.dart';
 
@@ -68,7 +69,7 @@ class FirebaseAuthRepository implements AuthRepository {
       throw AuthFailure(messageFor(e.code), cause: e);
     } catch (e, st) {
       AppLogger.warning('Google sign-in failed', error: e, stackTrace: st);
-      throw AuthFailure('Google sign-in failed. Please try again.', cause: e);
+      throw AuthFailure(AppL10n.current.authGoogleFailed, cause: e);
     }
   }
 
@@ -78,8 +79,8 @@ class FirebaseAuthRepository implements AuthRepository {
       await _auth.sendPasswordResetEmail(email: email);
     } on FirebaseAuthException catch (e) {
       throw AuthFailure(switch (e.code) {
-        'user-not-found' => 'No account found with this email',
-        'invalid-email' => 'Invalid email address',
+        'user-not-found' => AppL10n.current.authResetUserNotFound,
+        'invalid-email' => AppL10n.current.authResetInvalidEmail,
         _ => messageFor(e.code),
       }, cause: e);
     }
@@ -123,7 +124,7 @@ class FirebaseAuthRepository implements AuthRepository {
 
   User get _user {
     final user = _auth.currentUser;
-    if (user == null) throw const AuthFailure('Please sign in again.');
+    if (user == null) throw AuthFailure(AppL10n.current.authSignInAgain);
     return user;
   }
 
@@ -188,30 +189,36 @@ class FirebaseAuthRepository implements AuthRepository {
 
   /// Messages for changes to a signed-in account (the sign-in wording of
   /// [messageFor] talks about "email or password").
-  static String accountMessageFor(String code) => switch (code) {
-    'wrong-password' ||
-    'invalid-credential' ||
-    'INVALID_LOGIN_CREDENTIALS' => 'Wrong password.',
-    'user-mismatch' => 'Please pick the Google account you sign in with.',
-    'requires-recent-login' => 'Please confirm it is you and try again.',
-    'email-already-in-use' => 'Another account already uses this email.',
-    _ => messageFor(code),
-  };
+  static String accountMessageFor(String code) {
+    final l10n = AppL10n.current;
+    return switch (code) {
+      'wrong-password' ||
+      'invalid-credential' ||
+      'INVALID_LOGIN_CREDENTIALS' => l10n.authErrorWrongPassword,
+      'user-mismatch' => l10n.authErrorPickGoogleAccount,
+      'requires-recent-login' => l10n.authErrorRecentLogin,
+      'email-already-in-use' => l10n.authErrorEmailTaken,
+      _ => messageFor(code),
+    };
+  }
 
-  /// User-facing messages for Firebase Auth error codes. The first five keep
-  /// the original wording.
-  static String messageFor(String code) => switch (code) {
-    'user-not-found' => 'No user found with this email.',
-    'wrong-password' => 'Wrong password provided.',
-    'invalid-credential' ||
-    'INVALID_LOGIN_CREDENTIALS' => 'Wrong email or password.',
-    'email-already-in-use' => 'The account already exists for that email.',
-    'weak-password' => 'The password provided is too weak.',
-    'invalid-email' => 'The email address is not valid.',
-    'user-disabled' => 'This account has been disabled.',
-    'too-many-requests' => 'Too many attempts. Please try again later.',
-    'network-request-failed' => 'No connection. Please try again.',
-    'operation-not-allowed' => 'This sign-in method is not enabled.',
-    _ => 'An error occurred. Please try again.',
-  };
+  /// User-facing messages for Firebase Auth error codes, in the app's
+  /// language. The first five keep the original English wording.
+  static String messageFor(String code) {
+    final l10n = AppL10n.current;
+    return switch (code) {
+      'user-not-found' => l10n.authErrorUserNotFound,
+      'wrong-password' => l10n.authErrorWrongPasswordProvided,
+      'invalid-credential' ||
+      'INVALID_LOGIN_CREDENTIALS' => l10n.authErrorInvalidCredential,
+      'email-already-in-use' => l10n.authErrorEmailInUse,
+      'weak-password' => l10n.authErrorWeakPassword,
+      'invalid-email' => l10n.authErrorInvalidEmail,
+      'user-disabled' => l10n.authErrorUserDisabled,
+      'too-many-requests' => l10n.authErrorTooManyRequests,
+      'network-request-failed' => l10n.commonNoConnection,
+      'operation-not-allowed' => l10n.authErrorMethodDisabled,
+      _ => l10n.commonErrorGeneric,
+    };
+  }
 }

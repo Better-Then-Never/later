@@ -12,6 +12,213 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appName => 'Later';
 
   @override
+  String get authContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get authEmailHint => 'Email';
+
+  @override
+  String get authEnterEmail => 'Please enter your email';
+
+  @override
+  String get authErrorEmailInUse =>
+      'The account already exists for that email.';
+
+  @override
+  String get authErrorEmailTaken => 'Another account already uses this email.';
+
+  @override
+  String get authErrorInvalidCredential => 'Wrong email or password.';
+
+  @override
+  String get authErrorInvalidEmail => 'The email address is not valid.';
+
+  @override
+  String get authErrorMethodDisabled => 'This sign-in method is not enabled.';
+
+  @override
+  String get authErrorPickGoogleAccount =>
+      'Please pick the Google account you sign in with.';
+
+  @override
+  String get authErrorRecentLogin => 'Please confirm it is you and try again.';
+
+  @override
+  String get authErrorTooManyRequests =>
+      'Too many attempts. Please try again later.';
+
+  @override
+  String get authErrorUserDisabled => 'This account has been disabled.';
+
+  @override
+  String get authErrorUserNotFound => 'No user found with this email.';
+
+  @override
+  String get authErrorWeakPassword => 'The password provided is too weak.';
+
+  @override
+  String authErrorWithMessage(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get authErrorWrongPassword => 'Wrong password.';
+
+  @override
+  String get authErrorWrongPasswordProvided => 'Wrong password provided.';
+
+  @override
+  String get authFacebookSoon => 'Facebook (coming soon)';
+
+  @override
+  String get authFillAllFields => 'Please fill in all fields';
+
+  @override
+  String get authForgotPassword => 'Forgot password?';
+
+  @override
+  String get authGetStarted => 'Get Started';
+
+  @override
+  String get authGoToLogIn => 'Log In';
+
+  @override
+  String get authGoToSignUp => 'Sign Up';
+
+  @override
+  String get authGoogleFailed => 'Google sign-in failed. Please try again.';
+
+  @override
+  String get authHaveAccount => 'Do you have an account?';
+
+  @override
+  String get authHidePassword => 'Hide password';
+
+  @override
+  String authLegalNotice(String terms, String privacy) {
+    return 'By signing up you agree to the $terms and $privacy';
+  }
+
+  @override
+  String get authLinkOpenFailed => 'Could not open the page.';
+
+  @override
+  String get authLogInButton => 'Log In';
+
+  @override
+  String get authLoginSubtitle => 'Please log in to continue using our app';
+
+  @override
+  String get authLoginTitle => 'Log In Now';
+
+  @override
+  String get authNameHint => 'Name';
+
+  @override
+  String get authNoAccount => 'Don\'t have an account?';
+
+  @override
+  String get authNoFreeUsername => 'Could not pick a username. Please sign up.';
+
+  @override
+  String get authOrConnectWith => 'Or connect with';
+
+  @override
+  String get authPasswordHint => 'Password';
+
+  @override
+  String get authPermissionCameraText =>
+      'And you will be able to create time capsules!';
+
+  @override
+  String get authPermissionCameraTitle => 'Share Camera access with Later';
+
+  @override
+  String get authPermissionContactsText =>
+      'Find and invite friends from your contacts!';
+
+  @override
+  String get authPermissionContactsTitle => 'Access contacts';
+
+  @override
+  String get authPermissionEnable => 'Enable';
+
+  @override
+  String get authPermissionGranted => 'Granted';
+
+  @override
+  String get authPermissionLocationText =>
+      'And you will be able to find capsules near you!';
+
+  @override
+  String get authPermissionLocationTitle => 'Share geolocation with us';
+
+  @override
+  String get authPermissionMicrophoneText => 'Camera won\'t work without it';
+
+  @override
+  String get authPermissionMicrophoneTitle =>
+      'Provide Later with microphone access';
+
+  @override
+  String get authPermissionNotificationsText =>
+      'Stay updated with new followers and capsules!';
+
+  @override
+  String get authPermissionNotificationsTitle => 'Enable notifications';
+
+  @override
+  String get authPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get authResetDescription =>
+      'Enter your email to receive a password reset link';
+
+  @override
+  String get authResetInvalidEmail => 'Invalid email address';
+
+  @override
+  String get authResetSend => 'Send Reset Link';
+
+  @override
+  String get authResetSent => 'Password reset email sent! Check your inbox.';
+
+  @override
+  String get authResetTitle => 'Reset Password';
+
+  @override
+  String get authResetUserNotFound => 'No account found with this email';
+
+  @override
+  String get authShowPassword => 'Show password';
+
+  @override
+  String get authSignInAgain => 'Please sign in again.';
+
+  @override
+  String get authSignUpButton => 'Sign Up';
+
+  @override
+  String get authSignupSubtitle =>
+      'Please fill in the details to create your account';
+
+  @override
+  String get authSignupTitle => 'Sign Up Now';
+
+  @override
+  String get authTermsOfUse => 'Terms of Use';
+
+  @override
+  String get authUsernameHint => 'Nickname';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'Create an account to see your capsules\nand your friends\'';
+
+  @override
+  String get authWelcomeTo => 'Welcome to';
+
+  @override
   String get commonBack => 'Back';
 
   @override

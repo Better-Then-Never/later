@@ -12,6 +12,221 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appName => 'Later';
 
   @override
+  String get authContinueWithGoogle => 'Weiter mit Google';
+
+  @override
+  String get authEmailHint => 'E-Mail';
+
+  @override
+  String get authEnterEmail => 'Bitte gib deine E-Mail-Adresse ein';
+
+  @override
+  String get authErrorEmailInUse =>
+      'Für diese E-Mail-Adresse gibt es bereits ein Konto.';
+
+  @override
+  String get authErrorEmailTaken =>
+      'Diese E-Mail-Adresse wird schon von einem anderen Konto verwendet.';
+
+  @override
+  String get authErrorInvalidCredential => 'E-Mail oder Passwort ist falsch.';
+
+  @override
+  String get authErrorInvalidEmail => 'Die E-Mail-Adresse ist ungültig.';
+
+  @override
+  String get authErrorMethodDisabled =>
+      'Diese Anmeldemethode ist nicht aktiviert.';
+
+  @override
+  String get authErrorPickGoogleAccount =>
+      'Bitte wähle das Google-Konto, mit dem du dich anmeldest.';
+
+  @override
+  String get authErrorRecentLogin =>
+      'Bitte bestätige, dass du es bist, und versuche es erneut.';
+
+  @override
+  String get authErrorTooManyRequests =>
+      'Zu viele Versuche. Bitte versuche es später erneut.';
+
+  @override
+  String get authErrorUserDisabled => 'Dieses Konto wurde deaktiviert.';
+
+  @override
+  String get authErrorUserNotFound =>
+      'Kein Nutzer mit dieser E-Mail-Adresse gefunden.';
+
+  @override
+  String get authErrorWeakPassword => 'Das Passwort ist zu schwach.';
+
+  @override
+  String authErrorWithMessage(String message) {
+    return 'Fehler: $message';
+  }
+
+  @override
+  String get authErrorWrongPassword => 'Falsches Passwort.';
+
+  @override
+  String get authErrorWrongPasswordProvided => 'Das Passwort ist falsch.';
+
+  @override
+  String get authFacebookSoon => 'Facebook (bald verfügbar)';
+
+  @override
+  String get authFillAllFields => 'Bitte fülle alle Felder aus';
+
+  @override
+  String get authForgotPassword => 'Passwort vergessen?';
+
+  @override
+  String get authGetStarted => 'Los geht\'s';
+
+  @override
+  String get authGoToLogIn => 'Anmelden';
+
+  @override
+  String get authGoToSignUp => 'Registrieren';
+
+  @override
+  String get authGoogleFailed =>
+      'Anmeldung mit Google fehlgeschlagen. Bitte versuche es erneut.';
+
+  @override
+  String get authHaveAccount => 'Du hast schon ein Konto?';
+
+  @override
+  String get authHidePassword => 'Passwort verbergen';
+
+  @override
+  String authLegalNotice(String terms, String privacy) {
+    return 'Mit der Registrierung stimmst du den $terms und der $privacy zu';
+  }
+
+  @override
+  String get authLinkOpenFailed => 'Die Seite konnte nicht geöffnet werden.';
+
+  @override
+  String get authLogInButton => 'Anmelden';
+
+  @override
+  String get authLoginSubtitle => 'Melde dich an, um die App weiter zu nutzen';
+
+  @override
+  String get authLoginTitle => 'Jetzt anmelden';
+
+  @override
+  String get authNameHint => 'Name';
+
+  @override
+  String get authNoAccount => 'Noch kein Konto?';
+
+  @override
+  String get authNoFreeUsername =>
+      'Wir konnten keinen Benutzernamen wählen. Bitte registriere dich.';
+
+  @override
+  String get authOrConnectWith => 'Oder weiter mit';
+
+  @override
+  String get authPasswordHint => 'Passwort';
+
+  @override
+  String get authPermissionCameraText =>
+      'Dann kannst du Zeitkapseln erstellen!';
+
+  @override
+  String get authPermissionCameraTitle => 'Gib Later Zugriff auf die Kamera';
+
+  @override
+  String get authPermissionContactsText =>
+      'Finde Freunde in deinen Kontakten und lade sie ein!';
+
+  @override
+  String get authPermissionContactsTitle => 'Zugriff auf Kontakte';
+
+  @override
+  String get authPermissionEnable => 'Erlauben';
+
+  @override
+  String get authPermissionGranted => 'Erlaubt';
+
+  @override
+  String get authPermissionLocationText =>
+      'Dann findest du Kapseln in deiner Nähe!';
+
+  @override
+  String get authPermissionLocationTitle => 'Teile deinen Standort mit uns';
+
+  @override
+  String get authPermissionMicrophoneText =>
+      'Ohne Mikrofon funktioniert die Kamera nicht';
+
+  @override
+  String get authPermissionMicrophoneTitle => 'Gib Later Zugriff aufs Mikrofon';
+
+  @override
+  String get authPermissionNotificationsText =>
+      'Erfahre von neuen Followern und Kapseln!';
+
+  @override
+  String get authPermissionNotificationsTitle => 'Aktiviere Benachrichtigungen';
+
+  @override
+  String get authPrivacyPolicy => 'Datenschutzerklärung';
+
+  @override
+  String get authResetDescription =>
+      'Gib deine E-Mail-Adresse ein, dann schicken wir dir einen Link zum Zurücksetzen';
+
+  @override
+  String get authResetInvalidEmail => 'Ungültige E-Mail-Adresse';
+
+  @override
+  String get authResetSend => 'Link senden';
+
+  @override
+  String get authResetSent =>
+      'E-Mail zum Zurücksetzen gesendet! Schau in dein Postfach.';
+
+  @override
+  String get authResetTitle => 'Passwort zurücksetzen';
+
+  @override
+  String get authResetUserNotFound =>
+      'Kein Konto mit dieser E-Mail-Adresse gefunden';
+
+  @override
+  String get authShowPassword => 'Passwort anzeigen';
+
+  @override
+  String get authSignInAgain => 'Bitte melde dich erneut an.';
+
+  @override
+  String get authSignUpButton => 'Registrieren';
+
+  @override
+  String get authSignupSubtitle =>
+      'Gib deine Daten ein, um dein Konto zu erstellen';
+
+  @override
+  String get authSignupTitle => 'Jetzt registrieren';
+
+  @override
+  String get authTermsOfUse => 'Nutzungsbedingungen';
+
+  @override
+  String get authUsernameHint => 'Benutzername';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'Erstelle ein Konto, um deine Kapseln\nund die deiner Freunde zu sehen';
+
+  @override
+  String get authWelcomeTo => 'Willkommen bei';
+
+  @override
   String get commonBack => 'Zurück';
 
   @override

@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import '../../data/repositories/repositories.dart';
 import 'auth_controller.dart';
 import 'widgets/auth_heading.dart';
@@ -80,8 +82,9 @@ class _LoginViewState extends State<_LoginView> {
   @override
   Widget build(BuildContext context) {
     final busy = context.select<AuthController, bool>((c) => c.busy);
+    final l10n = context.l10n;
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -94,16 +97,16 @@ class _LoginViewState extends State<_LoginView> {
                       const Spacer(),
                       Column(
                         children: [
-                          const AuthHeading(
-                            title: 'Log In Now',
-                            subtitle: 'Please log in to continue using our app',
+                          AuthHeading(
+                            title: l10n.authLoginTitle,
+                            subtitle: l10n.authLoginSubtitle,
                           ),
                           const SizedBox(height: 30),
                           AutofillGroup(
                             child: Column(
                               children: [
                                 AuthTextField(
-                                  hint: 'Email',
+                                  hint: l10n.authEmailHint,
                                   controller: _email,
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
@@ -111,7 +114,7 @@ class _LoginViewState extends State<_LoginView> {
                                 ),
                                 const SizedBox(height: 10),
                                 AuthTextField(
-                                  hint: 'Password',
+                                  hint: l10n.authPasswordHint,
                                   obscure: true,
                                   controller: _password,
                                   textInputAction: TextInputAction.done,
@@ -131,9 +134,9 @@ class _LoginViewState extends State<_LoginView> {
                                       overlayColor: Colors.transparent,
                                     ),
                                     onPressed: _forgotPassword,
-                                    child: const Text(
-                                      'Forgot password?',
-                                      style: TextStyle(
+                                    child: Text(
+                                      l10n.authForgotPassword,
+                                      style: const TextStyle(
                                         color: AppColors.brandGreen,
                                         fontSize: 16.0,
                                       ),
@@ -145,16 +148,16 @@ class _LoginViewState extends State<_LoginView> {
                           ),
                           const SizedBox(height: 25),
                           AuthSubmitButton(
-                            text: 'Log In',
+                            text: l10n.authLogInButton,
                             isLoading: busy,
                             onPressed: _login,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                "Don't have an account?",
-                                style: TextStyle(fontSize: 16.0),
+                              Text(
+                                l10n.authNoAccount,
+                                style: const TextStyle(fontSize: 16.0),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
@@ -167,10 +170,10 @@ class _LoginViewState extends State<_LoginView> {
                                 ),
                                 onPressed: () =>
                                     AppRoutes.toSignupFromLogin(context),
-                                child: const Text(
-                                  'Sign Up',
+                                child: Text(
+                                  l10n.authGoToSignUp,
                                   style: TextStyle(
-                                    color: AppColors.black,
+                                    color: context.palette.textPrimary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.0,
                                   ),

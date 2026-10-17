@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// 325×55 outlined input of the auth screens, with an optional show/hide
 /// toggle for passwords.
@@ -47,7 +48,9 @@ class _AuthTextFieldState extends State<AuthTextField> {
           hintText: widget.hint,
           suffixIcon: widget.obscure
               ? IconButton(
-                  tooltip: _hidden ? 'Show password' : 'Hide password',
+                  tooltip: _hidden
+                      ? context.l10n.authShowPassword
+                      : context.l10n.authHidePassword,
                   icon: Image.asset(
                     _hidden
                         ? AppIcons.authPasswordShown
@@ -58,9 +61,12 @@ class _AuthTextFieldState extends State<AuthTextField> {
                   onPressed: () => setState(() => _hidden = !_hidden),
                 )
               : null,
-          enabledBorder: const OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
             borderRadius: AppRadii.lCircular,
-            borderSide: BorderSide(width: 1.5, color: AppColors.black),
+            borderSide: BorderSide(
+              width: 1.5,
+              color: context.palette.textPrimary,
+            ),
           ),
           border: const OutlineInputBorder(borderRadius: AppRadii.lCircular),
         ),

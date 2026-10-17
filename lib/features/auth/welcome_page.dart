@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 class WelcomePage extends StatelessWidget {
@@ -10,8 +12,9 @@ class WelcomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -28,19 +31,23 @@ class WelcomePage extends StatelessWidget {
                         offset: const Offset(0, -32.0),
                         child: Column(
                           children: [
-                            const Text(
-                              'Welcome to',
-                              style: TextStyle(
-                                fontSize: 40.0,
-                                fontFamily: kAppFontFamily,
+                            // Longer translations shrink to stay on one line.
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                l10n.authWelcomeTo,
+                                style: const TextStyle(
+                                  fontSize: 40.0,
+                                  fontFamily: kAppFontFamily,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                             Transform.translate(
                               offset: const Offset(0, -18.0),
-                              child: const Text(
-                                'Later',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.appName,
+                                style: const TextStyle(
                                   fontSize: 40.0,
                                   fontFamily: kAppFontFamily,
                                   fontWeight: FontWeight.bold,
@@ -50,10 +57,10 @@ class WelcomePage extends StatelessWidget {
 
                             Transform.translate(
                               offset: const Offset(0, -24.0),
-                              child: const Text(
-                                'Create an account to get an access to\ncapsules of yours and your friends',
+                              child: Text(
+                                l10n.authWelcomeSubtitle,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16.0,
                                   fontFamily: kAppFontFamily,
                                 ),
@@ -73,12 +80,12 @@ class WelcomePage extends StatelessWidget {
                           ),
                           child: Transform.translate(
                             offset: const Offset(0, -2.0),
-                            child: const Text(
-                              'Get Started',
-                              style: TextStyle(
+                            child: Text(
+                              l10n.authGetStarted,
+                              style: const TextStyle(
                                 fontFamily: kAppFontFamily,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.white,
+                                color: AppColors.onAccent,
                                 fontSize: 28.0,
                               ),
                             ),

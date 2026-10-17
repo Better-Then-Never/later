@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/errors/app_failure.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 class PasswordResetDialog extends StatefulWidget {
@@ -36,6 +38,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(context).pop(),
@@ -45,33 +48,36 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
           child: Container(
             width: 300,
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: context.palette.surface,
               borderRadius: BorderRadius.circular(25),
             ),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Reset Password',
+                Text(
+                  l10n.authResetTitle,
                   style: TextStyle(
-                    color: AppColors.black,
+                    color: context.palette.textPrimary,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Enter your email to receive a password reset link',
-                  style: TextStyle(color: AppColors.textFaint, fontSize: 14),
+                Text(
+                  l10n.authResetDescription,
+                  style: TextStyle(
+                    color: context.palette.textFaint,
+                    fontSize: 14,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _emailController,
                   decoration: InputDecoration(
-                    hintText: 'Email',
+                    hintText: l10n.authEmailHint,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
@@ -98,9 +104,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                             final email = _emailController.text.trim();
                             if (email.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Please enter your email'),
-                                ),
+                                SnackBar(content: Text(l10n.authEnterEmail)),
                               );
                               return;
                             }
@@ -114,10 +118,8 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                             if (failure == null) {
                               navigator.pop();
                               messenger.showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Password reset email sent! Check your inbox.',
-                                  ),
+                                SnackBar(
+                                  content: Text(l10n.authResetSent),
                                   backgroundColor: AppColors.brandGreen,
                                 ),
                               );
@@ -125,7 +127,9 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                               setState(() => _submitting = false);
                               messenger.showSnackBar(
                                 SnackBar(
-                                  content: Text('Error: ${failure.message}'),
+                                  content: Text(
+                                    l10n.authErrorWithMessage(failure.message),
+                                  ),
                                 ),
                               );
                             }
@@ -137,14 +141,14 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.white,
+                                AppColors.onAccent,
                               ),
                             ),
                           )
-                        : const Text(
-                            'Send Reset Link',
-                            style: TextStyle(
-                              color: AppColors.white,
+                        : Text(
+                            l10n.authResetSend,
+                            style: const TextStyle(
+                              color: AppColors.onAccent,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -154,7 +158,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textSecondary,
+                    foregroundColor: context.palette.textSecondary,
                     textStyle: const TextStyle(
                       fontFamily: kAppFontFamily,
                       fontSize: 16,
@@ -162,7 +166,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                     ),
                     padding: EdgeInsets.zero,
                   ),
-                  child: const Text('Cancel'),
+                  child: Text(l10n.commonCancel),
                 ),
               ],
             ),
@@ -182,7 +186,7 @@ Future<void> showPasswordResetDialog(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: AppColors.barrier,
+    barrierColor: context.palette.scrim,
     builder: (context) =>
         PasswordResetDialog(initialEmail: initialEmail, onSubmit: onSubmit),
   );

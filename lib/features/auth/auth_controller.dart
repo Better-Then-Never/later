@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
@@ -49,7 +50,7 @@ class AuthController extends ChangeNotifier {
 
   Future<AppFailure?> login({required String email, required String password}) {
     if (email.trim().isEmpty || password.isEmpty) {
-      return Future.value(const ValidationFailure('Please fill in all fields'));
+      return Future.value(ValidationFailure(AppL10n.current.authFillAllFields));
     }
     return _run(() => _auth.signInWithEmail(email.trim(), password));
   }
@@ -66,7 +67,7 @@ class AuthController extends ChangeNotifier {
         normalized.isEmpty ||
         email.trim().isEmpty ||
         password.isEmpty) {
-      return Future.value(const ValidationFailure('Please fill in all fields'));
+      return Future.value(ValidationFailure(AppL10n.current.authFillAllFields));
     }
     final invalid = Usernames.validate(normalized);
     if (invalid != null) return Future.value(ValidationFailure(invalid));
@@ -117,12 +118,12 @@ class AuthController extends ChangeNotifier {
       final candidate = '$base${random.nextInt(9000) + 1000}';
       if (!await _users.isUsernameTaken(candidate)) return candidate;
     }
-    throw const ValidationFailure('Could not pick a username. Please sign up.');
+    throw ValidationFailure(AppL10n.current.authNoFreeUsername);
   }
 
   Future<AppFailure?> sendPasswordReset(String email) {
     if (email.trim().isEmpty) {
-      return Future.value(const ValidationFailure('Please enter your email'));
+      return Future.value(ValidationFailure(AppL10n.current.authEnterEmail));
     }
     return _run(() => _auth.sendPasswordReset(email.trim()));
   }
