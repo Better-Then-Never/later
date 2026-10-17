@@ -27,6 +27,17 @@ class CapsuleInfoPanel extends StatefulWidget {
   /// most phones, and 152 still did by 2 px.
   static const double minHeight = 156;
 
+  /// The card's height on this screen: a share of the screen between
+  /// [minHeight] and 220, both grown with the system text size (at 130 %
+  /// the button was cut off).
+  static double heightFor(BuildContext context) {
+    // Measured at the card's body size: Android 14+ scales large text
+    // less than small text (nonlinear), so a big reference would say 1.0.
+    final scale = MediaQuery.textScalerOf(context).scale(16) / 16;
+    final screen = MediaQuery.sizeOf(context).height;
+    return (screen * 0.171).clamp(minHeight * scale, 220 * scale);
+  }
+
   @override
   State<CapsuleInfoPanel> createState() => _CapsuleInfoPanelState();
 }

@@ -180,4 +180,64 @@ void main() {
     expect(notified, 1);
     expect(location.position, const GeoPosition(1, 2));
   });
+
+  // Like Android 14+: small text grows by the full factor, large text less.
+  const nonlinear130 = _NonlinearScaler(1.3);
+  for (final (name, scaler) in [
+    ('100 %', TextScaler.noScaling),
+    ('130 %', const TextScaler.linear(1.3)),
+    ('200 %', const TextScaler.linear(2)),
+    ('130 %, nonlinear like Android', nonlinear130),
+  ]) {
+    testWidgets('the card fits its button with system text at $name', (
+      tester,
+    ) async {
+      tester.view
+        ..physicalSize = const Size(411, 914)
+        ..devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        testApp(
+          home: MediaQuery(
+            data: MediaQueryData(
+              size: const Size(411, 914),
+              textScaler: scaler,
+            ),
+            child: Scaffold(
+              body: Builder(
+                builder: (context) => Center(
+                  child: SizedBox(
+                    width: 379,
+                    height: CapsuleInfoPanel.heightFor(context),
+                    child: CapsuleInfoPanel(
+                      capsule: _panelCapsule(),
+                      onMoreInfo: () {},
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull, reason: 'no overflow');
+      expect(find.text('Open'), findsOneWidget);
+    });
+  }
+}
+
+/// Android 14+'s font scaling in short: [factor] up to 20 sp, fading to no
+/// growth for large text.
+class _NonlinearScaler extends TextScaler {
+  const _NonlinearScaler(this.factor);
+
+  final double factor;
+
+  @override
+  double scale(double fontSize) =>
+      fontSize <= 20 ? fontSize * factor : fontSize + 20 * (factor - 1);
+
+  @override
+  double get textScaleFactor => factor;
 }

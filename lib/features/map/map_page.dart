@@ -344,7 +344,6 @@ class _MapViewState extends State<_MapView> {
     }
     _reportLocationProblem(map);
 
-    final screen = MediaQuery.sizeOf(context);
     final start = map.initialCamera;
     final dark = Theme.of(context).brightness == Brightness.dark;
     if (_builtDark != null && _builtDark != dark) {
@@ -354,10 +353,7 @@ class _MapViewState extends State<_MapView> {
     _builtDark = dark;
     final selected = _selected;
     final bottom = NavbarWidget.coveredHeight(context) + 12;
-    final cardHeight = (screen.height * 0.171).clamp(
-      CapsuleInfoPanel.minHeight,
-      220.0,
-    );
+    final cardHeight = CapsuleInfoPanel.heightFor(context);
     final motion = AppMotion.of(context, AppMotion.emphasized);
     // A new user: nothing of theirs yet (a capsule waiting to upload counts).
     final noCapsules = context.select<OwnCapsulesStore, bool>(
