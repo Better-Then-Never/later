@@ -40,7 +40,9 @@ class ReplyBar extends StatelessWidget {
           boxShadow: AppShadows.card(context),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 8, 8, 8),
+          // The close button's 44 dp target supplies the right and
+          // vertical room (the bar stays 50 dp tall).
+          padding: const EdgeInsets.fromLTRB(14, 3, 0, 3),
           child: Row(
             children: [
               Container(

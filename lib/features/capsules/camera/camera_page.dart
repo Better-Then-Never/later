@@ -443,38 +443,45 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                         _ => l10n.capsulesCameraFlashOn,
                       },
                       child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: _toggleFlash,
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Image.asset(
-                                _flash == FlashMode.off
-                                    ? AppIcons.cameraFlashOff
-                                    : AppIcons.cameraFlashOn,
-                                width: 40,
-                                height: 40,
-                              ),
-                              // Automatic: the lit bolt with an "A".
-                              if (_flash == FlashMode.auto)
-                                Positioned(
-                                  right: -4,
-                                  bottom: -2,
-                                  child: ExcludeSemantics(
-                                    child: Text(
-                                      l10n.capsulesCameraFlashAutoBadge,
-                                      style: const TextStyle(
-                                        fontFamily: kAppFontFamily,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.onMedia,
+                        // A 44 dp target around the 40 dp picture.
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Image.asset(
+                                  _flash == FlashMode.off
+                                      ? AppIcons.cameraFlashOff
+                                      : AppIcons.cameraFlashOn,
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                // Automatic: the lit bolt with an "A".
+                                if (_flash == FlashMode.auto)
+                                  Positioned(
+                                    right: -4,
+                                    bottom: -2,
+                                    child: ExcludeSemantics(
+                                      child: Text(
+                                        l10n.capsulesCameraFlashAutoBadge,
+                                        style: const TextStyle(
+                                          fontFamily: kAppFontFamily,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.onMedia,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),

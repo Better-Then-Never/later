@@ -872,10 +872,12 @@ class _ReactionsPill extends StatelessWidget {
       counts[type] = (counts[type] ?? 0) + 1;
     }
     final mine = reactions.containsKey(myUid);
-    return Padding(
-      padding: const EdgeInsets.only(top: 3, left: 6, right: 6),
-      child: GestureDetector(
-        onTap: onTap,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      // A 44 dp tall target around the 24 dp pill (docs/feel/FEEL_QA.md).
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(6, 3, 6, 17),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
           decoration: BoxDecoration(

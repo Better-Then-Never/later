@@ -23,22 +23,37 @@ class DefaultIconButton extends StatelessWidget {
     this.semanticLabel,
   });
 
+  /// The smallest area that takes the tap, however small the picture
+  /// (44 × 44, docs/feel/FEEL_QA.md); the picture keeps its size, centred.
+  static const minTapTarget = 44.0;
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     final button = AppPressable(
       child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: onTap,
-        child: Opacity(
-          opacity: opacity ?? 1,
-          child:
-              child ??
-              Image.asset(
-                assetPath!,
-                width: size ?? screenWidth * 0.11,
-                height: size ?? screenWidth * 0.11,
-              ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minWidth: minTapTarget,
+            minHeight: minTapTarget,
+          ),
+          child: Center(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Opacity(
+              opacity: opacity ?? 1,
+              child:
+                  child ??
+                  Image.asset(
+                    assetPath!,
+                    width: size ?? screenWidth * 0.11,
+                    height: size ?? screenWidth * 0.11,
+                  ),
+            ),
+          ),
         ),
       ),
     );

@@ -73,16 +73,15 @@ class FirstCapsuleHint extends StatelessWidget {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: DefaultIconButton(
-                    onTap: onClose,
-                    assetPath: AppIcons.capsuleClose,
-                    size: 22,
-                    semanticLabel: MaterialLocalizations.of(
-                      context,
-                    ).closeButtonTooltip,
-                  ),
+                // Its 44 dp target keeps the cross where the old 8 dp
+                // padding put it.
+                DefaultIconButton(
+                  onTap: onClose,
+                  assetPath: AppIcons.capsuleClose,
+                  size: 22,
+                  semanticLabel: MaterialLocalizations.of(
+                    context,
+                  ).closeButtonTooltip,
                 ),
               ],
             ),
