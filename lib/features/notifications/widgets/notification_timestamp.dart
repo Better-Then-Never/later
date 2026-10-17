@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class NotificationTimestamp extends StatelessWidget {
   final DateTime timestamp;
@@ -11,7 +12,7 @@ class NotificationTimestamp extends StatelessWidget {
     return DefaultText(
       _formatTimestamp(timestamp),
       fontSize: 12,
-      color: Colors.grey[600],
+      color: AppColors.grey600,
     );
   }
 

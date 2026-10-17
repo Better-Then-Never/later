@@ -6,6 +6,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../core/assets/app_assets.dart';
 import '../../shared/widgets/later_loading_bar.dart';
 import '../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
+import 'package:later/core/theme/app_motion.dart';
 
 class AppPermission {
   final String name;
@@ -149,8 +151,8 @@ class _PermissionGatePageState extends State<PermissionGatePage>
       final next = _firstPendingIndex(from: _currentPage + 1);
       await _pageController.animateToPage(
         next,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeOut,
+        duration: AppMotion.reveal,
+        curve: AppMotion.enter,
       );
     }
 
@@ -230,9 +232,9 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                                   item.name,
                                   style: const TextStyle(
                                     fontSize: 50,
-                                    fontFamily: 'Irina',
+                                    fontFamily: kAppFontFamily,
                                     fontWeight: FontWeight.bold,
-                                    color: Color.fromARGB(255, 0, 0, 0),
+                                    color: AppColors.black,
                                   ),
                                 ),
                               ),
@@ -259,9 +261,9 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                                 child: Text(
                                   granted ? 'Granted' : 'Enable',
                                   style: const TextStyle(
-                                    fontFamily: 'Irina',
+                                    fontFamily: kAppFontFamily,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     fontSize: 25.0,
                                   ),
                                 ),
@@ -285,7 +287,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                   decoration: BoxDecoration(
                     color: _currentPage == index
                         ? AppColors.brandGreen
-                        : Colors.grey.shade400,
+                        : AppColors.grey400,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );

@@ -17,6 +17,8 @@ class SessionController extends ChangeNotifier {
     required AuthRepository auth,
     required UserRepository users,
     List<SessionScoped> scoped = const [],
+    this.cleanupTimeout = const Duration(seconds: 5),
+    this.missingProfileGrace = const Duration(seconds: 3),
   }) : _auth = auth,
        _users = users,
        _scoped = List.unmodifiable(scoped);
@@ -25,12 +27,21 @@ class SessionController extends ChangeNotifier {
   final UserRepository _users;
   final List<SessionScoped> _scoped;
 
+  /// Longest wait for each part's sign-out cleanup.
+  final Duration cleanupTimeout;
+
+  /// How long the profile may be missing before [profileMissing] says so.
+  /// Signup creates it right after the account, so a short gap is normal.
+  final Duration missingProfileGrace;
+
   StreamSubscription<String?>? _authSub;
   StreamSubscription<UserProfile?>? _profileSub;
 
   SessionStatus _status = SessionStatus.unknown;
   String? _uid;
   UserProfile? _profile;
+  bool _profileMissing = false;
+  Timer? _missingTimer;
   bool _signingOut = false;
   bool _signedOutByUser = false;
 
@@ -39,6 +50,11 @@ class SessionController extends ChangeNotifier {
 
   /// Live profile of the signed-in user; null until loaded or if missing.
   UserProfile? get profile => _profile;
+
+  /// Signed in, but `users/{uid}` does not exist (POL-002: a signup that
+  /// failed half-way, a profile removed elsewhere). The app asks for a name
+  /// and username instead of showing "Loading..." forever.
+  bool get profileMissing => _profileMissing;
 
   /// After an explicit "Log Out" the app shows the login page (not the
   /// welcome page), as it always did.
@@ -66,6 +82,18 @@ class SessionController extends ChangeNotifier {
       _profileSub = _users.watchProfile(uid).listen(
         (profile) {
           _profile = profile;
+          if (profile != null) {
+            _missingTimer?.cancel();
+            _missingTimer = null;
+            _profileMissing = false;
+          } else {
+            _missingTimer ??= Timer(missingProfileGrace, () {
+              _missingTimer = null;
+              if (_profile != null || _uid != uid) return;
+              _profileMissing = true;
+              notifyListeners();
+            });
+          }
           notifyListeners();
         },
         onError: (Object e, StackTrace st) => AppLogger.warning(
@@ -85,6 +113,9 @@ class SessionController extends ChangeNotifier {
     unawaited(_profileSub?.cancel());
     _profileSub = null;
     _profile = null;
+    _missingTimer?.cancel();
+    _missingTimer = null;
+    _profileMissing = false;
     if (_uid != null) {
       for (final s in _scoped.reversed) {
         s.detach();
@@ -101,7 +132,10 @@ class SessionController extends ChangeNotifier {
     try {
       for (final s in _scoped.reversed) {
         try {
-          await s.beforeSignOut(uid);
+          // A cleanup that cannot finish (e.g. a Firestore write while the
+          // backend is unreachable, which waits forever) must not keep the
+          // user signed in (POL-003).
+          await s.beforeSignOut(uid).timeout(cleanupTimeout);
         } catch (e, st) {
           AppLogger.warning(
             'Sign-out cleanup failed',
@@ -112,6 +146,22 @@ class SessionController extends ChangeNotifier {
       }
       _signedOutByUser = true;
       await _auth.signOut();
+    } finally {
+      _signingOut = false;
+    }
+  }
+
+  /// Deletes the signed-in account for good (after
+  /// [AuthRepository.reauthenticate]). No client cleanup first: the server
+  /// removes everything the account owned, push tokens included
+  /// (functions/lib/account.js), and a failed delete leaves the user
+  /// signed in with nothing removed. Throws an AppFailure on failure.
+  Future<void> deleteAccount() async {
+    if (_uid == null || _signingOut) return;
+    _signingOut = true;
+    try {
+      // The welcome page follows, not the login page.
+      await _auth.deleteAccount();
     } finally {
       _signingOut = false;
     }

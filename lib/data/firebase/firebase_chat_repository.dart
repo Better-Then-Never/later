@@ -51,10 +51,14 @@ class FirebaseChatRepository implements ChatRepository {
           );
 
   @override
+  String newMessageId(String chatId) => _messages(chatId).doc().id;
+
+  @override
   Future<void> sendText({
     required String from,
     required String to,
     required String text,
+    required String messageId,
   }) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return Future.value();
@@ -62,6 +66,7 @@ class FirebaseChatRepository implements ChatRepository {
       from: from,
       to: to,
       preview: trimmed,
+      messageId: messageId,
       message: {'text': trimmed},
     );
   }
@@ -75,6 +80,8 @@ class FirebaseChatRepository implements ChatRepository {
     from: from,
     to: to,
     preview: capsule.title,
+    // One chat message per capsule, so a retry cannot post it twice.
+    messageId: 'capsule_${capsule.id}',
     message: {
       'text': capsule.title,
       'type': ChatMessageType.capsule.name,
@@ -83,29 +90,39 @@ class FirebaseChatRepository implements ChatRepository {
     },
   );
 
-  /// Writes the message and the chat summary in one transaction, creating
-  /// the chat document on first use.
+  /// Writes the message and the chat summary in one transaction: creates the
+  /// chat on first use and counts the message as unread for [to]. A message
+  /// id that already exists means an earlier attempt arrived: nothing to do.
   Future<void> _send({
     required String from,
     required String to,
     required String preview,
+    required String messageId,
     required Map<String, dynamic> message,
   }) {
     final chatRef = _chats.doc(Chat.idBetween(from, to));
-    final messageRef = chatRef.collection(FirestorePaths.messages).doc();
+    final messageRef = chatRef
+        .collection(FirestorePaths.messages)
+        .doc(messageId);
     return _db.runTransaction((tx) async {
       final chat = await tx.get(chatRef);
+      if ((await tx.get(messageRef)).exists) return;
       final summary = {
         'lastMessage': preview,
         'lastUpdated': FieldValue.serverTimestamp(),
         'lastSenderId': from,
       };
       if (chat.exists) {
-        tx.update(chatRef, summary);
+        final unread = FirestoreMappers.chat(
+          chat.id,
+          chat.data()!,
+        ).unreadFor(to);
+        tx.update(chatRef, {...summary, 'unreadCounts.$to': unread + 1});
       } else {
         tx.set(chatRef, {
           'participants': [from, to],
           'createdAt': FieldValue.serverTimestamp(),
+          'unreadCounts': {to: 1},
           ...summary,
         });
       }
@@ -119,20 +136,11 @@ class FirebaseChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String chatId, {required String sender}) async {
-    final unread = await _messages(chatId)
-        .where('senderId', isEqualTo: sender)
-        .where('status', isEqualTo: 'sent')
-        .get();
-    final docs = unread.docs;
-    for (var i = 0; i < docs.length; i += _batchSize) {
-      final batch = _db.batch();
-      for (final d in docs.skip(i).take(_batchSize)) {
-        batch.update(d.reference, {'status': 'read'});
-      }
-      await batch.commit();
-    }
-  }
+  Future<void> markRead(String chatId, {required String reader}) =>
+      _chats.doc(chatId).update({
+        'unreadCounts.$reader': 0,
+        'lastReadAt.$reader': FieldValue.serverTimestamp(),
+      });
 
   @override
   Future<void> clearHistory(String chatId) async {
@@ -151,6 +159,7 @@ class FirebaseChatRepository implements ChatRepository {
     await _chats.doc(chatId).update({
       'lastMessage': '',
       'lastUpdated': FieldValue.serverTimestamp(),
+      'unreadCounts': <String, int>{},
     });
   }
 }

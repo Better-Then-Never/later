@@ -21,8 +21,8 @@ class NotificationFilterTabs extends StatelessWidget {
           ),
           indicatorSize: TabBarIndicatorSize.label,
           dividerColor: Colors.transparent,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.black,
+          labelColor: AppColors.white,
+          unselectedLabelColor: AppColors.black,
           labelStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,

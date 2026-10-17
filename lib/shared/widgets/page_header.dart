@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/default_search_bar.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_motion.dart';
+import 'package:later/core/theme/app_dimens.dart';
 
 class PageHeader extends StatelessWidget {
   final String mainText;
@@ -27,12 +29,12 @@ class PageHeader extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return AnimatedSize(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.fastOutSlowIn,
+      duration: AppMotion.of(context, AppMotion.emphasized),
+      curve: AppMotion.emphasizedCurve,
       child: Container(
         width: screenWidth,
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
@@ -48,10 +50,24 @@ class PageHeader extends StatelessWidget {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    DefaultText(
-                      mainText,
-                      fontSize: screenHeight * 0.04,
-                      fontWeight: FontWeight.bold,
+                    // Long titles shrink instead of running under the
+                    // buttons on either side.
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal:
+                            leadingButton != null || trailingButton != null
+                            ? screenWidth * 0.17
+                            : AppSpacing.l,
+                      ),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: DefaultText(
+                          mainText,
+                          fontSize: screenHeight * 0.04,
+                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                        ),
+                      ),
                     ),
                     if (leadingButton != null)
                       Positioned(
@@ -98,9 +114,9 @@ class PageHeader extends StatelessWidget {
                   bottom: screenHeight * 0.01,
                 ),
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 150),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
+                  duration: AppMotion.of(context, AppMotion.fast),
+                  switchInCurve: AppMotion.enter,
+                  switchOutCurve: AppMotion.exit,
                   child: actionButtonsRow == null
                       ? const SizedBox.shrink()
                       : actionButtonsRow!,

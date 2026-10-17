@@ -2,15 +2,18 @@ import 'package:intl/intl.dart';
 
 /// Time labels of the chat screens (same wording as on main).
 abstract final class ChatTime {
-  /// Chat list: "Now", "5m", "3h", "2d", then "16/10".
+  /// Chat list: the time today ("14:05"), "Yesterday", the weekday within
+  /// a week ("Monday"), then the date as on the app's date pills
+  /// ("16.10.2026"). A pending server time counts as now.
   static String listLabel(DateTime? time, DateTime now) {
-    if (time == null) return '';
-    final age = now.difference(time);
-    if (age.inMinutes < 1) return 'Now';
-    if (age.inHours < 1) return '${age.inMinutes}m';
-    if (age.inDays < 1) return '${age.inHours}h';
-    if (age.inDays < 7) return '${age.inDays}d';
-    return '${time.day}/${time.month}';
+    final at = time ?? now;
+    final today = DateTime(now.year, now.month, now.day);
+    final day = DateTime(at.year, at.month, at.day);
+    final daysAgo = today.difference(day).inDays;
+    if (daysAgo <= 0) return messageTime(at);
+    if (daysAgo == 1) return 'Yesterday';
+    if (daysAgo < 7) return DateFormat('EEEE').format(at);
+    return DateFormat('dd.MM.yyyy').format(at);
   }
 
   /// Day separator: "Today", "Yesterday", then "October 16, 2026". A

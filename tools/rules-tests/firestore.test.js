@@ -445,18 +445,72 @@ describe('blocking', () => {
 describe('chats', () => {
   const chatRef = (db, id = 'alice_bob') => doc(db, `chats/${id}`);
 
-  /** What the app does: one transaction writing the summary and a message. */
-  function send(db, from, to, extra = {}, chatId = [from, to].sort().join('_')) {
+  /**
+   * What the app does: one transaction writing the summary (with +1 unread
+   * for the recipient) and the message. `legacy` sends like main's app did,
+   * without unread counts.
+   */
+  function send(db, from, to, extra = {}, chatId = [from, to].sort().join('_'), { legacy = false } = {}) {
     const ref = chatRef(db, chatId);
     const message = doc(collection(ref, 'messages'));
     return runTransaction(db, async (tx) => {
       const chat = await tx.get(ref);
       const summary = { lastMessage: extra.text ?? 'hi', lastUpdated: serverTimestamp(), lastSenderId: from };
-      if (chat.exists()) tx.update(ref, summary);
-      else tx.set(ref, { participants: [from, to], createdAt: serverTimestamp(), ...summary });
+      if (chat.exists()) {
+        const unread = (chat.data().unreadCounts || {})[to] || 0;
+        tx.update(ref, legacy ? summary : { ...summary, [`unreadCounts.${to}`]: unread + 1 });
+      } else {
+        tx.set(ref, {
+          participants: [from, to],
+          createdAt: serverTimestamp(),
+          ...(legacy ? {} : { unreadCounts: { [to]: 1 } }),
+          ...summary,
+        });
+      }
       tx.set(message, { senderId: from, text: 'hi', timestamp: serverTimestamp(), status: 'sent', ...extra });
     });
   }
+
+  async function unreadOf(uid) {
+    let data;
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      data = (await getDoc(doc(ctx.firestore(), 'chats/alice_bob'))).data();
+    });
+    return (data.unreadCounts || {})[uid];
+  }
+
+  test('unread counts: +1 for the recipient per message, reset by the reader only', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    assert.equal(await unreadOf('bob'), 2);
+
+    const alice = as('alice');
+    // Inflating or touching your own count while sending is refused.
+    await assertFails(
+      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: serverTimestamp(), lastSenderId: 'alice', 'unreadCounts.bob': 5 }),
+    );
+    await assertFails(
+      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: serverTimestamp(), lastSenderId: 'alice', 'unreadCounts.alice': 1 }),
+    );
+    // Only the reader resets their own count, and the receipt is server time.
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.bob': 0 }));
+    await assertFails(updateDoc(chatRef(as('bob')), { 'unreadCounts.bob': 0, 'lastReadAt.bob': Timestamp.now() }));
+    await assertFails(updateDoc(chatRef(as('bob')), { 'lastReadAt.alice': serverTimestamp() }));
+    await assertSucceeds(updateDoc(chatRef(as('bob')), { 'unreadCounts.bob': 0, 'lastReadAt.bob': serverTimestamp() }));
+    assert.equal(await unreadOf('bob'), 0);
+    // A new chat starts with exactly one unread message for the recipient.
+    await assertFails(
+      setDoc(chatRef(as('carol'), 'bob_carol'), {
+        participants: ['carol', 'bob'], createdAt: serverTimestamp(), lastMessage: 'hi',
+        lastUpdated: serverTimestamp(), lastSenderId: 'carol', unreadCounts: { bob: 3 },
+      }),
+    );
+  });
+
+  test("sending like main's app (no unread counts) is still allowed", async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', {}, undefined, { legacy: true }));
+    await assertSucceeds(send(as('bob'), 'bob', 'alice', {}, undefined, { legacy: true }));
+  });
 
   test('participants start a chat and both write to it', async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob'));
@@ -527,7 +581,9 @@ describe('chats', () => {
     const batch = writeBatch(db);
     messages.docs.forEach((d) => batch.delete(d.ref));
     await assertSucceeds(batch.commit());
-    // Bob clears although Alice sent the last message.
+    // Bob clears although Alice sent the last message; both counts go too.
+    await assertFails(updateDoc(chatRef(db), { lastMessage: '', lastUpdated: serverTimestamp(), unreadCounts: { alice: 4 } }));
+    await assertSucceeds(updateDoc(chatRef(db), { lastMessage: '', lastUpdated: serverTimestamp(), unreadCounts: {} }));
     await assertSucceeds(updateDoc(chatRef(db), { lastMessage: '', lastUpdated: serverTimestamp() }));
     await assertFails(updateDoc(chatRef(db), { participants: ['bob', 'carol'] }));
     await assertFails(deleteDoc(chatRef(db)));
@@ -581,5 +637,43 @@ describe('chats', () => {
     await assertFails(send(as('bob'), 'bob', 'alice', { ...msg, capsuleId: 'carols' }));
     await assertFails(send(as('carol'), 'carol', 'alice', { ...msg, capsuleId: 'carols' }, 'alice_carol'));
     await assertFails(send(alice, 'alice', 'bob', { ...msg, capsuleId: 'missing' }));
+  });
+});
+
+describe('settings', () => {
+  const settingsRef = (db, uid = 'alice') => doc(db, `users/${uid}/settings/app`);
+  const valid = {
+    notifications: {
+      enabled: true,
+      messages: false,
+      follows: true,
+      capsules: true,
+      preview: false,
+      sound: true,
+      quietHours: { enabled: true, start: 1320, end: 420 },
+      utcOffsetMinutes: 120,
+    },
+  };
+
+  test('only the owner reads and writes, as the app does', async () => {
+    const alice = as('alice');
+    await assertSucceeds(setDoc(settingsRef(alice), valid, { merge: true }));
+    await assertSucceeds(setDoc(settingsRef(alice), { mutedChats: arrayUnion('alice_bob') }, { merge: true }));
+    await assertSucceeds(getDoc(settingsRef(alice)));
+    await assertFails(getDoc(settingsRef(as('bob'), 'alice')));
+    await assertFails(setDoc(settingsRef(as('bob'), 'alice'), valid));
+    await assertFails(deleteDoc(settingsRef(alice)));
+    await assertFails(setDoc(doc(alice, 'users/alice/settings/other'), valid));
+  });
+
+  test('values are validated', async () => {
+    const alice = as('alice');
+    const n = valid.notifications;
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, enabled: 'yes' } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, quietHours: { enabled: true, start: 2000, end: 0 } } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, utcOffsetMinutes: 5000 } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, extra: true } }));
+    await assertFails(setDoc(settingsRef(alice), { ...valid, isAdmin: true }));
+    await assertFails(setDoc(settingsRef(alice), { mutedChats: 'alice_bob' }));
   });
 });

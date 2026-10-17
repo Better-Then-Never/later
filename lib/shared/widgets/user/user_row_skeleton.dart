@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_colors.dart';
 
-class SuggestedFriendPlaceholderRow extends StatelessWidget {
+/// Placeholder of a user row while it loads (grey avatar and two text bars).
+class UserRowSkeleton extends StatelessWidget {
   final double screenWidth;
 
-  const SuggestedFriendPlaceholderRow({super.key, required this.screenWidth});
+  const UserRowSkeleton({super.key, required this.screenWidth});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +19,8 @@ class SuggestedFriendPlaceholderRow extends StatelessWidget {
           Container(
             width: screenWidth * 0.14,
             height: screenWidth * 0.14,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
+            decoration: const BoxDecoration(
+              color: AppColors.grey300,
               shape: BoxShape.circle,
             ),
           ),
@@ -29,13 +31,13 @@ class SuggestedFriendPlaceholderRow extends StatelessWidget {
               Container(
                 width: screenWidth * 0.3,
                 height: screenWidth * 0.04,
-                color: Colors.grey[300],
+                color: AppColors.grey300,
               ),
               const SizedBox(height: 4),
               Container(
                 width: screenWidth * 0.2,
                 height: screenWidth * 0.03,
-                color: Colors.grey[300],
+                color: AppColors.grey300,
               ),
             ],
           ),

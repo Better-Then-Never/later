@@ -5,6 +5,8 @@ import 'package:later/features/notifications/widgets/notification_avatar.dart';
 import 'package:later/features/notifications/widgets/notification_thumbnail.dart';
 import 'package:later/features/notifications/widgets/notification_timestamp.dart';
 import 'package:later/features/notifications/widgets/notification_unread_indicator.dart';
+import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class NotificationItem extends StatelessWidget {
   final AppNotification notification;
@@ -35,18 +37,20 @@ class NotificationItem extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: isSelected
           ? BoxDecoration(
-              color: Colors.blue.shade100,
+              color: AppColors.selectedNotification,
               borderRadius: BorderRadius.circular(25),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blue.withValues(alpha: 0.2),
+                  color: AppColors.infoBlue.withValues(alpha: 0.2),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
               ],
             )
           : BoxDecorations.whiteCard(borderRadius: 25).copyWith(
-              color: notification.isRead ? Colors.white : Colors.blue.shade50,
+              color: notification.isRead
+                  ? AppColors.white
+                  : AppColors.unreadNotification,
             ),
       child: InkWell(
         onTap: onTap,
@@ -92,9 +96,9 @@ class NotificationItem extends StatelessWidget {
           child: RichText(
             text: TextSpan(
               style: const TextStyle(
-                fontFamily: 'Irina',
+                fontFamily: kAppFontFamily,
                 fontSize: 14,
-                color: Colors.black,
+                color: AppColors.black,
               ),
               children: [
                 TextSpan(

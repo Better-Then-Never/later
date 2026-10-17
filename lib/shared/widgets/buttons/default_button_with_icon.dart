@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/motion/app_motion_widgets.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class DefaultButtonWithIcon extends StatelessWidget {
   final double? width;
@@ -26,6 +28,10 @@ class DefaultButtonWithIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return AppPressable(child: _buildButton());
+  }
+
+  Widget _buildButton() {
     return Container(
       decoration: decoration ?? BoxDecorations.greyCard(),
       child: Material(
@@ -33,7 +39,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(25),
-          splashColor: Colors.black.withAlpha(25),
+          splashColor: AppColors.black.withAlpha(25),
           child: Container(
             width: width,
             height: height ?? 48,
@@ -48,7 +54,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
                       text,
                       fontSize: textFontSize,
                       textAlign: TextAlign.center,
-                      color: Colors.black,
+                      color: AppColors.black,
                       fontWeight: textFontWeight,
                     ),
                   ),

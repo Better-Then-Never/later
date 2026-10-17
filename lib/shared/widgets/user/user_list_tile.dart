@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'user_round_avatar.dart';
 import '../../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class UserListTile extends StatelessWidget {
   final String uid;
@@ -30,8 +31,8 @@ class UserListTile extends StatelessWidget {
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: screenWidth * 0.045,
-          fontFamily: 'Irina',
-          color: Colors.black,
+          fontFamily: kAppFontFamily,
+          color: AppColors.black,
         ),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
@@ -40,7 +41,7 @@ class UserListTile extends StatelessWidget {
         '@$username',
         style: TextStyle(
           fontSize: screenWidth * 0.04,
-          fontFamily: 'Irina',
+          fontFamily: kAppFontFamily,
           color: AppColors.textSecondary,
         ),
       ),

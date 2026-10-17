@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
+import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/user_profile.dart';
-import '../../../shared/widgets/user/user_round_avatar.dart';
+import '../../../shared/motion/app_motion_widgets.dart';
+import '../../../shared/styles/box_decorations.dart';
+import '../../../shared/widgets/buttons/default_icon_button.dart';
+import '../../../shared/widgets/default_empty_inbox_info.dart';
+import '../../../shared/widgets/default_search_bar.dart';
+import '../../../shared/widgets/user/user_list_tile.dart';
+import '../../../shared/widgets/user/user_row_skeleton.dart';
 import '../../friends/friends_store.dart';
 import '../../users/user_directory.dart';
 
@@ -17,7 +24,7 @@ class NewChatSheet extends StatefulWidget {
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: Colors.black.withAlpha(128),
+    barrierColor: AppColors.barrier,
     builder: (_) => const NewChatSheet(),
   );
 
@@ -43,11 +50,11 @@ class _NewChatSheetState extends State<NewChatSheet> {
         p.username.toLowerCase().contains(q);
   }
 
-  void _open(String friendUid) {
-    // The sheet's context dies with the pop; the root navigator lives on.
+  /// Leaves the sheet first; the root navigator outlives it.
+  void _closeThen(void Function(BuildContext root) open) {
     final root = AppRoutes.navigatorKey.currentContext;
     Navigator.of(context).pop();
-    if (root != null) AppRoutes.toChat(root, friendUid);
+    if (root != null) open(root);
   }
 
   @override
@@ -67,275 +74,123 @@ class _NewChatSheetState extends State<NewChatSheet> {
           ),
         );
 
+    final Widget body;
+    if (!friends.isLoaded) {
+      body = Column(
+        key: const ValueKey('loading'),
+        children: [
+          for (var i = 0; i < 3; i++)
+            UserRowSkeleton(screenWidth: screen.width),
+        ],
+      );
+    } else if (ids.isEmpty) {
+      body = DefaultEmptyInboxInfo(
+        key: const ValueKey('no-friends'),
+        message: 'No friends yet',
+        subtitle: 'Add some friends to start chatting!',
+        assetPath: AppIcons.profileMyFriends,
+        actionText: 'Find friends',
+        onAction: () => _closeThen(AppRoutes.toAddFriends),
+      );
+    } else if (visible.isEmpty) {
+      body = DefaultEmptyInboxInfo(
+        key: const ValueKey('no-match'),
+        message: 'No friends found',
+        subtitle: 'Nothing matches "$_query"',
+        assetPath: AppIcons.profileFriendSearch,
+      );
+    } else {
+      body = ListView.builder(
+        key: const ValueKey('list'),
+        padding: EdgeInsets.fromLTRB(16, 4, 16, screen.height * 0.03),
+        itemCount: visible.length,
+        itemBuilder: (context, index) {
+          final id = visible[index];
+          final profile = directory.profile(id);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: DecoratedBox(
+              decoration: BoxDecorations.whiteCard(),
+              child: Semantics(
+                button: true,
+                label: 'Start chat with ${profile?.name ?? ''}',
+                child: UserListTile(
+                  uid: id,
+                  name: profile?.name ?? '',
+                  username: profile?.username ?? '',
+                  screenWidth: screen.width,
+                  onTap: () => _closeThen((root) => AppRoutes.toChat(root, id)),
+                  trailing: Opacity(
+                    opacity: 0.3,
+                    child: Image.asset(
+                      AppIcons.goHere,
+                      width: screen.width * 0.09,
+                      height: screen.width * 0.09,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
     return Container(
       height: screen.height * 0.7,
       decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
+        color: AppColors.pageBackground,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
       ),
       child: Column(
         children: [
+          // Same header as the app's pages: white, rounded bottom.
           Container(
-            margin: const EdgeInsets.only(top: 12),
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.all(Radius.circular(25)),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: screen.width * 0.04,
-              vertical: screen.height * 0.02,
+            padding: EdgeInsets.fromLTRB(
+              screen.width * 0.04,
+              screen.height * 0.02,
+              screen.width * 0.04,
+              0,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                const SizedBox(width: 40),
-                Text(
-                  'New Chat',
-                  style: TextStyle(
-                    fontSize: screen.height * 0.025,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: kAppFontFamily,
-                  ),
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Full width, so the close button sits at the edge.
+                    const SizedBox(width: double.infinity),
+                    Text(
+                      'New Chat',
+                      style: AppTextStyles.pageTitle(
+                        screen,
+                      ).copyWith(fontSize: screen.height * 0.03),
+                    ),
+                    Positioned(
+                      right: 0,
+                      child: DefaultIconButton(
+                        onTap: () => Navigator.of(context).pop(),
+                        assetPath: AppIcons.capsuleClose,
+                        size: screen.width * 0.08,
+                      ),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  tooltip: 'Close',
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
+                SizedBox(height: screen.height * 0.015),
+                DefaultSearchBar(
+                  controller: _searchController,
+                  hintText: 'Search friends',
+                  onChanged: (value) => setState(() => _query = value),
                 ),
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: screen.width * 0.04),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Icon(
-                      Icons.search,
-                      color: Colors.grey[600],
-                      size: screen.width * 0.06,
-                    ),
-                  ),
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: const InputDecoration(
-                        hintText: 'Search friends',
-                        border: InputBorder.none,
-                        isDense: true,
-                      ),
-                      style: const TextStyle(
-                        fontFamily: kAppFontFamily,
-                        fontSize: 18,
-                      ),
-                      onChanged: (value) => setState(() => _query = value),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(height: screen.height * 0.02),
-          Expanded(
-            child: !friends.isLoaded
-                ? const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.brandGreen,
-                    ),
-                  )
-                : ids.isEmpty
-                ? _NoFriends(
-                    onFindFriends: () {
-                      final root = AppRoutes.navigatorKey.currentContext;
-                      Navigator.of(context).pop();
-                      if (root != null) AppRoutes.toAddFriends(root);
-                    },
-                  )
-                : visible.isEmpty
-                ? _CenteredInfo(
-                    icon: Icons.search_off,
-                    text: 'No friends match "$_query"',
-                  )
-                : ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screen.width * 0.02,
-                    ),
-                    itemCount: visible.length,
-                    itemBuilder: (context, index) {
-                      final id = visible[index];
-                      return _FriendRow(
-                        friendUid: id,
-                        profile: directory.profile(id),
-                        onTap: () => _open(id),
-                      );
-                    },
-                  ),
-          ),
+          const SizedBox(height: 12),
+          Expanded(child: AppFadeSwitcher(child: body)),
         ],
-      ),
-    );
-  }
-}
-
-class _FriendRow extends StatelessWidget {
-  const _FriendRow({
-    required this.friendUid,
-    required this.profile,
-    required this.onTap,
-  });
-
-  final String friendUid;
-  final UserProfile? profile;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.sizeOf(context).height;
-    final name = profile?.name ?? '';
-    final username = profile?.username ?? '';
-
-    return Semantics(
-      label: 'Start chat with $name',
-      button: true,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Row(
-            children: [
-              UserRoundAvatar(userId: friendUid, radius: 25),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: screenHeight * 0.02,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (username.isNotEmpty)
-                      Text(
-                        '@$username',
-                        style: TextStyle(
-                          fontSize: screenHeight * 0.016,
-                          color: Colors.grey[600],
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: Colors.grey[400], size: 24),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NoFriends extends StatelessWidget {
-  const _NoFriends({required this.onFindFriends});
-
-  final VoidCallback onFindFriends;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              'No friends yet',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[700],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Add some friends to start chatting!',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: onFindFriends,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandGreen,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              child: const Text(
-                'Find Friends',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CenteredInfo extends StatelessWidget {
-  const _CenteredInfo({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: Colors.grey[400]),
-            const SizedBox(height: 16),
-            Text(
-              text,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-          ],
-        ),
       ),
     );
   }

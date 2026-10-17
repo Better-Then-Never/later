@@ -39,9 +39,6 @@ class CapsuleListTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final bool isSelected;
 
-  /// The green "created" pill (one unit off AppColors.brandGreen).
-  static const _createdGreen = Color(0xFF55C92E);
-
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
@@ -100,7 +97,9 @@ class CapsuleListTile extends StatelessWidget {
                           child: Icon(
                             isFavorite ? Icons.favorite : Icons.favorite_border,
                             size: screen.height * 0.03,
-                            color: isFavorite ? Colors.red : Colors.grey,
+                            color: isFavorite
+                                ? AppColors.materialRed
+                                : AppColors.grey500,
                           ),
                         ),
                       ),
@@ -147,7 +146,7 @@ class CapsuleListTile extends StatelessWidget {
                           SizedBox(height: screen.height * 0.005),
                           if (createdAt != null)
                             _Pill(
-                              color: _createdGreen,
+                              color: AppColors.brandGreen,
                               child: _pillText(
                                 context,
                                 '${createdAt.day}.${createdAt.month}.'
@@ -177,7 +176,7 @@ Widget _pillText(BuildContext context, String text) => Text(
     fontSize: MediaQuery.sizeOf(context).width * 0.04,
     fontFamily: kAppFontFamily,
     fontWeight: FontWeight.bold,
-    color: Colors.white,
+    color: AppColors.white,
   ),
 );
 
@@ -247,7 +246,7 @@ class _Thumbnail extends StatelessWidget {
       width: width,
       height: height,
       color: AppColors.placeholderGrey,
-      child: const Icon(Icons.lock_clock, color: Colors.white),
+      child: const Icon(Icons.lock_clock, color: AppColors.white),
     );
     final url = this.url;
     if (url == null || url.isEmpty) return placeholder;

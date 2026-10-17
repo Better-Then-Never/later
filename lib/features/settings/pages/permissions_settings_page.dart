@@ -3,8 +3,10 @@ import 'package:later/core/assets/app_assets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:later/core/theme/app_colors.dart';
-
-// TODO: Refactor
+import 'package:later/core/theme/app_text_styles.dart';
+import 'package:later/shared/widgets/buttons/go_back_button.dart';
+import 'package:later/shared/widgets/options/options_section.dart';
+import 'package:later/shared/widgets/page_header.dart';
 
 class PermissionsSettingsPage extends StatefulWidget {
   const PermissionsSettingsPage({super.key});
@@ -119,18 +121,24 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
           ),
           title: const Text(
             'Revoke Permission',
-            style: TextStyle(fontFamily: 'Irina', fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontFamily: kAppFontFamily,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: const Text(
             'To revoke this permission, you need to go to your device settings. This will disable the related features in the app.',
-            style: TextStyle(fontFamily: 'Irina'),
+            style: TextStyle(fontFamily: kAppFontFamily),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text(
                 'Cancel',
-                style: TextStyle(fontFamily: 'Irina', color: Colors.grey),
+                style: TextStyle(
+                  fontFamily: kAppFontFamily,
+                  color: AppColors.grey500,
+                ),
               ),
             ),
             TextButton(
@@ -141,7 +149,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
               child: const Text(
                 'Open Settings',
                 style: TextStyle(
-                  fontFamily: 'Irina',
+                  fontFamily: kAppFontFamily,
                   color: AppColors.infoBlue,
                   fontWeight: FontWeight.bold,
                 ),
@@ -163,18 +171,24 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
           ),
           title: const Text(
             'Permission Required',
-            style: TextStyle(fontFamily: 'Irina', fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontFamily: kAppFontFamily,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: const Text(
             'This permission has been permanently denied. Please enable it in your device settings.',
-            style: TextStyle(fontFamily: 'Irina'),
+            style: TextStyle(fontFamily: kAppFontFamily),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text(
                 'Cancel',
-                style: TextStyle(fontFamily: 'Irina', color: Colors.grey),
+                style: TextStyle(
+                  fontFamily: kAppFontFamily,
+                  color: AppColors.grey500,
+                ),
               ),
             ),
             TextButton(
@@ -185,7 +199,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
               child: const Text(
                 'Open Settings',
                 style: TextStyle(
-                  fontFamily: 'Irina',
+                  fontFamily: kAppFontFamily,
                   color: AppColors.infoBlue,
                   fontWeight: FontWeight.bold,
                 ),
@@ -224,7 +238,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
       case PermissionStatus.restricted:
       case PermissionStatus.limited:
       case PermissionStatus.provisional:
-        return Colors.orange;
+        return AppColors.warningOrange;
     }
   }
 
@@ -237,74 +251,11 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
       backgroundColor: AppColors.pageBackgroundAlt,
       body: Column(
         children: [
-          // Header
-          Container(
-            width: screenWidth,
-            height: screenHeight * 0.16,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(25),
-                bottomRight: Radius.circular(25),
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: 4,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          'App permissions',
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.095,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Irina',
-                            color: Colors.black,
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: screenWidth * 0.05,
-                            vertical: 0,
-                          ),
-                          child: const Text(
-                            'Manage app permissions',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              fontFamily: 'Irina',
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 39,
-                  left: 8,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Image.asset(
-                      AppIcons.goBack,
-                      width: screenWidth * 0.11,
-                      height: screenWidth * 0.11,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          PageHeader(
+            mainText: 'App permissions',
+            description: 'What Later may use on this phone',
+            leadingButton: GoBackButton(context: context),
           ),
-
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -325,11 +276,11 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                       return Container(
                         margin: EdgeInsets.only(bottom: screenHeight * 0.015),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.white,
                           borderRadius: BorderRadius.circular(15),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
+                              color: AppColors.black.withValues(alpha: 0.05),
                               blurRadius: 5,
                               offset: const Offset(0, 2),
                             ),
@@ -352,10 +303,10 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                           title: Text(
                             permission.name,
                             style: const TextStyle(
-                              fontFamily: 'Irina',
+                              fontFamily: kAppFontFamily,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black,
+                              color: AppColors.black,
                             ),
                           ),
                           subtitle: Column(
@@ -364,10 +315,10 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                               const SizedBox(height: 4),
                               Text(
                                 permission.description,
-                                style: TextStyle(
-                                  fontFamily: 'Irina',
+                                style: const TextStyle(
+                                  fontFamily: kAppFontFamily,
                                   fontSize: 14,
-                                  color: Colors.grey[600],
+                                  color: AppColors.grey600,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -393,20 +344,10 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                               ),
                             ],
                           ),
-                          trailing: Switch(
+                          trailing: AppSwitch(
                             value: status.isGranted,
                             onChanged: (_) =>
                                 _togglePermission(permission.permission),
-                            activeThumbColor: const Color.fromARGB(
-                              255,
-                              86,
-                              201,
-                              46,
-                            ),
-                            inactiveThumbColor: Colors.grey,
-                            inactiveTrackColor: Colors.grey.withValues(
-                              alpha: 0.3,
-                            ),
                           ),
                         ),
                       );

@@ -6,6 +6,7 @@ import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/geo_position.dart';
 import '../models/user_profile.dart';
+import '../models/user_settings.dart';
 
 /// Collection and field names in one place.
 abstract final class FirestorePaths {
@@ -20,6 +21,10 @@ abstract final class FirestorePaths {
   static const blocked = 'blocked';
   static const chats = 'chats';
   static const messages = 'messages';
+  static const settings = 'settings';
+
+  /// The one document in users/{uid}/settings.
+  static const settingsDoc = 'app';
 }
 
 /// Tolerant readers: every mapper accepts legacy shapes and missing fields.
@@ -35,6 +40,9 @@ abstract final class FirestoreMappers {
 
   static String? _nonEmptyString(Object? value) =>
       value is String && value.trim().isNotEmpty ? value : null;
+
+  static Map<String, Object?> _map(Object? value) =>
+      value is Map ? value.cast<String, Object?>() : const {};
 
   static List<String> _stringList(Object? value) =>
       value is Iterable ? value.whereType<String>().toList() : const [];
@@ -96,6 +104,14 @@ abstract final class FirestoreMappers {
     lastMessage: _string(data['lastMessage'], ''),
     lastUpdated: _date(data['lastUpdated']),
     lastSenderId: _nonEmptyString(data['lastSenderId']),
+    unreadCounts: {
+      for (final e in _map(data['unreadCounts']).entries)
+        if (e.value is num) e.key: (e.value as num).toInt(),
+    },
+    lastReadAt: {
+      for (final e in _map(data['lastReadAt']).entries)
+        if (_date(e.value) case final DateTime at) e.key: at,
+    },
   );
 
   static ChatMessage chatMessage(String id, Map<String, dynamic> data) =>
@@ -109,6 +125,54 @@ abstract final class FirestoreMappers {
         capsuleId: _nonEmptyString(data['capsuleId']),
         imageUrl: _nonEmptyString(data['imageUrl']),
       );
+
+  static bool _bool(Object? value, bool fallback) =>
+      value is bool ? value : fallback;
+
+  static int _minutes(Object? value, int fallback) =>
+      value is int && value >= 0 && value < 24 * 60 ? value : fallback;
+
+  /// Same defaults as functions/lib/prefs.js.
+  static UserSettings userSettings(Map<String, dynamic>? data) {
+    if (data == null) return const UserSettings();
+    final n = _map(data['notifications']);
+    final q = _map(n['quietHours']);
+    const d = NotificationSettings();
+    return UserSettings(
+      notifications: NotificationSettings(
+        enabled: _bool(n['enabled'], d.enabled),
+        messages: _bool(n['messages'], d.messages),
+        follows: _bool(n['follows'], d.follows),
+        capsules: _bool(n['capsules'], d.capsules),
+        preview: _bool(n['preview'], d.preview),
+        sound: _bool(n['sound'], d.sound),
+        quietHours: QuietHours(
+          enabled: _bool(q['enabled'], d.quietHours.enabled),
+          start: _minutes(q['start'], d.quietHours.start),
+          end: _minutes(q['end'], d.quietHours.end),
+        ),
+        utcOffsetMinutes: n['utcOffsetMinutes'] is int
+            ? n['utcOffsetMinutes'] as int
+            : d.utcOffsetMinutes,
+      ),
+      mutedChats: _stringList(data['mutedChats']).toSet(),
+    );
+  }
+
+  static Map<String, dynamic> notificationSettings(NotificationSettings n) => {
+    'enabled': n.enabled,
+    'messages': n.messages,
+    'follows': n.follows,
+    'capsules': n.capsules,
+    'preview': n.preview,
+    'sound': n.sound,
+    'quietHours': {
+      'enabled': n.quietHours.enabled,
+      'start': n.quietHours.start,
+      'end': n.quietHours.end,
+    },
+    'utcOffsetMinutes': n.utcOffsetMinutes,
+  };
 
   static FriendRequest friendRequest(Map<String, dynamic> data) =>
       FriendRequest(

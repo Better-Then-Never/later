@@ -79,7 +79,7 @@ class _BackgroundView extends StatelessWidget {
                       // Was misspelt "Inria" (system font, BUG-087).
                       fontFamily: kAppFontFamily,
                       fontWeight: FontWeight.normal,
-                      color: Colors.white,
+                      color: AppColors.white,
                     ),
                   ),
                 ),

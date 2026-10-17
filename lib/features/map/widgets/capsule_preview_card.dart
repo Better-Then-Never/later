@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/widgets/app_network_image.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -6,6 +7,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// Dialog content showing an opened capsule: photo, title, description,
 /// place and creation date. Tapping the place calls [onPlaceTap].
@@ -24,7 +26,7 @@ class CapsulePreviewCard extends StatelessWidget {
       width: screen.width,
       height: screen.height * 0.45,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: AppRadii.lCircular,
         boxShadow: AppShadows.raised,
       ),
@@ -37,15 +39,9 @@ class CapsulePreviewCard extends StatelessWidget {
               height: double.infinity,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadii.m),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
+                child: AppNetworkImage(
+                  url: imageUrl,
                   cacheWidth: (screen.width * 0.45 * 3).round(),
-                  loadingBuilder: (context, child, progress) => progress == null
-                      ? child
-                      : const Center(child: CircularProgressIndicator()),
-                  errorBuilder: (_, _, _) =>
-                      const Center(child: Icon(Icons.broken_image_outlined)),
                 ),
               ),
             ),
@@ -72,7 +68,7 @@ class CapsulePreviewCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 14,
                         fontFamily: kAppFontFamily,
-                        color: Colors.black54,
+                        color: AppColors.textFaint,
                       ),
                     ),
                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_dimens.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 /// 325×55 outlined input of the auth screens, with an optional show/hide
 /// toggle for passwords.
@@ -59,7 +60,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
               : null,
           enabledBorder: const OutlineInputBorder(
             borderRadius: AppRadii.lCircular,
-            borderSide: BorderSide(width: 1.5, color: Colors.black),
+            borderSide: BorderSide(width: 1.5, color: AppColors.black),
           ),
           border: const OutlineInputBorder(borderRadius: AppRadii.lCircular),
         ),

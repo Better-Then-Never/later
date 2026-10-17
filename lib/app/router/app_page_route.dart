@@ -1,33 +1,50 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_motion.dart';
 
-/// The app's standard transition: a 10 ms fade (visually an instant swap),
-/// identical to the `PageTransitionType.fade` routes it replaces.
+/// The app's page transition: a short fade (AppMotion.fast), used for every
+/// push so all screens move the same way. Instant when motion is reduced.
 Route<T> fadeRoute<T>(Widget page, {RouteSettings? settings}) {
   return PageRouteBuilder<T>(
     settings: settings,
-    transitionDuration: AppDurations.pageFade,
-    reverseTransitionDuration: AppDurations.pageFade,
+    transitionDuration: AppMotion.fast,
+    reverseTransitionDuration: AppMotion.fast,
     pageBuilder: (_, _, _) => page,
-    transitionsBuilder: (_, animation, _, child) =>
-        FadeTransition(opacity: animation, child: child),
+    transitionsBuilder: (context, animation, _, child) {
+      if (AppMotion.reduced(context)) return child;
+      return FadeTransition(
+        opacity: CurvedAnimation(
+          parent: animation,
+          curve: AppMotion.enter,
+          reverseCurve: AppMotion.exit,
+        ),
+        child: child,
+      );
+    },
   );
 }
 
-/// Bottom-to-top slide (100 ms), used for the "Add friends" entry point.
+/// Bottom-to-top slide for pages that open like a sheet ("Add friends"),
+/// with the same timing as [fadeRoute].
 Route<T> slideUpRoute<T>(Widget page, {RouteSettings? settings}) {
   return PageRouteBuilder<T>(
     settings: settings,
-    transitionDuration: AppDurations.pageSlideUp,
-    reverseTransitionDuration: AppDurations.pageSlideUp,
+    transitionDuration: AppMotion.fast,
+    reverseTransitionDuration: AppMotion.fast,
     pageBuilder: (_, _, _) => page,
-    transitionsBuilder: (_, animation, _, child) => SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, 1),
-        end: Offset.zero,
-      ).animate(animation),
-      child: child,
-    ),
+    transitionsBuilder: (context, animation, _, child) {
+      if (AppMotion.reduced(context)) return child;
+      return SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+            .animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: AppMotion.enter,
+                reverseCurve: AppMotion.exit,
+              ),
+            ),
+        child: child,
+      );
+    },
   );
 }

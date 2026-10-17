@@ -16,6 +16,24 @@ abstract final class AppColors {
   static const pendingYellow = Color(0xFFFDDB07);
   static const warningOrange = Color(0xFFFF9800);
 
+  // Neutral scale: the Material greys the screens already used, named so no
+  // screen needs raw `Colors.*` (docs/polish/DESIGN_DECISIONS.md §1).
+  static const white = Color(0xFFFFFFFF);
+  static const black = Color(0xFF000000);
+  static const black45 = Color(0x73000000);
+  static const black87 = Color(0xDD000000);
+  static const white70 = Color(0xB3FFFFFF);
+  static const grey100 = Color(0xFFF5F5F5);
+  static const grey200 = Color(0xFFEEEEEE);
+  static const grey300 = Color(0xFFE0E0E0);
+  static const grey400 = Color(0xFFBDBDBD);
+  static const grey500 = Color(0xFF9E9E9E);
+  static const grey600 = Color(0xFF757575);
+  static const grey700 = Color(0xFF616161);
+  static const grey800 = Color(0xFF424242);
+  static const infoBlue600 = Color(0xFF1E88E5);
+  static const infoBlue700 = Color(0xFF1976D2);
+
   // Surfaces
   static const pageBackground = Color(0xFFF6F6F6);
   static const pageBackgroundAlt = Color(0xFFF5F5F5);

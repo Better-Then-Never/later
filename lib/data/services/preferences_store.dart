@@ -16,6 +16,12 @@ class PreferencesStore {
   Future<void> setPinnedFriends(String uid, List<String> uids) async =>
       (await _prefs).setStringList(_key(uid, 'pinned_friend_uids'), uids);
 
+  Future<String?> string(String uid, String name) async =>
+      (await _prefs).getString(_key(uid, name));
+
+  Future<void> setString(String uid, String name, String value) async =>
+      (await _prefs).setString(_key(uid, name), value);
+
   /// Removes data written by older versions under global keys (profile and
   /// background bytes, pinned friends) that could belong to another account.
   Future<void> purgeLegacyGlobalKeys() async {

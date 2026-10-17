@@ -7,9 +7,10 @@ import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../friends/friends_store.dart';
 import '../../friends/widgets/block_user.dart';
+import '../../settings/settings_store.dart';
 import '../chat_controller.dart';
 
-/// Menu of an open chat: search, clear history, block or unblock.
+/// Menu of an open chat: search, mute, clear history, block or unblock.
 class ChatOptionsSheet extends StatelessWidget {
   const ChatOptionsSheet({super.key, required this.controller});
 
@@ -41,9 +42,38 @@ class ChatOptionsSheet extends StatelessWidget {
     },
   );
 
+  static Future<void> _setMuted(
+    BuildContext context,
+    String chatId, {
+    required bool muted,
+  }) async {
+    final failure = await context.read<SettingsStore>().setChatMuted(
+      chatId,
+      muted: muted,
+    );
+    if (!context.mounted) return;
+    if (failure != null) {
+      PopupNotificationService.showError(
+        context: context,
+        message: failure.message,
+        position: NotificationPosition.bottom,
+      );
+    } else {
+      PopupNotificationService.showSuccess(
+        context: context,
+        message: muted ? 'Chat muted' : 'Chat unmuted',
+        position: NotificationPosition.bottom,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final friendUid = controller.friendUid;
+    final chatId = controller.chatId;
+    final muted = context.select<SettingsStore, bool>(
+      (s) => chatId != null && s.isMuted(chatId),
+    );
     final blocked = context.select<FriendsStore, bool>(
       (s) => s.isBlocked(friendUid),
     );
@@ -61,6 +91,16 @@ class ChatOptionsSheet extends StatelessWidget {
           },
         ),
         const OptionsMenuDivider(),
+        if (chatId != null) ...[
+          OptionsMenuItem(
+            text: muted ? 'Unmute notifications' : 'Mute notifications',
+            onPressed: () {
+              Navigator.pop(context);
+              _setMuted(page, chatId, muted: !muted);
+            },
+          ),
+          const OptionsMenuDivider(),
+        ],
         OptionsMenuItem(
           text: 'Clear history',
           textColor: AppColors.danger,

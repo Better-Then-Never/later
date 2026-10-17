@@ -8,6 +8,7 @@ import '../../../../shared/widgets/popup/popup_notification_service.dart';
 import 'pinned_friend_avatar.dart';
 import 'pinned_friend_options_dialog.dart';
 import 'pinned_friends_selection_dialog.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class PinnedFriendsRow extends StatelessWidget {
   const PinnedFriendsRow({super.key});
@@ -25,7 +26,7 @@ class PinnedFriendsRow extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
+      barrierColor: AppColors.barrier,
       builder: (_) => PinnedFriendsSelectionDialog(
         pinnedUids: controller.pinnedUids,
         allFriends: friends,
@@ -77,7 +78,7 @@ class PinnedFriendsRow extends StatelessWidget {
                 context: context,
                 backgroundColor: Colors.transparent,
                 isScrollControlled: true,
-                barrierColor: Colors.black.withAlpha(128),
+                barrierColor: AppColors.barrier,
                 builder: (_) => PinnedFriendOptionsDialog(
                   friendUid: uid,
                   onViewProfile: () {

@@ -77,6 +77,10 @@ class NotificationRouter {
         } catch (e) {
           AppLogger.warning('Could not open capsule $capsuleId', error: e);
         }
+      case NotificationType.message:
+        final userId = tap.userId;
+        if (userId == null) return;
+        await AppRoutes.toChat(context, userId);
       case NotificationType.reply ||
           NotificationType.comment ||
           NotificationType.other:

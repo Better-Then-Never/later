@@ -7,7 +7,7 @@ import '../../../../shared/widgets/default_text.dart';
 import '../../friend_actions.dart';
 import '../../friend_suggestions_controller.dart';
 import '../../friends_store.dart';
-import 'suggested_friend_placeholder_row.dart';
+import '../../../../shared/widgets/user/user_row_skeleton.dart';
 import 'suggested_friend_row.dart';
 
 /// Search results minus the user, their friends and dismissed suggestions.
@@ -42,7 +42,7 @@ class SuggestedFriendsList extends StatelessWidget {
           return ListView(
             children: [
               for (var i = 0; i < 3; i++)
-                SuggestedFriendPlaceholderRow(screenWidth: screenWidth),
+                UserRowSkeleton(screenWidth: screenWidth),
             ],
           );
         }

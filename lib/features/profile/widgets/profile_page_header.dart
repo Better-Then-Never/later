@@ -6,6 +6,7 @@ import 'package:later/features/profile/widgets/profile_picture.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/features/profile/widgets/profile_page_header_action_buttons.dart';
 import 'package:later/shared/widgets/user/user_name_and_username.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class ProfilePageHeader extends StatelessWidget {
   final double screenWidth;
@@ -49,8 +50,8 @@ class ProfilePageHeader extends StatelessWidget {
                     userId: userId,
                     nameFontSize: 32,
                     usernameFontSize: 20,
-                    nameColor: Colors.white,
-                    usernameColor: Colors.white,
+                    nameColor: AppColors.white,
+                    usernameColor: AppColors.white,
                     nameFontWeight: FontWeight.bold,
                     usernameFontWeight: FontWeight.bold,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -57,7 +57,7 @@ class _PinnedFriendsSelectionDialogState
     return Container(
       height: MediaQuery.sizeOf(context).height * 0.7,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       child: SafeArea(
@@ -91,7 +91,7 @@ class _PinnedFriendsSelectionDialogState
                     subtitle: DefaultText(
                       '@${info?.username ?? ''}',
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: AppColors.grey500,
                     ),
                     trailing: Checkbox(
                       value: isPinned,

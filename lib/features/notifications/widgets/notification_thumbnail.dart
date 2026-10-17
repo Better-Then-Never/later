@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class NotificationThumbnail extends StatelessWidget {
   final String? thumbnailImage;
@@ -40,8 +41,8 @@ class NotificationThumbnail extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      color: Colors.grey.shade300,
-      child: const Icon(Icons.image, color: Colors.grey),
+      color: AppColors.grey300,
+      child: const Icon(Icons.image, color: AppColors.grey500),
     );
   }
 }

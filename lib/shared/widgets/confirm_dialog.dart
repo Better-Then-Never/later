@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -32,7 +33,7 @@ class ConfirmDialog extends StatelessWidget {
           child: Container(
             width: 264,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(25),
             ),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
@@ -44,7 +45,7 @@ class ConfirmDialog extends StatelessWidget {
                   child: Text(
                     title,
                     style: const TextStyle(
-                      color: Colors.black,
+                      color: AppColors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -71,7 +72,7 @@ class ConfirmDialog extends StatelessWidget {
                     child: Text(
                       confirmText,
                       style: const TextStyle(
-                        color: Colors.white,
+                        color: AppColors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -82,8 +83,9 @@ class ConfirmDialog extends StatelessWidget {
                 TextButton(
                   onPressed: onCancel ?? () => Navigator.of(context).pop(),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color.fromARGB(255, 95, 95, 95),
+                    foregroundColor: AppColors.textSecondary,
                     textStyle: const TextStyle(
+                      fontFamily: kAppFontFamily,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -112,7 +114,7 @@ class ConfirmDialog extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withAlpha(128),
+      barrierColor: AppColors.barrier,
       builder: (BuildContext context) {
         return ConfirmDialog(
           title: title,

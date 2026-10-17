@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/motion/app_motion_widgets.dart';
 
 class DefaultIconButton extends StatelessWidget {
   final double? size;
@@ -22,17 +23,19 @@ class DefaultIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Opacity(
-        opacity: opacity ?? 1,
-        child:
-            child ??
-            Image.asset(
-              assetPath!,
-              width: size ?? screenWidth * 0.11,
-              height: size ?? screenWidth * 0.11,
-            ),
+    return AppPressable(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Opacity(
+          opacity: opacity ?? 1,
+          child:
+              child ??
+              Image.asset(
+                assetPath!,
+                width: size ?? screenWidth * 0.11,
+                height: size ?? screenWidth * 0.11,
+              ),
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class PasswordResetDialog extends StatefulWidget {
   final String initialEmail;
@@ -44,7 +45,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
           child: Container(
             width: 300,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(25),
             ),
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -54,7 +55,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                 const Text(
                   'Reset Password',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: AppColors.black,
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -63,7 +64,7 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                 const SizedBox(height: 10),
                 const Text(
                   'Enter your email to receive a password reset link',
-                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                  style: TextStyle(color: AppColors.textFaint, fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 12),
@@ -136,14 +137,14 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                                AppColors.white,
                               ),
                             ),
                           )
                         : const Text(
                             'Send Reset Link',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -153,8 +154,9 @@ class _PasswordResetDialogState extends State<PasswordResetDialog> {
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: TextButton.styleFrom(
-                    foregroundColor: const Color.fromARGB(255, 95, 95, 95),
+                    foregroundColor: AppColors.textSecondary,
                     textStyle: const TextStyle(
+                      fontFamily: kAppFontFamily,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -180,7 +182,7 @@ Future<void> showPasswordResetDialog(
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: Colors.black.withAlpha(128),
+    barrierColor: AppColors.barrier,
     builder: (context) =>
         PasswordResetDialog(initialEmail: initialEmail, onSubmit: onSubmit),
   );

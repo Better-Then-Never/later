@@ -1,6 +1,9 @@
 enum NotificationType {
   follow,
   capsule,
+
+  /// A chat message (pushes only; never stored as an in-app notification).
+  message,
   reply,
   comment,
   other;
@@ -16,6 +19,7 @@ enum NotificationType {
   String get title => switch (this) {
     NotificationType.follow => 'New Follower',
     NotificationType.capsule => 'New Capsule',
+    NotificationType.message => 'New Message',
     NotificationType.reply => 'New Reply',
     NotificationType.comment => 'New Comment',
     NotificationType.other => 'Notification',

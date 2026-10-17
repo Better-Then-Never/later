@@ -1,0 +1,30 @@
+# Exceptions to tool/check_design_tokens.dart: <rule> <path> <match>  # reason
+# Material icons are listed per icon; they are part of the original design
+# (docs/refactor/screenshots/before) where no custom artwork exists.
+
+# Original design: QR scanner flash, follow bell, history favourites/lock/selection, nested menu
+material-icon lib/features/friends/pages/qr_code_scanner_page.dart Icons.flash_on  # original design
+material-icon lib/features/friends/pages/qr_code_scanner_page.dart Icons.flash_off  # original design
+material-icon lib/features/friends/widgets/friend_options_modal.dart Icons.notifications_active  # original design (follow)
+material-icon lib/features/friends/widgets/friend_options_modal.dart Icons.notifications_outlined  # original design (follow)
+material-icon lib/features/history/widgets/capsule_list_tile.dart Icons.favorite  # original design
+material-icon lib/features/history/widgets/capsule_list_tile.dart Icons.favorite_border  # original design
+material-icon lib/features/history/widgets/capsule_list_tile.dart Icons.lock_clock  # original design (locked capsule)
+material-icon lib/features/history/widgets/capsule_selection_action_bar.dart Icons.close  # original design (selection bar)
+material-icon lib/features/history/widgets/capsule_selection_action_bar.dart Icons.delete  # original design (selection bar)
+material-icon lib/features/history/widgets/nested_menu.dart Icons.arrow_back  # original design (filter menu)
+material-icon lib/features/history/widgets/nested_menu.dart Icons.chevron_right  # original design (filter menu)
+material-icon lib/features/notifications/widgets/notification_selection_action_bar.dart Icons.mark_email_read  # original design
+material-icon lib/features/notifications/widgets/notification_selection_action_bar.dart Icons.delete_outline  # original design
+material-icon lib/features/notifications/widgets/notification_selection_action_bar.dart Icons.close  # original design
+material-icon lib/features/notifications/widgets/notification_thumbnail.dart Icons.image  # original design (thumbnail placeholder)
+material-icon lib/features/profile/share/share_profile_page.dart Icons.share  # original design
+material-icon lib/features/profile/share/share_profile_page.dart Icons.copy  # original design
+material-icon lib/features/profile/share/share_profile_page.dart Icons.info_outline  # original design
+material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.check_circle  # original design (toasts)
+material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.error  # original design (toasts)
+material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.info  # original design (toasts)
+material-icon lib/shared/widgets/app_network_image.dart Icons.image  # original design (image placeholder, as on notification thumbnails)
+
+
+material-icon lib/features/settings/widgets/settings_scaffold.dart Icons.check_circle  # same check as the success toasts (selected option)

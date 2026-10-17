@@ -3,8 +3,10 @@
 'use strict';
 
 const { FieldValue } = require('firebase-admin/firestore');
+const prefs = require('./prefs');
 
-const CHANNEL_ID = 'high_importance_channel';
+/** Longest message text shown in a push. */
+const PREVIEW_LENGTH = 150;
 const BATCH_LIMIT = 500;
 
 /** FCM errors that mean the token will never work again. */
@@ -64,7 +66,31 @@ async function sendToUser({ db, messaging }, uid, buildMessage) {
   return { sent: response.successCount, failed: response.failureCount, pruned };
 }
 
-function followMessage(notification, token) {
+/** Android and iOS delivery options for a push of [category]. */
+function delivery(category, sound, { tag } = {}) {
+  return {
+    android: {
+      priority: 'high',
+      notification: {
+        channelId: prefs.channelFor(category, sound),
+        ...(sound ? { sound: 'default' } : {}),
+        // Same tag = the new push replaces the previous one (one per chat).
+        ...(tag ? { tag } : {}),
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          ...(sound ? { sound: 'default' } : {}),
+          ...(tag ? { 'thread-id': tag } : {}),
+          contentAvailable: true,
+        },
+      },
+    },
+  };
+}
+
+function followMessage(notification, token, sound = true) {
   const userName = notification.fromUserName || 'Someone';
   return {
     token,
@@ -79,17 +105,11 @@ function followMessage(notification, token) {
       userId: notification.fromUserId || '',
       clickAction: 'FLUTTER_NOTIFICATION_CLICK',
     },
-    android: {
-      priority: 'high',
-      notification: { channelId: CHANNEL_ID, sound: 'default' },
-    },
-    apns: {
-      payload: { aps: { sound: 'default', badge: 1, contentAvailable: true } },
-    },
+    ...delivery('follows', sound),
   };
 }
 
-function capsuleMessage({ creatorName, ownerId, capsuleId }, token) {
+function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true) {
   return {
     token,
     notification: {
@@ -103,17 +123,73 @@ function capsuleMessage({ creatorName, ownerId, capsuleId }, token) {
       capsuleId,
       clickAction: 'FLUTTER_NOTIFICATION_CLICK',
     },
-    android: {
-      priority: 'high',
-      notification: { channelId: CHANNEL_ID, sound: 'default' },
-    },
+    ...delivery('capsules', sound),
   };
 }
 
-/** users/{uid}/notifications/{id} was created: push it if it is a follow. */
+/** Body of a message push: the text, or a neutral line without preview. */
+function messageBody(message, preview) {
+  const capsule = message.type === 'capsule';
+  if (!preview) return capsule ? 'Sent you a capsule' : 'New message';
+  const text = String(message.text || '');
+  const short = text.length > PREVIEW_LENGTH ? `${text.slice(0, PREVIEW_LENGTH - 1)}…` : text;
+  return capsule ? `Sent you a capsule: ${short}` : short;
+}
+
+function chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound = true) {
+  return {
+    token,
+    notification: { title: senderName, body },
+    data: {
+      type: 'message',
+      userId: senderId,
+      chatId,
+      messageId,
+      clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+    },
+    ...delivery('messages', sound, { tag: chatId }),
+  };
+}
+
+const now = (services) => (services.now ? services.now() : new Date());
+
+/**
+ * users/{uid}/notifications/{id} was created: push it if it is a follow and
+ * the user wants follow pushes now.
+ */
 async function onNotificationCreated(services, uid, notification) {
   if (!notification || notification.type !== 'follow') return null;
-  return sendToUser(services, uid, (token) => followMessage(notification, token));
+  const settings = await prefs.loadSettings(services.db, uid);
+  const blocked = prefs.blockedReason(settings, 'follows', now(services));
+  if (blocked) return { skipped: blocked };
+  const sound = settings.notifications.sound;
+  return sendToUser(services, uid, (token) => followMessage(notification, token, sound));
+}
+
+/**
+ * chats/{chatId}/messages/{id} was created: push it to the other participant
+ * unless they muted the chat, turned message pushes off or are in quiet
+ * hours. One push per chat at a time on Android (tag = chat id).
+ */
+async function onMessageCreated(services, chatId, messageId, message) {
+  const members = String(chatId).split('_');
+  const senderId = message && message.senderId;
+  if (members.length !== 2 || !senderId || !members.includes(senderId)) return null;
+  const to = members.find((m) => m !== senderId);
+  const { db } = services;
+
+  const settings = await prefs.loadSettings(db, to);
+  if (settings.mutedChats.includes(chatId)) return { skipped: 'muted' };
+  const blocked = prefs.blockedReason(settings, 'messages', now(services));
+  if (blocked) return { skipped: blocked };
+
+  const sender = await db.collection('users').doc(senderId).get();
+  const senderName = (sender.exists && (sender.get('name') || sender.get('username'))) || 'New message';
+  const body = messageBody(message, settings.notifications.preview);
+  const sound = settings.notifications.sound;
+  return sendToUser(services, to, (token) =>
+    chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound),
+  );
 }
 
 /**
@@ -157,6 +233,7 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
 
   const recipients = await capsuleRecipients(db, ownerId, privacy, owner.friends || []);
   if (recipients.length === 0) return { recipients: 0 };
+  const at = now(services);
 
   // The in-app notification is written for every recipient, with or without
   // a device token.
@@ -177,12 +254,17 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
     await batch.commit();
   }
 
+  // Pushes only for recipients who want capsule pushes now; the in-app
+  // notification above is written for everyone.
   const results = await Promise.all(
-    recipients.map((uid) =>
-      sendToUser(services, uid, (token) =>
-        capsuleMessage({ creatorName, ownerId, capsuleId }, token),
-      ),
-    ),
+    recipients.map(async (uid) => {
+      const settings = await prefs.loadSettings(db, uid);
+      if (prefs.blockedReason(settings, 'capsules', at)) return { sent: 0, pruned: 0 };
+      const sound = settings.notifications.sound;
+      return sendToUser(services, uid, (token) =>
+        capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound),
+      );
+    }),
   );
   return {
     recipients: recipients.length,
@@ -229,6 +311,9 @@ module.exports = {
   followMessage,
   capsuleMessage,
   onNotificationCreated,
+  messageBody,
+  chatMessage,
+  onMessageCreated,
   capsuleRecipients,
   onCapsuleCreated,
   profileSummary,

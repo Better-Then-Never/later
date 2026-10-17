@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/app/session/session_controller.dart';
@@ -5,6 +7,7 @@ import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/repositories/repositories.dart';
 import 'package:later/features/auth/auth_controller.dart';
+import 'package:later/features/settings/account_settings.dart';
 
 import '../fakes/fake_repositories.dart';
 
@@ -20,6 +23,18 @@ class _RecordingScope extends SessionScoped {
   @override
   Future<void> beforeSignOut(String uid) async =>
       events.add('beforeSignOut:$uid');
+}
+
+/// A cleanup that waits forever, like a Firestore write while offline.
+class _StuckScope extends SessionScoped {
+  @override
+  void attach(String uid) {}
+
+  @override
+  void detach() {}
+
+  @override
+  Future<void> beforeSignOut(String uid) => Completer<void>().future;
 }
 
 void main() {
@@ -75,6 +90,91 @@ void main() {
       expect(session.status, SessionStatus.signedOut);
       expect(session.signedOutByUser, isTrue);
       expect(auth.signOuts, 1);
+    });
+
+    test(
+      'a cleanup that never finishes does not block sign-out (POL-003)',
+      () async {
+        final stuck = SessionController(
+          auth: auth,
+          users: users,
+          scoped: [_StuckScope()],
+          cleanupTimeout: const Duration(milliseconds: 50),
+        )..start();
+        auth.emit('u1');
+        await pumpEventQueue();
+        await stuck.signOut().timeout(const Duration(seconds: 2));
+        await pumpEventQueue();
+        expect(auth.signOuts, 1);
+        expect(stuck.status, SessionStatus.signedOut);
+        stuck.dispose();
+      },
+    );
+  });
+
+  group('Missing profile (POL-002)', () {
+    test(
+      'reported only after the grace period, cleared once created',
+      () async {
+        final auth = FakeAuthRepository();
+        final users = FakeUserRepository();
+        final session = SessionController(
+          auth: auth,
+          users: users,
+          missingProfileGrace: const Duration(milliseconds: 50),
+        )..start();
+        auth.emit('u1');
+        await pumpEventQueue();
+        expect(session.status, SessionStatus.signedIn);
+        expect(session.profileMissing, isFalse, reason: 'signup gap');
+
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+        expect(session.profileMissing, isTrue);
+
+        expect(
+          await AccountSettings.completeProfile(
+            users,
+            auth,
+            'u1',
+            name: ' ',
+            username: 'ann',
+          ),
+          isA<ValidationFailure>(),
+        );
+        expect(
+          await AccountSettings.completeProfile(
+            users,
+            auth,
+            'u1',
+            name: 'Ann',
+            username: ' Ann ',
+          ),
+          isNull,
+        );
+        await pumpEventQueue();
+        expect(session.profileMissing, isFalse);
+        expect(session.profile!.username, 'ann');
+        session.dispose();
+      },
+    );
+
+    test('a profile that arrives in time never counts as missing', () async {
+      final auth = FakeAuthRepository();
+      final users = FakeUserRepository();
+      final session = SessionController(
+        auth: auth,
+        users: users,
+        missingProfileGrace: const Duration(milliseconds: 50),
+      )..start();
+      auth.emit('u2');
+      await pumpEventQueue();
+      await users.createProfile(uid: 'u2', name: 'B', username: 'bee');
+      await Future<void>.delayed(const Duration(milliseconds: 80));
+      expect(session.profileMissing, isFalse);
+      auth.emit(null);
+      await pumpEventQueue();
+      expect(session.profileMissing, isFalse);
+      session.dispose();
     });
   });
 

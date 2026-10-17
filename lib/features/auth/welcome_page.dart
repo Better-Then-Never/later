@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -31,7 +32,7 @@ class WelcomePage extends StatelessWidget {
                               'Welcome to',
                               style: TextStyle(
                                 fontSize: 40.0,
-                                fontFamily: 'Irina',
+                                fontFamily: kAppFontFamily,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -41,7 +42,7 @@ class WelcomePage extends StatelessWidget {
                                 'Later',
                                 style: TextStyle(
                                   fontSize: 40.0,
-                                  fontFamily: 'Irina',
+                                  fontFamily: kAppFontFamily,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -54,7 +55,7 @@ class WelcomePage extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 16.0,
-                                  fontFamily: 'Irina',
+                                  fontFamily: kAppFontFamily,
                                 ),
                               ),
                             ),
@@ -75,9 +76,9 @@ class WelcomePage extends StatelessWidget {
                             child: const Text(
                               'Get Started',
                               style: TextStyle(
-                                fontFamily: 'Irina',
+                                fontFamily: kAppFontFamily,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                                color: AppColors.white,
                                 fontSize: 28.0,
                               ),
                             ),

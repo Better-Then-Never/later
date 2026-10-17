@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 class CapsuleCreationTitleInput extends StatelessWidget {
   final TextEditingController controller;
@@ -15,14 +16,14 @@ class CapsuleCreationTitleInput extends StatelessWidget {
         counterText: '',
         hintStyle: TextStyle(
           fontSize: 25,
-          fontFamily: 'Irina',
+          fontFamily: kAppFontFamily,
           fontWeight: FontWeight.bold,
         ),
         border: InputBorder.none,
       ),
       style: const TextStyle(
         fontSize: 25,
-        fontFamily: 'Irina',
+        fontFamily: kAppFontFamily,
         fontWeight: FontWeight.bold,
       ),
     );

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_dimens.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/chat.dart';
+import '../../../shared/widgets/app_network_image.dart';
 import '../chat_time.dart';
 
-/// One message: green on the right for own messages, grey on the left for
-/// the friend's. Capsule messages show the capsule's photo; tapping it calls
-/// [onCapsuleTap].
+/// One message: brand green on the right for the user's own, a white card on
+/// the left for the friend's. Consecutive messages of one sender form a
+/// group; [showTail] squares the bottom corner of the group's last bubble.
+/// Capsule messages show the capsule's photo; tapping it calls
+/// [onCapsuleTap]. A message still sending is shown at once; a failed one is
+/// faded until it is retried.
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
@@ -18,47 +25,46 @@ class MessageBubble extends StatelessWidget {
 
   final ChatMessage message;
   final bool isMine;
-
-  /// Squares the bottom corner of the last bubble of a group.
   final bool showTail;
   final VoidCallback? onCapsuleTap;
 
-  static const _received = Color(0xFFE4E4E4);
+  static const _radius = Radius.circular(AppRadii.m);
+  static const _tail = Radius.circular(6);
 
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
-    final textColor = isMine ? Colors.white : Colors.black;
+    final textColor = isMine ? AppColors.textOnPrimary : AppColors.textPrimary;
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
+    final failed = message.delivery == MessageDelivery.failed;
 
-    return Align(
-      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: screen.width * 0.04,
-          vertical: screen.height * 0.005,
+    final bubble = Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: screen.width * 0.035,
+        vertical: screen.height * 0.009,
+      ),
+      constraints: BoxConstraints(maxWidth: screen.width * 0.72),
+      decoration: BoxDecoration(
+        color: isMine ? AppColors.brandGreen : AppColors.surface,
+        borderRadius: BorderRadius.only(
+          topLeft: _radius,
+          topRight: _radius,
+          bottomLeft: showTail && !isMine ? _tail : _radius,
+          bottomRight: showTail && isMine ? _tail : _radius,
         ),
-        padding: EdgeInsets.symmetric(
-          horizontal: screen.width * 0.04,
-          vertical: screen.height * 0.010,
-        ),
-        constraints: BoxConstraints(maxWidth: screen.width * 0.7),
-        decoration: BoxDecoration(
-          color: isMine ? AppColors.brandGreen : _received,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
-            bottomLeft: Radius.circular(showTail && !isMine ? 4 : 20),
-            bottomRight: Radius.circular(showTail && isMine ? 4 : 20),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (message.isCapsule) ...[
-              if (imageUrl != null)
-                GestureDetector(
+        boxShadow: isMine ? null : AppShadows.card,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (message.isCapsule) ...[
+            if (imageUrl != null)
+              Semantics(
+                button: true,
+                label: 'Open capsule ${message.text}',
+                child: GestureDetector(
                   onTap: onCapsuleTap,
                   child: _CapsulePhoto(
                     imageUrl: imageUrl,
@@ -66,51 +72,47 @@ class MessageBubble extends StatelessWidget {
                     height: screen.width * 0.45,
                   ),
                 ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  message.text,
-                  style: TextStyle(
-                    fontSize: screen.height * 0.02,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
-                ),
               ),
-            ] else
-              Text(
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
                 message.text,
                 style: TextStyle(
-                  fontSize: screen.height * 0.025,
+                  fontFamily: kAppFontFamily,
+                  fontSize: screen.height * 0.02,
+                  fontWeight: FontWeight.bold,
                   color: textColor,
                 ),
               ),
-            const SizedBox(height: 4),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (sentAt != null)
-                  Text(
-                    ChatTime.messageTime(sentAt),
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: isMine ? Colors.white70 : Colors.grey[500],
-                    ),
-                  ),
-                if (isMine) ...[
-                  const SizedBox(width: 4),
-                  Icon(
-                    message.isRead ? Icons.done_all : Icons.done,
-                    size: 14,
-                    color: message.isRead ? Colors.white : Colors.white70,
-                  ),
-                ],
-              ],
+            ),
+          ] else
+            Text(
+              message.text,
+              style: TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: screen.height * 0.022,
+                color: textColor,
+              ),
+            ),
+          if (sentAt != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              ChatTime.messageTime(sentAt),
+              style: TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 11,
+                color: isMine ? AppColors.white70 : AppColors.textMuted,
+              ),
             ),
           ],
-        ),
+        ],
       ),
+    );
+
+    return Align(
+      alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+      child: Opacity(opacity: failed ? 0.5 : 1, child: bubble),
     );
   }
 }
@@ -129,53 +131,35 @@ class _CapsulePhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppRadii.s),
       child: SizedBox(
         width: width,
         height: height,
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              cacheWidth: (width * 3).round(),
-              loadingBuilder: (context, child, progress) => progress == null
-                  ? child
-                  : const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.brandGreen,
-                        strokeWidth: 2,
-                      ),
-                    ),
-              errorBuilder: (_, _, _) => const Center(
-                child: Icon(Icons.broken_image, color: Colors.grey),
-              ),
-            ),
+            AppNetworkImage(url: imageUrl, cacheWidth: (width * 3).round()),
             Positioned(
               top: 8,
               left: 8,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(8),
+                padding: const EdgeInsets.fromLTRB(6, 4, 10, 4),
+                decoration: const BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: AppRadii.lCircular,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.all_inbox_rounded,
-                      color: Colors.white,
-                      size: 14,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
+                    Image.asset(AppIcons.sendCapsule, width: 18, height: 18),
+                    const SizedBox(width: 4),
+                    const Text(
                       'Capsule',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+                        fontFamily: kAppFontFamily,
+                        color: AppColors.textPrimary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],

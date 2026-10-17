@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class NotificationUnreadIndicator extends StatelessWidget {
   final bool isRead;
@@ -14,7 +15,7 @@ class NotificationUnreadIndicator extends StatelessWidget {
       height: 8,
       margin: const EdgeInsets.only(left: 8),
       decoration: const BoxDecoration(
-        color: Colors.blue,
+        color: AppColors.infoBlue,
         shape: BoxShape.circle,
       ),
     );

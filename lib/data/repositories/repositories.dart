@@ -5,6 +5,7 @@ import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/user_profile.dart';
+import '../models/user_settings.dart';
 
 /// Result of a Google sign-in, or null when the user cancelled.
 class SocialSignInResult {
@@ -35,6 +36,29 @@ abstract interface class AuthRepository {
   /// written (signup rollback).
   Future<void> deleteCurrentUser();
   Future<void> signOut();
+
+  /// Whether the signed-in user has a password (email accounts). Google-only
+  /// accounts confirm their identity with Google instead.
+  bool get hasPassword;
+
+  /// Confirms the signed-in user's identity right before a sensitive change
+  /// (Firebase requires a recent sign-in): with [password] for email
+  /// accounts, with the Google account picker otherwise. Returns false when
+  /// the user cancelled the picker; throws an AuthFailure on a wrong
+  /// password or a different Google account.
+  Future<bool> reauthenticate({String? password});
+
+  /// Call [reauthenticate] first.
+  Future<void> updatePassword(String newPassword);
+
+  /// Sends a confirmation link to [newEmail]; the sign-in email changes when
+  /// the user opens it. Call [reauthenticate] first.
+  Future<void> requestEmailChange(String newEmail);
+
+  /// Deletes the signed-in Auth account for good; a Cloud Function then
+  /// removes its data (functions/lib/account.js). Call [reauthenticate]
+  /// first.
+  Future<void> deleteAccount();
 }
 
 abstract interface class UserRepository {
@@ -97,11 +121,18 @@ abstract interface class ChatRepository {
   /// Messages of [chatId], oldest first (the newest [limit]).
   Stream<List<ChatMessage>> watchMessages(String chatId, {int limit});
 
-  /// Sends [text] from [from] to [to], creating the chat on first use.
+  /// A new message id, made on the device: the message can be shown before
+  /// the server has it, and a retry with the same id cannot duplicate it.
+  String newMessageId(String chatId);
+
+  /// Sends [text] as message [messageId] from [from] to [to], creating the
+  /// chat on first use and counting it as unread for [to]. Sending an id that
+  /// already arrived does nothing.
   Future<void> sendText({
     required String from,
     required String to,
     required String text,
+    required String messageId,
   });
 
   /// Posts [capsule] (already shared with [to]) into the chat.
@@ -111,8 +142,9 @@ abstract interface class ChatRepository {
     required Capsule capsule,
   });
 
-  /// Marks every unread message [sender] sent in [chatId] as read.
-  Future<void> markRead(String chatId, {required String sender});
+  /// [reader] has read [chatId]: their unread count goes to 0 and their read
+  /// receipt to now, in one write.
+  Future<void> markRead(String chatId, {required String reader});
 
   /// Deletes every message of [chatId], for both participants.
   Future<void> clearHistory(String chatId);
@@ -147,6 +179,14 @@ abstract interface class NotificationRepository {
     required String fromUid,
     required String fromUserName,
   });
+}
+
+/// Account-level settings (`users/{uid}/settings/app`).
+abstract interface class SettingsRepository {
+  /// The settings, with defaults while the document does not exist.
+  Stream<UserSettings> watch(String uid);
+  Future<void> saveNotifications(String uid, NotificationSettings settings);
+  Future<void> setChatMuted(String uid, String chatId, {required bool muted});
 }
 
 abstract interface class PushTokenRepository {

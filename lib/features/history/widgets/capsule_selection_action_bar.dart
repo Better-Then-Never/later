@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
+import 'package:later/core/theme/app_colors.dart';
 
 class SelectionActionBar extends StatelessWidget {
   final int count;
@@ -33,16 +34,16 @@ class SelectionActionBar extends StatelessWidget {
               const Spacer(),
               TextButton.icon(
                 onPressed: onCancel,
-                icon: const Icon(Icons.close, color: Colors.black),
+                icon: const Icon(Icons.close, color: AppColors.black),
                 label: const DefaultText('Cancel'),
               ),
               const SizedBox(width: 8),
               TextButton.icon(
                 onPressed: onDelete,
-                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                icon: const Icon(Icons.delete, color: AppColors.redAccent),
                 label: Text(
                   'Delete ($count)',
-                  style: const TextStyle(color: Colors.redAccent),
+                  style: const TextStyle(color: AppColors.redAccent),
                 ),
               ),
             ],

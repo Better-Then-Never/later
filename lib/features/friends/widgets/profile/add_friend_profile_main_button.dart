@@ -29,7 +29,7 @@ class AddProfileMainButton extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: const [
           BoxShadow(
-            color: Colors.black12,
+            color: AppColors.shadowCard,
             spreadRadius: 1,
             blurRadius: 16,
             offset: Offset(0, 6),
@@ -50,7 +50,7 @@ class AddProfileMainButton extends StatelessWidget {
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
-                    color: Colors.white,
+                    color: AppColors.white,
                     strokeWidth: 2,
                   ),
                 )
@@ -58,7 +58,7 @@ class AddProfileMainButton extends StatelessWidget {
                   _getButtonText(),
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppColors.white,
                 ),
         ),
       ),

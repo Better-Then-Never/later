@@ -62,8 +62,8 @@ class YourFriendProfilePage extends StatelessWidget {
                             userId: friendUid,
                             nameFontSize: screenWidth * 0.07,
                             usernameFontSize: screenWidth * 0.05,
-                            nameColor: Colors.white,
-                            usernameColor: Colors.white,
+                            nameColor: AppColors.white,
+                            usernameColor: AppColors.white,
                             textAlign: TextAlign.left,
                           ),
                         ),
@@ -120,11 +120,11 @@ class YourFriendProfilePage extends StatelessWidget {
                     width: screenWidth - 32,
                     height: 80,
                     decoration: BoxDecorations.whiteCard(),
-                    child: Center(
+                    child: const Center(
                       child: DefaultText(
                         "Friend's capsules will appear here",
                         fontSize: 16,
-                        color: Colors.grey[600],
+                        color: AppColors.grey600,
                       ),
                     ),
                   ),

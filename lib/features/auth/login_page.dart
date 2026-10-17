@@ -170,7 +170,7 @@ class _LoginViewState extends State<_LoginView> {
                                 child: const Text(
                                   'Sign Up',
                                   style: TextStyle(
-                                    color: Colors.black,
+                                    color: AppColors.black,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.0,
                                   ),

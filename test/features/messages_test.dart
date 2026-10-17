@@ -108,12 +108,11 @@ void main() {
     final now = DateTime(2026, 10, 16, 12);
 
     test('chat list labels', () {
-      expect(ChatTime.listLabel(null, now), '');
-      expect(ChatTime.listLabel(now, now), 'Now');
-      expect(ChatTime.listLabel(DateTime(2026, 10, 16, 11, 55), now), '5m');
-      expect(ChatTime.listLabel(DateTime(2026, 10, 16, 9), now), '3h');
-      expect(ChatTime.listLabel(DateTime(2026, 10, 14, 12), now), '2d');
-      expect(ChatTime.listLabel(DateTime(2026, 9, 1), now), '1/9');
+      expect(ChatTime.listLabel(null, now), '12:00');
+      expect(ChatTime.listLabel(DateTime(2026, 10, 16, 9, 5), now), '09:05');
+      expect(ChatTime.listLabel(DateTime(2026, 10, 15, 23), now), 'Yesterday');
+      expect(ChatTime.listLabel(DateTime(2026, 10, 12, 8), now), 'Monday');
+      expect(ChatTime.listLabel(DateTime(2026, 10, 9), now), '09.10.2026');
     });
 
     test('day separators', () {
@@ -124,12 +123,20 @@ void main() {
     });
   });
 
+  var sent = 0;
+  Future<void> say(String from, String to, String text) => chatRepo.sendText(
+    from: from,
+    to: to,
+    text: text,
+    messageId: 'x${sent++}',
+  );
+
   group('ChatsStore', () {
     test('lists chats with messages and follows the session', () async {
       expect(chats.isLoaded, isTrue);
       expect(chats.chats, isEmpty);
 
-      expect(await chats.sendText('bob', 'hi'), isNull);
+      expect(await chats.sendText('bob', 'hi', messageId: 'a'), isNull);
       await pumpEventQueue();
       expect(chats.chats.single.lastMessage, 'hi');
 
@@ -139,60 +146,140 @@ void main() {
 
       chats.detach();
       expect(chats.uid, isNull);
-      expect(await chats.sendText('bob', 'x'), isA<AuthFailure>());
+      expect(
+        await chats.sendText('bob', 'x', messageId: 'b'),
+        isA<AuthFailure>(),
+      );
+    });
+
+    test('counts unread messages, except in muted chats', () async {
+      await say('bob', 'me', 'one');
+      await say('bob', 'me', 'two');
+      await say('me', 'carol', 'mine are not unread for me');
+      await say('carol', 'me', 'three');
+      await pumpEventQueue();
+      expect(chats.totalUnread, 3);
+      expect(chats.chatWith('bob')!.unreadFor('me'), 2);
+
+      chats.muted = {Chat.idBetween('me', 'bob')};
+      expect(chats.totalUnread, 1);
     });
 
     test('a failed send is reported, not thrown', () async {
       chatRepo.failSends = true;
-      final failure = await chats.sendText('bob', 'hi');
+      final failure = await chats.sendText('bob', 'hi', messageId: 'a');
       expect(failure?.message, 'Failed to send message');
     });
   });
 
   group('ChatController', () {
-    ChatController open() =>
-        ChatController(friendUid: 'bob', chats: chats, friends: friends);
-
-    test(
-      'shows the conversation and marks what the friend sent as read',
-      () async {
-        await chatRepo.sendText(from: 'bob', to: 'me', text: 'Hello');
-        final c = open();
-        await pumpEventQueue();
-
-        expect(c.isLoaded, isTrue);
-        expect(c.visibleMessages.single.text, 'Hello');
-        expect(c.isMine(c.visibleMessages.single), isFalse);
-        expect(chatRepo.calls, contains('read:bob_me:bob'));
-        expect(c.visibleMessages.single.isRead, isTrue);
-
-        // A message arriving while the chat is open is marked read too.
-        chatRepo.calls.clear();
-        await chatRepo.sendText(from: 'bob', to: 'me', text: 'Still there?');
-        await pumpEventQueue();
-        expect(chatRepo.calls, contains('read:bob_me:bob'));
-        c.dispose();
-      },
+    ChatController open({int pageSize = 50}) => ChatController(
+      friendUid: 'bob',
+      chats: chats,
+      friends: friends,
+      pageSize: pageSize,
     );
 
-    test('sends trimmed text, refuses empty and too long messages', () async {
+    test('shows the conversation and marks it read with one write', () async {
+      await say('bob', 'me', 'Hello');
+      final c = open();
+      await pumpEventQueue();
+
+      expect(c.isLoaded, isTrue);
+      expect(c.visibleMessages.single.text, 'Hello');
+      expect(c.isMine(c.visibleMessages.single), isFalse);
+      expect(chatRepo.calls.where((x) => x.startsWith('read:')), [
+        'read:bob_me:me',
+      ]);
+      expect(chats.chatWith('bob')!.unreadFor('me'), 0);
+
+      // A message arriving while the chat is open is marked read too.
+      chatRepo.calls.clear();
+      await say('bob', 'me', 'Still there?');
+      await pumpEventQueue();
+      expect(chatRepo.calls, contains('read:bob_me:me'));
+      c.dispose();
+    });
+
+    test('a message shows at once; its receipt goes sent, then read', () async {
+      final c = open();
+      await pumpEventQueue();
+      expect(c.receipt, isNull);
+
+      final sending = c.send('  hi  ');
+      expect(c.messages.single.text, 'hi', reason: 'shown before the server');
+      expect(c.receipt, ReceiptStatus.sending);
+      expect(await sending, isNull);
+      await pumpEventQueue();
+      expect(c.messages.single.delivery, MessageDelivery.sent);
+      expect(c.receipt, ReceiptStatus.sent);
+
+      chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+      await chatRepo.markRead(Chat.idBetween('me', 'bob'), reader: 'bob');
+      await pumpEventQueue();
+      expect(c.receipt, ReceiptStatus.read);
+
+      await say('bob', 'me', 'reply');
+      await pumpEventQueue();
+      expect(c.receipt, isNull, reason: 'the friend wrote last');
+      c.dispose();
+    });
+
+    test('a failed message stays, can be retried, and never doubles', () async {
+      final c = open();
+      await pumpEventQueue();
+      chatRepo.failSends = true;
+      expect(await c.send('hi'), isNotNull);
+      expect(c.messages.single.delivery, MessageDelivery.failed);
+      expect(c.receipt, ReceiptStatus.failed);
+
+      chatRepo.failSends = false;
+      final id = c.messages.single.id;
+      expect(await c.retry(id), isNull);
+      await pumpEventQueue();
+      expect(c.messages, hasLength(1));
+      expect(c.messages.single.delivery, MessageDelivery.sent);
+      // Retrying an id that already arrived changes nothing.
+      expect(await c.retry(id), isNull);
+      expect(chatRepo.messages[Chat.idBetween('me', 'bob')], hasLength(1));
+      c.dispose();
+    });
+
+    test('refuses empty and too long messages', () async {
       final c = open();
       await pumpEventQueue();
       expect(await c.send('   '), isNull);
       expect(chatRepo.calls.where((x) => x.startsWith('text:')), isEmpty);
-
-      expect(await c.send('  hi  '), isNull);
-      expect(chatRepo.calls, contains('text:me->bob:hi'));
-
       final long = 'x' * (Chat.maxMessageLength + 1);
       expect(await c.send(long), isA<ValidationFailure>());
+      expect(c.messages, isEmpty);
+      c.dispose();
+    });
+
+    test('loads older messages a page at a time', () async {
+      for (var i = 0; i < 12; i++) {
+        await say(i.isEven ? 'bob' : 'me', i.isEven ? 'me' : 'bob', 'm$i');
+      }
+      final c = open(pageSize: 5);
+      await pumpEventQueue();
+      expect(c.messages.map((m) => m.text), ['m7', 'm8', 'm9', 'm10', 'm11']);
+      expect(c.canLoadOlder, isTrue);
+
+      c.loadOlder();
+      await pumpEventQueue();
+      expect(c.messages, hasLength(10));
+      c.loadOlder();
+      await pumpEventQueue();
+      expect(c.messages, hasLength(12));
+      expect(c.canLoadOlder, isFalse);
+      expect(c.messages.first.text, 'm0');
       c.dispose();
     });
 
     test('search filters the messages', () async {
-      await chatRepo.sendText(from: 'me', to: 'bob', text: 'Lunch?');
-      await chatRepo.sendText(from: 'bob', to: 'me', text: 'Sure, lunch at 1');
-      await chatRepo.sendText(from: 'me', to: 'bob', text: 'Great');
+      await say('me', 'bob', 'Lunch?');
+      await say('bob', 'me', 'Sure, lunch at 1');
+      await say('me', 'bob', 'Great');
       final c = open();
       await pumpEventQueue();
 

@@ -96,7 +96,7 @@ describe('follow notifications', () => {
     assert.equal(messaging.sent.length, 2);
     assert.equal(messaging.sent[0].notification.body, 'bob started following you');
     assert.equal(messaging.sent[0].data.userId, 'bob');
-    assert.equal(messaging.sent[0].android.notification.channelId, 'high_importance_channel');
+    assert.equal(messaging.sent[0].android.notification.channelId, 'activity');
   });
 
   test('other notification types are not pushed again', async () => {
@@ -196,5 +196,189 @@ describe('profile summary for the landing page (BUG-103)', () => {
       displayName: 'BOB',
       photoURL: null,
     });
+  });
+});
+
+const prefs = require('../lib/prefs');
+const account = require('../lib/account');
+
+/** Fixed clock: 2026-10-16 12:00 UTC. */
+const noon = () => new Date(Date.UTC(2026, 9, 16, 12, 0));
+
+async function setSettings(uid, data) {
+  await users().doc(uid).collection('settings').doc('app').set(data);
+}
+
+describe('notification preferences', () => {
+  test('missing settings mean everything on, quiet hours off', () => {
+    const s = prefs.normalize(undefined);
+    assert.equal(s.notifications.enabled, true);
+    assert.equal(s.notifications.messages, true);
+    assert.equal(s.notifications.quietHours.enabled, false);
+    assert.deepEqual(s.mutedChats, []);
+    assert.equal(prefs.blockedReason(s, 'messages', noon()), null);
+  });
+
+  test('quiet hours use local time and may span midnight', () => {
+    const at = (h, m = 0) => new Date(Date.UTC(2026, 9, 16, h, m));
+    const n = (start, end, offset = 0) =>
+      prefs.normalize({ notifications: { quietHours: { enabled: true, start, end }, utcOffsetMinutes: offset } }).notifications;
+    // 22:00-07:00 in UTC+2: 21:30 UTC is 23:30 local (quiet), 06:00 UTC is 08:00 local (not).
+    assert.equal(prefs.inQuietHours(n(22 * 60, 7 * 60, 120), at(21, 30)), true);
+    assert.equal(prefs.inQuietHours(n(22 * 60, 7 * 60, 120), at(6)), false);
+    // Same-day window 13:00-15:00 UTC.
+    assert.equal(prefs.inQuietHours(n(13 * 60, 15 * 60), at(14)), true);
+    assert.equal(prefs.inQuietHours(n(13 * 60, 15 * 60), at(15)), false);
+    // start == end means no quiet hours.
+    assert.equal(prefs.inQuietHours(n(600, 600), at(10)), false);
+  });
+
+  test('bad values fall back to the defaults', () => {
+    const s = prefs.normalize({ notifications: { enabled: 'no', quietHours: { start: 9999 }, utcOffsetMinutes: 99999 } });
+    assert.equal(s.notifications.enabled, true);
+    assert.equal(s.notifications.quietHours.start, 22 * 60);
+    assert.equal(s.notifications.utcOffsetMinutes, 14 * 60);
+  });
+
+  test('channels: one per kind, a silent one when sound is off', () => {
+    assert.equal(prefs.channelFor('messages', true), 'messages');
+    assert.equal(prefs.channelFor('messages', false), 'messages_silent');
+    assert.equal(prefs.channelFor('follows', true), 'activity');
+    assert.equal(prefs.channelFor('capsules', false), 'activity_silent');
+  });
+});
+
+describe('message notifications', () => {
+  const chatId = 'alice_bob';
+  const services = (messaging) => ({ db, messaging, now: noon });
+
+  beforeEach(async () => {
+    await addUser('alice', { name: 'Alice' }, ['a1']);
+    await addUser('bob', { name: 'Bob' }, ['b1']);
+  });
+
+  test('the other participant gets the text, tagged by chat', async () => {
+    const messaging = fakeMessaging();
+    const result = await notify.onMessageCreated(services(messaging), chatId, 'm1', {
+      senderId: 'alice',
+      text: 'Hi Bob',
+    });
+    assert.equal(result.sent, 1);
+    const [push] = messaging.sent;
+    assert.equal(push.token, 'b1');
+    assert.equal(push.notification.title, 'Alice');
+    assert.equal(push.notification.body, 'Hi Bob');
+    assert.deepEqual(
+      { type: push.data.type, chatId: push.data.chatId, userId: push.data.userId },
+      { type: 'message', chatId, userId: 'alice' },
+    );
+    assert.equal(push.android.notification.channelId, 'messages');
+    assert.equal(push.android.notification.tag, chatId);
+  });
+
+  test('long texts are shortened; capsules say so', () => {
+    assert.equal(notify.messageBody({ text: 'x'.repeat(200) }, true).length, 150);
+    assert.equal(notify.messageBody({ type: 'capsule', text: 'Trip' }, true), 'Sent you a capsule: Trip');
+  });
+
+  test('no preview, no sound: neutral text on the silent channel', async () => {
+    await setSettings('bob', { notifications: { preview: false, sound: false } });
+    const messaging = fakeMessaging();
+    await notify.onMessageCreated(services(messaging), chatId, 'm1', { senderId: 'alice', text: 'secret' });
+    const [push] = messaging.sent;
+    assert.equal(push.notification.body, 'New message');
+    assert.equal(push.android.notification.channelId, 'messages_silent');
+    assert.equal(push.android.notification.sound, undefined);
+  });
+
+  test('muted chat, messages off, everything off or quiet hours: no push', async () => {
+    const send = async () => {
+      const messaging = fakeMessaging();
+      const result = await notify.onMessageCreated(services(messaging), chatId, 'm1', { senderId: 'alice', text: 'x' });
+      return { result, sent: messaging.sent.length };
+    };
+    await setSettings('bob', { mutedChats: [chatId] });
+    assert.deepEqual(await send(), { result: { skipped: 'muted' }, sent: 0 });
+    await setSettings('bob', { notifications: { messages: false } });
+    assert.deepEqual(await send(), { result: { skipped: 'messages off' }, sent: 0 });
+    await setSettings('bob', { notifications: { enabled: false } });
+    assert.deepEqual(await send(), { result: { skipped: 'disabled' }, sent: 0 });
+    await setSettings('bob', { notifications: { quietHours: { enabled: true, start: 11 * 60, end: 13 * 60 } } });
+    assert.deepEqual(await send(), { result: { skipped: 'quiet hours' }, sent: 0 });
+  });
+
+  test('senders outside the chat id are ignored', async () => {
+    const messaging = fakeMessaging();
+    assert.equal(await notify.onMessageCreated(services(messaging), chatId, 'm1', { senderId: 'carol', text: 'x' }), null);
+    assert.equal(messaging.sent.length, 0);
+  });
+});
+
+describe('preferences for follow and capsule pushes', () => {
+  test('follow pushes respect "new followers" off', async () => {
+    await addUser('alice', {}, ['a1']);
+    await setSettings('alice', { notifications: { follows: false } });
+    const messaging = fakeMessaging();
+    const result = await notify.onNotificationCreated({ db, messaging, now: noon }, 'alice', { type: 'follow', fromUserId: 'bob' });
+    assert.deepEqual(result, { skipped: 'follows off' });
+    assert.equal(messaging.sent.length, 0);
+  });
+
+  test('capsule pushes skip users who turned them off; the in-app notice stays', async () => {
+    await addUser('owner');
+    await addUser('fan', {}, ['f1']);
+    await follow('fan', 'owner');
+    await setSettings('fan', { notifications: { capsules: false } });
+    const messaging = fakeMessaging();
+    const result = await notify.onCapsuleCreated({ db, messaging, now: noon }, 'c1', { ownerId: 'owner', privacy: 'public' });
+    assert.equal(result.recipients, 1);
+    assert.equal(messaging.sent.length, 0);
+    const inApp = await users().doc('fan').collection('notifications').get();
+    assert.equal(inApp.size, 1);
+  });
+});
+
+describe('account deletion cleanup', () => {
+  test('removes the account everywhere and leaves others intact', async () => {
+    await addUser('gone', { username: 'gone', friends: ['bob'] }, ['g1']);
+    await addUser('bob', { friends: ['gone', 'carol'] });
+    await addUser('carol');
+    await db.collection('usernames').doc('gone').set({ uid: 'gone' });
+    await db.collection('friend_requests').doc('gone_carol').set({ fromUserId: 'gone', toUserId: 'carol' });
+    await db.collection('friend_requests').doc('bob_carol').set({ fromUserId: 'bob', toUserId: 'carol' });
+    await follow('carol', 'gone');
+    await follow('gone', 'bob');
+    await db.collection('capsules').doc('c1').set({ ownerId: 'gone', title: 'x' });
+    await db.collection('capsules').doc('c2').set({ ownerId: 'bob', title: 'y' });
+    await db.doc('chats/bob_gone').set({ participants: ['gone', 'bob'], lastMessage: 'hi' });
+    await db.doc('chats/bob_gone/messages/m1').set({ senderId: 'gone', text: 'hi' });
+    await setSettings('gone', { mutedChats: [] });
+    await bucket.file('userdata/gone/assets/images/profile_image').save('x');
+    await bucket.file('userdata/bob/assets/images/profile_image').save('y');
+
+    const report = await account.deleteUserData({ db, bucket }, 'gone');
+    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1 });
+
+    assert.equal((await users().doc('gone').get()).exists, false);
+    assert.equal((await users().doc('gone').collection('settings').doc('app').get()).exists, false);
+    assert.deepEqual((await users().doc('bob').get()).get('friends'), ['carol']);
+    assert.equal((await db.collection('usernames').doc('gone').get()).exists, false);
+    assert.equal((await db.collection('friend_requests').doc('gone_carol').get()).exists, false);
+    assert.equal((await db.collection('friend_requests').doc('bob_carol').get()).exists, true);
+    assert.equal((await users().doc('carol').collection('following').doc('gone').get()).exists, false);
+    assert.equal((await users().doc('bob').collection('followers').doc('gone').get()).exists, false);
+    assert.equal((await db.collection('capsules').doc('c1').get()).exists, false);
+    assert.equal((await db.collection('capsules').doc('c2').get()).exists, true);
+    assert.equal((await db.doc('chats/bob_gone').get()).exists, false);
+    assert.equal((await db.doc('chats/bob_gone/messages/m1').get()).exists, false);
+    assert.equal((await bucket.file('userdata/gone/assets/images/profile_image').exists())[0], false);
+    assert.equal((await bucket.file('userdata/bob/assets/images/profile_image').exists())[0], true);
+
+    // Running it again is harmless.
+    await account.deleteUserData({ db, bucket }, 'gone');
+  });
+
+  test('refuses an invalid uid', async () => {
+    await assert.rejects(account.deleteUserData({ db, bucket }, '../x'));
   });
 });

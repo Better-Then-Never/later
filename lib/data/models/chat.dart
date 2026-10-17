@@ -7,6 +7,8 @@ class Chat {
     this.lastMessage = '',
     this.lastUpdated,
     this.lastSenderId,
+    this.unreadCounts = const {},
+    this.lastReadAt = const {},
   });
 
   final String id;
@@ -17,6 +19,17 @@ class Chat {
   final String lastMessage;
   final DateTime? lastUpdated;
   final String? lastSenderId;
+
+  /// Messages each participant has not read yet. Chats written before this
+  /// field existed have none (counted as 0).
+  final Map<String, int> unreadCounts;
+
+  /// When each participant last read the chat (read receipts).
+  final Map<String, DateTime> lastReadAt;
+
+  int unreadFor(String uid) => unreadCounts[uid] ?? 0;
+
+  DateTime? readAtOf(String uid) => lastReadAt[uid];
 
   /// Longest message text the app sends (the rules enforce it too).
   static const maxMessageLength = 2000;
@@ -40,6 +53,8 @@ class Chat {
       other.lastMessage == lastMessage &&
       other.lastUpdated == lastUpdated &&
       other.lastSenderId == lastSenderId &&
+      _mapEquals(other.unreadCounts, unreadCounts) &&
+      _mapEquals(other.lastReadAt, lastReadAt) &&
       other.participants.length == participants.length &&
       other.participants.every(participants.contains);
 
@@ -55,6 +70,18 @@ enum ChatMessageType {
       value == 'capsule' ? capsule : text;
 }
 
+/// Where a message of this user is on its way to the server.
+enum MessageDelivery {
+  /// Shown right away, not yet confirmed by the server.
+  sending,
+
+  /// The send failed; the user can retry.
+  failed,
+
+  /// Stored on the server (every message read from Firestore).
+  sent,
+}
+
 /// One message (`chats/{chatId}/messages/{id}`).
 class ChatMessage {
   const ChatMessage({
@@ -66,6 +93,7 @@ class ChatMessage {
     this.type = ChatMessageType.text,
     this.capsuleId,
     this.imageUrl,
+    this.delivery = MessageDelivery.sent,
   });
 
   final String id;
@@ -80,6 +108,29 @@ class ChatMessage {
   /// For capsule messages: the shared capsule and its photo.
   final String? capsuleId;
   final String? imageUrl;
+  final MessageDelivery delivery;
+
+  /// Read by the recipient: from the chat's `lastReadAt` (current app) or the
+  /// per-message status written by older app versions.
+  bool readBy(DateTime? recipientReadAt) {
+    if (isRead) return true;
+    final at = sentAt;
+    return at != null &&
+        recipientReadAt != null &&
+        !at.isAfter(recipientReadAt);
+  }
+
+  ChatMessage withDelivery(MessageDelivery value) => ChatMessage(
+    id: id,
+    senderId: senderId,
+    text: text,
+    sentAt: sentAt,
+    isRead: isRead,
+    type: type,
+    capsuleId: capsuleId,
+    imageUrl: imageUrl,
+    delivery: value,
+  );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
 
@@ -93,8 +144,12 @@ class ChatMessage {
       other.isRead == isRead &&
       other.type == type &&
       other.capsuleId == capsuleId &&
-      other.imageUrl == imageUrl;
+      other.imageUrl == imageUrl &&
+      other.delivery == delivery;
 
   @override
-  int get hashCode => Object.hash(id, sentAt, isRead);
+  int get hashCode => Object.hash(id, sentAt, isRead, delivery);
 }
+
+bool _mapEquals<V>(Map<String, V> a, Map<String, V> b) =>
+    a.length == b.length && a.entries.every((e) => b[e.key] == e.value);

@@ -11,6 +11,7 @@ import 'package:later/features/notifications/widgets/notification_selection_acti
 import 'package:later/features/notifications/widgets/notifications_list.dart';
 import 'package:provider/provider.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_motion.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -65,8 +66,8 @@ class _NotificationsPageState extends State<NotificationsPage>
               animation: _controller,
               builder: (context, child) {
                 return AnimatedSize(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
+                  duration: AppMotion.of(context, AppMotion.slow),
+                  curve: AppMotion.standardCurve,
                   child: _controller.isSelectionMode
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -135,7 +136,7 @@ class _NotificationsPageState extends State<NotificationsPage>
           'Delete ${_controller.selectedCount} notification${_controller.selectedCount > 1 ? 's' : ''}?',
       confirmText: 'Delete',
       cancelText: 'Cancel',
-      confirmButtonColor: Colors.red,
+      confirmButtonColor: AppColors.materialRed,
       onConfirm: _performDelete,
     );
   }

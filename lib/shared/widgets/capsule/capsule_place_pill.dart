@@ -82,7 +82,7 @@ class _CapsulePlacePillState extends State<CapsulePlacePill> {
           height: widget.height,
           width: widget.height,
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.white,
             shape: BoxShape.circle,
           ),
           child: Image.asset(widget.iconPath),
