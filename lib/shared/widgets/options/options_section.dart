@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../styles/box_decorations.dart';
 import '../default_text.dart';
+import 'settings_row_layout.dart';
 import '../../../core/theme/app_palette.dart';
 
 /// A titled white card of settings rows, as on the Settings page.
@@ -92,12 +93,9 @@ class OptionsSwitchRow extends StatelessWidget {
     return Column(
       children: [
         MergeSemantics(
-          child: ListTile(
-            dense: true,
-            enabled: enabled,
-            minVerticalPadding: 6,
-            visualDensity: const VisualDensity(vertical: -3),
-            contentPadding: EdgeInsets.only(
+          child: SettingsRowLayout(
+            verticalPadding: 6,
+            padding: EdgeInsets.only(
               left: screenWidth * 0.05,
               right: screenWidth * 0.03,
             ),
