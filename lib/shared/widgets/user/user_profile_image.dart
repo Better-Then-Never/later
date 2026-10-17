@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/app_image_cache.dart';
 import '../../../data/services/profile_image_cache.dart';
+import 'user_placeholder.dart';
 
-/// A user's profile picture, or the "no photo" placeholder.
+/// A user's profile picture, or their [UserPlaceholder] (their gradient
+/// and initial).
 ///
 /// Resolved through [ProfileImageCache], so an upload or delete shows up
 /// everywhere at once and a missing picture is retried later instead of
@@ -21,8 +22,6 @@ class UserProfileImage extends StatelessWidget {
   final String userId;
   final bool small;
 
-  static const _placeholder = AssetImage(AppIcons.profileNoPhoto);
-
   @override
   Widget build(BuildContext context) {
     final url = context.select<ProfileImageCache, String?>(
@@ -32,12 +31,13 @@ class UserProfileImage extends StatelessWidget {
       (cache) =>
           cache.isResolved(userId, ProfileImageKind.profile, small: small),
     );
+    final placeholder = UserPlaceholder(userId: userId);
     if (url == null) {
       return resolved
-          ? const Image(image: _placeholder, fit: BoxFit.cover)
+          ? placeholder
           : ColoredBox(color: context.palette.skeleton);
     }
-    return NetworkPicture(url: url, fallback: _placeholder);
+    return NetworkPicture(url: url, fallback: placeholder);
   }
 }
 
@@ -47,7 +47,9 @@ class NetworkPicture extends StatelessWidget {
   const NetworkPicture({super.key, required this.url, required this.fallback});
 
   final String url;
-  final ImageProvider fallback;
+
+  /// Shown when the picture cannot be loaded.
+  final Widget fallback;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +68,7 @@ class NetworkPicture extends StatelessWidget {
           frameBuilder: (context, child, frame, sync) => sync || frame != null
               ? child
               : ColoredBox(color: context.palette.skeleton),
-          errorBuilder: (_, _, _) => Image(image: fallback, fit: BoxFit.cover),
+          errorBuilder: (_, _, _) => fallback,
         );
       },
     );

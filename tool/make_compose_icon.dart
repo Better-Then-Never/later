@@ -57,11 +57,12 @@ void main() {
   // pointed tip at the lower left.
   const tipX = 60.0, tipY = 84.0, endX = 128.0, endY = 16.0;
   const half = 11.0; // half the pencil's width
-  final dx = endX - tipX, dy = endY - tipY;
+  const dx = endX - tipX, dy = endY - tipY;
   final length = math.sqrt(dx * dx + dy * dy);
   final nx = -dy / length * half, ny = dx / length * half;
   const tipLength = 18.0;
-  final bx = tipX + dx / length * tipLength, by = tipY + dy / length * tipLength;
+  final bx = tipX + dx / length * tipLength,
+      by = tipY + dy / length * tipLength;
   // Outline of the pencil body and its tip.
   line(bx + nx, by + ny, endX + nx, endY + ny);
   line(bx - nx, by - ny, endX - nx, endY - ny);
@@ -76,8 +77,8 @@ void main() {
     height: _size,
     interpolation: img.Interpolation.average,
   );
-  File('assets/icons/messages/new_message.png').writeAsBytesSync(
-    img.encodePng(out),
-  );
+  File(
+    'assets/icons/messages/new_message.png',
+  ).writeAsBytesSync(img.encodePng(out));
   stdout.writeln('wrote assets/icons/messages/new_message.png ($_size px)');
 }
