@@ -5,6 +5,7 @@ import '../../../app/session/session_controller.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../../shared/widgets/app_sheets.dart';
 import '../../map/widgets/capsule_preview_card.dart';
 import 'capsule_social_controller.dart';
 import 'capsule_social_panel.dart';
@@ -23,40 +24,48 @@ abstract final class CapsuleDetailDialog {
         uid != null &&
         capsule.isOpen(DateTime.now()) &&
         CapsuleSocialPanel.showsAnything(capsule);
-    return showDialog<void>(
-      context: context,
-      barrierColor: context.palette.scrim,
-      builder: (dialogContext) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CapsulePreviewCard(
-              capsule: capsule,
-              onPlaceTap: onPlaceTap == null
-                  ? null
-                  : () {
-                      Navigator.of(dialogContext).pop();
-                      onPlaceTap();
-                    },
-            ),
-            if (withSocial) ...[
-              const SizedBox(height: 8),
-              ChangeNotifierProvider(
-                create: (_) => CapsuleSocialController(
+    // The card route: rises and grows in, closes on a tap outside or a drag
+    // down (MOTION_CATALOG.md).
+    return Navigator.of(context).push(
+      AppCardRoute<void>(
+        barrierColor: context.palette.scrim,
+        barrierLabel: MaterialLocalizations.of(
+          context,
+        ).modalBarrierDismissLabel,
+        builder: (dialogContext) => Material(
+          type: MaterialType.transparency,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CapsulePreviewCard(
                   capsule: capsule,
-                  uid: uid,
-                  social: social,
+                  onPlaceTap: onPlaceTap == null
+                      ? null
+                      : () {
+                          Navigator.of(dialogContext).pop();
+                          onPlaceTap();
+                        },
                 ),
-                child: Builder(
-                  builder: (context) => CapsuleSocialPanel(
-                    controller: context.read<CapsuleSocialController>(),
+                if (withSocial) ...[
+                  const SizedBox(height: 8),
+                  ChangeNotifierProvider(
+                    create: (_) => CapsuleSocialController(
+                      capsule: capsule,
+                      uid: uid,
+                      social: social,
+                    ),
+                    child: Builder(
+                      builder: (context) => CapsuleSocialPanel(
+                        controller: context.read<CapsuleSocialController>(),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            ],
-          ],
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );

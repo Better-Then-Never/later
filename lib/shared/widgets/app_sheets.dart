@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_palette.dart';
 
-/// The two ways the app opens something over a page (F-32), with the same
-/// dimmed barrier and slide-up animation:
+/// The two ways the app opens something over a page (F-32), over the same
+/// dimmed scrim (MOTION_CATALOG.md, "Sheets and cards"):
 ///
 /// * [showCenteredSheet]: a card in the middle of the screen for menus,
-///   confirmations and short forms; a tap outside closes it and the
-///   keyboard pushes it up.
+///   confirmations, short forms and the capsule dialog ([AppCardRoute]): it
+///   rises a little as it grows in; a tap outside or a drag down closes it;
+///   the keyboard pushes it up.
 /// * [showEdgeSheet]: a panel from the bottom edge for lists and threads,
 ///   built with [EdgeSheet] (rounded top, grab handle); dragging it down
 ///   closes it.
@@ -20,23 +22,13 @@ abstract final class AppSheets {
 }
 
 Future<T?> showCenteredSheet<T>(BuildContext context, Widget child) =>
-    showModalBottomSheet<T>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: context.palette.scrim,
-      builder: (context) => Padding(
-        // A card with a text field stays above the keyboard.
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(context).pop(),
-          child: Center(
-            child: GestureDetector(onTap: () {}, child: child),
-          ),
-        ),
+    Navigator.of(context).push(
+      AppCardRoute<T>(
+        builder: (_) => child,
+        barrierColor: context.palette.scrim,
+        barrierLabel: MaterialLocalizations.of(
+          context,
+        ).modalBarrierDismissLabel,
       ),
     );
 
@@ -46,8 +38,151 @@ Future<T?> showEdgeSheet<T>(BuildContext context, WidgetBuilder builder) =>
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       barrierColor: context.palette.scrim,
+      sheetAnimationStyle: AppMotion.reduced(context)
+          ? AnimationStyle.noAnimation
+          : const AnimationStyle(
+              duration: AppMotion.emphasized,
+              reverseDuration: AppMotion.standard,
+              curve: AppMotion.emphasizedCurve,
+              reverseCurve: AppMotion.standardCurve,
+            ),
       builder: builder,
     );
+
+/// A card over the page, centred, on a scrim: the route of
+/// [showCenteredSheet] and of dialogs. A page route (not a popup), so a
+/// [Hero] can fly into it. Enter: the card rises 24 dp and grows from 92 %
+/// while it fades in (only the card fades: a small layer, never the
+/// screen). Out: a tap outside, back, or a drag down past a third of the
+/// card or with a flick. Reduced motion: no animation.
+class AppCardRoute<T> extends PageRoute<T> {
+  AppCardRoute({
+    required this.builder,
+    required Color barrierColor,
+    required String barrierLabel,
+    super.settings,
+  }) : _barrierColor = barrierColor,
+       _barrierLabel = barrierLabel;
+
+  final WidgetBuilder builder;
+  final Color _barrierColor;
+  final String _barrierLabel;
+
+  @override
+  Color? get barrierColor => _barrierColor;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String? get barrierLabel => _barrierLabel;
+
+  @override
+  bool get opaque => false;
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Duration get transitionDuration => AppMotion.emphasized;
+
+  @override
+  Duration get reverseTransitionDuration => AppMotion.standard;
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) => Padding(
+    // A card with a text field stays above the keyboard.
+    padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+    child: Center(child: _DragToClose(child: builder(context))),
+  );
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (AppMotion.reduced(context)) return child;
+    final curve = CurvedAnimation(
+      parent: animation,
+      curve: AppMotion.emphasizedCurve,
+      reverseCurve: AppMotion.exit,
+    );
+    return AnimatedBuilder(
+      animation: curve,
+      child: child,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(0, 24 * (1 - curve.value)),
+        child: Transform.scale(
+          scale: 0.92 + 0.08 * curve.value,
+          child: Opacity(opacity: curve.value.clamp(0, 1), child: child),
+        ),
+      ),
+    );
+  }
+}
+
+/// Follows a downward drag on the card; past a third of its height, or on a
+/// flick, the route closes; otherwise the card springs back.
+class _DragToClose extends StatefulWidget {
+  const _DragToClose({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_DragToClose> createState() => _DragToCloseState();
+}
+
+class _DragToCloseState extends State<_DragToClose>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _back = AnimationController(
+    vsync: this,
+    duration: AppMotion.standard,
+  );
+  double _dy = 0;
+  double _from = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _back.addListener(() {
+      setState(() => _dy = _from * (1 - AppMotion.exit.transform(_back.value)));
+    });
+  }
+
+  @override
+  void dispose() {
+    _back.dispose();
+    super.dispose();
+  }
+
+  void _update(DragUpdateDetails details) {
+    _back.stop();
+    setState(() => _dy = (_dy + details.delta.dy).clamp(0, double.infinity));
+  }
+
+  void _end(DragEndDetails details) {
+    final height = context.size?.height ?? 1;
+    if (_dy > height / 3 || details.velocity.pixelsPerSecond.dy > 700) {
+      Navigator.of(context).maybePop();
+      return;
+    }
+    _from = _dy;
+    _back.forward(from: 0);
+  }
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    onVerticalDragUpdate: _update,
+    onVerticalDragEnd: _end,
+    child: Transform.translate(offset: Offset(0, _dy), child: widget.child),
+  );
+}
 
 /// A [showEdgeSheet] panel: [height] tall, rounded top corners, the grab
 /// handle on top of [child].
