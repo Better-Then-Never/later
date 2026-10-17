@@ -8,7 +8,8 @@ import 'package:later/shared/widgets/buttons/default_green_button.dart';
 import 'package:later/app/session/session_controller.dart';
 import 'package:later/data/repositories/repositories.dart';
 import 'package:later/features/settings/account_settings.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/core/theme/app_palette.dart';
 
 class NameSettingsPage extends StatefulWidget {
   const NameSettingsPage({super.key});
@@ -45,7 +46,7 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
     if (failure == null) {
       PopupNotificationService.showSuccess(
         context: context,
-        message: 'Name updated successfully!',
+        message: context.l10n.settingsNameUpdated,
         position: NotificationPosition.center,
       );
     } else {
@@ -62,14 +63,15 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    final l10n = context.l10n;
+
     return Scaffold(
-      backgroundColor: AppColors.pageBackgroundAlt,
+      backgroundColor: context.palette.backgroundAlt,
       body: Column(
         children: [
           PageHeader(
-            mainText: 'Name',
-            description:
-                'This is how you will be shown on Later, pick a name wisely, so your friends know you by',
+            mainText: l10n.settingsName,
+            description: l10n.settingsNameDescription,
             leadingButton: GoBackButton(context: context),
           ),
           Column(
@@ -77,7 +79,7 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
               SizedBox(height: screenHeight * 0.02),
               OptionsInputField(
                 controller: _nameController,
-                hintText: 'Enter new name',
+                hintText: l10n.settingsNameHint,
               ),
             ],
           ),
@@ -87,7 +89,7 @@ class _NameSettingsPageState extends State<NameSettingsPage> {
         minimum: EdgeInsets.all(screenWidth * 0.15),
         child: DefaultGreenButton(
           onTap: _saveName,
-          text: 'Save',
+          text: l10n.commonSave,
           isLoading: _isSaving,
         ),
       ),

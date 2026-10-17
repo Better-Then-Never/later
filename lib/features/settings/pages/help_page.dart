@@ -5,8 +5,9 @@ import 'package:provider/provider.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/app_links.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_motion.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
@@ -18,38 +19,16 @@ import '../widgets/settings_scaffold.dart';
 class HelpPage extends StatelessWidget {
   const HelpPage({super.key});
 
-  static const _faq = [
+  static List<(String, String)> _faq(AppLocalizations l10n) => [
+    (l10n.settingsFaqCapsuleQuestion, l10n.settingsFaqCapsuleAnswer),
+    (l10n.settingsFaqVisibilityQuestion, l10n.settingsFaqVisibilityAnswer),
+    (l10n.settingsFaqFriendsQuestion, l10n.settingsFaqFriendsAnswer),
     (
-      'What is a capsule?',
-      'A photo with a title and a note, pinned on the map where you made it. '
-          'You can set a date: until then the capsule stays locked.',
+      l10n.settingsFaqNotificationsQuestion,
+      l10n.settingsFaqNotificationsAnswer,
     ),
-    (
-      'Who can see my capsules?',
-      'You choose when you create one: only you (Private), your friends '
-          '(Friends) or everyone (Public).',
-    ),
-    (
-      'How do I add friends?',
-      'Search by username in Friends, scan their QR code, or share your '
-          'profile link from your profile.',
-    ),
-    (
-      'I do not get notifications',
-      'Check Settings > Notifications: the phone must allow Later to notify '
-          'you, and push notifications must be on. Quiet hours and muted chats '
-          'also keep pushes silent.',
-    ),
-    (
-      'How do I stop someone contacting me?',
-      'Block them from their profile or from the chat menu. You can unblock '
-          'them in Settings > Blocked users.',
-    ),
-    (
-      'How do I delete my account?',
-      'Settings > Delete account. Everything you made is removed and cannot '
-          'be brought back.',
-    ),
+    (l10n.settingsFaqBlockQuestion, l10n.settingsFaqBlockAnswer),
+    (l10n.settingsFaqDeleteQuestion, l10n.settingsFaqDeleteAnswer),
   ];
 
   Future<void> _copyInfo(BuildContext context) async {
@@ -59,7 +38,7 @@ class HelpPage extends StatelessWidget {
     if (!context.mounted) return;
     PopupNotificationService.showSuccess(
       context: context,
-      message: 'Copied. Paste it into your message to us.',
+      message: context.l10n.settingsHelpCopied,
       position: NotificationPosition.bottom,
     );
   }
@@ -75,7 +54,7 @@ class HelpPage extends StatelessWidget {
     if (!opened && context.mounted) {
       PopupNotificationService.showError(
         context: context,
-        message: 'No email app found. Write to ${AppLinks.supportEmail}',
+        message: context.l10n.settingsHelpNoEmailApp(AppLinks.supportEmail),
         position: NotificationPosition.bottom,
       );
     }
@@ -83,33 +62,33 @@ class HelpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final faq = _faq(l10n);
     return SettingsScaffold(
-      title: 'Help',
-      description: 'Answers and ways to reach us',
+      title: l10n.settingsHelp,
+      description: l10n.settingsHelpDescription,
       children: [
         OptionsSection(
-          title: 'QUESTIONS',
+          title: l10n.settingsSectionQuestions,
           children: [
-            for (final (i, (q, a)) in _faq.indexed)
-              _FaqRow(question: q, answer: a, last: i == _faq.length - 1),
+            for (final (i, (q, a)) in faq.indexed)
+              _FaqRow(question: q, answer: a, last: i == faq.length - 1),
           ],
         ),
         OptionsSection(
-          title: 'CONTACT',
-          footer:
-              'Emails from the app include your app version and phone. '
-              'You can also write to ${AppLinks.supportEmail}.',
+          title: l10n.settingsSectionContact,
+          footer: l10n.settingsHelpContactFooter(AppLinks.supportEmail),
           children: [
             OptionsSettingsRow(
-              title: 'Contact support',
-              onTap: () => _write(context, 'Later: question'),
+              title: l10n.settingsHelpContactSupport,
+              onTap: () => _write(context, l10n.settingsHelpSubjectQuestion),
             ),
             OptionsSettingsRow(
-              title: 'Report a problem',
-              onTap: () => _write(context, 'Later: problem report'),
+              title: l10n.settingsHelpReportProblem,
+              onTap: () => _write(context, l10n.settingsHelpSubjectProblem),
             ),
             OptionsSettingsRow(
-              title: 'Copy app information',
+              title: l10n.settingsHelpCopyInfo,
               withDivider: false,
               onTap: () => _copyInfo(context),
             ),
@@ -170,7 +149,7 @@ class _FaqRowState extends State<_FaqRow> {
               ? DefaultText(
                   widget.answer,
                   textAlign: TextAlign.left,
-                  color: AppColors.textSecondary,
+                  color: context.palette.textSecondary,
                   padding: EdgeInsets.only(
                     left: screenWidth * 0.05,
                     right: screenWidth * 0.05,
@@ -180,7 +159,7 @@ class _FaqRowState extends State<_FaqRow> {
               : const SizedBox(width: double.infinity),
         ),
         if (!widget.last)
-          const Divider(height: 1, thickness: 1, color: AppColors.divider),
+          Divider(height: 1, thickness: 1, color: context.palette.divider),
       ],
     );
   }

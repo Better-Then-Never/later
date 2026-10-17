@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../shared/widgets/buttons/go_back_button.dart';
 import '../../../shared/widgets/default_text.dart';
@@ -37,7 +38,7 @@ class SettingsScaffold extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      backgroundColor: AppColors.pageBackgroundAlt,
+      backgroundColor: context.palette.backgroundAlt,
       body: Column(
         children: [
           PageHeader(
@@ -87,7 +88,7 @@ class SettingsNote extends StatelessWidget {
     return DefaultText(
       text,
       textAlign: TextAlign.left,
-      color: AppColors.textSecondary,
+      color: context.palette.textSecondary,
       padding: EdgeInsets.only(
         left: screenWidth * 0.09,
         right: screenWidth * 0.09,
@@ -143,7 +144,7 @@ class SettingsChoiceRow extends StatelessWidget {
           onTap: onTap,
         ),
         if (withDivider)
-          const Divider(height: 1, thickness: 1, color: AppColors.divider),
+          Divider(height: 1, thickness: 1, color: context.palette.divider),
       ],
     );
   }

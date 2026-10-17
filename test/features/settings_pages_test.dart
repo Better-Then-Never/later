@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/services/cache_service.dart';
