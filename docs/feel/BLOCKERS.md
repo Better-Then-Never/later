@@ -19,6 +19,16 @@ Anything listed here was **not** checked on the device, or could not be done in 
 - Builds that use the emulators skip FCM topic subscriptions (`PushMessagingService`), so topic pushes are not
   testable with the emulator rig at all.
 
+## Part B, not finished (details in FEATURES_B.md)
+- **Groups**: no photos or capsules yet (Storage rules would need cross-service rules to read a group's members);
+  messages from someone you blocked still show in a group you share; no admin roles (any member renames and adds
+  their friends); no group picture.
+- **Photos offline**: a photo waits only while the app runs ("Not sent · Tap to retry" after 45 s offline); text
+  messages queue across restarts.
+- **Production IAM**: the functions' service account has *Storage Object Viewer* only, so it cannot delete files:
+  `deleteChatPhoto` and **the existing account deletion's file cleanup** fail in production until the grant in
+  BACKEND_CHANGES.md §2 is made.
+
 ## Owner decisions
 - **Russian text uses the phone's font.** Inria Sans (the app font) has no Cyrillic, so every Russian string falls
   back to the system font: the typefaces mix, and the first frame of a page costs ~5 ms more in Russian than in

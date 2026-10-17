@@ -89,4 +89,6 @@ dart run tool/dev/perf_summary.dart build/perf/<label>
   backend never deletes thousands of documents at once, so this is the rig, not the app.
 - **Background emulators**: stopping the shell that started them leaves `node` (the Firebase CLI) and the Firestore
   `java` running; stop those two processes before starting again.
+- **Functions tests** (`npm run test:emulate`) leave their Firestore `java` on port 8280 after finishing; the next
+  run then fails with "port taken". Stop it after each run (as the rules tests do with 8180).
 - The app keeps its language and theme on the phone between runs; the perf test sets a `PERF_LANG` back when it ends.
