@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/options_menu.dart';
@@ -28,8 +29,8 @@ class ChatOptionsSheet extends StatelessWidget {
     ChatController controller,
   ) => ConfirmDialog.show(
     context: context,
-    title: 'Are you sure you want to clear chat history?',
-    confirmText: 'Clear',
+    title: context.l10n.messagesClearConfirmTitle,
+    confirmText: context.l10n.messagesClearConfirm,
     onConfirm: () async {
       final failure = await controller.clearHistory();
       if (failure != null && context.mounted) {
@@ -61,7 +62,9 @@ class ChatOptionsSheet extends StatelessWidget {
     } else {
       PopupNotificationService.showSuccess(
         context: context,
-        message: muted ? 'Chat muted' : 'Chat unmuted',
+        message: muted
+            ? context.l10n.messagesMutedToast
+            : context.l10n.messagesUnmutedToast,
         position: NotificationPosition.bottom,
       );
     }
@@ -79,11 +82,12 @@ class ChatOptionsSheet extends StatelessWidget {
     );
     // The page's context: this sheet is gone when the follow-ups run.
     final page = Navigator.of(context).context;
+    final l10n = context.l10n;
 
     return OptionsMenu(
       children: [
         OptionsMenuItem(
-          text: 'Search',
+          text: l10n.messagesMenuSearch,
           isFirst: true,
           onPressed: () {
             Navigator.pop(context);
@@ -93,7 +97,7 @@ class ChatOptionsSheet extends StatelessWidget {
         const OptionsMenuDivider(),
         if (chatId != null) ...[
           OptionsMenuItem(
-            text: muted ? 'Unmute notifications' : 'Mute notifications',
+            text: muted ? l10n.messagesMenuUnmute : l10n.messagesMenuMute,
             onPressed: () {
               Navigator.pop(context);
               _setMuted(page, chatId, muted: !muted);
@@ -102,7 +106,7 @@ class ChatOptionsSheet extends StatelessWidget {
           const OptionsMenuDivider(),
         ],
         OptionsMenuItem(
-          text: 'Clear history',
+          text: l10n.messagesMenuClearHistory,
           textColor: AppColors.danger,
           onPressed: () {
             Navigator.pop(context);
@@ -112,7 +116,7 @@ class ChatOptionsSheet extends StatelessWidget {
         const OptionsMenuDivider(),
         if (blocked)
           OptionsMenuItem(
-            text: 'Unblock user',
+            text: l10n.messagesMenuUnblock,
             textColor: AppColors.brandGreen,
             isLast: true,
             onPressed: () {
@@ -122,7 +126,7 @@ class ChatOptionsSheet extends StatelessWidget {
           )
         else
           OptionsMenuItem(
-            text: 'Block user',
+            text: l10n.messagesMenuBlock,
             textColor: AppColors.danger,
             isLast: true,
             onPressed: () {

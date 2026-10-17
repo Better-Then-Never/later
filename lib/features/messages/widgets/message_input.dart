@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -73,8 +74,8 @@ class _MessageInputState extends State<MessageInput> {
             if (onCapsuleTap != null) ...[
               _RoundButton(
                 size: buttonSize,
-                color: AppColors.surface,
-                tooltip: 'Send a capsule',
+                color: context.palette.surface,
+                tooltip: context.l10n.messagesSendCapsule,
                 onTap: onCapsuleTap,
                 child: Padding(
                   padding: EdgeInsets.all(buttonSize * 0.14),
@@ -102,14 +103,14 @@ class _MessageInputState extends State<MessageInput> {
                   style: TextStyle(
                     fontFamily: kAppFontFamily,
                     fontSize: screen.height * 0.021,
-                    color: AppColors.textPrimary,
+                    color: context.palette.textPrimary,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Write a message...',
+                    hintText: context.l10n.messagesInputHint,
                     hintStyle: TextStyle(
                       fontFamily: kAppFontFamily,
                       fontSize: screen.height * 0.021,
-                      color: AppColors.textMuted,
+                      color: context.palette.textMuted,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
@@ -124,7 +125,7 @@ class _MessageInputState extends State<MessageInput> {
             _RoundButton(
               size: buttonSize,
               color: AppColors.brandGreen,
-              tooltip: 'Send',
+              tooltip: context.l10n.messagesSend,
               onTap: _hasText ? _send : null,
               child: Padding(
                 padding: EdgeInsets.all(buttonSize * 0.18),

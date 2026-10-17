@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_dimens.dart';
@@ -143,14 +144,14 @@ class _ChatViewState extends State<_ChatView> {
     if (capsule == null) {
       PopupNotificationService.showError(
         context: context,
-        message: 'This capsule is no longer available',
+        message: context.l10n.messagesCapsuleUnavailable,
         position: NotificationPosition.top,
       );
       return;
     }
     await showDialog<void>(
       context: context,
-      barrierColor: AppColors.barrier,
+      barrierColor: context.palette.scrim,
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -165,12 +166,13 @@ class _ChatViewState extends State<_ChatView> {
     // Rebuilds when this user blocks or unblocks the friend.
     context.watch<FriendsStore>();
     final friendUid = controller.friendUid;
+    final fallbackName = context.l10n.messagesChatFallbackTitle;
     final friendName = context.select<UserDirectory, String>(
-      (d) => d.profile(friendUid)?.name ?? 'Chat',
+      (d) => d.profile(friendUid)?.name ?? fallbackName,
     );
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Column(
         children: [
           _ChatHeader(
@@ -226,21 +228,22 @@ class _ChatViewState extends State<_ChatView> {
         child: CircularProgressIndicator(color: AppColors.brandGreen),
       );
     }
+    final l10n = context.l10n;
     if (controller.hasError) {
       return DefaultEmptyInboxInfo(
         key: const ValueKey('error'),
-        message: "Couldn't load the messages",
-        subtitle: 'Check your connection and try again',
+        message: l10n.messagesLoadError,
+        subtitle: l10n.messagesCheckConnection,
         assetPath: AppIcons.navbarMessages,
-        actionText: 'Retry',
+        actionText: l10n.commonRetry,
         onAction: controller.reload,
       );
     }
     if (!controller.hasMessages) {
       return DefaultEmptyInboxInfo(
         key: const ValueKey('empty'),
-        message: 'No messages yet',
-        subtitle: 'Say hello to $friendName!',
+        message: l10n.messagesEmptyTitle,
+        subtitle: l10n.messagesEmptySubtitle(friendName),
         assetPath: AppIcons.navbarMessages,
       );
     }
@@ -248,8 +251,8 @@ class _ChatViewState extends State<_ChatView> {
     if (messages.isEmpty) {
       return DefaultEmptyInboxInfo(
         key: const ValueKey('no-match'),
-        message: 'No messages found',
-        subtitle: 'Nothing matches "${controller.query}"',
+        message: l10n.messagesNoMatchTitle,
+        subtitle: l10n.messagesNothingMatches(controller.query),
         assetPath: AppIcons.profileFriendSearch,
       );
     }
@@ -306,7 +309,9 @@ class _ChatViewState extends State<_ChatView> {
           child: Column(
             children: [
               if (firstOfDay)
-                _DaySeparator(ChatTime.dayLabel(message.sentAt, now)),
+                _DaySeparator(
+                  ChatTime.dayLabel(message.sentAt, now, l10n: l10n),
+                ),
               GestureDetector(
                 onTap: failed ? () => _retry(message.id) : null,
                 child: MessageBubble(
@@ -345,9 +350,9 @@ class _ChatHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: context.palette.surface,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(AppRadii.l),
           bottomRight: Radius.circular(AppRadii.l),
         ),
@@ -380,9 +385,9 @@ class _ChatHeader extends StatelessWidget {
                 // Muted chats send no pushes; say so where it matters.
                 if (context.select<ChatController, bool>((c) => c.isMuted))
                   Text(
-                    'Notifications muted',
+                    context.l10n.messagesNotificationsMuted,
                     style: AppTextStyles.body.copyWith(
-                      color: AppColors.textSecondary,
+                      color: context.palette.textSecondary,
                     ),
                   ),
               ],
@@ -390,7 +395,7 @@ class _ChatHeader extends StatelessWidget {
           ),
           Semantics(
             button: true,
-            label: 'Chat options',
+            label: context.l10n.messagesChatOptions,
             child: DefaultIconButton(
               onTap: onMenu,
               assetPath: AppIcons.messagesChatMenu,
@@ -429,19 +434,19 @@ class _SearchRow extends StatelessWidget {
           Expanded(
             child: DefaultSearchBar(
               controller: controller,
-              hintText: 'Search messages',
-              color: AppColors.surface,
+              hintText: context.l10n.messagesSearchHint,
+              color: context.palette.surface,
               onChanged: onChanged,
             ),
           ),
           TextButton(
             onPressed: onCancel,
             style: TextButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
+              foregroundColor: context.palette.textSecondary,
             ),
-            child: const Text(
-              'Cancel',
-              style: TextStyle(
+            child: Text(
+              context.l10n.commonCancel,
+              style: const TextStyle(
                 fontFamily: kAppFontFamily,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -466,17 +471,17 @@ class _DaySeparator extends StatelessWidget {
       child: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-          decoration: const BoxDecoration(
-            color: AppColors.surfaceMuted,
+          decoration: BoxDecoration(
+            color: context.palette.surfaceMuted,
             borderRadius: AppRadii.lCircular,
           ),
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: kAppFontFamily,
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: AppColors.textMuted,
+              color: context.palette.textMuted,
             ),
           ),
         ),
@@ -495,11 +500,13 @@ class _Receipt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final muted = context.palette.textMuted;
     final (text, color) = switch (status) {
-      ReceiptStatus.sending => ('Sending…', AppColors.textMuted),
-      ReceiptStatus.sent => ('Sent', AppColors.textMuted),
-      ReceiptStatus.read => ('Read', AppColors.brandGreen),
-      ReceiptStatus.failed => ('Not sent · Tap to retry', AppColors.danger),
+      ReceiptStatus.sending => (l10n.messagesReceiptSending, muted),
+      ReceiptStatus.sent => (l10n.messagesReceiptSent, muted),
+      ReceiptStatus.read => (l10n.messagesReceiptRead, AppColors.brandGreen),
+      ReceiptStatus.failed => (l10n.messagesReceiptFailed, AppColors.danger),
     };
     final label = Padding(
       padding: const EdgeInsets.only(top: 3, right: 4),
@@ -535,7 +542,7 @@ class _ScrollToLatestButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Scroll to the latest message',
+      label: context.l10n.messagesScrollToLatest,
       child: AppPressable(
         child: GestureDetector(
           onTap: onTap,
@@ -574,12 +581,12 @@ class _BlockedNotice extends StatelessWidget {
         child: Center(
           child: Text(
             iBlockedThem
-                ? 'You blocked this user'
-                : "You can't send messages to this user",
-            style: const TextStyle(
+                ? context.l10n.messagesBlockedByYou
+                : context.l10n.messagesCantSend,
+            style: TextStyle(
               fontSize: 14,
               fontFamily: kAppFontFamily,
-              color: AppColors.textMuted,
+              color: context.palette.textMuted,
               fontWeight: FontWeight.bold,
             ),
           ),

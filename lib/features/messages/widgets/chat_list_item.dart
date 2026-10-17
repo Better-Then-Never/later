@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/styles/box_decorations.dart';
@@ -36,6 +38,7 @@ class ChatListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
+    final palette = context.palette;
     final hasUnread = unread > 0;
 
     return AppPressable(
@@ -65,9 +68,7 @@ class ChatListItem extends StatelessWidget {
               fontSize: screen.width * 0.04,
               fontFamily: kAppFontFamily,
               // Unread chats read darker, like an unread notification.
-              color: hasUnread
-                  ? AppColors.textPrimary
-                  : AppColors.textSecondary,
+              color: hasUnread ? palette.textPrimary : palette.textSecondary,
               fontWeight: hasUnread ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -76,20 +77,24 @@ class ChatListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                ChatTime.listLabel(timestamp, DateTime.now()),
+                ChatTime.listLabel(
+                  timestamp,
+                  DateTime.now(),
+                  l10n: context.l10n,
+                ),
                 style: TextStyle(
                   fontSize: screen.width * 0.032,
                   fontFamily: kAppFontFamily,
                   color: hasUnread && !muted
                       ? AppColors.brandGreen
-                      : AppColors.textMuted,
+                      : palette.textMuted,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 4),
               CountBadge(
                 count: unread,
-                color: muted ? AppColors.grey500 : AppColors.materialRed,
+                color: muted ? palette.iconMuted : AppColors.materialRed,
               ),
             ],
           ),

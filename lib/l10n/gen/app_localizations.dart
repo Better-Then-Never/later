@@ -212,6 +212,324 @@ abstract class AppLocalizations {
   /// **'You are not allowed to do that.'**
   String get failurePermission;
 
+  /// No description provided for @messagesBlockedByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You blocked this user'**
+  String get messagesBlockedByYou;
+
+  /// No description provided for @messagesCantSend.
+  ///
+  /// In en, this message translates to:
+  /// **'You can\'t send messages to this user'**
+  String get messagesCantSend;
+
+  /// Small label on the photo of a capsule sent in a chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule'**
+  String get messagesCapsuleLabel;
+
+  /// No description provided for @messagesCapsuleUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This capsule is no longer available'**
+  String get messagesCapsuleUnavailable;
+
+  /// Chat header title while the friend's name is not known yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get messagesChatFallbackTitle;
+
+  /// Accessibility label of the chat menu button.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat options'**
+  String get messagesChatOptions;
+
+  /// No description provided for @messagesChatsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your chats'**
+  String get messagesChatsLoadError;
+
+  /// No description provided for @messagesCheckConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again'**
+  String get messagesCheckConnection;
+
+  /// Confirm button of the clear-history dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get messagesClearConfirm;
+
+  /// No description provided for @messagesClearConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear chat history?'**
+  String get messagesClearConfirmTitle;
+
+  /// No description provided for @messagesClearFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to clear history'**
+  String get messagesClearFailed;
+
+  /// Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello to {name}!'**
+  String messagesEmptySubtitle(String name);
+
+  /// No description provided for @messagesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get messagesEmptyTitle;
+
+  /// No description provided for @messagesFindChatsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Find chats'**
+  String get messagesFindChatsHint;
+
+  /// No description provided for @messagesInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message...'**
+  String get messagesInputHint;
+
+  /// No description provided for @messagesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the messages'**
+  String get messagesLoadError;
+
+  /// No description provided for @messagesMenuBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Block user'**
+  String get messagesMenuBlock;
+
+  /// No description provided for @messagesMenuClearHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear history'**
+  String get messagesMenuClearHistory;
+
+  /// No description provided for @messagesMenuMute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute notifications'**
+  String get messagesMenuMute;
+
+  /// Chat menu item. Menu items are one short line (about 22 characters at most).
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get messagesMenuSearch;
+
+  /// No description provided for @messagesMenuUnblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Unblock user'**
+  String get messagesMenuUnblock;
+
+  /// No description provided for @messagesMenuUnmute.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute notifications'**
+  String get messagesMenuUnmute;
+
+  /// No description provided for @messagesMutedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat muted'**
+  String get messagesMutedToast;
+
+  /// No description provided for @messagesNewChatFindFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Find friends'**
+  String get messagesNewChatFindFriends;
+
+  /// No description provided for @messagesNewChatNoFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends yet'**
+  String get messagesNewChatNoFriends;
+
+  /// No description provided for @messagesNewChatNoFriendsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add some friends to start chatting!'**
+  String get messagesNewChatNoFriendsSubtitle;
+
+  /// No description provided for @messagesNewChatNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends found'**
+  String get messagesNewChatNoMatch;
+
+  /// No description provided for @messagesNewChatSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search friends'**
+  String get messagesNewChatSearchHint;
+
+  /// No description provided for @messagesNewChatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Chat'**
+  String get messagesNewChatTitle;
+
+  /// No description provided for @messagesNoChatsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats found'**
+  String get messagesNoChatsFound;
+
+  /// No description provided for @messagesNoChatsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the new message button to start chatting with friends!'**
+  String get messagesNoChatsSubtitle;
+
+  /// No description provided for @messagesNoChatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get messagesNoChatsTitle;
+
+  /// No description provided for @messagesNoMatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages found'**
+  String get messagesNoMatchTitle;
+
+  /// Empty search result in the chat list, a chat and the new-chat sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches \"{query}\"'**
+  String messagesNothingMatches(String query);
+
+  /// Small line under the friend's name in a muted chat. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications muted'**
+  String get messagesNotificationsMuted;
+
+  /// Accessibility label of a capsule's photo in a chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Open capsule {title}'**
+  String messagesOpenCapsule(String title);
+
+  /// No description provided for @messagesReceiptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent · Tap to retry'**
+  String get messagesReceiptFailed;
+
+  /// Receipt: the friend has read the message (past participle).
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get messagesReceiptRead;
+
+  /// Receipt under the user's newest message.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get messagesReceiptSending;
+
+  /// No description provided for @messagesReceiptSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get messagesReceiptSent;
+
+  /// Accessibility label of the round button that jumps to the newest message.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll to the latest message'**
+  String get messagesScrollToLatest;
+
+  /// No description provided for @messagesSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search messages'**
+  String get messagesSearchHint;
+
+  /// Accessibility label of the send button.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get messagesSend;
+
+  /// Accessibility label of the capsule button next to the message field.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a capsule'**
+  String get messagesSendCapsule;
+
+  /// No description provided for @messagesSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message'**
+  String get messagesSendFailed;
+
+  /// No description provided for @messagesSignedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed out'**
+  String get messagesSignedOut;
+
+  /// Accessibility label of a friend in the new-chat sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Start chat with {name}'**
+  String messagesStartChatWith(String name);
+
+  /// Title of the messages tab (the list of chats).
+  ///
+  /// In en, this message translates to:
+  /// **'My Laters'**
+  String get messagesTitle;
+
+  /// Day separator in a chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get messagesToday;
+
+  /// No description provided for @messagesTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'This message is too long'**
+  String get messagesTooLong;
+
+  /// No description provided for @messagesUnmutedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat unmuted'**
+  String get messagesUnmutedToast;
+
+  /// Day separator in a chat and the time label in the chat list.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get messagesYesterday;
+
+  /// Chat list preview when the user sent the last message.
+  ///
+  /// In en, this message translates to:
+  /// **'You: {message}'**
+  String messagesYouPrefix(String message);
+
   /// Place pill on a capsule when the phone has no location yet.
   ///
   /// In en, this message translates to:

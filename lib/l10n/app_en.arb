@@ -24,6 +24,146 @@
   "commonUnknownUsername": "unknown",
   "failureNotFound": "This item no longer exists.",
   "failurePermission": "You are not allowed to do that.",
+  "messagesBlockedByYou": "You blocked this user",
+  "messagesCantSend": "You can't send messages to this user",
+  "messagesCapsuleLabel": "Capsule",
+  "@messagesCapsuleLabel": {
+    "description": "Small label on the photo of a capsule sent in a chat."
+  },
+  "messagesCapsuleUnavailable": "This capsule is no longer available",
+  "messagesChatFallbackTitle": "Chat",
+  "@messagesChatFallbackTitle": {
+    "description": "Chat header title while the friend's name is not known yet."
+  },
+  "messagesChatOptions": "Chat options",
+  "@messagesChatOptions": {
+    "description": "Accessibility label of the chat menu button."
+  },
+  "messagesChatsLoadError": "Couldn't load your chats",
+  "messagesCheckConnection": "Check your connection and try again",
+  "messagesClearConfirm": "Clear",
+  "@messagesClearConfirm": {
+    "description": "Confirm button of the clear-history dialog."
+  },
+  "messagesClearConfirmTitle": "Are you sure you want to clear chat history?",
+  "messagesClearFailed": "Failed to clear history",
+  "messagesEmptySubtitle": "Say hello to {name}!",
+  "@messagesEmptySubtitle": {
+    "description": "Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesEmptyTitle": "No messages yet",
+  "messagesFindChatsHint": "Find chats",
+  "messagesInputHint": "Write a message...",
+  "messagesLoadError": "Couldn't load the messages",
+  "messagesMenuBlock": "Block user",
+  "messagesMenuClearHistory": "Clear history",
+  "messagesMenuMute": "Mute notifications",
+  "messagesMenuSearch": "Search",
+  "@messagesMenuSearch": {
+    "description": "Chat menu item. Menu items are one short line (about 22 characters at most)."
+  },
+  "messagesMenuUnblock": "Unblock user",
+  "messagesMenuUnmute": "Unmute notifications",
+  "messagesMutedToast": "Chat muted",
+  "messagesNewChatFindFriends": "Find friends",
+  "messagesNewChatNoFriends": "No friends yet",
+  "messagesNewChatNoFriendsSubtitle": "Add some friends to start chatting!",
+  "messagesNewChatNoMatch": "No friends found",
+  "messagesNewChatSearchHint": "Search friends",
+  "messagesNewChatTitle": "New Chat",
+  "messagesNoChatsFound": "No chats found",
+  "messagesNoChatsSubtitle": "Tap the new message button to start chatting with friends!",
+  "messagesNoChatsTitle": "No conversations yet",
+  "messagesNoMatchTitle": "No messages found",
+  "messagesNothingMatches": "Nothing matches \"{query}\"",
+  "@messagesNothingMatches": {
+    "description": "Empty search result in the chat list, a chat and the new-chat sheet.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "lunch"
+      }
+    }
+  },
+  "messagesNotificationsMuted": "Notifications muted",
+  "@messagesNotificationsMuted": {
+    "description": "Small line under the friend's name in a muted chat. Keep it short."
+  },
+  "messagesOpenCapsule": "Open capsule {title}",
+  "@messagesOpenCapsule": {
+    "description": "Accessibility label of a capsule's photo in a chat.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Trip to Rome"
+      }
+    }
+  },
+  "messagesReceiptFailed": "Not sent · Tap to retry",
+  "messagesReceiptRead": "Read",
+  "@messagesReceiptRead": {
+    "description": "Receipt: the friend has read the message (past participle)."
+  },
+  "messagesReceiptSending": "Sending…",
+  "@messagesReceiptSending": {
+    "description": "Receipt under the user's newest message."
+  },
+  "messagesReceiptSent": "Sent",
+  "messagesScrollToLatest": "Scroll to the latest message",
+  "@messagesScrollToLatest": {
+    "description": "Accessibility label of the round button that jumps to the newest message."
+  },
+  "messagesSearchHint": "Search messages",
+  "messagesSend": "Send",
+  "@messagesSend": {
+    "description": "Accessibility label of the send button."
+  },
+  "messagesSendCapsule": "Send a capsule",
+  "@messagesSendCapsule": {
+    "description": "Accessibility label of the capsule button next to the message field."
+  },
+  "messagesSendFailed": "Failed to send message",
+  "messagesSignedOut": "You are signed out",
+  "messagesStartChatWith": "Start chat with {name}",
+  "@messagesStartChatWith": {
+    "description": "Accessibility label of a friend in the new-chat sheet.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesTitle": "My Laters",
+  "@messagesTitle": {
+    "description": "Title of the messages tab (the list of chats)."
+  },
+  "messagesToday": "Today",
+  "@messagesToday": {
+    "description": "Day separator in a chat."
+  },
+  "messagesTooLong": "This message is too long",
+  "messagesUnmutedToast": "Chat unmuted",
+  "messagesYesterday": "Yesterday",
+  "@messagesYesterday": {
+    "description": "Day separator in a chat and the time label in the chat list."
+  },
+  "messagesYouPrefix": "You: {message}",
+  "@messagesYouPrefix": {
+    "description": "Chat list preview when the user sent the last message.",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "See you tomorrow!"
+      }
+    }
+  },
   "placeNoLocation": "No location",
   "@placeNoLocation": {
     "description": "Place pill on a capsule when the phone has no location yet."
