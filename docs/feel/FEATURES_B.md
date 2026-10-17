@@ -98,3 +98,29 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
 - **Not done**: iOS (no recorder written; the button is hidden there, BLOCKERS.md); no hold-to-record gesture (a
   tap starts it, which is also easier with a screen reader); voice messages in groups (the same Storage limit as
   photos); playback speed.
+
+### Big emoji and the sticker panel: ON (illustrated packs: owner)
+- **What**: a message of one to three emoji alone is shown large (56 / 44 / 36 px) without a bubble, like a
+  sticker. The smiley in the message field opens a panel of big emoji in five groups (faces, hands, hearts and
+  parties, places and things, nature) and the ones used lately; one tap sends.
+- **How**: client only; the messages are ordinary text, so older apps show them as emoji. Recents are kept on the
+  phone per account.
+- **Tests**: `emoji_only_test.dart` (skin tones, families, flags; digits and words are not emoji; the large
+  rendering; the panel sends and remembers).
+- **Phone**: the smiley in the field, the panel, a party emoji sent large.
+- **Not built**: illustrated sticker packs (they need artwork; BLOCKERS.md, owner decision).
+
+### Smaller chat gaps
+| Gap | State | How | Checked |
+|---|---|---|---|
+| Unread divider | ON | "Unread messages" over the first message unread when the chat opened (from the unread count in two-person chats, the read mark in groups); it stays while the chat is open | test; phone (3 unread from Hugo) |
+| Delete for me | ON | any delivered message, kept hidden on this phone per account and chat (500 at most); "Delete for everyone" for your own, as before | test; phone (menu) |
+| Forward | ON (text and big emoji) | to a friend or a group, marked "Forwarded" (optional `forwarded: true`, rules test) | test; phone (forwarded to a new chat) |
+| Report a message | ON | someone else's message, for a reason (the capsule report picker, shared); `reports` already accepted messages | test; phone (menu) |
+| Unread count on delete | ON | taking back a message the friend had not read lowers their count by one in the same batch (new rule: exactly −1, never below 0, never your own); deleting the only message clears the counts | test, rules test |
+| Quote jump beyond the loaded page | ON | loads older pages (up to 10) until the quoted message is there; says so when it was deleted | test |
+| Swipe actions | ON | in the chat list: right pins / unpins, left mutes / unmutes; the row springs back; the same actions are in the chat menu for screen readers | phone (pin and mute by swipe) |
+| Pinned chats | ON | up to 3 at the top, in the order pinned, with a small pin; synced through the settings document (`pinnedChats`) | test; phone |
+| Reaction pushes | ON (server) | `sendMessageReactionNotification` tells a message's author about a new reaction | functions test; emulator log on the rig (push built in Russian, not sent) |
+- **Not done**: forwarding photos, recordings and capsules (their files belong to the first chat's folder); an
+  "unread" jump button; reporting a whole chat.

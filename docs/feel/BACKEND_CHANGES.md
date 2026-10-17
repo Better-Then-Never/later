@@ -11,6 +11,7 @@ written for the owner.
 | 2 | Photo messages: rules for type "image", Storage folder per chat, `deleteChatFile`, photo pushes, account cleanup | rules, storage rules, functions | unaffected (read photos as text) | rules + functions (see section 2) | IAM grant, rules, one new function (gcloud), functions |
 | 3 | Typing hints (`chats/{id}/typing/{uid}`); offline batched send (rules unchanged, test added) | rules | unaffected | rules | rules |
 | 4 | Group chats: `chats/g_{id}` rules, invites, `acceptGroupInvite`, group pushes, account cleanup | rules, functions | unaffected (never see groups) | rules + functions | rules, one new function (gcloud), functions |
+| 5 | Voice messages (rules, `.m4a` storage, cleanup), forwarded mark, unread drop on delete, `pinnedChats`, `sendMessageReactionNotification` | rules, storage rules, functions | unaffected | rules + functions | rules, one new function (gcloud), functions |
 
 ## 1. Pushes are logged, not sent, in the Functions emulator
 `functions/index.js`: when `FUNCTIONS_EMULATOR === 'true'` (set only by the Firebase emulator), `services()`
@@ -117,3 +118,32 @@ block list, one block document of the inviter). Group pushes: one settings read 
    `--trigger-event-filters-path-pattern=document='chats/{chatId}/invites/{uid}'`.
 3. `firebase deploy --only functions --project later-da778` (updates the changed functions).
 4. Release the app. Until step 2 is done, a new group keeps only its creator (invites wait).
+
+## 5. Voice messages and the smaller chat changes (Part B1)
+**Firestore rules**:
+- messages: `type: 'voice'` with `audioUrl` (≤ 2,048 characters), `audioPath` (`chats/{this chat}/{sender}/{id}.m4a`),
+  `durationMs` (1–300,000) and an optional `waveform` list (≤ 64 entries); an optional `forwarded` that may only be
+  `true`.
+- chats: the sender may lower the other participant's unread count by exactly one (alone, or with the summary
+  rollback after deleting the newest message); never below zero, never their own.
+- settings: an optional `pinnedChats` list (≤ 10).
+
+**Storage rules**: the chat folder also takes `.m4a` audio up to 5 MB (same owner, read and delete rules as photos).
+
+**Functions**:
+- `deleteChatFile` (was `deleteChatPhoto` before any deploy): also deletes a voice message's recording.
+- `sendMessageReactionNotification` (new; `chats/{chatId}/messages/{messageId}` updated): pushes a new reaction to
+  the message's author (their message settings, mutes and blocks apply; one push per change).
+- `sendMessageNotification`: a voice message says "🎤 Voice message".
+
+**Old apps**: voice messages show as "🎤", forwarded ones as plain text; old apps never lower counts or pin.
+
+**Cost**: one function run per message update (reactions, and the read status older apps still write).
+
+**Tests**: rules 71/71 at the voice commit, plus the forwarded, unread-drop and pinned additions (see the final
+count in FEEL_QA.md); functions 51/51.
+
+**Deploy (owner)**: rules and storage rules with the rest; create `sendMessageReactionNotification` once with
+gcloud (`--trigger-event-filters=type=google.cloud.firestore.document.v1.updated`,
+`--trigger-event-filters-path-pattern=document='chats/{chatId}/messages/{messageId}'`); `deleteChatFile` replaces
+`deleteChatPhoto` in step 3 of section 2 (it was never deployed under either name).

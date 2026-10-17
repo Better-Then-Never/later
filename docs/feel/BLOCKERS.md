@@ -33,6 +33,7 @@ Anything listed here was **not** checked on the device, or could not be done in 
   BACKEND_CHANGES.md §2 is made.
 
 ## Owner decisions
+- **Illustrated sticker packs** need artwork (a designer or licensed packs). Big emoji work as stickers for now.
 - **Russian text uses the phone's font.** Inria Sans (the app font) has no Cyrillic, so every Russian string falls
   back to the system font: the typefaces mix, and the first frame of a page costs ~5 ms more in Russian than in
   English (settings: worst frame 18.4 ms in Russian, 13.3 ms in English; PERFORMANCE.md). "No new fonts" is the rule

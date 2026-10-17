@@ -67,3 +67,7 @@ on #78. Never merged, never deployed. Resume here.
 - Part B1 started: photo messages (app, rules, storage folder, cleanup function, pushes); rules 61/61,
   functions 45/45. The functions' service account has no Storage delete rights in production (also breaks
   account deletion's file cleanup today): deploy step in BACKEND_CHANGES.md §2.
+- B1 done: photos, offline queue, typing, groups, voice (Android), big emoji and the sticker panel, unread
+  divider, delete for me, forward, report a message, unread drop on delete, deep quote jump, swipe actions,
+  pinned chats, reaction pushes. Each checked on the phone where it has a screen (FEATURES_B.md). Rules 73/73,
+  functions 51/51.

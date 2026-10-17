@@ -572,7 +572,8 @@ describe('chats', () => {
     await assertSucceeds(
       updateDoc(chatRef(alice), { lastMessage: 'from bob', lastUpdated: earlier, lastSenderId: 'bob' }),
     );
-    // Not a stranger as the sender, no future time, no empty text, no counts.
+    // Not a stranger as the sender, no future time, no empty text, no counts
+    // other than one fewer for the other (see the next test).
     await assertFails(updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'carol' }));
     await assertFails(
       updateDoc(chatRef(alice), {
@@ -581,7 +582,7 @@ describe('chats', () => {
     );
     await assertFails(updateDoc(chatRef(alice), { lastMessage: '', lastUpdated: earlier, lastSenderId: 'bob' }));
     await assertFails(
-      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob', 'unreadCounts.bob': 0 }),
+      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob', 'unreadCounts.bob': 5 }),
     );
     await assertFails(updateDoc(chatRef(as('carol')), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob' }));
   });
@@ -827,6 +828,10 @@ describe('settings', () => {
     const alice = as('alice');
     await assertSucceeds(setDoc(settingsRef(alice), valid, { merge: true }));
     await assertSucceeds(setDoc(settingsRef(alice), { mutedChats: arrayUnion('alice_bob') }, { merge: true }));
+    // Pinned chats: a short list.
+    await assertSucceeds(setDoc(settingsRef(alice), { pinnedChats: arrayUnion('alice_bob') }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { pinnedChats: Array.from({ length: 11 }, (_, i) => `c${i}`) }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { pinnedChats: 'alice_bob' }, { merge: true }));
     await assertSucceeds(getDoc(settingsRef(alice)));
     await assertFails(getDoc(settingsRef(as('bob'), 'alice')));
     await assertFails(setDoc(settingsRef(as('bob'), 'alice'), valid));
