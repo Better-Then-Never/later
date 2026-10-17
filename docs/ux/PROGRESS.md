@@ -25,3 +25,15 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 
 ## Log
 - Branch created; PR #77 CI fix (goldens only on Windows) pushed to the polish branch and merged here.
+- **Phase 1 done:** STYLE_BIBLE, AUDIT (all F-xx mapped), PLAN, PERFORMANCE baseline (profile mode, emulator;
+  raster unusable on this emulator, build times are the budget), baseline = docs/polish/after.
+- **Foundation done (Tier 0 infra):** l10n fragments + gen-l10n, AppPalette (light identical; 3 dark candidates),
+  dark icons via ThemedAssetBundle, appearance controller (theme/language/UI size, loaded before first frame),
+  UiScaleView, edge-to-edge transparent bars, splash = first frame; shared/core/app layers on the palette.
+- **Conversion fan-out (worktrees):** messages ✔ merged, friends+users ✔ merged, settings (running), auth
+  (running), profile (running); still to launch: history+notifications, capsules+map. Then: remove
+  theme-dependent members from AppColors; data-layer strings (I do these myself).
+- **Backend done (not deployed):** localized pushes, reactions, comments, follower counts, friend request
+  notifications, stats/streaks/places/distance, achievements registry + unlocks, streak reminders, admin
+  announcements, reports, rules for all of it, account cleanup. Functions 43/43, rules 53/53. Admin scripts in
+  tools/admin (self-test passes), ADMIN.md.
