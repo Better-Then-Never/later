@@ -75,3 +75,26 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
 - **Not done (BLOCKERS.md)**: photos and capsules in groups (Storage rules cannot check a group's members
   without cross-service rules); messages from someone you blocked still show in a group you share; no admin
   roles (anyone in it can rename and add their friends); no group picture.
+
+### Voice messages: ON on Android (iOS: button hidden)
+- **What**: while the message field is empty, the send button is a microphone. Tapping it (after the system asks
+  for the microphone once) replaces the field with a recording bar: a pulsing red dot, the time, the live loudness,
+  a cross to throw it away and Send. Up to 5 minutes (then it is sent); under a second is not sent ("Too short to
+  send"). The bubble has play/pause, 40 loudness bars that fill as it plays (tap or drag them to jump) and the
+  length or position. One message plays at a time; leaving the chat stops it. The list says "🎤 Voice message";
+  a reply quotes "🎤 Voice message"; the push says "🎤 Voice message".
+- **How**: no new package. The app's own channel `later.app/voice` (`VoiceChannel.kt`: `MediaRecorder` AAC/M4A,
+  64 kbit/s mono; `MediaPlayer`) and `VoiceService` on the Dart side. The recording goes to
+  `chats/{chat}/{sender}/{id}.m4a`; the message carries its length and the bars. Others' recordings are downloaded
+  once into their own disk cache (`later_voice`, 30 days); the sender plays the file on the phone.
+- **Permission**: `RECORD_AUDIO` is back in the Android manifest (it had been removed with `tools:node`); the iOS
+  microphone string now says it is for voice messages.
+- **Tests**: `voice_test.dart` (bars from levels; the player against a mocked channel: play, progress, pause,
+  resume, one at a time, the end; sending through the controller; the bubble's labels and stopping on leave),
+  rules (voice messages, `.m4a` in the chat folder), functions (cleanup of recordings, push text).
+- **Phone** (Russian, light): the microphone button, the bar with the timer and live loudness, a 20-second
+  recording sent through the emulators' rules and Storage, played from the phone's file, then after a restart
+  played from Storage (downloaded), the list preview.
+- **Not done**: iOS (no recorder written; the button is hidden there, BLOCKERS.md); no hold-to-record gesture (a
+  tap starts it, which is also easier with a screen reader); voice messages in groups (the same Storage limit as
+  photos); playback speed.

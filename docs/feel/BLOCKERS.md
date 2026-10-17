@@ -23,6 +23,9 @@ Anything listed here was **not** checked on the device, or could not be done in 
 - **Groups**: no photos or capsules yet (Storage rules would need cross-service rules to read a group's members);
   messages from someone you blocked still show in a group you share; no admin roles (any member renames and adds
   their friends); no group picture.
+- **Voice messages on iOS**: no recorder is written for iOS (it would be an AVAudioRecorder channel like
+  `VoiceChannel.kt`, and there is no iOS device or Mac here to build and check it), so the button is hidden on iOS.
+  Voice and photos are not offered in groups either (Storage cannot check group members yet).
 - **Photos offline**: a photo waits only while the app runs ("Not sent · Tap to retry" after 45 s offline); text
   messages queue across restarts.
 - **Production IAM**: the functions' service account has *Storage Object Viewer* only, so it cannot delete files:
