@@ -387,6 +387,12 @@ class _CapsuleCreationView extends StatelessWidget {
                                       controller.allowReactions = v,
                                 ),
                               OptionsSwitchRow(
+                                title: l10n.capsulesCreationShowAuthor,
+                                subtitle: l10n.capsulesCreationShowAuthorHint,
+                                value: controller.showAuthor,
+                                onChanged: (v) => controller.showAuthor = v,
+                              ),
+                              OptionsSwitchRow(
                                 title: l10n.capsulesCreationApproximate,
                                 subtitle: l10n.capsulesCreationApproximateHint,
                                 value:

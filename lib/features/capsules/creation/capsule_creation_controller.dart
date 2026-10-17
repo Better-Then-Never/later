@@ -98,6 +98,15 @@ class CapsuleCreationController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Others see who left it (F-60).
+  bool _showAuthor = true;
+  bool get showAuthor => _showAuthor;
+
+  set showAuthor(bool value) {
+    _showAuthor = value;
+    notifyListeners();
+  }
+
   set approximateLocation(bool value) {
     _precision = value
         ? LocationPrecision.approximate
@@ -214,6 +223,7 @@ class CapsuleCreationController extends ChangeNotifier {
         locationPrecision: locationPrecision,
         allowComments: _allowComments,
         allowReactions: _allowReactions,
+        showAuthor: _showAuthor,
         imagePath: imagePath,
         framePaths: framePaths,
         openAt: _openAt,

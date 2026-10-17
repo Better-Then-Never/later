@@ -201,5 +201,23 @@
   "capsulesCommentsEarlier": "Show earlier comments",
   "@capsulesCommentsEarlier": {
     "description": "First row of a long comment thread: loads older comments."
+  },
+  "capsulesBy": "By {name}",
+  "@capsulesBy": {
+    "description": "Screen reader label of the author line on a capsule (opens their profile).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesCreationShowAuthor": "Show my name",
+  "@capsulesCreationShowAuthor": {
+    "description": "Creation setting: show the author on the capsule."
+  },
+  "capsulesCreationShowAuthorHint": "Others see who left it",
+  "@capsulesCreationShowAuthorHint": {
+    "description": "Under the setting."
   }
 }

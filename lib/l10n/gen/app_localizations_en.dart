@@ -391,6 +391,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWelcomeTo => 'Welcome to';
 
   @override
+  String capsulesBy(String name) {
+    return 'By $name';
+  }
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Allow camera access in Settings to take a photo';
 
@@ -532,6 +537,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesCreationSettings => 'Capsule Settings';
+
+  @override
+  String get capsulesCreationShowAuthor => 'Show my name';
+
+  @override
+  String get capsulesCreationShowAuthorHint => 'Others see who left it';
 
   @override
   String get capsulesCreationSubmit => 'Create Capsule';

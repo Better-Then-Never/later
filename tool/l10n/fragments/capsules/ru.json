@@ -73,5 +73,8 @@
   "capsulesCameraFlashTorchBadge": "Ф",
   "capsulesCameraExposure": "Яркость",
   "capsulesCameraZoomTo": "Увеличение {zoom}×",
-  "capsulesCommentsEarlier": "Показать более ранние"
+  "capsulesCommentsEarlier": "Показать более ранние",
+  "capsulesBy": "Автор: {name}",
+  "capsulesCreationShowAuthor": "Показывать моё имя",
+  "capsulesCreationShowAuthorHint": "Другие увидят, кто её оставил"
 }

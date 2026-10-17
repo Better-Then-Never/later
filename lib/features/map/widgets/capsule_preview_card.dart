@@ -6,6 +6,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
+import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
 import '../../../shared/widgets/loop_picture.dart';
@@ -85,6 +86,7 @@ class CapsulePreviewCard extends StatelessWidget {
                     fontFamily: kAppFontFamily,
                   ),
                 ),
+                CapsuleAuthorRow(capsule: capsule),
                 const SizedBox(height: 6),
                 Expanded(
                   child: SingleChildScrollView(

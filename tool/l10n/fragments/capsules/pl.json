@@ -73,5 +73,8 @@
   "capsulesCameraFlashTorchBadge": "L",
   "capsulesCameraExposure": "Jasność",
   "capsulesCameraZoomTo": "Powiększenie {zoom}×",
-  "capsulesCommentsEarlier": "Pokaż wcześniejsze komentarze"
+  "capsulesCommentsEarlier": "Pokaż wcześniejsze komentarze",
+  "capsulesBy": "Autor: {name}",
+  "capsulesCreationShowAuthor": "Pokazuj moje imię",
+  "capsulesCreationShowAuthorHint": "Inni zobaczą, kto ją zostawił"
 }

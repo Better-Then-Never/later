@@ -291,6 +291,16 @@
   "@authWelcomeTo": {
     "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
   },
+  "capsulesBy": "By {name}",
+  "@capsulesBy": {
+    "description": "Screen reader label of the author line on a capsule (opens their profile).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
   "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
   "@capsulesCameraAccessDenied": {
     "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
@@ -416,6 +426,14 @@
   "capsulesCreationSettings": "Capsule Settings",
   "@capsulesCreationSettings": {
     "description": "Section title above the privacy, open date and colour rows."
+  },
+  "capsulesCreationShowAuthor": "Show my name",
+  "@capsulesCreationShowAuthor": {
+    "description": "Creation setting: show the author on the capsule."
+  },
+  "capsulesCreationShowAuthorHint": "Others see who left it",
+  "@capsulesCreationShowAuthorHint": {
+    "description": "Under the setting."
   },
   "capsulesCreationSubmit": "Create Capsule",
   "@capsulesCreationSubmit": {

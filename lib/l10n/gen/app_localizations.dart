@@ -668,6 +668,12 @@ abstract class AppLocalizations {
   /// **'Welcome to'**
   String get authWelcomeTo;
 
+  /// Screen reader label of the author line on a capsule (opens their profile).
+  ///
+  /// In en, this message translates to:
+  /// **'By {name}'**
+  String capsulesBy(String name);
+
   /// Camera screen when camera permission was denied. 'Settings' are the phone's settings.
   ///
   /// In en, this message translates to:
@@ -925,6 +931,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Capsule Settings'**
   String get capsulesCreationSettings;
+
+  /// Creation setting: show the author on the capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Show my name'**
+  String get capsulesCreationShowAuthor;
+
+  /// Under the setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Others see who left it'**
+  String get capsulesCreationShowAuthorHint;
 
   /// Button at the bottom of the creation screen that saves the new capsule. Keep it short.
   ///

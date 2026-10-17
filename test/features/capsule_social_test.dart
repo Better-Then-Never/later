@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/models/capsule.dart';
+import 'package:later/shared/widgets/capsule/capsule_author_row.dart';
 import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/services/profile_image_cache.dart';
@@ -33,6 +34,25 @@ void main() {
         uid: uid,
         social: social,
       );
+
+  test('a capsule shows its author to others unless they chose not to', () {
+    expect(CapsuleAuthorRow.shows(_capsule, 'someone'), _capsule.showAuthor);
+    expect(CapsuleAuthorRow.shows(_capsule, _capsule.ownerId), isFalse);
+    expect(
+      CapsuleAuthorRow.shows(
+        const Capsule(
+          id: 'cap2',
+          ownerId: 'owner',
+          title: 'Shy',
+          privacy: CapsulePrivacy.public,
+          color: CapsuleColor.blue,
+          showAuthor: false,
+        ),
+        'someone',
+      ),
+      isFalse,
+    );
+  });
 
   group('CapsuleSocialController', () {
     test('comments load a page at a time, older ones on request', () async {
