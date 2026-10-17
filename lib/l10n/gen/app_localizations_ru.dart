@@ -668,6 +668,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonLoading => 'Загрузка...';
 
   @override
+  String commonNewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count нового',
+      many: '$count новых',
+      few: '$count новых',
+      one: '$count новое',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get commonNoConnection => 'Нет соединения. Попробуйте ещё раз.';
 
   @override

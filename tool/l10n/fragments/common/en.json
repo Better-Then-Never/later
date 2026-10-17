@@ -73,5 +73,14 @@
   "navMyCapsules": "My capsules",
   "navNewCapsule": "New capsule",
   "navMessages": "Messages",
-  "navProfile": "Profile"
+  "navProfile": "Profile",
+  "commonNewCount": "{count, plural, one{{count} new} other{{count} new}}",
+  "@commonNewCount": {
+    "description": "Accessibility label of a red count badge (new messages, requests).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

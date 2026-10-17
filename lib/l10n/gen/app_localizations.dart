@@ -1130,6 +1130,12 @@ abstract class AppLocalizations {
   /// **'Loading...'**
   String get commonLoading;
 
+  /// Accessibility label of a red count badge (new messages, requests).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} new} other{{count} new}}'**
+  String commonNewCount(int count);
+
   /// No description provided for @commonNoConnection.
   ///
   /// In en, this message translates to:

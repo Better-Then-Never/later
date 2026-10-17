@@ -171,6 +171,7 @@
   "commonDelete": "Löschen",
   "commonErrorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
   "commonLoading": "Wird geladen...",
+  "commonNewCount": "{count, plural, one{{count} neu} other{{count} neu}}",
   "commonNoConnection": "Keine Verbindung. Bitte versuche es erneut.",
   "commonRetry": "Erneut versuchen",
   "commonSave": "Speichern",

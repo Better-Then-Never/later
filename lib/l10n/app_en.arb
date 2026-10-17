@@ -478,6 +478,15 @@
   "commonDelete": "Delete",
   "commonErrorGeneric": "Something went wrong. Please try again.",
   "commonLoading": "Loading...",
+  "commonNewCount": "{count, plural, one{{count} new} other{{count} new}}",
+  "@commonNewCount": {
+    "description": "Accessibility label of a red count badge (new messages, requests).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "commonNoConnection": "No connection. Please try again.",
   "commonRetry": "Try again",
   "commonSave": "Save",

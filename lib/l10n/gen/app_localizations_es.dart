@@ -648,6 +648,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commonLoading => 'Cargando...';
 
   @override
+  String commonNewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nuevos',
+      one: '$count nuevo',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get commonNoConnection => 'Sin conexión. Inténtalo de nuevo.';
 
   @override

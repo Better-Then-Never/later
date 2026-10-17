@@ -171,6 +171,7 @@
   "commonDelete": "Удалить",
   "commonErrorGeneric": "Что-то пошло не так. Попробуйте ещё раз.",
   "commonLoading": "Загрузка...",
+  "commonNewCount": "{count, plural, one{{count} новое} few{{count} новых} many{{count} новых} other{{count} нового}}",
   "commonNoConnection": "Нет соединения. Попробуйте ещё раз.",
   "commonRetry": "Повторить",
   "commonSave": "Сохранить",

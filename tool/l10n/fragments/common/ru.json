@@ -29,5 +29,6 @@
   "navMyCapsules": "Мои капсулы",
   "navNewCapsule": "Новая капсула",
   "navMessages": "Сообщения",
-  "navProfile": "Профиль"
+  "navProfile": "Профиль",
+  "commonNewCount": "{count, plural, one{{count} новое} few{{count} новых} many{{count} новых} other{{count} нового}}"
 }

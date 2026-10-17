@@ -671,10 +671,10 @@ class _FocusRing extends StatefulWidget {
 
 class _FocusRingState extends State<_FocusRing>
     with SingleTickerProviderStateMixin {
+  // Shrinks in, holds, fades: 350 ms in all (the style rule's longest).
   late final AnimationController _c = AnimationController(
     vsync: this,
-    // Shrinks in, holds, fades: three slow steps.
-    duration: AppMotion.slow * 3,
+    duration: AppMotion.reveal,
   )..forward();
 
   @override
@@ -685,24 +685,29 @@ class _FocusRingState extends State<_FocusRing>
 
   @override
   Widget build(BuildContext context) {
+    final still = AppMotion.reduced(context);
     return IgnorePointer(
       child: AnimatedBuilder(
         animation: _c,
         builder: (context, _) {
           final t = _c.value;
-          final scale =
-              1.25 - 0.25 * Curves.easeOut.transform((t * 3).clamp(0, 1));
-          final opacity = t < 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
-          return Opacity(
-            opacity: opacity,
-            child: Transform.scale(
-              scale: scale,
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.onMedia, width: 2),
+          if (t >= 1) return const SizedBox.shrink();
+          // Reduced motion: the ring just shows where it focused, then goes.
+          final scale = still
+              ? 1.0
+              : 1.25 - 0.25 * Curves.easeOut.transform((t / 0.4).clamp(0, 1));
+          final fade = still || t < 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
+          return Transform.scale(
+            scale: scale,
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                // Faded through the colour: no opacity layer.
+                border: Border.all(
+                  color: AppColors.onMedia.withValues(alpha: fade),
+                  width: 2,
                 ),
               ),
             ),
