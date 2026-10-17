@@ -36,5 +36,15 @@
   "notificationsReactionBody": "{name} reaccionó con {emoji} a tu cápsula",
   "notificationsFriendRequestBody": "{name} quiere ser tu amigo",
   "notificationsFriendAcceptedBody": "{name} aceptó tu solicitud de amistad",
-  "notificationsAchievementBody": "{name}: desbloqueaste un logro nuevo"
+  "notificationsAchievementBody": "{name}: desbloqueaste un logro nuevo",
+  "notificationsChannelMessages": "Mensajes",
+  "notificationsChannelMessagesDescription": "Mensajes nuevos de tus amigos",
+  "notificationsChannelMessagesSilent": "Mensajes (en silencio)",
+  "notificationsChannelMessagesSilentDescription": "Mensajes nuevos sin sonido ni vibración",
+  "notificationsChannelActivity": "Actividad",
+  "notificationsChannelActivityDescription": "Seguidores, solicitudes de amistad, reacciones, comentarios y cápsulas nuevas",
+  "notificationsChannelActivitySilent": "Actividad (en silencio)",
+  "notificationsChannelActivitySilentDescription": "Actividad sin sonido ni vibración",
+  "notificationsChannelOther": "Otras notificaciones",
+  "notificationsChannelOtherDescription": "Otras notificaciones de Later"
 }

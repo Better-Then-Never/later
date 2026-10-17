@@ -93,7 +93,7 @@ void main() {
       expect(url.fromUserAvatarUrl, 'https://a/b.png');
     });
 
-    test('maps types and titles; pending timestamp is null', () {
+    test('maps types; pending timestamp is null', () {
       final n = FirestoreMappers.notification('n1', {
         'type': 'follow',
         'fromUserName': 'bob',
@@ -101,7 +101,6 @@ void main() {
         'isRead': false,
       });
       expect(n.type, NotificationType.follow);
-      expect(n.title, 'New Follower');
       expect(n.timestamp, isNull);
       expect(
         FirestoreMappers.notification('x', {}).type,

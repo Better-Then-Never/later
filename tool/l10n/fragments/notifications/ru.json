@@ -36,5 +36,15 @@
   "notificationsReactionBody": "{name} реагирует {emoji} на вашу капсулу",
   "notificationsFriendRequestBody": "{name} хочет добавить вас в друзья",
   "notificationsFriendAcceptedBody": "{name} принимает вашу заявку в друзья",
-  "notificationsAchievementBody": "{name}: у вас новое достижение"
+  "notificationsAchievementBody": "{name}: у вас новое достижение",
+  "notificationsChannelMessages": "Сообщения",
+  "notificationsChannelMessagesDescription": "Новые сообщения от друзей",
+  "notificationsChannelMessagesSilent": "Сообщения (без звука)",
+  "notificationsChannelMessagesSilentDescription": "Новые сообщения без звука и вибрации",
+  "notificationsChannelActivity": "Активность",
+  "notificationsChannelActivityDescription": "Подписчики, заявки в друзья, реакции, комментарии и новые капсулы",
+  "notificationsChannelActivitySilent": "Активность (без звука)",
+  "notificationsChannelActivitySilentDescription": "Активность без звука и вибрации",
+  "notificationsChannelOther": "Другие уведомления",
+  "notificationsChannelOtherDescription": "Другие уведомления от Later"
 }

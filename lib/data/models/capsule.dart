@@ -5,12 +5,6 @@ enum CapsulePrivacy {
   friends,
   public;
 
-  String get label => switch (this) {
-    CapsulePrivacy.public => 'Public',
-    CapsulePrivacy.private => 'Private',
-    CapsulePrivacy.friends => 'Friends',
-  };
-
   /// Tolerant parser: unknown or missing values become [fallback].
   static CapsulePrivacy parse(Object? value, {CapsulePrivacy? fallback}) {
     for (final p in values) {
@@ -59,8 +53,6 @@ enum CapsuleColor {
   yellow,
   orange,
   purple;
-
-  String get label => '${name[0].toUpperCase()}${name.substring(1)}';
 
   static CapsuleColor parse(Object? value, {CapsuleColor? fallback}) {
     for (final c in values) {

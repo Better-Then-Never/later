@@ -1016,6 +1016,41 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get notificationsChannelActivity => 'Actividad';
+
+  @override
+  String get notificationsChannelActivityDescription =>
+      'Seguidores, solicitudes de amistad, reacciones, comentarios y cápsulas nuevas';
+
+  @override
+  String get notificationsChannelActivitySilent => 'Actividad (en silencio)';
+
+  @override
+  String get notificationsChannelActivitySilentDescription =>
+      'Actividad sin sonido ni vibración';
+
+  @override
+  String get notificationsChannelMessages => 'Mensajes';
+
+  @override
+  String get notificationsChannelMessagesDescription =>
+      'Mensajes nuevos de tus amigos';
+
+  @override
+  String get notificationsChannelMessagesSilent => 'Mensajes (en silencio)';
+
+  @override
+  String get notificationsChannelMessagesSilentDescription =>
+      'Mensajes nuevos sin sonido ni vibración';
+
+  @override
+  String get notificationsChannelOther => 'Otras notificaciones';
+
+  @override
+  String get notificationsChannelOtherDescription =>
+      'Otras notificaciones de Later';
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name comentó tu cápsula';
   }

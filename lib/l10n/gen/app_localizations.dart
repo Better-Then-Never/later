@@ -1898,6 +1898,66 @@ abstract class AppLocalizations {
   /// **'{name} created a new capsule'**
   String notificationsCapsuleBody(String name);
 
+  /// No description provided for @notificationsChannelActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get notificationsChannelActivity;
+
+  /// No description provided for @notificationsChannelActivityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers, friend requests, reactions, comments and new capsules'**
+  String get notificationsChannelActivityDescription;
+
+  /// No description provided for @notificationsChannelActivitySilent.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity (silent)'**
+  String get notificationsChannelActivitySilent;
+
+  /// No description provided for @notificationsChannelActivitySilentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity, without sound or vibration'**
+  String get notificationsChannelActivitySilentDescription;
+
+  /// Android notification channel name (phone settings).
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notificationsChannelMessages;
+
+  /// No description provided for @notificationsChannelMessagesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'New messages from your friends'**
+  String get notificationsChannelMessagesDescription;
+
+  /// No description provided for @notificationsChannelMessagesSilent.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages (silent)'**
+  String get notificationsChannelMessagesSilent;
+
+  /// No description provided for @notificationsChannelMessagesSilentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'New messages, without sound or vibration'**
+  String get notificationsChannelMessagesSilentDescription;
+
+  /// No description provided for @notificationsChannelOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other notifications'**
+  String get notificationsChannelOther;
+
+  /// No description provided for @notificationsChannelOtherDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Other notifications from Later'**
+  String get notificationsChannelOtherDescription;
+
   /// Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.
   ///
   /// In en, this message translates to:

@@ -22,20 +22,6 @@ enum NotificationType {
     }
     return other;
   }
-
-  /// Title shown in the list (same mapping as before the refactor).
-  String get title => switch (this) {
-    NotificationType.follow => 'New Follower',
-    NotificationType.capsule => 'New Capsule',
-    NotificationType.message => 'New Message',
-    NotificationType.reply => 'New Reply',
-    NotificationType.comment => 'New Comment',
-    NotificationType.reaction => 'New Reaction',
-    NotificationType.friendRequest => 'Friend Request',
-    NotificationType.friendAccepted => 'New Friend',
-    NotificationType.achievement => 'Achievement',
-    NotificationType.other => 'Notification',
-  };
 }
 
 /// An in-app notification (`users/{uid}/notifications/{id}`).
@@ -76,8 +62,6 @@ class AppNotification {
 
   /// Which achievement an achievement notification is about.
   final String? achievementId;
-
-  String get title => type.title;
 
   AppNotification markedRead() => AppNotification(
     id: id,

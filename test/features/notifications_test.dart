@@ -176,7 +176,18 @@ void main() {
         NotificationType.values.map(
           (t) => t.localizedTitle(lookupAppLocalizations(const Locale('en'))),
         ),
-        [for (final t in NotificationType.values) t.title],
+        [
+          'New Follower',
+          'New Capsule',
+          'New Message',
+          'New Reply',
+          'New Comment',
+          'New Reaction',
+          'Friend Request',
+          'New Friend',
+          'Achievement',
+          'Notification',
+        ],
       );
     });
 

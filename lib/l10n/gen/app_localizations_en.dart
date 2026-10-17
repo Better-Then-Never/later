@@ -1007,6 +1007,41 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationsChannelActivity => 'Activity';
+
+  @override
+  String get notificationsChannelActivityDescription =>
+      'Followers, friend requests, reactions, comments and new capsules';
+
+  @override
+  String get notificationsChannelActivitySilent => 'Activity (silent)';
+
+  @override
+  String get notificationsChannelActivitySilentDescription =>
+      'Activity, without sound or vibration';
+
+  @override
+  String get notificationsChannelMessages => 'Messages';
+
+  @override
+  String get notificationsChannelMessagesDescription =>
+      'New messages from your friends';
+
+  @override
+  String get notificationsChannelMessagesSilent => 'Messages (silent)';
+
+  @override
+  String get notificationsChannelMessagesSilentDescription =>
+      'New messages, without sound or vibration';
+
+  @override
+  String get notificationsChannelOther => 'Other notifications';
+
+  @override
+  String get notificationsChannelOtherDescription =>
+      'Other notifications from Later';
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name commented on your capsule';
   }

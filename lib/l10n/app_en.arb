@@ -912,6 +912,19 @@
       }
     }
   },
+  "notificationsChannelActivity": "Activity",
+  "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
+  "notificationsChannelActivitySilent": "Activity (silent)",
+  "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
+  "notificationsChannelMessages": "Messages",
+  "@notificationsChannelMessages": {
+    "description": "Android notification channel name (phone settings)."
+  },
+  "notificationsChannelMessagesDescription": "New messages from your friends",
+  "notificationsChannelMessagesSilent": "Messages (silent)",
+  "notificationsChannelMessagesSilentDescription": "New messages, without sound or vibration",
+  "notificationsChannelOther": "Other notifications",
+  "notificationsChannelOtherDescription": "Other notifications from Later",
   "notificationsCommentBody": "{name} commented on your capsule",
   "@notificationsCommentBody": {
     "description": "Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.",

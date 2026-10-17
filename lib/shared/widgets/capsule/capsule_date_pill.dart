@@ -35,7 +35,10 @@ class CapsuleDatePill extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              DateFormat('dd.MM.yyyy').format(date ?? DateTime.now()),
+              DateFormat(
+                'dd.MM.yyyy',
+                Localizations.localeOf(context).toString(),
+              ).format(date ?? DateTime.now()),
               style: AppTextStyles.pill,
             ),
           ),

@@ -224,5 +224,18 @@
         "type": "String"
       }
     }
-  }
+  },
+  "notificationsChannelMessages": "Messages",
+  "@notificationsChannelMessages": {
+    "description": "Android notification channel name (phone settings)."
+  },
+  "notificationsChannelMessagesDescription": "New messages from your friends",
+  "notificationsChannelMessagesSilent": "Messages (silent)",
+  "notificationsChannelMessagesSilentDescription": "New messages, without sound or vibration",
+  "notificationsChannelActivity": "Activity",
+  "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
+  "notificationsChannelActivitySilent": "Activity (silent)",
+  "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
+  "notificationsChannelOther": "Other notifications",
+  "notificationsChannelOtherDescription": "Other notifications from Later"
 }

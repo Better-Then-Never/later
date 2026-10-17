@@ -36,5 +36,15 @@
   "notificationsReactionBody": "{name} hat mit {emoji} auf deine Kapsel reagiert",
   "notificationsFriendRequestBody": "{name} möchte mit dir befreundet sein",
   "notificationsFriendAcceptedBody": "{name} hat deine Freundschaftsanfrage angenommen",
-  "notificationsAchievementBody": "{name}: Du hast einen neuen Erfolg freigeschaltet"
+  "notificationsAchievementBody": "{name}: Du hast einen neuen Erfolg freigeschaltet",
+  "notificationsChannelMessages": "Nachrichten",
+  "notificationsChannelMessagesDescription": "Neue Nachrichten von deinen Freunden",
+  "notificationsChannelMessagesSilent": "Nachrichten (lautlos)",
+  "notificationsChannelMessagesSilentDescription": "Neue Nachrichten ohne Ton und Vibration",
+  "notificationsChannelActivity": "Aktivität",
+  "notificationsChannelActivityDescription": "Follower, Freundschaftsanfragen, Reaktionen, Kommentare und neue Kapseln",
+  "notificationsChannelActivitySilent": "Aktivität (lautlos)",
+  "notificationsChannelActivitySilentDescription": "Aktivität ohne Ton und Vibration",
+  "notificationsChannelOther": "Andere Benachrichtigungen",
+  "notificationsChannelOtherDescription": "Andere Benachrichtigungen von Later"
 }

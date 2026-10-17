@@ -1019,6 +1019,41 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get notificationsChannelActivity => 'Aktywność';
+
+  @override
+  String get notificationsChannelActivityDescription =>
+      'Obserwujący, zaproszenia, reakcje, komentarze i nowe kapsuły';
+
+  @override
+  String get notificationsChannelActivitySilent => 'Aktywność (bez dźwięku)';
+
+  @override
+  String get notificationsChannelActivitySilentDescription =>
+      'Aktywność bez dźwięku i wibracji';
+
+  @override
+  String get notificationsChannelMessages => 'Wiadomości';
+
+  @override
+  String get notificationsChannelMessagesDescription =>
+      'Nowe wiadomości od znajomych';
+
+  @override
+  String get notificationsChannelMessagesSilent => 'Wiadomości (bez dźwięku)';
+
+  @override
+  String get notificationsChannelMessagesSilentDescription =>
+      'Nowe wiadomości bez dźwięku i wibracji';
+
+  @override
+  String get notificationsChannelOther => 'Inne powiadomienia';
+
+  @override
+  String get notificationsChannelOtherDescription =>
+      'Inne powiadomienia od Later';
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name komentuje twoją kapsułę';
   }

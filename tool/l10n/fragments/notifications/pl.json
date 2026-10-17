@@ -36,5 +36,15 @@
   "notificationsReactionBody": "{name} reaguje {emoji} na twoją kapsułę",
   "notificationsFriendRequestBody": "{name} chce dodać cię do znajomych",
   "notificationsFriendAcceptedBody": "{name} akceptuje twoje zaproszenie",
-  "notificationsAchievementBody": "{name}: masz nowe osiągnięcie"
+  "notificationsAchievementBody": "{name}: masz nowe osiągnięcie",
+  "notificationsChannelMessages": "Wiadomości",
+  "notificationsChannelMessagesDescription": "Nowe wiadomości od znajomych",
+  "notificationsChannelMessagesSilent": "Wiadomości (bez dźwięku)",
+  "notificationsChannelMessagesSilentDescription": "Nowe wiadomości bez dźwięku i wibracji",
+  "notificationsChannelActivity": "Aktywność",
+  "notificationsChannelActivityDescription": "Obserwujący, zaproszenia, reakcje, komentarze i nowe kapsuły",
+  "notificationsChannelActivitySilent": "Aktywność (bez dźwięku)",
+  "notificationsChannelActivitySilentDescription": "Aktywność bez dźwięku i wibracji",
+  "notificationsChannelOther": "Inne powiadomienia",
+  "notificationsChannelOtherDescription": "Inne powiadomienia od Later"
 }

@@ -1013,6 +1013,41 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationsChannelActivity => 'Активность';
+
+  @override
+  String get notificationsChannelActivityDescription =>
+      'Подписчики, заявки в друзья, реакции, комментарии и новые капсулы';
+
+  @override
+  String get notificationsChannelActivitySilent => 'Активность (без звука)';
+
+  @override
+  String get notificationsChannelActivitySilentDescription =>
+      'Активность без звука и вибрации';
+
+  @override
+  String get notificationsChannelMessages => 'Сообщения';
+
+  @override
+  String get notificationsChannelMessagesDescription =>
+      'Новые сообщения от друзей';
+
+  @override
+  String get notificationsChannelMessagesSilent => 'Сообщения (без звука)';
+
+  @override
+  String get notificationsChannelMessagesSilentDescription =>
+      'Новые сообщения без звука и вибрации';
+
+  @override
+  String get notificationsChannelOther => 'Другие уведомления';
+
+  @override
+  String get notificationsChannelOtherDescription =>
+      'Другие уведомления от Later';
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name комментирует вашу капсулу';
   }

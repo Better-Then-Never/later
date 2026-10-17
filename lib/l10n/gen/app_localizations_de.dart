@@ -1033,6 +1033,41 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsChannelActivity => 'Aktivität';
+
+  @override
+  String get notificationsChannelActivityDescription =>
+      'Follower, Freundschaftsanfragen, Reaktionen, Kommentare und neue Kapseln';
+
+  @override
+  String get notificationsChannelActivitySilent => 'Aktivität (lautlos)';
+
+  @override
+  String get notificationsChannelActivitySilentDescription =>
+      'Aktivität ohne Ton und Vibration';
+
+  @override
+  String get notificationsChannelMessages => 'Nachrichten';
+
+  @override
+  String get notificationsChannelMessagesDescription =>
+      'Neue Nachrichten von deinen Freunden';
+
+  @override
+  String get notificationsChannelMessagesSilent => 'Nachrichten (lautlos)';
+
+  @override
+  String get notificationsChannelMessagesSilentDescription =>
+      'Neue Nachrichten ohne Ton und Vibration';
+
+  @override
+  String get notificationsChannelOther => 'Andere Benachrichtigungen';
+
+  @override
+  String get notificationsChannelOtherDescription =>
+      'Andere Benachrichtigungen von Later';
+
+  @override
   String notificationsCommentBody(String name) {
     return '$name hat deine Kapsel kommentiert';
   }
