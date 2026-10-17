@@ -369,10 +369,9 @@ void main() {
       expect(c.messages.single.reactions['me'], ReactionType.heart);
       expect(await reacting, isNull);
       await pumpEventQueue();
-      expect(
-        chatRepo.messages[Chat.idBetween('me', 'bob')]!.single.reactions,
-        {'me': ReactionType.heart},
-      );
+      expect(chatRepo.messages[Chat.idBetween('me', 'bob')]!.single.reactions, {
+        'me': ReactionType.heart,
+      });
 
       // Another emoji replaces it; the same one again removes it.
       await c.react(c.messages.single, ReactionType.fire);
