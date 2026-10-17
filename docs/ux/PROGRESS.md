@@ -123,3 +123,5 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **Large-text pass, done:** system font 130 % on history, profile, creation, messages, map card; the card cut
   off its button → `CapsuleInfoPanel.heightFor` (D-21), tests incl. a nonlinear scaler. Font scale reset after.
   Flutter 259.
+- **Russian + dark pass:** new menus, empty states and creation menus fit; every page's back arrow now has a
+  screen-reader label (GoBackButton, 13 pages).

@@ -60,6 +60,8 @@ Screenshots in `docs/ux/after`, `docs/ux/dark_candidates`.
 - Light theme pass over tonight's screens (found the quote alignment bug).
 - Large text (system font 130 %): history, profile, creation, messages fine; the map capsule card cut off its Open
   button (fixed, D-21).
+- Russian (and Russian + dark) over tonight's UI: history states, creation menus, colour menu fit; the page back
+  arrow had no screen-reader label (fixed).
 - Capsule created with comments off.
 - Verified badge and follower counts, achievements card and page (stats written by hand to the local emulator,
   since functions did not run there).
