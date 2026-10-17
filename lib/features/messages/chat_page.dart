@@ -413,10 +413,29 @@ class _ChatViewState extends State<_ChatView> {
   /// It may not be built yet (the list is lazy): first an estimate, then
   /// the exact position. Older than the loaded page or deleted: nothing.
   Future<void> _showQuoted(String id) async {
-    final messages = context.read<ChatController>().visibleMessages;
+    final controller = context.read<ChatController>();
     final duration = AppMotion.of(context, AppMotion.slow);
-    final i = messages.indexWhere((m) => m.id == id);
-    if (i < 0) return;
+    final l10n = context.l10n;
+    var messages = controller.visibleMessages;
+    var i = messages.indexWhere((m) => m.id == id);
+    if (i < 0) {
+      // Older than the loaded pages: load back to it (or learn it is gone).
+      if (await controller.loadUntil(id)) {
+        if (!mounted) return;
+        await WidgetsBinding.instance.endOfFrame;
+        messages = controller.visibleMessages;
+        i = messages.indexWhere((m) => m.id == id);
+      }
+      if (!mounted) return;
+      if (i < 0) {
+        PopupNotificationService.showError(
+          context: context,
+          message: l10n.messagesQuoteGone,
+          position: NotificationPosition.top,
+        );
+        return;
+      }
+    }
     for (var attempt = 0; attempt < 3; attempt++) {
       final target = _keys[id]?.currentContext;
       if (target != null && target.mounted) {

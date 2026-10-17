@@ -403,6 +403,7 @@
   "messagesPhotoCaption": "Añade un texto…",
   "messagesPhotoUnreadable": "No se puede enviar esta imagen",
   "messagesPlayVoice": "Reproducir mensaje de voz",
+  "messagesQuoteGone": "Ese mensaje ya no está en este chat",
   "messagesReactFailed": "No se pudo guardar tu reacción",
   "messagesReceiptFailed": "No enviado · Toca para reintentar",
   "messagesReceiptRead": "Leído",

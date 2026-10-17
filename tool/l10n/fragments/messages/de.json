@@ -112,5 +112,6 @@
   "messagesForwardTo": "Weiterleiten an",
   "messagesForwardedTo": "Weitergeleitet an {name}",
   "messagesReport": "Melden",
-  "messagesReportFailed": "Die Meldung konnte nicht gesendet werden. Versuch es noch einmal."
+  "messagesReportFailed": "Die Meldung konnte nicht gesendet werden. Versuch es noch einmal.",
+  "messagesQuoteGone": "Diese Nachricht gibt es in diesem Chat nicht mehr"
 }

@@ -1495,6 +1495,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesPlayVoice => 'Sprachnachricht abspielen';
 
   @override
+  String get messagesQuoteGone =>
+      'Diese Nachricht gibt es in diesem Chat nicht mehr';
+
+  @override
   String get messagesReactFailed =>
       'Deine Reaktion konnte nicht gespeichert werden';
 

@@ -885,6 +885,25 @@ void main() {
       },
     );
 
+    test('a quote older than the loaded pages is loaded back to', () async {
+      for (var i = 0; i < 120; i++) {
+        await say(i.isEven ? 'bob' : 'me', i.isEven ? 'me' : 'bob', 'm$i');
+      }
+      final c = ChatController(
+        friendUid: 'bob',
+        chats: chats,
+        friends: friends,
+        pageSize: 50,
+      );
+      await pumpEventQueue();
+      final oldest = chatRepo.messages['bob_me']!.first.id;
+      expect(c.messages.any((m) => m.id == oldest), isFalse);
+      expect(await c.loadUntil(oldest), isTrue);
+      expect(c.messages.length, 120);
+      expect(await c.loadUntil('gone'), isFalse, reason: 'deleted long ago');
+      c.dispose();
+    });
+
     test('deleting for me hides it here and keeps it hidden', () async {
       SharedPreferences.setMockInitialValues({});
       final hidden = HiddenMessages(PreferencesStore());

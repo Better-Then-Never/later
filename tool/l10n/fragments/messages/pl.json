@@ -112,5 +112,6 @@
   "messagesForwardTo": "Przekaż do",
   "messagesForwardedTo": "Przekazano: {name}",
   "messagesReport": "Zgłoś",
-  "messagesReportFailed": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie."
+  "messagesReportFailed": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+  "messagesQuoteGone": "Tej wiadomości nie ma już w czacie"
 }

@@ -407,5 +407,9 @@
   "messagesReportFailed": "The report could not be sent. Try again.",
   "@messagesReportFailed": {
     "description": "Shown when reporting a message fails."
+  },
+  "messagesQuoteGone": "That message is no longer in this chat",
+  "@messagesQuoteGone": {
+    "description": "Shown when the quoted message was deleted or cannot be found."
   }
 }

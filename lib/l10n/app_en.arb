@@ -1271,6 +1271,10 @@
   "@messagesPlayVoice": {
     "description": "Screen reader label of the play button of a voice message."
   },
+  "messagesQuoteGone": "That message is no longer in this chat",
+  "@messagesQuoteGone": {
+    "description": "Shown when the quoted message was deleted or cannot be found."
+  },
   "messagesReactFailed": "Could not save your reaction",
   "messagesReceiptFailed": "Not sent · Tap to retry",
   "messagesReceiptRead": "Read",

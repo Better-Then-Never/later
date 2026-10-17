@@ -112,5 +112,6 @@
   "messagesForwardTo": "Переслать",
   "messagesForwardedTo": "Переслано: {name}",
   "messagesReport": "Пожаловаться",
-  "messagesReportFailed": "Жалобу не удалось отправить. Попробуйте ещё раз."
+  "messagesReportFailed": "Жалобу не удалось отправить. Попробуйте ещё раз.",
+  "messagesQuoteGone": "Этого сообщения больше нет в чате"
 }

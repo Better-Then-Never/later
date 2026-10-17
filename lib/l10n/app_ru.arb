@@ -403,6 +403,7 @@
   "messagesPhotoCaption": "Добавьте подпись…",
   "messagesPhotoUnreadable": "Эту картинку нельзя отправить",
   "messagesPlayVoice": "Воспроизвести голосовое",
+  "messagesQuoteGone": "Этого сообщения больше нет в чате",
   "messagesReactFailed": "Не удалось сохранить реакцию",
   "messagesReceiptFailed": "Не отправлено · Нажмите, чтобы повторить",
   "messagesReceiptRead": "Прочитано",

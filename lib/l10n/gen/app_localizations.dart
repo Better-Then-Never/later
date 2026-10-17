@@ -2522,6 +2522,12 @@ abstract class AppLocalizations {
   /// **'Play voice message'**
   String get messagesPlayVoice;
 
+  /// Shown when the quoted message was deleted or cannot be found.
+  ///
+  /// In en, this message translates to:
+  /// **'That message is no longer in this chat'**
+  String get messagesQuoteGone;
+
   /// No description provided for @messagesReactFailed.
   ///
   /// In en, this message translates to:

@@ -112,5 +112,6 @@
   "messagesForwardTo": "Reenviar a",
   "messagesForwardedTo": "Reenviado a {name}",
   "messagesReport": "Denunciar",
-  "messagesReportFailed": "No se pudo enviar la denuncia. Inténtalo de nuevo."
+  "messagesReportFailed": "No se pudo enviar la denuncia. Inténtalo de nuevo.",
+  "messagesQuoteGone": "Ese mensaje ya no está en este chat"
 }

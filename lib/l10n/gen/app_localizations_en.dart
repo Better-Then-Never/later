@@ -1461,6 +1461,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesPlayVoice => 'Play voice message';
 
   @override
+  String get messagesQuoteGone => 'That message is no longer in this chat';
+
+  @override
   String get messagesReactFailed => 'Could not save your reaction';
 
   @override

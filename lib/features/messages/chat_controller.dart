@@ -405,6 +405,9 @@ class ChatController extends ChangeNotifier {
     _loaded = true;
     _failed = false;
     _loadingOlder = false;
+    final arrived = _pageArrived;
+    _pageArrived = null;
+    if (arrived != null && !arrived.isCompleted) arrived.complete();
     // Confirmed by the server: no longer pending.
     for (final m in messages) {
       _outbox.remove(m.id);
@@ -480,6 +483,26 @@ class ChatController extends ChangeNotifier {
     _loaded = false;
     _notify();
     _subscribe();
+  }
+
+  /// Resolved when the next page of messages arrives (see [loadUntil]).
+  Completer<void>? _pageArrived;
+
+  /// Loads older pages until message [messageId] is among the loaded ones
+  /// (at most [maxPages] more): whether it is.
+  Future<bool> loadUntil(String messageId, {int maxPages = 10}) async {
+    bool loaded() => messages.any((m) => m.id == messageId);
+    for (var page = 0; page < maxPages; page++) {
+      if (loaded()) return true;
+      if (!canLoadOlder || _disposed) return false;
+      final arrived = _pageArrived = Completer<void>();
+      loadOlder();
+      await arrived.future.timeout(
+        const Duration(seconds: 8),
+        onTimeout: () {},
+      );
+    }
+    return loaded();
   }
 
   /// Loads the next page of older messages (no-op while loading or when the

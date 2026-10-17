@@ -1498,6 +1498,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesPlayVoice => 'Воспроизвести голосовое';
 
   @override
+  String get messagesQuoteGone => 'Этого сообщения больше нет в чате';
+
+  @override
   String get messagesReactFailed => 'Не удалось сохранить реакцию';
 
   @override

@@ -1506,6 +1506,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get messagesPlayVoice => 'Odtwórz wiadomość głosową';
 
   @override
+  String get messagesQuoteGone => 'Tej wiadomości nie ma już w czacie';
+
+  @override
   String get messagesReactFailed => 'Nie udało się zapisać reakcji';
 
   @override

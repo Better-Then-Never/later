@@ -403,6 +403,7 @@
   "messagesPhotoCaption": "Dodaj podpis…",
   "messagesPhotoUnreadable": "Nie można wysłać tego obrazu",
   "messagesPlayVoice": "Odtwórz wiadomość głosową",
+  "messagesQuoteGone": "Tej wiadomości nie ma już w czacie",
   "messagesReactFailed": "Nie udało się zapisać reakcji",
   "messagesReceiptFailed": "Nie wysłano · Dotknij, aby ponowić",
   "messagesReceiptRead": "Przeczytano",
