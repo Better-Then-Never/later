@@ -272,7 +272,7 @@ class _MapViewState extends State<_MapView> {
               position: LatLng(me.latitude, me.longitude),
             );
     }
-    final key = (map.capsulesVersion, icons, map.showMarkers);
+    final key = (map.capsulesVersion, icons.capsulePins, map.showMarkers);
     if (key != _capsuleMarkersKey) {
       _capsuleMarkersKey = key;
       _capsuleMarkers = !map.showMarkers
