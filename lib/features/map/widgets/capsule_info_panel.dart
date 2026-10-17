@@ -22,9 +22,10 @@ class CapsuleInfoPanel extends StatefulWidget {
   final Capsule capsule;
   final VoidCallback onMoreInfo;
 
-  /// Smallest height that fits the content (title, date, status, button);
-  /// the original fixed 17.1% of the screen overflowed on most phones.
-  static const double minHeight = 152;
+  /// Smallest height that fits the content (title, date, status, button)
+  /// with the app font; the original fixed 17.1% of the screen overflowed on
+  /// most phones, and 152 still did by 2 px.
+  static const double minHeight = 156;
 
   @override
   State<CapsuleInfoPanel> createState() => _CapsuleInfoPanelState();
@@ -136,9 +137,10 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: isOpen
-                    ? AppColors.brandGreen
-                    : context.palette.iconMuted,
+                backgroundColor: AppColors.brandGreen,
+                // Locked: the grey of the design, not Flutter's pale
+                // disabled colour (the white label was unreadable on it).
+                disabledBackgroundColor: context.palette.iconMuted,
                 shape: const RoundedRectangleBorder(
                   borderRadius: AppRadii.lCircular,
                 ),

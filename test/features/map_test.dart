@@ -59,10 +59,7 @@ Widget _panel(
     body: Center(
       child: SizedBox(
         width: 320 * 0.58,
-        // The content is about 2 px taller than minHeight with the app font
-        // in tests, in English too (unchanged by the translations); these
-        // tests are about the texts fitting the panel's width.
-        height: CapsuleInfoPanel.minHeight + 4,
+        height: CapsuleInfoPanel.minHeight,
         child: CapsuleInfoPanel(
           capsule: capsule,
           onMoreInfo: onMoreInfo ?? () {},
