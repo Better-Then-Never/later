@@ -1400,6 +1400,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesMenuUnmute => 'Включить уведомления';
 
   @override
+  String get messagesMicPermission =>
+      'Разрешите доступ к микрофону, чтобы отправлять голосовые';
+
+  @override
   String get messagesMutedToast => 'Уведомления чата отключены';
 
   @override
@@ -1459,6 +1463,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesOpenPhoto => 'Открыть фото';
 
   @override
+  String get messagesPauseVoice => 'Пауза';
+
+  @override
   String get messagesPhoto => 'Фото';
 
   @override
@@ -1466,6 +1473,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesPhotoUnreadable => 'Эту картинку нельзя отправить';
+
+  @override
+  String get messagesPlayVoice => 'Воспроизвести голосовое';
 
   @override
   String get messagesReactFailed => 'Не удалось сохранить реакцию';
@@ -1482,6 +1492,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesReceiptSent => 'Отправлено';
+
+  @override
+  String get messagesRecordVoice => 'Записать голосовое';
 
   @override
   String get messagesScrollToLatest => 'К последнему сообщению';
@@ -1544,6 +1557,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Уведомления чата включены';
+
+  @override
+  String get messagesVoice => 'Голосовое сообщение';
+
+  @override
+  String get messagesVoiceCancel => 'Отменить запись';
+
+  @override
+  String get messagesVoiceFailed => 'Это голосовое не получается воспроизвести';
+
+  @override
+  String get messagesVoiceRecording => 'Запись';
+
+  @override
+  String get messagesVoiceSend => 'Отправить голосовое';
+
+  @override
+  String get messagesVoiceTooShort => 'Слишком коротко, чтобы отправить';
 
   @override
   String get messagesYesterday => 'Вчера';

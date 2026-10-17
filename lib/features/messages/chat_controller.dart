@@ -124,6 +124,9 @@ class ChatController extends ChangeNotifier {
   /// not upload again.
   final Map<String, ChatPhoto> _uploaded = {};
 
+  /// The same for recordings.
+  final Map<String, ChatAudio> _uploadedAudio = {};
+
   /// Deleted here, hidden until the server's list no longer has them.
   final Set<String> _deleting = {};
 
@@ -499,6 +502,41 @@ class ChatController extends ChangeNotifier {
     return _deliver(id);
   }
 
+  /// Voice messages can be sent to a friend (not yet in groups).
+  bool get canSendVoice => !isGroup;
+
+  /// Shows the recording at [localPath] at once as "sending", uploads it and
+  /// sends it; a failure keeps it as "not sent" to retry.
+  Future<AppFailure?> sendVoice(
+    String localPath, {
+    required int durationMs,
+    required List<int> waveform,
+  }) async {
+    if (!canSendVoice) return null;
+    final me = myUid;
+    final chat = chatId;
+    final id = chat == null ? null : _chats.newMessageIdIn(chat);
+    if (me == null || id == null) {
+      return AuthFailure(AppL10n.current.messagesSignedOut);
+    }
+    _stopTyping();
+    _localPhotos[id] = localPath;
+    _outbox[id] = ChatMessage(
+      id: id,
+      senderId: me,
+      text: ChatMessage.voiceSign,
+      type: ChatMessageType.voice,
+      localPath: localPath,
+      durationMs: durationMs,
+      waveform: waveform,
+      delivery: MessageDelivery.sending,
+      replyTo: _replyTo,
+    );
+    _replyTo = null;
+    _notify();
+    return _deliver(id);
+  }
+
   /// Whether [message] can be answered: it is on the server and the user
   /// may write here.
   bool canReply(ChatMessage message) =>
@@ -507,14 +545,19 @@ class ChatController extends ChangeNotifier {
   /// The next message answers [message].
   void replyTo(ChatMessage message) {
     if (!canReply(message)) return;
-    _replyTo = message.type == ChatMessageType.image
-        ? MessageReply.of(
-            message,
-            text:
-                '${ChatMessage.photoSign} '
-                '${message.caption.isEmpty ? AppL10n.current.messagesPhoto : message.caption}',
-          )
-        : MessageReply.of(message);
+    _replyTo = switch (message.type) {
+      ChatMessageType.image => MessageReply.of(
+        message,
+        text:
+            '${ChatMessage.photoSign} '
+            '${message.caption.isEmpty ? AppL10n.current.messagesPhoto : message.caption}',
+      ),
+      ChatMessageType.voice => MessageReply.of(
+        message,
+        text: '${ChatMessage.voiceSign} ${AppL10n.current.messagesVoice}',
+      ),
+      _ => MessageReply.of(message),
+    };
     _notify();
   }
 
@@ -548,6 +591,8 @@ class ChatController extends ChangeNotifier {
           )
         : pending.type == ChatMessageType.image
         ? await _deliverPhoto(pending)
+        : pending.type == ChatMessageType.voice
+        ? await _deliverVoice(pending)
         : await _chats.sendText(
             friendUid!,
             pending.text,
@@ -593,6 +638,35 @@ class ChatController extends ChangeNotifier {
       replyTo: pending.replyTo,
     );
     if (failure == null) _uploaded.remove(id);
+    return failure;
+  }
+
+  /// Uploads [pending]'s recording (once) and sends the message.
+  Future<AppFailure?> _deliverVoice(ChatMessage pending) async {
+    final friend = friendUid;
+    if (friend == null) return null;
+    final id = pending.id;
+    var audio = _uploadedAudio[id];
+    if (audio == null) {
+      final local = pending.localPath;
+      if (local == null) return null;
+      final (uploaded, failure) = await _chats.uploadVoice(
+        friend,
+        local,
+        messageId: id,
+      );
+      if (uploaded == null) return failure;
+      audio = _uploadedAudio[id] = uploaded;
+    }
+    final failure = await _chats.sendVoice(
+      friend,
+      audio,
+      messageId: id,
+      durationMs: pending.durationMs ?? 0,
+      waveform: pending.waveform,
+      replyTo: pending.replyTo,
+    );
+    if (failure == null) _uploadedAudio.remove(id);
     return failure;
   }
 
@@ -643,7 +717,7 @@ class ChatController extends ChangeNotifier {
     final failure = await _chats.deleteMessage(
       id,
       message.id,
-      imagePath: message.imagePath,
+      imagePath: message.imagePath ?? message.audioPath,
     );
     if (failure != null && !_disposed) {
       _deleting.remove(message.id);

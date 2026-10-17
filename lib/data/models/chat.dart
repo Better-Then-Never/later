@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show listEquals;
+
 import 'capsule.dart';
 
 /// A conversation between two users (`chats/{uidA}_{uidB}`, uids sorted so
@@ -105,13 +107,26 @@ enum ChatMessageType {
   capsule,
 
   /// A photo (with an optional caption as its text).
-  image;
+  image,
+
+  /// A voice recording (its text is a microphone sign for older apps).
+  voice;
 
   static ChatMessageType parse(Object? value) => switch (value) {
     'capsule' => capsule,
     'image' => image,
+    'voice' => voice,
     _ => text,
   };
+}
+
+/// A recording of a voice message, uploaded: its download URL and its file
+/// in Storage (`chats/{chatId}/{sender}/{messageId}.m4a`).
+class ChatAudio {
+  const ChatAudio({required this.url, required this.path});
+
+  final String url;
+  final String path;
 }
 
 /// A photo of a message, uploaded: its download URL, its file in Storage
@@ -199,10 +214,23 @@ class ChatMessage {
     this.width,
     this.height,
     this.localPath,
+    this.audioUrl,
+    this.audioPath,
+    this.durationMs,
+    this.waveform = const [],
   });
 
   /// The text of a photo without a caption (older app versions show it).
   static const photoSign = '📷';
+
+  /// The text of a voice message (older app versions show it).
+  static const voiceSign = '🎤';
+
+  /// Longest voice message.
+  static const maxVoice = Duration(minutes: 5);
+
+  /// Bars in a voice message's waveform.
+  static const waveformBars = 40;
 
   final String id;
   final String senderId;
@@ -238,9 +266,16 @@ class ChatMessage {
   final int? width;
   final int? height;
 
-  /// A photo sent from this phone: the picture on the phone, shown until
-  /// (and after) the server has it, so it never reloads.
+  /// A photo or voice message sent from this phone: the file on the phone,
+  /// used until (and after) the server has it, so it never reloads.
   final String? localPath;
+
+  /// For voice messages: the recording's URL and its file in Storage, its
+  /// length and loudness bars (0-100, [waveformBars] of them).
+  final String? audioUrl;
+  final String? audioPath;
+  final int? durationMs;
+  final List<int> waveform;
   final MessageDelivery delivery;
 
   /// Read by the recipient: from the chat's `lastReadAt` (current app) or the
@@ -264,6 +299,9 @@ class ChatMessage {
     height: photo.height,
   );
 
+  ChatMessage withAudio(ChatAudio audio) =>
+      _copy(audioUrl: audio.url, audioPath: audio.path);
+
   ChatMessage _copy({
     MessageDelivery? delivery,
     Map<String, ReactionType>? reactions,
@@ -272,6 +310,8 @@ class ChatMessage {
     int? width,
     int? height,
     String? localPath,
+    String? audioUrl,
+    String? audioPath,
   }) => ChatMessage(
     id: id,
     senderId: senderId,
@@ -288,6 +328,10 @@ class ChatMessage {
     width: width ?? this.width,
     height: height ?? this.height,
     localPath: localPath ?? this.localPath,
+    audioUrl: audioUrl ?? this.audioUrl,
+    audioPath: audioPath ?? this.audioPath,
+    durationMs: durationMs,
+    waveform: waveform,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
@@ -298,6 +342,10 @@ class ChatMessage {
 
   /// What was written with a photo; empty for none.
   String get caption => text == photoSign ? '' : text;
+
+  /// A voice message (its recording may still be on its way).
+  bool get isVoice =>
+      type == ChatMessageType.voice && (audioUrl != null || localPath != null);
 
   @override
   bool operator ==(Object other) =>
@@ -316,6 +364,10 @@ class ChatMessage {
       other.width == width &&
       other.height == height &&
       other.localPath == localPath &&
+      other.audioUrl == audioUrl &&
+      other.audioPath == audioPath &&
+      other.durationMs == durationMs &&
+      listEquals(other.waveform, waveform) &&
       _mapEquals(other.reactions, reactions);
 
   @override

@@ -202,6 +202,26 @@ abstract interface class ChatRepository {
     MessageReply? replyTo,
   });
 
+  /// Uploads the recording at [localPath] (AAC, .m4a) for message
+  /// [messageId] from [from] to [to].
+  Future<ChatAudio> uploadVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  });
+
+  /// Sends [audio] (from [uploadVoice]) as voice message [messageId].
+  Future<void> sendVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatAudio audio,
+    required int durationMs,
+    required List<int> waveform,
+    MessageReply? replyTo,
+  });
+
   /// Posts [capsule] (already shared with [to]) into the chat.
   Future<void> sendCapsule({
     required String from,

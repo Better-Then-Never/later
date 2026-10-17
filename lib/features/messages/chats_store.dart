@@ -331,6 +331,47 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     ),
   );
 
+  /// Uploads the recording at [localPath] for message [messageId] to [to].
+  Future<(ChatAudio?, AppFailure?)> uploadVoice(
+    String to,
+    String localPath, {
+    required String messageId,
+  }) async {
+    ChatAudio? audio;
+    final failure = await _run(
+      'Failed to upload a voice message',
+      AppL10n.current.messagesSendFailed,
+      (me) async => audio = await _chats.uploadVoice(
+        from: me,
+        to: to,
+        messageId: messageId,
+        localPath: localPath,
+      ),
+    );
+    return (audio, failure);
+  }
+
+  Future<AppFailure?> sendVoice(
+    String to,
+    ChatAudio audio, {
+    required String messageId,
+    required int durationMs,
+    required List<int> waveform,
+    MessageReply? replyTo,
+  }) => _run(
+    'Failed to send a voice message',
+    AppL10n.current.messagesSendFailed,
+    (me) => _chats.sendVoice(
+      from: me,
+      to: to,
+      messageId: messageId,
+      audio: audio,
+      durationMs: durationMs,
+      waveform: waveform,
+      replyTo: replyTo,
+    ),
+  );
+
   Future<AppFailure?> setMessageReaction(
     String chatId,
     String messageId,

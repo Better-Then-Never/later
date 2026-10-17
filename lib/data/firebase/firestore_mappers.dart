@@ -234,12 +234,24 @@ abstract final class FirestoreMappers {
         imagePath: _nonEmptyString(data['imagePath']),
         width: _positiveInt(data['width']),
         height: _positiveInt(data['height']),
+        audioUrl: _nonEmptyString(data['audioUrl']),
+        audioPath: _nonEmptyString(data['audioPath']),
+        durationMs: _positiveInt(data['durationMs']),
+        waveform: _waveform(data['waveform']),
         replyTo: messageReply(data['replyTo']),
         reactions: messageReactions(data['reactions']),
       );
 
   static int? _positiveInt(Object? value) =>
       value is num && value > 0 ? value.toInt() : null;
+
+  /// Loudness bars 0-100; anything else is dropped.
+  static List<int> _waveform(Object? value) => value is List
+      ? [
+          for (final v in value)
+            if (v is num) v.toInt().clamp(0, 100),
+        ]
+      : const [];
 
   /// {uid: type}; unknown types are skipped.
   static Map<String, ReactionType> messageReactions(Object? value) {

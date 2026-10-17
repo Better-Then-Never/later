@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -292,6 +294,67 @@ class FirebaseChatRepository implements ChatRepository {
       if (replyTo == null || e.code != 'permission-denied') rethrow;
       AppLogger.warning(
         'Photo reply refused with its quote, sending it without',
+      );
+      await send(quote: false);
+    }
+  }
+
+  @override
+  Future<ChatAudio> uploadVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  }) async {
+    final path = 'chats/${Chat.idBetween(from, to)}/$from/$messageId.m4a';
+    final ref = _storage.ref(path);
+    _storage.setMaxUploadRetryTime(const Duration(seconds: 45));
+    try {
+      await ref.putFile(
+        File(localPath),
+        SettableMetadata(contentType: 'audio/mp4'),
+      );
+    } on FirebaseException catch (e) {
+      // A sent recording cannot be replaced (storage.rules): an earlier
+      // attempt whose answer was lost already put it there.
+      if (e.code != 'unauthorized') rethrow;
+      AppLogger.debug('Voice message already uploaded, using it: $path');
+    }
+    return ChatAudio(url: await ref.getDownloadURL(), path: path);
+  }
+
+  @override
+  Future<void> sendVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatAudio audio,
+    required int durationMs,
+    required List<int> waveform,
+    MessageReply? replyTo,
+  }) async {
+    Future<void> send({required bool quote}) => _send(
+      from: from,
+      to: to,
+      preview: ChatMessage.voiceSign,
+      messageId: messageId,
+      message: {
+        'text': ChatMessage.voiceSign,
+        'type': ChatMessageType.voice.name,
+        'audioUrl': audio.url,
+        'audioPath': audio.path,
+        'durationMs': durationMs,
+        'waveform': waveform,
+        if (quote && replyTo != null)
+          'replyTo': FirestoreMappers.newMessageReply(replyTo),
+      },
+    );
+    try {
+      await send(quote: true);
+    } on FirebaseException catch (e) {
+      if (replyTo == null || e.code != 'permission-denied') rethrow;
+      AppLogger.warning(
+        'Voice reply refused with its quote, sending it without',
       );
       await send(quote: false);
     }

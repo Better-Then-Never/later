@@ -721,6 +721,46 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
+  Future<ChatAudio> uploadVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  }) async {
+    calls.add('uploadvoice:$messageId:$localPath');
+    if (failUploads) throw StateError('upload failed');
+    final path = 'chats/${Chat.idBetween(from, to)}/$from/$messageId.m4a';
+    return ChatAudio(url: 'https://storage.test/$path', path: path);
+  }
+
+  @override
+  Future<void> sendVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatAudio audio,
+    required int durationMs,
+    required List<int> waveform,
+    MessageReply? replyTo,
+  }) async {
+    calls.add('voice:$from->$to:${audio.path}:$durationMs');
+    _add(
+      from,
+      to,
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: ChatMessage.voiceSign,
+        sentAt: now,
+        type: ChatMessageType.voice,
+        durationMs: durationMs,
+        waveform: waveform,
+        replyTo: replyTo,
+      ).withAudio(audio),
+    );
+  }
+
+  @override
   Future<void> sendCapsule({
     required String from,
     required String to,

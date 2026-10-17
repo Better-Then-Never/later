@@ -1374,6 +1374,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get messagesMenuUnmute => 'Activar sonido';
 
   @override
+  String get messagesMicPermission =>
+      'Permite el micrófono para enviar mensajes de voz';
+
+  @override
   String get messagesMutedToast => 'Chat silenciado';
 
   @override
@@ -1433,6 +1437,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get messagesOpenPhoto => 'Abrir foto';
 
   @override
+  String get messagesPauseVoice => 'Pausa';
+
+  @override
   String get messagesPhoto => 'Foto';
 
   @override
@@ -1440,6 +1447,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get messagesPhotoUnreadable => 'No se puede enviar esta imagen';
+
+  @override
+  String get messagesPlayVoice => 'Reproducir mensaje de voz';
 
   @override
   String get messagesReactFailed => 'No se pudo guardar tu reacción';
@@ -1455,6 +1465,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get messagesReceiptSent => 'Enviado';
+
+  @override
+  String get messagesRecordVoice => 'Grabar un mensaje de voz';
 
   @override
   String get messagesScrollToLatest => 'Ir al último mensaje';
@@ -1509,6 +1522,25 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Sonido del chat activado';
+
+  @override
+  String get messagesVoice => 'Mensaje de voz';
+
+  @override
+  String get messagesVoiceCancel => 'Cancelar la grabación';
+
+  @override
+  String get messagesVoiceFailed =>
+      'No se puede reproducir este mensaje de voz';
+
+  @override
+  String get messagesVoiceRecording => 'Grabando';
+
+  @override
+  String get messagesVoiceSend => 'Enviar mensaje de voz';
+
+  @override
+  String get messagesVoiceTooShort => 'Demasiado corto para enviar';
 
   @override
   String get messagesYesterday => 'Ayer';

@@ -15,6 +15,7 @@ import '../data/repositories/repositories.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/services/location_service.dart';
 import '../data/services/preferences_store.dart';
+import '../data/services/voice_service.dart';
 import '../data/services/profile_image_cache.dart';
 import '../data/services/push_messaging_service.dart';
 import '../features/history/favorites_store.dart';
@@ -70,6 +71,7 @@ class _AppScopeState extends State<AppScope> {
   final SocialRepository _social = FirebaseSocialRepository();
   final _location = const LocationService();
   final _geocoding = GeocodingService();
+  final _voice = VoiceService();
   late final _prefs = widget.preferences;
   final _links = AppLinkHandler(onOpenProfile: AppRoutes.openProfileFromLink);
   final _push = PushMessagingService();
@@ -161,6 +163,7 @@ class _AppScopeState extends State<AppScope> {
         Provider<SocialRepository>.value(value: _social),
         Provider<LocationService>.value(value: _location),
         Provider<GeocodingService>.value(value: _geocoding),
+        Provider<VoiceService>.value(value: _voice),
         Provider<PreferencesStore>.value(value: _prefs),
         ChangeNotifierProvider<AppearanceController>.value(
           value: widget.appearance,

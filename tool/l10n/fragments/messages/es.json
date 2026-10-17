@@ -86,5 +86,15 @@
   "messagesGroupLeft": "Ya no estás en este grupo",
   "messagesGroupHello": "Saluda a todos",
   "messagesOpenGroup": "Abrir el grupo {name}",
-  "messagesGroupSave": "Guardar"
+  "messagesGroupSave": "Guardar",
+  "messagesVoice": "Mensaje de voz",
+  "messagesRecordVoice": "Grabar un mensaje de voz",
+  "messagesVoiceRecording": "Grabando",
+  "messagesVoiceCancel": "Cancelar la grabación",
+  "messagesVoiceSend": "Enviar mensaje de voz",
+  "messagesVoiceTooShort": "Demasiado corto para enviar",
+  "messagesMicPermission": "Permite el micrófono para enviar mensajes de voz",
+  "messagesPlayVoice": "Reproducir mensaje de voz",
+  "messagesPauseVoice": "Pausa",
+  "messagesVoiceFailed": "No se puede reproducir este mensaje de voz"
 }

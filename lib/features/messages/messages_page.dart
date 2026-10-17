@@ -133,10 +133,15 @@ class _ChatList extends StatelessWidget {
               itemBuilder: (context, index) {
                 final chat = chats[index];
                 final mine = chat.lastSenderId == me;
-                // A photo without a caption says what it is.
-                final last = chat.lastMessage == ChatMessage.photoSign
-                    ? '${ChatMessage.photoSign} ${l10n.messagesPhoto}'
-                    : chat.lastMessage;
+                // A photo without a caption, or a voice message, says
+                // what it is.
+                final last = switch (chat.lastMessage) {
+                  ChatMessage.photoSign =>
+                    '${ChatMessage.photoSign} ${l10n.messagesPhoto}',
+                  ChatMessage.voiceSign =>
+                    '${ChatMessage.voiceSign} ${l10n.messagesVoice}',
+                  final text => text,
+                };
                 if (chat.isGroup) {
                   final sender = chat.lastSenderId;
                   return ChatListItem(

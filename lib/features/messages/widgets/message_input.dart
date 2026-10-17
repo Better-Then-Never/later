@@ -24,9 +24,13 @@ class MessageInput extends StatefulWidget {
     required this.onSend,
     this.onCapsuleTap,
     this.onPhotoTap,
+    this.onVoiceTap,
     this.onChanged,
     this.focusNode,
   });
+
+  /// While the field is empty, the send button records a voice message.
+  final VoidCallback? onVoiceTap;
 
   /// Every change of the text (the typing hint).
   final ValueChanged<String>? onChanged;
@@ -161,15 +165,39 @@ class _MessageInputState extends State<MessageInput> {
               ),
             ),
             SizedBox(width: screen.width * 0.02),
-            _RoundButton(
-              size: buttonSize,
-              color: AppColors.brandGreen,
-              tooltip: context.l10n.messagesSend,
-              onTap: _hasText ? _send : null,
-              child: Padding(
-                padding: EdgeInsets.all(buttonSize * 0.18),
-                child: Image.asset(AppIcons.messagesSend),
-              ),
+            // Send, or the microphone while there is nothing to send.
+            AnimatedSwitcher(
+              duration: AppMotion.of(context, AppMotion.fast),
+              switchInCurve: AppMotion.enter,
+              switchOutCurve: AppMotion.exit,
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: !_hasText && widget.onVoiceTap != null
+                  ? _RoundButton(
+                      key: const ValueKey('voice'),
+                      size: buttonSize,
+                      color: AppColors.brandGreen,
+                      tooltip: context.l10n.messagesRecordVoice,
+                      onTap: widget.onVoiceTap,
+                      child: Padding(
+                        padding: EdgeInsets.all(buttonSize * 0.22),
+                        child: Image.asset(
+                          AppIcons.capsuleMicrophone,
+                          color: AppColors.onAccent,
+                        ),
+                      ),
+                    )
+                  : _RoundButton(
+                      key: const ValueKey('send'),
+                      size: buttonSize,
+                      color: AppColors.brandGreen,
+                      tooltip: context.l10n.messagesSend,
+                      onTap: _hasText ? _send : null,
+                      child: Padding(
+                        padding: EdgeInsets.all(buttonSize * 0.18),
+                        child: Image.asset(AppIcons.messagesSend),
+                      ),
+                    ),
             ),
           ],
         ),
@@ -180,6 +208,7 @@ class _MessageInputState extends State<MessageInput> {
 
 class _RoundButton extends StatelessWidget {
   const _RoundButton({
+    super.key,
     required this.size,
     required this.color,
     required this.tooltip,

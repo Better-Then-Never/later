@@ -1396,6 +1396,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesMenuUnmute => 'Stummschaltung aufheben';
 
   @override
+  String get messagesMicPermission =>
+      'Erlaube das Mikrofon, um Sprachnachrichten zu senden';
+
+  @override
   String get messagesMutedToast => 'Chat stummgeschaltet';
 
   @override
@@ -1455,6 +1459,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesOpenPhoto => 'Foto öffnen';
 
   @override
+  String get messagesPauseVoice => 'Pause';
+
+  @override
   String get messagesPhoto => 'Foto';
 
   @override
@@ -1463,6 +1470,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get messagesPhotoUnreadable =>
       'Dieses Bild kann nicht gesendet werden';
+
+  @override
+  String get messagesPlayVoice => 'Sprachnachricht abspielen';
 
   @override
   String get messagesReactFailed =>
@@ -1479,6 +1489,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesReceiptSent => 'Gesendet';
+
+  @override
+  String get messagesRecordVoice => 'Sprachnachricht aufnehmen';
 
   @override
   String get messagesScrollToLatest => 'Zur neuesten Nachricht scrollen';
@@ -1533,6 +1546,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Stummschaltung aufgehoben';
+
+  @override
+  String get messagesVoice => 'Sprachnachricht';
+
+  @override
+  String get messagesVoiceCancel => 'Aufnahme abbrechen';
+
+  @override
+  String get messagesVoiceFailed =>
+      'Diese Sprachnachricht lässt sich nicht abspielen';
+
+  @override
+  String get messagesVoiceRecording => 'Aufnahme';
+
+  @override
+  String get messagesVoiceSend => 'Sprachnachricht senden';
+
+  @override
+  String get messagesVoiceTooShort => 'Zu kurz zum Senden';
 
   @override
   String get messagesYesterday => 'Gestern';

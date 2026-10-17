@@ -55,4 +55,10 @@ abstract final class ChatTime {
 
   static bool isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
+  /// A recording's length or position: 0:07, 1:42.
+  static String clock(Duration d) {
+    final seconds = d.inSeconds;
+    return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+  }
 }

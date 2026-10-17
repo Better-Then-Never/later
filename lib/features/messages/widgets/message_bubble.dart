@@ -10,6 +10,7 @@ import '../../../data/models/chat.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../chat_time.dart';
 import 'photo_message.dart';
+import 'voice_message.dart';
 
 /// One message: brand green on the right for the user's own, a white card on
 /// the left for the friend's. Consecutive messages of one sender form a
@@ -143,7 +144,9 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
               ),
-            ] else if (photo) ...[
+            ] else if (message.type == ChatMessageType.voice)
+              VoiceMessageView(message: message, onGreen: isMine)
+            else if (photo) ...[
               PhotoMessage(message: message, onTap: onPhotoTap),
               if (message.caption.isNotEmpty)
                 Padding(

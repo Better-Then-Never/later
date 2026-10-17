@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
@@ -21,6 +22,7 @@ import '../../data/models/capsule.dart';
 import '../../data/models/chat.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/push_messaging_service.dart';
+import '../../data/services/voice_service.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/motion/reaction_burst.dart';
 import '../../shared/widgets/buttons/default_icon_button.dart';
@@ -47,6 +49,8 @@ import 'widgets/message_input.dart';
 import 'widgets/photo_message.dart';
 import 'widgets/photo_send_card.dart';
 import 'widgets/typing_label.dart';
+import 'widgets/voice_recorder_bar.dart';
+import 'voice_player.dart';
 import 'widgets/reply_bar.dart';
 
 /// A conversation with one friend, or a group.
@@ -82,7 +86,11 @@ class ChatPage extends StatelessWidget {
                 readReceipts: readReceipts,
               );
       },
-      child: const _ChatView(),
+      child: ChangeNotifierProvider(
+        // Playback stops when the chat closes.
+        create: (context) => VoicePlayer(context.read<VoiceService>()),
+        child: const _ChatView(),
+      ),
     );
   }
 }
@@ -100,6 +108,9 @@ class _ChatViewState extends State<_ChatView> {
   final _searchController = TextEditingController();
   final _inputFocus = FocusNode();
   bool _showScrollToLatest = false;
+
+  /// A voice message is being recorded (the bar replaces the field).
+  bool _recording = false;
 
   /// Messages already on screen: only messages that arrive later animate in.
   final Set<String> _shown = {};
@@ -208,6 +219,35 @@ class _ChatViewState extends State<_ChatView> {
       source,
       heroTag: PhotoMessage.heroTag(message),
     );
+  }
+
+  /// The microphone: asks for it if needed, then the recording bar takes
+  /// the field's place until the recording is sent or thrown away.
+  Future<void> _startVoice() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final l10n = context.l10n;
+    final status = await Permission.microphone.request();
+    if (!mounted) return;
+    if (!status.isGranted) {
+      PopupNotificationService.showError(
+        context: context,
+        message: l10n.messagesMicPermission,
+        position: NotificationPosition.top,
+      );
+      return;
+    }
+    await context.read<VoicePlayer>().stop();
+    if (mounted) setState(() => _recording = true);
+  }
+
+  void _sendVoice(String path, int durationMs, List<int> waveform) {
+    final controller = context.read<ChatController>();
+    unawaited(
+      controller
+          .sendVoice(path, durationMs: durationMs, waveform: waveform)
+          .then(_report),
+    );
+    _scrollToLatest();
   }
 
   void _retry(String messageId) {
@@ -439,17 +479,36 @@ class _ChatViewState extends State<_ChatView> {
                 null => const SizedBox(width: double.infinity),
               },
             ),
-            MessageInput(
-              onSend: _send,
-              onPhotoTap: controller.canSendPhotos ? _sendPhoto : null,
-              onChanged: controller.onInputChanged,
-              focusNode: _inputFocus,
-              onCapsuleTap: friendUid == null
-                  ? null
-                  : () => AppRoutes.toCamera(
-                      context,
-                      privacy: CapsulePrivacy.private,
-                      recipientId: friendUid,
+            AnimatedSwitcher(
+              duration: AppMotion.of(context, AppMotion.standard),
+              switchInCurve: AppMotion.enter,
+              switchOutCurve: AppMotion.exit,
+              child: _recording
+                  ? VoiceRecorderBar(
+                      key: const ValueKey('recording'),
+                      voice: context.read<VoiceService>(),
+                      onSend: _sendVoice,
+                      onDone: () {
+                        if (mounted) setState(() => _recording = false);
+                      },
+                    )
+                  : MessageInput(
+                      key: const ValueKey('input'),
+                      onSend: _send,
+                      onVoiceTap:
+                          controller.canSendVoice && VoiceService.isSupported
+                          ? _startVoice
+                          : null,
+                      onPhotoTap: controller.canSendPhotos ? _sendPhoto : null,
+                      onChanged: controller.onInputChanged,
+                      focusNode: _inputFocus,
+                      onCapsuleTap: friendUid == null
+                          ? null
+                          : () => AppRoutes.toCamera(
+                              context,
+                              privacy: CapsulePrivacy.private,
+                              recipientId: friendUid,
+                            ),
                     ),
             ),
           ] else if (controller.isGroup)

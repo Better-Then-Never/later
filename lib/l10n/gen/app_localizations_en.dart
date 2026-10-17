@@ -1363,6 +1363,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesMenuUnmute => 'Unmute notifications';
 
   @override
+  String get messagesMicPermission =>
+      'Allow the microphone to send voice messages';
+
+  @override
   String get messagesMutedToast => 'Chat muted';
 
   @override
@@ -1422,6 +1426,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesOpenPhoto => 'Open photo';
 
   @override
+  String get messagesPauseVoice => 'Pause';
+
+  @override
   String get messagesPhoto => 'Photo';
 
   @override
@@ -1429,6 +1436,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesPhotoUnreadable => 'This picture can\'t be sent';
+
+  @override
+  String get messagesPlayVoice => 'Play voice message';
 
   @override
   String get messagesReactFailed => 'Could not save your reaction';
@@ -1444,6 +1454,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesReceiptSent => 'Sent';
+
+  @override
+  String get messagesRecordVoice => 'Record a voice message';
 
   @override
   String get messagesScrollToLatest => 'Scroll to the latest message';
@@ -1498,6 +1511,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Chat unmuted';
+
+  @override
+  String get messagesVoice => 'Voice message';
+
+  @override
+  String get messagesVoiceCancel => 'Cancel recording';
+
+  @override
+  String get messagesVoiceFailed => 'This voice message cannot be played';
+
+  @override
+  String get messagesVoiceRecording => 'Recording';
+
+  @override
+  String get messagesVoiceSend => 'Send voice message';
+
+  @override
+  String get messagesVoiceTooShort => 'Too short to send';
 
   @override
   String get messagesYesterday => 'Yesterday';

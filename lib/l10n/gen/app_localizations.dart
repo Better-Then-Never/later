@@ -2348,6 +2348,12 @@ abstract class AppLocalizations {
   /// **'Unmute notifications'**
   String get messagesMenuUnmute;
 
+  /// Shown when the microphone permission is refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow the microphone to send voice messages'**
+  String get messagesMicPermission;
+
   /// No description provided for @messagesMutedToast.
   ///
   /// In en, this message translates to:
@@ -2450,6 +2456,12 @@ abstract class AppLocalizations {
   /// **'Open photo'**
   String get messagesOpenPhoto;
 
+  /// Screen reader label of the pause button of a voice message.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get messagesPauseVoice;
+
   /// A photo message: chat list preview and quotes (after a camera sign).
   ///
   /// In en, this message translates to:
@@ -2467,6 +2479,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This picture can\'t be sent'**
   String get messagesPhotoUnreadable;
+
+  /// Screen reader label of the play button of a voice message.
+  ///
+  /// In en, this message translates to:
+  /// **'Play voice message'**
+  String get messagesPlayVoice;
 
   /// No description provided for @messagesReactFailed.
   ///
@@ -2497,6 +2515,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sent'**
   String get messagesReceiptSent;
+
+  /// Screen reader label of the microphone button in the chat input.
+  ///
+  /// In en, this message translates to:
+  /// **'Record a voice message'**
+  String get messagesRecordVoice;
 
   /// Accessibility label of the round button that jumps to the newest message.
   ///
@@ -2593,6 +2617,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat unmuted'**
   String get messagesUnmutedToast;
+
+  /// A voice message: chat list preview and quotes (after a microphone sign).
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message'**
+  String get messagesVoice;
+
+  /// Screen reader label of the button that throws a recording away.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel recording'**
+  String get messagesVoiceCancel;
+
+  /// Shown when a voice message cannot be downloaded or played.
+  ///
+  /// In en, this message translates to:
+  /// **'This voice message cannot be played'**
+  String get messagesVoiceFailed;
+
+  /// Shown next to the timer while a voice message is recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording'**
+  String get messagesVoiceRecording;
+
+  /// Screen reader label of the button that sends a recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Send voice message'**
+  String get messagesVoiceSend;
+
+  /// Shown when a recording is under a second.
+  ///
+  /// In en, this message translates to:
+  /// **'Too short to send'**
+  String get messagesVoiceTooShort;
 
   /// Day separator in a chat and the time label in the chat list.
   ///

@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private val channelName = "later.app/deeplink"
     private var initialLink: String? = null
+    private var voice: VoiceChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,8 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // Voice messages: record and play (VoiceChannel.kt).
+        voice = VoiceChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         // The signed-in home screen drew its first frame (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->
@@ -52,5 +55,11 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        voice?.dispose()
+        voice = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 }

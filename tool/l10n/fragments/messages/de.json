@@ -86,5 +86,15 @@
   "messagesGroupLeft": "Du bist nicht mehr in dieser Gruppe",
   "messagesGroupHello": "Sag allen Hallo",
   "messagesOpenGroup": "Gruppe {name} öffnen",
-  "messagesGroupSave": "Speichern"
+  "messagesGroupSave": "Speichern",
+  "messagesVoice": "Sprachnachricht",
+  "messagesRecordVoice": "Sprachnachricht aufnehmen",
+  "messagesVoiceRecording": "Aufnahme",
+  "messagesVoiceCancel": "Aufnahme abbrechen",
+  "messagesVoiceSend": "Sprachnachricht senden",
+  "messagesVoiceTooShort": "Zu kurz zum Senden",
+  "messagesMicPermission": "Erlaube das Mikrofon, um Sprachnachrichten zu senden",
+  "messagesPlayVoice": "Sprachnachricht abspielen",
+  "messagesPauseVoice": "Pause",
+  "messagesVoiceFailed": "Diese Sprachnachricht lässt sich nicht abspielen"
 }

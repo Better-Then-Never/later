@@ -297,5 +297,45 @@
   "messagesGroupSave": "Save",
   "@messagesGroupSave": {
     "description": "Button saving a group's new name."
+  },
+  "messagesVoice": "Voice message",
+  "@messagesVoice": {
+    "description": "A voice message: chat list preview and quotes (after a microphone sign)."
+  },
+  "messagesRecordVoice": "Record a voice message",
+  "@messagesRecordVoice": {
+    "description": "Screen reader label of the microphone button in the chat input."
+  },
+  "messagesVoiceRecording": "Recording",
+  "@messagesVoiceRecording": {
+    "description": "Shown next to the timer while a voice message is recorded."
+  },
+  "messagesVoiceCancel": "Cancel recording",
+  "@messagesVoiceCancel": {
+    "description": "Screen reader label of the button that throws a recording away."
+  },
+  "messagesVoiceSend": "Send voice message",
+  "@messagesVoiceSend": {
+    "description": "Screen reader label of the button that sends a recording."
+  },
+  "messagesVoiceTooShort": "Too short to send",
+  "@messagesVoiceTooShort": {
+    "description": "Shown when a recording is under a second."
+  },
+  "messagesMicPermission": "Allow the microphone to send voice messages",
+  "@messagesMicPermission": {
+    "description": "Shown when the microphone permission is refused."
+  },
+  "messagesPlayVoice": "Play voice message",
+  "@messagesPlayVoice": {
+    "description": "Screen reader label of the play button of a voice message."
+  },
+  "messagesPauseVoice": "Pause",
+  "@messagesPauseVoice": {
+    "description": "Screen reader label of the pause button of a voice message."
+  },
+  "messagesVoiceFailed": "This voice message cannot be played",
+  "@messagesVoiceFailed": {
+    "description": "Shown when a voice message cannot be downloaded or played."
   }
 }
