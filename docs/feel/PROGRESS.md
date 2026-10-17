@@ -11,8 +11,8 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 2: jank fixes | done (PERFORMANCE.md "Phase 2"); remaining first-frame costs are engine-level (glyph atlas) |
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
-| Phase 5: verification, CHECKPOINT_A | in progress: final 3-run measurement |
-| Part B (B1..B7) | after CHECKPOINT_A |
+| Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
+| Part B (B1..B7) | in progress: B1 photo messages built (FEATURES_B.md) |
 
 ## Log
 ### 2026-10-17
@@ -56,3 +56,14 @@ on #78. Never merged, never deployed. Resume here.
 - Phase 5: `AchievementIcon` artwork override (D-16 now true); stale REPORT/ACHIEVEMENTS lines fixed; after stills;
   FEEL_QA.md. Incident: running the rules tests next to the dev emulators took them down mid-measurement (a
   Functions worker held a rules-test port); re-seeded and re-measured (RIG.md gotchas).
+- Final measurement (`measure.sh after 3`): run 3 stopped in camera_pinch when the app went to the background
+  mid-flow (no flash button found); the flow now records -1 and goes on (`9bbe55d`), and one more full run replaced
+  run 3. One more finding from it: right after a re-seed the phone's Firestore cache slowed the first minutes
+  (limbo documents; RIG.md), reproduced and confirmed by clearing the app's data.
+- Map compass with the other controls (F-11), checked on the phone with a two-finger twist in the perf test.
+- Regressions after Phase 3 named from a detailed timeline: the capsule dialog's card scale made Impeller re-draw
+  its letters per size (3.2 → 0.6 % after removing it); the others explained (PERFORMANCE.md).
+- Cold start at the end of Part A: 958 ms. CHECKPOINT_A.md written.
+- Part B1 started: photo messages (app, rules, storage folder, cleanup function, pushes); rules 61/61,
+  functions 45/45. The functions' service account has no Storage delete rights in production (also breaks
+  account deletion's file cleanup today): deploy step in BACKEND_CHANGES.md §2.

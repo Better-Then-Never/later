@@ -6,9 +6,9 @@ unit test in `test/`). Not checked = not claimed (BLOCKERS.md).
 ## Gates (local; PR #79 has no CI)
 | Gate | Command | Result at the checkpoint |
 |---|---|---|
-| Format, analyze, tests, design tokens, unused strings | `bash tool/dev/checks.sh` | ✓ (306 tests, 1 pre-existing skip) |
-| Functions tests (emulator) | `cd functions && npm run test:emulate` (own TEMP, see RIG.md) | ✓ 43/43 after the only functions change (`2850038`) |
-| Firestore and Storage rules tests | `scratchpad/rules_tests.sh` equivalent: `cd tools/rules-tests && npm test` under `firebase emulators:exec` | see CHECKPOINT_A.md (rules untouched in Part A) |
+| Format, analyze, tests, design tokens, unused strings | `bash tool/dev/checks.sh` | ✓ (315 tests, 1 pre-existing skip) |
+| Functions tests (emulator) | `cd functions && npm run test:emulate` (own TEMP, see RIG.md) | ✓ 45/45 (43 in Part A; +2 for chat photos) |
+| Firestore and Storage rules tests | `scratchpad/rules_tests.sh` equivalent: `cd tools/rules-tests && npm test` under `firebase emulators:exec` | ✓ 61/61 (rules untouched in Part A: 57; +4 for chat photos), run with the dev emulators stopped |
 | Perf flows on the phone | `tool/dev/measure.sh <label> 3`, `dart run tool/dev/perf_summary.dart` | PERFORMANCE.md "After" |
 
 ## Measured on the phone (profile builds)
@@ -27,6 +27,7 @@ See PERFORMANCE.md: baseline, every Phase 2 fix with before/after, and the final
 | Chat (600 messages) | bubbles, quote, receipts, input bar | ✓ | – | ✓ | – | – |
 | Add friends, Requests | 44 dp targets, segmented tabs | – | ✓ | ✓ | – | – |
 | Camera | zoom stops (2× tapped), brightness slider after tap to focus, torch, shutter freeze (front camera: the still shows the picture, 1080×1920) | n/a | n/a | ✓ | – | – |
+| Map compass | two-finger twist (perf test) → compass shows; tap → north (296° → 0°) | ✓ | – | ✓ | – | – |
 | Creation | page after capture, save morph (perf flow, 0 % janky) | ✓ | – | ✓ | – | – |
 
 ## Tap targets (tool/dev/tap_audit.sh on the phone)

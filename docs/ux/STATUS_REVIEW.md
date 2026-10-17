@@ -441,3 +441,79 @@ Next steps, in order:
 | Notifications reliability | 4/10 | Server logic is broad and unit-tested, but no push has ever been delivered to a device from this branch and announcements are invisible in the app. | Deploy to a dev project and run every event on a real phone in the three app states. |
 | Chat quality | 5/10 | Reply, reactions, delete and quote jump work well on the emulator, but there are no images, voice, stickers, groups or typing, and nothing sends offline. | Image messages with cached viewer (most used missing feature). |
 | Overall readiness to ship | 4/10 | Tests are green and the app works against the old backend, but the new features need an undeployed backend, nothing ran on a physical phone or iOS, and some docs overstate what exists. | Steps 2-3 of section 11 before anything else. |
+
+## 13. Addendum: the feel pass on a real phone (checkpoint A)
+
+Branch `feature/feel-pass-real-device`, draft PR #79 (stacked on #78). Checked on a **Samsung Galaxy S20 FE**
+(Android 13, 120 Hz, 360 × 800 dp; `docs/feel/DEVICE.md`) in profile builds, against the local Firebase emulators
+seeded with `tool/seed_heavy.js` (104 people, 2,002 capsules, a 600-message chat). Numbers:
+`docs/feel/PERFORMANCE.md`; what was looked at, and how: `docs/feel/FEEL_QA.md`. Still nothing on iOS, and no push
+was delivered (no dev project; `docs/feel/BLOCKERS.md`). Sections 1–12 above are left as they were written.
+
+### Findings whose status changed
+| ID | Was | Now | Evidence |
+|---|---|---|---|
+| F-10 | PARTIAL | DONE_VERIFIED (drawing) / PARTIAL (queries) | Only on-screen capsules become markers, clustered on a 64 px grid, never more than 150 (`map_clusters.dart`, `map_clusters_test.dart`); one shared pin set. Phone, 2,002 capsules: map pans and zooms 0 % janky (Flutter side); Android main-thread stalls **4,351–6,548 skipped frames per run (10–12 s freezes) → launch only (≤ 150)**. Queries are still not viewport-bounded (own capsules unbounded, friends `whereIn`, public band 300). |
+| F-11 | PARTIAL | DONE_VERIFIED | Google's compass off; our compass sits above the zoom pill and shows only while the map is turned (`map_compass.dart`, `map_compass_test.dart`). Phone: a two-finger twist in the perf test turned the map to 296°, a tap on the compass brought it back to 0° (`map_compass` flow, 0 % janky). |
+| F-12 | PARTIAL | DONE_VERIFIED | Zoom pill (two 52 dp halves) above the my-location button, both lift with the card; phone (FEEL_QA). |
+| F-15 | PARTIAL | DONE_VERIFIED (owner to compare) | Local light style, no map ID; the map is restyled in place on a theme switch (D-22). Compare with the cloud style before release (BLOCKERS). |
+| F-17 | DONE_VERIFIED | DONE_VERIFIED, richer | The card shows the capsule's photo (or the pin while locked), which flies into the dialog and on to full screen. Author, distance and reaction count are still not on the card. |
+| F-19 | PARTIAL | PARTIAL | Measured on the phone (above); queries remain. |
+| F-20 | PARTIAL | DONE_VERIFIED | Zoom stops (0.5 / 1 / 2 / 5×, those the lens has) with an eased move; a real two-finger pinch in the perf test reaches 3.8× on the phone (3 of 3 runs). |
+| F-21 | PARTIAL | PARTIAL | Brightness slider after tap to focus; no grid or other settings. |
+| F-22 | PARTIAL | PARTIAL (measured) | Tap → shutter feedback frame **24 ms** (the preview holds still at once), tap → file 1,083 ms, tap → creation page **1,111 ms** (CameraX `takePicture`; budget < 300 ms perceived is met by the feedback, not by the page). Blur not addressed. |
+| F-23 | PARTIAL | DONE_VERIFIED | Off → auto → on → torch, cycle checked on the phone in 3 of 3 runs (`camera_flash_step_*`). |
+| F-30 | PARTIAL | DONE_VERIFIED | Compose icon redrawn at 144 px with a dark variant (`tool/make_compose_icon.dart`); phone. |
+| F-31 | PARTIAL | DONE_VERIFIED | Controls 44 dp with 24 dp icons, search 17 sp, on the shared scale; phone tap audit clean. |
+| F-33 | PARTIAL | DONE_VERIFIED | Header from the real status-bar inset + 8, title 32; phone, light and dark. |
+| F-34 | NOT_DONE | DONE_VERIFIED | Pill 68 dp (was 80), fixed tab slots so the icons no longer jiggle; lists end clear of it; phone. |
+| F-35 | NOT_DONE | NOT_DONE (not reproduced) | My capsules scrolled to the end and back: 0 % janky in all 6 phone runs (baseline and after). The jitter as the team saw it was not reproduced; physics unchanged. |
+| F-37 | PARTIAL | DONE_VERIFIED (motion) | Centred cards rise and grow in over a painted scrim and close with a drag (`AppCardRoute`); sheets use the token motion. Stacked-modal separation not addressed separately. |
+| F-38 | DONE_UNVERIFIED | DONE_VERIFIED | Add friends transition 2.5 → 1.2 % janky on the phone (worst frame still 22.6 ms, over the 16.7 ms rule). |
+| F-39 | NOT_DONE | DONE_VERIFIED | "Friends" title, loading tiles, empty state with a way to Add friends; phone. |
+| F-40 | PARTIAL | DONE_VERIFIED | Per-person gradient from the user id (FNV-1a) for avatars and backgrounds (`user_placeholder.dart`, test); phone. |
+| F-43 | NOT_DONE | DONE (owner to approve) | Usual share sign in the profile icons' ring and stroke (`tool/make_share_icon.dart`, `docs/feel/icons/share.svg`). |
+| F-44 | PARTIAL | PARTIAL | Sweep on the phone in light/dark, ru/en and 130 % text (FEEL_QA); German, Polish, Spanish by tests only. |
+| F-45 | PARTIAL | DONE_VERIFIED (except map markers) | One page route with edge back swipe, tabs, cards, photo heroes, reaction bursts, idle empty states, pending → date and save morphs, achievements and streak motion (`docs/feel/MOTION_CATALOG.md`). Native marker motion not built (Google Maps markers are drawn on Android's main thread). |
+| F-92 | PARTIAL | DONE_VERIFIED (mechanism) | `assets/achievements/<id>.png` overrides the icon (`AchievementIcon.preloadArt`, `achievement_art_test.dart`, ACHIEVEMENTS.md). No artwork is shipped yet. |
+
+### Section 3 on the phone
+- **Frame timings**: measured, 3 runs per flow, baseline and after (PERFORMANCE.md). The theme switch went from
+  16.8 % janky with a ~10 s freeze after every switch to 0.4 % and no freeze; settings 12.4 → 3.3 %;
+  notifications segments 10.8 → 1.1 %.
+- **Hit areas**: audited on the phone (`tool/dev/tap_audit.sh`); every finding fixed to 44 dp (D-24,
+  `tap_targets_test.dart`).
+- **Reduce motion**: every new motion honours it in code and widget tests; it was **not** switched on on the phone.
+
+### Section 10, bug by bug
+| # | Now |
+|---|---|
+| 1 | Open (Part B6). |
+| 2 | Fixed (`7f5f064`). |
+| 3 | Open (Part B2). |
+| 4 | Fixed: "After" filled from 3 phone runs; F-38 measured. No video (no ffmpeg); stills from the phone in `docs/feel/after/`. |
+| 5 | Fixed (REPORT, ACHIEVEMENTS); `docs/ux/FEEL_QA.md` now points to the phone checks in `docs/feel/FEEL_QA.md`. |
+| 6 | Fixed (44 dp, phone audit). |
+| 7 | Open (Part B2). |
+| 8 | Open (Part B1 messages, B4 friend capsules). |
+| 9 | Open (Part B4). |
+| 10 | Not seen on the phone rig; unknown on production. |
+| 11 | Fixed (pill, headers, history controls, compose icon, share icon, placeholders, friends title). |
+| 12 | Fixed (ring ≤ 350 ms; ring and toasts honour reduced motion). |
+| 13 | Fixed (achievements open on the app route). |
+| 14 | Fixed: the map is restyled in place, never recreated. |
+| 15 | Open, owner decision (BLOCKERS). |
+| 16 | Open (the microphone string comes back with voice messages, Part B1). |
+| 17 | Open (Part B6). |
+| 18–20 | Open. |
+| 21 | Open (Part B4). |
+| 22 | Open (Part B7). |
+
+### Ratings at checkpoint A
+| Area | Was | Now | Why |
+|---|---|---|---|
+| Smoothness and feel | 5/10 | 7/10 | Measured on a phone; scrolls, pans, zooms and the camera are within budget; the freezes are gone. Opening things still costs 1–3 % janky frames (first text layout and Impeller's glyph atlas) and startup 6.6 %; the capsule dialog regression (3.2 %) was found and fixed (0.6 %). |
+| Style consistency | 6/10 | 7.5/10 | The original findings on pill, headers, controls, icons, placeholders and friends are done and checked on the phone in both themes; the font mix in Russian remains (owner). |
+| Notifications reliability | 4/10 | 4/10 | Unchanged until Part B6; still no push delivered. |
+| Chat quality | 5/10 | 5/10 | Unchanged until Part B1. |
+| Overall readiness to ship | 4/10 | 5/10 | Feels much better on Android hardware, but the backend from #78 is still undeployed and nothing ran on iOS. |
