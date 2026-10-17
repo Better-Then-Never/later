@@ -115,5 +115,7 @@
   "capsulesPinBack": "Zurück zu mir",
   "capsulesDraftTitle": "Unfertige Kapsel",
   "capsulesDraftContinue": "Weiter",
-  "capsulesDraftDiscard": "Unfertige Kapsel verwerfen"
+  "capsulesDraftDiscard": "Unfertige Kapsel verwerfen",
+  "capsulesComposerTitle": "Beschreibung",
+  "capsulesComposerDone": "Fertig"
 }

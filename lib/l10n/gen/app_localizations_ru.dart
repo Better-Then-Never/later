@@ -570,6 +570,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCommentsEmptyHint => 'Напишите первым.';
 
   @override
+  String get capsulesComposerDone => 'Готово';
+
+  @override
+  String get capsulesComposerTitle => 'Описание';
+
+  @override
   String get capsulesCreationAllowComments => 'Разрешить комментарии';
 
   @override

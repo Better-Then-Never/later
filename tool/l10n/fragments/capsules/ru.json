@@ -115,5 +115,7 @@
   "capsulesPinBack": "Вернуться ко мне",
   "capsulesDraftTitle": "Незаконченная капсула",
   "capsulesDraftContinue": "Продолжить",
-  "capsulesDraftDiscard": "Удалить незаконченную капсулу"
+  "capsulesDraftDiscard": "Удалить незаконченную капсулу",
+  "capsulesComposerTitle": "Описание",
+  "capsulesComposerDone": "Готово"
 }

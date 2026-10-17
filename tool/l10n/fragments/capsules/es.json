@@ -115,5 +115,7 @@
   "capsulesPinBack": "Volver a donde estoy",
   "capsulesDraftTitle": "Cápsula sin terminar",
   "capsulesDraftContinue": "Continuar",
-  "capsulesDraftDiscard": "Descartar la cápsula sin terminar"
+  "capsulesDraftDiscard": "Descartar la cápsula sin terminar",
+  "capsulesComposerTitle": "Descripción",
+  "capsulesComposerDone": "Listo"
 }

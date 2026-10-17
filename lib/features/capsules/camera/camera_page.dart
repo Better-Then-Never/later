@@ -518,11 +518,29 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                         onTapUp: (d) => _onTapToFocus(d, constraints.biggest),
                         child: Stack(
                           children: [
+                            // The frozen photo flies into the capsule card
+                            // (the creation page's preview, B4).
                             if (_frozen case final frozen?)
                               Positioned.fill(
-                                child: RawImage(
-                                  image: frozen,
-                                  fit: BoxFit.fill,
+                                child: Hero(
+                                  tag: 'creation-photo',
+                                  flightShuttleBuilder:
+                                      (context, animation, _, _, _) =>
+                                          AnimatedBuilder(
+                                            animation: animation,
+                                            builder: (context, _) => ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              child: RawImage(
+                                                image: frozen,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                  child: RawImage(
+                                    image: frozen,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
                               ),
                             if (_focusAt case final Offset at)

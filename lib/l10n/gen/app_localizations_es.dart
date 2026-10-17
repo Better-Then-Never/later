@@ -550,6 +550,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesCommentsEmptyHint => 'Sé el primero en decir algo.';
 
   @override
+  String get capsulesComposerDone => 'Listo';
+
+  @override
+  String get capsulesComposerTitle => 'Descripción';
+
+  @override
   String get capsulesCreationAllowComments => 'Permitir comentarios';
 
   @override

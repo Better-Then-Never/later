@@ -138,6 +138,8 @@
   "capsulesCommentsEarlier": "Frühere Kommentare zeigen",
   "capsulesCommentsEmpty": "Noch keine Kommentare",
   "capsulesCommentsEmptyHint": "Schreib als Erstes etwas.",
+  "capsulesComposerDone": "Fertig",
+  "capsulesComposerTitle": "Beschreibung",
   "capsulesCreationAllowComments": "Kommentare erlauben",
   "capsulesCreationAllowReactions": "Reaktionen erlauben",
   "capsulesCreationApproximate": "Ungefährer Standort",

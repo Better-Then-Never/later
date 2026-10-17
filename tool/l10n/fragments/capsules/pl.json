@@ -115,5 +115,7 @@
   "capsulesPinBack": "Wróć do mnie",
   "capsulesDraftTitle": "Niedokończona kapsuła",
   "capsulesDraftContinue": "Kontynuuj",
-  "capsulesDraftDiscard": "Odrzuć niedokończoną kapsułę"
+  "capsulesDraftDiscard": "Odrzuć niedokończoną kapsułę",
+  "capsulesComposerTitle": "Opis",
+  "capsulesComposerDone": "Gotowe"
 }

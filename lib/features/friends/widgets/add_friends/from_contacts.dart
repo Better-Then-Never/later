@@ -95,7 +95,7 @@ class _FromContactsSheetState extends State<_FromContactsSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SheetHandle(),
+                const Center(child: SheetHandle()),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
                   child: Text(

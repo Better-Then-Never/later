@@ -428,5 +428,13 @@
   "capsulesDraftDiscard": "Throw the unfinished capsule away",
   "@capsulesDraftDiscard": {
     "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesComposerTitle": "Description",
+  "@capsulesComposerTitle": {
+    "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesComposerDone": "Done",
+  "@capsulesComposerDone": {
+    "description": "The capsule description composer (a sheet over creation)."
   }
 }

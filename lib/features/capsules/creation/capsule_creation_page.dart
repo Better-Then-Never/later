@@ -30,6 +30,7 @@ import '../../messages/widgets/group_friends_picker.dart';
 import '../../settings/device_settings_store.dart';
 import '../../settings/settings_store.dart';
 import '../outbox/capsule_outbox.dart';
+import '../../../shared/motion/app_motion_widgets.dart';
 import 'capsule_creation_controller.dart';
 import 'creation_draft.dart';
 import 'widgets/capsule_creation_cycled_info.dart';
@@ -305,217 +306,240 @@ class _CapsuleCreationView extends StatelessWidget {
             ),
             Expanded(
               child: SingleChildScrollView(
-                child: SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        DefaultText(
-                          l10n.capsulesCreationPreview,
-                          fontSize: screen.width * 0.05,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        Container(
-                          width: screen.width,
-                          height: screen.height * 0.4,
-                          decoration: BoxDecorations.whiteCard(context),
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                width: screen.width * 0.45,
-                                height: double.infinity,
-                                // A look at the whole photo before saving.
-                                child: GestureDetector(
-                                  onTap: () => PhotoViewer.show(
-                                    context,
-                                    Uri.file(controller.imagePath).toString(),
-                                    heroTag: controller.isLoop
-                                        ? null
-                                        : 'creation-photo',
-                                  ),
-                                  child: controller.isLoop
-                                      ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            AppRadii.l,
-                                          ),
-                                          child: LoopPicture(
-                                            sources: controller.framePaths,
-                                            frameDelay: Duration(
-                                              milliseconds:
-                                                  controller.frameDelayMs,
+                child: AppStaggerScope(
+                  child: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          DefaultText(
+                            l10n.capsulesCreationPreview,
+                            fontSize: screen.width * 0.05,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          Container(
+                            width: screen.width,
+                            height: screen.height * 0.4,
+                            decoration: BoxDecorations.whiteCard(context),
+                            padding: const EdgeInsets.all(8),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: screen.width * 0.45,
+                                  height: double.infinity,
+                                  // A look at the whole photo before saving.
+                                  child: GestureDetector(
+                                    onTap: () => PhotoViewer.show(
+                                      context,
+                                      Uri.file(controller.imagePath).toString(),
+                                      heroTag: controller.isLoop
+                                          ? null
+                                          : 'creation-photo',
+                                    ),
+                                    child: controller.isLoop
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              AppRadii.l,
+                                            ),
+                                            child: LoopPicture(
+                                              sources: controller.framePaths,
+                                              frameDelay: Duration(
+                                                milliseconds:
+                                                    controller.frameDelayMs,
+                                              ),
+                                            ),
+                                          )
+                                        : Hero(
+                                            tag: 'creation-photo',
+                                            child: CapsuleImagePreview(
+                                              imagePath: controller.imagePath,
                                             ),
                                           ),
-                                        )
-                                      : Hero(
-                                          tag: 'creation-photo',
-                                          child: CapsuleImagePreview(
-                                            imagePath: controller.imagePath,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CapsuleCreationTitleInput(
+                                        controller: controller.titleController,
+                                      ),
+                                      ProfilePageDivider(
+                                        width: screen.width * 0.5,
+                                      ),
+                                      CapsuleCreationDescriptionInputField(
+                                        controller:
+                                            controller.descriptionController,
+                                      ),
+                                      CapsuleDatePill(
+                                        height: screen.height * 0.045,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // A tap moves the pin (B4).
+                                      Semantics(
+                                        button: controller.position != null,
+                                        hint: l10n.capsulesPinTitle,
+                                        child: GestureDetector(
+                                          onTap: () => _choosePlace(context),
+                                          child: CapsulePlacePill(
+                                            height: screen.height * 0.05,
+                                            iconPath: AppIcons.capsuleLocation,
+                                            position: controller.position,
                                           ),
                                         ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CapsuleCreationTitleInput(
-                                      controller: controller.titleController,
-                                    ),
-                                    ProfilePageDivider(
-                                      width: screen.width * 0.5,
-                                    ),
-                                    CapsuleCreationDescriptionInputField(
-                                      controller:
-                                          controller.descriptionController,
-                                    ),
-                                    CapsuleDatePill(
-                                      height: screen.height * 0.045,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    // A tap moves the pin (B4).
-                                    Semantics(
-                                      button: controller.position != null,
-                                      hint: l10n.capsulesPinTitle,
-                                      child: GestureDetector(
-                                        onTap: () => _choosePlace(context),
-                                        child: CapsulePlacePill(
-                                          height: screen.height * 0.05,
-                                          iconPath: AppIcons.capsuleLocation,
-                                          position: controller.position,
-                                        ),
+                              ],
+                            ),
+                          ),
+                          // A loop: its frames, to reorder or thin out.
+                          if (controller.isLoop) ...[
+                            const SizedBox(height: 10),
+                            LoopFrameStrip(controller: controller),
+                          ],
+                          const SizedBox(height: 8),
+                          AppStaggerItem(
+                            index: 0,
+                            child: DefaultText(
+                              l10n.capsulesCreationSettings,
+                              fontSize: screen.width * 0.05,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          AppStaggerItem(
+                            index: 1,
+                            child: Container(
+                              width: screen.width,
+                              decoration: BoxDecorations.whiteCard(context),
+                              child: Column(
+                                children: [
+                                  OptionsSettingsRow(
+                                    minVerticalPadding: 10,
+                                    title: l10n.capsulesCreationPrivacy,
+                                    leadingIconPath: AppIcons.capsulePrivacy,
+                                    trailing: CapsuleCreationCycledInfo(
+                                      infoText: controller.privacy.localized(
+                                        l10n,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // A loop: its frames, to reorder or thin out.
-                        if (controller.isLoop) ...[
-                          const SizedBox(height: 10),
-                          LoopFrameStrip(controller: controller),
-                        ],
-                        const SizedBox(height: 8),
-                        DefaultText(
-                          l10n.capsulesCreationSettings,
-                          fontSize: screen.width * 0.05,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: screen.width,
-                          decoration: BoxDecorations.whiteCard(context),
-                          child: Column(
-                            children: [
-                              OptionsSettingsRow(
-                                minVerticalPadding: 10,
-                                title: l10n.capsulesCreationPrivacy,
-                                leadingIconPath: AppIcons.capsulePrivacy,
-                                trailing: CapsuleCreationCycledInfo(
-                                  infoText: controller.privacy.localized(l10n),
-                                ),
-                                onTap: () => _choosePrivacy(context),
-                              ),
-                              OptionsSettingsRow(
-                                minVerticalPadding: 10,
-                                title: l10n.capsulesCreationOpenAt,
-                                trailing: CapsuleCreationCycledInfo(
-                                  infoText: openAt != null
-                                      ? AppDates.short(openAt, l10n.localeName)
-                                      : l10n.capsulesCreationSelectDate,
-                                ),
-                                leadingIconPath: AppIcons.capsuleTimer,
-                                onTap: () => _chooseOpenDate(context),
-                              ),
-                              if (controller.isLoop)
-                                OptionsSettingsRow(
-                                  minVerticalPadding: 10,
-                                  title: l10n.capsulesCreationSpeed,
-                                  trailing: CapsuleCreationCycledInfo(
-                                    infoText: _speedLabel(
-                                      l10n,
-                                      controller.frameDelayMs,
+                                    onTap: () => _choosePrivacy(context),
+                                  ),
+                                  OptionsSettingsRow(
+                                    minVerticalPadding: 10,
+                                    title: l10n.capsulesCreationOpenAt,
+                                    trailing: CapsuleCreationCycledInfo(
+                                      infoText: openAt != null
+                                          ? AppDates.short(
+                                              openAt,
+                                              l10n.localeName,
+                                            )
+                                          : l10n.capsulesCreationSelectDate,
                                     ),
+                                    leadingIconPath: AppIcons.capsuleTimer,
+                                    onTap: () => _chooseOpenDate(context),
                                   ),
-                                  leadingIconPath: AppIcons.capsuleTimer,
-                                  onTap: () => _chooseSpeed(context),
-                                ),
-                              OptionsSettingsRow(
-                                minVerticalPadding: 10,
-                                title: l10n.capsulesCreationCoAuthors,
-                                trailing: CapsuleCreationCycledInfo(
-                                  infoText: controller.coAuthors.isEmpty
-                                      ? l10n.capsulesCreationCoAuthorsNone
-                                      : l10n.capsulesCreationCoAuthorsCount(
-                                          controller.coAuthors.length,
+                                  if (controller.isLoop)
+                                    OptionsSettingsRow(
+                                      minVerticalPadding: 10,
+                                      title: l10n.capsulesCreationSpeed,
+                                      trailing: CapsuleCreationCycledInfo(
+                                        infoText: _speedLabel(
+                                          l10n,
+                                          controller.frameDelayMs,
                                         ),
-                                ),
-                                leadingIconPath: AppIcons.profileMyFriends,
-                                tintLeadingIcon: true,
-                                onTap: () => _chooseCoAuthors(context),
-                              ),
-                              OptionsSettingsRow(
-                                minVerticalPadding: 10,
-                                title: l10n.capsulesCreationColor,
-                                trailing: CapsuleCreationCycledInfo(
-                                  infoText: controller.color.localized(l10n),
-                                  trailingLeadingIconPath: AppIcons.capsulePin(
-                                    controller.color.name,
+                                      ),
+                                      leadingIconPath: AppIcons.capsuleTimer,
+                                      onTap: () => _chooseSpeed(context),
+                                    ),
+                                  OptionsSettingsRow(
+                                    minVerticalPadding: 10,
+                                    title: l10n.capsulesCreationCoAuthors,
+                                    trailing: CapsuleCreationCycledInfo(
+                                      infoText: controller.coAuthors.isEmpty
+                                          ? l10n.capsulesCreationCoAuthorsNone
+                                          : l10n.capsulesCreationCoAuthorsCount(
+                                              controller.coAuthors.length,
+                                            ),
+                                    ),
+                                    leadingIconPath: AppIcons.profileMyFriends,
+                                    tintLeadingIcon: true,
+                                    onTap: () => _chooseCoAuthors(context),
                                   ),
-                                ),
-                                leadingIconPath: AppIcons.capsulePinColor,
-                                onTap: () => _chooseColor(context),
-                                withDivider: false,
+                                  OptionsSettingsRow(
+                                    minVerticalPadding: 10,
+                                    title: l10n.capsulesCreationColor,
+                                    trailing: CapsuleCreationCycledInfo(
+                                      infoText: controller.color.localized(
+                                        l10n,
+                                      ),
+                                      trailingLeadingIconPath:
+                                          AppIcons.capsulePin(
+                                            controller.color.name,
+                                          ),
+                                    ),
+                                    leadingIconPath: AppIcons.capsulePinColor,
+                                    onTap: () => _chooseColor(context),
+                                    withDivider: false,
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          width: screen.width,
-                          decoration: BoxDecorations.whiteCard(context),
-                          child: Column(
-                            children: [
-                              if (FeatureFlags.comments)
-                                OptionsSwitchRow(
-                                  title: l10n.capsulesCreationAllowComments,
-                                  value: controller.allowComments,
-                                  onChanged: (v) =>
-                                      controller.allowComments = v,
-                                ),
-                              if (FeatureFlags.reactions)
-                                OptionsSwitchRow(
-                                  title: l10n.capsulesCreationAllowReactions,
-                                  value: controller.allowReactions,
-                                  onChanged: (v) =>
-                                      controller.allowReactions = v,
-                                ),
-                              OptionsSwitchRow(
-                                title: l10n.capsulesCreationShowAuthor,
-                                subtitle: l10n.capsulesCreationShowAuthorHint,
-                                value: controller.showAuthor,
-                                onChanged: (v) => controller.showAuthor = v,
+                          const SizedBox(height: 8),
+                          AppStaggerItem(
+                            index: 2,
+                            child: Container(
+                              width: screen.width,
+                              decoration: BoxDecorations.whiteCard(context),
+                              child: Column(
+                                children: [
+                                  if (FeatureFlags.comments)
+                                    OptionsSwitchRow(
+                                      title: l10n.capsulesCreationAllowComments,
+                                      value: controller.allowComments,
+                                      onChanged: (v) =>
+                                          controller.allowComments = v,
+                                    ),
+                                  if (FeatureFlags.reactions)
+                                    OptionsSwitchRow(
+                                      title:
+                                          l10n.capsulesCreationAllowReactions,
+                                      value: controller.allowReactions,
+                                      onChanged: (v) =>
+                                          controller.allowReactions = v,
+                                    ),
+                                  OptionsSwitchRow(
+                                    title: l10n.capsulesCreationShowAuthor,
+                                    subtitle:
+                                        l10n.capsulesCreationShowAuthorHint,
+                                    value: controller.showAuthor,
+                                    onChanged: (v) => controller.showAuthor = v,
+                                  ),
+                                  OptionsSwitchRow(
+                                    title: l10n.capsulesCreationApproximate,
+                                    subtitle:
+                                        l10n.capsulesCreationApproximateHint,
+                                    value:
+                                        controller.locationPrecision ==
+                                        LocationPrecision.approximate,
+                                    withDivider: false,
+                                    onChanged: (v) =>
+                                        controller.approximateLocation = v,
+                                  ),
+                                ],
                               ),
-                              OptionsSwitchRow(
-                                title: l10n.capsulesCreationApproximate,
-                                subtitle: l10n.capsulesCreationApproximateHint,
-                                value:
-                                    controller.locationPrecision ==
-                                    LocationPrecision.approximate,
-                                withDivider: false,
-                                onChanged: (v) =>
-                                    controller.approximateLocation = v,
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

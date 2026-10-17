@@ -932,6 +932,18 @@ abstract class AppLocalizations {
   /// **'Be the first to say something.'**
   String get capsulesCommentsEmptyHint;
 
+  /// The capsule description composer (a sheet over creation).
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get capsulesComposerDone;
+
+  /// The capsule description composer (a sheet over creation).
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get capsulesComposerTitle;
+
   /// No description provided for @capsulesCreationAllowComments.
   ///
   /// In en, this message translates to:

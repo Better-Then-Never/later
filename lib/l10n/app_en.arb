@@ -454,6 +454,14 @@
   },
   "capsulesCommentsEmpty": "No comments yet",
   "capsulesCommentsEmptyHint": "Be the first to say something.",
+  "capsulesComposerDone": "Done",
+  "@capsulesComposerDone": {
+    "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesComposerTitle": "Description",
+  "@capsulesComposerTitle": {
+    "description": "The capsule description composer (a sheet over creation)."
+  },
   "capsulesCreationAllowComments": "Allow comments",
   "capsulesCreationAllowReactions": "Allow reactions",
   "capsulesCreationApproximate": "Approximate location",
