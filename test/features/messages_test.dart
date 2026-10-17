@@ -885,6 +885,19 @@ void main() {
       },
     );
 
+    test('pinned chats lead the list, in the order pinned', () async {
+      await say('bob', 'me', 'old');
+      chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+      await say('carol', 'me', 'newer');
+      chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+      await say('dave', 'me', 'newest');
+      await pumpEventQueue();
+      expect(chats.chats.map((c) => c.id), ['dave_me', 'carol_me', 'bob_me']);
+      chats.pinned = ['bob_me', 'carol_me'];
+      expect(chats.chats.map((c) => c.id), ['bob_me', 'carol_me', 'dave_me']);
+      expect(chats.isPinned('bob_me'), isTrue);
+    });
+
     test('a quote older than the loaded pages is loaded back to', () async {
       for (var i = 0; i < 120; i++) {
         await say(i.isEven ? 'bob' : 'me', i.isEven ? 'me' : 'bob', 'm$i');

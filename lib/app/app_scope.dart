@@ -121,7 +121,7 @@ class _AppScopeState extends State<AppScope> {
       ],
     )..start();
     _links.init();
-    // Muted chats leave the unread badge.
+    // Muted chats leave the unread badge; pinned ones lead the list.
     _settingsStore.addListener(_syncMutedChats);
     _newsTopics.start();
     _notificationRouter = NotificationRouter(
@@ -135,7 +135,9 @@ class _AppScopeState extends State<AppScope> {
     _prefs.purgeLegacyGlobalKeys();
   }
 
-  void _syncMutedChats() => _chatsStore.muted = _settingsStore.mutedChats;
+  void _syncMutedChats() => _chatsStore
+    ..muted = _settingsStore.mutedChats
+    ..pinned = _settingsStore.pinnedChats;
 
   @override
   void dispose() {

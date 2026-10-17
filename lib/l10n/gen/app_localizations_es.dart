@@ -1469,6 +1469,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get messagesPhotoUnreadable => 'No se puede enviar esta imagen';
 
   @override
+  String get messagesPin => 'Fijar arriba';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Puedes fijar hasta $count chats',
+      one: 'Puedes fijar 1 chat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Fijado';
+
+  @override
   String get messagesPlayVoice => 'Reproducir mensaje de voz';
 
   @override
@@ -1573,6 +1590,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Sonido del chat activado';
+
+  @override
+  String get messagesUnpin => 'Desfijar';
 
   @override
   String get messagesUnreadDivider => 'Mensajes sin leer';

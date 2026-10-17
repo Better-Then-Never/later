@@ -1267,6 +1267,23 @@
   "@messagesPhotoUnreadable": {
     "description": "Shown when the chosen file cannot be read as a picture."
   },
+  "messagesPin": "Pin to top",
+  "@messagesPin": {
+    "description": "Chat menu and swipe action: keep the chat at the top of the list."
+  },
+  "messagesPinLimit": "{count, plural, =1{You can pin 1 chat} other{You can pin up to {count} chats}}",
+  "@messagesPinLimit": {
+    "description": "Shown when pinning more chats than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesPinned": "Pinned",
+  "@messagesPinned": {
+    "description": "Screen reader word for the pin mark on a chat row."
+  },
   "messagesPlayVoice": "Play voice message",
   "@messagesPlayVoice": {
     "description": "Screen reader label of the play button of a voice message."
@@ -1392,6 +1409,10 @@
     }
   },
   "messagesUnmutedToast": "Chat unmuted",
+  "messagesUnpin": "Unpin",
+  "@messagesUnpin": {
+    "description": "Chat menu and swipe action: stop keeping it at the top."
+  },
   "messagesUnreadDivider": "Unread messages",
   "@messagesUnreadDivider": {
     "description": "Line above the first message that was unread when the chat opened."

@@ -1458,6 +1458,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messagesPhotoUnreadable => 'This picture can\'t be sent';
 
   @override
+  String get messagesPin => 'Pin to top';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'You can pin up to $count chats',
+      one: 'You can pin 1 chat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Pinned';
+
+  @override
   String get messagesPlayVoice => 'Play voice message';
 
   @override
@@ -1561,6 +1578,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Chat unmuted';
+
+  @override
+  String get messagesUnpin => 'Unpin';
 
   @override
   String get messagesUnreadDivider => 'Unread messages';

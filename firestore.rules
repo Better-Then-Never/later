@@ -171,12 +171,14 @@ service cloud.firestore {
 
         function validSettings(d) {
           return d.keys().hasOnly(['notifications', 'mutedChats', 'language',
-              'privacy'])
+              'privacy', 'pinnedChats'])
             && validNotifications(d.get('notifications', {}))
             && d.get('language', 'en') in ['en', 'ru', 'pl', 'de', 'es']
             && validPrivacy(d.get('privacy', {}))
             && d.get('mutedChats', []) is list
-            && d.get('mutedChats', []).size() <= 500;
+            && d.get('mutedChats', []).size() <= 500
+            && d.get('pinnedChats', []) is list
+            && d.get('pinnedChats', []).size() <= 10;
         }
       }
 

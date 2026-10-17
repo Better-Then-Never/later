@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show listEquals;
+
 import 'capsule.dart';
 
 /// When pushes stay silent, in minutes after midnight, local time.
@@ -199,8 +201,15 @@ class UserSettings {
     this.notifications = const NotificationSettings(),
     this.privacy = const PrivacySettings(),
     this.mutedChats = const {},
+    this.pinnedChats = const [],
     this.language,
   });
+
+  /// Most chats kept at the top of the list.
+  static const maxPinned = 3;
+
+  /// Chats kept at the top of the list, first pinned first.
+  final List<String> pinnedChats;
 
   final NotificationSettings notifications;
   final PrivacySettings privacy;
@@ -215,11 +224,13 @@ class UserSettings {
     NotificationSettings? notifications,
     PrivacySettings? privacy,
     Set<String>? mutedChats,
+    List<String>? pinnedChats,
     String? language,
   }) => UserSettings(
     notifications: notifications ?? this.notifications,
     privacy: privacy ?? this.privacy,
     mutedChats: mutedChats ?? this.mutedChats,
+    pinnedChats: pinnedChats ?? this.pinnedChats,
     language: language ?? this.language,
   );
 
@@ -230,7 +241,8 @@ class UserSettings {
       other.privacy == privacy &&
       other.language == language &&
       other.mutedChats.length == mutedChats.length &&
-      other.mutedChats.containsAll(mutedChats);
+      other.mutedChats.containsAll(mutedChats) &&
+      listEquals(other.pinnedChats, pinnedChats);
 
   @override
   int get hashCode =>

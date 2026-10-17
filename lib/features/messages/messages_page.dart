@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/shell/navbar_widget.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
 import '../../core/theme/app_palette.dart';
+import '../../core/theme/app_text_styles.dart';
 import '../../data/models/chat.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/styles/box_decorations.dart';
@@ -13,8 +19,10 @@ import '../../shared/widgets/buttons/default_icon_button.dart';
 import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/page_header.dart';
+import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../../shared/widgets/user/user_row_skeleton.dart';
+import '../settings/settings_store.dart';
 import '../users/user_directory.dart';
 import 'chats_store.dart';
 import 'widgets/chat_list_item.dart';
@@ -144,49 +152,127 @@ class _ChatList extends StatelessWidget {
                 };
                 if (chat.isGroup) {
                   final sender = chat.lastSenderId;
-                  return ChatListItem(
-                    key: ValueKey(chat.id),
-                    friendUid: '',
-                    avatar: GroupAvatar(
-                      groupId: chat.id,
-                      name: chat.name,
-                      radius: UserRoundAvatar.listRadius(
-                        MediaQuery.sizeOf(context).width,
+                  return _SwipeActions(
+                    key: ValueKey('row-${chat.id}'),
+                    chatId: chat.id,
+                    child: ChatListItem(
+                      key: ValueKey(chat.id),
+                      friendUid: '',
+                      avatar: GroupAvatar(
+                        groupId: chat.id,
+                        name: chat.name,
+                        radius: UserRoundAvatar.listRadius(
+                          MediaQuery.sizeOf(context).width,
+                        ),
                       ),
+                      name: chat.name,
+                      semanticsLabel: l10n.messagesOpenGroup(chat.name),
+                      // "You: …", "Anna: …", or how many are in it.
+                      preview: !chat.hasMessages
+                          ? l10n.messagesGroupMembers(chat.members.length)
+                          : mine
+                          ? l10n.messagesYouPrefix(last)
+                          : sender == null
+                          ? last
+                          : '${directory.profile(sender)?.name ?? ''}: $last',
+                      timestamp: chat.lastUpdated,
+                      unread: chat.unreadFor(me),
+                      muted: store.isMuted(chat.id),
+                      pinned: store.isPinned(chat.id),
+                      onTap: () => AppRoutes.toGroupChat(context, chat.id),
                     ),
-                    name: chat.name,
-                    semanticsLabel: l10n.messagesOpenGroup(chat.name),
-                    // "You: …", "Anna: …", or how many are in it.
-                    preview: !chat.hasMessages
-                        ? l10n.messagesGroupMembers(chat.members.length)
-                        : mine
-                        ? l10n.messagesYouPrefix(last)
-                        : sender == null
-                        ? last
-                        : '${directory.profile(sender)?.name ?? ''}: $last',
-                    timestamp: chat.lastUpdated,
-                    unread: chat.unreadFor(me),
-                    muted: store.isMuted(chat.id),
-                    onTap: () => AppRoutes.toGroupChat(context, chat.id),
                   );
                 }
                 final friendUid = chat.otherThan(me);
-                return ChatListItem(
-                  key: ValueKey(chat.id),
-                  friendUid: friendUid,
-                  name: directory.profile(friendUid)?.name ?? '',
-                  preview: mine ? l10n.messagesYouPrefix(last) : last,
-                  timestamp: chat.lastUpdated,
-                  unread: chat.unreadFor(me),
-                  muted: store.isMuted(chat.id),
-                  onTap: friendUid.isEmpty
-                      ? () {}
-                      : () => AppRoutes.toChat(context, friendUid),
+                return _SwipeActions(
+                  key: ValueKey('row-${chat.id}'),
+                  chatId: chat.id,
+                  child: ChatListItem(
+                    key: ValueKey(chat.id),
+                    friendUid: friendUid,
+                    name: directory.profile(friendUid)?.name ?? '',
+                    preview: mine ? l10n.messagesYouPrefix(last) : last,
+                    timestamp: chat.lastUpdated,
+                    unread: chat.unreadFor(me),
+                    muted: store.isMuted(chat.id),
+                    pinned: store.isPinned(chat.id),
+                    onTap: friendUid.isEmpty
+                        ? () {}
+                        : () => AppRoutes.toChat(context, friendUid),
+                  ),
                 );
               },
             );
     }
     return AppFadeSwitcher(child: body);
+  }
+}
+
+/// A chat row that swipes: to the right it is pinned or unpinned, to the
+/// left muted or unmuted; it springs back either way. (The same actions are
+/// in the chat's menu, for screen readers.)
+class _SwipeActions extends StatelessWidget {
+  const _SwipeActions({super.key, required this.chatId, required this.child});
+
+  final String chatId;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final palette = context.palette;
+    final pinned = context.select<SettingsStore, bool>(
+      (s) => s.isPinned(chatId),
+    );
+    final muted = context.select<SettingsStore, bool>((s) => s.isMuted(chatId));
+    Widget label(String text, Color color, Alignment alignment) => Container(
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(AppRadii.l),
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.body.copyWith(
+          color: AppColors.onAccent,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+    return Dismissible(
+      key: ValueKey('swipe-$chatId'),
+      background: label(
+        pinned ? l10n.messagesUnpin : l10n.messagesPin,
+        AppColors.brandGreen,
+        Alignment.centerLeft,
+      ),
+      secondaryBackground: label(
+        muted ? l10n.messagesMenuUnmute : l10n.messagesMenuMute,
+        palette.iconMuted,
+        Alignment.centerRight,
+      ),
+      dismissThresholds: const {
+        DismissDirection.startToEnd: 0.3,
+        DismissDirection.endToStart: 0.3,
+      },
+      confirmDismiss: (direction) async {
+        unawaited(HapticFeedback.selectionClick());
+        final settings = context.read<SettingsStore>();
+        final failure = direction == DismissDirection.startToEnd
+            ? await settings.setChatPinned(chatId, pinned: !pinned)
+            : await settings.setChatMuted(chatId, muted: !muted);
+        if (failure != null && context.mounted) {
+          PopupNotificationService.showError(
+            context: context,
+            message: failure.message,
+            position: NotificationPosition.top,
+          );
+        }
+        return false;
+      },
+      child: child,
+    );
   }
 }
 

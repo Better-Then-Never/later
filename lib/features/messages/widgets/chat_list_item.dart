@@ -25,7 +25,11 @@ class ChatListItem extends StatelessWidget {
     this.muted = false,
     this.avatar,
     this.semanticsLabel,
+    this.pinned = false,
   });
+
+  /// Kept at the top of the list (a small pin by the time).
+  final bool pinned;
 
   final String friendUid;
 
@@ -103,9 +107,23 @@ class ChatListItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              CountBadge(
-                count: unread,
-                color: muted ? palette.iconMuted : AppColors.materialRed,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (pinned)
+                    Semantics(
+                      label: context.l10n.messagesPinned,
+                      child: CustomPaint(
+                        size: const Size(14, 16),
+                        painter: _PinPainter(color: palette.iconMuted),
+                      ),
+                    ),
+                  if (pinned && unread > 0) const SizedBox(width: 6),
+                  CountBadge(
+                    count: unread,
+                    color: muted ? palette.iconMuted : AppColors.materialRed,
+                  ),
+                ],
               ),
             ],
           ),
@@ -113,4 +131,26 @@ class ChatListItem extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A small push pin: a round head on a short needle.
+class _PinPainter extends CustomPainter {
+  const _PinPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    final head = Offset(size.width / 2, size.height * 0.33);
+    canvas
+      ..drawCircle(head, size.width * 0.34, paint)
+      ..drawLine(head, Offset(size.width / 2, size.height - 1), paint);
+  }
+
+  @override
+  bool shouldRepaint(_PinPainter old) => old.color != color;
 }

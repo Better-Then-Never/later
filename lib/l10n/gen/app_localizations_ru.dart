@@ -1495,6 +1495,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesPhotoUnreadable => 'Эту картинку нельзя отправить';
 
   @override
+  String get messagesPin => 'Закрепить';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Можно закрепить до $count чата',
+      many: 'Можно закрепить до $count чатов',
+      few: 'Можно закрепить до $count чатов',
+      one: 'Можно закрепить $count чат',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Закреплён';
+
+  @override
   String get messagesPlayVoice => 'Воспроизвести голосовое';
 
   @override
@@ -1608,6 +1627,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Уведомления чата включены';
+
+  @override
+  String get messagesUnpin => 'Открепить';
 
   @override
   String get messagesUnreadDivider => 'Непрочитанные сообщения';

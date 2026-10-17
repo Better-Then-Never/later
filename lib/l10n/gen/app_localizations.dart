@@ -2516,6 +2516,24 @@ abstract class AppLocalizations {
   /// **'This picture can\'t be sent'**
   String get messagesPhotoUnreadable;
 
+  /// Chat menu and swipe action: keep the chat at the top of the list.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to top'**
+  String get messagesPin;
+
+  /// Shown when pinning more chats than allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{You can pin 1 chat} other{You can pin up to {count} chats}}'**
+  String messagesPinLimit(int count);
+
+  /// Screen reader word for the pin mark on a chat row.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get messagesPinned;
+
   /// Screen reader label of the play button of a voice message.
   ///
   /// In en, this message translates to:
@@ -2713,6 +2731,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Chat unmuted'**
   String get messagesUnmutedToast;
+
+  /// Chat menu and swipe action: stop keeping it at the top.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get messagesUnpin;
 
   /// Line above the first message that was unread when the chat opened.
   ///

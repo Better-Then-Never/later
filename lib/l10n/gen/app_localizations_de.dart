@@ -1492,6 +1492,23 @@ class AppLocalizationsDe extends AppLocalizations {
       'Dieses Bild kann nicht gesendet werden';
 
   @override
+  String get messagesPin => 'Anheften';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Du kannst bis zu $count Chats anheften',
+      one: 'Du kannst 1 Chat anheften',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Angeheftet';
+
+  @override
   String get messagesPlayVoice => 'Sprachnachricht abspielen';
 
   @override
@@ -1598,6 +1615,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Stummschaltung aufgehoben';
+
+  @override
+  String get messagesUnpin => 'Lösen';
 
   @override
   String get messagesUnreadDivider => 'Ungelesene Nachrichten';

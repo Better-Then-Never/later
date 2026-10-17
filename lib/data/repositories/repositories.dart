@@ -357,6 +357,8 @@ abstract interface class SettingsRepository {
   /// The app's language, so pushes arrive in it.
   Future<void> saveLanguage(String uid, String languageCode);
   Future<void> setChatMuted(String uid, String chatId, {required bool muted});
+
+  Future<void> setChatPinned(String uid, String chatId, {required bool pinned});
 }
 
 abstract interface class PushTokenRepository {

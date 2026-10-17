@@ -113,5 +113,9 @@
   "messagesForwardedTo": "Reenviado a {name}",
   "messagesReport": "Denunciar",
   "messagesReportFailed": "No se pudo enviar la denuncia. Inténtalo de nuevo.",
-  "messagesQuoteGone": "Ese mensaje ya no está en este chat"
+  "messagesQuoteGone": "Ese mensaje ya no está en este chat",
+  "messagesPin": "Fijar arriba",
+  "messagesUnpin": "Desfijar",
+  "messagesPinned": "Fijado",
+  "messagesPinLimit": "{count, plural, =1{Puedes fijar 1 chat} other{Puedes fijar hasta {count} chats}}"
 }

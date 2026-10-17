@@ -1503,6 +1503,25 @@ class AppLocalizationsPl extends AppLocalizations {
   String get messagesPhotoUnreadable => 'Nie można wysłać tego obrazu';
 
   @override
+  String get messagesPin => 'Przypnij';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Możesz przypiąć do $count czatu',
+      many: 'Możesz przypiąć do $count czatów',
+      few: 'Możesz przypiąć do $count czatów',
+      one: 'Możesz przypiąć $count czat',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Przypięty';
+
+  @override
   String get messagesPlayVoice => 'Odtwórz wiadomość głosową';
 
   @override
@@ -1615,6 +1634,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get messagesUnmutedToast => 'Wyciszenie czatu wyłączone';
+
+  @override
+  String get messagesUnpin => 'Odepnij';
 
   @override
   String get messagesUnreadDivider => 'Nieprzeczytane wiadomości';

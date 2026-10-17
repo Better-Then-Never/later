@@ -411,5 +411,26 @@
   "messagesQuoteGone": "That message is no longer in this chat",
   "@messagesQuoteGone": {
     "description": "Shown when the quoted message was deleted or cannot be found."
+  },
+  "messagesPin": "Pin to top",
+  "@messagesPin": {
+    "description": "Chat menu and swipe action: keep the chat at the top of the list."
+  },
+  "messagesUnpin": "Unpin",
+  "@messagesUnpin": {
+    "description": "Chat menu and swipe action: stop keeping it at the top."
+  },
+  "messagesPinned": "Pinned",
+  "@messagesPinned": {
+    "description": "Screen reader word for the pin mark on a chat row."
+  },
+  "messagesPinLimit": "{count, plural, =1{You can pin 1 chat} other{You can pin up to {count} chats}}",
+  "@messagesPinLimit": {
+    "description": "Shown when pinning more chats than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

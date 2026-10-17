@@ -37,6 +37,49 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
   bool get isLoaded => _loaded;
   bool isMuted(String chatId) => _settings.mutedChats.contains(chatId);
 
+  List<String> get pinnedChats => _settings.pinnedChats;
+
+  bool isPinned(String chatId) => _settings.pinnedChats.contains(chatId);
+
+  /// Keeps chat [chatId] at the top of the list, or not; at most
+  /// [UserSettings.maxPinned].
+  Future<AppFailure?> setChatPinned(
+    String chatId, {
+    required bool pinned,
+  }) async {
+    final uid = _uid;
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
+    if (pinned == isPinned(chatId)) return null;
+    if (pinned && _settings.pinnedChats.length >= UserSettings.maxPinned) {
+      return ValidationFailure(
+        AppL10n.current.messagesPinLimit(UserSettings.maxPinned),
+      );
+    }
+    final previous = _settings;
+    _settings = _settings.copyWith(
+      pinnedChats: pinned
+          ? [..._settings.pinnedChats, chatId]
+          : ([..._settings.pinnedChats]..remove(chatId)),
+    );
+    notifyListeners();
+    try {
+      await _repo.setChatPinned(uid, chatId, pinned: pinned);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning('Pinning the chat failed', error: e, stackTrace: st);
+      if (_uid == uid) {
+        _settings = previous;
+        notifyListeners();
+      }
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorChatUpdateFailed,
+      );
+    }
+  }
+
   @override
   void attach(String uid) {
     _uid = uid;

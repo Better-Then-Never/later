@@ -330,6 +330,7 @@ abstract final class FirestoreMappers {
         ),
       ),
       mutedChats: _stringList(data['mutedChats']).toSet(),
+      pinnedChats: _stringList(data['pinnedChats']),
       language: _nonEmptyString(data['language']),
     );
   }

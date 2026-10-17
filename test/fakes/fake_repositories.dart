@@ -188,6 +188,22 @@ class FakeSettingsRepository implements SettingsRepository {
     );
     _changes.add(uid);
   }
+
+  @override
+  Future<void> setChatPinned(
+    String uid,
+    String chatId, {
+    required bool pinned,
+  }) async {
+    _check();
+    final current = docs[uid] ?? const UserSettings();
+    docs[uid] = current.copyWith(
+      pinnedChats: pinned
+          ? [...current.pinnedChats.where((c) => c != chatId), chatId]
+          : ([...current.pinnedChats]..remove(chatId)),
+    );
+    _changes.add(uid);
+  }
 }
 
 class FakeUserRepository implements UserRepository {

@@ -113,5 +113,9 @@
   "messagesForwardedTo": "Przekazano: {name}",
   "messagesReport": "Zgłoś",
   "messagesReportFailed": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
-  "messagesQuoteGone": "Tej wiadomości nie ma już w czacie"
+  "messagesQuoteGone": "Tej wiadomości nie ma już w czacie",
+  "messagesPin": "Przypnij",
+  "messagesUnpin": "Odepnij",
+  "messagesPinned": "Przypięty",
+  "messagesPinLimit": "{count, plural, one{Możesz przypiąć {count} czat} few{Możesz przypiąć do {count} czatów} many{Możesz przypiąć do {count} czatów} other{Możesz przypiąć do {count} czatu}}"
 }

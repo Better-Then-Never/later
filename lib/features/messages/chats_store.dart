@@ -40,11 +40,19 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   /// Two-person chats with messages and every group, most recently active
   /// first.
   List<Chat> get chats => _merged ??= [..._list, ..._groups]
-    ..sort(
-      (a, b) => (b.lastUpdated ?? DateTime(0)).compareTo(
+    ..sort((a, b) {
+      // Pinned first, in the order they were pinned; then the latest.
+      final pa = _pinned.indexOf(a.id);
+      final pb = _pinned.indexOf(b.id);
+      if (pa != pb) {
+        if (pa < 0) return 1;
+        if (pb < 0) return -1;
+        return pa.compareTo(pb);
+      }
+      return (b.lastUpdated ?? DateTime(0)).compareTo(
         a.lastUpdated ?? DateTime(0),
-      ),
-    );
+      );
+    });
   bool get isLoaded => _loaded;
   bool get hasError => _failed;
 
@@ -55,6 +63,19 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   set muted(Set<String> value) {
     if (setEquals(value, _muted)) return;
     _muted = value;
+    notifyListeners();
+  }
+
+  /// Chats the user keeps at the top (from their settings), first pinned
+  /// first.
+  List<String> get pinned => _pinned;
+  List<String> _pinned = const [];
+  bool isPinned(String chatId) => _pinned.contains(chatId);
+
+  set pinned(List<String> value) {
+    if (listEquals(value, _pinned)) return;
+    _pinned = value;
+    _merged = null;
     notifyListeners();
   }
 
@@ -153,6 +174,7 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     _loaded = false;
     _failed = false;
     _muted = const {};
+    _pinned = const [];
     _recent.clear();
     notifyListeners();
   }

@@ -48,6 +48,33 @@ class ChatOptionsSheet extends StatelessWidget {
     },
   );
 
+  static Future<void> _setPinned(
+    BuildContext context,
+    String chatId, {
+    required bool pinned,
+  }) async {
+    final failure = await context.read<SettingsStore>().setChatPinned(
+      chatId,
+      pinned: pinned,
+    );
+    if (context.mounted) _report(context, failure, null);
+  }
+
+  /// "Pin to top" / "Unpin" for [chatId], as a menu item.
+  static Widget _pinItem(BuildContext context, String chatId) {
+    final pinned = context.select<SettingsStore, bool>(
+      (s) => s.isPinned(chatId),
+    );
+    final page = Navigator.of(context).context;
+    return OptionsMenuItem(
+      text: pinned ? context.l10n.messagesUnpin : context.l10n.messagesPin,
+      onPressed: () {
+        Navigator.pop(context);
+        _setPinned(page, chatId, pinned: !pinned);
+      },
+    );
+  }
+
   static Future<void> _setMuted(
     BuildContext context,
     String chatId, {
@@ -177,6 +204,8 @@ class ChatOptionsSheet extends StatelessWidget {
           onPressed: () => then(() => _rename(page, controller)),
         ),
         const OptionsMenuDivider(),
+        _pinItem(context, chatId),
+        const OptionsMenuDivider(),
         OptionsMenuItem(
           text: muted ? l10n.messagesMenuUnmute : l10n.messagesMenuMute,
           onPressed: () => then(() => _setMuted(page, chatId, muted: !muted)),
@@ -221,6 +250,8 @@ class ChatOptionsSheet extends StatelessWidget {
         ),
         const OptionsMenuDivider(),
         if (chatId != null) ...[
+          _pinItem(context, chatId),
+          const OptionsMenuDivider(),
           OptionsMenuItem(
             text: muted ? l10n.messagesMenuUnmute : l10n.messagesMenuMute,
             onPressed: () {

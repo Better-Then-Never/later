@@ -113,5 +113,9 @@
   "messagesForwardedTo": "Переслано: {name}",
   "messagesReport": "Пожаловаться",
   "messagesReportFailed": "Жалобу не удалось отправить. Попробуйте ещё раз.",
-  "messagesQuoteGone": "Этого сообщения больше нет в чате"
+  "messagesQuoteGone": "Этого сообщения больше нет в чате",
+  "messagesPin": "Закрепить",
+  "messagesUnpin": "Открепить",
+  "messagesPinned": "Закреплён",
+  "messagesPinLimit": "{count, plural, one{Можно закрепить {count} чат} few{Можно закрепить до {count} чатов} many{Можно закрепить до {count} чатов} other{Можно закрепить до {count} чата}}"
 }

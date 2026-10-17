@@ -63,6 +63,24 @@ void main() {
       expect(store.mutedChats, isEmpty);
     });
 
+    test('pin up to three chats, in the order pinned', () async {
+      store.attach('alice');
+      await pumpEventQueue();
+      for (final c in ['a_b', 'a_c', 'a_d']) {
+        expect(await store.setChatPinned(c, pinned: true), isNull);
+      }
+      await pumpEventQueue();
+      expect(store.pinnedChats, ['a_b', 'a_c', 'a_d']);
+      expect(
+        await store.setChatPinned('a_e', pinned: true),
+        isA<ValidationFailure>(),
+      );
+      await store.setChatPinned('a_c', pinned: false);
+      await pumpEventQueue();
+      expect(store.pinnedChats, ['a_b', 'a_d']);
+      expect(repo.docs['alice']!.pinnedChats, ['a_b', 'a_d']);
+    });
+
     test('quiet hours follow the device time zone', () async {
       repo.docs['alice'] = const UserSettings(
         notifications: NotificationSettings(

@@ -113,5 +113,9 @@
   "messagesForwardedTo": "Weitergeleitet an {name}",
   "messagesReport": "Melden",
   "messagesReportFailed": "Die Meldung konnte nicht gesendet werden. Versuch es noch einmal.",
-  "messagesQuoteGone": "Diese Nachricht gibt es in diesem Chat nicht mehr"
+  "messagesQuoteGone": "Diese Nachricht gibt es in diesem Chat nicht mehr",
+  "messagesPin": "Anheften",
+  "messagesUnpin": "Lösen",
+  "messagesPinned": "Angeheftet",
+  "messagesPinLimit": "{count, plural, =1{Du kannst 1 Chat anheften} other{Du kannst bis zu {count} Chats anheften}}"
 }
