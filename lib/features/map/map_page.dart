@@ -235,38 +235,61 @@ class _MapViewState extends State<_MapView> {
     });
   }
 
+  // Marker and heatmap sets are rebuilt only when the capsules, the icons or
+  // the zoom band change (F-10): a new Marker carries a new tap closure, so
+  // rebuilding them on every position update or frame made the plugin send
+  // every marker to the native map again.
+  Object? _capsuleMarkersKey;
+  Set<Marker> _capsuleMarkers = const {};
+  Object? _heatmapsKey;
+  Set<Heatmap> _heatmapsCache = const {};
+  GeoPosition? _userMarkerAt;
+  Marker? _userMarker;
+
   Set<Marker> _markers(MapController map) {
     final icons = map.icons!;
-    final markers = <Marker>{};
     final me = map.myPosition;
-    if (me != null) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('_currentLocation'),
-          icon: icons.user,
-          position: LatLng(me.latitude, me.longitude),
-        ),
-      );
+    if (me != _userMarkerAt || _userMarker?.icon != icons.user) {
+      _userMarkerAt = me;
+      _userMarker = me == null
+          ? null
+          : Marker(
+              markerId: const MarkerId('_currentLocation'),
+              icon: icons.user,
+              position: LatLng(me.latitude, me.longitude),
+            );
     }
-    if (!map.showMarkers) return markers;
-    for (final capsule in map.visibleCapsules) {
-      final location = capsule.location!;
-      final position = LatLng(location.latitude, location.longitude);
-      markers.add(
-        Marker(
-          markerId: MarkerId(capsule.id),
-          position: position,
-          icon: icons.forColor(capsule.color),
-          onTap: () => _select(capsule),
-        ),
-      );
+    final key = (map.capsulesVersion, icons, map.showMarkers);
+    if (key != _capsuleMarkersKey) {
+      _capsuleMarkersKey = key;
+      _capsuleMarkers = !map.showMarkers
+          ? const {}
+          : {
+              for (final capsule in map.visibleCapsules)
+                Marker(
+                  markerId: MarkerId(capsule.id),
+                  position: LatLng(
+                    capsule.location!.latitude,
+                    capsule.location!.longitude,
+                  ),
+                  icon: icons.forColor(capsule.color),
+                  onTap: () => _select(capsule),
+                ),
+            };
     }
-    return markers;
+    final user = _userMarker;
+    return user == null ? _capsuleMarkers : {user, ..._capsuleMarkers};
   }
 
   /// The native heatmap throws on an empty point list (BUG-048), so the
   /// layer is only added when there is something to show.
   Set<Heatmap> _heatmaps(MapController map) {
+    if (_heatmapsKey == map.capsulesVersion) return _heatmapsCache;
+    _heatmapsKey = map.capsulesVersion;
+    return _heatmapsCache = _buildHeatmaps(map);
+  }
+
+  Set<Heatmap> _buildHeatmaps(MapController map) {
     final points = [
       for (final c in map.visibleCapsules)
         WeightedLatLng(

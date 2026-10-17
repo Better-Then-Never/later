@@ -80,8 +80,17 @@ class MapController extends ChangeNotifier {
   double get zoom => _zoom;
   bool get showMarkers => _zoom >= markerZoomThreshold;
 
-  /// Every capsule the signed-in user may see, de-duplicated.
-  List<Capsule> get visibleCapsules {
+  /// Changes whenever the capsules on the map change (not on position
+  /// updates or zoom): the map page rebuilds its markers only then (F-10).
+  int get capsulesVersion => _capsulesVersion;
+  int _capsulesVersion = 0;
+  List<Capsule>? _visible;
+
+  /// Every capsule the signed-in user may see, de-duplicated; computed once
+  /// per change of the capsule lists.
+  List<Capsule> get visibleCapsules => _visible ??= _computeVisible();
+
+  List<Capsule> _computeVisible() {
     final uid = _session.uid;
     final friends = _friendIds.toSet();
     final byId = <String, Capsule>{};
@@ -89,7 +98,12 @@ class MapController extends ChangeNotifier {
       if (c.location == null) continue; // malformed: cannot be placed
       if (isVisibleTo(c, uid: uid, friendIds: friends)) byId[c.id] = c;
     }
-    return byId.values.toList();
+    return List.unmodifiable(byId.values);
+  }
+
+  void _capsulesChanged() {
+    _visible = null;
+    _capsulesVersion++;
   }
 
   /// The capsule visibility rule (also enforced by the Firestore rules).
@@ -180,6 +194,7 @@ class MapController extends ChangeNotifier {
     final friends = _session.profile?.friends ?? const <String>[];
     if (listEquals(friends, _friendIds)) return;
     _friendIds = List.of(friends);
+    _capsulesChanged();
     unawaited(_friendsSub?.cancel());
     _friendsSub = _capsules
         .watchFriends(_friendIds)
@@ -225,6 +240,7 @@ class MapController extends ChangeNotifier {
   }
 
   void _set(VoidCallback update) {
+    _capsulesChanged();
     if (_disposed) return;
     update();
     AppLogger.debug(
