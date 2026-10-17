@@ -16,5 +16,17 @@
   "mapFirstCapsuleBody": "Mach hier ein Foto und wähle, wann es sich öffnet.",
   "mapZoomIn": "Vergrößern",
   "mapZoomOut": "Verkleinern",
-  "mapCompass": "Karte nach Norden drehen"
+  "mapCompass": "Karte nach Norden drehen",
+  "mapFilter": "Karte filtern",
+  "mapFilterActive": "{count, plural, =1{Karte filtern, 1 Auswahl aktiv} other{Karte filtern, {count} Auswahlen aktiv}}",
+  "mapFilterTitle": "Auf der Karte",
+  "mapFilterWhose": "Von wem",
+  "mapFilterMine": "Meine",
+  "mapFilterFriends": "Von Freunden",
+  "mapFilterOthers": "Von anderen",
+  "mapFilterState": "Offen oder nicht",
+  "mapFilterOpen": "Offen",
+  "mapFilterLocked": "Öffnen später",
+  "mapFilterColors": "Pin-Farbe",
+  "mapFilterReset": "Alles zeigen"
 }

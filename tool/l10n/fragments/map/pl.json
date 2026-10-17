@@ -16,5 +16,17 @@
   "mapFirstCapsuleBody": "Zrób tu zdjęcie i wybierz, kiedy się otworzy.",
   "mapZoomIn": "Przybliż",
   "mapZoomOut": "Oddal",
-  "mapCompass": "Obróć mapę na północ"
+  "mapCompass": "Obróć mapę na północ",
+  "mapFilter": "Filtruj mapę",
+  "mapFilterActive": "{count, plural, =1{Filtruj mapę, 1 wybór} few{Filtruj mapę, {count} wybory} many{Filtruj mapę, {count} wyborów} other{Filtruj mapę, {count} wyboru}}",
+  "mapFilterTitle": "Na mapie",
+  "mapFilterWhose": "Czyje",
+  "mapFilterMine": "Moje",
+  "mapFilterFriends": "Znajomych",
+  "mapFilterOthers": "Pozostałych",
+  "mapFilterState": "Otwarte czy nie",
+  "mapFilterOpen": "Otwarte",
+  "mapFilterLocked": "Otworzą się później",
+  "mapFilterColors": "Kolor pinezki",
+  "mapFilterReset": "Pokaż wszystko"
 }

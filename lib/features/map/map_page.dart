@@ -36,6 +36,7 @@ import 'widgets/capsule_info_panel.dart';
 import 'widgets/first_capsule_hint.dart';
 import 'widgets/map_compass.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
+import 'widgets/map_filter_sheet.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
@@ -51,6 +52,7 @@ class MapPage extends StatelessWidget {
               location: context.read<LocationService>(),
               currentLocation: context.read<CurrentLocation>(),
               session: context.read<SessionController>(),
+              prefs: context.read<PreferencesStore>(),
             )
             ..setDarkIcons(dark)
             ..start(),
@@ -144,6 +146,62 @@ class _SignPainter extends CustomPainter {
 
 /// Round button above the navigation bar that brings the map to the user,
 /// drawn with the map's own "you" figure.
+/// Opens the map filter; a green dot while it leaves something out.
+class _FilterButton extends StatelessWidget {
+  const _FilterButton({required this.active, required this.onTap});
+
+  final int active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = context.l10n;
+    return Semantics(
+      button: true,
+      label: active == 0 ? l10n.mapFilter : l10n.mapFilterActive(active),
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: _MyLocationButton.size,
+                height: _MyLocationButton.size,
+                padding: const EdgeInsets.all(13),
+                decoration: BoxDecoration(
+                  color: palette.surface,
+                  shape: BoxShape.circle,
+                  border: palette.isDark
+                      ? Border.all(color: palette.cardBorder)
+                      : null,
+                  boxShadow: AppShadows.raised(context),
+                ),
+                child: Image.asset(AppIcons.historyFilter),
+              ),
+              if (active > 0)
+                Positioned(
+                  right: 2,
+                  top: 2,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: AppColors.brandGreen,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: palette.surface, width: 2),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _MyLocationButton extends StatelessWidget {
   const _MyLocationButton({required this.onTap});
 
@@ -574,6 +632,19 @@ class _MapViewState extends State<_MapView> {
                 // The map went away (the tab was rebuilt) while this ran.
               }
             },
+          ),
+          // What the map shows (B5), top left under the status bar.
+          Positioned(
+            top: MediaQuery.viewPaddingOf(context).top + 12,
+            left: 16,
+            child: _FilterButton(
+              active: map.filter.activeCount,
+              onTap: () => MapFilterSheet.show(
+                context,
+                filter: map.filter,
+                onChanged: map.setFilter,
+              ),
+            ),
           ),
           AnimatedPositioned(
             duration: motion,

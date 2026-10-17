@@ -14,6 +14,8 @@ import 'cluster_icons.dart';
 import 'current_location.dart';
 import 'map_clusters.dart';
 import 'marker_icons.dart';
+import '../../data/services/preferences_store.dart';
+import 'map_filter.dart';
 
 enum MapLoadState { loading, ready }
 
@@ -31,7 +33,9 @@ class MapController extends ChangeNotifier {
     required LocationService location,
     required CurrentLocation currentLocation,
     required SessionController session,
-  }) : _capsules = capsules,
+    PreferencesStore? prefs,
+  }) : _prefs = prefs,
+       _capsules = capsules,
        _location = location,
        _currentLocation = currentLocation,
        _session = session;
@@ -40,6 +44,30 @@ class MapController extends ChangeNotifier {
   final LocationService _location;
   final CurrentLocation _currentLocation;
   final SessionController _session;
+  final PreferencesStore? _prefs;
+
+  static const _filterKey = 'map_filter';
+
+  /// What the map shows (B5); everything by default.
+  MapFilter _filter = MapFilter.all;
+  MapFilter get filter => _filter;
+
+  void setFilter(MapFilter value) {
+    if (value == _filter) return;
+    _set(() => _filter = value);
+    final uid = _session.uid;
+    final prefs = _prefs;
+    if (uid != null && prefs != null) {
+      unawaited(prefs.setString(uid, _filterKey, value.encode()));
+    }
+  }
+
+  Future<void> _loadFilter(String uid) async {
+    final saved = await _prefs?.string(uid, _filterKey);
+    if (_disposed || saved == null) return;
+    final filter = MapFilter.decode(saved);
+    if (filter != _filter) _set(() => _filter = filter);
+  }
 
   /// Camera used when no position is known at all.
   static const fallbackCamera = GeoPosition(20, 0);
@@ -147,10 +175,15 @@ class MapController extends ChangeNotifier {
   List<Capsule> _computeVisible() {
     final uid = _session.uid;
     final friends = _friendIds.toSet();
+    final now = DateTime.now();
     final byId = <String, Capsule>{};
     for (final c in [..._public, ..._friends, ..._own, ..._coAuthored]) {
       if (c.location == null) continue; // malformed: cannot be placed
-      if (isVisibleTo(c, uid: uid, friendIds: friends)) byId[c.id] = c;
+      if (!isVisibleTo(c, uid: uid, friendIds: friends)) continue;
+      if (!_filter.accepts(c, uid: uid, friendIds: friends, now: now)) {
+        continue;
+      }
+      byId[c.id] = c;
     }
     return List.unmodifiable(byId.values);
   }
@@ -174,6 +207,7 @@ class MapController extends ChangeNotifier {
   Future<void> start() async {
     final uid = _session.uid;
     if (uid == null) return;
+    unawaited(_loadFilter(uid));
 
     _icons = await MarkerIcons.load(dark: _darkIcons);
     _availability = await _location.availability();

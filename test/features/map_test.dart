@@ -13,6 +13,7 @@ import 'package:later/data/models/geo_position.dart';
 import 'package:later/features/map/widgets/capsule_info_panel.dart';
 
 import '../helpers/test_app.dart';
+import 'package:later/features/map/map_filter.dart';
 
 Capsule _c(String owner, CapsulePrivacy privacy) => Capsule(
   id: '$owner-${privacy.name}',
@@ -172,6 +173,74 @@ void main() {
     test("other people's private capsules are never visible", () {
       expect(visible(_c('friend', CapsulePrivacy.private)), isFalse);
       expect(visible(_c('stranger', CapsulePrivacy.private)), isFalse);
+    });
+  });
+
+  group('map filter (B5)', () {
+    final now = DateTime(2026, 10, 17);
+    Capsule c(
+      String owner,
+      CapsulePrivacy privacy, {
+      CapsuleColor color = CapsuleColor.red,
+      DateTime? openAt,
+    }) => Capsule(
+      id: '$owner-${privacy.name}-${color.name}',
+      ownerId: owner,
+      title: 't',
+      privacy: privacy,
+      color: color,
+      openAt: openAt,
+    );
+    bool shows(MapFilter f, Capsule capsule) =>
+        f.accepts(capsule, uid: 'me', friendIds: {'friend'}, now: now);
+
+    test(
+      'whose: mine, friends\' (also their public ones), everyone else\'s',
+      () {
+        const mineOnly = MapFilter(owners: {MapOwner.mine});
+        expect(shows(mineOnly, c('me', CapsulePrivacy.private)), isTrue);
+        expect(shows(mineOnly, c('friend', CapsulePrivacy.public)), isFalse);
+        const friendsOnly = MapFilter(owners: {MapOwner.friends});
+        expect(shows(friendsOnly, c('friend', CapsulePrivacy.public)), isTrue);
+        expect(
+          shows(friendsOnly, c('stranger', CapsulePrivacy.public)),
+          isFalse,
+        );
+        const others = MapFilter(owners: {MapOwner.others});
+        expect(shows(others, c('stranger', CapsulePrivacy.public)), isTrue);
+      },
+    );
+
+    test('open or later, and colours (none chosen: all)', () {
+      const later = MapFilter(states: {MapOpenState.locked});
+      expect(
+        shows(later, c('me', CapsulePrivacy.public, openAt: DateTime(2027))),
+        isTrue,
+      );
+      expect(shows(later, c('me', CapsulePrivacy.public)), isFalse);
+      const blue = MapFilter(colors: {CapsuleColor.blue});
+      expect(
+        shows(blue, c('me', CapsulePrivacy.public, color: CapsuleColor.blue)),
+        isTrue,
+      );
+      expect(shows(blue, c('me', CapsulePrivacy.public)), isFalse);
+      expect(
+        shows(MapFilter.all, c('stranger', CapsulePrivacy.public)),
+        isTrue,
+      );
+    });
+
+    test('kept as text; never empty by accident', () {
+      const f = MapFilter(
+        owners: {MapOwner.mine, MapOwner.friends},
+        states: {MapOpenState.open},
+        colors: {CapsuleColor.green},
+      );
+      expect(MapFilter.decode(f.encode()), f);
+      expect(f.activeCount, 3);
+      expect(MapFilter.all.isDefault, isTrue);
+      expect(MapFilter.decode('||'), MapFilter.all);
+      expect(MapFilter.decode('nonsense'), MapFilter.all);
     });
   });
 

@@ -16,5 +16,17 @@
   "mapFirstCapsuleBody": "Сделайте фото здесь и выберите, когда оно откроется.",
   "mapZoomIn": "Приблизить",
   "mapZoomOut": "Отдалить",
-  "mapCompass": "Повернуть карту на север"
+  "mapCompass": "Повернуть карту на север",
+  "mapFilter": "Фильтр карты",
+  "mapFilterActive": "{count, plural, one{Фильтр карты, включён {count}} few{Фильтр карты, включено {count}} many{Фильтр карты, включено {count}} other{Фильтр карты, включено {count}}}",
+  "mapFilterTitle": "На карте",
+  "mapFilterWhose": "Чьи",
+  "mapFilterMine": "Мои",
+  "mapFilterFriends": "Друзей",
+  "mapFilterOthers": "Остальных",
+  "mapFilterState": "Открыты ли",
+  "mapFilterOpen": "Открытые",
+  "mapFilterLocked": "Откроются позже",
+  "mapFilterColors": "Цвет метки",
+  "mapFilterReset": "Показать всё"
 }
