@@ -187,6 +187,13 @@ void main() {
     await binding.traceAction(() async {
       await bootstrap();
       FlutterError.onError = testErrorHandler;
+      // After a re-seed the account on the phone no longer exists: drop the
+      // stale session now instead of being signed out mid-flow.
+      try {
+        await FirebaseAuth.instance.currentUser?.reload();
+      } on FirebaseAuthException {
+        await FirebaseAuth.instance.signOut();
+      }
       final navbar = find.byType(NavbarWidget);
       final end = DateTime.now().add(const Duration(seconds: 40));
       var signingIn = false;
