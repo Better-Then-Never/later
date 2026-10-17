@@ -3,6 +3,7 @@ import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/features/notifications/notification_router.dart';
 import 'package:later/app/shell/selected_page.dart';
 import 'package:later/app/shell/startup_report.dart';
+import 'package:later/core/theme/glyph_warmup.dart';
 import 'package:later/app/shell/widget_tree.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +31,8 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       StartupReport.homeDrawn();
+      // Letters and emoji into the renderer's atlas while nothing moves.
+      GlyphWarmup.schedule();
       _links.onHomeReady();
       _notificationRouter.onHomeReady();
     });
