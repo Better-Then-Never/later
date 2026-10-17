@@ -30,10 +30,24 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **Foundation done (Tier 0 infra):** l10n fragments + gen-l10n, AppPalette (light identical; 3 dark candidates),
   dark icons via ThemedAssetBundle, appearance controller (theme/language/UI size, loaded before first frame),
   UiScaleView, edge-to-edge transparent bars, splash = first frame; shared/core/app layers on the palette.
-- **Conversion fan-out (worktrees):** messages ✔ merged, friends+users ✔ merged, settings (running), auth
-  (running), profile (running); still to launch: history+notifications, capsules+map. Then: remove
-  theme-dependent members from AppColors; data-layer strings (I do these myself).
+- **Conversion done:** all 8 areas merged (messages, friends+users, settings, auth, profile,
+  history+notifications, capsules+map); data-layer strings localized; theme-dependent members removed from
+  AppColors (only theme-invariant colours remain). Worktrees removed (branches kept).
 - **Backend done (not deployed):** localized pushes, reactions, comments, follower counts, friend request
   notifications, stats/streaks/places/distance, achievements registry + unlocks, streak reminders, admin
   announcements, reports, rules for all of it, account cleanup. Functions 43/43, rules 53/53. Admin scripts in
   tools/admin (self-test passes), ADMIN.md.
+- **Client data layer done:** settings (new categories, privacy, language synced for pushes), profile counters,
+  verified, stats + streakAt, capsule fields (capturedAt, loop frames, counters...), SocialRepository
+  (reactions, comments, reports, achievements, announcements) + fakes. Writes fall back once to the older shape
+  when rules predate the new fields (`legacyCapsule`, notification keys).
+- **Settings done:** Appearance (theme, size), Language, Privacy (default visibility, approximate location,
+  read receipts honoured both ways, show achievements), notification categories. FeatureFlags
+  (lib/core/config/feature_flags.dart): reactions, comments, achievements, streaks, news are **false** until
+  their UI ships; flip each when done and verified.
+- **Notifications:** new types (reaction, friendRequest, friendAccepted, achievement) with names looked up by id,
+  localized sentences, tap routing; Android channel names localized.
+- **Draft PR #78** opened (base main, includes #77's commits since #77 is not merged). Keep its body updated.
+- Next: emulator checks (dark candidates D-03, all screens in dark + ru/de), then Tier 0 images (F-01..F-03),
+  consistency (F-30..F-45), motion; then Tier 1/2 features (default visibility + approximate location in
+  creation, reactions/comments UI, achievements UI, news topic subscription).
