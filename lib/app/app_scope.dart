@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../data/firebase/firebase_auth_repository.dart';
 import '../data/firebase/firebase_capsule_repository.dart';
 import '../data/firebase/firebase_chat_repository.dart';
+import '../data/firebase/firebase_contact_match_repository.dart';
 import '../data/firebase/firebase_friends_repository.dart';
 import '../data/firebase/firebase_image_storage_repository.dart';
 import '../data/firebase/firebase_notification_repository.dart';
@@ -70,6 +71,8 @@ class _AppScopeState extends State<AppScope> {
   final ImageStorageRepository _images = FirebaseImageStorageRepository();
   final SettingsRepository _settings = FirebaseSettingsRepository();
   final SocialRepository _social = FirebaseSocialRepository();
+  final ContactMatchRepository _contactMatches =
+      FirebaseContactMatchRepository();
   final _location = const LocationService();
   final _geocoding = GeocodingService();
   final _voice = VoiceService();
@@ -174,6 +177,7 @@ class _AppScopeState extends State<AppScope> {
         Provider<ImageStorageRepository>.value(value: _images),
         Provider<SettingsRepository>.value(value: _settings),
         Provider<SocialRepository>.value(value: _social),
+        Provider<ContactMatchRepository>.value(value: _contactMatches),
         Provider<LocationService>.value(value: _location),
         Provider<GeocodingService>.value(value: _geocoding),
         Provider<VoiceService>.value(value: _voice),

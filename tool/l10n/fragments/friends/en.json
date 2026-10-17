@@ -139,5 +139,33 @@
   "friendsSearchPeopleHint": "Name or @username",
   "@friendsSearchPeopleHint": {
     "description": "Hint of the people search on Add friends (by name or username)."
+  },
+  "friendsFromContacts": "From your contacts",
+  "@friendsFromContacts": {
+    "description": "Add friends: look for friends among the phone's contacts (opt-in)."
+  },
+  "friendsFromContactsExplain": "Later reads the email addresses in your contacts on this phone and sends only scrambled fingerprints of them. You see the people who chose to be found; nothing from your contacts is kept. Once an hour.",
+  "@friendsFromContactsExplain": {
+    "description": "Explains what the contacts look-up sends and keeps, before it starts."
+  },
+  "friendsFromContactsGo": "Look for friends",
+  "@friendsFromContactsGo": {
+    "description": "Button that starts the contacts look-up."
+  },
+  "friendsFromContactsNone": "None of your contacts can be found on Later yet",
+  "@friendsFromContactsNone": {
+    "description": "No one from the contacts was found."
+  },
+  "friendsFromContactsTooSoon": "You looked a moment ago. Try again in an hour.",
+  "@friendsFromContactsTooSoon": {
+    "description": "The look-up runs once an hour."
+  },
+  "friendsFromContactsDenied": "Later needs access to your contacts for this",
+  "@friendsFromContactsDenied": {
+    "description": "Contacts permission was refused."
+  },
+  "friendsFromContactsFailed": "Could not look for friends now",
+  "@friendsFromContactsFailed": {
+    "description": "The look-up failed."
   }
 }

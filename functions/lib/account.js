@@ -98,6 +98,11 @@ async function deleteUserData({ db, bucket }, uid) {
   }
   report.groups = groups.size;
 
+  // Their entry in the contacts index and their last contacts request.
+  const indexed = await db.collection('contactIndex').where('uid', '==', uid).get();
+  await deleteDocs(db, indexed.docs.map((d) => d.ref));
+  await db.collection('contactMatches').doc(uid).delete();
+
   // Username reservation, if it is still this user's.
   if (typeof data.username === 'string' && data.username) {
     const reservation = db.collection('usernames').doc(data.username);

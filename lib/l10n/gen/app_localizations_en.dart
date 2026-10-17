@@ -877,6 +877,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsFriendCapsulesTitle => 'Friend\'s capsules';
 
   @override
+  String get friendsFromContacts => 'From your contacts';
+
+  @override
+  String get friendsFromContactsDenied =>
+      'Later needs access to your contacts for this';
+
+  @override
+  String get friendsFromContactsExplain =>
+      'Later reads the email addresses in your contacts on this phone and sends only scrambled fingerprints of them. You see the people who chose to be found; nothing from your contacts is kept. Once an hour.';
+
+  @override
+  String get friendsFromContactsFailed => 'Could not look for friends now';
+
+  @override
+  String get friendsFromContactsGo => 'Look for friends';
+
+  @override
+  String get friendsFromContactsNone =>
+      'None of your contacts can be found on Later yet';
+
+  @override
+  String get friendsFromContactsTooSoon =>
+      'You looked a moment ago. Try again in an hour.';
+
+  @override
   String get friendsHideSuggestionLabel => 'Hide suggestion';
 
   @override
@@ -2755,6 +2780,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'What others see and what new capsules start with';
+
+  @override
+  String get settingsPrivacyFindByContacts => 'Found by people with my email';
+
+  @override
+  String get settingsPrivacyFindByContactsHint =>
+      'People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.';
 
   @override
   String get settingsPrivacyFindByName => 'Find me by name';

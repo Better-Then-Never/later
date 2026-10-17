@@ -912,6 +912,32 @@ class AppLocalizationsPl extends AppLocalizations {
   String get friendsFriendCapsulesTitle => 'Kapsuły znajomego';
 
   @override
+  String get friendsFromContacts => 'Z twoich kontaktów';
+
+  @override
+  String get friendsFromContactsDenied =>
+      'Do tego Later potrzebuje dostępu do kontaktów';
+
+  @override
+  String get friendsFromContactsExplain =>
+      'Later odczyta adresy e-mail z kontaktów na tym telefonie i wyśle tylko ich zaszyfrowane odciski. Zobaczysz osoby, które pozwoliły się znaleźć; nic z kontaktów nie jest zapisywane. Raz na godzinę.';
+
+  @override
+  String get friendsFromContactsFailed =>
+      'Nie udało się teraz wyszukać znajomych';
+
+  @override
+  String get friendsFromContactsGo => 'Szukaj znajomych';
+
+  @override
+  String get friendsFromContactsNone =>
+      'Nikogo z twoich kontaktów nie można jeszcze znaleźć w Later';
+
+  @override
+  String get friendsFromContactsTooSoon =>
+      'Szukano przed chwilą. Spróbuj za godzinę.';
+
+  @override
   String get friendsHideSuggestionLabel => 'Ukryj propozycję';
 
   @override
@@ -2846,6 +2872,13 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Co widzą inni i jakie będą nowe kapsuły';
+
+  @override
+  String get settingsPrivacyFindByContacts => 'Znajdują mnie po moim e-mailu';
+
+  @override
+  String get settingsPrivacyFindByContactsHint =>
+      'Osoby z twoim e-mailem w kontaktach mogą zobaczyć cię w podpowiedziach. Zapisywany jest tylko odcisk potwierdzonego adresu.';
 
   @override
   String get settingsPrivacyFindByName => 'Znajdź mnie po imieniu';

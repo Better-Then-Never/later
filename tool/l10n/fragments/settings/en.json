@@ -480,5 +480,13 @@
   "settingsDownloadDataFailed": "Could not prepare your data",
   "@settingsDownloadDataFailed": {
     "description": "Error when the data export could not be made."
+  },
+  "settingsPrivacyFindByContacts": "Found by people with my email",
+  "@settingsPrivacyFindByContacts": {
+    "description": "Privacy switch: people who have the user's email in their contacts may find them (opt-in)."
+  },
+  "settingsPrivacyFindByContactsHint": "People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.",
+  "@settingsPrivacyFindByContactsHint": {
+    "description": "Explains the contacts switch."
   }
 }

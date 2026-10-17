@@ -384,6 +384,27 @@ abstract interface class SettingsRepository {
   Future<void> setPinnedFriends(String uid, List<String> friends);
 }
 
+/// The server's answer to a look-up in the phone's contacts.
+class ContactMatches {
+  const ContactMatches({required this.done, this.matches = const []});
+
+  /// Answered (the hashes are gone by then).
+  final bool done;
+
+  /// People found who allow it, not blocked either way.
+  final List<String> matches;
+}
+
+/// Friend suggestions from contacts (contactMatches/{uid}, B3).
+abstract interface class ContactMatchRepository {
+  /// Sends the hashes; a [PermissionFailure] within the hour of the last.
+  Future<void> requestMatches(String uid, List<String> hashes);
+
+  /// The latest request's state; null while nothing was asked or it is
+  /// still on its way.
+  Stream<ContactMatches?> watchMatches(String uid);
+}
+
 abstract interface class PushTokenRepository {
   Future<void> saveToken(String uid, String token, String platform);
   Future<void> deleteToken(String uid, String token);

@@ -18,6 +18,7 @@ const social = require('./lib/social');
 const gamification = require('./lib/gamification');
 const broadcast = require('./lib/broadcast');
 const chats = require('./lib/chats');
+const contacts = require('./lib/contacts');
 
 admin.initializeApp();
 
@@ -157,6 +158,31 @@ function logged(name, work) {
 }
 
 const data = (snapshot) => (snapshot && snapshot.exists ? snapshot.data() : undefined);
+
+// Suggestions from contacts (functions/lib/contacts.js), opt-in: the index
+// follows "people with my email find me"; a request is answered once.
+exports.syncContactIndex = onDocumentWritten(
+  'users/{uid}/settings/app',
+  logged('Contact index', (event) =>
+    contacts.syncContactIndex(
+      { db: admin.firestore(), auth: admin.auth() },
+      event.params.uid,
+      data(event.data && event.data.before),
+      data(event.data && event.data.after),
+    ),
+  ),
+);
+
+exports.matchContacts = onDocumentWritten(
+  'contactMatches/{uid}',
+  logged('Contact matches', (event) =>
+    contacts.matchContacts(
+      { db: admin.firestore() },
+      event.params.uid,
+      data(event.data && event.data.after),
+    ),
+  ),
+);
 
 // Someone invited to a group joins if the inviter is their friend
 // (functions/lib/chats.js).

@@ -154,6 +154,7 @@ class PrivacySettings {
     this.locationPrecision = LocationPrecision.exact,
     this.contactSuggestions = false,
     this.findByName = true,
+    this.findByContacts = false,
   });
 
   /// What the creation screen starts with.
@@ -169,18 +170,24 @@ class PrivacySettings {
   /// Whether others find the user by their name (by username always).
   final bool findByName;
 
+  /// Whether people with the user's (verified) email in their contacts may
+  /// see them as a suggestion.
+  final bool findByContacts;
+
   PrivacySettings copyWith({
     CapsulePrivacy? defaultVisibility,
     bool? readReceipts,
     LocationPrecision? locationPrecision,
     bool? contactSuggestions,
     bool? findByName,
+    bool? findByContacts,
   }) => PrivacySettings(
     defaultVisibility: defaultVisibility ?? this.defaultVisibility,
     readReceipts: readReceipts ?? this.readReceipts,
     locationPrecision: locationPrecision ?? this.locationPrecision,
     contactSuggestions: contactSuggestions ?? this.contactSuggestions,
     findByName: findByName ?? this.findByName,
+    findByContacts: findByContacts ?? this.findByContacts,
   );
 
   @override
@@ -190,7 +197,8 @@ class PrivacySettings {
       other.readReceipts == readReceipts &&
       other.locationPrecision == locationPrecision &&
       other.contactSuggestions == contactSuggestions &&
-      other.findByName == findByName;
+      other.findByName == findByName &&
+      other.findByContacts == findByContacts;
 
   @override
   int get hashCode => Object.hash(
@@ -199,6 +207,7 @@ class PrivacySettings {
     locationPrecision,
     contactSuggestions,
     findByName,
+    findByContacts,
   );
 }
 

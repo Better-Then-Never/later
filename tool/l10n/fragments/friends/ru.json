@@ -65,5 +65,12 @@
   "friendsViewProfile": "Открыть профиль",
   "friendsMutualCount": "{count, plural, one{{count} общий друг} few{{count} общих друга} many{{count} общих друзей} other{{count} общих друга}}",
   "friendsFindByUsernameHint": "Найдите человека по @нику или отсканируйте QR-код друга. Здесь появятся знакомые ваших друзей.",
-  "friendsSearchPeopleHint": "Имя или @ник"
+  "friendsSearchPeopleHint": "Имя или @ник",
+  "friendsFromContacts": "Из ваших контактов",
+  "friendsFromContactsExplain": "Later прочитает адреса почты в контактах на этом телефоне и отправит только их зашифрованные отпечатки. Вы увидите тех, кто разрешил себя находить; из контактов ничего не сохраняется. Раз в час.",
+  "friendsFromContactsGo": "Искать друзей",
+  "friendsFromContactsNone": "Никого из ваших контактов пока нельзя найти в Later",
+  "friendsFromContactsTooSoon": "Вы только что искали. Попробуйте через час.",
+  "friendsFromContactsDenied": "Для этого Later нужен доступ к контактам",
+  "friendsFromContactsFailed": "Сейчас не удалось найти друзей"
 }

@@ -23,4 +23,9 @@ abstract final class FeatureFlags {
   /// "On this day": the user's capsules from today's date in earlier years,
   /// above My Capsules.
   static const memories = true;
+
+  /// Friend suggestions from the phone's contacts (hashed emails, opt-in on
+  /// both sides). Off until checked on a test phone whose contacts may be
+  /// read (docs/feel/BLOCKERS.md).
+  static const contactSuggestions = false;
 }

@@ -133,6 +133,15 @@ class PrivacySettingsPage extends StatelessWidget {
                   ? (v) => _save(context, privacy.copyWith(findByName: v))
                   : null,
             ),
+            if (FeatureFlags.contactSuggestions)
+              OptionsSwitchRow(
+                title: l10n.settingsPrivacyFindByContacts,
+                subtitle: l10n.settingsPrivacyFindByContactsHint,
+                value: privacy.findByContacts,
+                onChanged: loaded
+                    ? (v) => _save(context, privacy.copyWith(findByContacts: v))
+                    : null,
+              ),
             OptionsSwitchRow(
               title: l10n.settingsPrivacyReadReceipts,
               subtitle: l10n.settingsPrivacyReadReceiptsHint,

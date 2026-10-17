@@ -861,6 +861,36 @@ describe('chats', () => {
   });
 });
 
+describe('suggestions from contacts', () => {
+  const hashes = [
+    'a'.repeat(64),
+    'b'.repeat(64),
+  ];
+
+  test('nobody reads or writes the index from the app', async () => {
+    await assertFails(getDoc(doc(as('alice'), `contactIndex/${hashes[0]}`)));
+    await assertFails(setDoc(doc(as('alice'), `contactIndex/${hashes[0]}`), { uid: 'alice' }));
+  });
+
+  test('a request of your own, at most once an hour; only you read the answer', async () => {
+    const mine = doc(as('alice'), 'contactMatches/alice');
+    const ask = { hashes, at: serverTimestamp(), status: 'pending' };
+    await assertSucceeds(setDoc(mine, ask));
+    await assertSucceeds(getDoc(mine));
+    await assertFails(getDoc(doc(as('bob'), 'contactMatches/alice')));
+    await assertFails(setDoc(doc(as('bob'), 'contactMatches/alice'), ask));
+    await assertFails(setDoc(mine, ask), 'again within the hour');
+    await assertFails(setDoc(doc(as('bob'), 'contactMatches/bob'), { ...ask, status: 'done', matches: ['x'] }));
+    await assertFails(
+      setDoc(doc(as('bob'), 'contactMatches/bob'), { ...ask, hashes: Array.from({ length: 1001 }, () => hashes[0]) }),
+    );
+    // An hour later it may ask again.
+    await seed((db) => setDoc(doc(db, 'contactMatches/carol'), { at: new Date(Date.now() - 2 * 3600 * 1000), status: 'done', matches: [] }));
+    await assertSucceeds(setDoc(doc(as('carol'), 'contactMatches/carol'), ask));
+    await assertSucceeds(deleteDoc(mine));
+  });
+});
+
 describe('settings', () => {
   const settingsRef = (db, uid = 'alice') => doc(db, `users/${uid}/settings/app`);
   const valid = {
@@ -890,6 +920,7 @@ describe('settings', () => {
     // Found by name, or not.
     await assertSucceeds(setDoc(settingsRef(alice), { privacy: { findByName: false } }, { merge: true }));
     await assertFails(setDoc(settingsRef(alice), { privacy: { findByName: 'no' } }, { merge: true }));
+    await assertSucceeds(setDoc(settingsRef(alice), { privacy: { findByContacts: true } }, { merge: true }));
     await assertSucceeds(getDoc(settingsRef(alice)));
     await assertFails(getDoc(settingsRef(as('bob'), 'alice')));
     await assertFails(setDoc(settingsRef(as('bob'), 'alice'), valid));

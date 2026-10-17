@@ -341,6 +341,7 @@ abstract final class FirestoreMappers {
           pd.contactSuggestions,
         ),
         findByName: _bool(p['findByName'], pd.findByName),
+        findByContacts: _bool(p['findByContacts'], pd.findByContacts),
       ),
       mutedChats: _stringList(data['mutedChats']).toSet(),
       pinnedChats: _stringList(data['pinnedChats']),
@@ -386,6 +387,7 @@ abstract final class FirestoreMappers {
     'locationPrecision': p.locationPrecision.name,
     'contactSuggestions': p.contactSuggestions,
     'findByName': p.findByName,
+    'findByContacts': p.findByContacts,
   };
 
   static CapsuleReaction? reaction(String uid, Map<String, dynamic> data) {

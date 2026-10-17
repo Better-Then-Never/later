@@ -14,7 +14,10 @@ import '../../users/user_directory.dart';
 import '../friend_actions.dart';
 import '../friend_suggestions_controller.dart';
 import '../friends_store.dart';
+import '../../../core/config/feature_flags.dart';
+import '../../../data/services/contacts_service.dart';
 import '../widgets/add_friends/add_friends_action_buttons_row.dart';
+import '../widgets/add_friends/from_contacts.dart';
 import '../widgets/add_friends/suggested_friends_list.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
@@ -82,6 +85,8 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             ),
           ),
           const AddFriendsActionButtonsRow(),
+          if (FeatureFlags.contactSuggestions && ContactsService.isSupported)
+            const FromContactsButton(),
           Align(
             alignment: Alignment.centerLeft,
             child: Padding(

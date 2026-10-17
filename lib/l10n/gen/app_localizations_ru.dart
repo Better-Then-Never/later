@@ -907,6 +907,31 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsFriendCapsulesTitle => 'Капсулы друга';
 
   @override
+  String get friendsFromContacts => 'Из ваших контактов';
+
+  @override
+  String get friendsFromContactsDenied =>
+      'Для этого Later нужен доступ к контактам';
+
+  @override
+  String get friendsFromContactsExplain =>
+      'Later прочитает адреса почты в контактах на этом телефоне и отправит только их зашифрованные отпечатки. Вы увидите тех, кто разрешил себя находить; из контактов ничего не сохраняется. Раз в час.';
+
+  @override
+  String get friendsFromContactsFailed => 'Сейчас не удалось найти друзей';
+
+  @override
+  String get friendsFromContactsGo => 'Искать друзей';
+
+  @override
+  String get friendsFromContactsNone =>
+      'Никого из ваших контактов пока нельзя найти в Later';
+
+  @override
+  String get friendsFromContactsTooSoon =>
+      'Вы только что искали. Попробуйте через час.';
+
+  @override
   String get friendsHideSuggestionLabel => 'Скрыть рекомендацию';
 
   @override
@@ -2841,6 +2866,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Что видят другие и какими будут новые капсулы';
+
+  @override
+  String get settingsPrivacyFindByContacts => 'Меня находят по моей почте';
+
+  @override
+  String get settingsPrivacyFindByContactsHint =>
+      'Те, у кого ваша почта есть в контактах, могут увидеть вас в подсказках. Хранится только отпечаток подтверждённого адреса.';
 
   @override
   String get settingsPrivacyFindByName => 'Искать меня по имени';

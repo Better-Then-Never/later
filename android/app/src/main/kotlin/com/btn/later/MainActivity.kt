@@ -11,6 +11,7 @@ class MainActivity : FlutterActivity() {
     private var initialLink: String? = null
     private var voice: VoiceChannel? = null
     private var gallery: GalleryChannel? = null
+    private var contacts: ContactsChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +48,8 @@ class MainActivity : FlutterActivity() {
         voice = VoiceChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         // Capsule photos into the gallery (GalleryChannel.kt).
         gallery = GalleryChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        // Friend suggestions: hashes of the contacts' emails (ContactsChannel.kt).
+        contacts = ContactsChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         // The signed-in home screen drew its first frame (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->
@@ -65,6 +68,8 @@ class MainActivity : FlutterActivity() {
         voice = null
         gallery?.dispose()
         gallery = null
+        contacts?.dispose()
+        contacts = null
         super.cleanUpFlutterEngine(flutterEngine)
     }
 }

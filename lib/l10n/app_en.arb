@@ -738,6 +738,34 @@
   },
   "friendsFriendCapsulesEmpty": "Friend's capsules will appear here",
   "friendsFriendCapsulesTitle": "Friend's capsules",
+  "friendsFromContacts": "From your contacts",
+  "@friendsFromContacts": {
+    "description": "Add friends: look for friends among the phone's contacts (opt-in)."
+  },
+  "friendsFromContactsDenied": "Later needs access to your contacts for this",
+  "@friendsFromContactsDenied": {
+    "description": "Contacts permission was refused."
+  },
+  "friendsFromContactsExplain": "Later reads the email addresses in your contacts on this phone and sends only scrambled fingerprints of them. You see the people who chose to be found; nothing from your contacts is kept. Once an hour.",
+  "@friendsFromContactsExplain": {
+    "description": "Explains what the contacts look-up sends and keeps, before it starts."
+  },
+  "friendsFromContactsFailed": "Could not look for friends now",
+  "@friendsFromContactsFailed": {
+    "description": "The look-up failed."
+  },
+  "friendsFromContactsGo": "Look for friends",
+  "@friendsFromContactsGo": {
+    "description": "Button that starts the contacts look-up."
+  },
+  "friendsFromContactsNone": "None of your contacts can be found on Later yet",
+  "@friendsFromContactsNone": {
+    "description": "No one from the contacts was found."
+  },
+  "friendsFromContactsTooSoon": "You looked a moment ago. Try again in an hour.",
+  "@friendsFromContactsTooSoon": {
+    "description": "The look-up runs once an hour."
+  },
   "friendsHideSuggestionLabel": "Hide suggestion",
   "@friendsHideSuggestionLabel": {
     "description": "Accessibility label of the cross that hides a suggested friend."
@@ -2443,6 +2471,14 @@
   "settingsPrivacyApproximate": "Approximate location",
   "settingsPrivacyApproximateHint": "Places new capsules within about a kilometre, not at the exact spot",
   "settingsPrivacyDescription": "What others see and what new capsules start with",
+  "settingsPrivacyFindByContacts": "Found by people with my email",
+  "@settingsPrivacyFindByContacts": {
+    "description": "Privacy switch: people who have the user's email in their contacts may find them (opt-in)."
+  },
+  "settingsPrivacyFindByContactsHint": "People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.",
+  "@settingsPrivacyFindByContactsHint": {
+    "description": "Explains the contacts switch."
+  },
   "settingsPrivacyFindByName": "Find me by name",
   "@settingsPrivacyFindByName": {
     "description": "Privacy switch: others may find the user by searching their name."

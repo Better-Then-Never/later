@@ -65,5 +65,12 @@
   "friendsViewProfile": "Zobacz profil",
   "friendsMutualCount": "{count, plural, one{1 wspólny znajomy} few{{count} wspólnych znajomych} many{{count} wspólnych znajomych} other{{count} wspólnego znajomego}}",
   "friendsFindByUsernameHint": "Szukaj po @nicku albo zeskanuj kod QR znajomego. Tutaj pojawią się osoby, które znają twoi znajomi.",
-  "friendsSearchPeopleHint": "Imię lub @nick"
+  "friendsSearchPeopleHint": "Imię lub @nick",
+  "friendsFromContacts": "Z twoich kontaktów",
+  "friendsFromContactsExplain": "Later odczyta adresy e-mail z kontaktów na tym telefonie i wyśle tylko ich zaszyfrowane odciski. Zobaczysz osoby, które pozwoliły się znaleźć; nic z kontaktów nie jest zapisywane. Raz na godzinę.",
+  "friendsFromContactsGo": "Szukaj znajomych",
+  "friendsFromContactsNone": "Nikogo z twoich kontaktów nie można jeszcze znaleźć w Later",
+  "friendsFromContactsTooSoon": "Szukano przed chwilą. Spróbuj za godzinę.",
+  "friendsFromContactsDenied": "Do tego Later potrzebuje dostępu do kontaktów",
+  "friendsFromContactsFailed": "Nie udało się teraz wyszukać znajomych"
 }

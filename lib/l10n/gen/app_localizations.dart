@@ -1514,6 +1514,48 @@ abstract class AppLocalizations {
   /// **'Friend\'s capsules'**
   String get friendsFriendCapsulesTitle;
 
+  /// Add friends: look for friends among the phone's contacts (opt-in).
+  ///
+  /// In en, this message translates to:
+  /// **'From your contacts'**
+  String get friendsFromContacts;
+
+  /// Contacts permission was refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Later needs access to your contacts for this'**
+  String get friendsFromContactsDenied;
+
+  /// Explains what the contacts look-up sends and keeps, before it starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Later reads the email addresses in your contacts on this phone and sends only scrambled fingerprints of them. You see the people who chose to be found; nothing from your contacts is kept. Once an hour.'**
+  String get friendsFromContactsExplain;
+
+  /// The look-up failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not look for friends now'**
+  String get friendsFromContactsFailed;
+
+  /// Button that starts the contacts look-up.
+  ///
+  /// In en, this message translates to:
+  /// **'Look for friends'**
+  String get friendsFromContactsGo;
+
+  /// No one from the contacts was found.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your contacts can be found on Later yet'**
+  String get friendsFromContactsNone;
+
+  /// The look-up runs once an hour.
+  ///
+  /// In en, this message translates to:
+  /// **'You looked a moment ago. Try again in an hour.'**
+  String get friendsFromContactsTooSoon;
+
   /// Accessibility label of the cross that hides a suggested friend.
   ///
   /// In en, this message translates to:
@@ -4579,6 +4621,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What others see and what new capsules start with'**
   String get settingsPrivacyDescription;
+
+  /// Privacy switch: people who have the user's email in their contacts may find them (opt-in).
+  ///
+  /// In en, this message translates to:
+  /// **'Found by people with my email'**
+  String get settingsPrivacyFindByContacts;
+
+  /// Explains the contacts switch.
+  ///
+  /// In en, this message translates to:
+  /// **'People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.'**
+  String get settingsPrivacyFindByContactsHint;
 
   /// Privacy switch: others may find the user by searching their name.
   ///

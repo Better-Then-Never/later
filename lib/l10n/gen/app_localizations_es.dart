@@ -887,6 +887,31 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsFriendCapsulesTitle => 'Cápsulas de tu amigo';
 
   @override
+  String get friendsFromContacts => 'De tus contactos';
+
+  @override
+  String get friendsFromContactsDenied =>
+      'Para esto Later necesita acceso a tus contactos';
+
+  @override
+  String get friendsFromContactsExplain =>
+      'Later lee las direcciones de correo de tus contactos en este teléfono y solo envía huellas cifradas de ellas. Verás a quienes aceptaron ser encontrados; no se guarda nada de tus contactos. Una vez por hora.';
+
+  @override
+  String get friendsFromContactsFailed => 'No se pudo buscar amigos ahora';
+
+  @override
+  String get friendsFromContactsGo => 'Buscar amigos';
+
+  @override
+  String get friendsFromContactsNone =>
+      'Aún no se puede encontrar a ninguno de tus contactos en Later';
+
+  @override
+  String get friendsFromContactsTooSoon =>
+      'Acabas de buscar. Inténtalo dentro de una hora.';
+
+  @override
   String get friendsHideSuggestionLabel => 'Ocultar sugerencia';
 
   @override
@@ -2773,6 +2798,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Qué ven los demás y cómo empiezan las cápsulas nuevas';
+
+  @override
+  String get settingsPrivacyFindByContacts => 'Me encuentran por mi correo';
+
+  @override
+  String get settingsPrivacyFindByContactsHint =>
+      'Quien tenga tu correo en sus contactos puede verte como sugerencia. Solo se guarda una huella de una dirección confirmada.';
 
   @override
   String get settingsPrivacyFindByName => 'Encontrarme por nombre';

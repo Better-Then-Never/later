@@ -171,8 +171,9 @@ service cloud.firestore {
         function validPrivacy(p) {
           return p is map
             && p.keys().hasOnly(['defaultVisibility', 'readReceipts',
-              'locationPrecision', 'contactSuggestions', 'findByName'])
-            && isBool(p, 'findByName')
+              'locationPrecision', 'contactSuggestions', 'findByName',
+              'findByContacts'])
+            && isBool(p, 'findByName') && isBool(p, 'findByContacts')
             && p.get('defaultVisibility', 'public') in ['public', 'friends', 'private']
             && isBool(p, 'readReceipts') && isBool(p, 'contactSuggestions')
             && p.get('locationPrecision', 'exact') in ['exact', 'approximate'];
@@ -457,6 +458,29 @@ service cloud.firestore {
         && (c.size() < 3 || c[2] in myFriends())
         && (c.size() < 4 || c[3] in myFriends())
         && (c.size() < 5 || c[4] in myFriends());
+    }
+
+    // ---- suggestions from contacts (opt-in; functions/lib/contacts.js) -----
+
+    // Hashes of the verified emails of people who chose to be found: only
+    // the functions read or write them.
+    match /contactIndex/{hash} {
+      allow read, write: if false;
+    }
+
+    // One request an hour: the hashes of the user's contacts' emails; the
+    // function answers in place (matches) and drops the hashes.
+    match /contactMatches/{uid} {
+      allow get: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['hashes', 'at', 'status'])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.hashes is list
+        && request.resource.data.hashes.size() <= 1000
+        && isServerTime(request.resource.data.at)
+        && (resource == null
+          || request.time > resource.data.at + duration.value(1, 'h'));
+      allow delete: if isMe(uid);
     }
 
     // ---- reports and announcements -------------------------------------------

@@ -230,5 +230,7 @@
   "settingsSignInEmail": "Correo y contraseña",
   "settingsDownloadData": "Descargar mis datos",
   "settingsDownloadDataHint": "Tu perfil, ajustes, cápsulas, amigos y chats en un archivo (fotos como enlaces).",
-  "settingsDownloadDataFailed": "No se pudieron preparar tus datos"
+  "settingsDownloadDataFailed": "No se pudieron preparar tus datos",
+  "settingsPrivacyFindByContacts": "Me encuentran por mi correo",
+  "settingsPrivacyFindByContactsHint": "Quien tenga tu correo en sus contactos puede verte como sugerencia. Solo se guarda una huella de una dirección confirmada."
 }
