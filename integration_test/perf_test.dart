@@ -515,13 +515,17 @@ void main() {
         Finder flash() => find.byWidgetPredicate(
           (w) => w is Semantics && flashLabels.containsKey(w.properties.label),
         );
-        int state() =>
-            flashLabels[(tester.widget<Semantics>(
-              flash().first,
-            )).properties.label]!;
+        // -1: the flash button is not on screen (the camera did not start, or
+        // the app was sent to the background), so the run goes on without it.
+        int state() => flash().evaluate().isEmpty
+            ? -1
+            : flashLabels[(tester.widget<Semantics>(
+                flash().first,
+              )).properties.label]!;
         // 0 off, 1 auto, 2 on, 3 torch: recorded as one number per step.
         for (var i = 0; i < 5; i++) {
           record('camera_flash_step_$i', state());
+          if (state() < 0) break;
           await tester.tap(flash().first, warnIfMissed: false);
           await wait(tester, const Duration(milliseconds: 600));
         }
