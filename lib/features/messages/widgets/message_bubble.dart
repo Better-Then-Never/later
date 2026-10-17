@@ -45,6 +45,9 @@ class MessageBubble extends StatelessWidget {
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
     final failed = message.delivery == MessageDelivery.failed;
+    // A reply's quote spans the bubble: the column is laid out at its
+    // natural width and every line stretches to it.
+    final quoted = message.replyTo != null;
 
     final bubble = Container(
       padding: EdgeInsets.symmetric(
@@ -62,61 +65,67 @@ class MessageBubble extends StatelessWidget {
         ),
         boxShadow: isMine ? null : AppShadows.card(context),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (message.replyTo case final reply?)
-            _Quote(name: replyName ?? '', text: reply.text, onGreen: isMine),
-          if (message.isCapsule) ...[
-            if (imageUrl != null)
-              Semantics(
-                button: true,
-                label: context.l10n.messagesOpenCapsule(message.text),
-                child: GestureDetector(
-                  onTap: onCapsuleTap,
-                  child: _CapsulePhoto(
-                    imageUrl: imageUrl,
-                    width: screen.width * 0.6,
-                    height: screen.width * 0.45,
+      child: _NaturalWidth(
+        enabled: quoted,
+        child: Column(
+          crossAxisAlignment: quoted
+              ? CrossAxisAlignment.stretch
+              : CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (message.replyTo case final reply?)
+              _Quote(name: replyName ?? '', text: reply.text, onGreen: isMine),
+            if (message.isCapsule) ...[
+              if (imageUrl != null)
+                Semantics(
+                  button: true,
+                  label: context.l10n.messagesOpenCapsule(message.text),
+                  child: GestureDetector(
+                    onTap: onCapsuleTap,
+                    child: _CapsulePhoto(
+                      imageUrl: imageUrl,
+                      width: screen.width * 0.6,
+                      height: screen.width * 0.45,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  message.text,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: screen.height * 0.02,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
                 ),
               ),
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
+            ] else
+              Text(
                 message.text,
                 style: TextStyle(
                   fontFamily: kAppFontFamily,
-                  fontSize: screen.height * 0.02,
-                  fontWeight: FontWeight.bold,
+                  fontSize: screen.height * 0.022,
                   color: textColor,
                 ),
               ),
-            ),
-          ] else
-            Text(
-              message.text,
-              style: TextStyle(
-                fontFamily: kAppFontFamily,
-                fontSize: screen.height * 0.022,
-                color: textColor,
+            if (sentAt != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                ChatTime.messageTime(sentAt, locale: context.l10n.localeName),
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontFamily: kAppFontFamily,
+                  fontSize: 11,
+                  // Muted white on the green bubble, the same in both themes.
+                  color: isMine ? AppColors.onMediaMuted : palette.textMuted,
+                ),
               ),
-            ),
-          if (sentAt != null) ...[
-            const SizedBox(height: 2),
-            Text(
-              ChatTime.messageTime(sentAt, locale: context.l10n.localeName),
-              style: TextStyle(
-                fontFamily: kAppFontFamily,
-                fontSize: 11,
-                // Muted white on the green bubble, the same in both themes.
-                color: isMine ? AppColors.onMediaMuted : palette.textMuted,
-              ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
 
@@ -125,6 +134,18 @@ class MessageBubble extends StatelessWidget {
       child: Opacity(opacity: failed ? 0.5 : 1, child: bubble),
     );
   }
+}
+
+/// [IntrinsicWidth] only when [enabled] (it costs a second layout pass).
+class _NaturalWidth extends StatelessWidget {
+  const _NaturalWidth({required this.enabled, required this.child});
+
+  final bool enabled;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      enabled ? IntrinsicWidth(child: child) : child;
 }
 
 /// The answered message inside a reply: a coloured edge, the name and the
