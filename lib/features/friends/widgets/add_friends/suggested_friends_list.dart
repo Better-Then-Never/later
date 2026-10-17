@@ -70,27 +70,30 @@ class SuggestedFriendsList extends StatelessWidget {
           );
         }
 
-        return ListView(
-          children: [
-            for (final user in users)
-              SuggestedFriendRow(
-                key: ValueKey(user.uid),
-                userId: user.uid,
-                name: user.name,
-                username: user.username,
-                mutualFriends: controller.mutualCount(user.uid),
-                relation: store.relationTo(user.uid),
-                screenWidth: screenWidth,
-                onTapProfile: () =>
-                    AppRoutes.toAddFriendProfile(context, user.uid),
-                // A received request is accepted from here (BUG-070).
-                onSendRequest: () =>
-                    store.relationTo(user.uid) == FriendRelation.requestReceived
-                    ? actions.acceptRequest(user.uid)
-                    : actions.sendRequest(user.uid),
-                onRemove: () => actions.dismissSuggestion(user.uid),
-              ),
-          ],
+        // Built lazily: only the rows on screen during the page transition
+        // (F-38).
+        return ListView.builder(
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final user = users[index];
+            return SuggestedFriendRow(
+              key: ValueKey(user.uid),
+              userId: user.uid,
+              name: user.name,
+              username: user.username,
+              mutualFriends: controller.mutualCount(user.uid),
+              relation: store.relationTo(user.uid),
+              screenWidth: screenWidth,
+              onTapProfile: () =>
+                  AppRoutes.toAddFriendProfile(context, user.uid),
+              // A received request is accepted from here (BUG-070).
+              onSendRequest: () =>
+                  store.relationTo(user.uid) == FriendRelation.requestReceived
+                  ? actions.acceptRequest(user.uid)
+                  : actions.sendRequest(user.uid),
+              onRemove: () => actions.dismissSuggestion(user.uid),
+            );
+          },
         );
       },
     );
