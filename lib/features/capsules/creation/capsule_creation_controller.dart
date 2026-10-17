@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../../core/errors/app_failure.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
@@ -118,14 +119,14 @@ class CapsuleCreationController extends ChangeNotifier {
       if (_position == null) await _locate();
       final position = _position;
       if (position == null) {
-        return const ValidationFailure('We could not detect your location');
+        return ValidationFailure(AppL10n.current.capsulesErrorNoLocation);
       }
       final title = titleController.text.trim();
       final description = descriptionController.text.trim();
       final capsule = _created ??= await _capsules.create(
         CapsuleDraft(
           ownerId: ownerId,
-          title: title.isEmpty ? 'Capsule' : title,
+          title: title.isEmpty ? AppL10n.current.capsulesDefaultTitle : title,
           description: description.isEmpty ? null : description,
           privacy: _privacy,
           color: _color,
@@ -147,8 +148,7 @@ class CapsuleCreationController extends ChangeNotifier {
           );
           return AppFailure.from(
             e,
-            fallbackMessage:
-                'The capsule was saved but not sent. Tap save to try again.',
+            fallbackMessage: AppL10n.current.capsulesErrorSavedNotSent,
           );
         }
       }
@@ -156,7 +156,10 @@ class CapsuleCreationController extends ChangeNotifier {
       return null;
     } catch (e, st) {
       AppLogger.error('Saving the capsule failed', error: e, stackTrace: st);
-      return AppFailure.from(e, fallbackMessage: 'Failed to save capsule');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.capsulesErrorSaveFailed,
+      );
     } finally {
       _saving = false;
       if (!_disposed) notifyListeners();

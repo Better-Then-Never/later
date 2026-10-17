@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/app_network_image.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
-import 'package:later/core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 
 /// Dialog content showing an opened capsule: photo, title, description,
@@ -65,11 +65,12 @@ class CapsulePreviewCard extends StatelessWidget {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Text(
-                      capsule.description ?? 'This capsule has no description.',
-                      style: const TextStyle(
+                      capsule.description ??
+                          context.l10n.mapCapsuleNoDescription,
+                      style: TextStyle(
                         fontSize: 14,
                         fontFamily: kAppFontFamily,
-                        color: AppColors.textFaint,
+                        color: context.palette.textFaint,
                       ),
                     ),
                   ),

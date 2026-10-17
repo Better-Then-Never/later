@@ -174,6 +174,102 @@
   "@authWelcomeTo": {
     "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
   },
+  "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
+  "@capsulesCameraAccessDenied": {
+    "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
+  },
+  "capsulesCameraFlashOff": "Flash off",
+  "@capsulesCameraFlashOff": {
+    "description": "Accessibility label of the flash button while the flash is off."
+  },
+  "capsulesCameraFlashOn": "Flash on",
+  "@capsulesCameraFlashOn": {
+    "description": "Accessibility label of the flash button while the flash is on."
+  },
+  "capsulesCameraStartFailed": "The camera could not be started",
+  "capsulesCameraSwitch": "Switch camera",
+  "@capsulesCameraSwitch": {
+    "description": "Accessibility label of the button that switches between the front and back camera."
+  },
+  "capsulesCameraTakePhoto": "Take photo",
+  "@capsulesCameraTakePhoto": {
+    "description": "Accessibility label of the shutter button."
+  },
+  "capsulesCameraUnavailable": "No camera available",
+  "@capsulesCameraUnavailable": {
+    "description": "Shown on the camera screen when the phone has no camera."
+  },
+  "capsulesColorBlue": "Blue",
+  "capsulesColorGreen": "Green",
+  "capsulesColorOrange": "Orange",
+  "capsulesColorPurple": "Purple",
+  "capsulesColorRed": "Red",
+  "@capsulesColorRed": {
+    "description": "Colour of the capsule's map pin. Agrees with the word 'colour'."
+  },
+  "capsulesColorYellow": "Yellow",
+  "capsulesCreationColor": "Color",
+  "@capsulesCreationColor": {
+    "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
+  },
+  "capsulesCreationDescriptionHint": "Add description...",
+  "@capsulesCreationDescriptionHint": {
+    "description": "Hint in the capsule description field."
+  },
+  "capsulesCreationOpenAt": "Open At",
+  "@capsulesCreationOpenAt": {
+    "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
+  },
+  "capsulesCreationPreview": "Capsule Preview",
+  "@capsulesCreationPreview": {
+    "description": "Section title above the card that shows how the capsule will look."
+  },
+  "capsulesCreationPrivacy": "Privacy",
+  "@capsulesCreationPrivacy": {
+    "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
+  },
+  "capsulesCreationSelectDate": "Select date",
+  "@capsulesCreationSelectDate": {
+    "description": "Shown in the open date row until a date is picked. Keep it short."
+  },
+  "capsulesCreationSettings": "Capsule Settings",
+  "@capsulesCreationSettings": {
+    "description": "Section title above the privacy, open date and colour rows."
+  },
+  "capsulesCreationSubmit": "Create Capsule",
+  "@capsulesCreationSubmit": {
+    "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
+  },
+  "capsulesCreationTitle": "Create Capsule",
+  "@capsulesCreationTitle": {
+    "description": "Header title of the screen where a new capsule is set up after taking the photo."
+  },
+  "capsulesCreationTitleHint": "Add Title...",
+  "@capsulesCreationTitleHint": {
+    "description": "Hint in the capsule title field (one line, large bold font, narrow: keep it very short)."
+  },
+  "capsulesDefaultTitle": "Capsule",
+  "@capsulesDefaultTitle": {
+    "description": "Title given to a capsule saved without one. It is stored with the capsule."
+  },
+  "capsulesErrorNoLocation": "We could not detect your location",
+  "capsulesErrorSaveFailed": "Failed to save capsule",
+  "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
+  "@capsulesErrorSavedNotSent": {
+    "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
+  },
+  "capsulesPrivacyFriends": "Friends",
+  "@capsulesPrivacyFriends": {
+    "description": "Capsule visibility: only the owner's friends can see it."
+  },
+  "capsulesPrivacyPrivate": "Private",
+  "@capsulesPrivacyPrivate": {
+    "description": "Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'."
+  },
+  "capsulesPrivacyPublic": "Public",
+  "@capsulesPrivacyPublic": {
+    "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
+  },
   "commonBack": "Back",
   "@commonBack": {
     "description": "Accessibility label of the back arrow."
@@ -578,6 +674,84 @@
   "historyVisibilityPublic": "Public visibility",
   "@historyVisibilityPublic": {
     "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
+  },
+  "mapCapsuleLocked": "Locked",
+  "@mapCapsuleLocked": {
+    "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."
+  },
+  "mapCapsuleNoDescription": "This capsule has no description.",
+  "@mapCapsuleNoDescription": {
+    "description": "Shown in the capsule card opened from the map when the capsule has no description."
+  },
+  "mapCapsuleOpen": "Open",
+  "@mapCapsuleOpen": {
+    "description": "Button in the window above an open capsule's pin: shows the capsule. A verb."
+  },
+  "mapCapsuleOpensIn": "Opens in {time}",
+  "@mapCapsuleOpensIn": {
+    "description": "Countdown in the small window above a locked capsule's pin. {time} is a compact duration made of the mapDuration* parts, e.g. '2d 5h 30m 15s'.",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2d 5h 30m 15s"
+      }
+    }
+  },
+  "mapCapsuleReady": "Check out what's inside!",
+  "@mapCapsuleReady": {
+    "description": "Line in the small window above a capsule pin when the capsule is already open."
+  },
+  "mapDurationDays": "{count}d",
+  "@mapDurationDays": {
+    "description": "Days part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "mapDurationHours": "{count}h",
+  "@mapDurationHours": {
+    "description": "Hours part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "mapDurationMinutes": "{count}m",
+  "@mapDurationMinutes": {
+    "description": "Minutes part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "mapDurationSeconds": "{count}s",
+  "@mapDurationSeconds": {
+    "description": "Seconds part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "mapLocationDenied": "Allow location access to see capsules near you",
+  "@mapLocationDenied": {
+    "description": "Toast on the map when location permission was denied."
+  },
+  "mapLocationServiceOff": "Turn on location to see capsules near you",
+  "@mapLocationServiceOff": {
+    "description": "Toast on the map when the phone's location service is switched off."
+  },
+  "mapLocationUnknown": "We could not detect your location",
+  "@mapLocationUnknown": {
+    "description": "Toast on the map when no position could be found although location is allowed."
   },
   "messagesBlockedByYou": "You blocked this user",
   "messagesCantSend": "You can't send messages to this user",

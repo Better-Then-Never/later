@@ -222,6 +222,99 @@ class AppLocalizationsPl extends AppLocalizations {
   String get authWelcomeTo => 'Witaj w';
 
   @override
+  String get capsulesCameraAccessDenied =>
+      'Zezwól na dostęp do aparatu w ustawieniach, żeby zrobić zdjęcie';
+
+  @override
+  String get capsulesCameraFlashOff => 'Flesz wyłączony';
+
+  @override
+  String get capsulesCameraFlashOn => 'Flesz włączony';
+
+  @override
+  String get capsulesCameraStartFailed => 'Nie udało się uruchomić aparatu';
+
+  @override
+  String get capsulesCameraSwitch => 'Przełącz aparat';
+
+  @override
+  String get capsulesCameraTakePhoto => 'Zrób zdjęcie';
+
+  @override
+  String get capsulesCameraUnavailable => 'Brak dostępnego aparatu';
+
+  @override
+  String get capsulesColorBlue => 'Niebieski';
+
+  @override
+  String get capsulesColorGreen => 'Zielony';
+
+  @override
+  String get capsulesColorOrange => 'Pomarańczowy';
+
+  @override
+  String get capsulesColorPurple => 'Fioletowy';
+
+  @override
+  String get capsulesColorRed => 'Czerwony';
+
+  @override
+  String get capsulesColorYellow => 'Żółty';
+
+  @override
+  String get capsulesCreationColor => 'Kolor';
+
+  @override
+  String get capsulesCreationDescriptionHint => 'Dodaj opis...';
+
+  @override
+  String get capsulesCreationOpenAt => 'Otworzy się';
+
+  @override
+  String get capsulesCreationPreview => 'Podgląd kapsuły';
+
+  @override
+  String get capsulesCreationPrivacy => 'Widoczność';
+
+  @override
+  String get capsulesCreationSelectDate => 'Wybierz datę';
+
+  @override
+  String get capsulesCreationSettings => 'Ustawienia kapsuły';
+
+  @override
+  String get capsulesCreationSubmit => 'Utwórz kapsułę';
+
+  @override
+  String get capsulesCreationTitle => 'Utwórz kapsułę';
+
+  @override
+  String get capsulesCreationTitleHint => 'Dodaj tytuł...';
+
+  @override
+  String get capsulesDefaultTitle => 'Kapsuła';
+
+  @override
+  String get capsulesErrorNoLocation =>
+      'Nie udało się ustalić twojej lokalizacji';
+
+  @override
+  String get capsulesErrorSaveFailed => 'Nie udało się zapisać kapsuły';
+
+  @override
+  String get capsulesErrorSavedNotSent =>
+      'Kapsuła została zapisana, ale nie wysłana. Dotknij przycisku jeszcze raz, żeby spróbować ponownie.';
+
+  @override
+  String get capsulesPrivacyFriends => 'Dla znajomych';
+
+  @override
+  String get capsulesPrivacyPrivate => 'Prywatna';
+
+  @override
+  String get capsulesPrivacyPublic => 'Publiczna';
+
+  @override
   String get commonBack => 'Wstecz';
 
   @override
@@ -693,6 +786,54 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get historyVisibilityPublic => 'Kapsuła publiczna';
+
+  @override
+  String get mapCapsuleLocked => 'Zamknięta';
+
+  @override
+  String get mapCapsuleNoDescription => 'Ta kapsuła nie ma opisu.';
+
+  @override
+  String get mapCapsuleOpen => 'Otwórz';
+
+  @override
+  String mapCapsuleOpensIn(String time) {
+    return 'Otworzy się za $time';
+  }
+
+  @override
+  String get mapCapsuleReady => 'Zobacz, co jest w środku!';
+
+  @override
+  String mapDurationDays(int count) {
+    return '${count}d';
+  }
+
+  @override
+  String mapDurationHours(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String mapDurationMinutes(int count) {
+    return '${count}min';
+  }
+
+  @override
+  String mapDurationSeconds(int count) {
+    return '${count}s';
+  }
+
+  @override
+  String get mapLocationDenied =>
+      'Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu';
+
+  @override
+  String get mapLocationServiceOff =>
+      'Włącz lokalizację, żeby widzieć kapsuły w pobliżu';
+
+  @override
+  String get mapLocationUnknown => 'Nie udało się ustalić twojej lokalizacji';
 
   @override
   String get messagesBlockedByYou => 'Ten użytkownik jest zablokowany';

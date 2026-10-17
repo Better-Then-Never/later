@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/session/session_controller.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/models/capsule.dart';
@@ -116,14 +117,14 @@ class _MapViewState extends State<_MapView> {
     _reportedLocationProblem = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final l10n = context.l10n;
       PopupNotificationService.showError(
         context: context,
         message: switch (map.availability) {
-          LocationAvailability.serviceDisabled =>
-            'Turn on location to see capsules near you',
-          LocationAvailability.denied || LocationAvailability.deniedForever =>
-            'Allow location access to see capsules near you',
-          LocationAvailability.available => 'We could not detect your location',
+          LocationAvailability.serviceDisabled => l10n.mapLocationServiceOff,
+          LocationAvailability.denied ||
+          LocationAvailability.deniedForever => l10n.mapLocationDenied,
+          LocationAvailability.available => l10n.mapLocationUnknown,
         },
         position: NotificationPosition.top,
       );

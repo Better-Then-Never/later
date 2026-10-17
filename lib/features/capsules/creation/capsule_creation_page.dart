@@ -5,7 +5,8 @@ import 'package:provider/provider.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/location_service.dart';
@@ -98,19 +99,21 @@ class _CapsuleCreationView extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = context.watch<CapsuleCreationController>();
     final screen = MediaQuery.sizeOf(context);
+    final l10n = context.l10n;
+    final openAt = controller.openAt;
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: AppColors.pageBackgroundAlt,
+        backgroundColor: context.palette.backgroundAlt,
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PageHeader(
-                mainText: 'Create Capsule',
+                mainText: l10n.capsulesCreationTitle,
                 leadingButton: DefaultIconButton(
                   onTap: () => AppRoutes.toCamera(
                     context,
@@ -133,7 +136,7 @@ class _CapsuleCreationView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       DefaultText(
-                        'Capsule Preview',
+                        l10n.capsulesCreationPreview,
                         fontSize: screen.width * 0.05,
                         fontWeight: FontWeight.bold,
                       ),
@@ -182,7 +185,7 @@ class _CapsuleCreationView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       DefaultText(
-                        'Capsule Settings',
+                        l10n.capsulesCreationSettings,
                         fontSize: screen.width * 0.05,
                         fontWeight: FontWeight.bold,
                       ),
@@ -194,31 +197,32 @@ class _CapsuleCreationView extends StatelessWidget {
                           children: [
                             OptionsSettingsRow(
                               minVerticalPadding: 10,
-                              title: 'Privacy',
+                              title: l10n.capsulesCreationPrivacy,
                               leadingIconPath: AppIcons.capsulePrivacy,
                               trailing: CapsuleCreationCycledInfo(
-                                infoText: controller.privacy.label,
+                                infoText: controller.privacy.localized(l10n),
                               ),
                               onTap: controller.cyclePrivacy,
                             ),
                             OptionsSettingsRow(
                               minVerticalPadding: 10,
-                              title: 'Open At',
+                              title: l10n.capsulesCreationOpenAt,
                               trailing: CapsuleCreationCycledInfo(
-                                infoText: controller.openAt != null
+                                infoText: openAt != null
                                     ? DateFormat(
                                         'yyyy-MM-dd',
-                                      ).format(controller.openAt!)
-                                    : 'Select date',
+                                        l10n.localeName,
+                                      ).format(openAt)
+                                    : l10n.capsulesCreationSelectDate,
                               ),
                               leadingIconPath: AppIcons.capsuleTimer,
                               onTap: () => _pickOpenDate(context),
                             ),
                             OptionsSettingsRow(
                               minVerticalPadding: 10,
-                              title: 'Color',
+                              title: l10n.capsulesCreationColor,
                               trailing: CapsuleCreationCycledInfo(
-                                infoText: controller.color.label,
+                                infoText: controller.color.localized(l10n),
                                 trailingLeadingIconPath: AppIcons.capsulePin(
                                   controller.color.name,
                                 ),
@@ -242,7 +246,7 @@ class _CapsuleCreationView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
             child: DefaultGreenButton(
               onTap: () => _save(context),
-              text: 'Create Capsule',
+              text: l10n.capsulesCreationSubmit,
               isLoading: controller.isSaving,
             ),
           ),
@@ -250,4 +254,25 @@ class _CapsuleCreationView extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Privacy names in the app's language (the model's `label` is English).
+extension on CapsulePrivacy {
+  String localized(AppLocalizations l10n) => switch (this) {
+    CapsulePrivacy.public => l10n.capsulesPrivacyPublic,
+    CapsulePrivacy.friends => l10n.capsulesPrivacyFriends,
+    CapsulePrivacy.private => l10n.capsulesPrivacyPrivate,
+  };
+}
+
+/// Pin colour names in the app's language (the model's `label` is English).
+extension on CapsuleColor {
+  String localized(AppLocalizations l10n) => switch (this) {
+    CapsuleColor.red => l10n.capsulesColorRed,
+    CapsuleColor.blue => l10n.capsulesColorBlue,
+    CapsuleColor.green => l10n.capsulesColorGreen,
+    CapsuleColor.yellow => l10n.capsulesColorYellow,
+    CapsuleColor.orange => l10n.capsulesColorOrange,
+    CapsuleColor.purple => l10n.capsulesColorPurple,
+  };
 }

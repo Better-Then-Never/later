@@ -1,0 +1,14 @@
+{
+  "mapLocationServiceOff": "Schalte die Ortung ein, um Kapseln in deiner Nähe zu sehen",
+  "mapLocationDenied": "Erlaube den Standortzugriff, um Kapseln in deiner Nähe zu sehen",
+  "mapLocationUnknown": "Wir konnten deinen Standort nicht ermitteln",
+  "mapCapsuleReady": "Schau, was drin ist!",
+  "mapCapsuleOpensIn": "Öffnet sich in {time}",
+  "mapDurationDays": "{count}T",
+  "mapDurationHours": "{count}h",
+  "mapDurationMinutes": "{count}min",
+  "mapDurationSeconds": "{count}s",
+  "mapCapsuleOpen": "Öffnen",
+  "mapCapsuleLocked": "Gesperrt",
+  "mapCapsuleNoDescription": "Diese Kapsel hat keine Beschreibung."
+}

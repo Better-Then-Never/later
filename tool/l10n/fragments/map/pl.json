@@ -1,0 +1,14 @@
+{
+  "mapLocationServiceOff": "Włącz lokalizację, żeby widzieć kapsuły w pobliżu",
+  "mapLocationDenied": "Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu",
+  "mapLocationUnknown": "Nie udało się ustalić twojej lokalizacji",
+  "mapCapsuleReady": "Zobacz, co jest w środku!",
+  "mapCapsuleOpensIn": "Otworzy się za {time}",
+  "mapDurationDays": "{count}d",
+  "mapDurationHours": "{count}h",
+  "mapDurationMinutes": "{count}min",
+  "mapDurationSeconds": "{count}s",
+  "mapCapsuleOpen": "Otwórz",
+  "mapCapsuleLocked": "Zamknięta",
+  "mapCapsuleNoDescription": "Ta kapsuła nie ma opisu."
+}

@@ -222,6 +222,98 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authWelcomeTo => 'Добро пожаловать в';
 
   @override
+  String get capsulesCameraAccessDenied =>
+      'Разрешите доступ к камере в настройках, чтобы сделать фото';
+
+  @override
+  String get capsulesCameraFlashOff => 'Вспышка выключена';
+
+  @override
+  String get capsulesCameraFlashOn => 'Вспышка включена';
+
+  @override
+  String get capsulesCameraStartFailed => 'Не удалось запустить камеру';
+
+  @override
+  String get capsulesCameraSwitch => 'Сменить камеру';
+
+  @override
+  String get capsulesCameraTakePhoto => 'Сделать фото';
+
+  @override
+  String get capsulesCameraUnavailable => 'Камера недоступна';
+
+  @override
+  String get capsulesColorBlue => 'Синий';
+
+  @override
+  String get capsulesColorGreen => 'Зелёный';
+
+  @override
+  String get capsulesColorOrange => 'Оранжевый';
+
+  @override
+  String get capsulesColorPurple => 'Фиолетовый';
+
+  @override
+  String get capsulesColorRed => 'Красный';
+
+  @override
+  String get capsulesColorYellow => 'Жёлтый';
+
+  @override
+  String get capsulesCreationColor => 'Цвет';
+
+  @override
+  String get capsulesCreationDescriptionHint => 'Добавьте описание...';
+
+  @override
+  String get capsulesCreationOpenAt => 'Откроется';
+
+  @override
+  String get capsulesCreationPreview => 'Предпросмотр капсулы';
+
+  @override
+  String get capsulesCreationPrivacy => 'Видимость';
+
+  @override
+  String get capsulesCreationSelectDate => 'Выберите дату';
+
+  @override
+  String get capsulesCreationSettings => 'Настройки капсулы';
+
+  @override
+  String get capsulesCreationSubmit => 'Создать капсулу';
+
+  @override
+  String get capsulesCreationTitle => 'Создать капсулу';
+
+  @override
+  String get capsulesCreationTitleHint => 'Название...';
+
+  @override
+  String get capsulesDefaultTitle => 'Капсула';
+
+  @override
+  String get capsulesErrorNoLocation => 'Не удалось определить вашу геопозицию';
+
+  @override
+  String get capsulesErrorSaveFailed => 'Не удалось сохранить капсулу';
+
+  @override
+  String get capsulesErrorSavedNotSent =>
+      'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
+
+  @override
+  String get capsulesPrivacyFriends => 'Для друзей';
+
+  @override
+  String get capsulesPrivacyPrivate => 'Личная';
+
+  @override
+  String get capsulesPrivacyPublic => 'Публичная';
+
+  @override
   String get commonBack => 'Назад';
 
   @override
@@ -687,6 +779,54 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get historyVisibilityPublic => 'Публичная капсула';
+
+  @override
+  String get mapCapsuleLocked => 'Закрыта';
+
+  @override
+  String get mapCapsuleNoDescription => 'У этой капсулы нет описания.';
+
+  @override
+  String get mapCapsuleOpen => 'Открыть';
+
+  @override
+  String mapCapsuleOpensIn(String time) {
+    return 'Откроется через $time';
+  }
+
+  @override
+  String get mapCapsuleReady => 'Посмотрите, что внутри!';
+
+  @override
+  String mapDurationDays(int count) {
+    return '$countд';
+  }
+
+  @override
+  String mapDurationHours(int count) {
+    return '$countч';
+  }
+
+  @override
+  String mapDurationMinutes(int count) {
+    return '$countмин';
+  }
+
+  @override
+  String mapDurationSeconds(int count) {
+    return '$countс';
+  }
+
+  @override
+  String get mapLocationDenied =>
+      'Разрешите доступ к геопозиции, чтобы видеть капсулы рядом с вами';
+
+  @override
+  String get mapLocationServiceOff =>
+      'Включите геолокацию, чтобы видеть капсулы рядом с вами';
+
+  @override
+  String get mapLocationUnknown => 'Не удалось определить вашу геопозицию';
 
   @override
   String get messagesBlockedByYou => 'Вы заблокировали этого пользователя';

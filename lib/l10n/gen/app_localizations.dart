@@ -494,6 +494,186 @@ abstract class AppLocalizations {
   /// **'Welcome to'**
   String get authWelcomeTo;
 
+  /// Camera screen when camera permission was denied. 'Settings' are the phone's settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera access in Settings to take a photo'**
+  String get capsulesCameraAccessDenied;
+
+  /// Accessibility label of the flash button while the flash is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash off'**
+  String get capsulesCameraFlashOff;
+
+  /// Accessibility label of the flash button while the flash is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash on'**
+  String get capsulesCameraFlashOn;
+
+  /// No description provided for @capsulesCameraStartFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera could not be started'**
+  String get capsulesCameraStartFailed;
+
+  /// Accessibility label of the button that switches between the front and back camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch camera'**
+  String get capsulesCameraSwitch;
+
+  /// Accessibility label of the shutter button.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get capsulesCameraTakePhoto;
+
+  /// Shown on the camera screen when the phone has no camera.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera available'**
+  String get capsulesCameraUnavailable;
+
+  /// No description provided for @capsulesColorBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get capsulesColorBlue;
+
+  /// No description provided for @capsulesColorGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get capsulesColorGreen;
+
+  /// No description provided for @capsulesColorOrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get capsulesColorOrange;
+
+  /// No description provided for @capsulesColorPurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Purple'**
+  String get capsulesColorPurple;
+
+  /// Colour of the capsule's map pin. Agrees with the word 'colour'.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get capsulesColorRed;
+
+  /// No description provided for @capsulesColorYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow'**
+  String get capsulesColorYellow;
+
+  /// Row title: the colour of the capsule's map pin (tapping cycles the colours).
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get capsulesCreationColor;
+
+  /// Hint in the capsule description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Add description...'**
+  String get capsulesCreationDescriptionHint;
+
+  /// Row title: the day the capsule opens. The chosen date is shown next to it.
+  ///
+  /// In en, this message translates to:
+  /// **'Open At'**
+  String get capsulesCreationOpenAt;
+
+  /// Section title above the card that shows how the capsule will look.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Preview'**
+  String get capsulesCreationPreview;
+
+  /// Row title: who can see the capsule (tapping cycles Public / Friends / Private).
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get capsulesCreationPrivacy;
+
+  /// Shown in the open date row until a date is picked. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get capsulesCreationSelectDate;
+
+  /// Section title above the privacy, open date and colour rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Settings'**
+  String get capsulesCreationSettings;
+
+  /// Button at the bottom of the creation screen that saves the new capsule. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Capsule'**
+  String get capsulesCreationSubmit;
+
+  /// Header title of the screen where a new capsule is set up after taking the photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Capsule'**
+  String get capsulesCreationTitle;
+
+  /// Hint in the capsule title field (one line, large bold font, narrow: keep it very short).
+  ///
+  /// In en, this message translates to:
+  /// **'Add Title...'**
+  String get capsulesCreationTitleHint;
+
+  /// Title given to a capsule saved without one. It is stored with the capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule'**
+  String get capsulesDefaultTitle;
+
+  /// No description provided for @capsulesErrorNoLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not detect your location'**
+  String get capsulesErrorNoLocation;
+
+  /// No description provided for @capsulesErrorSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save capsule'**
+  String get capsulesErrorSaveFailed;
+
+  /// The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries.
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule was saved but not sent. Tap save to try again.'**
+  String get capsulesErrorSavedNotSent;
+
+  /// Capsule visibility: only the owner's friends can see it.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get capsulesPrivacyFriends;
+
+  /// Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get capsulesPrivacyPrivate;
+
+  /// Capsule visibility: everyone can see it. Agrees with 'capsule'.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get capsulesPrivacyPublic;
+
   /// Accessibility label of the back arrow.
   ///
   /// In en, this message translates to:
@@ -1315,6 +1495,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public visibility'**
   String get historyVisibilityPublic;
+
+  /// Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get mapCapsuleLocked;
+
+  /// Shown in the capsule card opened from the map when the capsule has no description.
+  ///
+  /// In en, this message translates to:
+  /// **'This capsule has no description.'**
+  String get mapCapsuleNoDescription;
+
+  /// Button in the window above an open capsule's pin: shows the capsule. A verb.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get mapCapsuleOpen;
+
+  /// Countdown in the small window above a locked capsule's pin. {time} is a compact duration made of the mapDuration* parts, e.g. '2d 5h 30m 15s'.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens in {time}'**
+  String mapCapsuleOpensIn(String time);
+
+  /// Line in the small window above a capsule pin when the capsule is already open.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out what\'s inside!'**
+  String get mapCapsuleReady;
+
+  /// Days part of the compact countdown. Keep it as short as possible.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d'**
+  String mapDurationDays(int count);
+
+  /// Hours part of the compact countdown. Keep it as short as possible.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h'**
+  String mapDurationHours(int count);
+
+  /// Minutes part of the compact countdown. Keep it as short as possible.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m'**
+  String mapDurationMinutes(int count);
+
+  /// Seconds part of the compact countdown. Keep it as short as possible.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}s'**
+  String mapDurationSeconds(int count);
+
+  /// Toast on the map when location permission was denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location access to see capsules near you'**
+  String get mapLocationDenied;
+
+  /// Toast on the map when the phone's location service is switched off.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location to see capsules near you'**
+  String get mapLocationServiceOff;
+
+  /// Toast on the map when no position could be found although location is allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not detect your location'**
+  String get mapLocationUnknown;
 
   /// No description provided for @messagesBlockedByYou.
   ///

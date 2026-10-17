@@ -1,0 +1,98 @@
+{
+  "capsulesCameraUnavailable": "No camera available",
+  "@capsulesCameraUnavailable": {
+    "description": "Shown on the camera screen when the phone has no camera."
+  },
+  "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
+  "@capsulesCameraAccessDenied": {
+    "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
+  },
+  "capsulesCameraStartFailed": "The camera could not be started",
+  "capsulesCameraFlashOn": "Flash on",
+  "@capsulesCameraFlashOn": {
+    "description": "Accessibility label of the flash button while the flash is on."
+  },
+  "capsulesCameraFlashOff": "Flash off",
+  "@capsulesCameraFlashOff": {
+    "description": "Accessibility label of the flash button while the flash is off."
+  },
+  "capsulesCameraTakePhoto": "Take photo",
+  "@capsulesCameraTakePhoto": {
+    "description": "Accessibility label of the shutter button."
+  },
+  "capsulesCameraSwitch": "Switch camera",
+  "@capsulesCameraSwitch": {
+    "description": "Accessibility label of the button that switches between the front and back camera."
+  },
+  "capsulesCreationTitle": "Create Capsule",
+  "@capsulesCreationTitle": {
+    "description": "Header title of the screen where a new capsule is set up after taking the photo."
+  },
+  "capsulesCreationSubmit": "Create Capsule",
+  "@capsulesCreationSubmit": {
+    "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
+  },
+  "capsulesCreationPreview": "Capsule Preview",
+  "@capsulesCreationPreview": {
+    "description": "Section title above the card that shows how the capsule will look."
+  },
+  "capsulesCreationSettings": "Capsule Settings",
+  "@capsulesCreationSettings": {
+    "description": "Section title above the privacy, open date and colour rows."
+  },
+  "capsulesCreationTitleHint": "Add Title...",
+  "@capsulesCreationTitleHint": {
+    "description": "Hint in the capsule title field (one line, large bold font, narrow: keep it very short)."
+  },
+  "capsulesCreationDescriptionHint": "Add description...",
+  "@capsulesCreationDescriptionHint": {
+    "description": "Hint in the capsule description field."
+  },
+  "capsulesCreationPrivacy": "Privacy",
+  "@capsulesCreationPrivacy": {
+    "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
+  },
+  "capsulesCreationOpenAt": "Open At",
+  "@capsulesCreationOpenAt": {
+    "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
+  },
+  "capsulesCreationSelectDate": "Select date",
+  "@capsulesCreationSelectDate": {
+    "description": "Shown in the open date row until a date is picked. Keep it short."
+  },
+  "capsulesCreationColor": "Color",
+  "@capsulesCreationColor": {
+    "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
+  },
+  "capsulesPrivacyPublic": "Public",
+  "@capsulesPrivacyPublic": {
+    "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
+  },
+  "capsulesPrivacyFriends": "Friends",
+  "@capsulesPrivacyFriends": {
+    "description": "Capsule visibility: only the owner's friends can see it."
+  },
+  "capsulesPrivacyPrivate": "Private",
+  "@capsulesPrivacyPrivate": {
+    "description": "Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'."
+  },
+  "capsulesColorRed": "Red",
+  "@capsulesColorRed": {
+    "description": "Colour of the capsule's map pin. Agrees with the word 'colour'."
+  },
+  "capsulesColorBlue": "Blue",
+  "capsulesColorGreen": "Green",
+  "capsulesColorYellow": "Yellow",
+  "capsulesColorOrange": "Orange",
+  "capsulesColorPurple": "Purple",
+  "capsulesDefaultTitle": "Capsule",
+  "@capsulesDefaultTitle": {
+    "description": "Title given to a capsule saved without one. It is stored with the capsule."
+  },
+  "capsulesErrorNoLocation": "We could not detect your location",
+  "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
+  "@capsulesErrorSavedNotSent": {
+    "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
+  },
+  "capsulesErrorSaveFailed": "Failed to save capsule"
+}
