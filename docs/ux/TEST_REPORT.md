@@ -46,6 +46,17 @@ Screenshots in `docs/ux/after`, `docs/ux/dark_candidates`.
 - Reactions and a comment saved through the new rules; comments sheet stays below the status bar with the
   keyboard open.
 - Camera: first use after skipping the onboarding asks for the permission and starts (was failing).
+- Offline capsule: airplane mode → saved at once with "Waiting for connection" → network back → uploaded
+  ().
+- Sheets and menus: history Sort/Filter with the current choice, pinned friends sheet with a handle, permission
+  confirmation card (, , ).
+- Chat: hold menu, delete for both (chat list falls back), swipe-to-reply bar, quotes on both bubbles in light,
+  tap a quote to jump across 40 messages ().
+- Creation: privacy/colour/date menus, presets (); full-screen photo from the preview and
+  from an opened capsule, zoom and drag to close ().
+- On this day with capsules dated 1 and 2 years back (); heatmap only when zoomed out
+  ().
+- Light theme pass over tonight's screens (found the quote alignment bug).
 - Capsule created with comments off.
 - Verified badge and follower counts, achievements card and page (stats written by hand to the local emulator,
   since functions did not run there).
