@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/assets/app_assets.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
@@ -18,7 +19,9 @@ import 'capsule_labels.dart';
 import 'favorites_store.dart';
 import 'history_controller.dart';
 import 'own_capsules_store.dart';
+import 'on_this_day.dart';
 import 'widgets/capsule_list_tile.dart';
+import 'widgets/on_this_day_strip.dart';
 import 'widgets/capsule_selection_action_bar.dart';
 import 'widgets/menu_item_node.dart';
 import 'widgets/nested_menu.dart';
@@ -220,6 +223,13 @@ class _HistoryPageState extends State<HistoryPage> {
       );
     }
 
+    // The whole list, unsearched and unfiltered: then memories lead it.
+    final now = DateTime.now();
+    final memories = FeatureFlags.memories && !_controller.isNarrowed
+        ? OnThisDay.from(all, now)
+        : const <Capsule>[];
+    final lead = memories.isEmpty ? 0 : 1;
+
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(
         0,
@@ -227,9 +237,12 @@ class _HistoryPageState extends State<HistoryPage> {
         0,
         screenHeight * 0.15,
       ),
-      itemCount: shown.length,
-      itemBuilder: (context, i) {
-        final capsule = shown[i];
+      itemCount: shown.length + lead,
+      itemBuilder: (context, index) {
+        if (index < lead) {
+          return OnThisDayStrip(capsules: memories, now: now, onTap: _onTap);
+        }
+        final capsule = shown[index - lead];
         return CapsuleListTile(
           key: ValueKey(capsule.id),
           capsule: capsule,

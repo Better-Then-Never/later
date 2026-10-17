@@ -1039,6 +1039,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get historyNoMatches => 'Keine Kapsel passt zu deiner Suche';
 
   @override
+  String get historyOnThisDay => 'An diesem Tag';
+
+  @override
   String get historyPrivacyFriends => 'Freunde';
 
   @override
@@ -1102,6 +1105,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Wartet auf Verbindung';
+
+  @override
+  String historyYearsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Vor $count Jahren',
+      one: 'Vor einem Jahr',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get mapCapsuleLocked => 'Gesperrt';

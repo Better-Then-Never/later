@@ -44,5 +44,7 @@
   "historyDeleted": "{count, plural, one{{count} капсула удалена} few{{count} капсулы удалены} many{{count} капсул удалено} other{{count} капсулы удалено}}",
   "historyErrorFavorites": "Не удалось обновить избранное",
   "historyErrorDelete": "Не удалось удалить капсулы",
-  "historyWaitingUpload": "Ждёт интернета"
+  "historyWaitingUpload": "Ждёт интернета",
+  "historyOnThisDay": "В этот день",
+  "historyYearsAgo": "{count, plural, one{{count} год назад} few{{count} года назад} many{{count} лет назад} other{{count} года назад}}"
 }

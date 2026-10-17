@@ -1042,6 +1042,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyNoMatches => 'По вашему запросу капсул нет';
 
   @override
+  String get historyOnThisDay => 'В этот день';
+
+  @override
   String get historyPrivacyFriends => 'Для друзей';
 
   @override
@@ -1107,6 +1110,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Ждёт интернета';
+
+  @override
+  String historyYearsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count года назад',
+      many: '$count лет назад',
+      few: '$count года назад',
+      one: '$count год назад',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get mapCapsuleLocked => 'Закрыта';

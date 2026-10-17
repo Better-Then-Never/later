@@ -804,6 +804,10 @@
     "description": "Filter menu group: who can see the capsule (public, private, friends)."
   },
   "historyNoMatches": "No capsules match your search",
+  "historyOnThisDay": "On this day",
+  "@historyOnThisDay": {
+    "description": "Title above the user's capsules made on today's date in earlier years"
+  },
   "historyPrivacyFriends": "Friends",
   "@historyPrivacyFriends": {
     "description": "Capsule visibility: only friends can see it."
@@ -864,6 +868,15 @@
     "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
   },
   "historyWaitingUpload": "Waiting for connection",
+  "historyYearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@historyYearsAgo": {
+    "description": "Under an 'On this day' capsule.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "mapCapsuleLocked": "Locked",
   "@mapCapsuleLocked": {
     "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."

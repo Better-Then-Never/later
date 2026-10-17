@@ -44,5 +44,7 @@
   "historyDeleted": "{count, plural, one{Usunięto {count} kapsułę} few{Usunięto {count} kapsuły} many{Usunięto {count} kapsuł} other{Usunięto {count} kapsuły}}",
   "historyErrorFavorites": "Nie udało się zaktualizować ulubionych",
   "historyErrorDelete": "Nie udało się usunąć kapsuł",
-  "historyWaitingUpload": "Czeka na sieć"
+  "historyWaitingUpload": "Czeka na sieć",
+  "historyOnThisDay": "Tego dnia",
+  "historyYearsAgo": "{count, plural, one{Rok temu} few{{count} lata temu} many{{count} lat temu} other{{count} roku temu}}"
 }

@@ -19,4 +19,8 @@ abstract final class FeatureFlags {
 
   /// Loop capsules (several frames played as a loop) and their achievement.
   static const loopCapsules = false;
+
+  /// "On this day": the user's capsules from today's date in earlier years,
+  /// above My Capsules.
+  static const memories = true;
 }

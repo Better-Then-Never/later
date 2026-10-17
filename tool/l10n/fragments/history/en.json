@@ -208,5 +208,18 @@
   },
   "historyErrorFavorites": "Could not update favorites",
   "historyErrorDelete": "Could not delete capsules",
-  "historyWaitingUpload": "Waiting for connection"
+  "historyWaitingUpload": "Waiting for connection",
+  "historyOnThisDay": "On this day",
+  "@historyOnThisDay": {
+    "description": "Title above the user's capsules made on today's date in earlier years"
+  },
+  "historyYearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@historyYearsAgo": {
+    "description": "Under an 'On this day' capsule.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

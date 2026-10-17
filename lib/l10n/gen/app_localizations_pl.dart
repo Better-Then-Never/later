@@ -1050,6 +1050,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get historyNoMatches => 'Żadna kapsuła nie pasuje do wyszukiwania';
 
   @override
+  String get historyOnThisDay => 'Tego dnia';
+
+  @override
   String get historyPrivacyFriends => 'Dla znajomych';
 
   @override
@@ -1115,6 +1118,19 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Czeka na sieć';
+
+  @override
+  String historyYearsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count roku temu',
+      many: '$count lat temu',
+      few: '$count lata temu',
+      one: 'Rok temu',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get mapCapsuleLocked => 'Zamknięta';

@@ -1766,6 +1766,12 @@ abstract class AppLocalizations {
   /// **'No capsules match your search'**
   String get historyNoMatches;
 
+  /// Title above the user's capsules made on today's date in earlier years
+  ///
+  /// In en, this message translates to:
+  /// **'On this day'**
+  String get historyOnThisDay;
+
   /// Capsule visibility: only friends can see it.
   ///
   /// In en, this message translates to:
@@ -1879,6 +1885,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting for connection'**
   String get historyWaitingUpload;
+
+  /// Under an 'On this day' capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
+  String historyYearsAgo(int count);
 
   /// Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'.
   ///

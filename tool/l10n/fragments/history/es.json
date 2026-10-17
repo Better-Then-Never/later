@@ -44,5 +44,7 @@
   "historyDeleted": "{count, plural, one{{count} cápsula eliminada} other{{count} cápsulas eliminadas}}",
   "historyErrorFavorites": "No se pudieron actualizar los favoritos",
   "historyErrorDelete": "No se pudieron eliminar las cápsulas",
-  "historyWaitingUpload": "Esperando conexión"
+  "historyWaitingUpload": "Esperando conexión",
+  "historyOnThisDay": "Un día como hoy",
+  "historyYearsAgo": "{count, plural, =1{Hace 1 año} other{Hace {count} años}}"
 }

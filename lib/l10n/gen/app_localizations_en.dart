@@ -1013,6 +1013,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyNoMatches => 'No capsules match your search';
 
   @override
+  String get historyOnThisDay => 'On this day';
+
+  @override
   String get historyPrivacyFriends => 'Friends';
 
   @override
@@ -1076,6 +1079,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Waiting for connection';
+
+  @override
+  String historyYearsAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years ago',
+      one: '1 year ago',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get mapCapsuleLocked => 'Locked';

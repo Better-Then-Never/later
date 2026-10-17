@@ -45,6 +45,13 @@ class HistoryController extends ChangeNotifier {
   bool get favoritesOnly => _favoritesOnly;
 
   bool get isSelectionMode => _selected.isNotEmpty;
+
+  /// A search or filter narrows the list (sorting does not).
+  bool get isNarrowed =>
+      _query.trim().isNotEmpty ||
+      _colorFilter != null ||
+      _privacyFilter != null ||
+      _favoritesOnly;
   int get selectedCount => _selected.length;
   Set<String> get selectedIds => Set.unmodifiable(_selected);
   bool isSelected(String id) => _selected.contains(id);
