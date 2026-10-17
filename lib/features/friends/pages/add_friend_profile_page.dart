@@ -8,7 +8,11 @@ import '../../profile/share/sharing_service.dart';
 import '../../../shared/widgets/user/user_name_and_username.dart';
 import '../friend_actions.dart';
 import '../friends_store.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/options_menu.dart';
+import '../widgets/block_user.dart';
 import '../widgets/profile/add_friend_profile_action_button.dart';
+import '../widgets/report_user.dart';
 import '../widgets/profile/add_friend_profile_header.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
@@ -58,6 +62,39 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     }
   }
 
+  /// Report or block someone who is not a friend (strangers can still send
+  /// requests and appear on public capsules).
+  Future<void> _options() async {
+    final l10n = context.l10n;
+    final choice = await showCenteredSheet<String>(
+      context,
+      OptionsMenu(
+        children: [
+          OptionsMenuItem(
+            text: l10n.friendsReport,
+            textColor: AppColors.danger,
+            isFirst: true,
+            onPressed: () => Navigator.of(context).pop('report'),
+          ),
+          const OptionsMenuDivider(),
+          OptionsMenuItem(
+            text: l10n.friendsBlock,
+            textColor: AppColors.danger,
+            isLast: true,
+            onPressed: () => Navigator.of(context).pop('block'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    switch (choice) {
+      case 'report':
+        await reportUser(context, widget.userId);
+      case 'block':
+        await confirmBlockUser(context, widget.userId);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userId = widget.userId;
@@ -89,6 +126,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                     context: context,
                     userId: userId,
                   ),
+                  onOptions: relation == FriendRelation.self ? null : _options,
                 ),
                 const SizedBox(height: 110),
                 UserNameAndUsername(
