@@ -608,6 +608,30 @@ abstract class AppLocalizations {
   /// **'Be the first to say something.'**
   String get capsulesCommentsEmptyHint;
 
+  /// No description provided for @capsulesCreationAllowComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow comments'**
+  String get capsulesCreationAllowComments;
+
+  /// No description provided for @capsulesCreationAllowReactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow reactions'**
+  String get capsulesCreationAllowReactions;
+
+  /// No description provided for @capsulesCreationApproximate.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate location'**
+  String get capsulesCreationApproximate;
+
+  /// No description provided for @capsulesCreationApproximateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'About a kilometre off, not the exact spot'**
+  String get capsulesCreationApproximateHint;
+
   /// Row title: the colour of the capsule's map pin (tapping cycles the colours).
   ///
   /// In en, this message translates to:

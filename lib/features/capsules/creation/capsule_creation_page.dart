@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
@@ -18,6 +19,7 @@ import '../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/page_header.dart';
+import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
@@ -118,138 +120,177 @@ class _CapsuleCreationView extends StatelessWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: context.palette.backgroundAlt,
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              PageHeader(
-                mainText: l10n.capsulesCreationTitle,
-                leadingButton: DefaultIconButton(
-                  onTap: () => AppRoutes.toCamera(
-                    context,
-                    replace: true,
-                    privacy: initialPrivacy,
-                    recipientId: recipientId,
-                  ),
-                  assetPath: AppIcons.goBack,
+        // The header stays put (edge-to-edge: content scrolling under the
+        // status bar would otherwise carry the title into it).
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            PageHeader(
+              mainText: l10n.capsulesCreationTitle,
+              leadingButton: DefaultIconButton(
+                onTap: () => AppRoutes.toCamera(
+                  context,
+                  replace: true,
+                  privacy: initialPrivacy,
+                  recipientId: recipientId,
                 ),
-                trailingButton: DefaultIconButton(
-                  onTap: () => Navigator.pop(context),
-                  assetPath: AppIcons.capsuleClose,
-                ),
+                assetPath: AppIcons.goBack,
               ),
-              SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DefaultText(
-                        l10n.capsulesCreationPreview,
-                        fontSize: screen.width * 0.05,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      Container(
-                        width: screen.width,
-                        height: screen.height * 0.4,
-                        decoration: BoxDecorations.whiteCard(context),
-                        padding: const EdgeInsets.all(8),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: screen.width * 0.45,
-                              height: double.infinity,
-                              child: CapsuleImagePreview(
-                                imagePath: controller.imagePath,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CapsuleCreationTitleInput(
-                                    controller: controller.titleController,
-                                  ),
-                                  ProfilePageDivider(width: screen.width * 0.5),
-                                  CapsuleCreationDescriptionInputField(
-                                    controller:
-                                        controller.descriptionController,
-                                  ),
-                                  CapsuleDatePill(
-                                    height: screen.height * 0.045,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  CapsulePlacePill(
-                                    height: screen.height * 0.05,
-                                    iconPath: AppIcons.capsuleLocation,
-                                    position: controller.position,
-                                  ),
-                                  const SizedBox(height: 8),
-                                ],
-                              ),
-                            ),
-                          ],
+              trailingButton: DefaultIconButton(
+                onTap: () => Navigator.pop(context),
+                assetPath: AppIcons.capsuleClose,
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        DefaultText(
+                          l10n.capsulesCreationPreview,
+                          fontSize: screen.width * 0.05,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      DefaultText(
-                        l10n.capsulesCreationSettings,
-                        fontSize: screen.width * 0.05,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        width: screen.width,
-                        decoration: BoxDecorations.whiteCard(context),
-                        child: Column(
-                          children: [
-                            OptionsSettingsRow(
-                              minVerticalPadding: 10,
-                              title: l10n.capsulesCreationPrivacy,
-                              leadingIconPath: AppIcons.capsulePrivacy,
-                              trailing: CapsuleCreationCycledInfo(
-                                infoText: controller.privacy.localized(l10n),
-                              ),
-                              onTap: controller.cyclePrivacy,
-                            ),
-                            OptionsSettingsRow(
-                              minVerticalPadding: 10,
-                              title: l10n.capsulesCreationOpenAt,
-                              trailing: CapsuleCreationCycledInfo(
-                                infoText: openAt != null
-                                    ? DateFormat(
-                                        'yyyy-MM-dd',
-                                        l10n.localeName,
-                                      ).format(openAt)
-                                    : l10n.capsulesCreationSelectDate,
-                              ),
-                              leadingIconPath: AppIcons.capsuleTimer,
-                              onTap: () => _pickOpenDate(context),
-                            ),
-                            OptionsSettingsRow(
-                              minVerticalPadding: 10,
-                              title: l10n.capsulesCreationColor,
-                              trailing: CapsuleCreationCycledInfo(
-                                infoText: controller.color.localized(l10n),
-                                trailingLeadingIconPath: AppIcons.capsulePin(
-                                  controller.color.name,
+                        Container(
+                          width: screen.width,
+                          height: screen.height * 0.4,
+                          decoration: BoxDecorations.whiteCard(context),
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: screen.width * 0.45,
+                                height: double.infinity,
+                                child: CapsuleImagePreview(
+                                  imagePath: controller.imagePath,
                                 ),
                               ),
-                              leadingIconPath: AppIcons.capsulePinColor,
-                              onTap: controller.cycleColor,
-                              withDivider: false,
-                            ),
-                          ],
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    CapsuleCreationTitleInput(
+                                      controller: controller.titleController,
+                                    ),
+                                    ProfilePageDivider(
+                                      width: screen.width * 0.5,
+                                    ),
+                                    CapsuleCreationDescriptionInputField(
+                                      controller:
+                                          controller.descriptionController,
+                                    ),
+                                    CapsuleDatePill(
+                                      height: screen.height * 0.045,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    CapsulePlacePill(
+                                      height: screen.height * 0.05,
+                                      iconPath: AppIcons.capsuleLocation,
+                                      position: controller.position,
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        DefaultText(
+                          l10n.capsulesCreationSettings,
+                          fontSize: screen.width * 0.05,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: screen.width,
+                          decoration: BoxDecorations.whiteCard(context),
+                          child: Column(
+                            children: [
+                              OptionsSettingsRow(
+                                minVerticalPadding: 10,
+                                title: l10n.capsulesCreationPrivacy,
+                                leadingIconPath: AppIcons.capsulePrivacy,
+                                trailing: CapsuleCreationCycledInfo(
+                                  infoText: controller.privacy.localized(l10n),
+                                ),
+                                onTap: controller.cyclePrivacy,
+                              ),
+                              OptionsSettingsRow(
+                                minVerticalPadding: 10,
+                                title: l10n.capsulesCreationOpenAt,
+                                trailing: CapsuleCreationCycledInfo(
+                                  infoText: openAt != null
+                                      ? DateFormat(
+                                          'yyyy-MM-dd',
+                                          l10n.localeName,
+                                        ).format(openAt)
+                                      : l10n.capsulesCreationSelectDate,
+                                ),
+                                leadingIconPath: AppIcons.capsuleTimer,
+                                onTap: () => _pickOpenDate(context),
+                              ),
+                              OptionsSettingsRow(
+                                minVerticalPadding: 10,
+                                title: l10n.capsulesCreationColor,
+                                trailing: CapsuleCreationCycledInfo(
+                                  infoText: controller.color.localized(l10n),
+                                  trailingLeadingIconPath: AppIcons.capsulePin(
+                                    controller.color.name,
+                                  ),
+                                ),
+                                leadingIconPath: AppIcons.capsulePinColor,
+                                onTap: controller.cycleColor,
+                                withDivider: false,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: screen.width,
+                          decoration: BoxDecorations.whiteCard(context),
+                          child: Column(
+                            children: [
+                              if (FeatureFlags.comments)
+                                OptionsSwitchRow(
+                                  title: l10n.capsulesCreationAllowComments,
+                                  value: controller.allowComments,
+                                  onChanged: (v) =>
+                                      controller.allowComments = v,
+                                ),
+                              if (FeatureFlags.reactions)
+                                OptionsSwitchRow(
+                                  title: l10n.capsulesCreationAllowReactions,
+                                  value: controller.allowReactions,
+                                  onChanged: (v) =>
+                                      controller.allowReactions = v,
+                                ),
+                              OptionsSwitchRow(
+                                title: l10n.capsulesCreationApproximate,
+                                subtitle: l10n.capsulesCreationApproximateHint,
+                                value:
+                                    controller.locationPrecision ==
+                                    LocationPrecision.approximate,
+                                withDivider: false,
+                                onChanged: (v) =>
+                                    controller.approximateLocation = v,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(

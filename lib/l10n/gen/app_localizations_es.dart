@@ -290,6 +290,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesCommentsEmptyHint => 'Sé el primero en decir algo.';
 
   @override
+  String get capsulesCreationAllowComments => 'Permitir comentarios';
+
+  @override
+  String get capsulesCreationAllowReactions => 'Permitir reacciones';
+
+  @override
+  String get capsulesCreationApproximate => 'Ubicación aproximada';
+
+  @override
+  String get capsulesCreationApproximateHint =>
+      'A un kilómetro aproximado, no en el punto exacto';
+
+  @override
   String get capsulesCreationColor => 'Color';
 
   @override

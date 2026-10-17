@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
@@ -59,8 +60,13 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  /// The system permission dialog is open: it makes the app inactive, which
+  /// must not tear the camera down (the first open used to fail).
+  bool _askingPermission = false;
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_askingPermission) return;
     final controller = _controller;
     if (state == AppLifecycleState.inactive) {
       // Release the camera for other apps while we are in the background.
@@ -80,6 +86,20 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     }
     if (_cameras.isEmpty) {
       if (mounted) setState(() => _error = _CameraError.unavailable);
+      return;
+    }
+    // Asked here, before the camera starts (the onboarding may have been
+    // skipped): the camera plugin's own request raced the page lifecycle.
+    _askingPermission = true;
+    final PermissionStatus status;
+    try {
+      status = await Permission.camera.request();
+    } finally {
+      _askingPermission = false;
+    }
+    if (!mounted) return;
+    if (!status.isGranted) {
+      setState(() => _error = _CameraError.accessDenied);
       return;
     }
     await _start();

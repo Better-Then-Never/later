@@ -142,5 +142,9 @@
   "capsulesReportPrivacy": "Private information",
   "capsulesReportOther": "Something else",
   "capsulesReportSent": "Thanks for telling us. The Later team will look at it.",
-  "capsulesYou": "You"
+  "capsulesYou": "You",
+  "capsulesCreationAllowComments": "Allow comments",
+  "capsulesCreationAllowReactions": "Allow reactions",
+  "capsulesCreationApproximate": "Approximate location",
+  "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot"
 }

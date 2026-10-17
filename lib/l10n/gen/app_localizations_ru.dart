@@ -290,6 +290,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCommentsEmptyHint => 'Напишите первым.';
 
   @override
+  String get capsulesCreationAllowComments => 'Разрешить комментарии';
+
+  @override
+  String get capsulesCreationAllowReactions => 'Разрешить реакции';
+
+  @override
+  String get capsulesCreationApproximate => 'Примерное место';
+
+  @override
+  String get capsulesCreationApproximateHint =>
+      'Примерно в километре, а не точно';
+
+  @override
   String get capsulesCreationColor => 'Цвет';
 
   @override

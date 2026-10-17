@@ -216,6 +216,10 @@
   },
   "capsulesCommentsEmpty": "No comments yet",
   "capsulesCommentsEmptyHint": "Be the first to say something.",
+  "capsulesCreationAllowComments": "Allow comments",
+  "capsulesCreationAllowReactions": "Allow reactions",
+  "capsulesCreationApproximate": "Approximate location",
+  "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
   "capsulesCreationColor": "Color",
   "@capsulesCreationColor": {
     "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."

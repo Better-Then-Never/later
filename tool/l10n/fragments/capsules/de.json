@@ -53,5 +53,9 @@
   "capsulesReportPrivacy": "Private Informationen",
   "capsulesReportOther": "Etwas anderes",
   "capsulesReportSent": "Danke für den Hinweis. Das Later-Team sieht es sich an.",
-  "capsulesYou": "Du"
+  "capsulesYou": "Du",
+  "capsulesCreationAllowComments": "Kommentare erlauben",
+  "capsulesCreationAllowReactions": "Reaktionen erlauben",
+  "capsulesCreationApproximate": "Ungefährer Standort",
+  "capsulesCreationApproximateHint": "Etwa einen Kilometer daneben, nicht genau"
 }

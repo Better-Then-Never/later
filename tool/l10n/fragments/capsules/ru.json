@@ -53,5 +53,9 @@
   "capsulesReportPrivacy": "Личная информация",
   "capsulesReportOther": "Другое",
   "capsulesReportSent": "Спасибо, что сообщили. Команда Later посмотрит.",
-  "capsulesYou": "Вы"
+  "capsulesYou": "Вы",
+  "capsulesCreationAllowComments": "Разрешить комментарии",
+  "capsulesCreationAllowReactions": "Разрешить реакции",
+  "capsulesCreationApproximate": "Примерное место",
+  "capsulesCreationApproximateHint": "Примерно в километре, а не точно"
 }

@@ -112,6 +112,21 @@ void main() {
     c.dispose();
   });
 
+  test('comments, reactions and precision chosen per capsule', () async {
+    final repo = FakeCapsuleRepository();
+    final c = build(repo, known: const GeoPosition(52.2297, 21.0122))
+      ..allowComments = false
+      ..allowReactions = false
+      ..approximateLocation = true;
+    expect(await c.save(), isNull);
+    final draft = repo.created.single;
+    expect(draft.allowComments, isFalse);
+    expect(draft.allowReactions, isFalse);
+    expect(draft.locationPrecision, LocationPrecision.approximate);
+    expect(draft.location, const GeoPosition(52.23, 21.01));
+    c.dispose();
+  });
+
   test('a 0,0 fix is not a place (F-18)', () async {
     expect(const GeoPosition(0, 0).isValid, isFalse);
     expect(const GeoPosition(0.00001, -0.00002).isValid, isFalse);

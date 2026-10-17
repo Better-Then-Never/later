@@ -29,9 +29,10 @@ class CapsuleCreationController extends ChangeNotifier {
     CapsulePrivacy? initialPrivacy,
     this.recipientId,
     ChatRepository? chats,
-    this.locationPrecision = LocationPrecision.exact,
+    LocationPrecision locationPrecision = LocationPrecision.exact,
     DateTime? capturedAt,
   }) : assert(recipientId == null || chats != null),
+       _precision = locationPrecision,
        capturedAt = capturedAt ?? DateTime.now(),
        _capsules = capsules,
        _chats = chats,
@@ -50,8 +51,33 @@ class CapsuleCreationController extends ChangeNotifier {
   final String ownerId;
   final String imagePath;
 
-  /// Settings > Privacy: approximate places are rounded before upload.
-  final LocationPrecision locationPrecision;
+  /// Starts from Settings > Privacy; approximate places are rounded before
+  /// upload.
+  LocationPrecision _precision;
+  LocationPrecision get locationPrecision => _precision;
+
+  /// What others may do with the capsule (F-29).
+  bool _allowComments = true;
+  bool _allowReactions = true;
+  bool get allowComments => _allowComments;
+  bool get allowReactions => _allowReactions;
+
+  set allowComments(bool value) {
+    _allowComments = value;
+    notifyListeners();
+  }
+
+  set allowReactions(bool value) {
+    _allowReactions = value;
+    notifyListeners();
+  }
+
+  set approximateLocation(bool value) {
+    _precision = value
+        ? LocationPrecision.approximate
+        : LocationPrecision.exact;
+    notifyListeners();
+  }
 
   /// When the photo was taken (the page opens right after the shutter).
   final DateTime capturedAt;
@@ -143,6 +169,8 @@ class CapsuleCreationController extends ChangeNotifier {
               ? position.approximate
               : position,
           locationPrecision: locationPrecision,
+          allowComments: _allowComments,
+          allowReactions: _allowReactions,
           imagePath: imagePath,
           openAt: _openAt,
           recipientId: recipientId,

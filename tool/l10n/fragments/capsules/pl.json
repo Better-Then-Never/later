@@ -53,5 +53,9 @@
   "capsulesReportPrivacy": "Prywatne informacje",
   "capsulesReportOther": "Coś innego",
   "capsulesReportSent": "Dzięki za zgłoszenie. Zespół Later się temu przyjrzy.",
-  "capsulesYou": "Ty"
+  "capsulesYou": "Ty",
+  "capsulesCreationAllowComments": "Pozwól komentować",
+  "capsulesCreationAllowReactions": "Pozwól reagować",
+  "capsulesCreationApproximate": "Przybliżona lokalizacja",
+  "capsulesCreationApproximateHint": "Około kilometra obok, nie w dokładnym miejscu"
 }
