@@ -97,8 +97,8 @@ abstract final class AppRoutes {
       Navigator.of(context).push(appRoute(const ShareProfilePage()));
 
   // Friends
-  static Future<void> toAddFriends(BuildContext context) =>
-      Navigator.of(context).push(appSheetRoute(const AddFriendsPage()));
+  static Future<void> toAddFriends(BuildContext context, {String query = ''}) =>
+      Navigator.of(context).push(appSheetRoute(AddFriendsPage(query: query)));
 
   static Future<void> toFriendRequests(BuildContext context) =>
       Navigator.of(context).push(appRoute(const FriendRequestsPage()));

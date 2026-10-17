@@ -125,6 +125,9 @@ class _ChatList extends StatelessWidget {
               message: l10n.messagesNoChatsFound,
               subtitle: l10n.messagesNothingMatches(query),
               assetPath: AppIcons.profileFriendSearch,
+              // The chat search reaches everyone (F-57).
+              actionText: l10n.messagesFindPeople(query),
+              onAction: () => AppRoutes.toAddFriends(context, query: query),
             )
           : ListView.separated(
               key: const ValueKey('list'),
@@ -136,9 +139,11 @@ class _ChatList extends StatelessWidget {
                 16,
                 NavbarWidget.coveredHeight(context) + 16,
               ),
-              itemCount: chats.length,
+              itemCount: chats.length + (query.isEmpty ? 0 : 1),
               separatorBuilder: (_, _) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
+                // After the chats that match: everyone else (F-57).
+                if (index == chats.length) return _FindPeople(query: query);
                 final chat = chats[index];
                 final mine = chat.lastSenderId == me;
                 // A photo without a caption, or a voice message, says
@@ -206,6 +211,31 @@ class _ChatList extends StatelessWidget {
     }
     return AppFadeSwitcher(child: body);
   }
+}
+
+/// "Find people: “anna”" under the chats a search found: the same text on
+/// Add friends, by name and username.
+class _FindPeople extends StatelessWidget {
+  const _FindPeople({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: TextButton.icon(
+      onPressed: () => AppRoutes.toAddFriends(context, query: query),
+      icon: Image.asset(AppIcons.profileFriendSearch, width: 24),
+      label: Text(
+        context.l10n.messagesFindPeople(query),
+        style: const TextStyle(
+          fontFamily: kAppFontFamily,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+          color: AppColors.brandGreen,
+        ),
+      ),
+    ),
+  );
 }
 
 /// A chat row that swipes: to the right it is pinned or unpinned, to the
