@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/widgets/app_segmented_tabs.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
@@ -12,7 +13,6 @@ import '../friend_actions.dart';
 import '../friends_store.dart';
 import '../widgets/requests/friend_requests_received_row.dart';
 import '../widgets/requests/friend_requests_sent_row.dart';
-import '../widgets/requests/friend_requests_toggle_button.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 
@@ -107,20 +107,13 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
           PageHeader(
             mainText: context.l10n.friendsRequestsTitle,
             leadingButton: GoBackButton(context: context),
-            actionButtonsRow: Row(
-              children: [
-                FriendRequestsToggleButton(
-                  onTap: () => setState(() => _showReceived = true),
-                  text: context.l10n.friendsRequestsReceivedTab,
-                  isSelected: _showReceived,
-                ),
-                const SizedBox(width: 12),
-                FriendRequestsToggleButton(
-                  onTap: () => setState(() => _showReceived = false),
-                  text: context.l10n.friendsRequestsSentTab,
-                  isSelected: !_showReceived,
-                ),
+            actionButtonsRow: AppSegmentedTabs(
+              labels: [
+                context.l10n.friendsRequestsReceivedTab,
+                context.l10n.friendsRequestsSentTab,
               ],
+              selected: _showReceived ? 0 : 1,
+              onChanged: (i) => setState(() => _showReceived = i == 0),
             ),
           ),
           Expanded(child: list),
