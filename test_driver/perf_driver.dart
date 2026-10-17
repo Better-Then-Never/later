@@ -1,5 +1,7 @@
 // Driver for integration_test/perf_test.dart: turns each traced flow into
-// build/<flow>.timeline_summary.json (see docs/ux/PERFORMANCE.md).
+// build/<flow>.timeline_summary.json (see docs/feel/PERFORMANCE.md), and
+// the PerfMarks in its timeline into "tap → mark" durations in
+// build/perf_numbers.json (e.g. chat_open.chat.messagesShown_ms).
 import 'dart:convert';
 import 'dart:io';
 
@@ -14,6 +16,7 @@ Future<void> main() => integrationDriver(
       final value = entry.value;
       if (value is Map<String, dynamic>) {
         final timeline = driver.Timeline.fromJson(value);
+        _marks(entry.key, timeline, numbers);
         final summary = driver.TimelineSummary.summarize(timeline);
         try {
           await summary.writeTimelineToFile(
@@ -35,3 +38,28 @@ Future<void> main() => integrationDriver(
     ).writeAsString(const JsonEncoder.withIndent('  ').convert(numbers));
   },
 );
+
+/// Milliseconds from each `later.tap` (marked by the test) to the marks that
+/// follow it, as lists per flow and mark.
+void _marks(String flow, driver.Timeline timeline, Map<String, Object?> out) {
+  final events = [
+    for (final e in timeline.events ?? const <driver.TimelineEvent>[])
+      if ((e.name ?? '').startsWith('later.') && e.timestampMicros != null) e,
+  ]..sort((a, b) => a.timestampMicros!.compareTo(b.timestampMicros!));
+  int? tap;
+  final seen = <String>{};
+  for (final e in events) {
+    final name = e.name!.substring('later.'.length);
+    if (name == 'tap') {
+      tap = e.timestampMicros;
+      seen.clear();
+      continue;
+    }
+    // Only the first of each mark after a tap counts.
+    if (tap == null || !seen.add(name)) continue;
+    final key = '$flow.${name}_ms';
+    final list = (out[key] as List<Object?>?) ?? <Object?>[];
+    list.add(((e.timestampMicros! - tap) / 1000).round());
+    out[key] = list;
+  }
+}

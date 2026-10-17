@@ -41,5 +41,16 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // The signed-in home screen drew its first frame (StartupReport).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "fullyDrawn" -> {
+                        reportFullyDrawn()
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
     }
 }

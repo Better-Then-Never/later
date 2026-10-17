@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/l10n/l10n.dart';
+import '../../core/logging/perf_marks.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_dimens.dart';
@@ -417,6 +418,7 @@ class _ChatViewState extends State<_ChatView> {
     final showOlderSpinner = controller.isLoadingOlder;
     final count = messages.length + (showOlderSpinner ? 1 : 0);
     final animate = !_firstBuild;
+    if (_firstBuild) PerfMarks.nextFrame('chat.messagesShown');
     _firstBuild = false;
 
     return ListView.builder(

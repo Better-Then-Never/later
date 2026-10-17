@@ -11,6 +11,7 @@ import '../../../core/assets/app_assets.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/logging/app_logger.dart';
+import '../../../core/logging/perf_marks.dart';
 import '../../../data/models/capsule.dart';
 import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
@@ -213,12 +214,15 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       _capturing = true;
       _shutterBlink = true;
     });
+    PerfMarks.nextFrame('camera.feedback');
     Future<void>.delayed(const Duration(milliseconds: 120), () {
       if (mounted) setState(() => _shutterBlink = false);
     });
     try {
       final picture = await controller.takePicture();
+      PerfMarks.now('camera.file');
       if (!mounted) return;
+      PerfMarks.nextFrame('creation.firstFrame');
       await AppRoutes.toCapsuleCreation(
         context,
         imagePath: picture.path,

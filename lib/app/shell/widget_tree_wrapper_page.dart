@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/features/notifications/notification_router.dart';
 import 'package:later/app/shell/selected_page.dart';
+import 'package:later/app/shell/startup_report.dart';
 import 'package:later/app/shell/widget_tree.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,7 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
     // Pending deep links open once the home screen is on screen.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      StartupReport.homeDrawn();
       _links.onHomeReady();
       _notificationRouter.onHomeReady();
     });

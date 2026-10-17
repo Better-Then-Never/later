@@ -1,16 +1,27 @@
-// Frame timings of the key flows, for docs/ux/PERFORMANCE.md.
+// Frame timings of the key flows, for docs/feel/PERFORMANCE.md.
 //
-// Run in profile mode on a device or emulator, against the local Firebase
-// emulators (seeded with tools/emulator/seed.js):
+// Run in profile mode on the phone, against the local Firebase emulators
+// seeded with tool/seed_heavy.js (docs/feel/RIG.md):
 //
-//   flutter drive --profile --driver=test_driver/perf_driver.dart \
+//   tool/dev/perf.sh <label> [runs]
+//
+// which runs
+//
+//   flutter drive --profile --no-dds --driver=test_driver/perf_driver.dart \
 //     --target=integration_test/perf_test.dart \
-//     --dart-define=USE_FIREBASE_EMULATOR=true
+//     --dart-define=USE_FIREBASE_EMULATOR=true \
+//     --dart-define=FIREBASE_EMULATOR_HOST=127.0.0.1
 //
 // Each flow is recorded with traceAction; the driver writes
-// build/<flow>.timeline_summary.json (build and raster times per frame).
-// The account comes from TEST_ACCOUNT_EMAIL / TEST_ACCOUNT_PASSWORD
-// (--dart-define), defaulting to the seeded emulator account.
+// build/<flow>.timeline_summary.json (build and raster times per frame) and
+// turns the PerfMarks after each `later.tap` into durations
+// (build/perf_numbers.json). --dart-define=PERF_FLOWS=a,b runs only those
+// flows (startup always runs). Labels come from the app's own translations,
+// so the phone's language does not matter. The account comes from
+// TEST_ACCOUNT_EMAIL / TEST_ACCOUNT_PASSWORD (--dart-define), defaulting to
+// the seeded emulator account.
+import 'dart:developer' show Timeline;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,7 +29,14 @@ import 'package:integration_test/integration_test.dart';
 import 'package:later/app/bootstrap.dart';
 import 'package:later/app/shell/navbar_widget.dart';
 import 'package:later/core/assets/app_assets.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/features/capsules/creation/capsule_creation_page.dart';
+import 'package:later/features/history/own_capsules_store.dart';
+import 'package:later/features/map/map_focus.dart';
+import 'package:later/features/map/widgets/capsule_preview_card.dart';
 import 'package:later/features/messages/widgets/chat_list_item.dart';
+import 'package:later/features/messages/widgets/message_bubble.dart';
+import 'package:provider/provider.dart';
 
 const _email = String.fromEnvironment(
   'TEST_ACCOUNT_EMAIL',
@@ -28,6 +46,11 @@ const _password = String.fromEnvironment(
   'TEST_ACCOUNT_PASSWORD',
   defaultValue: 'emulator-only-123',
 );
+const _only = String.fromEnvironment('PERF_FLOWS');
+
+/// Where tool/seed_heavy.js put most capsules (its SEED_CENTER default).
+const _seedLatitude = 52.2297;
+const _seedLongitude = 21.0122;
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -42,26 +65,97 @@ void main() {
     }
   }
 
+  /// Pumps frames until [finder] finds something; returns the milliseconds
+  /// that took, or null after [timeout].
+  Future<int?> waitFor(
+    WidgetTester tester,
+    Finder finder, [
+    Duration timeout = const Duration(seconds: 10),
+  ]) async {
+    final watch = Stopwatch()..start();
+    while (finder.evaluate().isEmpty) {
+      if (watch.elapsed > timeout) return null;
+      await tester.pump(const Duration(milliseconds: 4));
+    }
+    return watch.elapsedMilliseconds;
+  }
+
   Finder icon(String asset) => find.image(AssetImage(asset));
+  AppLocalizations l10n() => AppL10n.current;
+
+  Future<void> tap(WidgetTester tester, Finder finder) async {
+    Timeline.instantSync('later.tap');
+    await tester.tap(finder.first, warnIfMissed: false);
+  }
 
   Future<void> tapAndWait(
     WidgetTester tester,
     Finder finder, [
     Duration duration = const Duration(milliseconds: 1200),
   ]) async {
-    await tester.tap(finder.first, warnIfMissed: false);
+    await tap(tester, finder);
     await wait(tester, duration);
   }
 
+  NavigatorState rootNavigator(WidgetTester tester) =>
+      tester.state<NavigatorState>(find.byType(Navigator).first);
+
   Future<void> back(WidgetTester tester) async {
-    final navigator = tester.state<NavigatorState>(
-      find.byType(Navigator).first,
-    );
-    navigator.pop();
+    rootNavigator(tester).pop();
     await wait(tester, const Duration(milliseconds: 900));
   }
 
+  /// Closes every page, sheet and dialog over the tabs.
+  Future<void> home(WidgetTester tester) async {
+    rootNavigator(tester).popUntil((route) => route.isFirst);
+    await wait(tester, const Duration(milliseconds: 900));
+  }
+
+  Future<void> tab(WidgetTester tester, String asset) async {
+    await home(tester);
+    await tester.tap(icon(asset).first, warnIfMissed: false);
+    await wait(tester, const Duration(milliseconds: 1500));
+  }
+
+  /// Two fingers moving from [from] to [to] pixels apart around [center].
+  Future<void> pinch(
+    WidgetTester tester,
+    Offset center,
+    double from,
+    double to,
+  ) async {
+    final a = await tester.startGesture(center - Offset(from / 2, 0));
+    final b = await tester.startGesture(center + Offset(from / 2, 0));
+    const steps = 24;
+    for (var i = 1; i <= steps; i++) {
+      final d = from + (to - from) * i / steps;
+      await a.moveTo(center - Offset(d / 2, 0));
+      await b.moveTo(center + Offset(d / 2, 0));
+      await tester.pump(const Duration(milliseconds: 12));
+    }
+    await a.up();
+    await b.up();
+    await wait(tester, const Duration(milliseconds: 900));
+  }
+
+  final measured = <String, List<int>>{};
+  void record(String key, int? ms) {
+    if (ms != null) measured.putIfAbsent(key, () => []).add(ms);
+  }
+
   testWidgets('key flows', (tester) async {
+    /// Runs [body] as the traced flow [name] when it was asked for, after
+    /// [setup] (not traced).
+    Future<void> flow(
+      String name,
+      Future<void> Function() body, {
+      Future<void> Function()? setup,
+    }) async {
+      if (_only.isNotEmpty && !_only.split(',').contains(name)) return;
+      if (setup != null) await setup();
+      await binding.traceAction(body, reportKey: name);
+    }
+
     final launch = Stopwatch()..start();
     // bootstrap() installs the app's error handler; keep the test's, so a
     // failure fails the run instead of only being logged.
@@ -70,9 +164,8 @@ void main() {
       await bootstrap();
       FlutterError.onError = testErrorHandler;
       final navbar = find.byType(NavbarWidget);
-      final signedOut = find.text('Get Started');
-      final login = find.text('Log In Now');
       final end = DateTime.now().add(const Duration(seconds: 40));
+      var signingIn = false;
       while (navbar.evaluate().isEmpty) {
         if (DateTime.now().isAfter(end)) {
           final texts = find
@@ -84,14 +177,15 @@ void main() {
               .join(' | ');
           throw TestFailure('no home screen; showing: $texts');
         }
-        if (signedOut.evaluate().isNotEmpty || login.evaluate().isNotEmpty) {
+        if (!signingIn && FirebaseAuth.instance.currentUser == null) {
+          signingIn = true;
           await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: _email,
             password: _password,
           );
         }
         // The optional permission steps of a fresh install.
-        final notNow = find.text('Not now');
+        final notNow = find.text(l10n().authPermissionNotNow);
         if (notNow.evaluate().isNotEmpty) {
           await tester.tap(notNow.first, warnIfMissed: false);
           await tester.pump(const Duration(milliseconds: 500));
@@ -104,7 +198,7 @@ void main() {
     binding.reportData ??= {};
     binding.reportData!['startup_ms_to_home'] = launch.elapsedMilliseconds;
 
-    await binding.traceAction(() async {
+    await flow('tab_switches', () async {
       for (final asset in [
         AppIcons.navbarHistory,
         AppIcons.navbarMessages,
@@ -115,75 +209,252 @@ void main() {
       ]) {
         await tapAndWait(tester, icon(asset));
       }
-    }, reportKey: 'tab_switches');
+    });
 
-    // History is open: scroll My capsules to the end and back.
-    await binding.traceAction(() async {
-      final list = find.byType(Scrollable).first;
-      for (var i = 0; i < 3; i++) {
-        await tester.fling(list, const Offset(0, -900), 2500);
-        await wait(tester, const Duration(milliseconds: 900));
-      }
-      for (var i = 0; i < 3; i++) {
-        await tester.fling(list, const Offset(0, 900), 2500);
-        await wait(tester, const Duration(milliseconds: 900));
-      }
-    }, reportKey: 'history_scroll');
+    // My capsules (about a hundred): to the end, past it, and back.
+    await flow(
+      'history_scroll',
+      setup: () => tab(tester, AppIcons.navbarHistory),
+      () async {
+        final list = find.byType(Scrollable).first;
+        for (var i = 0; i < 6; i++) {
+          await tester.fling(list, const Offset(0, -900), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+        for (var i = 0; i < 6; i++) {
+          await tester.fling(list, const Offset(0, 900), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+      },
+    );
 
-    await tapAndWait(tester, icon(AppIcons.navbarProfile));
-    await binding.traceAction(() async {
-      await tapAndWait(tester, icon(AppIcons.settings));
-      await back(tester);
-    }, reportKey: 'settings_open_close');
+    await flow(
+      'settings_open_close',
+      setup: () => tab(tester, AppIcons.navbarProfile),
+      () async {
+        await tapAndWait(tester, icon(AppIcons.settings));
+        await back(tester);
+      },
+    );
 
-    await binding.traceAction(() async {
-      await tapAndWait(tester, find.text('Add friends'));
-      await back(tester);
-    }, reportKey: 'add_friends_transition');
+    await flow(
+      'theme_switch',
+      setup: () async {
+        await tab(tester, AppIcons.navbarProfile);
+        await tapAndWait(tester, icon(AppIcons.settings));
+        await tapAndWait(tester, find.text(l10n().settingsAppearance));
+      },
+      () async {
+        for (final mode in [
+          l10n().settingsThemeDark,
+          l10n().settingsThemeLight,
+          l10n().settingsThemeSystem,
+        ]) {
+          await tapAndWait(
+            tester,
+            find.text(mode),
+            const Duration(milliseconds: 1500),
+          );
+        }
+      },
+    );
 
-    await binding.traceAction(() async {
-      await tapAndWait(tester, icon(AppIcons.notifications));
-      for (final tab in ['Replies', 'Comments', 'All']) {
+    await flow(
+      'add_friends_transition',
+      setup: () => tab(tester, AppIcons.navbarProfile),
+      () async {
+        await tapAndWait(tester, find.text(l10n().profileAddFriends));
+        await back(tester);
+      },
+    );
+
+    await flow(
+      'notifications_tabs',
+      setup: () => tab(tester, AppIcons.navbarProfile),
+      () async {
+        await tapAndWait(tester, icon(AppIcons.notifications));
+        for (final label in [
+          l10n().notificationsTabReplies,
+          l10n().notificationsTabComments,
+          l10n().notificationsTabAll,
+        ]) {
+          await tapAndWait(
+            tester,
+            find.text(label),
+            const Duration(milliseconds: 700),
+          );
+        }
+        await back(tester);
+      },
+    );
+
+    // The 600-message chat is the newest, so it is the first row.
+    await flow(
+      'chat_open',
+      setup: () => tab(tester, AppIcons.navbarMessages),
+      () async {
+        for (var i = 0; i < 3; i++) {
+          final watch = Stopwatch()..start();
+          await tap(tester, find.byType(ChatListItem));
+          await waitFor(tester, find.byType(MessageBubble));
+          record('chat_open_test_ms', watch.elapsedMilliseconds);
+          await wait(tester, const Duration(milliseconds: 1500));
+          await back(tester);
+        }
+      },
+    );
+
+    await flow(
+      'chat_scroll',
+      setup: () async {
+        await tab(tester, AppIcons.navbarMessages);
+        await tapAndWait(tester, find.byType(ChatListItem));
+      },
+      () async {
+        final list = find.byType(Scrollable).last;
+        // The list is reversed: dragging down goes back in time.
+        for (var i = 0; i < 8; i++) {
+          await tester.fling(list, const Offset(0, 900), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+        for (var i = 0; i < 8; i++) {
+          await tester.fling(list, const Offset(0, -900), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+      },
+    );
+
+    await flow(
+      'chat_options_sheet',
+      setup: () async {
+        await tab(tester, AppIcons.navbarMessages);
+        await tapAndWait(tester, find.byType(ChatListItem));
+      },
+      () async {
+        for (var i = 0; i < 2; i++) {
+          await tapAndWait(
+            tester,
+            find.bySemanticsLabel(l10n().messagesChatOptions),
+          );
+          await back(tester);
+        }
+      },
+    );
+
+    // The map: fly to one of the account's opened capsules where the seed
+    // put most of them, open its dialog and photo, then zoom out across the
+    // marker threshold (heatmap) and back, panning at both levels.
+    final mapFlows = [
+      'map_focus',
+      'capsule_dialog',
+      'photo_viewer',
+      'map_zoom_out',
+      'map_pan_heatmap',
+      'map_zoom_in',
+      'map_pan_markers',
+    ];
+    if (_only.isEmpty || mapFlows.any(_only.split(',').contains)) {
+      await tab(tester, AppIcons.navbarMap);
+      await wait(tester, const Duration(seconds: 2));
+      final context = tester.element(find.byType(NavbarWidget));
+      final now = DateTime.now();
+      final own = context.read<OwnCapsulesStore>().capsules.where(
+        (c) =>
+            c.isOpen(now) &&
+            c.location != null &&
+            (c.location!.latitude - _seedLatitude).abs() < 0.3 &&
+            (c.location!.longitude - _seedLongitude).abs() < 0.5,
+      );
+      final capsule = own.isEmpty ? null : own.first;
+      final center = tester.getCenter(find.byType(Scaffold).first);
+
+      await flow('map_focus', () async {
+        if (capsule != null) context.read<MapFocus>().focus(capsule);
+        await wait(tester, const Duration(seconds: 3));
+      });
+      await flow('capsule_dialog', () async {
+        await tapAndWait(tester, find.text(l10n().mapCapsuleOpen));
+        await back(tester);
+      });
+      await flow(
+        'photo_viewer',
+        setup: () => tapAndWait(tester, find.text(l10n().mapCapsuleOpen)),
+        () async {
+          await tapAndWait(
+            tester,
+            find.descendant(
+              of: find.byType(CapsulePreviewCard),
+              matching: find.byType(GestureDetector),
+            ),
+          );
+          await back(tester);
+        },
+      );
+      await home(tester);
+      await flow('map_zoom_out', () async {
+        for (var i = 0; i < 4; i++) {
+          await pinch(tester, center, 600, 150);
+        }
+      });
+      await flow('map_pan_heatmap', () async {
+        for (var i = 0; i < 3; i++) {
+          await tester.dragFrom(center, const Offset(-250, 120));
+          await wait(tester, const Duration(milliseconds: 700));
+          await tester.dragFrom(center, const Offset(250, -120));
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+      });
+      await flow('map_zoom_in', () async {
+        for (var i = 0; i < 2; i++) {
+          await pinch(tester, center, 150, 600);
+        }
+      });
+      await flow('map_pan_markers', () async {
+        for (var i = 0; i < 3; i++) {
+          await tester.dragFrom(center, const Offset(-250, 120));
+          await wait(tester, const Duration(milliseconds: 700));
+          await tester.dragFrom(center, const Offset(250, -120));
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+      });
+    }
+
+    await flow(
+      'camera_open_close',
+      setup: () => tab(tester, AppIcons.navbarMap),
+      () async {
         await tapAndWait(
           tester,
-          find.text(tab),
-          const Duration(milliseconds: 700),
+          icon(AppIcons.navbarAdd),
+          const Duration(seconds: 3),
         );
-      }
-      await back(tester);
-    }, reportKey: 'notifications_tabs');
-
-    await tapAndWait(tester, icon(AppIcons.navbarMessages));
-    await binding.traceAction(() async {
-      final chatRow = find.byType(ChatListItem);
-      if (chatRow.evaluate().isNotEmpty) {
-        await tapAndWait(tester, chatRow, const Duration(milliseconds: 1800));
         await back(tester);
-      }
-    }, reportKey: 'open_chat');
-
-    await tapAndWait(
-      tester,
-      icon(AppIcons.navbarMap),
-      const Duration(seconds: 3),
+      },
     );
-    await binding.traceAction(() async {
-      final center = tester.getCenter(find.byType(Scaffold).first);
-      for (var i = 0; i < 4; i++) {
-        await tester.dragFrom(center, const Offset(-250, 120));
-        await wait(tester, const Duration(milliseconds: 700));
-        await tester.dragFrom(center, const Offset(250, -120));
-        await wait(tester, const Duration(milliseconds: 700));
-      }
-    }, reportKey: 'map_pan');
 
-    await binding.traceAction(() async {
-      await tapAndWait(
-        tester,
-        icon(AppIcons.navbarAdd),
-        const Duration(seconds: 3),
-      );
-      await back(tester);
-    }, reportKey: 'camera_open_close');
+    await flow(
+      'camera_capture',
+      setup: () async {
+        await tab(tester, AppIcons.navbarMap);
+        await tapAndWait(
+          tester,
+          icon(AppIcons.navbarAdd),
+          const Duration(seconds: 3),
+        );
+      },
+      () async {
+        final watch = Stopwatch()..start();
+        await tap(
+          tester,
+          find.bySemanticsLabel(l10n().capsulesCameraTakePhoto),
+        );
+        await waitFor(tester, find.byType(CapsuleCreationPage));
+        record('camera_tap_to_creation_test_ms', watch.elapsedMilliseconds);
+        await wait(tester, const Duration(seconds: 2));
+      },
+    );
+    await home(tester);
+
+    measured.forEach((key, values) => binding.reportData![key] = values);
   });
 }
