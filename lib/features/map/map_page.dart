@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../../app/session/session_controller.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
+import '../../app/shell/navbar_widget.dart';
 import '../../core/theme/app_colors.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
@@ -20,6 +21,7 @@ import '../settings/device_settings_store.dart';
 import 'current_location.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
+import 'map_styles.dart';
 import 'widgets/capsule_info_panel.dart';
 import 'widgets/capsule_preview_card.dart';
 
@@ -48,7 +50,13 @@ class _MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<_MapView> {
-  final _mapController = Completer<GoogleMapController>();
+  var _mapController = Completer<GoogleMapController>();
+
+  /// The look the map was created with: a theme change recreates the map
+  /// (the cloud style needs the map ID, the dark style needs none), at the
+  /// place the user was looking at.
+  bool? _builtDark;
+  CameraPosition? _lastCamera;
   final _infoWindow = CustomInfoWindowController();
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
@@ -197,19 +205,37 @@ class _MapViewState extends State<_MapView> {
 
     final screen = MediaQuery.sizeOf(context);
     final start = map.initialCamera;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    if (_builtDark != null && _builtDark != dark) {
+      _mapController = Completer<GoogleMapController>();
+      _infoWindow.hideInfoWindow?.call();
+    }
+    _builtDark = dark;
     return Stack(
       children: [
         GoogleMap(
-          mapId: _mapId,
+          key: ValueKey(dark),
+          mapId: dark ? null : _mapId,
+          style: dark ? MapStyles.dark : null,
+          // The Google logo and the map toolbar stay visible above the
+          // floating navigation bar and below the status bar (F-12); the
+          // zoom buttons were hidden under the bar (pinch zooms).
+          padding: EdgeInsets.only(
+            top: MediaQuery.viewPaddingOf(context).top,
+            bottom: NavbarWidget.coveredHeight(context) + 4,
+          ),
+          zoomControlsEnabled: false,
           mapType: switch (look) {
             MapLook.standard => MapType.normal,
             MapLook.satellite => MapType.satellite,
             MapLook.hybrid => MapType.hybrid,
           },
-          initialCameraPosition: CameraPosition(
-            target: LatLng(start.latitude, start.longitude),
-            zoom: map.initialCameraZoom,
-          ),
+          initialCameraPosition:
+              _lastCamera ??
+              CameraPosition(
+                target: LatLng(start.latitude, start.longitude),
+                zoom: map.initialCameraZoom,
+              ),
           onMapCreated: (controller) {
             _infoWindow.googleMapController = controller;
             if (!_mapController.isCompleted) {
@@ -221,6 +247,7 @@ class _MapViewState extends State<_MapView> {
           heatmaps: _heatmaps(map),
           onTap: (_) => _infoWindow.hideInfoWindow?.call(),
           onCameraMove: (position) {
+            _lastCamera = position;
             _infoWindow.onCameraMove?.call();
             map.onCameraMove(position.zoom);
           },

@@ -12,8 +12,20 @@ light, white fill dark) and keeps colours; white icons drawn over photos get no 
 serves the variants through `DefaultAssetBundle`, so no `Image.asset` call changes. Contact sheet:
 `icons_light_dark.png`.
 
-**D-03 Dark palette.** Three candidates (`AppPalette.darkCharcoal`, `darkForest`, `darkSlate`) are compared on
-the key screens once every screen reads the palette; the choice and screenshots are recorded here.
+**D-03 Dark palette: charcoal.** Three candidates (`AppPalette.darkCharcoal`, `darkForest`, `darkSlate`) were
+rendered on the emulator on the map, history, messages and profile tabs (`docs/ux/dark_candidates/sheet.png`: rows
+charcoal, forest, slate; repeat with `--dart-define=DARK_PALETTE=forest|slate`). Charcoal wins: the app's colour
+lives in its illustrations, capsule colours, pills and the brand green, and a neutral grey keeps all of them true.
+Forest's green tint makes green avatars, green pills and the green nav icon sink into the surface; slate's cool cast
+fights the warm yellow and orange pills and flattens the blue profile header. The dark map style (D-07) is neutral
+too, so charcoal continues it without a seam.
+
+**D-07 Dark map.** The light map keeps the owner's cloud style (map ID). Cloud styles on Android have no dark
+variant in google_maps_flutter (`colorScheme` is web-only), so in dark mode the map is created without the map ID and
+with a local JSON style (`lib/features/map/map_styles.dart`) that follows the light one: blue water, green parks,
+quiet roads, no business POIs. A theme change recreates the map at the same camera position. Mobile map loads cost
+the same either way. The map now has padding for the floating navigation bar, so the Google logo and toolbar stay
+visible above it; the zoom buttons, which were hidden under the bar, are off (pinch zooms).
 
 **D-04 UI size scales the whole interface.** Most sizes are fractions of the screen, so a text-size setting alone
 would leave icons and cards unchanged. `UiScaleView` lays the app out on a virtual screen of `size / scale` and

@@ -20,13 +20,22 @@ class NavbarWidget extends StatelessWidget {
     required this.onItemTapped,
   });
 
+  static const double barHeight = 80;
+
+  /// How much of the bottom of the screen the floating bar covers, system
+  /// navigation included (the map keeps its logo and controls above it).
+  static double coveredHeight(BuildContext context) {
+    final media = MediaQuery.of(context);
+    return barHeight + media.size.height * 0.01 + media.viewPadding.bottom;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     return Padding(
       padding: EdgeInsets.only(bottom: screenHeight * 0.01),
       child: Container(
-        height: 80,
+        height: barHeight,
         margin: const EdgeInsets.symmetric(horizontal: 16.0),
         decoration: BoxDecoration(
           color: context.palette.surface,
