@@ -21,10 +21,12 @@
 - **Cloud Functions in the running app**: the local emulator session ran auth, Firestore and Storage only, so
   counters, unlocks and pushes were exercised by the functions test suite (43/43), not end to end. Stats and
   achievements on the emulator screenshots were written by hand to the local emulator.
-- **Intermittent save failure (observed once)**: on a memory-starved emulator, the first capsule save after a
-  reinstall was denied twice (full and legacy shape), while the identical document passed over REST and three
-  later saves passed. Not reproducible; the user sees an error and the retry succeeds. Worth watching after the
-  deploy.
+- **Intermittent save failure (seen twice, emulator)**: the first capsule write after the device's network comes
+  back (once after a starved reinstall, once after airplane mode) is denied twice; the emulator first closes the
+  write stream with "Application error processing RPC" and its rule coverage shows `request.resource` as
+  undefined, so the rules never saw the document. The same document passes a minute later. Offline capsules now
+  absorb it (refusals are retried up to three times); a capsule saved online shows the error and the user's retry
+  works. Worth watching after the deploy.
 
 ## Decisions taken without the owner (reversible)
 D-03 dark palette (charcoal), D-07 dark map style without map ID, optional permissions (F-42), contacts and

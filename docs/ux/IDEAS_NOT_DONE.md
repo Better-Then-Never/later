@@ -6,8 +6,8 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
 - **Loop capsules (F-93)**: several frames played as a loop. Data model, rules (`frames`, `frameDelayMs`), stats and
   the Animator achievement exist; needs the camera burst, upload of frames (Storage rules allow only `image.jpg`
   today: add `frame_<n>.jpg`), and a looping viewer. Hidden by `FeatureFlags.loopCapsules`.
-- **Offline capsules (F-26)**: local outbox with the photo, pending state in the list, background upload with
-  retry; `capturedAt` already keeps the real moment for streaks.
+- **Offline capsules, next steps**: a capsule for a friend still needs the connection (its chat post is made at
+  once); a "not sent" state with a manual retry for capsules the server refused three times.
 - **Camera (F-23)**: flash auto/torch (needs artwork for the extra states; zoom, focus and shutter feedback are
   done).
 - **Own calendar for the open date (F-27)** and a step-by-step composer (F-25, F-28).

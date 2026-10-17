@@ -66,3 +66,10 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   re-seed (tools/emulator: npm run seed) before more on-device checks.
 - Next candidates (IDEAS_NOT_DONE.md): friend's capsules list (F-54), history controls (F-31), one sheet system
   (F-32), requests toggle (F-41), share icon (F-43), Add Friends transition (F-38), camera controls, loop capsules.
+- **Offline capsules (F-26), done:** per-account outbox (photo + draft JSON in the documents folder), pending
+  capsules in My Capsules with an orange "Waiting for connection" pill and the local photo, uploads at sign-in,
+  on resume and every minute with the id fixed when queued (repository `create` is idempotent), refusals capped at
+  3 per sign-in (each attempt re-uploads the photo). Creation asks for the location permission itself (found on
+  the device: skipped onboarding left "No location"). Verified on the emulator: airplane mode → saved instantly as
+  pending → network back → uploaded on the next retry (the first one hit the emulator's after-reconnect denial,
+  BLOCKERS.md). Unused strings `achievementsProgress`, `commonClose`, `commonDone` removed. Flutter 231.

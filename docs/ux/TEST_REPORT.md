@@ -5,7 +5,7 @@
 |---|---|---|
 | Static analysis | `flutter analyze` | No issues found |
 | Format | `dart format --output=none --set-exit-if-changed lib test tool` | clean |
-| Unit + widget + golden | `flutter test` | **226 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
+| Unit + widget + golden | `flutter test` | **231 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
 | Translations | `test/l10n` (part of the above) | every message in 5 languages with the same placeholders; ARBs built from the fragments |
 | Design tokens | `dart run tool/check_design_tokens.dart` | no violations |
 | Cloud Functions | `cd functions && npm run test:emulate` | **43/43** |
@@ -19,7 +19,8 @@ CI runs `flutter test --exclude-tags golden` (goldens are rendered on Windows on
 Data mappers for every new field and the legacy fallbacks; settings store (privacy, language sync, offset);
 read receipts both ways; reopening a chat without a spinner; image cache buckets and remembered avatar URLs
 (restart, offline, eviction, account switch); friends-of-friends ranking; capsule creation (approximate rounding,
-capture time, per-capsule switches, 0,0 rejected); reactions (toggle, replace, rollback), comments (thread order,
+capture time, per-capsule switches, 0,0 rejected); offline outbox (queue, restart, other account, discard,
+refusal cap); reactions (toggle, replace, rollback), comments (thread order,
 limits, delete rights), reports; news topics; achievements (catalog equals the server registry, standings,
 streak); notification sentences for the server-made types; Appearance, Language and Privacy pages.
 

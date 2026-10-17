@@ -27,6 +27,8 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Camera asks for its permission first (fix) | on | `camera_page.dart` | emulator |
 | Camera: pinch to zoom, tap to focus/exposure, instant shutter feedback (F-20..F-22) | on | `camera_page.dart` | emulator (focus ring; pinch needs a real device) |
 | Description limit 2000 (F-25 bug) | on | creation | – |
+| Offline capsules: kept on the phone, "Waiting for connection" in My Capsules, uploaded at sign-in/resume/every minute with a fixed id; refused ones tried 3× per sign-in (F-26) | on | `capsules/outbox/`, `own_capsules_store.dart` | tests, emulator (airplane mode → pending → uploaded) |
+| Creation asks for location itself when onboarding skipped it (fix) | on | `capsule_creation_controller.dart` | emulator |
 
 ## Social and gamification (Tier 2)
 | Feature | Status | Where | Verified |
