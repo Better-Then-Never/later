@@ -1988,6 +1988,30 @@ abstract class AppLocalizations {
   /// **'Failed to clear history'**
   String get messagesClearFailed;
 
+  /// Toast after copying a message
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get messagesCopied;
+
+  /// Message menu: copy the text
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get messagesCopy;
+
+  /// No description provided for @messagesDeleteConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this message for both of you?'**
+  String get messagesDeleteConfirmTitle;
+
+  /// No description provided for @messagesDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the message'**
+  String get messagesDeleteFailed;
+
   /// Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.
   ///
   /// In en, this message translates to:

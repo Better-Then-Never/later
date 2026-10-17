@@ -1177,6 +1177,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesClearFailed => 'Не удалось очистить историю';
 
   @override
+  String get messagesCopied => 'Скопировано';
+
+  @override
+  String get messagesCopy => 'Копировать';
+
+  @override
+  String get messagesDeleteConfirmTitle => 'Удалить это сообщение у вас обоих?';
+
+  @override
+  String get messagesDeleteFailed => 'Не удалось удалить сообщение';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return '$name ждёт вашего привета!';
   }

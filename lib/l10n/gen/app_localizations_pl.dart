@@ -1185,6 +1185,18 @@ class AppLocalizationsPl extends AppLocalizations {
   String get messagesClearFailed => 'Nie udało się wyczyścić historii';
 
   @override
+  String get messagesCopied => 'Skopiowano';
+
+  @override
+  String get messagesCopy => 'Kopiuj';
+
+  @override
+  String get messagesDeleteConfirmTitle => 'Usunąć tę wiadomość u was obojga?';
+
+  @override
+  String get messagesDeleteFailed => 'Nie udało się usunąć wiadomości';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return '$name czeka na twoje „cześć”!';
   }

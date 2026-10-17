@@ -1176,6 +1176,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesClearFailed => 'Verlauf konnte nicht gelöscht werden';
 
   @override
+  String get messagesCopied => 'Kopiert';
+
+  @override
+  String get messagesCopy => 'Kopieren';
+
+  @override
+  String get messagesDeleteConfirmTitle =>
+      'Diese Nachricht für euch beide löschen?';
+
+  @override
+  String get messagesDeleteFailed =>
+      'Die Nachricht konnte nicht gelöscht werden';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return 'Sag $name Hallo!';
   }

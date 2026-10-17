@@ -138,5 +138,15 @@
         "example": "Anna"
       }
     }
-  }
+  },
+  "messagesCopy": "Copy",
+  "@messagesCopy": {
+    "description": "Message menu: copy the text"
+  },
+  "messagesCopied": "Copied",
+  "@messagesCopied": {
+    "description": "Toast after copying a message"
+  },
+  "messagesDeleteConfirmTitle": "Delete this message for both of you?",
+  "messagesDeleteFailed": "Could not delete the message"
 }

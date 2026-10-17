@@ -156,6 +156,10 @@ abstract interface class ChatRepository {
 
   /// Deletes every message of [chatId], for both participants.
   Future<void> clearHistory(String chatId);
+
+  /// Deletes one message of [chatId] for both participants. When it was the
+  /// newest, the chat list shows the one before it again (or nothing).
+  Future<void> deleteMessage(String chatId, String messageId);
 }
 
 abstract interface class CapsuleRepository {

@@ -1157,6 +1157,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get messagesClearFailed => 'No se pudo borrar el historial';
 
   @override
+  String get messagesCopied => 'Copiado';
+
+  @override
+  String get messagesCopy => 'Copiar';
+
+  @override
+  String get messagesDeleteConfirmTitle =>
+      '¿Eliminar este mensaje para los dos?';
+
+  @override
+  String get messagesDeleteFailed => 'No se pudo eliminar el mensaje';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return '¡Saluda a $name!';
   }

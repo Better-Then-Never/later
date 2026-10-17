@@ -288,6 +288,48 @@ void main() {
       c.dispose();
     });
 
+    test('deleting your newest message: gone at once, the summary goes back '
+        'to the one before', () async {
+      await say('bob', 'me', 'Hello');
+      final c = open();
+      await pumpEventQueue();
+      expect(await c.send('oops'), isNull);
+      await pumpEventQueue();
+      final mine = c.messages.last;
+      expect(c.canDelete(mine), isTrue);
+      expect(c.canDelete(c.messages.first), isFalse, reason: "Bob's");
+
+      final deleting = c.deleteMessage(mine);
+      expect(c.messages.map((m) => m.text), ['Hello'], reason: 'at once');
+      expect(await deleting, isNull);
+      await pumpEventQueue();
+      expect(c.messages.map((m) => m.text), ['Hello']);
+      final chat = chats.chatWith('bob')!;
+      expect(chat.lastMessage, 'Hello');
+      expect(chat.lastSenderId, 'bob', reason: 'not "You: Hello"');
+      c.dispose();
+    });
+
+    test('a refused delete brings the message back; an unsent one is only '
+        'dropped here', () async {
+      final c = open();
+      await pumpEventQueue();
+      expect(await c.send('kept'), isNull);
+      await pumpEventQueue();
+      chatRepo.failSends = true;
+      expect(await c.deleteMessage(c.messages.single), isNotNull);
+      expect(c.messages.single.text, 'kept');
+
+      expect(await c.send('never sent'), isNotNull);
+      final failed = c.messages.last;
+      expect(failed.delivery, MessageDelivery.failed);
+      chatRepo.calls.clear();
+      expect(await c.deleteMessage(failed), isNull);
+      expect(c.messages.map((m) => m.text), ['kept']);
+      expect(chatRepo.calls.where((x) => x.startsWith('delete:')), isEmpty);
+      c.dispose();
+    });
+
     test('refuses empty and too long messages', () async {
       final c = open();
       await pumpEventQueue();

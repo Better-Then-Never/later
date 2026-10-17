@@ -51,5 +51,9 @@
   "messagesNewChatNoFriendsSubtitle": "Füge Freunde hinzu und leg los mit dem Chatten!",
   "messagesNewChatFindFriends": "Freunde finden",
   "messagesNewChatNoMatch": "Keine Freunde gefunden",
-  "messagesStartChatWith": "Chat mit {name} starten"
+  "messagesStartChatWith": "Chat mit {name} starten",
+  "messagesCopy": "Kopieren",
+  "messagesCopied": "Kopiert",
+  "messagesDeleteConfirmTitle": "Diese Nachricht für euch beide löschen?",
+  "messagesDeleteFailed": "Die Nachricht konnte nicht gelöscht werden"
 }

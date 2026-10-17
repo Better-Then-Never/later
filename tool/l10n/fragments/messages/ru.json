@@ -51,5 +51,9 @@
   "messagesNewChatNoFriendsSubtitle": "Добавьте друзей, чтобы начать общаться!",
   "messagesNewChatFindFriends": "Найти друзей",
   "messagesNewChatNoMatch": "Друзья не найдены",
-  "messagesStartChatWith": "Начать чат: {name}"
+  "messagesStartChatWith": "Начать чат: {name}",
+  "messagesCopy": "Копировать",
+  "messagesCopied": "Скопировано",
+  "messagesDeleteConfirmTitle": "Удалить это сообщение у вас обоих?",
+  "messagesDeleteFailed": "Не удалось удалить сообщение"
 }

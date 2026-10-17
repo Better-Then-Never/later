@@ -954,6 +954,16 @@
   },
   "messagesClearConfirmTitle": "Are you sure you want to clear chat history?",
   "messagesClearFailed": "Failed to clear history",
+  "messagesCopied": "Copied",
+  "@messagesCopied": {
+    "description": "Toast after copying a message"
+  },
+  "messagesCopy": "Copy",
+  "@messagesCopy": {
+    "description": "Message menu: copy the text"
+  },
+  "messagesDeleteConfirmTitle": "Delete this message for both of you?",
+  "messagesDeleteFailed": "Could not delete the message",
   "messagesEmptySubtitle": "Say hello to {name}!",
   "@messagesEmptySubtitle": {
     "description": "Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.",

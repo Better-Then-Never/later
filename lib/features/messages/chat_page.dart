@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
@@ -19,8 +20,10 @@ import '../../data/services/push_messaging_service.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/widgets/buttons/default_icon_button.dart';
 import '../../shared/widgets/buttons/go_back_button.dart';
+import '../../shared/widgets/confirm_dialog.dart';
 import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
+import '../../shared/widgets/options_menu.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../friends/friends_store.dart';
@@ -124,6 +127,64 @@ class _ChatViewState extends State<_ChatView> {
 
   void _retry(String messageId) {
     unawaited(context.read<ChatController>().retry(messageId).then(_report));
+  }
+
+  /// Held message: copy it, or delete the user's own for both.
+  Future<void> _showMessageMenu(ChatMessage message) async {
+    // The keyboard must not come back when the menu closes.
+    FocusManager.instance.primaryFocus?.unfocus();
+    final controller = context.read<ChatController>();
+    final l10n = context.l10n;
+    final canDelete = controller.canDelete(message);
+    unawaited(HapticFeedback.selectionClick());
+    final action = await showCenteredSheet<_MessageAction>(
+      context,
+      Builder(
+        builder: (sheet) => OptionsMenu(
+          children: [
+            OptionsMenuItem(
+              text: l10n.messagesCopy,
+              isFirst: true,
+              isLast: !canDelete,
+              onPressed: () => Navigator.pop(sheet, _MessageAction.copy),
+            ),
+            if (canDelete) ...[
+              const OptionsMenuDivider(),
+              OptionsMenuItem(
+                text: l10n.commonDelete,
+                textColor: AppColors.danger,
+                isLast: true,
+                onPressed: () => Navigator.pop(sheet, _MessageAction.delete),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+    if (!mounted || action == null) return;
+    switch (action) {
+      case _MessageAction.copy:
+        await Clipboard.setData(ClipboardData(text: message.text));
+        if (!mounted) return;
+        PopupNotificationService.showSuccess(
+          context: context,
+          message: l10n.messagesCopied,
+          position: NotificationPosition.bottom,
+        );
+      case _MessageAction.delete:
+        // Never arrived: only this phone has it, nothing to confirm.
+        if (message.delivery == MessageDelivery.failed) {
+          unawaited(controller.deleteMessage(message).then(_report));
+          return;
+        }
+        await ConfirmDialog.show(
+          context: context,
+          title: l10n.messagesDeleteConfirmTitle,
+          confirmText: l10n.commonDelete,
+          onConfirm: () =>
+              unawaited(controller.deleteMessage(message).then(_report)),
+        );
+    }
   }
 
   void _report(Object? failure) {
@@ -308,6 +369,7 @@ class _ChatViewState extends State<_ChatView> {
                 ),
               GestureDetector(
                 onTap: failed ? () => _retry(message.id) : null,
+                onLongPress: () => _showMessageMenu(message),
                 child: MessageBubble(
                   message: message,
                   isMine: controller.isMine(message),
@@ -387,15 +449,11 @@ class _ChatHeader extends StatelessWidget {
               ],
             ),
           ),
-          Semantics(
-            button: true,
-            label: context.l10n.messagesChatOptions,
-            child: DefaultIconButton(
-              onTap: onMenu,
-              assetPath: AppIcons.messagesChatMenu,
-              semanticLabel: MaterialLocalizations.of(context).showMenuTooltip,
-              size: screen.width * 0.12,
-            ),
+          DefaultIconButton(
+            onTap: onMenu,
+            assetPath: AppIcons.messagesChatMenu,
+            semanticLabel: context.l10n.messagesChatOptions,
+            size: screen.width * 0.12,
           ),
         ],
       ),
@@ -590,3 +648,5 @@ class _BlockedNotice extends StatelessWidget {
     );
   }
 }
+
+enum _MessageAction { copy, delete }

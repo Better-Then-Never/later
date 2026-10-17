@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../core/logging/app_logger.dart';
 import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../repositories/repositories.dart';
@@ -144,6 +145,54 @@ class FirebaseChatRepository implements ChatRepository {
     'unreadCounts.$reader': 0,
     if (receipt) 'lastReadAt.$reader': FieldValue.serverTimestamp(),
   });
+
+  @override
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    final chatRef = _chats.doc(chatId);
+    final newest = await _messages(
+      chatId,
+    ).orderBy('timestamp', descending: true).limit(2).get();
+    final docs = newest.docs;
+    final wasNewest = docs.isNotEmpty && docs.first.id == messageId;
+    final previous = wasNewest && docs.length > 1
+        ? FirestoreMappers.chatMessage(docs[1].id, docs[1].data())
+        : null;
+
+    Future<void> commit({required bool exactSummary}) {
+      final batch = _db.batch()..delete(_messages(chatId).doc(messageId));
+      if (wasNewest) {
+        final sentAt = previous?.sentAt;
+        batch.update(
+          chatRef,
+          previous == null
+              // Nothing left: the chat leaves the list, like a cleared one.
+              ? {'lastMessage': '', 'lastUpdated': FieldValue.serverTimestamp()}
+              : exactSummary
+              ? {
+                  'lastMessage': previous.text,
+                  'lastUpdated': sentAt == null
+                      ? FieldValue.serverTimestamp()
+                      : Timestamp.fromDate(sentAt),
+                  'lastSenderId': previous.senderId,
+                }
+              // Rules before `isUndo`: the text only, as a send.
+              : {
+                  'lastMessage': previous.text,
+                  'lastUpdated': FieldValue.serverTimestamp(),
+                },
+        );
+      }
+      return batch.commit();
+    }
+
+    try {
+      await commit(exactSummary: true);
+    } on FirebaseException catch (e) {
+      if (e.code != 'permission-denied' || previous == null) rethrow;
+      AppLogger.warning('Summary rollback refused, writing the text only');
+      await commit(exactSummary: false);
+    }
+  }
 
   @override
   Future<void> clearHistory(String chatId) async {

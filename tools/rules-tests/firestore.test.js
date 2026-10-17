@@ -507,6 +507,29 @@ describe('chats', () => {
     );
   });
 
+  test('deleting the newest message puts the one before it back in the summary', async () => {
+    await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'from bob' }));
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'oops' }));
+    const alice = as('alice');
+    const earlier = Timestamp.fromMillis(Date.now() - 60000);
+    // Back to Bob's message, with its own time; unread counts untouched.
+    await assertSucceeds(
+      updateDoc(chatRef(alice), { lastMessage: 'from bob', lastUpdated: earlier, lastSenderId: 'bob' }),
+    );
+    // Not a stranger as the sender, no future time, no empty text, no counts.
+    await assertFails(updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'carol' }));
+    await assertFails(
+      updateDoc(chatRef(alice), {
+        lastMessage: 'x', lastUpdated: Timestamp.fromMillis(Date.now() + 3600000), lastSenderId: 'bob',
+      }),
+    );
+    await assertFails(updateDoc(chatRef(alice), { lastMessage: '', lastUpdated: earlier, lastSenderId: 'bob' }));
+    await assertFails(
+      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob', 'unreadCounts.bob': 0 }),
+    );
+    await assertFails(updateDoc(chatRef(as('carol')), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob' }));
+  });
+
   test("sending like main's app (no unread counts) is still allowed", async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob', {}, undefined, { legacy: true }));
     await assertSucceeds(send(as('bob'), 'bob', 'alice', {}, undefined, { legacy: true }));

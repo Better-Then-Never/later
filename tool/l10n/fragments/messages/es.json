@@ -51,5 +51,9 @@
   "messagesNewChatNoFriendsSubtitle": "¡Añade amigos para empezar a chatear!",
   "messagesNewChatFindFriends": "Encontrar amigos",
   "messagesNewChatNoMatch": "No se encontraron amigos",
-  "messagesStartChatWith": "Empezar un chat con {name}"
+  "messagesStartChatWith": "Empezar un chat con {name}",
+  "messagesCopy": "Copiar",
+  "messagesCopied": "Copiado",
+  "messagesDeleteConfirmTitle": "¿Eliminar este mensaje para los dos?",
+  "messagesDeleteFailed": "No se pudo eliminar el mensaje"
 }

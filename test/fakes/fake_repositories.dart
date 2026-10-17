@@ -557,6 +557,30 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
+  Future<void> deleteMessage(String chatId, String messageId) async {
+    calls.add('delete:$chatId:$messageId');
+    if (failSends) throw StateError('delete failed');
+    final list = messages[chatId];
+    if (list == null) return;
+    final wasNewest = list.isNotEmpty && list.last.id == messageId;
+    list.removeWhere((m) => m.id == messageId);
+    final chat = chats[chatId];
+    if (wasNewest && chat != null) {
+      final previous = list.lastOrNull;
+      chats[chatId] = Chat(
+        id: chat.id,
+        participants: chat.participants,
+        lastMessage: previous?.text ?? '',
+        lastUpdated: previous?.sentAt ?? now,
+        lastSenderId: previous?.senderId ?? chat.lastSenderId,
+        unreadCounts: chat.unreadCounts,
+        lastReadAt: chat.lastReadAt,
+      );
+    }
+    _notify();
+  }
+
+  @override
   Future<void> clearHistory(String chatId) async {
     calls.add('clear:$chatId');
     messages.remove(chatId);

@@ -523,6 +523,18 @@ service cloud.firestore {
           && (!changed().hasAny(['unreadCounts']) || d.unreadCounts == {});
       }
 
+      // Deleting the newest message: the summary shows the one before it
+      // again, by either participant and with its own time; unread counts
+      // stay as they are.
+      function isUndo() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.lastMessage is string && d.lastMessage != ''
+          && d.lastMessage.size() <= 2000
+          && d.lastUpdated is timestamp && d.lastUpdated <= request.time
+          && d.get('lastSenderId', '') in members();
+      }
+
       // get works before the chat exists (the send transaction reads it).
       allow get: if isMember();
       // The app's query: participants array-contains me.
@@ -542,7 +554,8 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['unreadCounts'])
           || (request.resource.data.unreadCounts.keys().hasOnly([other()])
             && request.resource.data.unreadCounts[other()] == 1));
-      allow update: if isMember() && (isSend() || isRead() || isClear());
+      allow update: if isMember()
+        && (isSend() || isRead() || isClear() || isUndo());
       allow delete: if false;
 
       match /messages/{messageId} {

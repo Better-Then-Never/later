@@ -51,6 +51,9 @@ class ChatController extends ChangeNotifier {
 
   /// Messages typed here that the server has not confirmed yet, by id.
   final Map<String, ChatMessage> _outbox = {};
+
+  /// Deleted here, hidden until the server's list no longer has them.
+  final Set<String> _deleting = {};
   bool _loaded = false;
   bool _failed = false;
   bool _loadingOlder = false;
@@ -88,7 +91,10 @@ class ChatController extends ChangeNotifier {
   /// still sending or failed.
   List<ChatMessage> get messages {
     final ids = {for (final m in _server) m.id};
-    return [..._server, ..._outbox.values.where((m) => !ids.contains(m.id))];
+    return [
+      ..._server,
+      ..._outbox.values.where((m) => !ids.contains(m.id)),
+    ].where((m) => !_deleting.contains(m.id)).toList();
   }
 
   /// [messages], or the search matches.
@@ -151,6 +157,8 @@ class ChatController extends ChangeNotifier {
     for (final m in messages) {
       _outbox.remove(m.id);
     }
+    final ids = {for (final m in messages) m.id};
+    _deleting.retainWhere(ids.contains);
     _notify();
     _markReadIfNeeded();
   }
@@ -270,6 +278,31 @@ class ChatController extends ChangeNotifier {
   }
 
   Future<AppFailure?> clearHistory() => _chats.clearHistory(friendUid);
+
+  /// Whether [message] can be deleted here: the user's own, sent or not.
+  bool canDelete(ChatMessage message) =>
+      isMine(message) && message.delivery != MessageDelivery.sending;
+
+  /// Deletes the user's [message] for both: it disappears at once and comes
+  /// back if the server refuses. One that never arrived (not sent) is only
+  /// dropped from this phone.
+  Future<AppFailure?> deleteMessage(ChatMessage message) async {
+    if (!canDelete(message)) return null;
+    final pending = _outbox[message.id];
+    if (pending != null && pending.delivery == MessageDelivery.failed) {
+      _outbox.remove(message.id);
+      _notify();
+      return null;
+    }
+    _deleting.add(message.id);
+    _notify();
+    final failure = await _chats.deleteMessage(friendUid, message.id);
+    if (failure != null && !_disposed) {
+      _deleting.remove(message.id);
+      _notify();
+    }
+    return failure;
+  }
 
   void _notify() {
     if (!_disposed) notifyListeners();
