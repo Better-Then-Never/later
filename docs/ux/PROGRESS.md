@@ -120,3 +120,6 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **First-capsule hint, done:** map card for users without capsules (frank@later.test on the emulator), camera on
   tap, closed for good per account (survives a restart, verified), Google logo kept visible. Flutter 255.
 - **Flash auto, done:** off → auto → on with an "A" on the lit bolt; verified on the emulator's virtual camera.
+- **Large-text pass, done:** system font 130 % on history, profile, creation, messages, map card; the card cut
+  off its button → `CapsuleInfoPanel.heightFor` (D-21), tests incl. a nonlinear scaler. Font scale reset after.
+  Flutter 259.

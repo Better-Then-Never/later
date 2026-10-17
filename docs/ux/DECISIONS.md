@@ -87,3 +87,7 @@ which google_maps_flutter cannot draw yet; revisit when it can.
 need a sender-only update rule); the summary rolls back to the previous message through `isUndo`. Replies carry a
 short quote (`replyTo`: id, sender, ≤140 characters) instead of a reference, so they render without loading the
 original and survive its deletion.
+
+**D-21 Large text:** the app follows the system text size (no clamping). Fixed-height surfaces size themselves
+from the text scale measured at body size (16): Android 14+ scales text nonlinearly, so a large reference size
+under-reports it. First applied to the map capsule card; other fixed-height cards are checked at 130 %.

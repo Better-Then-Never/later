@@ -27,6 +27,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Capsule card that always closes; Google logo never covered (F-12, F-14, F-17) | on | `map_page.dart` | emulator |
 | Marker/heatmap memoization (F-10) | on | `map_controller.dart`, `map_page.dart` | profile run (`perf/mid`) |
 | One short date format everywhere (`AppDates.short`, dd.MM.yyyy) | on | `core/l10n/app_dates.dart` | tests |
+| Map capsule card grows with the system text size (was cut off at 130 %) | on | `CapsuleInfoPanel.heightFor` | tests incl. Android-like nonlinear scaling, emulator |
 | Heatmap in one brand green, only when zoomed out (F-16, D-19) | on | `map_page.dart`, `AppColors.heatmap*` | emulator |
 | Invalid places (0,0) ignored (F-18) | on | `geo_position.dart`, mapper, rules | tests |
 | Privacy defaults in creation; per-capsule comments/reactions/approximate location (F-29) | on | `capsule_creation_*` | tests, emulator |

@@ -5,7 +5,7 @@
 |---|---|---|
 | Static analysis | `flutter analyze` | No issues found |
 | Format | `dart format --output=none --set-exit-if-changed lib test tool` | clean |
-| Unit + widget + golden | `flutter test` | **255 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
+| Unit + widget + golden | `flutter test` | **259 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
 | Translations | `test/l10n` (part of the above) | every message in 5 languages with the same placeholders; ARBs built from the fragments |
 | Design tokens | `dart run tool/check_design_tokens.dart` | no violations |
 | Cloud Functions | `cd functions && npm run test:emulate` | **43/43** |
@@ -58,6 +58,8 @@ Screenshots in `docs/ux/after`, `docs/ux/dark_candidates`.
 - On this day with capsules dated 1 and 2 years back (`on_this_day_dark.png`); heatmap only when zoomed out
   (`map_heatmap_green_dark.png`).
 - Light theme pass over tonight's screens (found the quote alignment bug).
+- Large text (system font 130 %): history, profile, creation, messages fine; the map capsule card cut off its Open
+  button (fixed, D-21).
 - Capsule created with comments off.
 - Verified badge and follower counts, achievements card and page (stats written by hand to the local emulator,
   since functions did not run there).

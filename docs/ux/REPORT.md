@@ -31,7 +31,7 @@ onboarding (asks for the permission first now); creation header scrolled under t
 vanished on the dark map; comments sheet went under the status bar with the keyboard; the info panel overflowed by
 2 px and its locked button was unreadable; creation said "No location" when onboarding skipped it (asks now); the
 photo viewer's photo shrank to the size of its Back button; a chat quote sat at the wrong edge of the friend's
-bubble; place pills were empty after a restart.
+bubble; place pills were empty after a restart; with large system text the map card cut off its Open button.
 
 **Features.** Reactions, comments (one level of replies), reports; a friend's capsules on their profile; camera
 pinch zoom, tap to focus and instant shutter feedback; offline capsules (kept on the phone, uploaded when the
@@ -48,7 +48,7 @@ removes the user's reactions and comments; deleting a chat message puts the prev
 (`isUndo`); messages may quote the one they answer (`replyTo`) and carry reactions. Functions 43/43, rules 56/56.
 
 ## Numbers
-Flutter tests 255 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
+Flutter tests 259 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
 PERFORMANCE.md (build p90 within a frame except first builds of tabs/pages at 17-18 ms).
 
 ## Decisions (DECISIONS.md)
