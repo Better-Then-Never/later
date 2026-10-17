@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -61,6 +63,13 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   bool _shutterBlink = false;
   bool _capturing = false;
 
+  /// The preview as it was at the tap, held still while CameraX takes the
+  /// picture (about a second on the reference phone): the moment is
+  /// visibly caught at once, and moving the phone afterwards changes
+  /// nothing on screen (docs/feel/PERFORMANCE.md, camera).
+  final _previewKey = GlobalKey();
+  ui.Image? _frozen;
+
   /// Holding the shutter records a loop: frames one after another until
   /// it is released or [_maxFrames] are taken.
   static const _maxFrames = 10;
@@ -82,6 +91,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     _zoomHint?.cancel();
+    _frozen?.dispose();
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_controller?.dispose());
     super.dispose();
@@ -210,9 +220,11 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       return;
     }
     unawaited(HapticFeedback.mediumImpact());
+    final frozen = _freeze();
     setState(() {
       _capturing = true;
       _shutterBlink = true;
+      _frozen = frozen;
     });
     PerfMarks.nextFrame('camera.feedback');
     Future<void>.delayed(const Duration(milliseconds: 120), () {
@@ -232,7 +244,28 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       );
     } on CameraException catch (e) {
       AppLogger.warning('Taking the picture failed', error: e);
-      if (mounted) setState(() => _capturing = false);
+      if (mounted) {
+        setState(() {
+          _capturing = false;
+          _frozen?.dispose();
+          _frozen = null;
+        });
+      }
+    }
+  }
+
+  /// A still of the preview as it is now, or null when it cannot be taken.
+  ui.Image? _freeze() {
+    if (AppMotion.reduced(context)) return null;
+    final boundary = _previewKey.currentContext?.findRenderObject();
+    if (boundary is! RenderRepaintBoundary || !boundary.hasSize) return null;
+    try {
+      return boundary.toImageSync(
+        pixelRatio: MediaQuery.devicePixelRatioOf(context),
+      );
+    } catch (e) {
+      AppLogger.debug('Camera freeze unavailable: $e');
+      return null;
     }
   }
 
@@ -359,57 +392,67 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                child: CameraPreview(
-                  controller,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onScaleStart: _onScaleStart,
-                      onScaleUpdate: _onScaleUpdate,
-                      onTapUp: (d) => _onTapToFocus(d, constraints.biggest),
-                      child: Stack(
-                        children: [
-                          if (_focusAt case final Offset at)
-                            Positioned(
-                              left: at.dx - 32,
-                              top: at.dy - 32,
-                              child: _FocusRing(key: ValueKey(_focusTick)),
-                            ),
-                          Align(
-                            alignment: const Alignment(0, 0.85),
-                            child: AnimatedOpacity(
-                              opacity: _showZoom ? 1 : 0,
-                              duration: AppMotion.of(context, AppMotion.fast),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                child: RepaintBoundary(
+                  key: _previewKey,
+                  child: CameraPreview(
+                    controller,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) => GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onScaleStart: _onScaleStart,
+                        onScaleUpdate: _onScaleUpdate,
+                        onTapUp: (d) => _onTapToFocus(d, constraints.biggest),
+                        child: Stack(
+                          children: [
+                            if (_frozen case final frozen?)
+                              Positioned.fill(
+                                child: RawImage(
+                                  image: frozen,
+                                  fit: BoxFit.fill,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.mediaScrim,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '${_zoom.toStringAsFixed(1)}×',
-                                  style: const TextStyle(
-                                    color: AppColors.onMedia,
-                                    fontWeight: FontWeight.bold,
+                              ),
+                            if (_focusAt case final Offset at)
+                              Positioned(
+                                left: at.dx - 32,
+                                top: at.dy - 32,
+                                child: _FocusRing(key: ValueKey(_focusTick)),
+                              ),
+                            Align(
+                              alignment: const Alignment(0, 0.85),
+                              child: AnimatedOpacity(
+                                opacity: _showZoom ? 1 : 0,
+                                duration: AppMotion.of(context, AppMotion.fast),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mediaScrim,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '${_zoom.toStringAsFixed(1)}×',
+                                    style: const TextStyle(
+                                      color: AppColors.onMedia,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          IgnorePointer(
-                            child: AnimatedOpacity(
-                              opacity: _shutterBlink ? 0.85 : 0,
-                              duration: AppMotion.quick,
-                              child: const ColoredBox(
-                                color: AppColors.onMedia,
-                                child: SizedBox.expand(),
+                            IgnorePointer(
+                              child: AnimatedOpacity(
+                                opacity: _shutterBlink ? 0.85 : 0,
+                                duration: AppMotion.quick,
+                                child: const ColoredBox(
+                                  color: AppColors.onMedia,
+                                  child: SizedBox.expand(),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
