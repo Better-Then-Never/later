@@ -47,6 +47,7 @@ class _MessagesPageState extends State<MessagesPage> {
             leadingButton: DefaultIconButton(
               onTap: () => NewChatSheet.show(context),
               assetPath: AppIcons.messagesNew,
+              semanticLabel: context.l10n.messagesNewChatTitle,
             ),
             searchBar: DefaultSearchBar(
               controller: _searchController,

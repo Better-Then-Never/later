@@ -9,6 +9,9 @@ class DefaultIconButton extends StatelessWidget {
   final double? opacity;
   final EdgeInsetsGeometry? contentPadding;
 
+  /// What a screen reader says for the button; pictures alone say nothing.
+  final String? semanticLabel;
+
   const DefaultIconButton({
     super.key,
     required this.onTap,
@@ -17,13 +20,14 @@ class DefaultIconButton extends StatelessWidget {
     this.child,
     this.opacity,
     this.contentPadding,
+    this.semanticLabel,
   });
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return AppPressable(
+    final button = AppPressable(
       child: GestureDetector(
         onTap: onTap,
         child: Opacity(
@@ -38,5 +42,8 @@ class DefaultIconButton extends StatelessWidget {
         ),
       ),
     );
+    final label = semanticLabel;
+    if (label == null) return button;
+    return Semantics(button: true, label: label, child: button);
   }
 }

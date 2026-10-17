@@ -179,6 +179,9 @@ class _NewChatSheetState extends State<NewChatSheet> {
                       child: DefaultIconButton(
                         onTap: () => Navigator.of(context).pop(),
                         assetPath: AppIcons.capsuleClose,
+                        semanticLabel: MaterialLocalizations.of(
+                          context,
+                        ).closeButtonTooltip,
                         size: screen.width * 0.08,
                       ),
                     ),

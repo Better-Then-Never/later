@@ -72,6 +72,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
               trailingButton: DefaultIconButton(
                 onTap: () => AppRoutes.scanProfileQr(context),
                 assetPath: AppIcons.friendsQrScan,
+                semanticLabel: context.l10n.friendsQrTitle,
                 size: screenWidth * 0.09,
               ),
             ),

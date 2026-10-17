@@ -145,10 +145,14 @@ class _CapsuleCreationView extends StatelessWidget {
                   recipientId: recipientId,
                 ),
                 assetPath: AppIcons.goBack,
+                semanticLabel: context.l10n.commonBack,
               ),
               trailingButton: DefaultIconButton(
                 onTap: () => Navigator.pop(context),
                 assetPath: AppIcons.capsuleClose,
+                semanticLabel: MaterialLocalizations.of(
+                  context,
+                ).closeButtonTooltip,
               ),
             ),
             Expanded(

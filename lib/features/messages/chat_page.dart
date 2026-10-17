@@ -393,6 +393,7 @@ class _ChatHeader extends StatelessWidget {
             child: DefaultIconButton(
               onTap: onMenu,
               assetPath: AppIcons.messagesChatMenu,
+              semanticLabel: MaterialLocalizations.of(context).showMenuTooltip,
               size: screen.width * 0.12,
             ),
           ),
