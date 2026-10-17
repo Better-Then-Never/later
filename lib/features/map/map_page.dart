@@ -419,12 +419,17 @@ class _MapViewState extends State<_MapView> {
             },
             onCameraIdle: () async {
               final controller = await _mapController.future;
-              final bounds = await controller.getVisibleRegion();
-              final center = GeoPosition(
-                (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
-                (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
-              );
-              map.onCameraIdle(center, await controller.getZoomLevel());
+              try {
+                final bounds = await controller.getVisibleRegion();
+                final center = GeoPosition(
+                  (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+                  (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+                );
+                map.onCameraIdle(center, await controller.getZoomLevel());
+              } on StateError {
+                // The map was recreated (theme change) while this ran; the
+                // new map reports its own idle camera.
+              }
             },
           ),
           AnimatedPositioned(
