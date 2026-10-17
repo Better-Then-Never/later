@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/router/app_routes.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/default_text.dart';
 import '../../friend_actions.dart';
@@ -55,7 +56,7 @@ class SuggestedFriendsList extends StatelessWidget {
         }).toList();
 
         if (users.isEmpty) {
-          return const Center(child: DefaultText('No more suggested friends'));
+          return Center(child: DefaultText(context.l10n.friendsNoSuggestions));
         }
 
         return ListView(

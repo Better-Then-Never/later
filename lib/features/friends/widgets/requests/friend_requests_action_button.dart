@@ -31,7 +31,7 @@ class FriendRequestsActionButton extends StatelessWidget {
         decoration: BoxDecorations.defaultBorderRadius(color: color),
         child: DefaultText(
           text,
-          color: AppColors.white,
+          color: AppColors.onAccent,
           fontWeight: FontWeight.bold,
         ),
       ),

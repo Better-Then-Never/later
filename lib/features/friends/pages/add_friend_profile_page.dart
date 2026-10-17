@@ -10,7 +10,8 @@ import '../friend_actions.dart';
 import '../friends_store.dart';
 import '../widgets/profile/add_friend_profile_action_button.dart';
 import '../widgets/profile/add_friend_profile_header.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Profile of someone who is not (yet) a friend: add, cancel, accept or
 /// reject, live from [FriendsStore].
@@ -35,7 +36,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       case FriendRelation.self:
         PopupNotificationService.showInfo(
           context: context,
-          message: 'This is your account',
+          message: context.l10n.friendsThisIsYou,
           position: NotificationPosition.center,
         );
       case FriendRelation.friends:
@@ -43,13 +44,13 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       case FriendRelation.requestSent:
         PopupNotificationService.showInfo(
           context: context,
-          message: 'Friend request is pending',
+          message: context.l10n.friendsRequestPendingInfo,
           position: NotificationPosition.center,
         );
       case FriendRelation.requestReceived:
         PopupNotificationService.showInfo(
           context: context,
-          message: 'This user sent you a friend request',
+          message: context.l10n.friendsRequestReceivedInfo,
           position: NotificationPosition.center,
         );
       case FriendRelation.none:
@@ -70,7 +71,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Stack(
         children: [
           SingleChildScrollView(

@@ -4,6 +4,8 @@ import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
 import 'package:later/shared/widgets/user/user_round_avatar.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class FriendRequestsReceivedRow extends StatelessWidget {
   final String name;
@@ -53,7 +55,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                           name,
                           fontWeight: FontWeight.bold,
                           fontSize: screenWidth * 0.045,
-                          color: AppColors.black,
+                          color: context.palette.textPrimary,
                           textAlign: TextAlign.start,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -63,7 +65,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                     DefaultText(
                       '@$username',
                       fontSize: screenWidth * 0.035,
-                      color: AppColors.grey600,
+                      color: context.palette.textMuted,
                     ),
                   ],
                 ),
@@ -72,13 +74,13 @@ class FriendRequestsReceivedRow extends StatelessWidget {
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onAccept,
                 color: AppColors.brandGreen,
-                text: 'Accept',
+                text: context.l10n.friendsAccept,
               ),
               SizedBox(width: screenWidth * 0.01),
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onReject,
                 color: AppColors.danger,
-                text: 'Reject',
+                text: context.l10n.friendsReject,
               ),
             ],
           ),

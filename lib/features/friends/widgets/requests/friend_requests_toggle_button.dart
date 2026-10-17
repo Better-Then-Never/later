@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
 
 class FriendRequestsToggleButton extends StatelessWidget {
   final VoidCallback onTap;
@@ -25,7 +26,7 @@ class FriendRequestsToggleButton extends StatelessWidget {
         child: Container(
           height: 35,
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.brandGreen : AppColors.white,
+            color: isSelected ? AppColors.brandGreen : context.palette.surface,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.brandGreen, width: 2),
           ),
@@ -34,7 +35,7 @@ class FriendRequestsToggleButton extends StatelessWidget {
               text,
               fontSize: screenWidth * 0.04,
               fontWeight: FontWeight.bold,
-              color: isSelected ? AppColors.white : AppColors.brandGreen,
+              color: isSelected ? AppColors.onAccent : AppColors.brandGreen,
             ),
           ),
         ),

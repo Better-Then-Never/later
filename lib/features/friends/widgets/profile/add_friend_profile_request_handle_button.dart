@@ -43,7 +43,7 @@ class AddProfileRequestHandleButton extends StatelessWidget {
                   text,
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppColors.onAccent,
                 ),
         ),
       ),

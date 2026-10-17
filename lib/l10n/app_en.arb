@@ -24,6 +24,139 @@
   "commonUnknownUsername": "unknown",
   "failureNotFound": "This item no longer exists.",
   "failurePermission": "You are not allowed to do that.",
+  "friendsAccept": "Accept",
+  "@friendsAccept": {
+    "description": "Button that accepts a received friend request."
+  },
+  "friendsAcceptRequestLabel": "Accept friend request",
+  "@friendsAcceptRequestLabel": {
+    "description": "Accessibility label of the add icon on a suggestion when that user already sent a request."
+  },
+  "friendsAdd": "Add",
+  "@friendsAdd": {
+    "description": "Main button on the profile of someone who is not a friend yet: sends a friend request."
+  },
+  "friendsAddTitle": "Add Friends",
+  "friendsBlock": "Block",
+  "@friendsBlock": {
+    "description": "Menu item and confirm button that block a user."
+  },
+  "friendsBlockConfirm": "Are you sure you want to block this user?",
+  "friendsCapsulesSettings": "Capsules settings",
+  "friendsChatSettings": "Chat settings",
+  "friendsEmpty": "No friends added yet",
+  "friendsErrorAcceptRequest": "Failed to accept request",
+  "friendsErrorBlock": "Failed to block user",
+  "friendsErrorCancelRequest": "Failed to cancel request",
+  "friendsErrorFollow": "Failed to follow user",
+  "friendsErrorLoadUsers": "Could not load users",
+  "@friendsErrorLoadUsers": {
+    "description": "Shown instead of the suggestions on Add Friends when the search fails; tapping it retries."
+  },
+  "friendsErrorRejectRequest": "Failed to reject request",
+  "friendsErrorRemoveFriend": "Failed to remove friend",
+  "friendsErrorSendRequest": "Failed to send friend request",
+  "friendsErrorUnblock": "Failed to unblock user",
+  "friendsErrorUnfollow": "Failed to unfollow user",
+  "friendsFollow": "Follow",
+  "@friendsFollow": {
+    "description": "Button in Manage friendship: get notified about this friend's capsules."
+  },
+  "friendsFollowed": "Following! You'll get notifications about their capsules",
+  "friendsFollowing": "Following",
+  "@friendsFollowing": {
+    "description": "State of the follow button when the user already follows this friend."
+  },
+  "friendsFriendCapsulesEmpty": "Friend's capsules will appear here",
+  "friendsFriendCapsulesTitle": "Friend's capsules",
+  "friendsHideSuggestionLabel": "Hide suggestion",
+  "@friendsHideSuggestionLabel": {
+    "description": "Accessibility label of the cross that hides a suggested friend."
+  },
+  "friendsMakeFriends": "Make friends",
+  "@friendsMakeFriends": {
+    "description": "Section title above the suggested people on Add Friends."
+  },
+  "friendsManageFriendship": "Manage friendship",
+  "friendsMyFriendsTitle": "My friends",
+  "friendsMyProfile": "My Profile",
+  "@friendsMyProfile": {
+    "description": "Main button when the opened profile is the user's own."
+  },
+  "friendsNoMatches": "No friends match your search",
+  "friendsNoSuggestions": "No more suggested friends",
+  "friendsOpenChat": "Open chat",
+  "friendsPending": "Pending",
+  "@friendsPending": {
+    "description": "Main button on a profile the user already sent a friend request to."
+  },
+  "friendsQrHint": "Point your camera at the QR code to add a friend",
+  "friendsQrInvalid": "Invalid QR code. Please scan a Later profile QR code.",
+  "friendsQrTitle": "Scan QR Code",
+  "friendsReject": "Reject",
+  "@friendsReject": {
+    "description": "Button that rejects a received friend request."
+  },
+  "friendsRemove": "Remove from friends",
+  "friendsRemoveAction": "Remove",
+  "@friendsRemoveAction": {
+    "description": "Confirm button of the remove-friend dialog."
+  },
+  "friendsRemoveConfirm": "Are you sure you want to remove user from friends?",
+  "friendsRemoving": "Removing...",
+  "friendsReport": "Report",
+  "@friendsReport": {
+    "description": "Menu item that reports a user."
+  },
+  "friendsRequestAccepted": "Friend request accepted!",
+  "friendsRequestAlreadyExists": "Friend request already exists",
+  "@friendsRequestAlreadyExists": {
+    "description": "Toast when the user taps add on someone they already sent a request to."
+  },
+  "friendsRequestCancelled": "Friend request cancelled",
+  "friendsRequestPendingInfo": "Friend request is pending",
+  "friendsRequestReceivedInfo": "This user sent you a friend request",
+  "friendsRequestRejected": "Friend request rejected",
+  "friendsRequestSent": "Friend request sent!",
+  "friendsRequestsButton": "Requests",
+  "@friendsRequestsButton": {
+    "description": "Button on Add Friends that opens the friend requests."
+  },
+  "friendsRequestsEmptySubtitle": "When someone sends you a friend request,\nit will appear here",
+  "friendsRequestsEmptyTitle": "No friend requests",
+  "friendsRequestsReceivedTab": "Received",
+  "@friendsRequestsReceivedTab": {
+    "description": "Toggle on Friend Requests: requests other people sent to the user."
+  },
+  "friendsRequestsSentTab": "Sent",
+  "@friendsRequestsSentTab": {
+    "description": "Toggle on Friend Requests: requests the user sent."
+  },
+  "friendsRequestsTitle": "Friend Requests",
+  "friendsSearchByTagHint": "Search by tag",
+  "@friendsSearchByTagHint": {
+    "description": "Search hint on Add Friends; the search looks people up by @username. Keep it short."
+  },
+  "friendsSearchHint": "Find my friends",
+  "@friendsSearchHint": {
+    "description": "Search hint on My friends (searches only among the user's friends). Keep it short."
+  },
+  "friendsSendCapsule": "Send Capsule",
+  "friendsSendRequestLabel": "Send friend request",
+  "@friendsSendRequestLabel": {
+    "description": "Accessibility label of the add icon on a suggested friend."
+  },
+  "friendsSentEmptySubtitle": "Friend requests you send\nwill appear here",
+  "friendsSentEmptyTitle": "No sent requests",
+  "friendsShareProfile": "Share Profile",
+  "friendsShareProfileTo": "Share profile to ...",
+  "friendsSuggestionRemoved": "Suggested friend removed from the list!",
+  "friendsThisIsYou": "This is your account",
+  "friendsUnfollowed": "Unfollowed successfully",
+  "friendsViewProfile": "View Profile",
+  "@friendsViewProfile": {
+    "description": "Main button on the profile of someone who is already a friend: opens their friend profile."
+  },
   "placeNoLocation": "No location",
   "@placeNoLocation": {
     "description": "Place pill on a capsule when the phone has no location yet."
