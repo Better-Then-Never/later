@@ -5,6 +5,7 @@ const assert = require('node:assert/strict');
 const { init } = require('./common');
 const { setAdmin } = require('./set-admin');
 const { setVerified } = require('./set-verified');
+const { backfillCounts } = require('./backfill-counts');
 
 (async () => {
   const { db, auth } = init([]);
@@ -24,6 +25,23 @@ const { setVerified } = require('./set-verified');
   assert.equal((await db.doc(`users/${user.uid}`).get()).get('verified'), true);
   await setVerified(db, ['temka_ink'], { revoke: true });
   assert.equal((await db.doc(`users/${user.uid}`).get()).get('verified'), false);
+
+  // Backfill: two followers, one following, two capsules (one public).
+  await db.doc(`users/${user.uid}/followers/a`).set({ x: 1 });
+  await db.doc(`users/${user.uid}/followers/b`).set({ x: 1 });
+  await db.doc(`users/${user.uid}/following/c`).set({ x: 1 });
+  await db.collection('capsules').add({ ownerId: user.uid, privacy: 'public' });
+  await db.collection('capsules').add({ ownerId: user.uid, privacy: 'friends' });
+  const dryRun = await backfillCounts(db, { dryRun: true });
+  assert.equal(dryRun.changed, 1);
+  assert.equal((await db.doc(`users/${user.uid}`).get()).get('followerCount'), undefined);
+  await backfillCounts(db);
+  const counted = (await db.doc(`users/${user.uid}`).get()).data();
+  assert.equal(counted.followerCount, 2);
+  assert.equal(counted.followingCount, 1);
+  assert.deepEqual(counted.stats, { capsules: 2, publicCapsules: 1 });
+  assert.equal((await backfillCounts(db)).changed, 0, 'running again changes nothing');
+
   console.log('admin scripts: all checks passed');
 })().catch((e) => {
   console.error(e);
