@@ -419,6 +419,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Разрешите доступ к камере в настройках, чтобы сделать фото';
 
   @override
+  String get capsulesCameraExposure => 'Яркость';
+
+  @override
   String get capsulesCameraFlashAuto => 'Вспышка: авто';
 
   @override
@@ -429,6 +432,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesCameraFlashOn => 'Вспышка включена';
+
+  @override
+  String get capsulesCameraFlashTorch => 'Фонарик включён';
+
+  @override
+  String get capsulesCameraFlashTorchBadge => 'Ф';
 
   @override
   String get capsulesCameraHoldForLoop => 'Удерживайте для лупа';
@@ -448,6 +457,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesCameraUnavailable => 'Камера недоступна';
+
+  @override
+  String capsulesCameraZoomTo(String zoom) {
+    return 'Увеличение $zoom×';
+  }
 
   @override
   String get capsulesColorBlue => 'Синий';

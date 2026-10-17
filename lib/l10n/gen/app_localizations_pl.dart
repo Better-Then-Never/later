@@ -420,6 +420,9 @@ class AppLocalizationsPl extends AppLocalizations {
       'Zezwól na dostęp do aparatu w ustawieniach, żeby zrobić zdjęcie';
 
   @override
+  String get capsulesCameraExposure => 'Jasność';
+
+  @override
   String get capsulesCameraFlashAuto => 'Lampa błyskowa: auto';
 
   @override
@@ -430,6 +433,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesCameraFlashOn => 'Flesz włączony';
+
+  @override
+  String get capsulesCameraFlashTorch => 'Latarka włączona';
+
+  @override
+  String get capsulesCameraFlashTorchBadge => 'L';
 
   @override
   String get capsulesCameraHoldForLoop => 'Przytrzymaj, by nagrać pętlę';
@@ -449,6 +458,11 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesCameraUnavailable => 'Brak dostępnego aparatu';
+
+  @override
+  String capsulesCameraZoomTo(String zoom) {
+    return 'Powiększenie $zoom×';
+  }
 
   @override
   String get capsulesColorBlue => 'Niebieski';

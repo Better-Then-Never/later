@@ -674,6 +674,12 @@ abstract class AppLocalizations {
   /// **'Allow camera access in Settings to take a photo'**
   String get capsulesCameraAccessDenied;
 
+  /// Screen reader label of the camera brightness (exposure) slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Brightness'**
+  String get capsulesCameraExposure;
+
   /// Camera flash button, screen reader: the flash fires when it is dark
   ///
   /// In en, this message translates to:
@@ -697,6 +703,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Flash on'**
   String get capsulesCameraFlashOn;
+
+  /// Screen reader label of the flash button when the light stays on (torch).
+  ///
+  /// In en, this message translates to:
+  /// **'Light on'**
+  String get capsulesCameraFlashTorch;
+
+  /// One letter on the lit bolt when the light stays on (like "A" for automatic): the first letter of the word for torch/light.
+  ///
+  /// In en, this message translates to:
+  /// **'L'**
+  String get capsulesCameraFlashTorchBadge;
 
   /// Under the shutter: hold it to record several frames played as a loop
   ///
@@ -733,6 +751,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No camera available'**
   String get capsulesCameraUnavailable;
+
+  /// Screen reader label of a zoom stop button.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom {zoom}×'**
+  String capsulesCameraZoomTo(String zoom);
 
   /// No description provided for @capsulesColorBlue.
   ///

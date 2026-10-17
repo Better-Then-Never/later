@@ -395,6 +395,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Allow camera access in Settings to take a photo';
 
   @override
+  String get capsulesCameraExposure => 'Brightness';
+
+  @override
   String get capsulesCameraFlashAuto => 'Flash auto';
 
   @override
@@ -405,6 +408,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesCameraFlashOn => 'Flash on';
+
+  @override
+  String get capsulesCameraFlashTorch => 'Light on';
+
+  @override
+  String get capsulesCameraFlashTorchBadge => 'L';
 
   @override
   String get capsulesCameraHoldForLoop => 'Hold for a loop';
@@ -424,6 +433,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesCameraUnavailable => 'No camera available';
+
+  @override
+  String capsulesCameraZoomTo(String zoom) {
+    return 'Zoom $zoom×';
+  }
 
   @override
   String get capsulesColorBlue => 'Blue';

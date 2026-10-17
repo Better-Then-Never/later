@@ -175,5 +175,27 @@
   "capsulesCameraTakePhotoOrLoop": "Take photo. Hold to record a loop",
   "@capsulesCameraTakePhotoOrLoop": {
     "description": "Screen reader label of the shutter when loops are on"
+  },
+  "capsulesCameraFlashTorch": "Light on",
+  "capsulesCameraFlashTorchBadge": "L",
+  "capsulesCameraExposure": "Brightness",
+  "capsulesCameraZoomTo": "Zoom {zoom}×",
+  "@capsulesCameraFlashTorch": {
+    "description": "Screen reader label of the flash button when the light stays on (torch)."
+  },
+  "@capsulesCameraFlashTorchBadge": {
+    "description": "One letter on the lit bolt when the light stays on (like \"A\" for automatic): the first letter of the word for torch/light."
+  },
+  "@capsulesCameraExposure": {
+    "description": "Screen reader label of the camera brightness (exposure) slider."
+  },
+  "@capsulesCameraZoomTo": {
+    "description": "Screen reader label of a zoom stop button.",
+    "placeholders": {
+      "zoom": {
+        "type": "String",
+        "example": "2"
+      }
+    }
   }
 }

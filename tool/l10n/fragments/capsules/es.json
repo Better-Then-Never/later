@@ -68,5 +68,9 @@
   "capsulesCameraFlashAuto": "Flash automático",
   "capsulesCameraFlashAutoBadge": "A",
   "capsulesCameraHoldForLoop": "Mantén para un bucle",
-  "capsulesCameraTakePhotoOrLoop": "Hacer foto. Mantén para grabar un bucle"
+  "capsulesCameraTakePhotoOrLoop": "Hacer foto. Mantén para grabar un bucle",
+  "capsulesCameraFlashTorch": "Linterna encendida",
+  "capsulesCameraFlashTorchBadge": "L",
+  "capsulesCameraExposure": "Brillo",
+  "capsulesCameraZoomTo": "Zoom {zoom}×"
 }

@@ -295,6 +295,10 @@
   "@capsulesCameraAccessDenied": {
     "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
   },
+  "capsulesCameraExposure": "Brightness",
+  "@capsulesCameraExposure": {
+    "description": "Screen reader label of the camera brightness (exposure) slider."
+  },
   "capsulesCameraFlashAuto": "Flash auto",
   "@capsulesCameraFlashAuto": {
     "description": "Camera flash button, screen reader: the flash fires when it is dark"
@@ -310,6 +314,14 @@
   "capsulesCameraFlashOn": "Flash on",
   "@capsulesCameraFlashOn": {
     "description": "Accessibility label of the flash button while the flash is on."
+  },
+  "capsulesCameraFlashTorch": "Light on",
+  "@capsulesCameraFlashTorch": {
+    "description": "Screen reader label of the flash button when the light stays on (torch)."
+  },
+  "capsulesCameraFlashTorchBadge": "L",
+  "@capsulesCameraFlashTorchBadge": {
+    "description": "One letter on the lit bolt when the light stays on (like \"A\" for automatic): the first letter of the word for torch/light."
   },
   "capsulesCameraHoldForLoop": "Hold for a loop",
   "@capsulesCameraHoldForLoop": {
@@ -331,6 +343,16 @@
   "capsulesCameraUnavailable": "No camera available",
   "@capsulesCameraUnavailable": {
     "description": "Shown on the camera screen when the phone has no camera."
+  },
+  "capsulesCameraZoomTo": "Zoom {zoom}×",
+  "@capsulesCameraZoomTo": {
+    "description": "Screen reader label of a zoom stop button.",
+    "placeholders": {
+      "zoom": {
+        "type": "String",
+        "example": "2"
+      }
+    }
   },
   "capsulesColorBlue": "Blue",
   "capsulesColorGreen": "Green",

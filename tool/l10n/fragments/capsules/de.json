@@ -68,5 +68,9 @@
   "capsulesCameraFlashAuto": "Blitz automatisch",
   "capsulesCameraFlashAutoBadge": "A",
   "capsulesCameraHoldForLoop": "Halten für einen Loop",
-  "capsulesCameraTakePhotoOrLoop": "Foto aufnehmen. Halten für einen Loop"
+  "capsulesCameraTakePhotoOrLoop": "Foto aufnehmen. Halten für einen Loop",
+  "capsulesCameraFlashTorch": "Licht an",
+  "capsulesCameraFlashTorchBadge": "L",
+  "capsulesCameraExposure": "Helligkeit",
+  "capsulesCameraZoomTo": "Zoom {zoom}×"
 }

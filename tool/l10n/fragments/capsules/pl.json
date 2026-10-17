@@ -68,5 +68,9 @@
   "capsulesCameraFlashAuto": "Lampa błyskowa: auto",
   "capsulesCameraFlashAutoBadge": "A",
   "capsulesCameraHoldForLoop": "Przytrzymaj, by nagrać pętlę",
-  "capsulesCameraTakePhotoOrLoop": "Zrób zdjęcie. Przytrzymaj, by nagrać pętlę"
+  "capsulesCameraTakePhotoOrLoop": "Zrób zdjęcie. Przytrzymaj, by nagrać pętlę",
+  "capsulesCameraFlashTorch": "Latarka włączona",
+  "capsulesCameraFlashTorchBadge": "L",
+  "capsulesCameraExposure": "Jasność",
+  "capsulesCameraZoomTo": "Powiększenie {zoom}×"
 }

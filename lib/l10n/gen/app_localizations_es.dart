@@ -401,6 +401,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Permite el acceso a la cámara en Ajustes para hacer una foto';
 
   @override
+  String get capsulesCameraExposure => 'Brillo';
+
+  @override
   String get capsulesCameraFlashAuto => 'Flash automático';
 
   @override
@@ -411,6 +414,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get capsulesCameraFlashOn => 'Flash activado';
+
+  @override
+  String get capsulesCameraFlashTorch => 'Linterna encendida';
+
+  @override
+  String get capsulesCameraFlashTorchBadge => 'L';
 
   @override
   String get capsulesCameraHoldForLoop => 'Mantén para un bucle';
@@ -430,6 +439,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get capsulesCameraUnavailable => 'No hay ninguna cámara disponible';
+
+  @override
+  String capsulesCameraZoomTo(String zoom) {
+    return 'Zoom $zoom×';
+  }
 
   @override
   String get capsulesColorBlue => 'Azul';
