@@ -65,6 +65,7 @@ void main() {
     social: social,
     prefs: PreferencesStore(),
     show: shown.add,
+    settle: Duration.zero,
   )..start();
 
   test(
@@ -104,6 +105,27 @@ void main() {
     expect(moment.more, 2);
     c.dispose();
   });
+
+  test(
+    'levels stored one by one (a server catch-up) become one moment',
+    () async {
+      social.achievements['me'] = [];
+      final c = controller();
+      await pumpEventQueue();
+      social.achievements['me'] = [_a('collector', 1, 4, 1)];
+      social.changed();
+      social.achievements['me'] = [
+        _a('collector', 1, 4, 1),
+        _a('friendly', 2, 3, 3),
+      ];
+      social.changed();
+      await pumpEventQueue();
+      final moment = shown.single as AchievementMoment;
+      expect(moment.def.id, 'friendly');
+      expect(moment.more, 1);
+      c.dispose();
+    },
+  );
 
   test('seen levels survive a restart; unlocks while closed show', () async {
     social.achievements['me'] = [_a('collector', 0, 4)];
@@ -215,6 +237,7 @@ void main() {
       social: social,
       prefs: PreferencesStore(),
       show: MomentToast.show,
+      settle: Duration.zero,
     )..start();
     await tester.pump();
     social.achievements['me'] = [_a('collector', 1, 4)];

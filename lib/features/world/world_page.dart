@@ -151,7 +151,7 @@ class _PassportState extends State<_Passport> {
                 maxCrossAxisExtent: 220,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
-                childAspectRatio: 0.82,
+                childAspectRatio: 0.9,
               ),
               itemCount: world.countries.length,
               itemBuilder: (context, i) {

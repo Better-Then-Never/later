@@ -36,6 +36,8 @@ class StreakMoment extends Moment {
 /// phone, so nothing shows twice; on an account's first start here the
 /// levels it already has are taken as seen (no flood of old news). Levels
 /// unlocked while the app was closed are celebrated on the next start.
+/// Levels that arrive together (the server stores a catch-up one document
+/// at a time) wait [settle] and become one moment: the newest, "and N more".
 class MomentsController {
   MomentsController({
     required SessionController session,
@@ -43,11 +45,14 @@ class MomentsController {
     required PreferencesStore prefs,
     required void Function(Moment moment) show,
     DateTime Function()? now,
+    this.settle = const Duration(milliseconds: 1500),
   }) : _session = session,
        _social = social,
        _prefs = prefs,
        _show = show,
        _now = now ?? DateTime.now;
+
+  final Duration settle;
 
   static const streakMilestones = [3, 7, 14, 30, 50, 100, 200, 365];
 
@@ -67,6 +72,10 @@ class MomentsController {
   /// "day:days" of the last streak looked at.
   String? _streakSeen;
 
+  /// New levels waiting for the others of the same burst.
+  final Map<String, (UnlockedAchievement, AchievementDef)> _pending = {};
+  Timer? _settleTimer;
+
   void start() {
     _session.addListener(_sessionChanged);
     _sessionChanged();
@@ -78,6 +87,7 @@ class MomentsController {
     _session.removeListener(_sessionChanged);
     unawaited(_sub?.cancel());
     _sub = null;
+    _settleTimer?.cancel();
   }
 
   void _sessionChanged() {
@@ -96,6 +106,8 @@ class MomentsController {
     _loaded = false;
     _seen = null;
     _streakSeen = null;
+    _settleTimer?.cancel();
+    _pending.clear();
     if (uid == null) return;
     final seen = await _prefs.string(uid, 'moments_achievements');
     final streak = await _prefs.string(uid, 'moments_streak');
@@ -146,14 +158,25 @@ class MomentsController {
     _seen = next;
     unawaited(_prefs.setString(uid, 'moments_achievements', jsonEncode(next)));
     if (fresh.isEmpty) return;
+    for (final f in fresh) {
+      _pending[f.$1.id] = f;
+    }
+    _settleTimer?.cancel();
+    _settleTimer = Timer(settle, () => _showPending(uid));
+  }
+
+  void _showPending(String uid) {
+    if (_uid != uid || _pending.isEmpty) return;
     // The newest first; the others are counted.
-    fresh.sort(
-      (a, b) => (b.$1.unlockedAt ?? DateTime(0)).compareTo(
-        a.$1.unlockedAt ?? DateTime(0),
-      ),
-    );
-    final (newest, def) = fresh.first;
-    _show(AchievementMoment(def, newest.tier, more: fresh.length - 1));
+    final all = _pending.values.toList()
+      ..sort(
+        (a, b) => (b.$1.unlockedAt ?? DateTime(0)).compareTo(
+          a.$1.unlockedAt ?? DateTime(0),
+        ),
+      );
+    _pending.clear();
+    final (newest, def) = all.first;
+    _show(AchievementMoment(def, newest.tier, more: all.length - 1));
   }
 
   void _checkStreak() {
