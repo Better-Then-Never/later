@@ -34,8 +34,12 @@ class AuthSubmitButton extends StatelessWidget {
             ),
           ),
           child: isLoading
-              ? const CircularProgressIndicator(color: AppColors.white)
-              : Text(text, style: AppTextStyles.buttonLarge),
+              ? const CircularProgressIndicator(color: AppColors.onAccent)
+              // Longer translations shrink to stay on one line.
+              : FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(text, style: AppTextStyles.buttonLarge),
+                ),
         ),
       ),
     );

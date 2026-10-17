@@ -12,6 +12,218 @@ class AppLocalizationsEs extends AppLocalizations {
   String get appName => 'Later';
 
   @override
+  String get authContinueWithGoogle => 'Continuar con Google';
+
+  @override
+  String get authEmailHint => 'Correo electrónico';
+
+  @override
+  String get authEnterEmail => 'Escribe tu correo electrónico';
+
+  @override
+  String get authErrorEmailInUse => 'Ya existe una cuenta con este correo.';
+
+  @override
+  String get authErrorEmailTaken => 'Otra cuenta ya usa este correo.';
+
+  @override
+  String get authErrorInvalidCredential => 'Correo o contraseña incorrectos.';
+
+  @override
+  String get authErrorInvalidEmail => 'El correo electrónico no es válido.';
+
+  @override
+  String get authErrorMethodDisabled =>
+      'Este método de inicio de sesión no está activado.';
+
+  @override
+  String get authErrorPickGoogleAccount =>
+      'Elige la cuenta de Google con la que inicias sesión.';
+
+  @override
+  String get authErrorRecentLogin =>
+      'Confirma que eres tú e inténtalo de nuevo.';
+
+  @override
+  String get authErrorTooManyRequests =>
+      'Demasiados intentos. Inténtalo más tarde.';
+
+  @override
+  String get authErrorUserDisabled => 'Esta cuenta está desactivada.';
+
+  @override
+  String get authErrorUserNotFound =>
+      'No se encontró ningún usuario con este correo.';
+
+  @override
+  String get authErrorWeakPassword => 'La contraseña es demasiado débil.';
+
+  @override
+  String authErrorWithMessage(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get authErrorWrongPassword => 'Contraseña incorrecta.';
+
+  @override
+  String get authErrorWrongPasswordProvided => 'La contraseña es incorrecta.';
+
+  @override
+  String get authFacebookSoon => 'Facebook (próximamente)';
+
+  @override
+  String get authFillAllFields => 'Completa todos los campos';
+
+  @override
+  String get authForgotPassword => '¿Olvidaste tu contraseña?';
+
+  @override
+  String get authGetStarted => 'Empezar';
+
+  @override
+  String get authGoToLogIn => 'Inicia sesión';
+
+  @override
+  String get authGoToSignUp => 'Regístrate';
+
+  @override
+  String get authGoogleFailed =>
+      'No se pudo iniciar sesión con Google. Inténtalo de nuevo.';
+
+  @override
+  String get authHaveAccount => '¿Ya tienes cuenta?';
+
+  @override
+  String get authHidePassword => 'Ocultar contraseña';
+
+  @override
+  String authLegalNotice(String terms, String privacy) {
+    return 'Al registrarte, aceptas los $terms y la $privacy';
+  }
+
+  @override
+  String get authLinkOpenFailed => 'No se pudo abrir la página.';
+
+  @override
+  String get authLogInButton => 'Entrar';
+
+  @override
+  String get authLoginSubtitle =>
+      'Entra en tu cuenta para seguir usando la app';
+
+  @override
+  String get authLoginTitle => 'Inicia sesión';
+
+  @override
+  String get authNameHint => 'Nombre';
+
+  @override
+  String get authNoAccount => '¿No tienes cuenta?';
+
+  @override
+  String get authNoFreeUsername =>
+      'No pudimos elegir un nombre de usuario. Regístrate, por favor.';
+
+  @override
+  String get authOrConnectWith => 'O continúa con';
+
+  @override
+  String get authPasswordHint => 'Contraseña';
+
+  @override
+  String get authPermissionCameraText => '¡Y podrás crear cápsulas del tiempo!';
+
+  @override
+  String get authPermissionCameraTitle => 'Dale a Later acceso a la cámara';
+
+  @override
+  String get authPermissionContactsText =>
+      '¡Encuentra a tus amigos en tus contactos e invítalos!';
+
+  @override
+  String get authPermissionContactsTitle => 'Acceso a los contactos';
+
+  @override
+  String get authPermissionEnable => 'Permitir';
+
+  @override
+  String get authPermissionGranted => 'Permitido';
+
+  @override
+  String get authPermissionLocationText =>
+      '¡Y podrás encontrar cápsulas cerca de ti!';
+
+  @override
+  String get authPermissionLocationTitle =>
+      'Comparte tu ubicación con nosotros';
+
+  @override
+  String get authPermissionMicrophoneText => 'Sin él, la cámara no funcionará';
+
+  @override
+  String get authPermissionMicrophoneTitle =>
+      'Dale a Later acceso al micrófono';
+
+  @override
+  String get authPermissionNotificationsText =>
+      '¡Entérate de nuevos seguidores y cápsulas!';
+
+  @override
+  String get authPermissionNotificationsTitle => 'Activa las notificaciones';
+
+  @override
+  String get authPrivacyPolicy => 'Política de privacidad';
+
+  @override
+  String get authResetDescription =>
+      'Escribe tu correo y te enviaremos un enlace para restablecer la contraseña';
+
+  @override
+  String get authResetInvalidEmail => 'Correo electrónico no válido';
+
+  @override
+  String get authResetSend => 'Enviar enlace';
+
+  @override
+  String get authResetSent =>
+      '¡Te enviamos un correo para restablecer la contraseña! Revisa tu bandeja de entrada.';
+
+  @override
+  String get authResetTitle => 'Restablecer contraseña';
+
+  @override
+  String get authResetUserNotFound => 'No hay ninguna cuenta con este correo';
+
+  @override
+  String get authShowPassword => 'Mostrar contraseña';
+
+  @override
+  String get authSignInAgain => 'Vuelve a iniciar sesión.';
+
+  @override
+  String get authSignUpButton => 'Registrarse';
+
+  @override
+  String get authSignupSubtitle => 'Completa tus datos para registrarte';
+
+  @override
+  String get authSignupTitle => 'Crea tu cuenta';
+
+  @override
+  String get authTermsOfUse => 'Términos de uso';
+
+  @override
+  String get authUsernameHint => 'Nombre de usuario';
+
+  @override
+  String get authWelcomeSubtitle =>
+      'Crea una cuenta para ver tus cápsulas\ny las de tus amigos';
+
+  @override
+  String get authWelcomeTo => 'Te damos la bienvenida a';
+
+  @override
   String get commonBack => 'Atrás';
 
   @override
