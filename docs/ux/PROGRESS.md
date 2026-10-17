@@ -115,3 +115,5 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   pill under the bubble, optimistic with rollback. Verified on the emulator with Bob reacting through an admin
   write (live "😂 2"). A format slip (pipe hid the exit code) was caught before pushing; checks now run from a
   script that stops on the first failure. Flutter 249.
+- **My Capsules states, done:** empty (what a capsule is + "Create a capsule"), no match ("Reset" clears search
+  and filters), load error, all in the shared empty-state style. Flutter 250.

@@ -17,6 +17,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | One sheet system (F-32/F-37): centred cards and edge sheets share barrier, animation and shapes; grab handle on every bottom sheet; history Sort/Filter in the menu card with the current choice in green; permission dialogs use the confirmation card; centred forms rise above the keyboard | on | `shared/widgets/app_sheets.dart`, `options_menu.dart`, `nested_menu.dart` | tests (`test/shared/sheets_test.dart`), emulator |
 | List entrance stagger on pages opened over the tabs (notifications, friends, suggestions); off with reduced motion | on | `AppStaggerScope`, `AppStaggerItem` | tests, emulator |
 | Screen-reader labels on icon-only buttons (new chat, close, back, QR, share, menu, notifications, settings) | on | `DefaultIconButton.semanticLabel` | test |
+| My Capsules empty / no-match / error states in the shared style, with "Create a capsule" and "Reset" | on | `history_page.dart` | test, emulator |
 | No dead ends: the friend menu's "Chat settings"/"Capsules settings" (did nothing) removed; place pills never empty | on | `friend_options_modal.dart`, `capsule_list_tile.dart` | tests, emulator |
 
 ## Map and creation (Tier 1)
