@@ -1,6 +1,7 @@
 // The world view (B7): the summary as read, the place from the geocoder at
 // creation, the passport page and its row on the profile.
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:later/data/firebase/firestore_mappers.dart';
@@ -142,6 +143,35 @@ void main() {
     await pumpPage(tester, WorldSummary.empty);
     expect(find.byType(Stamp), findsNothing);
     expect(find.textContaining('gets a stamp here'), findsOneWidget);
+  });
+
+  testWidgets('a long name at a large text size fits its stamp', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      testApp(
+        home: MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+          child: Center(
+            child: SizedBox(
+              width: 164,
+              height: 182,
+              child: Stamp(
+                visit: CountryVisit(
+                  code: 'US',
+                  capsules: 12,
+                  cities: const {'New York': 9, 'Los Angeles': 3},
+                  first: DateTime(2026, 1),
+                ),
+                name: 'Соединенные Штаты Америки',
+                index: 0,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull, reason: 'no overflow');
   });
 
   test('the stats carry the totals for the profile row', () {

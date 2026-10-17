@@ -274,49 +274,60 @@ class Stamp extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  CountryNames.flag(visit.code),
-                  style: const TextStyle(fontSize: 30),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  name,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: kAppFontFamily,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: ink,
+            // Too much for the stamp (a long name, large text): the whole
+            // content shrinks a little instead of overflowing (a fixed size).
+            child: LayoutBuilder(
+              builder: (context, box) => FittedBox(
+                fit: BoxFit.scaleDown,
+                child: SizedBox(
+                  width: box.maxWidth,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        CountryNames.flag(visit.code),
+                        style: const TextStyle(fontSize: 30),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        name,
+                        maxLines: 2,
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: ink,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(l10n.worldCapsules(visit.capsules), style: small),
+                      if (towns.isNotEmpty)
+                        Text(
+                          more > 0 ? '$shown +$more' : shown,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: small,
+                        ),
+                      if (first != null) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.worldFirst(
+                            DateFormat.yMMM(l10n.localeName).format(first),
+                          ),
+                          style: AppTextStyles.body.copyWith(
+                            fontSize: 11,
+                            color: palette.textMuted,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(l10n.worldCapsules(visit.capsules), style: small),
-                if (towns.isNotEmpty)
-                  Text(
-                    more > 0 ? '$shown +$more' : shown,
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: small,
-                  ),
-                if (first != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.worldFirst(
-                      DateFormat.yMMM(l10n.localeName).format(first),
-                    ),
-                    style: AppTextStyles.body.copyWith(
-                      fontSize: 11,
-                      color: palette.textMuted,
-                    ),
-                  ),
-                ],
-              ],
+              ),
             ),
           ),
         ),
