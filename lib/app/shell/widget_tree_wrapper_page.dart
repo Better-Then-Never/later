@@ -21,7 +21,7 @@ class _WidgetTreeWrapperState extends State<WidgetTreeWrapper> {
   @override
   void initState() {
     super.initState();
-    selectedPageNotifier.value = 0;
+    selectedPageNotifier.value = AppTabs.map;
 
     _links = context.read<AppLinkHandler>();
     _notificationRouter = context.read<NotificationRouter>();

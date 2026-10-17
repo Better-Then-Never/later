@@ -11,6 +11,10 @@ extension NotificationTypeL10n on NotificationType {
     NotificationType.message => l10n.notificationsTypeMessage,
     NotificationType.reply => l10n.notificationsTypeReply,
     NotificationType.comment => l10n.notificationsTypeComment,
+    NotificationType.reaction => l10n.notificationsTypeReaction,
+    NotificationType.friendRequest => l10n.notificationsTypeFriendRequest,
+    NotificationType.friendAccepted => l10n.notificationsTypeFriendAccepted,
+    NotificationType.achievement => l10n.notificationsTypeAchievement,
     NotificationType.other => l10n.notificationsTypeOther,
   };
 }
@@ -49,6 +53,18 @@ abstract final class NotificationTexts {
         text.isEmpty
             ? strings.notificationsReplyBody(_name)
             : strings.notificationsReplyBodyWithText(_name, text),
+      NotificationType.reaction => strings.notificationsReactionBody(
+        _name,
+        n.reaction ?? '',
+      ),
+      NotificationType.friendRequest => strings.notificationsFriendRequestBody(
+        _name,
+      ),
+      NotificationType.friendAccepted =>
+        strings.notificationsFriendAcceptedBody(_name),
+      NotificationType.achievement => strings.notificationsAchievementBody(
+        _name,
+      ),
       NotificationType.other => null,
     };
     if (template == null) return (before: '', after: ' ${n.message}');

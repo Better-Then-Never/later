@@ -28,5 +28,13 @@
   "notificationsMarkedRead": "{count, plural, one{{count} notificación marcada como leída} other{{count} notificaciones marcadas como leídas}}",
   "notificationsDeleteConfirm": "{count, plural, one{¿Eliminar {count} notificación?} other{¿Eliminar {count} notificaciones?}}",
   "notificationsDeleted": "{count, plural, one{{count} notificación eliminada} other{{count} notificaciones eliminadas}}",
-  "notificationsUnreadBadge": "{count, plural, one{{count} notificación sin leer} other{{count} notificaciones sin leer}}"
+  "notificationsUnreadBadge": "{count, plural, one{{count} notificación sin leer} other{{count} notificaciones sin leer}}",
+  "notificationsTypeReaction": "Nueva reacción",
+  "notificationsTypeFriendRequest": "Solicitud de amistad",
+  "notificationsTypeFriendAccepted": "Nuevo amigo",
+  "notificationsTypeAchievement": "Logro",
+  "notificationsReactionBody": "{name} reaccionó con {emoji} a tu cápsula",
+  "notificationsFriendRequestBody": "{name} quiere ser tu amigo",
+  "notificationsFriendAcceptedBody": "{name} aceptó tu solicitud de amistad",
+  "notificationsAchievementBody": "{name}: desbloqueaste un logro nuevo"
 }

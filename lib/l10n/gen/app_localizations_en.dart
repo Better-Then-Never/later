@@ -857,6 +857,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String notificationsAchievementBody(String name) {
+    return '$name: you unlocked a new achievement';
+  }
+
+  @override
   String notificationsCapsuleBody(String name) {
     return '$name created a new capsule';
   }
@@ -922,6 +927,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String notificationsFriendAcceptedBody(String name) {
+    return '$name accepted your friend request';
+  }
+
+  @override
+  String notificationsFriendRequestBody(String name) {
+    return '$name wants to be your friend';
+  }
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -966,6 +981,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String notificationsReactionBody(String name, String emoji) {
+    return '$name reacted $emoji to your capsule';
+  }
+
+  @override
   String notificationsReplyBody(String name) {
     return '$name replied to you';
   }
@@ -999,6 +1019,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsTitle => 'Notifications';
 
   @override
+  String get notificationsTypeAchievement => 'Achievement';
+
+  @override
   String get notificationsTypeCapsule => 'New Capsule';
 
   @override
@@ -1008,10 +1031,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsTypeFollow => 'New Follower';
 
   @override
+  String get notificationsTypeFriendAccepted => 'New Friend';
+
+  @override
+  String get notificationsTypeFriendRequest => 'Friend Request';
+
+  @override
   String get notificationsTypeMessage => 'New Message';
 
   @override
   String get notificationsTypeOther => 'Notification';
+
+  @override
+  String get notificationsTypeReaction => 'New Reaction';
 
   @override
   String get notificationsTypeReply => 'New Reply';

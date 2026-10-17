@@ -28,5 +28,13 @@
   "notificationsMarkedRead": "{count, plural, one{Oznaczono {count} powiadomienie jako przeczytane} few{Oznaczono {count} powiadomienia jako przeczytane} many{Oznaczono {count} powiadomień jako przeczytane} other{Oznaczono {count} powiadomienia jako przeczytane}}",
   "notificationsDeleteConfirm": "{count, plural, one{Usunąć {count} powiadomienie?} few{Usunąć {count} powiadomienia?} many{Usunąć {count} powiadomień?} other{Usunąć {count} powiadomienia?}}",
   "notificationsDeleted": "{count, plural, one{Usunięto {count} powiadomienie} few{Usunięto {count} powiadomienia} many{Usunięto {count} powiadomień} other{Usunięto {count} powiadomienia}}",
-  "notificationsUnreadBadge": "{count, plural, one{{count} nieprzeczytane powiadomienie} few{{count} nieprzeczytane powiadomienia} many{{count} nieprzeczytanych powiadomień} other{{count} nieprzeczytanego powiadomienia}}"
+  "notificationsUnreadBadge": "{count, plural, one{{count} nieprzeczytane powiadomienie} few{{count} nieprzeczytane powiadomienia} many{{count} nieprzeczytanych powiadomień} other{{count} nieprzeczytanego powiadomienia}}",
+  "notificationsTypeReaction": "Nowa reakcja",
+  "notificationsTypeFriendRequest": "Zaproszenie do znajomych",
+  "notificationsTypeFriendAccepted": "Nowy znajomy",
+  "notificationsTypeAchievement": "Osiągnięcie",
+  "notificationsReactionBody": "{name} reaguje {emoji} na twoją kapsułę",
+  "notificationsFriendRequestBody": "{name} chce dodać cię do znajomych",
+  "notificationsFriendAcceptedBody": "{name} akceptuje twoje zaproszenie",
+  "notificationsAchievementBody": "{name}: masz nowe osiągnięcie"
 }

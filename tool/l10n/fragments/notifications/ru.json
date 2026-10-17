@@ -28,5 +28,13 @@
   "notificationsMarkedRead": "{count, plural, one{{count} уведомление прочитано} few{{count} уведомления прочитаны} many{{count} уведомлений прочитано} other{{count} уведомления прочитано}}",
   "notificationsDeleteConfirm": "{count, plural, one{Удалить {count} уведомление?} few{Удалить {count} уведомления?} many{Удалить {count} уведомлений?} other{Удалить {count} уведомления?}}",
   "notificationsDeleted": "{count, plural, one{{count} уведомление удалено} few{{count} уведомления удалены} many{{count} уведомлений удалено} other{{count} уведомления удалено}}",
-  "notificationsUnreadBadge": "{count, plural, one{{count} непрочитанное уведомление} few{{count} непрочитанных уведомления} many{{count} непрочитанных уведомлений} other{{count} непрочитанного уведомления}}"
+  "notificationsUnreadBadge": "{count, plural, one{{count} непрочитанное уведомление} few{{count} непрочитанных уведомления} many{{count} непрочитанных уведомлений} other{{count} непрочитанного уведомления}}",
+  "notificationsTypeReaction": "Новая реакция",
+  "notificationsTypeFriendRequest": "Заявка в друзья",
+  "notificationsTypeFriendAccepted": "Новый друг",
+  "notificationsTypeAchievement": "Достижение",
+  "notificationsReactionBody": "{name} реагирует {emoji} на вашу капсулу",
+  "notificationsFriendRequestBody": "{name} хочет добавить вас в друзья",
+  "notificationsFriendAcceptedBody": "{name} принимает вашу заявку в друзья",
+  "notificationsAchievementBody": "{name}: у вас новое достижение"
 }

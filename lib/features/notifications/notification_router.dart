@@ -58,21 +58,26 @@ class NotificationRouter {
     final context = AppRoutes.navigatorKey.currentContext;
     if (context == null) return;
     switch (tap.type) {
-      case NotificationType.follow:
+      case NotificationType.follow || NotificationType.friendAccepted:
         final userId = tap.userId;
         if (userId == null) return;
         final isFriend = _session.profile?.friends.contains(userId) ?? false;
         await (isFriend
             ? AppRoutes.toFriendProfile(context, userId)
             : AppRoutes.toAddFriendProfile(context, userId));
-      case NotificationType.capsule:
+      case NotificationType.friendRequest:
+        await AppRoutes.toFriendRequests(context);
+      case NotificationType.capsule ||
+          NotificationType.reaction ||
+          NotificationType.comment ||
+          NotificationType.reply:
         final capsuleId = tap.capsuleId;
         if (capsuleId == null) return;
         try {
           final capsule = await _capsules.getById(capsuleId);
           if (capsule == null) return;
           AppRoutes.backToRoot();
-          selectedPageNotifier.value = 0;
+          selectedPageNotifier.value = AppTabs.map;
           _mapFocus.focus(capsule);
         } catch (e) {
           AppLogger.warning('Could not open capsule $capsuleId', error: e);
@@ -81,10 +86,11 @@ class NotificationRouter {
         final userId = tap.userId;
         if (userId == null) return;
         await AppRoutes.toChat(context, userId);
-      case NotificationType.reply ||
-          NotificationType.comment ||
-          NotificationType.other:
-        // No destination exists for these types yet.
+      case NotificationType.achievement:
+        AppRoutes.backToRoot();
+        selectedPageNotifier.value = AppTabs.profile;
+      case NotificationType.other:
+        // Nothing to open.
         break;
     }
   }

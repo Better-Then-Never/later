@@ -107,7 +107,7 @@ class _HistoryPageState extends State<HistoryPage> {
       _controller.toggleSelection(capsule.id);
     } else if (capsule.location != null) {
       context.read<MapFocus>().focus(capsule);
-      selectedPageNotifier.value = 0;
+      selectedPageNotifier.value = AppTabs.map;
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/app_notification.dart';
 import 'package:later/features/notifications/notification_texts.dart';
@@ -10,6 +11,7 @@ import 'package:later/features/notifications/widgets/notification_unread_indicat
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import 'package:later/features/users/user_directory.dart';
 
 class NotificationItem extends StatelessWidget {
   final AppNotification notification;
@@ -100,6 +102,16 @@ class NotificationItem extends StatelessWidget {
       notification,
       l10n: context.l10n,
     );
+    // Newer notifications store only the sender's id: their current name.
+    final senderId = notification.fromUserId;
+    final looked = context.select<UserDirectory, String?>(
+      (d) => notification.fromUserName.isEmpty && senderId != null
+          ? d.profile(senderId)?.name
+          : null,
+    );
+    final name = notification.fromUserName.isNotEmpty
+        ? notification.fromUserName
+        : looked ?? '';
     return Row(
       children: [
         Expanded(
@@ -113,7 +125,7 @@ class NotificationItem extends StatelessWidget {
               children: [
                 if (sentence.before.isNotEmpty) TextSpan(text: sentence.before),
                 TextSpan(
-                  text: notification.fromUserName,
+                  text: name,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 TextSpan(text: sentence.after),

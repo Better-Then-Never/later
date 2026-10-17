@@ -719,6 +719,15 @@
       }
     }
   },
+  "notificationsAchievementBody": "{name}: you unlocked a new achievement",
+  "@notificationsAchievementBody": {
+    "description": "{name} is the app's name (Later), shown in bold.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "notificationsCapsuleBody": "{name} created a new capsule",
   "@notificationsCapsuleBody": {
     "description": "Notification text: a friend created a capsule. The name is bold and cannot be inflected.",
@@ -793,6 +802,22 @@
       }
     }
   },
+  "notificationsFriendAcceptedBody": "{name} accepted your friend request",
+  "@notificationsFriendAcceptedBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFriendRequestBody": "{name} wants to be your friend",
+  "@notificationsFriendRequestBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "notificationsHoursAgo": "{count, plural, one{{count}h ago} other{{count}h ago}}",
   "@notificationsHoursAgo": {
     "description": "Time of a notification less than a day old.",
@@ -835,6 +860,17 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "notificationsReactionBody": "{name} reacted {emoji} to your capsule",
+  "@notificationsReactionBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "emoji": {
+        "type": "String"
       }
     }
   },
@@ -887,14 +923,18 @@
   "@notificationsTitle": {
     "description": "Title of the notifications page and of its empty state."
   },
+  "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
   "notificationsTypeComment": "New Comment",
   "notificationsTypeFollow": "New Follower",
   "@notificationsTypeFollow": {
     "description": "Title of a notification of this type."
   },
+  "notificationsTypeFriendAccepted": "New Friend",
+  "notificationsTypeFriendRequest": "Friend Request",
   "notificationsTypeMessage": "New Message",
   "notificationsTypeOther": "Notification",
+  "notificationsTypeReaction": "New Reaction",
   "notificationsTypeReply": "New Reply",
   "notificationsUnreadBadge": "{count, plural, one{{count} unread notification} other{{count} unread notifications}}",
   "@notificationsUnreadBadge": {

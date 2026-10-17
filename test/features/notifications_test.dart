@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:later/core/l10n/l10n.dart';
+import 'package:later/data/firebase/firestore_mappers.dart';
 import 'package:later/data/models/app_notification.dart';
+import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/services/profile_image_cache.dart';
 import 'package:later/data/services/push_messaging_service.dart';
 import 'package:later/features/notifications/notification_texts.dart';
 import 'package:later/features/notifications/notifications_store.dart';
 import 'package:later/features/notifications/widgets/notification_item.dart';
 import 'package:later/features/notifications/widgets/notification_selection_action_bar.dart';
+import 'package:later/features/users/user_directory.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
@@ -194,8 +197,15 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      ChangeNotifierProvider(
-        create: (_) => ProfileImageCache(FakeImageStorageRepository()),
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => ProfileImageCache(FakeImageStorageRepository()),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => UserDirectory(FakeUserRepository()),
+          ),
+        ],
         child: testApp(
           home: Scaffold(
             body: NotificationItem(
@@ -215,6 +225,71 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Just now'), findsOneWidget);
+  });
+
+  testWidgets('newer notifications look the sender up by id', (tester) async {
+    final users = FakeUserRepository()
+      ..put(const UserProfile(uid: 'u9', name: 'Zoe', username: 'zoe'));
+    final reaction = FirestoreMappers.notification('r1', {
+      'type': 'reaction',
+      'fromUserId': 'u9',
+      'capsuleId': 'c1',
+      'reaction': 'fire',
+      'isRead': false,
+    });
+    expect(reaction.type, NotificationType.reaction);
+    expect(reaction.fromUserName, isEmpty);
+    expect(reaction.reaction, '🔥');
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => ProfileImageCache(FakeImageStorageRepository()),
+          ),
+          ChangeNotifierProvider(create: (_) => UserDirectory(users)),
+        ],
+        child: testApp(
+          home: Scaffold(
+            body: NotificationItem(
+              notification: reaction,
+              isSelected: false,
+              selectionMode: false,
+              onTap: () {},
+              onLongPress: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Zoe reacted 🔥 to your capsule', findRichText: true),
+      findsOneWidget,
+    );
+  });
+
+  test('sentences of the server-made types', () {
+    AppNotification server(String type) => FirestoreMappers.notification('x', {
+      'type': type,
+      if (type != 'achievement') 'fromUserId': 'u9',
+    });
+    String text(AppNotification n, String name) {
+      final s = NotificationTexts.sentence(n);
+      return '${s.before}$name${s.after}';
+    }
+
+    expect(text(server('friendRequest'), 'Zoe'), 'Zoe wants to be your friend');
+    expect(
+      text(server('friendAccepted'), 'Zoe'),
+      'Zoe accepted your friend request',
+    );
+    final achievement = server('achievement');
+    expect(achievement.fromUserName, 'Later');
+    expect(
+      text(achievement, achievement.fromUserName),
+      'Later: you unlocked a new achievement',
+    );
   });
 
   testWidgets('the selection bar shows the count and labels its buttons', (

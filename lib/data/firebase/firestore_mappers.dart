@@ -395,14 +395,20 @@ abstract final class FirestoreMappers {
       id: id,
       type: NotificationType.parse(data['type']),
       fromUserId: _nonEmptyString(data['fromUserId']),
-      // Sent by the app itself (achievements, announcements).
-      fromUserName: _string(data['fromUserName'], AppL10n.current.appName),
+      // Newer notifications store only the sender's id (the app looks the
+      // name up); without a sender it comes from the app itself.
+      fromUserName: _string(
+        data['fromUserName'],
+        data['fromUserId'] is String ? '' : AppL10n.current.appName,
+      ),
       fromUserAvatarUrl: url(data['fromUserAvatar']),
       message: _string(data['message'], ''),
       thumbnailImageUrl: url(data['thumbnailImage']),
       timestamp: _date(data['timestamp']),
       isRead: data['isRead'] == true,
       capsuleId: _nonEmptyString(data['capsuleId']),
+      reaction: ReactionType.parse(data['reaction'])?.emoji,
+      achievementId: _nonEmptyString(data['achievementId']),
     );
   }
 }

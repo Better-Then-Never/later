@@ -28,5 +28,13 @@
   "notificationsMarkedRead": "{count, plural, one{{count} Benachrichtigung als gelesen markiert} other{{count} Benachrichtigungen als gelesen markiert}}",
   "notificationsDeleteConfirm": "{count, plural, one{{count} Benachrichtigung löschen?} other{{count} Benachrichtigungen löschen?}}",
   "notificationsDeleted": "{count, plural, one{{count} Benachrichtigung gelöscht} other{{count} Benachrichtigungen gelöscht}}",
-  "notificationsUnreadBadge": "{count, plural, one{{count} ungelesene Benachrichtigung} other{{count} ungelesene Benachrichtigungen}}"
+  "notificationsUnreadBadge": "{count, plural, one{{count} ungelesene Benachrichtigung} other{{count} ungelesene Benachrichtigungen}}",
+  "notificationsTypeReaction": "Neue Reaktion",
+  "notificationsTypeFriendRequest": "Freundschaftsanfrage",
+  "notificationsTypeFriendAccepted": "Neuer Freund",
+  "notificationsTypeAchievement": "Erfolg",
+  "notificationsReactionBody": "{name} hat mit {emoji} auf deine Kapsel reagiert",
+  "notificationsFriendRequestBody": "{name} möchte mit dir befreundet sein",
+  "notificationsFriendAcceptedBody": "{name} hat deine Freundschaftsanfrage angenommen",
+  "notificationsAchievementBody": "{name}: Du hast einen neuen Erfolg freigeschaltet"
 }

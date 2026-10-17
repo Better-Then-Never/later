@@ -1634,6 +1634,12 @@ abstract class AppLocalizations {
   /// **'You: {message}'**
   String messagesYouPrefix(String message);
 
+  /// {name} is the app's name (Later), shown in bold.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}: you unlocked a new achievement'**
+  String notificationsAchievementBody(String name);
+
   /// Notification text: a friend created a capsule. The name is bold and cannot be inflected.
   ///
   /// In en, this message translates to:
@@ -1694,6 +1700,18 @@ abstract class AppLocalizations {
   /// **'{name} started following you'**
   String notificationsFollowBody(String name);
 
+  /// No description provided for @notificationsFriendAcceptedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} accepted your friend request'**
+  String notificationsFriendAcceptedBody(String name);
+
+  /// No description provided for @notificationsFriendRequestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} wants to be your friend'**
+  String notificationsFriendRequestBody(String name);
+
   /// Time of a notification less than a day old.
   ///
   /// In en, this message translates to:
@@ -1729,6 +1747,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count}m ago} other{{count}m ago}}'**
   String notificationsMinutesAgo(int count);
+
+  /// No description provided for @notificationsReactionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} reacted {emoji} to your capsule'**
+  String notificationsReactionBody(String name, String emoji);
 
   /// Notification text: a reply to the user (no reply text stored). The name is bold and cannot be inflected.
   ///
@@ -1772,6 +1796,12 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get notificationsTitle;
 
+  /// No description provided for @notificationsTypeAchievement.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement'**
+  String get notificationsTypeAchievement;
+
   /// No description provided for @notificationsTypeCapsule.
   ///
   /// In en, this message translates to:
@@ -1790,6 +1820,18 @@ abstract class AppLocalizations {
   /// **'New Follower'**
   String get notificationsTypeFollow;
 
+  /// No description provided for @notificationsTypeFriendAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'New Friend'**
+  String get notificationsTypeFriendAccepted;
+
+  /// No description provided for @notificationsTypeFriendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend Request'**
+  String get notificationsTypeFriendRequest;
+
   /// No description provided for @notificationsTypeMessage.
   ///
   /// In en, this message translates to:
@@ -1801,6 +1843,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notification'**
   String get notificationsTypeOther;
+
+  /// No description provided for @notificationsTypeReaction.
+  ///
+  /// In en, this message translates to:
+  /// **'New Reaction'**
+  String get notificationsTypeReaction;
 
   /// No description provided for @notificationsTypeReply.
   ///

@@ -863,6 +863,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String notificationsAchievementBody(String name) {
+    return '$name: у вас новое достижение';
+  }
+
+  @override
   String notificationsCapsuleBody(String name) {
     return '$name делится новой капсулой';
   }
@@ -934,6 +939,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String notificationsFriendAcceptedBody(String name) {
+    return '$name принимает вашу заявку в друзья';
+  }
+
+  @override
+  String notificationsFriendRequestBody(String name) {
+    return '$name хочет добавить вас в друзья';
+  }
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -984,6 +999,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String notificationsReactionBody(String name, String emoji) {
+    return '$name реагирует $emoji на вашу капсулу';
+  }
+
+  @override
   String notificationsReplyBody(String name) {
     return '$name отвечает вам';
   }
@@ -1019,6 +1039,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationsTitle => 'Уведомления';
 
   @override
+  String get notificationsTypeAchievement => 'Достижение';
+
+  @override
   String get notificationsTypeCapsule => 'Новая капсула';
 
   @override
@@ -1028,10 +1051,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationsTypeFollow => 'Новый подписчик';
 
   @override
+  String get notificationsTypeFriendAccepted => 'Новый друг';
+
+  @override
+  String get notificationsTypeFriendRequest => 'Заявка в друзья';
+
+  @override
   String get notificationsTypeMessage => 'Новое сообщение';
 
   @override
   String get notificationsTypeOther => 'Уведомление';
+
+  @override
+  String get notificationsTypeReaction => 'Новая реакция';
 
   @override
   String get notificationsTypeReply => 'Новый ответ';
