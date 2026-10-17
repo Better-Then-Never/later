@@ -15,5 +15,5 @@ abstract final class FeatureFlags {
   static const streaks = false;
 
   /// Announcements from the Later team (topic pushes).
-  static const news = false;
+  static const news = true;
 }

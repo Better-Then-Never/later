@@ -25,6 +25,7 @@ import '../features/map/current_location.dart';
 import '../features/map/map_focus.dart';
 import '../features/messages/chats_store.dart';
 import '../features/notifications/notification_router.dart';
+import '../features/notifications/news_topics.dart';
 import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
 import '../features/settings/device_settings_store.dart';
@@ -87,6 +88,11 @@ class _AppScopeState extends State<AppScope> {
     notifications: _notifications,
   );
   late final NotificationRouter _notificationRouter;
+  late final _newsTopics = NewsTopics(
+    push: _push,
+    settings: _settingsStore,
+    prefs: _prefs,
+  );
 
   late final SessionController _session;
 
@@ -112,6 +118,7 @@ class _AppScopeState extends State<AppScope> {
     _links.init();
     // Muted chats leave the unread badge.
     _settingsStore.addListener(_syncMutedChats);
+    _newsTopics.start();
     _notificationRouter = NotificationRouter(
       push: _push,
       session: _session,
@@ -128,6 +135,7 @@ class _AppScopeState extends State<AppScope> {
   @override
   void dispose() {
     _settingsStore.removeListener(_syncMutedChats);
+    _newsTopics.dispose();
     _session.dispose();
     _notificationRouter.dispose();
     _push.dispose();

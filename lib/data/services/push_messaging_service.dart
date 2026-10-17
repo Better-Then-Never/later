@@ -48,7 +48,13 @@ class NotificationTap {
 
 /// FCM + local notifications: permission, token, foreground display and tap
 /// events for all three app states (foreground, background, terminated).
-class PushMessagingService {
+/// Subscribes this device to FCM topics.
+abstract interface class TopicSubscriber {
+  Future<void> subscribeToTopic(String topic);
+  Future<void> unsubscribeFromTopic(String topic);
+}
+
+class PushMessagingService implements TopicSubscriber {
   PushMessagingService({
     FirebaseMessaging? messaging,
     FlutterLocalNotificationsPlugin? localNotifications,
@@ -209,6 +215,15 @@ class PushMessagingService {
       return null;
     }
   }
+
+  /// Topic pushes (announcements, see NewsTopics).
+  @override
+  Future<void> subscribeToTopic(String topic) =>
+      _messaging.subscribeToTopic(topic);
+
+  @override
+  Future<void> unsubscribeFromTopic(String topic) =>
+      _messaging.unsubscribeFromTopic(topic);
 
   /// Revokes this device's token so the previous user stops receiving pushes.
   Future<void> deleteToken() async {
