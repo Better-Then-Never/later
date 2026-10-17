@@ -27,6 +27,7 @@ import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/later_loading_bar.dart';
 import '../settings/device_settings_store.dart';
 import 'current_location.dart';
+import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
@@ -184,6 +185,32 @@ class _MapViewState extends State<_MapView> {
     _select(capsule);
   }
 
+  /// A tap on a numbered bubble: the camera moves in on its capsules.
+  Future<void> _zoomTo(MapItem cluster) async {
+    final controller = await _mapController.future;
+    final b = cluster.bounds!;
+    if ((b.north - b.south).abs() < 1e-4 && (b.east - b.west).abs() < 1e-4) {
+      // All in one spot: closer, around it.
+      final zoom = await controller.getZoomLevel();
+      await controller.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(cluster.at.latitude, cluster.at.longitude),
+          zoom + 2,
+        ),
+      );
+      return;
+    }
+    await controller.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(b.south, b.west),
+          northeast: LatLng(b.north, b.east),
+        ),
+        64,
+      ),
+    );
+  }
+
   Widget _infoPanel(Capsule capsule) => CapsuleInfoPanel(
     capsule: capsule,
     onMoreInfo: () => CapsuleDetailDialog.show(
@@ -272,23 +299,34 @@ class _MapViewState extends State<_MapView> {
               position: LatLng(me.latitude, me.longitude),
             );
     }
-    final key = (map.capsulesVersion, icons.capsulePins, map.showMarkers);
+    // Only what is on screen, clustered (MapController.items): every marker
+    // update runs on Android's main thread.
+    final key = (map.itemsVersion, icons.capsulePins);
     if (key != _capsuleMarkersKey) {
       _capsuleMarkersKey = key;
-      _capsuleMarkers = !map.showMarkers
-          ? const {}
-          : {
-              for (final capsule in map.visibleCapsules)
-                Marker(
-                  markerId: MarkerId(capsule.id),
-                  position: LatLng(
-                    capsule.location!.latitude,
-                    capsule.location!.longitude,
-                  ),
-                  icon: icons.forColor(capsule.color),
-                  onTap: () => _select(capsule),
-                ),
-            };
+      _capsuleMarkers = {
+        for (final item in map.items)
+          if (item.capsule case final capsule?)
+            Marker(
+              markerId: MarkerId(capsule.id),
+              position: LatLng(
+                capsule.location!.latitude,
+                capsule.location!.longitude,
+              ),
+              icon: icons.forColor(capsule.color),
+              onTap: () => _select(capsule),
+            )
+          else
+            Marker(
+              markerId: MarkerId(item.id),
+              position: LatLng(item.at.latitude, item.at.longitude),
+              icon:
+                  map.clusterIcon(item.count) ?? BitmapDescriptor.defaultMarker,
+              anchor: const Offset(0.5, 0.5),
+              zIndexInt: 1,
+              onTap: () => unawaited(_zoomTo(item)),
+            ),
+      };
     }
     final user = _userMarker;
     return user == null ? _capsuleMarkers : {user, ..._capsuleMarkers};
@@ -330,7 +368,8 @@ class _MapViewState extends State<_MapView> {
 
   @override
   Widget build(BuildContext context) {
-    final map = context.watch<MapController>();
+    final map = context.watch<MapController>()
+      ..pixelRatio = MediaQuery.devicePixelRatioOf(context);
     final look = context.select<DeviceSettingsStore, MapLook>((s) => s.mapLook);
     if (map.state == MapLoadState.loading) {
       return const Center(child: LaterLoadingBar(width: 150, height: 150));
@@ -415,7 +454,16 @@ class _MapViewState extends State<_MapView> {
                   (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
                   (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
                 );
-                map.onCameraIdle(center, await controller.getZoomLevel());
+                map.onCameraIdle(
+                  center,
+                  await controller.getZoomLevel(),
+                  view: GeoBounds(
+                    south: bounds.southwest.latitude,
+                    west: bounds.southwest.longitude,
+                    north: bounds.northeast.latitude,
+                    east: bounds.northeast.longitude,
+                  ),
+                );
               } on StateError {
                 // The map went away (the tab was rebuilt) while this ran.
               }

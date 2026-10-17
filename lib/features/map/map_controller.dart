@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart'
+    show BitmapDescriptor;
 
 import '../../app/session/session_controller.dart';
 import '../../core/logging/app_logger.dart';
@@ -8,7 +10,9 @@ import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
+import 'cluster_icons.dart';
 import 'current_location.dart';
+import 'map_clusters.dart';
 import 'marker_icons.dart';
 
 enum MapLoadState { loading, ready }
@@ -89,6 +93,54 @@ class MapController extends ChangeNotifier {
   /// Every capsule the signed-in user may see, de-duplicated; computed once
   /// per change of the capsule lists.
   List<Capsule> get visibleCapsules => _visible ??= _computeVisible();
+
+  /// What the map shows at marker zoom: pins and numbered bubbles for the
+  /// part on screen (see [clusterCapsules]), recomputed when the camera stops
+  /// or the capsules change, never while it moves. Empty until the first
+  /// camera stop and below [markerZoomThreshold] (the heatmap shows then).
+  List<MapItem> get items => _items;
+  List<MapItem> _items = const [];
+
+  /// Changes whenever [items] change: the map page rebuilds markers only then.
+  int get itemsVersion => _itemsVersion;
+  int _itemsVersion = 0;
+
+  GeoBounds? _view;
+  int _clusterRun = 0;
+  final Map<String, BitmapDescriptor> _clusterIcons = {};
+
+  /// Device pixel ratio for the bubble bitmaps (set by the map page).
+  double pixelRatio = 3;
+
+  /// The bubble for a cluster of [count] (ready whenever [items] has it).
+  BitmapDescriptor? clusterIcon(int count) =>
+      _clusterIcons[ClusterIcons.label(count)];
+
+  Future<void> _recluster() async {
+    final view = _view;
+    final run = ++_clusterRun;
+    if (view == null || !showMarkers) {
+      if (_items.isEmpty) return;
+      _items = const [];
+      _itemsVersion++;
+      notifyListeners();
+      return;
+    }
+    final items = clusterCapsules(visibleCapsules, view: view, zoom: _zoom);
+    for (final item in items) {
+      if (!item.isCluster) continue;
+      final label = ClusterIcons.label(item.count);
+      if (_clusterIcons.containsKey(label)) continue;
+      _clusterIcons[label] = await ClusterIcons.forCount(
+        item.count,
+        pixelRatio,
+      );
+    }
+    if (_disposed || run != _clusterRun) return;
+    _items = items;
+    _itemsVersion++;
+    notifyListeners();
+  }
 
   List<Capsule> _computeVisible() {
     final uid = _session.uid;
@@ -219,13 +271,16 @@ class MapController extends ChangeNotifier {
         );
   }
 
-  /// Called when the camera stops moving.
-  void onCameraIdle(GeoPosition center, double zoom) {
+  /// Called when the camera stops moving, with the part of the map on
+  /// screen.
+  void onCameraIdle(GeoPosition center, double zoom, {GeoBounds? view}) {
     final band = _bandCenter;
     if (band == null || (center.latitude - band).abs() > _bandHalfHeight / 2) {
       _loadPublicBand(center.latitude);
     }
     _setZoom(zoom);
+    if (view != null) _view = view;
+    unawaited(_recluster());
   }
 
   /// Called while the camera moves; only crossing the marker threshold
@@ -243,6 +298,7 @@ class MapController extends ChangeNotifier {
     _capsulesChanged();
     if (_disposed) return;
     update();
+    unawaited(_recluster());
     AppLogger.debug(
       'Map capsules: own=${_own.length} friends=${_friends.length} '
       'public=${_public.length} visible=${visibleCapsules.length}',
