@@ -1215,6 +1215,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapMyLocation => 'Mein Standort';
 
   @override
+  String get mapZoomIn => 'Vergrößern';
+
+  @override
+  String get mapZoomOut => 'Verkleinern';
+
+  @override
   String get messagesBlockedByYou => 'Du hast diesen Nutzer blockiert';
 
   @override

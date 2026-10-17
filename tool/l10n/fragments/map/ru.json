@@ -13,5 +13,7 @@
   "mapCapsuleNoDescription": "У этой капсулы нет описания.",
   "mapMyLocation": "Моё местоположение",
   "mapFirstCapsuleTitle": "Оставьте первую капсулу",
-  "mapFirstCapsuleBody": "Сделайте фото здесь и выберите, когда оно откроется."
+  "mapFirstCapsuleBody": "Сделайте фото здесь и выберите, когда оно откроется.",
+  "mapZoomIn": "Приблизить",
+  "mapZoomOut": "Отдалить"
 }

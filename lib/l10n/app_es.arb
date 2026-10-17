@@ -322,6 +322,8 @@
   "mapLocationServiceOff": "Activa la ubicación para ver cápsulas cerca de ti",
   "mapLocationUnknown": "No hemos podido detectar tu ubicación",
   "mapMyLocation": "Mi ubicación",
+  "mapZoomIn": "Acercar",
+  "mapZoomOut": "Alejar",
   "messagesBlockedByYou": "Has bloqueado a este usuario",
   "messagesCantSend": "No puedes enviar mensajes a este usuario",
   "messagesCapsuleLabel": "Cápsula",

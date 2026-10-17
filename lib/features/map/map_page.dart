@@ -65,10 +65,88 @@ class _MapView extends StatefulWidget {
   State<_MapView> createState() => _MapViewState();
 }
 
+/// Zoom in and out: one pill of two 52 dp halves, the signs drawn in the
+/// hand-drawn icons' rounded stroke (no icon font).
+class _ZoomButtons extends StatelessWidget {
+  const _ZoomButtons({required this.onZoomIn, required this.onZoomOut});
+
+  final VoidCallback onZoomIn;
+  final VoidCallback onZoomOut;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    Widget half(String label, VoidCallback onTap, {required bool plus}) =>
+        Semantics(
+          button: true,
+          label: label,
+          child: AppPressable(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: SizedBox.square(
+                dimension: _MyLocationButton.size,
+                child: CustomPaint(
+                  painter: _SignPainter(plus: plus, color: palette.icon),
+                ),
+              ),
+            ),
+          ),
+        );
+    return Container(
+      decoration: BoxDecoration(
+        color: palette.surface,
+        borderRadius: BorderRadius.circular(_MyLocationButton.size / 2),
+        border: palette.isDark ? Border.all(color: palette.cardBorder) : null,
+        boxShadow: AppShadows.raised(context),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          half(context.l10n.mapZoomIn, onZoomIn, plus: true),
+          Container(width: 28, height: 1, color: palette.divider),
+          half(context.l10n.mapZoomOut, onZoomOut, plus: false),
+        ],
+      ),
+    );
+  }
+}
+
+class _SignPainter extends CustomPainter {
+  const _SignPainter({required this.plus, required this.color});
+
+  final bool plus;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2.6
+      ..strokeCap = StrokeCap.round;
+    final c = size.center(Offset.zero);
+    const arm = 9.0;
+    canvas.drawLine(c - const Offset(arm, 0), c + const Offset(arm, 0), paint);
+    if (plus) {
+      canvas.drawLine(
+        c - const Offset(0, arm),
+        c + const Offset(0, arm),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SignPainter old) =>
+      old.plus != plus || old.color != color;
+}
+
 /// Round button above the navigation bar that brings the map to the user,
 /// drawn with the map's own "you" figure.
 class _MyLocationButton extends StatelessWidget {
   const _MyLocationButton({required this.onTap});
+
+  static const size = 52.0;
 
   final VoidCallback onTap;
 
@@ -82,8 +160,8 @@ class _MyLocationButton extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: Container(
-            width: 52,
-            height: 52,
+            width: size,
+            height: size,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: palette.surface,
@@ -183,6 +261,12 @@ class _MapViewState extends State<_MapView> {
     await controller.animateCamera(CameraUpdate.newLatLngZoom(target, 18));
     AppLogger.debug('Map focus: camera moved');
     _select(capsule);
+  }
+
+  Future<void> _zoomBy(CameraUpdate update) async {
+    unawaited(HapticFeedback.selectionClick());
+    final controller = await _mapController.future;
+    await controller.animateCamera(update);
   }
 
   /// A tap on a numbered bubble: the camera moves in on its capsules.
@@ -476,6 +560,17 @@ class _MapViewState extends State<_MapView> {
             // Moves up while a capsule card (or the hint) is shown.
             bottom: bottom + raised,
             child: _MyLocationButton(onTap: () => _goToMe(map)),
+          ),
+          // Zoom, above the my-location button (pinch still works).
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            right: 16,
+            bottom: bottom + raised + _MyLocationButton.size + 12,
+            child: _ZoomButtons(
+              onZoomIn: () => unawaited(_zoomBy(CameraUpdate.zoomIn())),
+              onZoomOut: () => unawaited(_zoomBy(CameraUpdate.zoomOut())),
+            ),
           ),
           Positioned(
             left: 16,

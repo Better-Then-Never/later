@@ -987,6 +987,14 @@
     "description": "Toast on the map when no position could be found although location is allowed."
   },
   "mapMyLocation": "My location",
+  "mapZoomIn": "Zoom in",
+  "@mapZoomIn": {
+    "description": "Screen reader label of the map's + button."
+  },
+  "mapZoomOut": "Zoom out",
+  "@mapZoomOut": {
+    "description": "Screen reader label of the map's − button."
+  },
   "messagesBlockedByYou": "You blocked this user",
   "messagesCantSend": "You can't send messages to this user",
   "messagesCapsuleLabel": "Capsule",

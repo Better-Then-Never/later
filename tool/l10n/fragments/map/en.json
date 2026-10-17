@@ -79,5 +79,13 @@
   },
   "mapMyLocation": "My location",
   "mapFirstCapsuleTitle": "Leave your first capsule",
-  "mapFirstCapsuleBody": "Take a photo here and choose when it opens."
+  "mapFirstCapsuleBody": "Take a photo here and choose when it opens.",
+  "mapZoomIn": "Zoom in",
+  "mapZoomOut": "Zoom out",
+  "@mapZoomIn": {
+    "description": "Screen reader label of the map's + button."
+  },
+  "@mapZoomOut": {
+    "description": "Screen reader label of the map's − button."
+  }
 }

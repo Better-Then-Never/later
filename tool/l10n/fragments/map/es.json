@@ -13,5 +13,7 @@
   "mapCapsuleNoDescription": "Esta cápsula no tiene descripción.",
   "mapMyLocation": "Mi ubicación",
   "mapFirstCapsuleTitle": "Deja tu primera cápsula",
-  "mapFirstCapsuleBody": "Haz una foto aquí y elige cuándo se abre."
+  "mapFirstCapsuleBody": "Haz una foto aquí y elige cuándo se abre.",
+  "mapZoomIn": "Acercar",
+  "mapZoomOut": "Alejar"
 }

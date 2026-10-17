@@ -1231,6 +1231,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mapMyLocation => 'Moja lokalizacja';
 
   @override
+  String get mapZoomIn => 'Przybliż';
+
+  @override
+  String get mapZoomOut => 'Oddal';
+
+  @override
   String get messagesBlockedByYou => 'Ten użytkownik jest zablokowany';
 
   @override

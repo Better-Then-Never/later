@@ -1188,6 +1188,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapMyLocation => 'My location';
 
   @override
+  String get mapZoomIn => 'Zoom in';
+
+  @override
+  String get mapZoomOut => 'Zoom out';
+
+  @override
   String get messagesBlockedByYou => 'You blocked this user';
 
   @override

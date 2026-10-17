@@ -322,6 +322,8 @@
   "mapLocationServiceOff": "Включите геолокацию, чтобы видеть капсулы рядом с вами",
   "mapLocationUnknown": "Не удалось определить вашу геопозицию",
   "mapMyLocation": "Моё местоположение",
+  "mapZoomIn": "Приблизить",
+  "mapZoomOut": "Отдалить",
   "messagesBlockedByYou": "Вы заблокировали этого пользователя",
   "messagesCantSend": "Вы не можете писать этому пользователю",
   "messagesCapsuleLabel": "Капсула",

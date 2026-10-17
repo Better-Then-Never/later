@@ -1198,6 +1198,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mapMyLocation => 'Mi ubicación';
 
   @override
+  String get mapZoomIn => 'Acercar';
+
+  @override
+  String get mapZoomOut => 'Alejar';
+
+  @override
   String get messagesBlockedByYou => 'Has bloqueado a este usuario';
 
   @override

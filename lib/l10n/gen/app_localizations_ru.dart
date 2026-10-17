@@ -1223,6 +1223,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapMyLocation => 'Моё местоположение';
 
   @override
+  String get mapZoomIn => 'Приблизить';
+
+  @override
+  String get mapZoomOut => 'Отдалить';
+
+  @override
   String get messagesBlockedByYou => 'Вы заблокировали этого пользователя';
 
   @override

@@ -2036,6 +2036,18 @@ abstract class AppLocalizations {
   /// **'My location'**
   String get mapMyLocation;
 
+  /// Screen reader label of the map's + button.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in'**
+  String get mapZoomIn;
+
+  /// Screen reader label of the map's − button.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom out'**
+  String get mapZoomOut;
+
   /// No description provided for @messagesBlockedByYou.
   ///
   /// In en, this message translates to:
