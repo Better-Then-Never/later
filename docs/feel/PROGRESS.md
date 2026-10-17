@@ -7,11 +7,11 @@ on #78. Never merged, never deployed. Resume here.
 | Part | Status |
 |---|---|
 | Phase 0: rig | done (RIG.md, DEVICE.md) |
-| Phase 1: baseline | done (PERFORMANCE.md "Baseline"); tap-target phone audit still to run |
-| Phase 2: jank fixes | in progress: fonts, theme crossfade, map restyle + shared pins, route, clustering done |
-| Phase 3: motion system | not started |
-| Phase 4: layout | not started |
-| Phase 5: verification, CHECKPOINT_A | not started |
+| Phase 1: baseline | done (PERFORMANCE.md "Baseline"; tap-target audit on the phone, FEEL_QA.md) |
+| Phase 2: jank fixes | done (PERFORMANCE.md "Phase 2"); remaining first-frame costs are engine-level (glyph atlas) |
+| Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
+| Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
+| Phase 5: verification, CHECKPOINT_A | in progress: final 3-run measurement |
 | Part B (B1..B7) | after CHECKPOINT_A |
 
 ## Log
@@ -43,3 +43,16 @@ on #78. Never merged, never deployed. Resume here.
 - Found by flow wall times and Android's "Skipped N frames": the app **froze 10 s after every theme switch** and
   **4–5 s after startup** (marker updates on Android's main thread, where Flutter's vsync comes from). Theme freeze
   gone (theme flow 22 s → 4.8 s). Startup: markers now viewport-bounded and clustered (≤ 150), measuring.
+- Phase 2, later fixes: rows enter under a painted cover (notifications 6.6 → 0.7 %); tabs stop hidden tickers;
+  settings rows without ListTile; the centred-card route first regressed the capsule dialog to 20 % (a card fade),
+  fixed by rising without a fade (3.9 → ~2–3 %); glyph-atlas warm-up tried and reverted after an A/B.
+- Phase 3: route, cards with drag to close, tabs, heroes (card → dialog → viewer, creation → viewer), reaction
+  bursts, idle float on empty states, pull to refresh that refreshes, pending → uploaded morph, save morph,
+  achievements and streak, focus ring ≤ 350 ms, toasts and ring honour reduced motion, translated badge label.
+- Phase 4: pill 68 dp with fixed tab slots; header from the real inset; history controls and search on the
+  shared scale; friends card; per-user gradient placeholders; sharp compose icon; share icon (SVG for review);
+  zoom pill; map card with photo; camera zoom stops, brightness slider, torch, real pinch test (3.8× on the phone);
+  tap targets fixed from the phone audit; "On this day" overflow at 130 % fixed; light/dark, ru/en, 130 % sweep.
+- Phase 5: `AchievementIcon` artwork override (D-16 now true); stale REPORT/ACHIEVEMENTS lines fixed; after stills;
+  FEEL_QA.md. Incident: running the rules tests next to the dev emulators took them down mid-measurement (a
+  Functions worker held a rules-test port); re-seeded and re-measured (RIG.md gotchas).
