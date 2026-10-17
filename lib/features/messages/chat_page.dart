@@ -19,6 +19,7 @@ import '../../data/models/chat.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/push_messaging_service.dart';
 import '../../shared/motion/app_motion_widgets.dart';
+import '../../shared/motion/reaction_burst.dart';
 import '../../shared/widgets/buttons/default_icon_button.dart';
 import '../../shared/widgets/buttons/go_back_button.dart';
 import '../../shared/widgets/confirm_dialog.dart';
@@ -888,15 +889,19 @@ class _ReactionsPill extends StatelessWidget {
               width: 1.2,
             ),
           ),
-          child: Text(
-            [
-              for (final e in counts.entries)
-                e.value > 1 ? '${e.key.emoji} ${e.value}' : e.key.emoji,
-            ].join(' '),
-            style: TextStyle(
-              fontFamily: kAppFontFamily,
-              fontSize: 14,
-              color: palette.textPrimary,
+          // Pops when the user's own reaction arrives.
+          child: ReactionBurst(
+            active: mine,
+            child: Text(
+              [
+                for (final e in counts.entries)
+                  e.value > 1 ? '${e.key.emoji} ${e.value}' : e.key.emoji,
+              ].join(' '),
+              style: TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 14,
+                color: palette.textPrimary,
+              ),
             ),
           ),
         ),

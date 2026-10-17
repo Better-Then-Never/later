@@ -14,6 +14,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/social.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
+import '../../../shared/motion/reaction_burst.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import 'capsule_comments_sheet.dart';
@@ -242,9 +243,12 @@ class CapsuleReactionsBar extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                type.emoji,
-                                style: const TextStyle(fontSize: 18),
+                              ReactionBurst(
+                                active: mine == type,
+                                child: Text(
+                                  type.emoji,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
                               ),
                               if ((counts[type] ?? 0) > 0) ...[
                                 const SizedBox(width: 3),
