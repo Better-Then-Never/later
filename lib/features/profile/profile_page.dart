@@ -5,7 +5,7 @@ import 'package:later/features/profile/widgets/profile_page_my_capsules_panel.da
 import 'package:later/features/profile/widgets/profile_page_my_friends_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:later/app/session/session_controller.dart';
-import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -28,7 +28,7 @@ class _ProfilePageState extends State<ProfilePage>
     final uid = context.read<SessionController>().uid!;
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Column(
         children: [
           ProfilePageHeader(screenWidth: screenWidth, userId: uid),

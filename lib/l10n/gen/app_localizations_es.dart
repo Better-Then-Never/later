@@ -456,6 +456,127 @@ class AppLocalizationsEs extends AppLocalizations {
   String get placeUnknown => 'Lugar desconocido';
 
   @override
+  String get profileAddFriends => 'Añadir amigos';
+
+  @override
+  String get profileAddToMapEveryone => 'Al mapa | Para todos';
+
+  @override
+  String get profileAddToMapFriends => 'Al mapa | Solo para amigos';
+
+  @override
+  String get profileBackgroundDelete => 'Eliminar imagen de fondo';
+
+  @override
+  String get profileBackgroundTitle => 'Imagen de fondo';
+
+  @override
+  String get profileBackgroundUpdated => '¡Imagen de fondo actualizada!';
+
+  @override
+  String get profileChoosePinned => 'Fijar amigos';
+
+  @override
+  String get profileCopyLink => 'Copiar enlace';
+
+  @override
+  String get profileErrorCopyLink => 'No se pudo copiar el enlace';
+
+  @override
+  String get profileErrorDeleteBackground =>
+      'No se pudo eliminar la imagen de fondo';
+
+  @override
+  String get profileErrorDeletePicture =>
+      'No se pudo eliminar la foto de perfil';
+
+  @override
+  String get profileErrorShare => 'No se pudo compartir el perfil';
+
+  @override
+  String get profileErrorUploadBackground =>
+      'No se pudo subir la imagen de fondo';
+
+  @override
+  String get profileErrorUploadPicture => 'No se pudo subir la foto de perfil';
+
+  @override
+  String get profileImageFromGallery => 'Elegir de la galería';
+
+  @override
+  String get profileImageTakePhoto => 'Hacer una foto';
+
+  @override
+  String get profileLinkCopied => '¡Enlace copiado!';
+
+  @override
+  String get profileMyCapsules => 'Mis cápsulas';
+
+  @override
+  String get profileMyFriends => 'Mis amigos';
+
+  @override
+  String get profileNoFriends => 'Aún no tienes amigos';
+
+  @override
+  String get profilePictureDelete => 'Eliminar foto de perfil';
+
+  @override
+  String get profilePictureTitle => 'Foto de perfil';
+
+  @override
+  String get profilePictureUpdated => '¡Foto de perfil actualizada!';
+
+  @override
+  String get profilePinnedHint =>
+      'Si eliges menos de 3, mostraremos amigos al azar de tu lista';
+
+  @override
+  String get profilePinnedLimit => 'Solo puedes fijar hasta 3 amigos';
+
+  @override
+  String get profilePinnedTitle => 'Fija hasta 3 amigos';
+
+  @override
+  String get profilePinnedUpdated => '¡Amigos fijados actualizados!';
+
+  @override
+  String get profileQrError => 'Algo salió mal...';
+
+  @override
+  String get profileShare => 'Compartir';
+
+  @override
+  String get profileShareHeading => 'Comparte tu perfil';
+
+  @override
+  String get profileShareHint =>
+      'Otros pueden escanear este código con la cámara o desde la app para añadirte como amigo';
+
+  @override
+  String profileShareMessage(String name, String link) {
+    return '¡Mira el perfil de $name en Later!\n$link';
+  }
+
+  @override
+  String profileShareSubject(String name) {
+    return 'Conecta con $name en Later';
+  }
+
+  @override
+  String get profileShareSubtitle =>
+      'Deja que otros escaneen este código QR para añadirte como amigo';
+
+  @override
+  String get profileShareTitle => 'Compartir perfil';
+
+  @override
+  String get profileUpdating => 'Actualizando...';
+
+  @override
+  String get profileViewProfile => 'Ver perfil';
+
+  @override
   String get settingsAbout => 'Acerca de';
 
   @override

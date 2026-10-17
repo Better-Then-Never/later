@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/profile_image_cache.dart';
@@ -10,6 +11,7 @@ import '../../../shared/widgets/later_loading_bar.dart';
 import '../profile_image_editor.dart';
 import 'edit_profile_image.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// The signed-in user's profile background; tap to change or delete.
 class ProfileBackgroundPicture extends StatelessWidget {
@@ -40,6 +42,7 @@ class _BackgroundView extends StatelessWidget {
   Widget build(BuildContext context) {
     final editor = context.watch<ProfileImageEditor>();
     final image = ownImage(context, editor);
+    final l10n = context.l10n;
 
     return GestureDetector(
       onTap: editor.isBusy
@@ -47,15 +50,15 @@ class _BackgroundView extends StatelessWidget {
           : () => editProfileImage(
               context,
               editor,
-              title: 'Background picture',
-              deleteLabel: 'Delete background picture',
-              successMessage: 'Background picture updated successfully!',
+              title: l10n.profileBackgroundTitle,
+              deleteLabel: l10n.profileBackgroundDelete,
+              successMessage: l10n.profileBackgroundUpdated,
             ),
       child: Container(
         height: height,
         width: double.infinity,
         decoration: BoxDecoration(
-          color: AppColors.emptyBackground,
+          color: context.palette.emptyBackground,
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(25),
             bottomRight: Radius.circular(25),
@@ -65,21 +68,23 @@ class _BackgroundView extends StatelessWidget {
               : null,
         ),
         child: editor.isBusy
-            ? const Align(
+            ? Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                  padding: EdgeInsets.only(bottom: 60),
+                  padding: const EdgeInsets.only(bottom: 60),
                   child: LaterLoadingBar(
                     width: 40,
                     height: 40,
-                    message: 'Updating...',
+                    message: l10n.profileUpdating,
                     messageSpacing: 5,
-                    messageStyle: TextStyle(
+                    // Over the header area, like the name and icons: light
+                    // in both themes.
+                    messageStyle: const TextStyle(
                       fontSize: 12,
                       // Was misspelt "Inria" (system font, BUG-087).
                       fontFamily: kAppFontFamily,
                       fontWeight: FontWeight.normal,
-                      color: AppColors.white,
+                      color: AppColors.onMedia,
                     ),
                   ),
                 ),

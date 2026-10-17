@@ -449,6 +449,124 @@ class AppLocalizationsRu extends AppLocalizations {
   String get placeUnknown => 'Неизвестное место';
 
   @override
+  String get profileAddFriends => 'Добавить друзей';
+
+  @override
+  String get profileAddToMapEveryone => 'На карту | Для всех';
+
+  @override
+  String get profileAddToMapFriends => 'На карту | Для друзей';
+
+  @override
+  String get profileBackgroundDelete => 'Удалить фон';
+
+  @override
+  String get profileBackgroundTitle => 'Фон профиля';
+
+  @override
+  String get profileBackgroundUpdated => 'Фон профиля обновлён!';
+
+  @override
+  String get profileChoosePinned => 'Закрепить друзей';
+
+  @override
+  String get profileCopyLink => 'Копировать';
+
+  @override
+  String get profileErrorCopyLink => 'Не удалось скопировать ссылку';
+
+  @override
+  String get profileErrorDeleteBackground => 'Не удалось удалить фон профиля';
+
+  @override
+  String get profileErrorDeletePicture => 'Не удалось удалить фото профиля';
+
+  @override
+  String get profileErrorShare => 'Не удалось поделиться профилем';
+
+  @override
+  String get profileErrorUploadBackground => 'Не удалось загрузить фон профиля';
+
+  @override
+  String get profileErrorUploadPicture => 'Не удалось загрузить фото профиля';
+
+  @override
+  String get profileImageFromGallery => 'Выбрать из галереи';
+
+  @override
+  String get profileImageTakePhoto => 'Сделать фото';
+
+  @override
+  String get profileLinkCopied => 'Ссылка скопирована!';
+
+  @override
+  String get profileMyCapsules => 'Мои капсулы';
+
+  @override
+  String get profileMyFriends => 'Мои друзья';
+
+  @override
+  String get profileNoFriends => 'У вас пока нет друзей';
+
+  @override
+  String get profilePictureDelete => 'Удалить фото профиля';
+
+  @override
+  String get profilePictureTitle => 'Фото профиля';
+
+  @override
+  String get profilePictureUpdated => 'Фото профиля обновлено!';
+
+  @override
+  String get profilePinnedHint =>
+      'Если выберете меньше трёх, покажем случайных друзей из вашего списка';
+
+  @override
+  String get profilePinnedLimit => 'Закрепить можно не больше 3 друзей';
+
+  @override
+  String get profilePinnedTitle => 'Закрепите до 3 друзей';
+
+  @override
+  String get profilePinnedUpdated => 'Закреплённые друзья обновлены!';
+
+  @override
+  String get profileQrError => 'Что-то пошло не так...';
+
+  @override
+  String get profileShare => 'Поделиться';
+
+  @override
+  String get profileShareHeading => 'Поделитесь профилем';
+
+  @override
+  String get profileShareHint =>
+      'Друзья могут отсканировать этот код камерой телефона или в приложении, чтобы добавить вас';
+
+  @override
+  String profileShareMessage(String name, String link) {
+    return '$name в Later — загляните!\n$link';
+  }
+
+  @override
+  String profileShareSubject(String name) {
+    return '$name ждёт вас в Later';
+  }
+
+  @override
+  String get profileShareSubtitle =>
+      'Покажите этот QR-код, чтобы вас добавили в друзья';
+
+  @override
+  String get profileShareTitle => 'Поделиться профилем';
+
+  @override
+  String get profileUpdating => 'Секунду...';
+
+  @override
+  String get profileViewProfile => 'Открыть профиль';
+
+  @override
   String get settingsAbout => 'О приложении';
 
   @override

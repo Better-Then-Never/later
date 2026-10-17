@@ -454,6 +454,128 @@ class AppLocalizationsPl extends AppLocalizations {
   String get placeUnknown => 'Nieznane miejsce';
 
   @override
+  String get profileAddFriends => 'Dodaj znajomych';
+
+  @override
+  String get profileAddToMapEveryone => 'Na mapę | Dla wszystkich';
+
+  @override
+  String get profileAddToMapFriends => 'Na mapę | Tylko dla znajomych';
+
+  @override
+  String get profileBackgroundDelete => 'Usuń zdjęcie w tle';
+
+  @override
+  String get profileBackgroundTitle => 'Zdjęcie w tle';
+
+  @override
+  String get profileBackgroundUpdated => 'Zdjęcie w tle zaktualizowane!';
+
+  @override
+  String get profileChoosePinned => 'Przypnij znajomych';
+
+  @override
+  String get profileCopyLink => 'Kopiuj link';
+
+  @override
+  String get profileErrorCopyLink => 'Nie udało się skopiować linku';
+
+  @override
+  String get profileErrorDeleteBackground =>
+      'Nie udało się usunąć zdjęcia w tle';
+
+  @override
+  String get profileErrorDeletePicture =>
+      'Nie udało się usunąć zdjęcia profilowego';
+
+  @override
+  String get profileErrorShare => 'Nie udało się udostępnić profilu';
+
+  @override
+  String get profileErrorUploadBackground =>
+      'Nie udało się przesłać zdjęcia w tle';
+
+  @override
+  String get profileErrorUploadPicture =>
+      'Nie udało się przesłać zdjęcia profilowego';
+
+  @override
+  String get profileImageFromGallery => 'Wybierz z galerii';
+
+  @override
+  String get profileImageTakePhoto => 'Zrób zdjęcie';
+
+  @override
+  String get profileLinkCopied => 'Link skopiowany!';
+
+  @override
+  String get profileMyCapsules => 'Moje kapsuły';
+
+  @override
+  String get profileMyFriends => 'Moi znajomi';
+
+  @override
+  String get profileNoFriends => 'Nie masz jeszcze znajomych';
+
+  @override
+  String get profilePictureDelete => 'Usuń zdjęcie profilowe';
+
+  @override
+  String get profilePictureTitle => 'Zdjęcie profilowe';
+
+  @override
+  String get profilePictureUpdated => 'Zdjęcie profilowe zaktualizowane!';
+
+  @override
+  String get profilePinnedHint =>
+      'Jeśli wybierzesz mniej niż 3, pokażemy losowych znajomych z twojej listy';
+
+  @override
+  String get profilePinnedLimit => 'Możesz przypiąć maksymalnie 3 znajomych';
+
+  @override
+  String get profilePinnedTitle => 'Przypnij do 3 znajomych';
+
+  @override
+  String get profilePinnedUpdated => 'Przypięci znajomi zaktualizowani!';
+
+  @override
+  String get profileQrError => 'Coś poszło nie tak...';
+
+  @override
+  String get profileShare => 'Udostępnij';
+
+  @override
+  String get profileShareHeading => 'Udostępnij swój profil';
+
+  @override
+  String get profileShareHint =>
+      'Inni mogą zeskanować ten kod aparatem lub w aplikacji, aby dodać cię do znajomych';
+
+  @override
+  String profileShareMessage(String name, String link) {
+    return '$name jest w Later. Zajrzyj!\n$link';
+  }
+
+  @override
+  String profileShareSubject(String name) {
+    return '$name czeka na ciebie w Later';
+  }
+
+  @override
+  String get profileShareSubtitle =>
+      'Pokaż ten kod QR, aby inni mogli dodać cię do znajomych';
+
+  @override
+  String get profileShareTitle => 'Udostępnij profil';
+
+  @override
+  String get profileUpdating => 'Aktualizacja...';
+
+  @override
+  String get profileViewProfile => 'Zobacz profil';
+
+  @override
   String get settingsAbout => 'O aplikacji';
 
   @override
