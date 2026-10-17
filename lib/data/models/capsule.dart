@@ -20,6 +20,38 @@ enum CapsulePrivacy {
   }
 }
 
+/// How exactly a capsule records where it was made.
+enum LocationPrecision {
+  exact,
+
+  /// Rounded to about a kilometre before it leaves the phone.
+  approximate;
+
+  static LocationPrecision parse(Object? value) =>
+      value == approximate.name ? approximate : exact;
+}
+
+/// The six reactions (functions/lib/social.js REACTIONS).
+enum ReactionType {
+  heart('❤️'),
+  laugh('😂'),
+  wow('😮'),
+  sad('😢'),
+  fire('🔥'),
+  clap('👏');
+
+  const ReactionType(this.emoji);
+
+  final String emoji;
+
+  static ReactionType? parse(Object? value) {
+    for (final r in values) {
+      if (r.name == value) return r;
+    }
+    return null;
+  }
+}
+
 enum CapsuleColor {
   red,
   blue,
@@ -53,7 +85,23 @@ class Capsule {
     this.openAt,
     this.isScheduled = false,
     this.sharedWith = const [],
+    this.capturedAt,
+    this.utcOffsetMinutes,
+    this.showAuthor = true,
+    this.allowComments = true,
+    this.allowReactions = true,
+    this.locationPrecision = LocationPrecision.exact,
+    this.frames = const [],
+    this.frameDelayMs = defaultFrameDelayMs,
+    this.thumbUrl,
+    this.placeName,
+    this.reactionCounts = const {},
+    this.reactionTotal = 0,
+    this.commentCount = 0,
   });
+
+  /// Pause between the frames of a loop capsule.
+  static const defaultFrameDelayMs = 300;
 
   final String id;
   final String ownerId;
@@ -75,12 +123,50 @@ class Capsule {
   /// capsules are visible to everyone listed here.
   final List<String> sharedWith;
 
+  /// When the photo was taken (differs from [createdAt] for a capsule saved
+  /// offline and uploaded later). Null on older capsules.
+  final DateTime? capturedAt;
+
+  /// The device's offset from UTC when the photo was taken.
+  final int? utcOffsetMinutes;
+
+  /// False: shown without the author's name and avatar to others.
+  final bool showAuthor;
+  final bool allowComments;
+  final bool allowReactions;
+  final LocationPrecision locationPrecision;
+
+  /// Image URLs of a loop capsule, in order (empty for a single photo).
+  final List<String> frames;
+  final int frameDelayMs;
+
+  /// A small version of the image for lists and markers.
+  final String? thumbUrl;
+
+  /// Where it was made, in words ("Old Town, Warsaw").
+  final String? placeName;
+
+  /// Counted by the Cloud Functions.
+  final Map<ReactionType, int> reactionCounts;
+  final int reactionTotal;
+  final int commentCount;
+
+  /// When the moment happened: the capture time, else the upload time.
+  DateTime? get takenAt => capturedAt ?? createdAt;
+
+  bool get isLoop => frames.length > 1;
+
   bool isOpen(DateTime now) => openAt == null || !openAt!.isAfter(now);
 
   Duration timeUntilOpen(DateTime now) =>
       isOpen(now) ? Duration.zero : openAt!.difference(now);
 
-  Capsule copyWith({String? imageUrl}) => Capsule(
+  Capsule copyWith({
+    String? imageUrl,
+    Map<ReactionType, int>? reactionCounts,
+    int? reactionTotal,
+    int? commentCount,
+  }) => Capsule(
     id: id,
     ownerId: ownerId,
     title: title,
@@ -93,6 +179,19 @@ class Capsule {
     openAt: openAt,
     isScheduled: isScheduled,
     sharedWith: sharedWith,
+    capturedAt: capturedAt,
+    utcOffsetMinutes: utcOffsetMinutes,
+    showAuthor: showAuthor,
+    allowComments: allowComments,
+    allowReactions: allowReactions,
+    locationPrecision: locationPrecision,
+    frames: frames,
+    frameDelayMs: frameDelayMs,
+    thumbUrl: thumbUrl,
+    placeName: placeName,
+    reactionCounts: reactionCounts ?? this.reactionCounts,
+    reactionTotal: reactionTotal ?? this.reactionTotal,
+    commentCount: commentCount ?? this.commentCount,
   );
 
   @override
@@ -110,7 +209,20 @@ class Capsule {
       other.openAt == openAt &&
       other.isScheduled == isScheduled &&
       other.sharedWith.length == sharedWith.length &&
-      other.sharedWith.every(sharedWith.contains);
+      other.sharedWith.every(sharedWith.contains) &&
+      other.capturedAt == capturedAt &&
+      other.utcOffsetMinutes == utcOffsetMinutes &&
+      other.showAuthor == showAuthor &&
+      other.allowComments == allowComments &&
+      other.allowReactions == allowReactions &&
+      other.locationPrecision == locationPrecision &&
+      _listEquals(other.frames, frames) &&
+      other.frameDelayMs == frameDelayMs &&
+      other.thumbUrl == thumbUrl &&
+      other.placeName == placeName &&
+      _mapEquals(other.reactionCounts, reactionCounts) &&
+      other.reactionTotal == reactionTotal &&
+      other.commentCount == commentCount;
 
   @override
   int get hashCode => Object.hash(
@@ -125,8 +237,23 @@ class Capsule {
     createdAt,
     openAt,
     isScheduled,
+    capturedAt,
+    reactionTotal,
+    commentCount,
+    frames.length,
   );
 }
+
+bool _listEquals<T>(List<T> a, List<T> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
+}
+
+bool _mapEquals<K, V>(Map<K, V> a, Map<K, V> b) =>
+    a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
 
 /// Data entered on the creation screen, before the capsule exists.
 class CapsuleDraft {
@@ -140,6 +267,15 @@ class CapsuleDraft {
     this.description,
     this.openAt,
     this.recipientId,
+    this.capturedAt,
+    this.utcOffsetMinutes,
+    this.showAuthor = true,
+    this.allowComments = true,
+    this.allowReactions = true,
+    this.locationPrecision = LocationPrecision.exact,
+    this.framePaths = const [],
+    this.frameDelayMs = Capsule.defaultFrameDelayMs,
+    this.placeName,
   });
 
   final String ownerId;
@@ -153,4 +289,20 @@ class CapsuleDraft {
 
   /// The friend this capsule is sent to, if any.
   final String? recipientId;
+
+  /// When the photo was taken and the device's UTC offset then (streaks
+  /// count the capture day, even when the upload happens later).
+  final DateTime? capturedAt;
+  final int? utcOffsetMinutes;
+  final bool showAuthor;
+  final bool allowComments;
+  final bool allowReactions;
+
+  /// [location] is already rounded when approximate; this records it.
+  final LocationPrecision locationPrecision;
+
+  /// Local files of a loop capsule, in order; [imagePath] is the first.
+  final List<String> framePaths;
+  final int frameDelayMs;
+  final String? placeName;
 }

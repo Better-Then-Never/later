@@ -5,6 +5,7 @@ import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../models/friend_request.dart';
 import '../models/geo_position.dart';
+import '../models/social.dart';
 import '../models/user_profile.dart';
 import '../models/user_settings.dart';
 
@@ -22,6 +23,11 @@ abstract final class FirestorePaths {
   static const chats = 'chats';
   static const messages = 'messages';
   static const settings = 'settings';
+  static const reactions = 'reactions';
+  static const comments = 'comments';
+  static const achievements = 'achievements';
+  static const announcements = 'announcements';
+  static const reports = 'reports';
 
   /// The one document in users/{uid}/settings.
   static const settingsDoc = 'app';
@@ -55,8 +61,34 @@ abstract final class FirestoreMappers {
       username: _string(data['username'], 'unknown'),
       friends: _stringList(data['friends']),
       favorites: _stringList(data['favorites']).toSet(),
+      verified: data['verified'] == true,
+      followerCount: _count(data['followerCount']),
+      followingCount: _count(data['followingCount']),
+      showAchievements: _bool(data['showAchievements'], true),
+      stats: userStats(_map(data['stats'])),
     );
   }
+
+  /// Counters never show below zero (a lost increment must not show -1).
+  static int _count(Object? value) =>
+      value is num && value > 0 ? value.toInt() : 0;
+
+  static UserStats userStats(Map<String, Object?> s) => UserStats(
+    capsules: _count(s['capsules']),
+    publicCapsules: _count(s['publicCapsules']),
+    loopCapsules: _count(s['loopCapsules']),
+    places: _count(s['places']),
+    distanceKm: s['distanceKm'] is num && (s['distanceKm'] as num) > 0
+        ? (s['distanceKm'] as num).toDouble()
+        : 0,
+    streakCurrent: _count(s['streakCurrent']),
+    streakLongest: _count(s['streakLongest']),
+    streakLastDay: _nonEmptyString(s['streakLastDay']),
+    reactionsReceived: _count(s['reactionsReceived']),
+    commentsWritten: _count(s['commentsWritten']),
+    nightCapsules: _count(s['nightCapsules']),
+    morningCapsules: _count(s['morningCapsules']),
+  );
 
   static Capsule capsule(String id, Map<String, dynamic> data) {
     final location = data['location'];
@@ -76,12 +108,60 @@ abstract final class FirestoreMappers {
       openAt: _date(data['openAt']),
       isScheduled: data['isScheduled'] == true,
       sharedWith: _stringList(data['sharedWith']),
+      capturedAt: _date(data['capturedAt']),
+      utcOffsetMinutes: data['utcOffsetMinutes'] is int
+          ? data['utcOffsetMinutes'] as int
+          : null,
+      showAuthor: _bool(data['showAuthor'], true),
+      allowComments: _bool(data['allowComments'], true),
+      allowReactions: _bool(data['allowReactions'], true),
+      locationPrecision: LocationPrecision.parse(data['locationPrecision']),
+      frames: _stringList(
+        data['frames'],
+      ).where((u) => u.startsWith('https://')).toList(),
+      frameDelayMs: data['frameDelayMs'] is int
+          ? (data['frameDelayMs'] as int).clamp(80, 2000)
+          : Capsule.defaultFrameDelayMs,
+      thumbUrl: _nonEmptyString(data['thumbUrl']),
+      placeName: _nonEmptyString(data['placeName']),
+      reactionCounts: {
+        for (final e in _map(data['reactionCounts']).entries)
+          if (ReactionType.parse(e.key) case final ReactionType type)
+            if (e.value is num && (e.value as num) > 0)
+              type: (e.value as num).toInt(),
+      },
+      reactionTotal: _count(data['reactionTotal']),
+      commentCount: _count(data['commentCount']),
     );
   }
+
+  /// Fields a capsule may carry since the 2026 social update; the rules of
+  /// older deployments reject them (see [legacyCapsule]).
+  static const capsuleFieldsAdded = {
+    'capturedAt',
+    'utcOffsetMinutes',
+    'showAuthor',
+    'allowComments',
+    'allowReactions',
+    'locationPrecision',
+    'frames',
+    'frameDelayMs',
+    'thumbUrl',
+    'placeName',
+  };
+
+  /// [capsule] without the added fields, for a backend whose rules predate
+  /// them (the app retries with this once; DEPLOY.md has the order).
+  static Map<String, dynamic> legacyCapsule(Map<String, dynamic> capsule) => {
+    for (final e in capsule.entries)
+      if (!capsuleFieldsAdded.contains(e.key)) e.key: e.value,
+  };
 
   static Map<String, dynamic> newCapsule(
     CapsuleDraft draft, {
     required String imageUrl,
+    List<String> frameUrls = const [],
+    String? thumbUrl,
   }) => {
     'ownerId': draft.ownerId,
     'imageUrl': imageUrl,
@@ -96,6 +176,23 @@ abstract final class FirestoreMappers {
     'color': draft.color.name,
     if (draft.recipientId != null)
       'sharedWith': [draft.ownerId, draft.recipientId!],
+    if (draft.capturedAt != null)
+      'capturedAt': Timestamp.fromDate(draft.capturedAt!),
+    if (draft.utcOffsetMinutes != null)
+      'utcOffsetMinutes': draft.utcOffsetMinutes!.clamp(-840, 840),
+    // Defaults are left out (absent means true / exact).
+    if (!draft.showAuthor) 'showAuthor': false,
+    if (!draft.allowComments) 'allowComments': false,
+    if (!draft.allowReactions) 'allowReactions': false,
+    if (draft.locationPrecision != LocationPrecision.exact)
+      'locationPrecision': draft.locationPrecision.name,
+    if (frameUrls.length > 1) ...{
+      'frames': frameUrls,
+      'frameDelayMs': draft.frameDelayMs.clamp(80, 2000),
+    },
+    if (thumbUrl != null) 'thumbUrl': thumbUrl,
+    if (draft.placeName case final String place when place.trim().isNotEmpty)
+      'placeName': place.length > 200 ? place.substring(0, 200) : place,
   };
 
   static Chat chat(String id, Map<String, dynamic> data) => Chat(
@@ -137,7 +234,9 @@ abstract final class FirestoreMappers {
     if (data == null) return const UserSettings();
     final n = _map(data['notifications']);
     final q = _map(n['quietHours']);
+    final p = _map(data['privacy']);
     const d = NotificationSettings();
+    const pd = PrivacySettings();
     return UserSettings(
       notifications: NotificationSettings(
         enabled: _bool(n['enabled'], d.enabled),
@@ -145,6 +244,12 @@ abstract final class FirestoreMappers {
         follows: _bool(n['follows'], d.follows),
         capsules: _bool(n['capsules'], d.capsules),
         preview: _bool(n['preview'], d.preview),
+        friendRequests: _bool(n['friendRequests'], d.friendRequests),
+        reactions: _bool(n['reactions'], d.reactions),
+        comments: _bool(n['comments'], d.comments),
+        achievements: _bool(n['achievements'], d.achievements),
+        news: _bool(n['news'], d.news),
+        streakReminder: _bool(n['streakReminder'], d.streakReminder),
         sound: _bool(n['sound'], d.sound),
         quietHours: QuietHours(
           enabled: _bool(q['enabled'], d.quietHours.enabled),
@@ -155,7 +260,20 @@ abstract final class FirestoreMappers {
             ? n['utcOffsetMinutes'] as int
             : d.utcOffsetMinutes,
       ),
+      privacy: PrivacySettings(
+        defaultVisibility: CapsulePrivacy.parse(
+          p['defaultVisibility'],
+          fallback: pd.defaultVisibility,
+        ),
+        readReceipts: _bool(p['readReceipts'], pd.readReceipts),
+        locationPrecision: LocationPrecision.parse(p['locationPrecision']),
+        contactSuggestions: _bool(
+          p['contactSuggestions'],
+          pd.contactSuggestions,
+        ),
+      ),
       mutedChats: _stringList(data['mutedChats']).toSet(),
+      language: _nonEmptyString(data['language']),
     );
   }
 
@@ -164,6 +282,12 @@ abstract final class FirestoreMappers {
     'messages': n.messages,
     'follows': n.follows,
     'capsules': n.capsules,
+    'friendRequests': n.friendRequests,
+    'reactions': n.reactions,
+    'comments': n.comments,
+    'achievements': n.achievements,
+    'news': n.news,
+    'streakReminder': n.streakReminder,
     'preview': n.preview,
     'sound': n.sound,
     'quietHours': {
@@ -173,6 +297,78 @@ abstract final class FirestoreMappers {
     },
     'utcOffsetMinutes': n.utcOffsetMinutes,
   };
+
+  /// Notification switches added with the 2026 social update.
+  static const notificationKeysAdded = {
+    'friendRequests',
+    'reactions',
+    'comments',
+    'achievements',
+    'news',
+    'streakReminder',
+  };
+
+  static Map<String, dynamic> privacySettings(PrivacySettings p) => {
+    'defaultVisibility': p.defaultVisibility.name,
+    'readReceipts': p.readReceipts,
+    'locationPrecision': p.locationPrecision.name,
+    'contactSuggestions': p.contactSuggestions,
+  };
+
+  static CapsuleReaction? reaction(String uid, Map<String, dynamic> data) {
+    final type = ReactionType.parse(data['type']);
+    if (type == null) return null;
+    return CapsuleReaction(uid: uid, type: type, at: _date(data['updatedAt']));
+  }
+
+  static CapsuleComment comment(
+    String capsuleId,
+    String id,
+    Map<String, dynamic> data,
+  ) => CapsuleComment(
+    id: id,
+    capsuleId: capsuleId,
+    authorId: _string(data['authorId'], ''),
+    text: _string(data['text'], ''),
+    createdAt: _date(data['createdAt']),
+    replyTo: _nonEmptyString(data['replyTo']),
+  );
+
+  static Map<String, dynamic> newComment({
+    required String authorId,
+    required String text,
+    String? replyTo,
+  }) => {
+    'authorId': authorId,
+    'text': text,
+    'createdAt': FieldValue.serverTimestamp(),
+    if (replyTo != null) 'replyTo': replyTo,
+  };
+
+  static UnlockedAchievement achievement(
+    String id,
+    Map<String, dynamic> data,
+  ) => UnlockedAchievement(
+    id: id,
+    tier: data['tier'] is int ? data['tier'] as int : 0,
+    tiers: data['tiers'] is int ? data['tiers'] as int : 1,
+    value: data['value'] is num ? data['value'] as num : 0,
+    unlockedAt: _date(data['unlockedAt']),
+  );
+
+  static Announcement announcement(String id, Map<String, dynamic> data) {
+    Map<String, String> texts(Object? value) => {
+      for (final e in _map(value).entries)
+        if (e.value case final String text when text.trim().isNotEmpty)
+          e.key: text,
+    };
+    return Announcement(
+      id: id,
+      title: texts(data['title']),
+      body: texts(data['body']),
+      createdAt: _date(data['createdAt']),
+    );
+  }
 
   static FriendRequest friendRequest(Map<String, dynamic> data) =>
       FriendRequest(

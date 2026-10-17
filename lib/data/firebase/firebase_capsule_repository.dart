@@ -58,6 +58,19 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
   }
 
   @override
+  Stream<Capsule?> watchById(String id) => _capsules
+      .doc(id)
+      .snapshots()
+      .map((doc) {
+        final data = doc.data();
+        return data == null ? null : FirestoreMappers.capsule(doc.id, data);
+      })
+      .handleError((Object e) {
+        // No longer visible (unfriended, privacy changed): the stream ends.
+        if (e is! FirebaseException || e.code != 'permission-denied') throw e;
+      });
+
+  @override
   Stream<List<Capsule>> watchFriends(List<String> friendIds) {
     final ids = friendIds.toSet().toList();
     if (ids.isEmpty) return Stream.value(const []);
@@ -102,7 +115,10 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
     await imageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
     final imageUrl = await imageRef.getDownloadURL();
     try {
-      await doc.set(FirestoreMappers.newCapsule(draft, imageUrl: imageUrl));
+      await _setNew(
+        doc,
+        FirestoreMappers.newCapsule(draft, imageUrl: imageUrl),
+      );
     } catch (_) {
       // Do not leave an orphaned image behind.
       await _deleteImage(imageRef);
@@ -123,7 +139,32 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       sharedWith: [
         if (draft.recipientId != null) ...[draft.ownerId, draft.recipientId!],
       ],
+      capturedAt: draft.capturedAt,
+      utcOffsetMinutes: draft.utcOffsetMinutes,
+      showAuthor: draft.showAuthor,
+      allowComments: draft.allowComments,
+      allowReactions: draft.allowReactions,
+      locationPrecision: draft.locationPrecision,
+      placeName: draft.placeName,
     );
+  }
+
+  /// Rules deployed before the added capsule fields reject them: the capsule
+  /// is then saved without them, once, so the app may ship before the rules.
+  Future<void> _setNew(
+    DocumentReference<Map<String, dynamic>> doc,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      await doc.set(data);
+    } on FirebaseException catch (e) {
+      final legacy = FirestoreMappers.legacyCapsule(data);
+      if (e.code != 'permission-denied' || legacy.length == data.length) {
+        rethrow;
+      }
+      AppLogger.warning('Capsule rejected with the added fields, retrying');
+      await doc.set(legacy);
+    }
   }
 
   @override

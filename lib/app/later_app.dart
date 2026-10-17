@@ -7,6 +7,7 @@ import '../core/l10n/l10n.dart';
 import '../core/theme/app_motion.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/themed_asset_bundle.dart';
+import '../features/settings/settings_store.dart';
 import 'appearance/appearance_controller.dart';
 import 'appearance/ui_scale_view.dart';
 import 'router/app_routes.dart';
@@ -55,7 +56,10 @@ class LaterApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       builder: (context, child) {
-        AppL10n.update(Localizations.localeOf(context));
+        final locale = Localizations.localeOf(context);
+        AppL10n.update(locale);
+        // Pushes are written by the server in the language the app shows.
+        context.read<SettingsStore>().syncLanguage(locale.languageCode);
         final brightness = Theme.of(context).brightness;
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: systemBarsFor(brightness),

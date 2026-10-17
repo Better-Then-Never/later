@@ -4,6 +4,7 @@ import '../models/app_notification.dart';
 import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../models/friend_request.dart';
+import '../models/social.dart';
 import '../models/user_profile.dart';
 import '../models/user_settings.dart';
 
@@ -85,6 +86,9 @@ abstract interface class UserRepository {
   Future<List<UserProfile>> searchByUsername(String prefix, {int limit});
 
   Future<void> setFavorite(String uid, String capsuleId, bool favorite);
+
+  /// Whether friends may see [uid]'s achievements.
+  Future<void> setShowAchievements(String uid, bool show);
 }
 
 abstract interface class FriendsRepository {
@@ -156,6 +160,10 @@ abstract interface class CapsuleRepository {
   /// One capsule, or null when it does not exist or is not visible.
   Future<Capsule?> getById(String id);
 
+  /// One capsule, live (counters move as people react and comment); null
+  /// when it is deleted or not visible.
+  Stream<Capsule?> watchById(String id);
+
   /// Friends-only capsules of [friendIds] (chunked `whereIn`).
   Stream<List<Capsule>> watchFriends(List<String> friendIds);
 
@@ -168,6 +176,46 @@ abstract interface class CapsuleRepository {
 
   Future<Capsule> create(CapsuleDraft draft);
   Future<void> delete(Iterable<Capsule> capsules);
+}
+
+/// Reactions, comments, reports, achievements and announcements.
+abstract interface class SocialRepository {
+  /// Everyone's reactions on [capsuleId], newest first.
+  Stream<List<CapsuleReaction>> watchReactions(String capsuleId, {int limit});
+
+  /// The reaction of [uid] on [capsuleId], or null.
+  Stream<ReactionType?> watchMyReaction(String capsuleId, String uid);
+
+  /// Sets (or with null removes) the reaction of [uid].
+  Future<void> setReaction(String capsuleId, String uid, ReactionType? type);
+
+  /// Comments on [capsuleId], oldest first (the newest [limit]).
+  Stream<List<CapsuleComment>> watchComments(String capsuleId, {int limit});
+
+  Future<void> addComment(
+    String capsuleId, {
+    required String authorId,
+    required String text,
+    String? replyTo,
+  });
+
+  /// The author or the capsule's owner may delete a comment.
+  Future<void> deleteComment(String capsuleId, String commentId);
+
+  /// Sends a report to the Later team; nobody else can read it.
+  Future<void> report({
+    required String reporterId,
+    required ReportTarget target,
+    required String targetPath,
+    required ReportReason reason,
+    String? details,
+  });
+
+  /// Achievements [uid] unlocked (own, or a friend's when they share them).
+  Stream<List<UnlockedAchievement>> watchAchievements(String uid);
+
+  /// Messages from the Later team, newest first.
+  Stream<List<Announcement>> watchAnnouncements({int limit});
 }
 
 abstract interface class NotificationRepository {
@@ -186,6 +234,10 @@ abstract interface class SettingsRepository {
   /// The settings, with defaults while the document does not exist.
   Stream<UserSettings> watch(String uid);
   Future<void> saveNotifications(String uid, NotificationSettings settings);
+  Future<void> savePrivacy(String uid, PrivacySettings privacy);
+
+  /// The app's language, so pushes arrive in it.
+  Future<void> saveLanguage(String uid, String languageCode);
   Future<void> setChatMuted(String uid, String chatId, {required bool muted});
 }
 

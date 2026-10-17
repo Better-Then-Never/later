@@ -6,6 +6,7 @@ import 'package:later/data/models/app_notification.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/friend_request.dart';
+import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/repositories/repositories.dart';
@@ -156,6 +157,22 @@ class FakeSettingsRepository implements SettingsRepository {
   }
 
   @override
+  Future<void> savePrivacy(String uid, PrivacySettings privacy) async {
+    _check();
+    docs[uid] = (docs[uid] ?? const UserSettings()).copyWith(privacy: privacy);
+    _changes.add(uid);
+  }
+
+  @override
+  Future<void> saveLanguage(String uid, String languageCode) async {
+    _check();
+    docs[uid] = (docs[uid] ?? const UserSettings()).copyWith(
+      language: languageCode,
+    );
+    _changes.add(uid);
+  }
+
+  @override
   Future<void> setChatMuted(
     String uid,
     String chatId, {
@@ -243,6 +260,10 @@ class FakeUserRepository implements UserRepository {
       .where((p) => p.username.startsWith(prefix))
       .take(limit)
       .toList();
+
+  @override
+  Future<void> setShowAchievements(String uid, bool show) async =>
+      put(profiles[uid]!.copyWith(showAchievements: show));
 
   @override
   Future<void> setFavorite(String uid, String capsuleId, bool favorite) async {
@@ -561,6 +582,18 @@ class FakeCapsuleRepository implements CapsuleRepository {
   @override
   Future<Capsule?> getById(String id) async => byId?.id == id ? byId : null;
 
+  final _byIdChanges = StreamController<void>.broadcast();
+
+  /// Replaces [byId] and tells [watchById] listeners.
+  void emitById(Capsule? capsule) {
+    byId = capsule;
+    _byIdChanges.add(null);
+  }
+
+  @override
+  Stream<Capsule?> watchById(String id) =>
+      seeded(() => byId?.id == id ? byId : null, _byIdChanges.stream);
+
   @override
   Stream<List<Capsule>> watchFriends(List<String> friendIds) =>
       Stream.value(const []);
@@ -587,6 +620,117 @@ class FakeCapsuleRepository implements CapsuleRepository {
   @override
   Future<void> delete(Iterable<Capsule> capsules) async =>
       deleted.addAll(capsules.map((c) => c.id));
+}
+
+/// In-memory reactions, comments, reports, achievements and announcements.
+class FakeSocialRepository implements SocialRepository {
+  final Map<String, Map<String, ReactionType>> reactions = {};
+  final Map<String, List<CapsuleComment>> comments = {};
+  final Map<String, List<UnlockedAchievement>> achievements = {};
+  List<Announcement> announcements = [];
+  final List<Map<String, Object?>> reports = [];
+  final _changes = StreamController<void>.broadcast();
+  bool failWrites = false;
+  var _ids = 0;
+
+  void changed() => _changes.add(null);
+
+  void _check() {
+    if (failWrites) throw const PermissionFailure('denied');
+  }
+
+  @override
+  Stream<List<CapsuleReaction>> watchReactions(
+    String capsuleId, {
+    int limit = 100,
+  }) => seeded(
+    () => [
+      for (final e in (reactions[capsuleId] ?? const {}).entries)
+        CapsuleReaction(uid: e.key, type: e.value),
+    ].take(limit).toList(),
+    _changes.stream,
+  );
+
+  @override
+  Stream<ReactionType?> watchMyReaction(String capsuleId, String uid) =>
+      seeded(() => reactions[capsuleId]?[uid], _changes.stream);
+
+  @override
+  Future<void> setReaction(
+    String capsuleId,
+    String uid,
+    ReactionType? type,
+  ) async {
+    _check();
+    final map = reactions.putIfAbsent(capsuleId, () => {});
+    type == null ? map.remove(uid) : map[uid] = type;
+    changed();
+  }
+
+  @override
+  Stream<List<CapsuleComment>> watchComments(
+    String capsuleId, {
+    int limit = 200,
+  }) => seeded(() {
+    final all = comments[capsuleId] ?? const <CapsuleComment>[];
+    return all.length <= limit ? [...all] : all.sublist(all.length - limit);
+  }, _changes.stream);
+
+  @override
+  Future<void> addComment(
+    String capsuleId, {
+    required String authorId,
+    required String text,
+    String? replyTo,
+  }) async {
+    _check();
+    comments
+        .putIfAbsent(capsuleId, () => [])
+        .add(
+          CapsuleComment(
+            id: 'c${++_ids}',
+            capsuleId: capsuleId,
+            authorId: authorId,
+            text: text,
+            createdAt: DateTime(2026, 1, 1).add(Duration(minutes: _ids)),
+            replyTo: replyTo,
+          ),
+        );
+    changed();
+  }
+
+  @override
+  Future<void> deleteComment(String capsuleId, String commentId) async {
+    _check();
+    comments[capsuleId]?.removeWhere((c) => c.id == commentId);
+    changed();
+  }
+
+  @override
+  Future<void> report({
+    required String reporterId,
+    required ReportTarget target,
+    required String targetPath,
+    required ReportReason reason,
+    String? details,
+  }) async {
+    _check();
+    reports.add({
+      'reporterId': reporterId,
+      'target': target,
+      'targetPath': targetPath,
+      'reason': reason,
+      'details': details,
+    });
+  }
+
+  @override
+  Stream<List<UnlockedAchievement>> watchAchievements(String uid) =>
+      seeded(() => [...?achievements[uid]], _changes.stream);
+
+  @override
+  Stream<List<Announcement>> watchAnnouncements({int limit = 20}) =>
+      seeded(() => announcements.take(limit).toList(), _changes.stream);
 }
 
 class FakeImageStorageRepository implements ImageStorageRepository {

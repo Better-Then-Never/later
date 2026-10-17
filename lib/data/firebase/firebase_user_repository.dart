@@ -157,4 +157,8 @@ class FirebaseUserRepository implements UserRepository {
             ? FieldValue.arrayUnion([capsuleId])
             : FieldValue.arrayRemove([capsuleId]),
       }, SetOptions(merge: true));
+
+  @override
+  Future<void> setShowAchievements(String uid, bool show) =>
+      _users.doc(uid).update({'showAchievements': show});
 }

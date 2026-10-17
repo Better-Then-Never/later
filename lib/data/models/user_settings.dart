@@ -1,3 +1,5 @@
+import 'capsule.dart';
+
 /// When pushes stay silent, in minutes after midnight, local time.
 class QuietHours {
   const QuietHours({
@@ -35,6 +37,12 @@ class NotificationSettings {
     this.messages = true,
     this.follows = true,
     this.capsules = true,
+    this.friendRequests = true,
+    this.reactions = true,
+    this.comments = true,
+    this.achievements = true,
+    this.news = true,
+    this.streakReminder = false,
     this.preview = true,
     this.sound = true,
     this.quietHours = const QuietHours(),
@@ -46,6 +54,16 @@ class NotificationSettings {
   final bool messages;
   final bool follows;
   final bool capsules;
+  final bool friendRequests;
+  final bool reactions;
+  final bool comments;
+  final bool achievements;
+
+  /// Announcements from the Later team.
+  final bool news;
+
+  /// An evening reminder when the streak is at risk (opt-in).
+  final bool streakReminder;
 
   /// Show the message text in message pushes.
   final bool preview;
@@ -62,6 +80,12 @@ class NotificationSettings {
     bool? messages,
     bool? follows,
     bool? capsules,
+    bool? friendRequests,
+    bool? reactions,
+    bool? comments,
+    bool? achievements,
+    bool? news,
+    bool? streakReminder,
     bool? preview,
     bool? sound,
     QuietHours? quietHours,
@@ -71,6 +95,12 @@ class NotificationSettings {
     messages: messages ?? this.messages,
     follows: follows ?? this.follows,
     capsules: capsules ?? this.capsules,
+    friendRequests: friendRequests ?? this.friendRequests,
+    reactions: reactions ?? this.reactions,
+    comments: comments ?? this.comments,
+    achievements: achievements ?? this.achievements,
+    news: news ?? this.news,
+    streakReminder: streakReminder ?? this.streakReminder,
     preview: preview ?? this.preview,
     sound: sound ?? this.sound,
     quietHours: quietHours ?? this.quietHours,
@@ -84,6 +114,12 @@ class NotificationSettings {
       other.messages == messages &&
       other.follows == follows &&
       other.capsules == capsules &&
+      other.friendRequests == friendRequests &&
+      other.reactions == reactions &&
+      other.comments == comments &&
+      other.achievements == achievements &&
+      other.news == news &&
+      other.streakReminder == streakReminder &&
       other.preview == preview &&
       other.sound == sound &&
       other.quietHours == quietHours &&
@@ -95,10 +131,64 @@ class NotificationSettings {
     messages,
     follows,
     capsules,
+    friendRequests,
+    reactions,
+    comments,
+    achievements,
+    news,
+    streakReminder,
     preview,
     sound,
     quietHours,
     utcOffsetMinutes,
+  );
+}
+
+/// Privacy defaults (`privacy` in the settings document).
+class PrivacySettings {
+  const PrivacySettings({
+    this.defaultVisibility = CapsulePrivacy.public,
+    this.readReceipts = true,
+    this.locationPrecision = LocationPrecision.exact,
+    this.contactSuggestions = false,
+  });
+
+  /// What the creation screen starts with.
+  final CapsulePrivacy defaultVisibility;
+
+  /// Whether others see when the user has read their messages.
+  final bool readReceipts;
+  final LocationPrecision locationPrecision;
+
+  /// Whether the app may suggest people from the phone's contacts.
+  final bool contactSuggestions;
+
+  PrivacySettings copyWith({
+    CapsulePrivacy? defaultVisibility,
+    bool? readReceipts,
+    LocationPrecision? locationPrecision,
+    bool? contactSuggestions,
+  }) => PrivacySettings(
+    defaultVisibility: defaultVisibility ?? this.defaultVisibility,
+    readReceipts: readReceipts ?? this.readReceipts,
+    locationPrecision: locationPrecision ?? this.locationPrecision,
+    contactSuggestions: contactSuggestions ?? this.contactSuggestions,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is PrivacySettings &&
+      other.defaultVisibility == defaultVisibility &&
+      other.readReceipts == readReceipts &&
+      other.locationPrecision == locationPrecision &&
+      other.contactSuggestions == contactSuggestions;
+
+  @override
+  int get hashCode => Object.hash(
+    defaultVisibility,
+    readReceipts,
+    locationPrecision,
+    contactSuggestions,
   );
 }
 
@@ -107,29 +197,42 @@ class NotificationSettings {
 class UserSettings {
   const UserSettings({
     this.notifications = const NotificationSettings(),
+    this.privacy = const PrivacySettings(),
     this.mutedChats = const {},
+    this.language,
   });
 
   final NotificationSettings notifications;
+  final PrivacySettings privacy;
 
   /// Chats whose messages do not push and do not count in the tab badge.
   final Set<String> mutedChats;
 
+  /// The app's language code, for pushes in that language; null = English.
+  final String? language;
+
   UserSettings copyWith({
     NotificationSettings? notifications,
+    PrivacySettings? privacy,
     Set<String>? mutedChats,
+    String? language,
   }) => UserSettings(
     notifications: notifications ?? this.notifications,
+    privacy: privacy ?? this.privacy,
     mutedChats: mutedChats ?? this.mutedChats,
+    language: language ?? this.language,
   );
 
   @override
   bool operator ==(Object other) =>
       other is UserSettings &&
       other.notifications == notifications &&
+      other.privacy == privacy &&
+      other.language == language &&
       other.mutedChats.length == mutedChats.length &&
       other.mutedChats.containsAll(mutedChats);
 
   @override
-  int get hashCode => Object.hash(notifications, mutedChats.length);
+  int get hashCode =>
+      Object.hash(notifications, privacy, language, mutedChats.length);
 }

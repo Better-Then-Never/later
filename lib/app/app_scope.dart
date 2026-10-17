@@ -9,6 +9,7 @@ import '../data/firebase/firebase_image_storage_repository.dart';
 import '../data/firebase/firebase_notification_repository.dart';
 import '../data/firebase/firebase_push_token_repository.dart';
 import '../data/firebase/firebase_settings_repository.dart';
+import '../data/firebase/firebase_social_repository.dart';
 import '../data/firebase/firebase_user_repository.dart';
 import '../data/repositories/repositories.dart';
 import '../data/services/geocoding_service.dart';
@@ -64,6 +65,7 @@ class _AppScopeState extends State<AppScope> {
   final PushTokenRepository _pushTokens = FirebasePushTokenRepository();
   final ImageStorageRepository _images = FirebaseImageStorageRepository();
   final SettingsRepository _settings = FirebaseSettingsRepository();
+  final SocialRepository _social = FirebaseSocialRepository();
   final _location = const LocationService();
   final _geocoding = GeocodingService();
   late final _prefs = widget.preferences;
@@ -145,6 +147,7 @@ class _AppScopeState extends State<AppScope> {
         Provider<PushTokenRepository>.value(value: _pushTokens),
         Provider<ImageStorageRepository>.value(value: _images),
         Provider<SettingsRepository>.value(value: _settings),
+        Provider<SocialRepository>.value(value: _social),
         Provider<LocationService>.value(value: _location),
         Provider<GeocodingService>.value(value: _geocoding),
         Provider<PreferencesStore>.value(value: _prefs),
