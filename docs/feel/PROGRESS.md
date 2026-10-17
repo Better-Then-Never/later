@@ -12,7 +12,7 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
 | Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
-| Part B (B1..B7) | B1..B4 done (FEATURES_B.md; contacts flagged); B5 next |
+| Part B (B1..B7) | B1..B6 done (FEATURES_B.md; contacts flagged, icon badge not built); B7 next |
 
 ## Log
 ### 2026-10-17
@@ -94,3 +94,15 @@ on #78. Never merged, never deployed. Resume here.
   own calendar, pin on a map, creation steps, composer, camera hero, friend capsules queued, backoff, Wi-Fi only,
   uploads in the background (WorkManager). Rules 78/78 before the thumbnail rule (its test runs with the next rules
   run), Flutter 374.
+- B5 done: the map filter (whose, open or later, colours; kept per account on the phone). Mine only left 105 of
+  1,208 capsules, Mine + red 17. The B5 commit (`0994c86`) left out the generated strings (`lib/l10n`); they
+  came with the next commit, so `0994c86` alone does not compile. History is not rewritten on this branch, so it
+  stays.
+- B6 done: days, the team's announcements in the tab, swipes, friend requests answered in place, the vibration
+  switch (two new Android channels), the router turned into tested destinations; on the server achievements are
+  checked where stats change (`unlockAchievements` removed) and a capsule's follower fan-out stops at 500. The B6
+  commit missed `functions/index.js`; `6eef251` adds it. Functions 58/58, Flutter 385.
+- Found on the phone during B6: one accept in place unlocked five seeded achievements and sent five notifications
+  at once; a catch-up now tells once.
+- Rig: a stale `flutter run` session kept pushing old code, and opening the app again from the launcher ran the
+  installed APK instead of the reloaded code (RIG.md §5).

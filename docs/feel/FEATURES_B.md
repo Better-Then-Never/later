@@ -347,3 +347,73 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
   hand-over existed, showed the app and the job racing (the job's create was refused): that race is gone. Not seen:
   the job with the app process killed (Android keeps WorkManager jobs across process death by design; `am kill`
   could not kill the app while the job ran).
+
+## B5. Map filters
+
+### What the map shows: ON
+- **What**: a button at the top left of the map opens "On the map": whose capsules (mine, friends', everyone
+  else's; a friend's public capsule counts as a friend's, co-authored ones as mine), open or opening later, and pin
+  colours (none chosen: all). Changes apply at once, a green dot on the button shows while something is left out,
+  "Show everything" resets. Clusters and the heatmap follow the filter.
+- **How**: `MapFilter` (`lib/features/map/map_filter.dart`) is applied where the controller picks the visible
+  capsules; it is kept as text in the phone's preferences (`map_filter`), per account.
+- **Tests**: `map_test.dart` (owners, a friend's public capsule, open or later, colours, kept as text, a broken or
+  empty value means everything).
+- **Phone**: Mine only left 105 of 1,208 capsules, Mine + red 17; the choice survived a restart (the button read
+  "Фильтр карты, включено 2").
+- **Not done**: the filter is kept on the phone, not in the account (a second phone starts with everything).
+
+## B6. Notifications
+
+### Days, newest first: ON
+- Rows sit under "Today", "Yesterday", then the date (the chat's day labels, in the app's language).
+
+### The Later team's announcements in the tab: ON
+- Announcements (already sent as topic pushes) join "All" as rows of their own: the app's logo, "From the Later
+  team", title and text in the app's language (English when missing). The last 10 are read. Hidden when Settings >
+  Notifications > News is off.
+
+### Swipes: ON
+- Right marks a notification read (the row springs back, now read); left deletes it ("Delete" in red behind).
+  Read rows swipe only left; nothing swipes while selecting.
+
+### Friend requests answered in place: ON
+- A friend request row carries Accept and Reject; once accepted it reads "You are friends now".
+
+### Vibration switch: ON (Android)
+- Settings > Notifications > Vibration, on by default, greyed out while Sound is off ("Comes with the sound").
+  Android fixes vibration per notification channel, so two more channels (`messages_novibrate`,
+  `activity_novibrate`) carry the pushes of people who switched it off; the server picks the channel
+  (`prefs.channelFor`). A silent push never vibrates.
+- **Tests**: functions `notify.test.js` (the channel for each sound and vibration setting); rules accept
+  `notifications.vibrate`.
+- **Phone**: not checked: it changes only real pushes, which the rig cannot deliver (BLOCKERS.md).
+
+### Where a tap leads: ON
+- `NotificationRouter` first turns a tap into a destination (a profile, friend requests, a capsule on the map, its
+  card, its thread, a chat or group, achievements), then opens it. **Tests**: `notification_router_test.dart` (every
+  type, taps without the id they need, taps held until the home screen exists).
+
+### Server: bounded fan-out, achievements where stats change: ON
+- Group and co-author notifications came with B1 and B2.
+- A new capsule tells at most 500 followers (friends-only capsules: followers who are friends).
+- The `unlockAchievements` trigger ran on every write to `users/{uid}` (each profile edit, pin, favourite and stats
+  update). Achievements are now checked in the four triggers where a counted stat changes (a capsule made, a
+  reaction received, a comment written, a friend accepted, for both people). Reaching several tiers at once is told
+  once; the rest are stored and show on the profile.
+- **Tests**: functions `gamification.test.js` (`checkAchievements`, one notice for a catch-up), `notify.test.js`
+  (the 500 cap).
+
+### App icon badge: NOT BUILT (Android's own dot remains)
+- Android 8+ marks the icon from the notifications in the tray (the channels allow badges by default; Samsung
+  shows their count). A count of unread notifications on the icon would need a third-party package (the usual one,
+  flutter_app_badger, is no longer maintained) or a count computed on the server for every push. Neither was added
+  (BLOCKERS.md). Not checked on the phone.
+
+### B6 on the phone
+- Day headers in Russian ("Сегодня", "Вчера", then dates), the announcement "Лупы уже здесь" under "Сегодня", an
+  accept in place ("Теперь вы друзья"), a swipe right (read 7 → 8 in Firestore) and a swipe left (11 → 10
+  notifications).
+- Found there: the first accept in place reached five seeded achievements at once and five notifications arrived
+  together. Since then a catch-up tells once (test added).
+- **Tests** (app): `notifications_tab_test.dart` (days, News off, both swipes, accept in place).

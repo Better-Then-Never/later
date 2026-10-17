@@ -92,3 +92,7 @@ dart run tool/dev/perf_summary.dart build/perf/<label>
 - **Functions tests** (`npm run test:emulate`) leave their Firestore `java` on port 8280 after finishing; the next
   run then fails with "port taken". Stop it after each run (as the rules tests do with 8180).
 - The app keeps its language and theme on the phone between runs; the perf test sets a `PERF_LANG` back when it ends.
+- **Back on the map closes the app's activity.** Opening it again from the launcher starts the code installed with the
+  APK, and hot reload then targets an isolate that is gone: what is on the screen is old code. Quit and start
+  `tool/dev/run.sh` again (`ctl.sh q` first). The same after a `flutter run` that was never quit: it keeps
+  pushing its own (older) build.

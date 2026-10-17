@@ -935,6 +935,9 @@ describe('settings', () => {
     await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, quietHours: { enabled: true, start: 2000, end: 0 } } }));
     await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, utcOffsetMinutes: 5000 } }));
     await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, extra: true } }));
+    // Vibration (B6): a switch; missing means on.
+    await assertSucceeds(setDoc(settingsRef(alice), { notifications: { ...n, vibrate: false } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, vibrate: 'off' } }));
     await assertFails(setDoc(settingsRef(alice), { ...valid, isAdmin: true }));
     await assertFails(setDoc(settingsRef(alice), { mutedChats: 'alice_bob' }));
   });

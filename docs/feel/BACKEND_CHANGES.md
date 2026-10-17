@@ -15,6 +15,7 @@ written for the owner.
 | 6 | Capsules: quick reply (`capsuleRef` on messages), co-authors (rules, index, notifications), share links on the web page; the groups index | rules, indexes, functions, hosting | unaffected (see section 6) | rules 75/75, functions 52/52 | rules, indexes, functions, hosting |
 | 7 | Profiles: about, name search (nameLower), pinned friends, privacy switches; contacts index and requests (flagged) | rules, functions, data | unaffected | rules, functions 55/55 | rules; two new functions (gcloud) only with the contacts flag; optional backfill |
 | 8 | Creation: thumb.jpg storage rule; WorkManager (app build only) | storage rules | unaffected | storage rules test | storage rules |
+| 9 | Notifications: `notifications.vibrate`, channels without vibration; achievements checked where stats change (`unlockAchievements` removed); follower fan-out capped at 500 | rules, functions | unaffected (see section 9) | rules 79/79, functions 58/58 | rules, delete one function, functions |
 
 ## 1. Pushes are logged, not sent, in the Functions emulator
 `functions/index.js`: when `FUNCTIONS_EMULATOR === 'true'` (set only by the Firebase emulator), `services()`
@@ -247,3 +248,36 @@ server side.
 **Tests**: storage rules (thumbnail: owner, size).
 
 **Deploy (owner)**: `firebase deploy --only storage --project later-da778`, then release the app.
+
+## 9. Notifications (Part B6)
+**Firestore rules**: settings `notifications.vibrate` (a boolean; missing means on).
+
+**Functions**:
+- `lib/prefs.js`: `alertOf(settings)` (`sound`, `vibrate` or `silent`) and `channelFor(kind, alert)`. People who
+  switched vibration off get their pushes on `messages_novibrate` / `activity_novibrate`. Every sender now asks
+  `alertOf` instead of reading `notifications.sound` itself.
+- `lib/notify.js`: `capsuleRecipients` reads at most 500 followers (`MAX_FOLLOWER_FANOUT`); before, a capsule
+  read every follower and every follower's `following` document.
+- `lib/gamification.js`: `checkAchievements(services, uid)` reads the user once and unlocks what their stats
+  reached; a catch-up notifies once (`notifyAtMost: 1`).
+- `index.js`: `updateCapsuleStats`, `onReactionWritten`, `onCommentCreated` and `onFriendRequestUpdated` call
+  it after their work. **`unlockAchievements` (a trigger on every `users/{uid}` update) is no longer exported.**
+- `lib/social.js`: the reaction trigger returns the capsule's owner (for the check above).
+
+**Old apps**: unaffected. They never write `vibrate` (pushes keep vibrating); they create only the old channels.
+A push sent to an old app on a `*_novibrate` channel (only after the owner of that account switched vibration
+off in a new app on another phone) falls back to Android's default channel. Achievements unlock as before, at the
+moment a stat changes instead of on the next profile write.
+
+**Cost**: fewer invocations (no trigger on every profile write; one user read per changed stat); the fan-out of one
+capsule is bounded.
+
+**Tests**: functions 58/58 (alert and channel per setting, the fan-out cap, `checkAchievements`, the single notice);
+rules (`vibrate` accepted as a boolean, refused otherwise; the final count is in FEEL_QA.md).
+
+**Deploy (owner)**:
+1. `firebase deploy --only firestore:rules --project later-da778`
+2. `firebase functions:delete unlockAchievements --region us-central1 --project later-da778` (the CLI would
+   otherwise ask about it during the next step).
+3. `firebase deploy --only functions --project later-da778`
+4. Release the app (the new channels are created by the app on its first start).

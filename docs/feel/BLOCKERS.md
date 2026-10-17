@@ -15,7 +15,9 @@ Anything listed here was **not** checked on the device, or could not be done in 
   - [ ] a new message, a reaction, a comment, a friend request and an achievement each arrive as a push, in the
     phone's language, and open the right screen when tapped;
   - [ ] quiet hours and per-category switches hold back the right pushes;
-  - [ ] announcements arrive on the topic of the account's language.
+  - [ ] announcements arrive on the topic of the account's language;
+  - [ ] with Settings > Notifications > Vibration off, pushes arrive on the `*_novibrate` channels and do not
+    vibrate; with Sound off they are silent.
 - Builds that use the emulators skip FCM topic subscriptions (`PushMessagingService`), so topic pushes are not
   testable with the emulator rig at all.
 
@@ -37,6 +39,9 @@ Anything listed here was **not** checked on the device, or could not be done in 
   store-review and privacy question). Before the flag goes on: add the permission, run it on a test phone, deploy
   the two functions (BACKEND_CHANGES.md §7). iOS has no native reader yet. Matching is by verified email; matching
   by phone number would need phone verification (an owner decision).
+- **App icon badge (B6)**: not built. Android shows its own mark from the notifications in the tray (not checked on
+  the phone). An unread count on the icon needs a third-party package (flutter_app_badger is no longer maintained;
+  no other was vetted) or a count query on the server per push. Owner to decide.
 - **Name search** finds prefixes of the whole name only ("anna f", not "fischer"); existing accounts are found by name
   after they open the new version or after the optional backfill (BACKEND_CHANGES.md §7).
 
