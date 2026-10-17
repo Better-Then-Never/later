@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import '../core/logging/app_logger.dart';
 import '../core/theme/themed_asset_bundle.dart';
 import '../data/services/preferences_store.dart';
+import '../core/theme/font_warmup.dart';
 import '../firebase_options.dart';
 import 'app_scope.dart';
 import 'appearance/appearance_controller.dart';
@@ -46,6 +47,8 @@ Future<void> bootstrap() async {
     preferences.init(),
     ThemedAssetBundle.preload(),
   ]);
+  // Fonts loaded and shaped now, not on the first frame of a page.
+  FontWarmup.run();
   final appearance = AppearanceController(preferences);
   await appearance.load();
   // Draw under transparent status and navigation bars (styles.xml); screens
