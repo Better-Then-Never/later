@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_palette.dart';
+import '../../shared/motion/tint_painter.dart';
 
 /// How a page enters: from the right (pages) or from the bottom (pages that
 /// open like a sheet: the camera, "Add friends").
@@ -144,7 +145,7 @@ class AppPageRoute<T> extends PageRoute<T> {
         fit: StackFit.expand,
         children: [
           IgnorePointer(
-            child: CustomPaint(painter: _ScrimPainter(arriving, scrim)),
+            child: CustomPaint(painter: TintPainter(arriving, scrim)),
           ),
           page,
         ],
@@ -181,30 +182,9 @@ class _Scrim extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CustomPaint(
-    foregroundPainter: _ScrimPainter(animation, color),
+    foregroundPainter: TintPainter(animation, color),
     child: child,
   );
-}
-
-class _ScrimPainter extends CustomPainter {
-  _ScrimPainter(this.animation, this.color) : super(repaint: animation);
-
-  final Animation<double> animation;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final t = animation.value;
-    if (t <= 0) return;
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = color.withValues(alpha: color.a * t),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_ScrimPainter old) =>
-      old.animation != animation || old.color != color;
 }
 
 /// A soft shadow along the left edge of a page sliding in, drawn as a
