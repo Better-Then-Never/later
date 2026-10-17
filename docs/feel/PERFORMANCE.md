@@ -129,4 +129,76 @@ Android's "Skipped N frames" reports, which `tool/dev/perf_summary.dart` now pri
 Full table at `0262430`: `docs/feel/perf/fix4.md`.
 
 ## After
-Pending: Phase 5.
+Commit `c70213d` (runs 1–2) and `9bbe55d` (run 3; only the perf test changed), 3 runs on 2026-10-17, same phone,
+seed and settings as the baseline (Russian, semantics off). Medians; raw table: `docs/feel/perf/after.md`.
+✓ = within the budget, ✗ = not.
+
+| Flow | Janky % before → after | Worst frame ms before → after | p90 ms before → after | |
+|---|---|---|---|---|
+| startup (launch → home) | 8.1 → **6.6** | 26.5 → 41.9 | 4.2 → 4.0 | ✗ |
+| tab_switches | 0.3 → 1.0 | 29.6 → 20.5 | 3.5 → 3.4 | ✗ (at the line) |
+| history_scroll | 0 → 0 | 6.4 → 5.5 | 3.7 → 3.4 | ✓ |
+| settings_open_close | 12.4 → **3.3** | 33.4 → 14.4 | 9.8 → 4.5 | ✗ |
+| theme_switch | 16.8 → **0.4** | 31.6 → 21.1 | 12.7 → 2.6 | ✓ janky, ✗ one first frame |
+| add_friends_transition | 2.5 → 1.2 | 18.1 → 22.6 | 5.1 → 3.7 | ✗ |
+| notifications_tabs | 10.8 → **1.1** | 15.5 → 10.9 | 8.8 → 2.9 | ✗ (at the line) |
+| chat_open | 3.2 → 1.7 | 14.4 → 15.2 | 6.6 → 5.3 | ✗ |
+| chat_scroll | 0 → 0 | 6.3 → 7.0 | 4.0 → 4.3 | ✓ |
+| chat_options_sheet | 0 → 1.2 | 6.4 → 10.6 | 4.0 → 5.0 | ✗ (regression) |
+| map_focus | 0.6 → 0 | 14.1 → 8.0 | 2.7 → 2.8 | ✓ |
+| capsule_dialog | 0.7 → 3.2, then **0.6** (`43a1ffa`) | 14.5 → 12.2, then 17.8 | 3.0 → 6.6, then 2.9 | ✓ janky after the fix (regression found and fixed below) |
+| photo_viewer | 0.8 → 0 | 13.1 → 4.6 | 6.2 → 3.0 | ✓ |
+| map_zoom_out | 0 → 0 | 4.1 → 4.5 | 2.7 → 2.6 | ✓ |
+| map_pan_heatmap | 0.5 → 0 | 8.8 → 3.8 | 3.1 → 2.6 | ✓ |
+| map_zoom_in | 0 → 0 | 3.7 → 4.2 | 2.2 → 2.5 | ✓ |
+| map_pan_markers | 0 → 0 | 3.6 → 4.0 | 2.6 → 2.5 | ✓ |
+| camera_open_close | 1.2 → **0.6** | 28.4 → 9.6 | 3.3 → 3.3 | ✓ |
+| camera_capture | 1.4 → 0.7 | 19.9 → 13.8 | 2.9 → 2.7 | ✓ |
+| camera_pinch (new: real pinch, flash cycle) | – → 0 | – → 5.8 | – → 3.5 | ✓ |
+| creation_save (new: save → page closed) | – → 0.4 | – → 11.5 | – → 2.4 | ✓ |
+| map_compass (new, 1 run at `ccb056c`) | – → 0 | – → 4.3 | – → 1.7 | ✓ |
+
+| Timed | Before | After | Budget | |
+|---|---|---|---|---|
+| Cold start, process → first frame (= signed-in home), at `43a1ffa` | 867 ms | 958 ms (982, 963, 958, 946, 936; the font warm-up, ~75 ms, runs before the first frame) | < 2 s | ✓ |
+| Launch → home inside the test | 397 ms | 469 ms (the font warm-up, ~75 ms, before the first frame) | | |
+| Camera: tap → shutter feedback frame | 26 ms | **24 ms** | < 300 ms | ✓ |
+| Camera: tap → picture file written | 1,053 ms | 1,083 ms | | |
+| Camera: tap → first frame of creation | 1,070 ms | 1,111 ms | (< 300 ms perceived: met by the frozen preview, not by the page) | ✗ |
+| Camera: pinch on the preview | not possible through adb | 3.8× in 3 of 3 runs | | ✓ |
+| Chat (600 messages): tap → first frame with messages | 21 ms | 23 ms | < 400 ms | ✓ |
+| Creation: save → page closed (emulators, upload included) | – | 1,877 ms | | |
+| **Theme switch flow, wall time** | **22.1 s** (a ~10 s freeze per switch) | **4.9 s** | | ✓ |
+
+**Freezes (Android main-thread stalls, whole run).** Before: 4,351–6,548 skipped frames per run, the longest
+10–12 s. After: 0 / 150 / 49 frames, the longest 60 frames (0.5 s), all of them during the launch, before the first
+flow starts (the map view and Google Play services starting).
+
+**Reading it.**
+- Everything that moves continuously is within budget: scrolls, pans, zooms, the camera, the photo viewer.
+- The two big problems are gone: the theme switch (16.8 % janky and a 10 s freeze after it) and the freezes after
+  startup (marker floods). Settings and the notification segments went from 12 % and 11 % to about 1–3 %.
+- Still over 1 %: opening things (settings 3.3 %, chat 1.7 %, add friends 1.2 %, notifications 1.1 %) and startup
+  (6.6 %). What is left is the first frame of a page: its text laid out for the first time and Impeller adding
+  new letters to its glyph atlas (Phase 2 above; engine-level, BLOCKERS.md).
+- **Regressions from Phase 3 motion**: capsule_dialog (0.7 → 3.2 %, fixed: 0.6 %), chat_options_sheet (0 → 1.2 %)
+  and tab_switches (0.3 → 1.0 %, worst frame lower); startup's worst frame rose (26.5 → 41.9 ms). See
+  "Regressions after Phase 3" below.
+
+**A rig effect, not the app**: right after a re-seed, the first chat open of a run waited the test's limit of 10 s
+for its messages (run 1 here; all three opens in a re-seeded check run). The phone's Firestore cache still held the
+previous seed's capsules, and the SDK checked each cached document a query no longer returned, one by one, for 1–2
+minutes (the map re-sorted its capsules ~3 times a second meanwhile). With the app's data cleared after the
+re-seed, the same first open took **176 ms** and the map sorted 4 times (RIG.md, gotchas). The other 8 opens of
+the final runs took 28–188 ms in the test and 20–27 ms to the frame with messages.
+
+### Regressions after Phase 3, by name
+Detailed timeline (`KEEP_TIMELINE=1 DETAIL=1`, `tool/dev/slow_frames.dart`) of the flows that got worse:
+
+| Flow | After | Where the time went | Now |
+|---|---|---|---|
+| capsule_dialog | 3.2 % | the card settled from 96 % to 100 %: Impeller drew the card's letters again at each new size (`UpdateAtlasBitmap` 8–9 ms, a new glyph atlas on every open) | **0.6 %** (0.6 / 0.6 / 0.7, `43a1ffa`: the card only rises; MOTION_CATALOG rule 2) |
+| chat_options_sheet | 1.2 % (3 of 250 frames) | first open: new letters into the glyph atlas (9.6 ms raster) and one garbage collection (9.3 ms) | unchanged (engine-level, as in Phase 2) |
+| tab_switches | 1.0 % (3 of 304 frames) | a tab coming back rebuilds its pictures (each `Image` depends on `TickerMode`, which `TabStack` turns back on) plus a garbage collection | kept: stopping hidden tabs' tickers is what took notifications and the camera to ~0–1 % |
+| startup, worst frame 26.5 → 41.9 ms | | the hidden tabs (My capsules, Messages) build their lists when their data arrives about a second after launch (40 paragraphs of first text layout in one frame); the tabs are kept alive as before; the new motion adds frames (62 → 106) but not this one | not fixed (IDEAS_NOT_DONE.md) |
+

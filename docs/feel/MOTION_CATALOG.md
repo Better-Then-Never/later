@@ -10,7 +10,12 @@ phone's "remove animations" setting; every motion below honours it (instant, or 
    `TintPainter` (`lib/shared/motion/tint_painter.dart`) covers a widget with its background colour and thins the
    cover (looks identical over a plain background), or dims with a scrim. Opacity is fine on small things (a button,
    a card).
-2. **Transforms are free**: slides, scales and lifts move layers without redrawing them.
+2. **Moves are free; scaling text is not.** Slides and lifts move layers without redrawing them. A *scale* is free
+   for pictures, but on Impeller text under a changing scale is drawn again at every new size (its letters go into
+   the glyph atlas once per size): the centred card's 96 % → 100 % settle kept the capsule dialog at 3.2 % janky,
+   rising alone brought it to 0.6 % (`43a1ffa`). Scale icons and photos, not cards full of text. Small scaled text
+   (the 0.97 press on buttons, the count badge, a reaction's pop) costs a few letters each time; not measured
+   on its own.
 3. **Nothing heavy at the start of a motion.** The first frame of a page builds it; keep that frame light (no
    `ListTile` intrinsic layouts, no per-row `ThemeData`), and never send native views (the map) a burst of updates
    mid-animation.
@@ -24,7 +29,7 @@ phone's "remove animations" setting; every motion below honours it (instant, or 
 | **Back swipe** | same, horizontal pages | drag from the left 24 dp follows the finger (linear), pops past half the width or on a flick (> 1 width/s), else springs back; blocked by `PopScope(canPop: false)` | finger-driven | swipe still pops (no follow motion) |
 | **Sheet-like pages** | camera, Add friends (`appSheetRoute`) | rise from the bottom over a painted scrim | emphasized / standard | no animation |
 | **Tabs** | `TabStack` (`lib/app/shell/tab_stack.dart`) | incoming tab rises 6 dp out of the page background (cover thins); hidden tabs' tickers off | fast, `enter` | instant |
-| **Centred cards** (menus, confirmations, capsule dialog) | `AppCardRoute` (`lib/shared/widgets/app_sheets.dart`) | card rises from below the screen and settles from 96 % (no fade: a card-sized opacity layer made the capsule dialog 20 % janky); scrim darkens; drag down past a third or a flick closes, else springs back | emphasized in, standard out | no animation |
+| **Centred cards** (menus, confirmations, capsule dialog) | `AppCardRoute` (`lib/shared/widgets/app_sheets.dart`) | card rises from below the screen (no fade: a card-sized opacity layer made the capsule dialog 20 % janky; no settle from 96 %: rule 2); scrim darkens; drag down past a third or a flick closes, else springs back | emphasized in, standard out | no animation |
 | **Edge sheets** (lists, threads) | `showEdgeSheet` | Material bottom sheet with the app tokens; drag down closes | emphasized / standard, `emphasizedCurve` | no animation |
 | **Photo viewer** | `PhotoViewer.show` | the photo flies as a `Hero` from the capsule card or the creation page; black behind it is painted in; Back button fades alone; drag up/down closes with the black thinning | emphasized / standard | no animation |
 | **Theme, language, size switch** | `AppearanceCrossfade` (`lib/app/appearance/`) | a still of the old screen fades out over the new one (one rebuild under it) | slow, `standardCurve` | instant |
