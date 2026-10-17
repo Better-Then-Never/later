@@ -1,4 +1,5 @@
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
@@ -18,7 +19,7 @@ abstract final class AccountSettings {
   }) async {
     final trimmedName = name.trim();
     if (trimmedName.isEmpty) {
-      return const ValidationFailure('Please enter your name.');
+      return ValidationFailure(AppL10n.current.settingsErrorEnterName);
     }
     final normalized = Usernames.normalize(username);
     final invalid = Usernames.validate(normalized);
@@ -39,7 +40,7 @@ abstract final class AccountSettings {
       );
       return AppFailure.from(
         e,
-        fallbackMessage: 'Could not save. Please try again.',
+        fallbackMessage: AppL10n.current.settingsErrorCouldNotSave,
       );
     }
   }
@@ -51,14 +52,17 @@ abstract final class AccountSettings {
   ) async {
     final name = input.trim();
     if (name.isEmpty) {
-      return const ValidationFailure('Please enter a new name!');
+      return ValidationFailure(AppL10n.current.settingsErrorEnterNewName);
     }
     try {
       await users.updateName(uid, name);
       return null;
     } catch (e, st) {
       AppLogger.warning('Updating the name failed', error: e, stackTrace: st);
-      return AppFailure.from(e, fallbackMessage: 'Failed to update name!');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorNameFailed,
+      );
     }
   }
 
@@ -71,7 +75,7 @@ abstract final class AccountSettings {
     String input,
   ) async {
     if (input.trim().isEmpty) {
-      return const ValidationFailure('Please enter a new username!');
+      return ValidationFailure(AppL10n.current.settingsErrorEnterNewUsername);
     }
     final username = Usernames.normalize(input);
     final invalid = Usernames.validate(username);
@@ -85,7 +89,10 @@ abstract final class AccountSettings {
         error: e,
         stackTrace: st,
       );
-      return AppFailure.from(e, fallbackMessage: 'Failed to update username!');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorUsernameFailed,
+      );
     }
   }
 }
@@ -106,21 +113,20 @@ abstract final class AccountSecurity {
     required String next,
     required String confirm,
   }) async {
+    final l10n = AppL10n.current;
     if (current.isEmpty) {
-      return const ValidationFailure('Please enter your current password.');
+      return ValidationFailure(l10n.settingsErrorCurrentPassword);
     }
     if (next.length < minPasswordLength) {
-      return const ValidationFailure(
-        'The new password needs at least $minPasswordLength characters.',
+      return ValidationFailure(
+        l10n.settingsErrorPasswordTooShort(minPasswordLength),
       );
     }
     if (next != confirm) {
-      return const ValidationFailure('The new passwords do not match.');
+      return ValidationFailure(l10n.settingsErrorPasswordsMismatch);
     }
     if (next == current) {
-      return const ValidationFailure(
-        'The new password is the same as the current one.',
-      );
+      return ValidationFailure(l10n.settingsErrorPasswordSame);
     }
     return _run('Changing the password', () async {
       await auth.reauthenticate(password: current);
@@ -137,13 +143,13 @@ abstract final class AccountSecurity {
   }) async {
     final email = newEmail.trim();
     if (!_email.hasMatch(email)) {
-      return const ValidationFailure('Please enter a valid email address.');
+      return ValidationFailure(AppL10n.current.settingsErrorInvalidEmail);
     }
     if (email.toLowerCase() == auth.currentEmail?.toLowerCase()) {
-      return const ValidationFailure('This is already your email.');
+      return ValidationFailure(AppL10n.current.settingsErrorSameEmail);
     }
     if (auth.hasPassword && (password == null || password.isEmpty)) {
-      return const ValidationFailure('Please enter your password.');
+      return ValidationFailure(AppL10n.current.settingsErrorEnterPassword);
     }
     return _run('Changing the email', () async {
       if (!await auth.reauthenticate(
@@ -162,7 +168,7 @@ abstract final class AccountSecurity {
     String? password,
   }) async {
     if (auth.hasPassword && (password == null || password.isEmpty)) {
-      return const ValidationFailure('Please enter your password.');
+      return ValidationFailure(AppL10n.current.settingsErrorEnterPassword);
     }
     return _run('Deleting the account', () async {
       if (!await auth.reauthenticate(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/models/user_settings.dart';
@@ -76,7 +77,9 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
   /// previous settings are back in place).
   Future<AppFailure?> updateNotifications(NotificationSettings next) async {
     final uid = _uid;
-    if (uid == null) return const PermissionFailure('Please sign in again.');
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
     final previous = _settings;
     final withOffset = next.copyWith(utcOffsetMinutes: _utcOffset());
     _settings = _settings.copyWith(notifications: withOffset);
@@ -90,14 +93,19 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
         _settings = previous;
         notifyListeners();
       }
-      return AppFailure.from(e, fallbackMessage: 'Could not save settings.');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorSaveFailed,
+      );
     }
   }
 
   /// Mutes or unmutes pushes (and the unread badge) for [chatId].
   Future<AppFailure?> setChatMuted(String chatId, {required bool muted}) async {
     final uid = _uid;
-    if (uid == null) return const PermissionFailure('Please sign in again.');
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
     final previous = _settings;
     _settings = _settings.copyWith(
       mutedChats: muted
@@ -114,7 +122,10 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
         _settings = previous;
         notifyListeners();
       }
-      return AppFailure.from(e, fallbackMessage: 'Could not update the chat.');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorChatUpdateFailed,
+      );
     }
   }
 

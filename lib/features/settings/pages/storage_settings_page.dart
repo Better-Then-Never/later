@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../data/services/cache_service.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/options/options_section.dart';
@@ -39,8 +40,8 @@ class _StorageSettingsPageState extends State<StorageSettingsPage> {
     if (_clearing) return;
     ConfirmDialog.show(
       context: context,
-      title: 'Clear the cache? Pictures load again when you need them.',
-      confirmText: 'Clear',
+      title: context.l10n.settingsStorageClearConfirm,
+      confirmText: context.l10n.settingsStorageClear,
       onConfirm: _clear,
     );
   }
@@ -53,7 +54,7 @@ class _StorageSettingsPageState extends State<StorageSettingsPage> {
     setState(() => _clearing = false);
     PopupNotificationService.showSuccess(
       context: context,
-      message: 'Cache cleared',
+      message: context.l10n.settingsStorageCleared,
       position: NotificationPosition.bottom,
     );
   }
@@ -61,17 +62,16 @@ class _StorageSettingsPageState extends State<StorageSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final size = _size;
+    final l10n = context.l10n;
     return SettingsScaffold(
-      title: 'Data and storage',
-      description: 'Space Later uses on this phone',
+      title: l10n.settingsDataAndStorage,
+      description: l10n.settingsStorageDescription,
       children: [
         OptionsSection(
-          footer:
-              'Photos taken or picked for capsules and pictures loaded '
-              'from the internet. Your capsules, chats and account stay.',
+          footer: l10n.settingsStorageFooter,
           children: [
             OptionsSettingsRow(
-              title: 'Cache',
+              title: l10n.settingsStorageCache,
               trailing: DefaultText(
                 size == null ? '...' : CacheService.format(size),
               ),
@@ -82,7 +82,9 @@ class _StorageSettingsPageState extends State<StorageSettingsPage> {
         OptionsSection(
           children: [
             OptionsSettingsRow(
-              title: _clearing ? 'Clearing...' : 'Clear cache',
+              title: _clearing
+                  ? l10n.settingsStorageClearing
+                  : l10n.settingsStorageClearCache,
               withDivider: false,
               onTap: _confirmClear,
             ),

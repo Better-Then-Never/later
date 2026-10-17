@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../data/models/user_profile.dart';
 import '../../../shared/widgets/buttons/default_text_button.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
@@ -22,14 +23,15 @@ class BlockedUsersPage extends StatelessWidget {
     final blocked = context.select<FriendsStore, List<String>>(
       (s) => s.blocked.toList()..sort(),
     );
+    final l10n = context.l10n;
     return SettingsScaffold(
-      title: 'Blocked users',
-      description: 'They cannot message you or send you friend requests',
+      title: l10n.settingsBlockedUsers,
+      description: l10n.settingsBlockedDescription,
       children: [
         if (blocked.isEmpty)
-          const DefaultEmptyInboxInfo(
-            message: 'Nobody is blocked',
-            subtitle: 'Block someone from their profile\nor from a chat',
+          DefaultEmptyInboxInfo(
+            message: l10n.settingsBlockedEmpty,
+            subtitle: l10n.settingsBlockedEmptyHint,
             assetPath: AppIcons.friendsRequestPage,
           )
         else
@@ -59,11 +61,13 @@ class _BlockedRow extends StatelessWidget {
     if (!resolved) return UserRowSkeleton(screenWidth: screenWidth);
     return UserListTile(
       uid: uid,
-      name: user?.name ?? 'Deleted account',
+      name: user?.name ?? context.l10n.settingsDeletedAccount,
       username: user?.username ?? '',
       screenWidth: screenWidth,
       trailing: DefaultTextButton(
-        text: busy ? 'Unblocking...' : 'Unblock',
+        text: busy
+            ? context.l10n.settingsUnblocking
+            : context.l10n.settingsUnblock,
         onTap: busy ? () {} : () => unblockUser(context, uid),
       ),
     );

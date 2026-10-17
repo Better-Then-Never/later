@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/app_links.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
@@ -17,41 +18,42 @@ class AboutPage extends StatelessWidget {
     if (await AppInfo.openUrl(url) || !context.mounted) return;
     PopupNotificationService.showError(
       context: context,
-      message: 'Could not open the page.',
+      message: context.l10n.settingsAboutOpenFailed,
       position: NotificationPosition.bottom,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return FutureBuilder<AppInfo>(
       future: AppInfo.load(),
       builder: (context, snapshot) {
         final version = snapshot.data?.label ?? '...';
         return SettingsScaffold(
-          title: 'About',
-          description: 'Later $version',
+          title: l10n.settingsAbout,
+          description: '${l10n.appName} $version',
           children: [
             OptionsSection(
               children: [
                 OptionsSettingsRow(
-                  title: 'Version',
+                  title: l10n.settingsAboutVersion,
                   trailing: DefaultText(version),
                 ),
                 OptionsSettingsRow(
-                  title: 'Privacy policy',
+                  title: l10n.settingsAboutPrivacy,
                   onTap: () => _open(context, AppLinks.privacyPolicy),
                 ),
                 OptionsSettingsRow(
-                  title: 'Terms of use',
+                  title: l10n.settingsAboutTerms,
                   onTap: () => _open(context, AppLinks.termsOfService),
                 ),
                 OptionsSettingsRow(
-                  title: 'Open-source licenses',
+                  title: l10n.settingsAboutLicenses,
                   withDivider: false,
                   onTap: () => showLicensePage(
                     context: context,
-                    applicationName: 'Later',
+                    applicationName: l10n.appName,
                     applicationVersion: version,
                     applicationIcon: Padding(
                       padding: const EdgeInsets.all(8),

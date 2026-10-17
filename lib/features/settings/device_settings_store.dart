@@ -2,18 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/services/preferences_store.dart';
 
 /// How the map draws the world.
 enum MapLook {
-  standard('Standard'),
-  satellite('Satellite'),
-  hybrid('Satellite with labels');
+  standard,
+  satellite,
+  hybrid;
 
-  const MapLook(this.label);
-  final String label;
+  /// The name shown in settings, in the app's language.
+  String get label => switch (this) {
+    standard => AppL10n.current.settingsMapLookStandard,
+    satellite => AppL10n.current.settingsMapLookSatellite,
+    hybrid => AppL10n.current.settingsMapLookHybrid,
+  };
 
   static MapLook parse(String? value) =>
       values.firstWhere((v) => v.name == value, orElse: () => standard);
@@ -21,11 +26,14 @@ enum MapLook {
 
 /// Which camera the capsule camera opens with.
 enum StartCamera {
-  back('Back camera'),
-  front('Front camera');
+  back,
+  front;
 
-  const StartCamera(this.label);
-  final String label;
+  /// The name shown in settings, in the app's language.
+  String get label => switch (this) {
+    back => AppL10n.current.settingsCameraBack,
+    front => AppL10n.current.settingsCameraFront,
+  };
 
   static StartCamera parse(String? value) =>
       values.firstWhere((v) => v.name == value, orElse: () => back);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/options/options_input_field.dart';
 import '../../../shared/widgets/options/options_section.dart';
@@ -55,7 +56,7 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
     _confirm.clear();
     PopupNotificationService.showSuccess(
       context: context,
-      message: 'Password changed',
+      message: context.l10n.settingsPasswordChanged,
       position: NotificationPosition.center,
     );
   }
@@ -69,14 +70,14 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
       if (!mounted) return;
       PopupNotificationService.showSuccess(
         context: context,
-        message: 'We sent a reset link to $email',
+        message: context.l10n.settingsPasswordResetSent(email),
         position: NotificationPosition.center,
       );
     } catch (e) {
       if (!mounted) return;
       PopupNotificationService.showError(
         context: context,
-        message: 'Could not send the link. Please try again.',
+        message: context.l10n.settingsPasswordResetFailed,
         position: NotificationPosition.center,
       );
     }
@@ -85,23 +86,19 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final auth = context.read<AuthRepository>();
+    final l10n = context.l10n;
     if (!auth.hasPassword) {
-      return const SettingsScaffold(
-        title: 'Password',
-        description: 'You sign in with Google',
-        children: [
-          SettingsNote(
-            'Your account has no Later password: Google confirms it is you. '
-            'Change your password in your Google account.',
-          ),
-        ],
+      return SettingsScaffold(
+        title: l10n.settingsPassword,
+        description: l10n.settingsPasswordGoogleDescription,
+        children: [SettingsNote(l10n.settingsPasswordGoogleNote)],
       );
     }
     final gap = SizedBox(height: MediaQuery.of(context).size.height * 0.015);
     return SettingsScaffold(
-      title: 'Password',
-      description: 'Choose a password you do not use anywhere else',
-      buttonText: 'Save',
+      title: l10n.settingsPassword,
+      description: l10n.settingsPasswordDescription,
+      buttonText: l10n.commonSave,
       onButton: _save,
       busy: _saving,
       children: [
@@ -111,7 +108,7 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
               children: [
                 OptionsInputField(
                   controller: _current,
-                  hintText: 'Current password',
+                  hintText: l10n.settingsPasswordCurrent,
                   obscureText: true,
                   autofillHints: const [AutofillHints.password],
                   textInputAction: TextInputAction.next,
@@ -119,8 +116,9 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
                 gap,
                 OptionsInputField(
                   controller: _next,
-                  hintText:
-                      'New password (${AccountSecurity.minPasswordLength}+ characters)',
+                  hintText: l10n.settingsPasswordNew(
+                    AccountSecurity.minPasswordLength,
+                  ),
                   obscureText: true,
                   autofillHints: const [AutofillHints.newPassword],
                   textInputAction: TextInputAction.next,
@@ -128,7 +126,7 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
                 gap,
                 OptionsInputField(
                   controller: _confirm,
-                  hintText: 'Repeat new password',
+                  hintText: l10n.settingsPasswordRepeat,
                   obscureText: true,
                   autofillHints: const [AutofillHints.newPassword],
                   textInputAction: TextInputAction.done,
@@ -142,7 +140,7 @@ class _PasswordSettingsPageState extends State<PasswordSettingsPage> {
         OptionsSection(
           children: [
             OptionsSettingsRow(
-              title: 'Forgot your password?',
+              title: l10n.settingsPasswordForgot,
               withDivider: false,
               onTap: _sendReset,
             ),

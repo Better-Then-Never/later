@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../data/models/user_settings.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
@@ -81,7 +82,9 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60),
-      helpText: start ? 'Quiet from' : 'Quiet until',
+      helpText: start
+          ? context.l10n.settingsQuietFrom
+          : context.l10n.settingsQuietUntil,
     );
     if (picked == null || !mounted) return;
     final value = picked.hour * 60 + picked.minute;
@@ -111,21 +114,20 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
     final loaded = context.select<SettingsStore, bool>((s) => s.isLoaded);
     final on = n.enabled && loaded;
     final quiet = n.quietHours;
+    final l10n = context.l10n;
 
     return SettingsScaffold(
-      title: 'Notifications',
-      description: 'Choose what Later tells you about',
+      title: l10n.settingsNotifications,
+      description: l10n.settingsNotificationsDescription,
       children: [
         if (_systemAllowed == false)
           OptionsSection(
-            footer:
-                'Your phone does not let Later show notifications, so none '
-                'arrive whatever you choose below.',
+            footer: l10n.settingsNotificationsBlockedFooter,
             children: [
               OptionsSettingsRow(
-                title: 'Allow notifications',
-                subtitle: const DefaultText(
-                  'Off in your phone settings',
+                title: l10n.settingsNotificationsAllow,
+                subtitle: DefaultText(
+                  l10n.settingsNotificationsOffInPhone,
                   textAlign: TextAlign.left,
                 ),
                 withDivider: false,
@@ -136,8 +138,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
         OptionsSection(
           children: [
             OptionsSwitchRow(
-              title: 'Push notifications',
-              subtitle: n.enabled ? null : 'You get no pushes from Later',
+              title: l10n.settingsNotificationsPush,
+              subtitle: n.enabled ? null : l10n.settingsNotificationsPushOff,
               value: n.enabled,
               withDivider: false,
               onChanged: loaded ? (v) => _save(n.copyWith(enabled: v)) : null,
@@ -145,21 +147,21 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           ],
         ),
         OptionsSection(
-          title: 'NOTIFY ME ABOUT',
+          title: l10n.settingsSectionNotifyAbout,
           children: [
             OptionsSwitchRow(
-              title: 'Messages',
+              title: l10n.settingsNotificationsMessages,
               value: n.messages,
               onChanged: on ? (v) => _save(n.copyWith(messages: v)) : null,
             ),
             OptionsSwitchRow(
-              title: 'New followers',
+              title: l10n.settingsNotificationsFollowers,
               value: n.follows,
               onChanged: on ? (v) => _save(n.copyWith(follows: v)) : null,
             ),
             OptionsSwitchRow(
-              title: 'New capsules',
-              subtitle: 'From people you follow with notifications on',
+              title: l10n.settingsNotificationsCapsules,
+              subtitle: l10n.settingsNotificationsCapsulesHint,
               value: n.capsules,
               withDivider: false,
               onChanged: on ? (v) => _save(n.copyWith(capsules: v)) : null,
@@ -167,16 +169,16 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           ],
         ),
         OptionsSection(
-          title: 'HOW',
+          title: l10n.settingsSectionHow,
           children: [
             OptionsSwitchRow(
-              title: 'Show message text',
-              subtitle: n.preview ? null : 'Pushes say "New message" only',
+              title: l10n.settingsNotificationsPreview,
+              subtitle: n.preview ? null : l10n.settingsNotificationsPreviewOff,
               value: n.preview,
               onChanged: on ? (v) => _save(n.copyWith(preview: v)) : null,
             ),
             OptionsSwitchRow(
-              title: 'Sound and vibration',
+              title: l10n.settingsNotificationsSound,
               value: n.sound,
               withDivider: false,
               onChanged: on ? (v) => _save(n.copyWith(sound: v)) : null,
@@ -184,12 +186,11 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           ],
         ),
         OptionsSection(
-          title: 'QUIET HOURS',
-          footer:
-              'No pushes during these hours. Messages still arrive in the app.',
+          title: l10n.settingsSectionQuietHours,
+          footer: l10n.settingsQuietHoursFooter,
           children: [
             OptionsSwitchRow(
-              title: 'Quiet hours',
+              title: l10n.settingsQuietHours,
               value: quiet.enabled,
               withDivider: quiet.enabled,
               onChanged: on
@@ -200,12 +201,12 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
             ),
             if (quiet.enabled) ...[
               OptionsSettingsRow(
-                title: 'From',
+                title: l10n.settingsQuietHoursFrom,
                 trailing: DefaultText(_time(quiet.start)),
                 onTap: on ? () => _pickTime(quiet, start: true) : null,
               ),
               OptionsSettingsRow(
-                title: 'Until',
+                title: l10n.settingsQuietHoursUntil,
                 trailing: DefaultText(_time(quiet.end)),
                 withDivider: false,
                 onTap: on ? () => _pickTime(quiet, start: false) : null,
@@ -213,7 +214,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
             ],
           ],
         ),
-        const SettingsNote('Mute a single chat from its menu in Messages.'),
+        SettingsNote(l10n.settingsNotificationsMuteHint),
       ],
     );
   }

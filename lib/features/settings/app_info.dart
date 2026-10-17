@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 
 /// The app's version and the phone it runs on, for the About page and
@@ -10,11 +11,16 @@ import '../../core/logging/app_logger.dart';
 class AppInfo {
   const AppInfo({required this.version, required this.build});
 
+  /// Empty when the version could not be read.
   final String version;
   final String build;
 
-  /// "0.0.31 (31)".
-  String get label => build.isEmpty ? version : '$version ($build)';
+  /// "0.0.31 (31)"; "unknown" in the app's language when it could not be
+  /// read.
+  String get label {
+    if (version.isEmpty) return AppL10n.current.settingsAboutVersionUnknown;
+    return build.isEmpty ? version : '$version ($build)';
+  }
 
   static Future<AppInfo>? _loaded;
 
@@ -27,16 +33,21 @@ class AppInfo {
       return AppInfo(version: info.version, build: info.buildNumber);
     } catch (e) {
       AppLogger.warning('Could not read the app version', error: e);
-      return const AppInfo(version: 'unknown', build: '');
+      return const AppInfo(version: '', build: '');
     }
   }
 
   /// What support needs to look into a problem. No email, no tokens.
-  String supportText({String? uid}) => [
-    'App: Later $label',
-    'Phone: ${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
-    if (uid != null) 'User id: $uid',
-  ].join('\n');
+  String supportText({String? uid}) {
+    final l10n = AppL10n.current;
+    return [
+      l10n.settingsSupportInfoApp(label),
+      l10n.settingsSupportInfoPhone(
+        '${Platform.operatingSystem} ${Platform.operatingSystemVersion}',
+      ),
+      if (uid != null) l10n.settingsSupportInfoUserId(uid),
+    ].join('\n');
+  }
 
   /// Opens [url] in the browser; false when nothing could open it.
   static Future<bool> openUrl(String url) =>
