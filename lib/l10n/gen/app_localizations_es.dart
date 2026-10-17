@@ -533,6 +533,24 @@ class AppLocalizationsEs extends AppLocalizations {
       'La cápsula se ha guardado, pero no se ha enviado. Vuelve a tocar el botón para intentarlo de nuevo.';
 
   @override
+  String get capsulesOpenInMonth => 'En un mes';
+
+  @override
+  String get capsulesOpenInWeek => 'En una semana';
+
+  @override
+  String get capsulesOpenInYear => 'En un año';
+
+  @override
+  String get capsulesOpenNow => 'Abrir ya';
+
+  @override
+  String get capsulesOpenPickDate => 'Elegir fecha…';
+
+  @override
+  String get capsulesOpenTomorrow => 'Mañana';
+
+  @override
   String get capsulesPrivacyFriends => 'Amigos';
 
   @override

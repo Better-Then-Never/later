@@ -21,6 +21,7 @@ import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/page_header.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
+import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
 import '../../settings/settings_store.dart';
@@ -82,16 +83,82 @@ class _CapsuleCreationView extends StatelessWidget {
   final CapsulePrivacy? initialPrivacy;
   final String? recipientId;
 
-  Future<void> _pickOpenDate(BuildContext context) async {
-    final now = DateTime.now();
+  Future<void> _choosePrivacy(BuildContext context) async {
+    final l10n = context.l10n;
     final controller = context.read<CapsuleCreationController>();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: now.add(const Duration(days: 1)),
-      firstDate: now.add(const Duration(days: 1)),
-      lastDate: DateTime(now.year + 5),
+    final chosen = await showChoiceMenu<CapsulePrivacy>(
+      context,
+      title: l10n.capsulesCreationPrivacy,
+      selected: controller.privacy,
+      choices: [
+        for (final p in CapsulePrivacy.values) MenuChoice(p, p.localized(l10n)),
+      ],
     );
-    if (picked != null) controller.setOpenDate(picked);
+    if (chosen != null) controller.privacy = chosen;
+  }
+
+  Future<void> _chooseColor(BuildContext context) async {
+    final l10n = context.l10n;
+    final controller = context.read<CapsuleCreationController>();
+    final chosen = await showChoiceMenu<CapsuleColor>(
+      context,
+      title: l10n.capsulesCreationColor,
+      selected: controller.color,
+      choices: [
+        for (final c in CapsuleColor.values)
+          MenuChoice(
+            c,
+            c.localized(l10n),
+            trailing: Image.asset(
+              AppIcons.capsulePin(c.name),
+              width: 22,
+              height: 22,
+            ),
+          ),
+      ],
+    );
+    if (chosen != null) controller.color = chosen;
+  }
+
+  /// Quick choices first; the calendar only for another day.
+  Future<void> _chooseOpenDate(BuildContext context) async {
+    final l10n = context.l10n;
+    final controller = context.read<CapsuleCreationController>();
+    final now = DateTime.now();
+    final choice = await showChoiceMenu<_OpenChoice>(
+      context,
+      title: l10n.capsulesCreationOpenAt,
+      choices: [
+        MenuChoice(_OpenChoice.tomorrow, l10n.capsulesOpenTomorrow),
+        MenuChoice(_OpenChoice.week, l10n.capsulesOpenInWeek),
+        MenuChoice(_OpenChoice.month, l10n.capsulesOpenInMonth),
+        MenuChoice(_OpenChoice.year, l10n.capsulesOpenInYear),
+        MenuChoice(_OpenChoice.pick, l10n.capsulesOpenPickDate),
+        if (controller.openAt != null)
+          MenuChoice(_OpenChoice.now, l10n.capsulesOpenNow),
+      ],
+    );
+    if (choice == null || !context.mounted) return;
+    switch (choice) {
+      case _OpenChoice.tomorrow:
+        controller.setOpenDate(now.add(const Duration(days: 1)));
+      case _OpenChoice.week:
+        controller.setOpenDate(now.add(const Duration(days: 7)));
+      case _OpenChoice.month:
+        controller.setOpenDate(CapsuleCreationController.addMonths(now, 1));
+      case _OpenChoice.year:
+        controller.setOpenDate(CapsuleCreationController.addMonths(now, 12));
+      case _OpenChoice.now:
+        controller.clearOpenDate();
+      case _OpenChoice.pick:
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: controller.openAt ?? now.add(const Duration(days: 1)),
+          firstDate: now.add(const Duration(days: 1)),
+          lastDate: DateTime(now.year + 5),
+        );
+        if (picked != null) controller.setOpenDate(picked);
+    }
   }
 
   Future<void> _save(BuildContext context) async {
@@ -233,21 +300,20 @@ class _CapsuleCreationView extends StatelessWidget {
                                 trailing: CapsuleCreationCycledInfo(
                                   infoText: controller.privacy.localized(l10n),
                                 ),
-                                onTap: controller.cyclePrivacy,
+                                onTap: () => _choosePrivacy(context),
                               ),
                               OptionsSettingsRow(
                                 minVerticalPadding: 10,
                                 title: l10n.capsulesCreationOpenAt,
                                 trailing: CapsuleCreationCycledInfo(
                                   infoText: openAt != null
-                                      ? DateFormat(
-                                          'yyyy-MM-dd',
+                                      ? DateFormat.yMMMd(
                                           l10n.localeName,
                                         ).format(openAt)
                                       : l10n.capsulesCreationSelectDate,
                                 ),
                                 leadingIconPath: AppIcons.capsuleTimer,
-                                onTap: () => _pickOpenDate(context),
+                                onTap: () => _chooseOpenDate(context),
                               ),
                               OptionsSettingsRow(
                                 minVerticalPadding: 10,
@@ -259,7 +325,7 @@ class _CapsuleCreationView extends StatelessWidget {
                                   ),
                                 ),
                                 leadingIconPath: AppIcons.capsulePinColor,
-                                onTap: controller.cycleColor,
+                                onTap: () => _chooseColor(context),
                                 withDivider: false,
                               ),
                             ],
@@ -320,6 +386,8 @@ class _CapsuleCreationView extends StatelessWidget {
     );
   }
 }
+
+enum _OpenChoice { tomorrow, week, month, year, pick, now }
 
 /// Privacy names in the app's language (the model's `label` is English).
 extension on CapsulePrivacy {

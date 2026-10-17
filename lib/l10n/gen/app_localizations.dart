@@ -914,6 +914,42 @@ abstract class AppLocalizations {
   /// **'The capsule was saved but not sent. Tap save to try again.'**
   String get capsulesErrorSavedNotSent;
 
+  /// No description provided for @capsulesOpenInMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'In a month'**
+  String get capsulesOpenInMonth;
+
+  /// No description provided for @capsulesOpenInWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'In a week'**
+  String get capsulesOpenInWeek;
+
+  /// No description provided for @capsulesOpenInYear.
+  ///
+  /// In en, this message translates to:
+  /// **'In a year'**
+  String get capsulesOpenInYear;
+
+  /// Open date menu: remove the date, the capsule is open at once
+  ///
+  /// In en, this message translates to:
+  /// **'Open right away'**
+  String get capsulesOpenNow;
+
+  /// No description provided for @capsulesOpenPickDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date…'**
+  String get capsulesOpenPickDate;
+
+  /// Open date preset
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get capsulesOpenTomorrow;
+
   /// Capsule visibility: only the owner's friends can see it.
   ///
   /// In en, this message translates to:

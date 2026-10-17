@@ -541,6 +541,24 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Kapsel wurde gespeichert, aber nicht gesendet. Tippe noch einmal auf den Button, um es erneut zu versuchen.';
 
   @override
+  String get capsulesOpenInMonth => 'In einem Monat';
+
+  @override
+  String get capsulesOpenInWeek => 'In einer Woche';
+
+  @override
+  String get capsulesOpenInYear => 'In einem Jahr';
+
+  @override
+  String get capsulesOpenNow => 'Sofort öffnen';
+
+  @override
+  String get capsulesOpenPickDate => 'Datum wählen…';
+
+  @override
+  String get capsulesOpenTomorrow => 'Morgen';
+
+  @override
   String get capsulesPrivacyFriends => 'Freunde';
 
   @override

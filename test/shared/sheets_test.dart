@@ -6,6 +6,7 @@ import 'package:later/features/history/widgets/nested_menu.dart';
 import 'package:later/shared/widgets/app_sheets.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
 import 'package:later/shared/widgets/confirm_dialog.dart';
+import 'package:later/shared/widgets/options_menu.dart';
 
 import '../helpers/test_app.dart';
 
@@ -128,6 +129,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(picked, 'old');
     expect(find.text('Sort By'), findsNothing, reason: 'closed after a pick');
+  });
+
+  testWidgets('a choice menu marks the current value and returns the tap', (
+    tester,
+  ) async {
+    String? picked;
+    await tester.pumpWidget(
+      _launcher((context) async {
+        picked = await showChoiceMenu<String>(
+          context,
+          title: 'Privacy',
+          selected: 'friends',
+          choices: const [
+            MenuChoice('public', 'Public'),
+            MenuChoice('friends', 'Friends'),
+            MenuChoice('private', 'Private'),
+          ],
+        );
+      }),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    final friends = tester.widget<DefaultTextStyle>(
+      find
+          .ancestor(
+            of: find.text('Friends'),
+            matching: find.byType(DefaultTextStyle),
+          )
+          .first,
+    );
+    expect(friends.style.color, AppColors.brandGreen);
+    await tester.tap(find.text('Private'));
+    await tester.pumpAndSettle();
+    expect(picked, 'private');
   });
 
   testWidgets('icon buttons can be read by a screen reader', (tester) async {

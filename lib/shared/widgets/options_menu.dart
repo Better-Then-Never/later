@@ -158,3 +158,44 @@ class OptionsMenuTitle extends StatelessWidget {
     );
   }
 }
+
+/// One entry of [showChoiceMenu].
+class MenuChoice<T> {
+  const MenuChoice(this.value, this.label, {this.trailing});
+
+  final T value;
+  final String label;
+
+  /// E.g. the coloured pin next to a colour's name.
+  final Widget? trailing;
+}
+
+/// A menu card titled [title] listing [choices], the [selected] one in
+/// green. Resolves to the tapped value, or null when dismissed.
+Future<T?> showChoiceMenu<T>(
+  BuildContext context, {
+  required String title,
+  required List<MenuChoice<T>> choices,
+  T? selected,
+}) => showCenteredSheet<T>(
+  context,
+  Builder(
+    builder: (sheet) => OptionsMenu(
+      children: [
+        OptionsMenuTitle(title),
+        for (var i = 0; i < choices.length; i++) ...[
+          if (i > 0) const OptionsMenuDivider(),
+          OptionsMenuItem(
+            text: choices[i].label,
+            textColor: choices[i].value == selected
+                ? AppColors.brandGreen
+                : null,
+            trailing: choices[i].trailing,
+            isLast: i == choices.length - 1,
+            onPressed: () => Navigator.pop(sheet, choices[i].value),
+          ),
+        ],
+      ],
+    ),
+  ),
+);

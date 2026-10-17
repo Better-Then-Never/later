@@ -553,6 +553,24 @@ class AppLocalizationsRu extends AppLocalizations {
       'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
 
   @override
+  String get capsulesOpenInMonth => 'Через месяц';
+
+  @override
+  String get capsulesOpenInWeek => 'Через неделю';
+
+  @override
+  String get capsulesOpenInYear => 'Через год';
+
+  @override
+  String get capsulesOpenNow => 'Открыть сразу';
+
+  @override
+  String get capsulesOpenPickDate => 'Выбрать дату…';
+
+  @override
+  String get capsulesOpenTomorrow => 'Завтра';
+
+  @override
   String get capsulesPrivacyFriends => 'Для друзей';
 
   @override

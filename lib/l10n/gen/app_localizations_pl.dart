@@ -555,6 +555,24 @@ class AppLocalizationsPl extends AppLocalizations {
       'Kapsuła została zapisana, ale nie wysłana. Dotknij przycisku jeszcze raz, żeby spróbować ponownie.';
 
   @override
+  String get capsulesOpenInMonth => 'Za miesiąc';
+
+  @override
+  String get capsulesOpenInWeek => 'Za tydzień';
+
+  @override
+  String get capsulesOpenInYear => 'Za rok';
+
+  @override
+  String get capsulesOpenNow => 'Otwórz od razu';
+
+  @override
+  String get capsulesOpenPickDate => 'Wybierz datę…';
+
+  @override
+  String get capsulesOpenTomorrow => 'Jutro';
+
+  @override
   String get capsulesPrivacyFriends => 'Dla znajomych';
 
   @override

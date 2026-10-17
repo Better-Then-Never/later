@@ -526,6 +526,24 @@ class AppLocalizationsEn extends AppLocalizations {
       'The capsule was saved but not sent. Tap save to try again.';
 
   @override
+  String get capsulesOpenInMonth => 'In a month';
+
+  @override
+  String get capsulesOpenInWeek => 'In a week';
+
+  @override
+  String get capsulesOpenInYear => 'In a year';
+
+  @override
+  String get capsulesOpenNow => 'Open right away';
+
+  @override
+  String get capsulesOpenPickDate => 'Pick a date…';
+
+  @override
+  String get capsulesOpenTomorrow => 'Tomorrow';
+
+  @override
   String get capsulesPrivacyFriends => 'Friends';
 
   @override

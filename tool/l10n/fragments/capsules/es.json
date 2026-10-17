@@ -58,5 +58,11 @@
   "capsulesCreationAllowReactions": "Permitir reacciones",
   "capsulesCreationApproximate": "Ubicación aproximada",
   "capsulesCreationApproximateHint": "A un kilómetro aproximado, no en el punto exacto",
-  "capsulesQueued": "Guardada en tu teléfono. Se subirá cuando vuelvas a tener conexión."
+  "capsulesQueued": "Guardada en tu teléfono. Se subirá cuando vuelvas a tener conexión.",
+  "capsulesOpenTomorrow": "Mañana",
+  "capsulesOpenInWeek": "En una semana",
+  "capsulesOpenInMonth": "En un mes",
+  "capsulesOpenInYear": "En un año",
+  "capsulesOpenPickDate": "Elegir fecha…",
+  "capsulesOpenNow": "Abrir ya"
 }

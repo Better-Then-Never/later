@@ -59,18 +59,15 @@ void main() {
       final c = build(repo, known: const GeoPosition(1, 2));
       c.titleController.text = '  ';
       c.descriptionController.text = '  hello ';
-      c.cycleColor();
-      c.cyclePrivacy();
+      c
+        ..color = CapsuleColor.blue
+        ..privacy = CapsulePrivacy.private;
       expect(await c.save(), isNull);
       final draft = repo.created.single;
       expect(draft.title, 'Capsule', reason: 'empty title falls back');
       expect(draft.description, 'hello');
       expect(draft.color, CapsuleColor.blue);
-      expect(
-        draft.privacy,
-        CapsulePrivacy.private,
-        reason: 'public -> private',
-      );
+      expect(draft.privacy, CapsulePrivacy.private);
       expect(draft.location, const GeoPosition(1, 2));
       c.dispose();
     },
@@ -175,6 +172,28 @@ void main() {
     final c = build(repo, known: const GeoPosition(1, 2));
     expect(await c.save(), isNull);
     expect(repo.created.single.title, 'Kapsel');
+    c.dispose();
+  });
+
+  test('open date presets: months keep the day or end on the last one', () {
+    DateTime add(DateTime d, int m) =>
+        CapsuleCreationController.addMonths(d, m);
+    expect(add(DateTime(2026, 1, 31), 1), DateTime(2026, 2, 28));
+    expect(add(DateTime(2028, 1, 31), 1), DateTime(2028, 2, 29));
+    expect(add(DateTime(2026, 12, 15), 1), DateTime(2027, 1, 15));
+    expect(add(DateTime(2028, 2, 29), 12), DateTime(2029, 2, 28));
+
+    final c = build(FakeCapsuleRepository(), known: const GeoPosition(1, 2));
+    var changes = 0;
+    c
+      ..addListener(() => changes++)
+      ..setOpenDate(DateTime(2030, 5, 17))
+      ..clearOpenDate();
+    expect(c.openAt, isNull, reason: 'open right away');
+    c
+      ..privacy = c.privacy
+      ..color = c.color;
+    expect(changes, 2, reason: 'choosing the same value changes nothing');
     c.dispose();
   });
 

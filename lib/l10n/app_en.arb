@@ -397,6 +397,18 @@
   "@capsulesErrorSavedNotSent": {
     "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
   },
+  "capsulesOpenInMonth": "In a month",
+  "capsulesOpenInWeek": "In a week",
+  "capsulesOpenInYear": "In a year",
+  "capsulesOpenNow": "Open right away",
+  "@capsulesOpenNow": {
+    "description": "Open date menu: remove the date, the capsule is open at once"
+  },
+  "capsulesOpenPickDate": "Pick a date…",
+  "capsulesOpenTomorrow": "Tomorrow",
+  "@capsulesOpenTomorrow": {
+    "description": "Open date preset"
+  },
   "capsulesPrivacyFriends": "Friends",
   "@capsulesPrivacyFriends": {
     "description": "Capsule visibility: only the owner's friends can see it."

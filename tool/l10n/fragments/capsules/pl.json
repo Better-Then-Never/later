@@ -58,5 +58,11 @@
   "capsulesCreationAllowReactions": "Pozwól reagować",
   "capsulesCreationApproximate": "Przybliżona lokalizacja",
   "capsulesCreationApproximateHint": "Około kilometra obok, nie w dokładnym miejscu",
-  "capsulesQueued": "Zapisano w telefonie. Wyślemy, gdy wrócisz do sieci."
+  "capsulesQueued": "Zapisano w telefonie. Wyślemy, gdy wrócisz do sieci.",
+  "capsulesOpenTomorrow": "Jutro",
+  "capsulesOpenInWeek": "Za tydzień",
+  "capsulesOpenInMonth": "Za miesiąc",
+  "capsulesOpenInYear": "Za rok",
+  "capsulesOpenPickDate": "Wybierz datę…",
+  "capsulesOpenNow": "Otwórz od razu"
 }

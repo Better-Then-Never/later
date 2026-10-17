@@ -58,5 +58,11 @@
   "capsulesCreationAllowReactions": "Reaktionen erlauben",
   "capsulesCreationApproximate": "Ungefährer Standort",
   "capsulesCreationApproximateHint": "Etwa einen Kilometer daneben, nicht genau",
-  "capsulesQueued": "Auf deinem Handy gespeichert. Wird hochgeladen, sobald du wieder online bist."
+  "capsulesQueued": "Auf deinem Handy gespeichert. Wird hochgeladen, sobald du wieder online bist.",
+  "capsulesOpenTomorrow": "Morgen",
+  "capsulesOpenInWeek": "In einer Woche",
+  "capsulesOpenInMonth": "In einem Monat",
+  "capsulesOpenInYear": "In einem Jahr",
+  "capsulesOpenPickDate": "Datum wählen…",
+  "capsulesOpenNow": "Sofort öffnen"
 }

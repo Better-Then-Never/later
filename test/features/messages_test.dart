@@ -364,9 +364,7 @@ void main() {
       expect(quote.text.runes.length, MessageReply.maxText + 1);
       expect(quote.text.endsWith('…'), isTrue);
       expect(
-        FirestoreMappers.messageReply(
-          FirestoreMappers.newMessageReply(quote),
-        ),
+        FirestoreMappers.messageReply(FirestoreMappers.newMessageReply(quote)),
         quote,
       );
       expect(FirestoreMappers.messageReply({'id': 'x'}), isNull);

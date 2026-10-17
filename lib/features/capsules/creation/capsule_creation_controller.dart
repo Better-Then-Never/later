@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -129,16 +130,31 @@ class CapsuleCreationController extends ChangeNotifier {
   GeoPosition? get position => _position;
   bool get isSaving => _saving;
 
-  void cyclePrivacy() {
-    const values = CapsulePrivacy.values;
-    _privacy = values[(values.indexOf(_privacy) + 1) % values.length];
+  set privacy(CapsulePrivacy value) {
+    if (value == _privacy) return;
+    _privacy = value;
     notifyListeners();
   }
 
-  void cycleColor() {
-    const values = CapsuleColor.values;
-    _color = values[(values.indexOf(_color) + 1) % values.length];
+  set color(CapsuleColor value) {
+    if (value == _color) return;
+    _color = value;
     notifyListeners();
+  }
+
+  /// No open date: the capsule is open as soon as it exists.
+  void clearOpenDate() {
+    if (_openAt == null) return;
+    _openAt = null;
+    notifyListeners();
+  }
+
+  /// [from] plus [months] calendar months, on the same day when that month
+  /// has it, else on its last day (31 January + 1 month = 28/29 February).
+  static DateTime addMonths(DateTime from, int months) {
+    final first = DateTime(from.year, from.month + months);
+    final lastDay = DateTime(first.year, first.month + 1, 0).day;
+    return DateTime(first.year, first.month, math.min(from.day, lastDay));
   }
 
   /// The chosen day at the current time of day (as before), from tomorrow.

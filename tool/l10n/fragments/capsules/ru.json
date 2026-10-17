@@ -58,5 +58,11 @@
   "capsulesCreationAllowReactions": "Разрешить реакции",
   "capsulesCreationApproximate": "Примерное место",
   "capsulesCreationApproximateHint": "Примерно в километре, а не точно",
-  "capsulesQueued": "Сохранено на телефоне. Загрузится, когда появится интернет."
+  "capsulesQueued": "Сохранено на телефоне. Загрузится, когда появится интернет.",
+  "capsulesOpenTomorrow": "Завтра",
+  "capsulesOpenInWeek": "Через неделю",
+  "capsulesOpenInMonth": "Через месяц",
+  "capsulesOpenInYear": "Через год",
+  "capsulesOpenPickDate": "Выбрать дату…",
+  "capsulesOpenNow": "Открыть сразу"
 }

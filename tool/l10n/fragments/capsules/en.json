@@ -147,5 +147,17 @@
   "capsulesCreationAllowReactions": "Allow reactions",
   "capsulesCreationApproximate": "Approximate location",
   "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
-  "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again."
+  "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again.",
+  "capsulesOpenTomorrow": "Tomorrow",
+  "@capsulesOpenTomorrow": {
+    "description": "Open date preset"
+  },
+  "capsulesOpenInWeek": "In a week",
+  "capsulesOpenInMonth": "In a month",
+  "capsulesOpenInYear": "In a year",
+  "capsulesOpenPickDate": "Pick a date…",
+  "capsulesOpenNow": "Open right away",
+  "@capsulesOpenNow": {
+    "description": "Open date menu: remove the date, the capsule is open at once"
+  }
 }
