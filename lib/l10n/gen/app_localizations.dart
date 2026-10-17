@@ -938,6 +938,12 @@ abstract class AppLocalizations {
   /// **'Public'**
   String get capsulesPrivacyPublic;
 
+  /// No description provided for @capsulesQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on your phone. It will be uploaded when you are online again.'**
+  String get capsulesQueued;
+
   /// Accessibility label of a reaction button.
   ///
   /// In en, this message translates to:
@@ -1861,6 +1867,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Public visibility'**
   String get historyVisibilityPublic;
+
+  /// No description provided for @historyWaitingUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for connection'**
+  String get historyWaitingUpload;
 
   /// Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'.
   ///

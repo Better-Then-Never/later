@@ -24,6 +24,7 @@ import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
 import '../../settings/settings_store.dart';
+import '../outbox/capsule_outbox.dart';
 import 'capsule_creation_controller.dart';
 import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
@@ -65,6 +66,7 @@ class CapsuleCreationPage extends StatelessWidget {
             .read<SettingsStore>()
             .privacy
             .locationPrecision,
+        outbox: context.read<CapsuleOutbox>(),
       ),
       child: _CapsuleCreationView(
         initialPrivacy: initialPrivacy,
@@ -94,9 +96,17 @@ class _CapsuleCreationView extends StatelessWidget {
 
   Future<void> _save(BuildContext context) async {
     final navigator = Navigator.of(context);
-    final failure = await context.read<CapsuleCreationController>().save();
+    final controller = context.read<CapsuleCreationController>();
+    final failure = await controller.save();
     if (!context.mounted) return;
     if (failure == null) {
+      if (controller.queued) {
+        PopupNotificationService.showSuccess(
+          context: context,
+          message: context.l10n.capsulesQueued,
+          position: NotificationPosition.top,
+        );
+      }
       navigator.pop();
     } else {
       PopupNotificationService.showError(

@@ -21,6 +21,7 @@ class _NoLocation extends LocationService {
   @override
   Future<GeoPosition?> currentPosition({
     Duration timeout = const Duration(seconds: 8),
+    bool request = false,
   }) async => null;
 }
 
@@ -384,7 +385,7 @@ void main() {
 
         expect(await c.save(), isNull);
         expect(capsules.created.single.recipientId, 'bob');
-        expect(chatRepo.calls, ['capsule:me->bob:new-1']);
+        expect(chatRepo.calls, ['capsule:me->bob:cap-1']);
         final message = chatRepo.messages['bob_me']!.single;
         expect(message.isCapsule, isTrue);
         expect(message.text, 'For you');

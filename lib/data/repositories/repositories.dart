@@ -182,6 +182,12 @@ abstract interface class CapsuleRepository {
     int limit,
   });
 
+  /// An id for a new capsule, made on the device (see [CapsuleDraft.id]).
+  String newCapsuleId();
+
+  /// Uploads the photo and writes the capsule. With [CapsuleDraft.id] it is
+  /// idempotent: a capsule that already exists under that id is returned
+  /// as is (an earlier attempt succeeded but its answer was lost).
   Future<Capsule> create(CapsuleDraft draft);
   Future<void> delete(Iterable<Capsule> capsules);
 }

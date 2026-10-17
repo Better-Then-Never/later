@@ -57,5 +57,6 @@
   "capsulesCreationAllowComments": "Permitir comentarios",
   "capsulesCreationAllowReactions": "Permitir reacciones",
   "capsulesCreationApproximate": "Ubicación aproximada",
-  "capsulesCreationApproximateHint": "A un kilómetro aproximado, no en el punto exacto"
+  "capsulesCreationApproximateHint": "A un kilómetro aproximado, no en el punto exacto",
+  "capsulesQueued": "Guardada en tu teléfono. Se subirá cuando vuelvas a tener conexión."
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -149,7 +150,15 @@ class CapsuleListTile extends StatelessWidget {
                             child: _PlaceName(capsule: capsule),
                           ),
                           SizedBox(height: screen.height * 0.005),
-                          if (createdAt != null)
+                          if (capsule.pending)
+                            _Pill(
+                              color: AppColors.warningOrange,
+                              child: _pillText(
+                                context,
+                                context.l10n.historyWaitingUpload,
+                              ),
+                            )
+                          else if (createdAt != null)
                             _Pill(
                               color: AppColors.brandGreen,
                               // Day.month.year like the app's other date
@@ -260,6 +269,20 @@ class _Thumbnail extends StatelessWidget {
     );
     final url = this.url;
     if (url == null || url.isEmpty) return placeholder;
+    // A capsule waiting in the outbox shows its photo from the phone.
+    if (url.startsWith('file:')) {
+      return Image.file(
+        File.fromUri(Uri.parse(url)),
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        cacheWidth: AppImageCache.decodeWidth(
+          width,
+          MediaQuery.devicePixelRatioOf(context),
+        ),
+        errorBuilder: (_, _, _) => placeholder,
+      );
+    }
     return Image(
       image: AppImageCache.provider(
         url,

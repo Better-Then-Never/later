@@ -547,6 +547,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesPrivacyPublic => 'Pública';
 
   @override
+  String get capsulesQueued =>
+      'Guardada en tu teléfono. Se subirá cuando vuelvas a tener conexión.';
+
+  @override
   String capsulesReactWith(String emoji) {
     return 'Reaccionar con $emoji';
   }
@@ -1079,6 +1083,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get historyVisibilityPublic => 'Pública';
+
+  @override
+  String get historyWaitingUpload => 'Esperando conexión';
 
   @override
   String get mapCapsuleLocked => 'Bloqueada';

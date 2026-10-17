@@ -567,6 +567,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesPrivacyPublic => 'Публичная';
 
   @override
+  String get capsulesQueued =>
+      'Сохранено на телефоне. Загрузится, когда появится интернет.';
+
+  @override
   String capsulesReactWith(String emoji) {
     return 'Реакция $emoji';
   }
@@ -1099,6 +1103,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get historyVisibilityPublic => 'Публичная';
+
+  @override
+  String get historyWaitingUpload => 'Ждёт интернета';
 
   @override
   String get mapCapsuleLocked => 'Закрыта';

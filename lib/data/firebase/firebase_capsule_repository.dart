@@ -128,8 +128,21 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       .map(_map);
 
   @override
+  String newCapsuleId() => _capsules.doc().id;
+
+  @override
   Future<Capsule> create(CapsuleDraft draft) async {
-    final doc = _capsules.doc();
+    final id = draft.id;
+    final doc = id == null ? _capsules.doc() : _capsules.doc(id);
+    if (id != null) {
+      // A retry after an attempt whose answer was lost: done already.
+      final existing = await doc.get();
+      final data = existing.data();
+      if (data != null) return FirestoreMappers.capsule(doc.id, data);
+    }
+    // An attempt that the app gave up on (no connection: the capsule went to
+    // the outbox) must not keep uploading for the default 10 minutes.
+    _storage.setMaxUploadRetryTime(const Duration(seconds: 45));
     final imageRef = _imageRef(draft.ownerId, doc.id);
     final bytes = await _processor.capsuleJpegFromFile(draft.imagePath);
     await imageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));

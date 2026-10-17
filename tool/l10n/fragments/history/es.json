@@ -43,5 +43,6 @@
   "historyDeleteConfirm": "{count, plural, one{¿Eliminar {count} cápsula?} other{¿Eliminar {count} cápsulas?}}",
   "historyDeleted": "{count, plural, one{{count} cápsula eliminada} other{{count} cápsulas eliminadas}}",
   "historyErrorFavorites": "No se pudieron actualizar los favoritos",
-  "historyErrorDelete": "No se pudieron eliminar las cápsulas"
+  "historyErrorDelete": "No se pudieron eliminar las cápsulas",
+  "historyWaitingUpload": "Esperando conexión"
 }

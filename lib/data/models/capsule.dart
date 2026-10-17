@@ -90,6 +90,7 @@ class Capsule {
     this.reactionCounts = const {},
     this.reactionTotal = 0,
     this.commentCount = 0,
+    this.pending = false,
   });
 
   /// Pause between the frames of a loop capsule.
@@ -142,6 +143,10 @@ class Capsule {
   final Map<ReactionType, int> reactionCounts;
   final int reactionTotal;
   final int commentCount;
+
+  /// Saved on this phone and waiting for a connection (offline outbox);
+  /// never stored.
+  final bool pending;
 
   /// When the moment happened: the capture time, else the upload time.
   DateTime? get takenAt => capturedAt ?? createdAt;
@@ -256,6 +261,7 @@ class CapsuleDraft {
     required this.color,
     required this.location,
     required this.imagePath,
+    this.id,
     this.description,
     this.openAt,
     this.recipientId,
@@ -292,6 +298,32 @@ class CapsuleDraft {
 
   /// [location] is already rounded when approximate; this records it.
   final LocationPrecision locationPrecision;
+
+  /// The capsule's id, chosen before the upload so a retry (offline outbox)
+  /// writes the same document instead of a second one. Null: a new id.
+  final String? id;
+
+  CapsuleDraft copyWith({String? id, String? imagePath}) => CapsuleDraft(
+    ownerId: ownerId,
+    title: title,
+    privacy: privacy,
+    color: color,
+    location: location,
+    imagePath: imagePath ?? this.imagePath,
+    id: id ?? this.id,
+    description: description,
+    openAt: openAt,
+    recipientId: recipientId,
+    capturedAt: capturedAt,
+    utcOffsetMinutes: utcOffsetMinutes,
+    showAuthor: showAuthor,
+    allowComments: allowComments,
+    allowReactions: allowReactions,
+    locationPrecision: locationPrecision,
+    framePaths: framePaths,
+    frameDelayMs: frameDelayMs,
+    placeName: placeName,
+  );
 
   /// Local files of a loop capsule, in order; [imagePath] is the first.
   final List<String> framePaths;

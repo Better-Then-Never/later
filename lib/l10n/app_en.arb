@@ -420,6 +420,7 @@
   "@capsulesPrivacyPublic": {
     "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
   },
+  "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again.",
   "capsulesReactWith": "React with {emoji}",
   "@capsulesReactWith": {
     "description": "Accessibility label of a reaction button.",
@@ -865,6 +866,7 @@
   "@historyVisibilityPublic": {
     "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
   },
+  "historyWaitingUpload": "Waiting for connection",
   "mapCapsuleLocked": "Locked",
   "@mapCapsuleLocked": {
     "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."

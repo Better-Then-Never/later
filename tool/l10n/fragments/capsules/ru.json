@@ -57,5 +57,6 @@
   "capsulesCreationAllowComments": "Разрешить комментарии",
   "capsulesCreationAllowReactions": "Разрешить реакции",
   "capsulesCreationApproximate": "Примерное место",
-  "capsulesCreationApproximateHint": "Примерно в километре, а не точно"
+  "capsulesCreationApproximateHint": "Примерно в километре, а не точно",
+  "capsulesQueued": "Сохранено на телефоне. Загрузится, когда появится интернет."
 }

@@ -29,11 +29,14 @@ class LocationService {
   }
 
   /// Best effort current position: a fresh fix within [timeout], otherwise the
-  /// last known position, otherwise null.
+  /// last known position, otherwise null. With [request], asks for the
+  /// permission first when it was not given yet.
   Future<GeoPosition?> currentPosition({
     Duration timeout = const Duration(seconds: 8),
+    bool request = false,
   }) async {
-    if (await availability() != LocationAvailability.available) {
+    if (await availability(request: request) !=
+        LocationAvailability.available) {
       return lastKnownPosition();
     }
     try {

@@ -57,5 +57,6 @@
   "capsulesCreationAllowComments": "Pozwól komentować",
   "capsulesCreationAllowReactions": "Pozwól reagować",
   "capsulesCreationApproximate": "Przybliżona lokalizacja",
-  "capsulesCreationApproximateHint": "Około kilometra obok, nie w dokładnym miejscu"
+  "capsulesCreationApproximateHint": "Około kilometra obok, nie w dokładnym miejscu",
+  "capsulesQueued": "Zapisano w telefonie. Wyślemy, gdy wrócisz do sieci."
 }

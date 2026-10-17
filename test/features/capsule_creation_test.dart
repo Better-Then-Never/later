@@ -20,6 +20,7 @@ class _FakeLocation extends LocationService {
   @override
   Future<GeoPosition?> currentPosition({
     Duration timeout = const Duration(seconds: 8),
+    bool request = false,
   }) async => position;
 }
 

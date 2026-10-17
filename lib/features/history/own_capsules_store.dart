@@ -8,6 +8,7 @@ import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/models/capsule.dart';
 import '../../data/repositories/repositories.dart';
+import '../capsules/outbox/capsule_outbox.dart';
 
 /// The signed-in user's own capsules, live and newest first (BUG-063).
 ///
@@ -15,16 +16,37 @@ import '../../data/repositories/repositories.dart';
 /// force unwraps on missing fields, BUG-060) and deletion through the
 /// repository, which also removes the images from Storage (BUG-062).
 class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
-  OwnCapsulesStore(this._repo);
+  OwnCapsulesStore(this._repo, {CapsuleOutbox? outbox}) : _outbox = outbox {
+    _outbox?.addListener(_onOutbox);
+  }
 
   final CapsuleRepository _repo;
+
+  /// Capsules waiting for a connection show first, marked pending (F-26).
+  final CapsuleOutbox? _outbox;
+  List<Capsule> _merged = const [];
+
+  void _onOutbox() {
+    _merge();
+    notifyListeners();
+  }
+
+  void _merge() {
+    final server = _capsules;
+    final serverIds = {for (final c in server) c.id};
+    _merged = [
+      for (final p in _outbox?.pending ?? const <PendingCapsule>[])
+        if (!serverIds.contains(p.id)) p.toCapsule(),
+      ...server,
+    ];
+  }
 
   StreamSubscription<List<Capsule>>? _sub;
   List<Capsule> _capsules = const [];
   bool _loaded = false;
   AppFailure? _error;
 
-  List<Capsule> get capsules => _capsules;
+  List<Capsule> get capsules => _merged;
   bool get isLoaded => _loaded;
   AppFailure? get error => _error;
 
@@ -35,6 +57,7 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
         .listen(
           (list) {
             _capsules = list;
+            _merge();
             _loaded = true;
             _error = null;
             notifyListeners();
@@ -57,9 +80,16 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
     unawaited(_sub?.cancel());
     _sub = null;
     _capsules = const [];
+    _merged = const [];
     _loaded = false;
     _error = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _outbox?.removeListener(_onOutbox);
+    super.dispose();
   }
 
   @override
@@ -69,6 +99,10 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
   /// success; the live list drops them once Firestore confirms.
   Future<AppFailure?> delete(Iterable<String> ids) async {
     final wanted = ids.toSet();
+    // Waiting ones are only on this phone.
+    for (final p in [...?_outbox?.pending]) {
+      if (wanted.remove(p.id)) await _outbox!.discard(p.id);
+    }
     final targets = _capsules.where((c) => wanted.contains(c.id)).toList();
     if (targets.isEmpty) return null;
     try {

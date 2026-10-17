@@ -18,6 +18,7 @@ import '../data/services/preferences_store.dart';
 import '../data/services/profile_image_cache.dart';
 import '../data/services/push_messaging_service.dart';
 import '../features/history/favorites_store.dart';
+import '../features/capsules/outbox/capsule_outbox.dart';
 import '../features/history/own_capsules_store.dart';
 import '../features/friends/friends_store.dart';
 import '../features/users/user_directory.dart';
@@ -76,7 +77,8 @@ class _AppScopeState extends State<AppScope> {
   final _currentLocation = CurrentLocation();
   late final _imageCache = ProfileImageCache(_images, prefs: _prefs);
   late final _notificationsStore = NotificationsStore(_notifications);
-  late final _ownCapsules = OwnCapsulesStore(_capsules);
+  late final _outbox = CapsuleOutbox(_capsules);
+  late final _ownCapsules = OwnCapsulesStore(_capsules, outbox: _outbox);
   late final _favorites = FavoritesStore(_users);
   late final _directory = UserDirectory(_users);
   late final _chatsStore = ChatsStore(_chats);
@@ -105,6 +107,7 @@ class _AppScopeState extends State<AppScope> {
       scoped: [
         _imageCache,
         _notificationsStore,
+        _outbox,
         _ownCapsules,
         _favorites,
         _directory,
@@ -173,6 +176,7 @@ class _AppScopeState extends State<AppScope> {
         ),
         ChangeNotifierProvider<MapFocus>.value(value: _mapFocus),
         ChangeNotifierProvider<OwnCapsulesStore>.value(value: _ownCapsules),
+        ChangeNotifierProvider<CapsuleOutbox>.value(value: _outbox),
         ChangeNotifierProvider<FavoritesStore>.value(value: _favorites),
         ChangeNotifierProvider<UserDirectory>.value(value: _directory),
         ChangeNotifierProvider<FriendsStore>.value(value: _friendsStore),

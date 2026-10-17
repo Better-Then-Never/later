@@ -57,5 +57,6 @@
   "capsulesCreationAllowComments": "Kommentare erlauben",
   "capsulesCreationAllowReactions": "Reaktionen erlauben",
   "capsulesCreationApproximate": "Ungefährer Standort",
-  "capsulesCreationApproximateHint": "Etwa einen Kilometer daneben, nicht genau"
+  "capsulesCreationApproximateHint": "Etwa einen Kilometer daneben, nicht genau",
+  "capsulesQueued": "Auf deinem Handy gespeichert. Wird hochgeladen, sobald du wieder online bist."
 }

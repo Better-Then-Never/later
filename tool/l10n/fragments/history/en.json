@@ -207,5 +207,6 @@
     }
   },
   "historyErrorFavorites": "Could not update favorites",
-  "historyErrorDelete": "Could not delete capsules"
+  "historyErrorDelete": "Could not delete capsules",
+  "historyWaitingUpload": "Waiting for connection"
 }

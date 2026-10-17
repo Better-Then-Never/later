@@ -11,6 +11,7 @@ import '../../../data/models/geo_position.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/location_service.dart';
 import '../../map/current_location.dart';
+import '../outbox/capsule_outbox.dart';
 
 /// State of the "Create Capsule" screen.
 ///
@@ -31,7 +32,10 @@ class CapsuleCreationController extends ChangeNotifier {
     ChatRepository? chats,
     LocationPrecision locationPrecision = LocationPrecision.exact,
     DateTime? capturedAt,
+    CapsuleOutbox? outbox,
+    this.uploadTimeout = const Duration(seconds: 20),
   }) : assert(recipientId == null || chats != null),
+       _outbox = outbox,
        _precision = locationPrecision,
        capturedAt = capturedAt ?? DateTime.now(),
        _capsules = capsules,
@@ -50,6 +54,21 @@ class CapsuleCreationController extends ChangeNotifier {
 
   final String ownerId;
   final String imagePath;
+
+  /// Keeps the capsule on the phone when there is no connection (F-26).
+  final CapsuleOutbox? _outbox;
+
+  /// How long an upload may take before the capsule goes to the outbox.
+  final Duration uploadTimeout;
+
+  /// Fixed before the first attempt, so a retry (here or from the outbox)
+  /// writes the same capsule.
+  late final String _id = _capsules.newCapsuleId();
+
+  bool _queued = false;
+
+  /// The last save kept the capsule on the phone, to upload later.
+  bool get queued => _queued;
 
   /// Starts from Settings > Privacy; approximate places are rounded before
   /// upload.
@@ -137,7 +156,9 @@ class CapsuleCreationController extends ChangeNotifier {
   }
 
   Future<void> _locate() async {
-    final position = await _location.currentPosition();
+    // A capsule needs a place: ask for the permission here if the
+    // onboarding step was skipped.
+    final position = await _location.currentPosition(request: true);
     if (_disposed || position == null || !position.isValid) return;
     _currentLocation.update(position);
     _position = position;
@@ -158,26 +179,45 @@ class CapsuleCreationController extends ChangeNotifier {
       }
       final title = titleController.text.trim();
       final description = descriptionController.text.trim();
-      final capsule = _created ??= await _capsules.create(
-        CapsuleDraft(
-          ownerId: ownerId,
-          title: title.isEmpty ? AppL10n.current.capsulesDefaultTitle : title,
-          description: description.isEmpty ? null : description,
-          privacy: _privacy,
-          color: _color,
-          location: locationPrecision == LocationPrecision.approximate
-              ? position.approximate
-              : position,
-          locationPrecision: locationPrecision,
-          allowComments: _allowComments,
-          allowReactions: _allowReactions,
-          imagePath: imagePath,
-          openAt: _openAt,
-          recipientId: recipientId,
-          capturedAt: capturedAt,
-          utcOffsetMinutes: capturedAt.timeZoneOffset.inMinutes,
-        ),
+      final draft = CapsuleDraft(
+        id: _id,
+        ownerId: ownerId,
+        title: title.isEmpty ? AppL10n.current.capsulesDefaultTitle : title,
+        description: description.isEmpty ? null : description,
+        privacy: _privacy,
+        color: _color,
+        location: locationPrecision == LocationPrecision.approximate
+            ? position.approximate
+            : position,
+        locationPrecision: locationPrecision,
+        allowComments: _allowComments,
+        allowReactions: _allowReactions,
+        imagePath: imagePath,
+        openAt: _openAt,
+        recipientId: recipientId,
+        capturedAt: capturedAt,
+        utcOffsetMinutes: capturedAt.timeZoneOffset.inMinutes,
       );
+      final Capsule capsule;
+      try {
+        capsule = _created ??= await _capsules
+            .create(draft)
+            .timeout(uploadTimeout);
+      } catch (e) {
+        final outbox = _outbox;
+        // No connection: keep it on the phone (not for a friend: the chat
+        // post needs the connection too).
+        if (outbox == null ||
+            recipientId != null ||
+            !CapsuleOutbox.isOffline(e)) {
+          rethrow;
+        }
+        AppLogger.info('No connection: capsule $_id kept for later');
+        await outbox.enqueue(draft);
+        _queued = true;
+        unawaited(_deleteTempPhoto());
+        return null;
+      }
       final to = recipientId;
       if (to != null) {
         try {

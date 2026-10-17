@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:later/core/errors/app_failure.dart';
@@ -618,11 +619,38 @@ class FakeCapsuleRepository implements CapsuleRepository {
     int limit = 300,
   }) => Stream.value(const []);
 
+  var _ids = 0;
+
+  /// The next creates fail like an upload without network.
+  bool offline = false;
+
+  /// The next creates are refused by the server (rules).
+  bool refuse = false;
+
+  /// Every create call, including failed ones.
+  int attempts = 0;
+
+  @override
+  String newCapsuleId() => 'cap-${++_ids}';
+
   @override
   Future<Capsule> create(CapsuleDraft draft) async {
+    attempts++;
+    if (offline) throw const SocketException('offline');
+    if (refuse) throw StateError('permission-denied');
+    final id = draft.id;
+    if (id != null && created.any((d) => d.id == id)) {
+      return Capsule(
+        id: id,
+        ownerId: draft.ownerId,
+        title: draft.title,
+        privacy: draft.privacy,
+        color: draft.color,
+      );
+    }
     created.add(draft);
     return Capsule(
-      id: 'new-${created.length}',
+      id: id ?? 'new-${created.length}',
       ownerId: draft.ownerId,
       title: draft.title,
       privacy: draft.privacy,

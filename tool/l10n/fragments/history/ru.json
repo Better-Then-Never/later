@@ -43,5 +43,6 @@
   "historyDeleteConfirm": "{count, plural, one{Удалить {count} капсулу?} few{Удалить {count} капсулы?} many{Удалить {count} капсул?} other{Удалить {count} капсулы?}}",
   "historyDeleted": "{count, plural, one{{count} капсула удалена} few{{count} капсулы удалены} many{{count} капсул удалено} other{{count} капсулы удалено}}",
   "historyErrorFavorites": "Не удалось обновить избранное",
-  "historyErrorDelete": "Не удалось удалить капсулы"
+  "historyErrorDelete": "Не удалось удалить капсулы",
+  "historyWaitingUpload": "Ждёт интернета"
 }

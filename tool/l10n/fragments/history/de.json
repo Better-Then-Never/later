@@ -43,5 +43,6 @@
   "historyDeleteConfirm": "{count, plural, one{{count} Kapsel löschen?} other{{count} Kapseln löschen?}}",
   "historyDeleted": "{count, plural, one{{count} Kapsel gelöscht} other{{count} Kapseln gelöscht}}",
   "historyErrorFavorites": "Favoriten konnten nicht aktualisiert werden",
-  "historyErrorDelete": "Kapseln konnten nicht gelöscht werden"
+  "historyErrorDelete": "Kapseln konnten nicht gelöscht werden",
+  "historyWaitingUpload": "Wartet auf Verbindung"
 }
