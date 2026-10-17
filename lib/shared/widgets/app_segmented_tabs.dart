@@ -30,39 +30,44 @@ class AppSegmentedTabs extends StatelessWidget {
         children: [
           for (final (i, label) in labels.indexed)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
               child: Semantics(
                 button: true,
                 selected: i == selected,
                 child: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => onChanged(i),
-                  child: AnimatedContainer(
-                    duration: duration,
-                    curve: AppMotion.standardCurve,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: i == selected
-                          ? AppColors.brandGreen
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: AnimatedDefaultTextStyle(
+                  // Taps land 6 dp above and below the 32 dp pill too: a
+                  // 44 dp target in the same 48 dp row (D-24).
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: AnimatedContainer(
                       duration: duration,
-                      style: TextStyle(
-                        fontFamily: kAppFontFamily,
-                        fontSize: 14,
-                        fontWeight: i == selected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: i == selected
-                            ? AppColors.onAccent
-                            : palette.textPrimary,
+                      curve: AppMotion.standardCurve,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
                       ),
-                      child: Text(label, maxLines: 1),
+                      decoration: BoxDecoration(
+                        color: i == selected
+                            ? AppColors.brandGreen
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: AnimatedDefaultTextStyle(
+                        duration: duration,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 14,
+                          fontWeight: i == selected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color: i == selected
+                              ? AppColors.onAccent
+                              : palette.textPrimary,
+                        ),
+                        child: Text(label, maxLines: 1),
+                      ),
                     ),
                   ),
                 ),
