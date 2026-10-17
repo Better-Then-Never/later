@@ -748,7 +748,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get historySortBy => 'Сортировка';
+  String get historySortBy => 'Порядок';
 
   @override
   String get historySortClosest => 'Сначала ближние';
@@ -772,13 +772,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyTitle => 'Мои капсулы';
 
   @override
-  String get historyVisibilityFriends => 'Капсула для друзей';
+  String get historyVisibilityFriends => 'Для друзей';
 
   @override
-  String get historyVisibilityPrivate => 'Личная капсула';
+  String get historyVisibilityPrivate => 'Личная';
 
   @override
-  String get historyVisibilityPublic => 'Публичная капсула';
+  String get historyVisibilityPublic => 'Публичная';
 
   @override
   String get mapCapsuleLocked => 'Закрыта';
@@ -1930,7 +1930,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'К чему у Later есть доступ на этом телефоне';
 
   @override
-  String get settingsPrivacy => 'Конфиденциальность';
+  String get settingsPrivacy => 'Приватность';
 
   @override
   String get settingsPrivacyAchievements => 'Показывать мои достижения';

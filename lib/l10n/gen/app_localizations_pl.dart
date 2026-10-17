@@ -779,13 +779,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get historyTitle => 'Moje kapsuły';
 
   @override
-  String get historyVisibilityFriends => 'Kapsuła dla znajomych';
+  String get historyVisibilityFriends => 'Dla znajomych';
 
   @override
-  String get historyVisibilityPrivate => 'Kapsuła prywatna';
+  String get historyVisibilityPrivate => 'Prywatna';
 
   @override
-  String get historyVisibilityPublic => 'Kapsuła publiczna';
+  String get historyVisibilityPublic => 'Publiczna';
 
   @override
   String get mapCapsuleLocked => 'Zamknięta';

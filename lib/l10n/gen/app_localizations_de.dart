@@ -788,13 +788,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get historyTitle => 'Meine Kapseln';
 
   @override
-  String get historyVisibilityFriends => 'Kapsel für Freunde';
+  String get historyVisibilityFriends => 'Für Freunde';
 
   @override
-  String get historyVisibilityPrivate => 'Private Kapsel';
+  String get historyVisibilityPrivate => 'Privat';
 
   @override
-  String get historyVisibilityPublic => 'Öffentliche Kapsel';
+  String get historyVisibilityPublic => 'Öffentlich';
 
   @override
   String get mapCapsuleLocked => 'Gesperrt';

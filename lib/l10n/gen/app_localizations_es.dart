@@ -776,13 +776,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get historyTitle => 'Mis cápsulas';
 
   @override
-  String get historyVisibilityFriends => 'Cápsula para amigos';
+  String get historyVisibilityFriends => 'Para amigos';
 
   @override
-  String get historyVisibilityPrivate => 'Cápsula privada';
+  String get historyVisibilityPrivate => 'Privada';
 
   @override
-  String get historyVisibilityPublic => 'Cápsula pública';
+  String get historyVisibilityPublic => 'Pública';
 
   @override
   String get mapCapsuleLocked => 'Bloqueada';
