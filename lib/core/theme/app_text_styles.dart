@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'app_palette.dart';
 
 /// The app's single font family (Inria Sans files registered as "Irina").
 const String kAppFontFamily = 'Irina';
 
 /// Named text styles from the design (DESIGN_SPEC.md §3). Screen-relative
-/// sizes are part of the look and are exposed as functions of the screen size.
+/// sizes are part of the look and are exposed as functions of the context
+/// (screen size and theme colours).
 abstract final class AppTextStyles {
-  static const body = TextStyle(
-    fontFamily: kAppFontFamily,
-    fontSize: 14,
-    color: AppColors.textPrimary,
-  );
+  /// Body text; the colour comes from the caller (context.palette).
+  static const body = TextStyle(fontFamily: kAppFontFamily, fontSize: 14);
 
   static const authHeading = TextStyle(
     fontFamily: kAppFontFamily,
@@ -31,7 +30,7 @@ abstract final class AppTextStyles {
   static const buttonLarge = TextStyle(
     fontFamily: kAppFontFamily,
     fontWeight: FontWeight.bold,
-    color: AppColors.textOnPrimary,
+    color: AppColors.onAccent,
     fontSize: 32,
   );
 
@@ -57,30 +56,30 @@ abstract final class AppTextStyles {
     fontFamily: kAppFontFamily,
     fontSize: 50,
     fontWeight: FontWeight.bold,
-    color: AppColors.textOnPrimary,
+    color: AppColors.onAccent,
   );
 
   /// Page header title: 4% of the screen height, bold.
-  static TextStyle pageTitle(Size screen) => TextStyle(
+  static TextStyle pageTitle(BuildContext context) => TextStyle(
     fontFamily: kAppFontFamily,
-    fontSize: screen.height * 0.04,
+    fontSize: MediaQuery.sizeOf(context).height * 0.04,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: context.palette.textPrimary,
   );
 
   /// Page header description: 1.7% of the screen height, bold grey.
-  static TextStyle pageDescription(Size screen) => TextStyle(
+  static TextStyle pageDescription(BuildContext context) => TextStyle(
     fontFamily: kAppFontFamily,
-    fontSize: screen.height * 0.017,
+    fontSize: MediaQuery.sizeOf(context).height * 0.017,
     fontWeight: FontWeight.bold,
-    color: AppColors.textSecondary,
+    color: context.palette.textSecondary,
   );
 
   /// Name in user lists: 4.5% of the screen width, bold.
-  static TextStyle listName(Size screen) => TextStyle(
+  static TextStyle listName(BuildContext context) => TextStyle(
     fontFamily: kAppFontFamily,
-    fontSize: screen.width * 0.045,
+    fontSize: MediaQuery.sizeOf(context).width * 0.045,
     fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
+    color: context.palette.textPrimary,
   );
 }

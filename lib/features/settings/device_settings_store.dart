@@ -2,18 +2,23 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/services/preferences_store.dart';
 
 /// How the map draws the world.
 enum MapLook {
-  standard('Standard'),
-  satellite('Satellite'),
-  hybrid('Satellite with labels');
+  standard,
+  satellite,
+  hybrid;
 
-  const MapLook(this.label);
-  final String label;
+  /// The name shown in settings, in the app's language.
+  String get label => switch (this) {
+    standard => AppL10n.current.settingsMapLookStandard,
+    satellite => AppL10n.current.settingsMapLookSatellite,
+    hybrid => AppL10n.current.settingsMapLookHybrid,
+  };
 
   static MapLook parse(String? value) =>
       values.firstWhere((v) => v.name == value, orElse: () => standard);
@@ -21,19 +26,56 @@ enum MapLook {
 
 /// Which camera the capsule camera opens with.
 enum StartCamera {
-  back('Back camera'),
-  front('Front camera');
+  back,
+  front;
 
-  const StartCamera(this.label);
-  final String label;
+  /// The name shown in settings, in the app's language.
+  String get label => switch (this) {
+    back => AppL10n.current.settingsCameraBack,
+    front => AppL10n.current.settingsCameraFront,
+  };
 
   static StartCamera parse(String? value) =>
       values.firstWhere((v) => v.name == value, orElse: () => back);
 }
 
+/// How distances are written.
+enum DistanceUnit {
+  kilometres,
+  miles;
+
+  /// The name shown in settings, in the app's language.
+  String get label => switch (this) {
+    kilometres => AppL10n.current.settingsUnitsKilometres,
+    miles => AppL10n.current.settingsUnitsMiles,
+  };
+
+  static DistanceUnit parse(String? value) =>
+      values.firstWhere((v) => v.name == value, orElse: () => kilometres);
+}
+
+/// How big capsule photos are sent.
+enum PhotoQuality {
+  /// 1600 px, JPEG 85: quick on a slow connection.
+  standard,
+
+  /// 2560 px, JPEG 90: sharper, about twice the size.
+  high;
+
+  /// The name shown in settings, in the app's language.
+  String get label => switch (this) {
+    standard => AppL10n.current.settingsPhotoQualityStandard,
+    high => AppL10n.current.settingsPhotoQualityHigh,
+  };
+
+  static PhotoQuality parse(String? value) =>
+      values.firstWhere((v) => v.name == value, orElse: () => standard);
+}
+
 /// Preferences of this device for the signed-in user (map look, starting
-/// camera). Kept on the device: they describe how this phone behaves, not
-/// the account.
+/// camera, distance unit, photo quality, saving photos to the gallery).
+/// Kept on the device: they describe how this phone behaves, not the
+/// account.
 class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
   DeviceSettingsStore(this._prefs);
 
@@ -41,13 +83,29 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
 
   static const _mapKey = 'map_look';
   static const _cameraKey = 'start_camera';
+  static const _unitKey = 'distance_unit';
+  static const _qualityKey = 'photo_quality';
+  static const _galleryKey = 'save_to_gallery';
+  static const _wifiKey = 'uploads_wifi_only';
 
   String? _uid;
   MapLook _map = MapLook.standard;
   StartCamera _camera = StartCamera.back;
+  DistanceUnit _unit = DistanceUnit.kilometres;
+  PhotoQuality _quality = PhotoQuality.standard;
+  bool _saveToGallery = false;
+  bool _wifiOnly = false;
+
+  /// Capsules wait for Wi-Fi (no upload on a metered network).
+  bool get uploadsWifiOnly => _wifiOnly;
 
   MapLook get mapLook => _map;
   StartCamera get startCamera => _camera;
+  DistanceUnit get distanceUnit => _unit;
+  PhotoQuality get photoQuality => _quality;
+
+  /// Capsule photos also go to the phone's gallery once the capsule is made.
+  bool get saveToGallery => _saveToGallery;
 
   @override
   void attach(String uid) {
@@ -59,9 +117,17 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     try {
       final map = await _prefs.string(uid, _mapKey);
       final camera = await _prefs.string(uid, _cameraKey);
+      final unit = await _prefs.string(uid, _unitKey);
+      final quality = await _prefs.string(uid, _qualityKey);
+      final gallery = await _prefs.string(uid, _galleryKey);
+      final wifi = await _prefs.string(uid, _wifiKey);
       if (_uid != uid) return;
       _map = MapLook.parse(map);
       _camera = StartCamera.parse(camera);
+      _unit = DistanceUnit.parse(unit);
+      _quality = PhotoQuality.parse(quality);
+      _saveToGallery = gallery == 'true';
+      _wifiOnly = wifi == 'true';
       notifyListeners();
     } catch (e, st) {
       AppLogger.warning(
@@ -77,6 +143,10 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     _uid = null;
     _map = MapLook.standard;
     _camera = StartCamera.back;
+    _unit = DistanceUnit.kilometres;
+    _quality = PhotoQuality.standard;
+    _saveToGallery = false;
+    _wifiOnly = false;
     notifyListeners();
   }
 
@@ -97,5 +167,44 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     _camera = value;
     notifyListeners();
     await _prefs.setString(uid, _cameraKey, value.name);
+  }
+
+  Future<void> setDistanceUnit(DistanceUnit value) async {
+    final uid = _uid;
+    if (uid == null || value == _unit) return;
+    _unit = value;
+    notifyListeners();
+    await _prefs.setString(uid, _unitKey, value.name);
+  }
+
+  Future<void> setPhotoQuality(PhotoQuality value) async {
+    final uid = _uid;
+    if (uid == null || value == _quality) return;
+    _quality = value;
+    notifyListeners();
+    await _prefs.setString(uid, _qualityKey, value.name);
+  }
+
+  /// The Wi-Fi only switch of [uid], read without a store (the background
+  /// upload job runs without the app).
+  static Future<bool> readUploadsWifiOnly(
+    PreferencesStore prefs,
+    String uid,
+  ) async => await prefs.string(uid, _wifiKey) == 'true';
+
+  Future<void> setUploadsWifiOnly(bool value) async {
+    final uid = _uid;
+    if (uid == null || value == _wifiOnly) return;
+    _wifiOnly = value;
+    notifyListeners();
+    await _prefs.setString(uid, _wifiKey, '$value');
+  }
+
+  Future<void> setSaveToGallery(bool value) async {
+    final uid = _uid;
+    if (uid == null || value == _saveToGallery) return;
+    _saveToGallery = value;
+    notifyListeners();
+    await _prefs.setString(uid, _galleryKey, '$value');
   }
 }

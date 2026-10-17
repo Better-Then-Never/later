@@ -2,16 +2,21 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/assets/app_assets.dart';
+import '../../core/l10n/l10n.dart';
+import '../../data/services/preferences_store.dart';
 import '../../shared/widgets/later_loading_bar.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 import 'package:later/core/theme/app_motion.dart';
 
 class AppPermission {
-  final String name;
-  final String description;
+  /// Title and text in the app's language.
+  final String Function(AppLocalizations l10n) name;
+  final String Function(AppLocalizations l10n) description;
   final String iconAsset;
   final Permission permission;
 
@@ -26,7 +31,14 @@ class AppPermission {
 class PermissionGatePage extends StatefulWidget {
   final VoidCallback onAllGranted;
 
-  const PermissionGatePage({super.key, required this.onAllGranted});
+  const PermissionGatePage({
+    super.key,
+    required this.uid,
+    required this.onAllGranted,
+  });
+
+  /// The signed-in user: the onboarding is shown once per account.
+  final String uid;
 
   @override
   State<PermissionGatePage> createState() => _PermissionGatePageState();
@@ -42,36 +54,24 @@ class _PermissionGatePageState extends State<PermissionGatePage>
 
   final List<AppPermission> _permissionsList = [
     AppPermission(
-      name: 'Share Camera access with Later',
-      description: 'And you will be able to create time capsules!',
+      name: (l10n) => l10n.authPermissionCameraTitle,
+      description: (l10n) => l10n.authPermissionCameraText,
       permission: Permission.camera,
       iconAsset: AppIcons.cameraFull,
     ),
     AppPermission(
-      name: 'Provide Later with microphone access',
-      description: "Camera won't work without it",
-      permission: Permission.microphone,
-      iconAsset: AppIcons.capsuleMicrophone,
-    ),
-    AppPermission(
-      name: 'Share geolocation with us',
-      description: 'And you will be able to find capsules nearby you!',
+      name: (l10n) => l10n.authPermissionLocationTitle,
+      description: (l10n) => l10n.authPermissionLocationText,
       permission: Platform.isIOS
           ? Permission.locationWhenInUse
           : Permission.location,
       iconAsset: AppIcons.capsuleLocation,
     ),
     AppPermission(
-      name: 'Enable notifications',
-      description: 'Stay updated with new followers and capsules!',
+      name: (l10n) => l10n.authPermissionNotificationsTitle,
+      description: (l10n) => l10n.authPermissionNotificationsText,
       permission: Permission.notification,
       iconAsset: AppIcons.notificationsBlackFull,
-    ),
-    AppPermission(
-      name: 'Access contacts',
-      description: 'Find and invite friends from your contacts!',
-      permission: Permission.contacts,
-      iconAsset: AppIcons.friendsBook,
     ),
   ];
 
@@ -115,11 +115,17 @@ class _PermissionGatePageState extends State<PermissionGatePage>
     return 0;
   }
 
+  static const _seenKey = 'permission_onboarding';
+
   Future<void> _checkPermissions() async {
+    final prefs = context.read<PreferencesStore>();
+    final seen = await prefs.string(widget.uid, _seenKey) == 'done';
     await _readStatuses();
     if (!mounted) return;
 
-    if (_permissionsList.every(_isGranted)) {
+    // Shown once per account on this phone: afterwards each feature asks
+    // for its permission when it needs it (F-42).
+    if (seen || _permissionsList.every(_isGranted)) {
       _navigated = true;
       widget.onAllGranted();
     } else {
@@ -146,17 +152,34 @@ class _PermissionGatePageState extends State<PermissionGatePage>
       return;
     }
 
-    if (status.isGranted && !_permissionsList.every(_isGranted)) {
-      // Skip pages that are already granted.
-      final next = _firstPendingIndex(from: _currentPage + 1);
-      await _pageController.animateToPage(
-        next,
-        duration: AppMotion.reveal,
-        curve: AppMotion.enter,
-      );
-    }
+    if (status.isGranted) await _next();
+  }
 
-    _checkIfAllGranted();
+  /// The next page still asking for something, or into the app after the
+  /// last one: every permission is optional here.
+  Future<void> _next() async {
+    for (var i = _currentPage + 1; i < _permissionsList.length; i++) {
+      if (!_isGranted(_permissionsList[i])) {
+        await _pageController.animateToPage(
+          i,
+          duration: AppMotion.reveal,
+          curve: AppMotion.enter,
+        );
+        return;
+      }
+    }
+    await _finish();
+  }
+
+  Future<void> _finish() async {
+    if (_navigated) return;
+    _navigated = true;
+    await context.read<PreferencesStore>().setString(
+      widget.uid,
+      _seenKey,
+      'done',
+    );
+    if (mounted) widget.onAllGranted();
   }
 
   void _checkIfAllGranted() {
@@ -169,9 +192,8 @@ class _PermissionGatePageState extends State<PermissionGatePage>
     );
 
     if (allRequiredGranted && mounted) {
-      _navigated = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) widget.onAllGranted();
+        if (mounted) _finish();
       });
     }
   }
@@ -179,16 +201,17 @@ class _PermissionGatePageState extends State<PermissionGatePage>
   @override
   Widget build(BuildContext context) {
     if (!_loaded) {
-      return const Scaffold(
-        backgroundColor: AppColors.pageBackground,
-        body: Center(child: LaterLoadingBar(width: 150, height: 150)),
+      return Scaffold(
+        backgroundColor: context.palette.background,
+        body: const Center(child: LaterLoadingBar(width: 150, height: 150)),
       );
     }
 
     final screenHeight = MediaQuery.of(context).size.height;
+    final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -207,9 +230,12 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                   return Padding(
                     padding: const EdgeInsets.all(24.0),
                     child: Card(
-                      color: AppColors.pageBackground,
+                      color: context.palette.background,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
+                        // Transparent in light; the card's edge in dark,
+                        // where its shadow does not show.
+                        side: BorderSide(color: context.palette.cardBorder),
                       ),
                       elevation: 4,
                       child: Padding(
@@ -229,18 +255,18 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                               child: Padding(
                                 padding: const EdgeInsets.all(12.0),
                                 child: Text(
-                                  item.name,
-                                  style: const TextStyle(
+                                  item.name(l10n),
+                                  style: TextStyle(
                                     fontSize: 50,
                                     fontFamily: kAppFontFamily,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.black,
+                                    color: context.palette.textPrimary,
                                   ),
                                 ),
                               ),
                             ),
                             Text(
-                              item.description,
+                              item.description(l10n),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -250,7 +276,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: granted
-                                    ? null
+                                    ? _next
                                     : () => _requestPermission(item.permission),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.brandGreen,
@@ -258,17 +284,34 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                                     borderRadius: BorderRadius.circular(25.0),
                                   ),
                                 ),
-                                child: Text(
-                                  granted ? 'Granted' : 'Enable',
-                                  style: const TextStyle(
-                                    fontFamily: kAppFontFamily,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.white,
-                                    fontSize: 25.0,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    granted
+                                        ? l10n.commonContinue
+                                        : l10n.authPermissionEnable,
+                                    style: const TextStyle(
+                                      fontFamily: kAppFontFamily,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.onAccent,
+                                      fontSize: 25.0,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
+                            if (!granted)
+                              TextButton(
+                                onPressed: _next,
+                                child: Text(
+                                  l10n.authPermissionNotNow,
+                                  style: TextStyle(
+                                    fontFamily: kAppFontFamily,
+                                    fontSize: 16,
+                                    color: context.palette.textSecondary,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -287,7 +330,7 @@ class _PermissionGatePageState extends State<PermissionGatePage>
                   decoration: BoxDecoration(
                     color: _currentPage == index
                         ? AppColors.brandGreen
-                        : AppColors.grey400,
+                        : context.palette.disabled,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );

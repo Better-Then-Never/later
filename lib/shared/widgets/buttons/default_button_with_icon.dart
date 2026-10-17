@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/motion/app_motion_widgets.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/shared/widgets/default_text.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class DefaultButtonWithIcon extends StatelessWidget {
   final double? width;
@@ -14,6 +14,9 @@ class DefaultButtonWithIcon extends StatelessWidget {
   final FontWeight? textFontWeight;
   final Decoration? decoration;
 
+  /// Size of the picture on the left.
+  final double iconSize;
+
   const DefaultButtonWithIcon({
     super.key,
     required this.onTap,
@@ -24,29 +27,30 @@ class DefaultButtonWithIcon extends StatelessWidget {
     this.textFontSize,
     this.decoration,
     this.textFontWeight,
+    this.iconSize = 32,
   });
 
   @override
   Widget build(BuildContext context) {
-    return AppPressable(child: _buildButton());
+    return AppPressable(child: _buildButton(context));
   }
 
-  Widget _buildButton() {
+  Widget _buildButton(BuildContext context) {
     return Container(
-      decoration: decoration ?? BoxDecorations.greyCard(),
+      decoration: decoration ?? BoxDecorations.greyCard(context),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(25),
-          splashColor: AppColors.black.withAlpha(25),
+          splashColor: context.palette.textPrimary.withAlpha(25),
           child: Container(
             width: width,
             height: height ?? 48,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                Image.asset(assetPath, width: 32, height: 32),
+                Image.asset(assetPath, width: iconSize, height: iconSize),
                 Expanded(
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
@@ -54,7 +58,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
                       text,
                       fontSize: textFontSize,
                       textAlign: TextAlign.center,
-                      color: AppColors.black,
+                      color: context.palette.textPrimary,
                       fontWeight: textFontWeight,
                     ),
                   ),

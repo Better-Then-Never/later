@@ -1,20 +1,31 @@
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
+import 'capsule_labels.dart';
 
 enum HistorySort {
   /// Repository order: newest first.
-  none(null),
-  oldest('From Oldest'),
-  newest('From Newest'),
-  closest('From Closest'),
-  farthest('From Farthest');
+  none,
+  oldest,
+  newest,
+  closest,
+  farthest;
 
-  const HistorySort(this.label);
-
-  final String? label;
+  /// Menu and button label in the app's language ([AppL10n.current] when
+  /// [l10n] is null); null for [none].
+  String? label([AppLocalizations? l10n]) {
+    final strings = l10n ?? AppL10n.current;
+    return switch (this) {
+      HistorySort.none => null,
+      HistorySort.oldest => strings.historySortOldest,
+      HistorySort.newest => strings.historySortNewest,
+      HistorySort.closest => strings.historySortClosest,
+      HistorySort.farthest => strings.historySortFarthest,
+    };
+  }
 }
 
 /// Search, sort, filter and selection state of the History page. The list
@@ -34,19 +45,33 @@ class HistoryController extends ChangeNotifier {
   bool get favoritesOnly => _favoritesOnly;
 
   bool get isSelectionMode => _selected.isNotEmpty;
+
+  /// A search or filter narrows the list (sorting does not).
+  bool get isNarrowed =>
+      _query.trim().isNotEmpty ||
+      _colorFilter != null ||
+      _privacyFilter != null ||
+      _favoritesOnly;
   int get selectedCount => _selected.length;
   Set<String> get selectedIds => Set.unmodifiable(_selected);
   bool isSelected(String id) => _selected.contains(id);
 
-  String get activeSortLabel => _sort.label ?? 'Sort By';
+  /// Text of the sort button: the chosen sort or "Sort By". Widgets pass
+  /// `context.l10n`; without it [AppL10n.current] is used.
+  String activeSortLabel([AppLocalizations? l10n]) {
+    final strings = l10n ?? AppL10n.current;
+    return _sort.label(strings) ?? strings.historySortBy;
+  }
 
-  String get activeFilterLabel {
+  /// Text of the filter button: the active filters or "Filter By".
+  String activeFilterLabel([AppLocalizations? l10n]) {
+    final strings = l10n ?? AppL10n.current;
     final parts = [
-      ?_colorFilter?.label,
-      ?_privacyFilter?.label,
-      if (_favoritesOnly) 'Favorite',
+      ?_colorFilter?.localizedLabel(strings),
+      ?_privacyFilter?.localizedLabel(strings),
+      if (_favoritesOnly) strings.historyFilterFavorite,
     ];
-    return parts.isEmpty ? 'Filter By' : parts.join(' · ');
+    return parts.isEmpty ? strings.historyFilterBy : parts.join(' · ');
   }
 
   void updateSearchQuery(String query) {

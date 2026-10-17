@@ -7,6 +7,21 @@ class GeoPosition {
   final double latitude;
   final double longitude;
 
+  /// A real place: in range, finite, and not 0,0 (what a failed location
+  /// fix looks like; the rules reject it too) (F-18).
+  bool get isValid =>
+      latitude.isFinite &&
+      longitude.isFinite &&
+      latitude.abs() <= 90 &&
+      longitude.abs() <= 180 &&
+      !(latitude.abs() < 1e-4 && longitude.abs() < 1e-4);
+
+  /// Rounded to two decimals (about a kilometre), for approximate places.
+  GeoPosition get approximate => GeoPosition(
+    (latitude * 100).roundToDouble() / 100,
+    (longitude * 100).roundToDouble() / 100,
+  );
+
   /// Great-circle distance in metres (haversine).
   double distanceTo(GeoPosition other) {
     const earthRadius = 6371000.0;

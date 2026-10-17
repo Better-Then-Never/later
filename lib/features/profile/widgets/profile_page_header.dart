@@ -47,11 +47,12 @@ class ProfilePageHeader extends StatelessWidget {
                 SizedBox(width: screenWidth * 0.04),
                 Expanded(
                   child: UserNameAndUsername(
+                    showCounts: true,
                     userId: userId,
                     nameFontSize: 32,
                     usernameFontSize: 20,
-                    nameColor: AppColors.white,
-                    usernameColor: AppColors.white,
+                    nameColor: AppColors.onMedia,
+                    usernameColor: AppColors.onMedia,
                     nameFontWeight: FontWeight.bold,
                     usernameFontWeight: FontWeight.bold,
                     crossAxisAlignment: CrossAxisAlignment.start,

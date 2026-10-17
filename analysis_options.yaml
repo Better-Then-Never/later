@@ -4,6 +4,8 @@ analyzer:
   exclude:
     - build/**
     - lib/firebase_options.dart
+    # Agent worktrees (local tooling), never part of the app.
+    - .claude/**
   language:
     strict-casts: false
     strict-raw-types: true

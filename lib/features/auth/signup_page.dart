@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/errors/app_failure.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_palette.dart';
 import '../../data/repositories/repositories.dart';
 import 'auth_controller.dart';
 import 'widgets/auth_heading.dart';
@@ -77,8 +78,9 @@ class _SignupViewState extends State<_SignupView> {
   @override
   Widget build(BuildContext context) {
     final busy = context.select<AuthController, bool>((c) => c.busy);
+    final l10n = context.l10n;
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -91,10 +93,9 @@ class _SignupViewState extends State<_SignupView> {
                       const Spacer(),
                       Column(
                         children: [
-                          const AuthHeading(
-                            title: 'Sign Up Now',
-                            subtitle:
-                                'Please fill the details to create your account',
+                          AuthHeading(
+                            title: l10n.authSignupTitle,
+                            subtitle: l10n.authSignupSubtitle,
                           ),
                           const SizedBox(height: 17.5),
                           AutofillGroup(
@@ -102,14 +103,14 @@ class _SignupViewState extends State<_SignupView> {
                               children: [
                                 AuthTextField(
                                   controller: _name,
-                                  hint: 'Name',
+                                  hint: l10n.authNameHint,
                                   textInputAction: TextInputAction.next,
                                   autofillHints: const [AutofillHints.name],
                                 ),
                                 const SizedBox(height: 10.0),
                                 AuthTextField(
                                   controller: _username,
-                                  hint: 'Nickname',
+                                  hint: l10n.authUsernameHint,
                                   textInputAction: TextInputAction.next,
                                   autofillHints: const [
                                     AutofillHints.newUsername,
@@ -118,7 +119,7 @@ class _SignupViewState extends State<_SignupView> {
                                 const SizedBox(height: 10.0),
                                 AuthTextField(
                                   controller: _email,
-                                  hint: 'Email',
+                                  hint: l10n.authEmailHint,
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
                                   autofillHints: const [AutofillHints.email],
@@ -126,7 +127,7 @@ class _SignupViewState extends State<_SignupView> {
                                 const SizedBox(height: 10.0),
                                 AuthTextField(
                                   controller: _password,
-                                  hint: 'Password',
+                                  hint: l10n.authPasswordHint,
                                   obscure: true,
                                   textInputAction: TextInputAction.done,
                                   autofillHints: const [
@@ -138,16 +139,16 @@ class _SignupViewState extends State<_SignupView> {
                           ),
                           const SizedBox(height: 40),
                           AuthSubmitButton(
-                            text: 'Sign Up',
+                            text: l10n.authSignUpButton,
                             isLoading: busy,
                             onPressed: _signUp,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
-                                'Do you have an account?',
-                                style: TextStyle(fontSize: 16.0),
+                              Text(
+                                l10n.authHaveAccount,
+                                style: const TextStyle(fontSize: 16.0),
                               ),
                               TextButton(
                                 style: TextButton.styleFrom(
@@ -159,10 +160,10 @@ class _SignupViewState extends State<_SignupView> {
                                   overlayColor: Colors.transparent,
                                 ),
                                 onPressed: () => AppRoutes.toLogin(context),
-                                child: const Text(
-                                  'Log In',
+                                child: Text(
+                                  l10n.authGoToLogIn,
                                   style: TextStyle(
-                                    color: AppColors.black,
+                                    color: context.palette.textPrimary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16.0,
                                   ),

@@ -63,6 +63,24 @@ void main() {
       expect(store.mutedChats, isEmpty);
     });
 
+    test('pin up to three chats, in the order pinned', () async {
+      store.attach('alice');
+      await pumpEventQueue();
+      for (final c in ['a_b', 'a_c', 'a_d']) {
+        expect(await store.setChatPinned(c, pinned: true), isNull);
+      }
+      await pumpEventQueue();
+      expect(store.pinnedChats, ['a_b', 'a_c', 'a_d']);
+      expect(
+        await store.setChatPinned('a_e', pinned: true),
+        isA<ValidationFailure>(),
+      );
+      await store.setChatPinned('a_c', pinned: false);
+      await pumpEventQueue();
+      expect(store.pinnedChats, ['a_b', 'a_d']);
+      expect(repo.docs['alice']!.pinnedChats, ['a_b', 'a_d']);
+    });
+
     test('quiet hours follow the device time zone', () async {
       repo.docs['alice'] = const UserSettings(
         notifications: NotificationSettings(
@@ -73,6 +91,48 @@ void main() {
       store.attach('alice');
       await pumpEventQueue();
       expect(repo.docs['alice']!.notifications.utcOffsetMinutes, 120);
+    });
+
+    test('the streak reminder follows the device time zone too', () async {
+      repo.docs['alice'] = const UserSettings(
+        notifications: NotificationSettings(
+          streakReminder: true,
+          utcOffsetMinutes: 60,
+        ),
+      );
+      store.attach('alice');
+      await pumpEventQueue();
+      expect(repo.docs['alice']!.notifications.utcOffsetMinutes, 120);
+    });
+
+    test('privacy saves and rolls back', () async {
+      store.attach('alice');
+      await pumpEventQueue();
+      const next = PrivacySettings(readReceipts: false);
+      expect(await store.updatePrivacy(next), isNull);
+      expect(repo.docs['alice']!.privacy, next);
+
+      repo.failWrites = true;
+      final failure = await store.updatePrivacy(
+        next.copyWith(contactSuggestions: true),
+      );
+      expect(failure, isA<AppFailure>());
+      expect(store.privacy, next);
+    });
+
+    test('the shown language is saved once, after loading', () async {
+      store.syncLanguage('de');
+      expect(repo.docs, isEmpty, reason: 'not signed in yet');
+      store.attach('alice');
+      await pumpEventQueue();
+      expect(repo.docs['alice']!.language, 'de');
+      store.syncLanguage('de');
+      store.syncLanguage('de');
+      await pumpEventQueue();
+      expect(store.settings.language, 'de');
+      store.syncLanguage('es');
+      await pumpEventQueue();
+      expect(repo.docs['alice']!.language, 'es');
     });
 
     test('sign-out forgets the settings', () async {

@@ -6,17 +6,22 @@ import '../../core/logging/app_logger.dart';
 
 /// Parses and queues incoming links (Android intent channel, QR codes) and
 /// runs them once the signed-in home screen is ready, instead of guessing
-/// with fixed delays.
+/// with fixed delays. Links are to profiles or to capsules.
 class AppLinkHandler {
-  AppLinkHandler({required this.onOpenProfile});
+  AppLinkHandler({required this.onOpenProfile, this.onOpenCapsule});
 
   /// Opens the profile of [userId]; provided by the router.
   final void Function(String userId) onOpenProfile;
 
+  /// Opens capsule [capsuleId] (if the user may see it); provided by the
+  /// router.
+  final void Function(String capsuleId)? onOpenCapsule;
+
   static const _channel = MethodChannel('later.app/deeplink');
   static const _webHost = 'later-da778.web.app';
 
-  String? _pendingUserId;
+  /// The link waiting for the home screen: a profile or a capsule.
+  ({String? userId, String? capsuleId})? _pending;
   bool _homeReady = false;
 
   void init() {
@@ -57,10 +62,30 @@ class AppLinkHandler {
   static String profileWebLink(String userId) =>
       'https://$_webHost/?userId=$userId';
 
+  /// Accepts `later://capsule/<id>` and
+  /// `https://later-da778.web.app/?capsuleId=<id>`.
+  static String? capsuleId(String link) {
+    final uri = Uri.tryParse(link.trim());
+    if (uri == null) return null;
+    String? id;
+    if (uri.scheme == 'later' && uri.host == 'capsule') {
+      id = uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+    } else if (uri.scheme == 'https' && uri.host == _webHost) {
+      id = uri.queryParameters['capsuleId'];
+    }
+    return id == null || !RegExp(r'^[A-Za-z0-9_-]{1,64}$').hasMatch(id)
+        ? null
+        : id;
+  }
+
+  /// The link to share for capsule [id]: a web page that opens the app.
+  static String capsuleWebLink(String id) => 'https://$_webHost/?capsuleId=$id';
+
   void handleLink(String link) {
-    final id = profileUserId(link);
-    if (id == null) return;
-    _pendingUserId = id;
+    final capsule = capsuleId(link);
+    final user = capsule == null ? profileUserId(link) : null;
+    if (capsule == null && user == null) return;
+    _pending = (userId: user, capsuleId: capsule);
     _flush();
   }
 
@@ -72,9 +97,13 @@ class AppLinkHandler {
   void onHomeGone() => _homeReady = false;
 
   void _flush() {
-    final id = _pendingUserId;
-    if (!_homeReady || id == null) return;
-    _pendingUserId = null;
-    onOpenProfile(id);
+    final link = _pending;
+    if (!_homeReady || link == null) return;
+    _pending = null;
+    if (link.capsuleId case final id?) {
+      onOpenCapsule?.call(id);
+    } else if (link.userId case final id?) {
+      onOpenProfile(id);
+    }
   }
 }

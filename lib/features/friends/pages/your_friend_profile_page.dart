@@ -12,7 +12,16 @@ import 'package:later/features/profile/widgets/profile_header_background_image.d
 import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:later/shared/widgets/user/user_square_avatar.dart';
 import 'package:later/features/friends/widgets/friend_options_modal.dart';
+import 'package:later/features/friends/widgets/profile/friend_capsules_strip.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/core/config/feature_flags.dart';
+import 'package:later/data/models/user_profile.dart';
+import 'package:later/features/achievements/achievements_view.dart';
+import 'package:later/features/users/user_directory.dart';
+import 'package:provider/provider.dart';
+import 'package:later/shared/widgets/user/user_about_line.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;
@@ -23,9 +32,12 @@ class YourFriendProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final friend = context.select<UserDirectory, UserProfile?>(
+      (d) => d.profile(friendUid),
+    );
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -59,11 +71,12 @@ class YourFriendProfilePage extends StatelessWidget {
                         SizedBox(width: screenWidth * 0.04),
                         Expanded(
                           child: UserNameAndUsername(
+                            showCounts: true,
                             userId: friendUid,
                             nameFontSize: screenWidth * 0.07,
                             usernameFontSize: screenWidth * 0.05,
-                            nameColor: AppColors.white,
-                            usernameColor: AppColors.white,
+                            nameColor: AppColors.onMedia,
+                            usernameColor: AppColors.onMedia,
                             textAlign: TextAlign.left,
                           ),
                         ),
@@ -74,6 +87,7 @@ class YourFriendProfilePage extends StatelessWidget {
               ],
             ),
 
+            UserAboutLine(userId: friendUid),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
@@ -83,18 +97,18 @@ class YourFriendProfilePage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          decoration: BoxDecorations.whiteCard(),
+                          decoration: BoxDecorations.whiteCard(context),
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () => AppRoutes.toChat(context, friendUid),
                           assetPath: AppIcons.sendMessage,
-                          text: 'Open chat',
+                          text: context.l10n.friendsOpenChat,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          decoration: BoxDecorations.whiteCard(),
+                          decoration: BoxDecorations.whiteCard(context),
                           textFontSize: 18,
                           textFontWeight: FontWeight.bold,
                           onTap: () => AppRoutes.toCamera(
@@ -103,32 +117,28 @@ class YourFriendProfilePage extends StatelessWidget {
                             recipientId: friendUid,
                           ),
                           assetPath: AppIcons.sendCapsule,
-                          text: 'Send Capsule',
+                          text: context.l10n.friendsSendCapsule,
                         ),
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 24),
-                  const DefaultText(
-                    "Friend's capsules",
+                  DefaultText(
+                    context.l10n.friendsFriendCapsulesTitle,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    width: screenWidth - 32,
-                    height: 80,
-                    decoration: BoxDecorations.whiteCard(),
-                    child: const Center(
-                      child: DefaultText(
-                        "Friend's capsules will appear here",
-                        fontSize: 16,
-                        color: AppColors.grey600,
-                      ),
-                    ),
-                  ),
+                  FriendCapsulesStrip(friendUid: friendUid),
                   const SizedBox(height: 16),
+                  // Shown when the friend shares them (Settings > Privacy).
+                  if (FeatureFlags.achievements &&
+                      friend != null &&
+                      friend.showAchievements) ...[
+                    AchievementsPanel(profile: friend),
+                    const SizedBox(height: 16),
+                  ],
                 ],
               ),
             ),

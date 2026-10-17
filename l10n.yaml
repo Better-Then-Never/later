@@ -1,0 +1,11 @@
+# Flutter gen-l10n: ARB files are assembled from tool/l10n/fragments by
+# `dart run tool/l10n/build_arb.dart`; AppLocalizations is generated into
+# lib/l10n/gen on `flutter pub get` / build.
+arb-dir: lib/l10n
+output-dir: lib/l10n/gen
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+required-resource-attributes: false
+format: true

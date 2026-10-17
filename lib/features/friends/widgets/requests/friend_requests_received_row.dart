@@ -4,6 +4,8 @@ import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
 import 'package:later/shared/widgets/user/user_round_avatar.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class FriendRequestsReceivedRow extends StatelessWidget {
   final String name;
@@ -31,14 +33,17 @@ class FriendRequestsReceivedRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecorations.whiteCard(),
+      decoration: BoxDecorations.whiteCard(context),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: InkWell(
           onTap: onTap,
           child: Row(
             children: [
-              UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
+              UserRoundAvatar(
+                userId: uid,
+                radius: UserRoundAvatar.listRadius(screenWidth),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -53,7 +58,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                           name,
                           fontWeight: FontWeight.bold,
                           fontSize: screenWidth * 0.045,
-                          color: AppColors.black,
+                          color: context.palette.textPrimary,
                           textAlign: TextAlign.start,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -63,7 +68,7 @@ class FriendRequestsReceivedRow extends StatelessWidget {
                     DefaultText(
                       '@$username',
                       fontSize: screenWidth * 0.035,
-                      color: AppColors.grey600,
+                      color: context.palette.textMuted,
                     ),
                   ],
                 ),
@@ -72,13 +77,13 @@ class FriendRequestsReceivedRow extends StatelessWidget {
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onAccept,
                 color: AppColors.brandGreen,
-                text: 'Accept',
+                text: context.l10n.friendsAccept,
               ),
               SizedBox(width: screenWidth * 0.01),
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onReject,
                 color: AppColors.danger,
-                text: 'Reject',
+                text: context.l10n.friendsReject,
               ),
             ],
           ),

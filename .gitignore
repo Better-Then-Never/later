@@ -157,3 +157,6 @@ shell.nix
 
 # CI writes the release keystore here
 android/app/release.keystore
+
+# Local Claude Code state (agent worktrees)
+.claude/

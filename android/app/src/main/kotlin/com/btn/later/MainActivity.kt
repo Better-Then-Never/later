@@ -9,6 +9,9 @@ import io.flutter.plugin.common.MethodChannel
 class MainActivity : FlutterActivity() {
     private val channelName = "later.app/deeplink"
     private var initialLink: String? = null
+    private var voice: VoiceChannel? = null
+    private var gallery: GalleryChannel? = null
+    private var contacts: ContactsChannel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,5 +44,81 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        // Voice messages: record and play (VoiceChannel.kt).
+        voice = VoiceChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        // Capsule photos into the gallery (GalleryChannel.kt).
+        gallery = GalleryChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        // Friend suggestions: hashes of the contacts' emails (ContactsChannel.kt).
+        contacts = ContactsChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        // Waiting capsules uploaded while the app is closed (UploadWorker.kt).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/uploads")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "schedule" -> {
+                        UploadWorker.schedule(
+                            applicationContext,
+                            wifiOnly = call.argument<Boolean>("wifiOnly") ?: false,
+                        )
+                        result.success(null)
+                    }
+                    "cancel" -> {
+                        UploadWorker.cancel(applicationContext)
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        // Whether the network costs money (uploads on Wi-Fi only).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/network")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "isMetered" -> {
+                        val cm = getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            as android.net.ConnectivityManager
+                        result.success(cm.isActiveNetworkMetered)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        // Country names in the app's language (the world view, B7): the
+        // platform knows them for every language, no table in the app.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/locale")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "countryNames" -> {
+                        val codes = call.argument<List<String>>("codes") ?: emptyList()
+                        val language = java.util.Locale.forLanguageTag(
+                            call.argument<String>("language") ?: "en",
+                        )
+                        result.success(
+                            codes.associateWith { code ->
+                                java.util.Locale("", code).getDisplayCountry(language)
+                            },
+                        )
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        // The signed-in home screen drew its first frame (StartupReport).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "fullyDrawn" -> {
+                        reportFullyDrawn()
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        voice?.dispose()
+        voice = null
+        gallery?.dispose()
+        gallery = null
+        contacts?.dispose()
+        contacts = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 }

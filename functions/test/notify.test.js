@@ -152,6 +152,46 @@ describe('capsule notifications (BUG-026, BUG-027)', () => {
     assert.equal((await notified('follower')).length, 0);
   });
 
+  test('co-authors hear about it, even when private; once, not as followers', async () => {
+    await addUser('owner', { friends: ['friendFollower', 'pal'] });
+    await addUser('pal', {}, ['pal1']);
+    const messaging = fakeMessaging();
+    const result = await notify.onCapsuleCreated({ db, messaging }, 'c6', {
+      ownerId: 'owner',
+      privacy: 'private',
+      coAuthors: ['pal', 'stranger', 'owner', 'pal'],
+    });
+    assert.equal(result.recipients, 0);
+    assert.equal(result.coAuthors, 1);
+    assert.deepEqual(messaging.sent.map((m) => m.token), ['pal1']);
+    assert.equal(messaging.sent[0].data.type, 'coAuthor');
+    assert.equal(messaging.sent[0].notification.body, 'owner made a capsule with you');
+    const [n] = await notified('pal');
+    assert.equal(n.type, 'coAuthor');
+    assert.equal(n.capsuleId, 'c6');
+    assert.equal((await notified('stranger')).length, 0);
+
+    // A friend who follows and co-authored gets the co-author one only.
+    const again = fakeMessaging();
+    const friendsOnly = await notify.onCapsuleCreated({ db, messaging: again }, 'c7', {
+      ownerId: 'owner',
+      privacy: 'friends',
+      coAuthors: ['friendFollower'],
+    });
+    assert.equal(friendsOnly.recipients, 0);
+    assert.equal(friendsOnly.coAuthors, 1);
+    const got = (await notified('friendFollower')).filter((x) => x.capsuleId === 'c7');
+    assert.deepEqual(got.map((x) => x.type), ['coAuthor']);
+  });
+
+  test('the follower fan-out is bounded', async () => {
+    const few = await notify.capsuleRecipients(db, 'owner', 'public', [], 2);
+    assert.ok(few.length <= 2);
+    const all = await notify.capsuleRecipients(db, 'owner', 'public', []);
+    assert.equal(all.length, 3, 'followers with notifications on');
+    assert.equal(notify.MAX_FOLLOWER_FANOUT, 500);
+  });
+
   test('private capsule: nobody', async () => {
     const messaging = fakeMessaging();
     const result = await notify.onCapsuleCreated({ db, messaging }, 'c3', {
@@ -246,6 +286,15 @@ describe('notification preferences', () => {
     assert.equal(prefs.channelFor('follows', true), 'activity');
     assert.equal(prefs.channelFor('capsules', false), 'activity_silent');
   });
+
+  test('vibration off: sound only, its own channel; silent stays silent', () => {
+    const settings = (n) => prefs.normalize({ notifications: n });
+    assert.equal(prefs.alertOf(settings({})), true);
+    assert.equal(prefs.alertOf(settings({ vibrate: false })), 'novibrate');
+    assert.equal(prefs.alertOf(settings({ sound: false, vibrate: false })), false);
+    assert.equal(prefs.channelFor('messages', 'novibrate'), 'messages_novibrate');
+    assert.equal(prefs.channelFor('reactions', 'novibrate'), 'activity_novibrate');
+  });
 });
 
 describe('message notifications', () => {
@@ -276,9 +325,40 @@ describe('message notifications', () => {
     assert.equal(push.android.notification.tag, chatId);
   });
 
+  test('a group message goes to every other member, each by their settings', async () => {
+    await addUser('carol', { name: 'Carol' }, ['c1']);
+    await addUser('dave', { name: 'Dave' }, ['d1']);
+    await setSettings('dave', { mutedChats: ['g_trip12345678'] });
+    await setSettings('carol', { language: 'ru' });
+    await db.doc('chats/g_trip12345678').set({ name: 'Trip', members: ['alice', 'bob', 'carol', 'dave'] });
+    const messaging = fakeMessaging();
+    const report = await notify.onMessageCreated(services(messaging), 'g_trip12345678', 'm1', {
+      senderId: 'alice',
+      text: 'Tomorrow at 9',
+    });
+    assert.deepEqual(Object.keys(report).sort(), ['bob', 'carol', 'dave']);
+    assert.deepEqual(report.dave, { skipped: 'muted' });
+    assert.deepEqual(messaging.sent.map((m) => m.token).sort(), ['b1', 'c1']);
+    const [push] = messaging.sent;
+    assert.equal(push.notification.title, 'Trip');
+    assert.equal(push.notification.body, 'Alice: Tomorrow at 9');
+    assert.equal(push.data.chatId, 'g_trip12345678');
+
+    // Not a member, or no such group: nobody.
+    assert.equal(await notify.onMessageCreated(services(fakeMessaging()), 'g_trip12345678', 'm2', { senderId: 'erin', text: 'x' }), null);
+    assert.equal(await notify.onMessageCreated(services(fakeMessaging()), 'g_none12345678', 'm3', { senderId: 'alice', text: 'x' }), null);
+  });
+
   test('long texts are shortened; capsules say so', () => {
     assert.equal(notify.messageBody({ text: 'x'.repeat(200) }, true).length, 150);
     assert.equal(notify.messageBody({ type: 'capsule', text: 'Trip' }, true), 'Sent you a capsule: Trip');
+    // Photos: the caption after a camera sign, or a line saying what it is.
+    assert.equal(notify.messageBody({ type: 'image', text: '📷' }, true), 'Sent you a photo');
+    assert.equal(notify.messageBody({ type: 'image', text: 'Look!' }, true), '📷 Look!');
+    assert.equal(notify.messageBody({ type: 'image', text: 'Look!' }, false, 'ru'), 'Фото для вас');
+    // Voice: says what it is, with or without previews.
+    assert.equal(notify.messageBody({ type: 'voice', text: '🎤' }, true), '🎤 Voice message');
+    assert.equal(notify.messageBody({ type: 'voice', text: '🎤' }, false, 'de'), '🎤 Sprachnachricht');
   });
 
   test('no preview, no sound: neutral text on the silent channel', async () => {
@@ -355,9 +435,13 @@ describe('account deletion cleanup', () => {
     await setSettings('gone', { mutedChats: [] });
     await bucket.file('userdata/gone/assets/images/profile_image').save('x');
     await bucket.file('userdata/bob/assets/images/profile_image').save('y');
+    await bucket.file('chats/bob_gone/bob/p1.jpg').save('z');
+    await db.doc('chats/g_group1234567').set({ name: 'G', members: ['gone', 'bob', 'carol'] });
+    await bucket.file('chats/bob_carol/bob/p2.jpg').save('z');
 
     const report = await account.deleteUserData({ db, bucket }, 'gone');
-    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1 });
+    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1, groups: 1, reactions: 0, comments: 0 });
+    assert.deepEqual((await db.doc('chats/g_group1234567').get()).get('members'), ['bob', 'carol']);
 
     assert.equal((await users().doc('gone').get()).exists, false);
     assert.equal((await users().doc('gone').collection('settings').doc('app').get()).exists, false);
@@ -373,6 +457,8 @@ describe('account deletion cleanup', () => {
     assert.equal((await db.doc('chats/bob_gone/messages/m1').get()).exists, false);
     assert.equal((await bucket.file('userdata/gone/assets/images/profile_image').exists())[0], false);
     assert.equal((await bucket.file('userdata/bob/assets/images/profile_image').exists())[0], true);
+    assert.equal((await bucket.file('chats/bob_gone/bob/p1.jpg').exists())[0], false);
+    assert.equal((await bucket.file('chats/bob_carol/bob/p2.jpg').exists())[0], true);
 
     // Running it again is harmless.
     await account.deleteUserData({ db, bucket }, 'gone');

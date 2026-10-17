@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/repositories/repositories.dart';
+import '../../../data/services/app_image_cache.dart';
 import '../../../data/services/profile_image_cache.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../profile_image_editor.dart';
@@ -17,7 +18,7 @@ ImageProvider? ownImage(BuildContext context, ProfileImageEditor editor) {
     (c) => c.url(editor.uid, editor.kind, small: small),
   );
   final preview = editor.preview;
-  if (url != null) return NetworkImage(url);
+  if (url != null) return AppImageCache.provider(url);
   if (preview != null) return MemoryImage(preview);
   return null;
 }

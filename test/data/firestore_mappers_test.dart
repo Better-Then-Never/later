@@ -93,7 +93,7 @@ void main() {
       expect(url.fromUserAvatarUrl, 'https://a/b.png');
     });
 
-    test('maps types and titles; pending timestamp is null', () {
+    test('maps types; pending timestamp is null', () {
       final n = FirestoreMappers.notification('n1', {
         'type': 'follow',
         'fromUserName': 'bob',
@@ -101,13 +101,12 @@ void main() {
         'isRead': false,
       });
       expect(n.type, NotificationType.follow);
-      expect(n.title, 'New Follower');
       expect(n.timestamp, isNull);
       expect(
         FirestoreMappers.notification('x', {}).type,
         NotificationType.other,
       );
-      expect(FirestoreMappers.notification('x', {}).fromUserName, 'System');
+      expect(FirestoreMappers.notification('x', {}).fromUserName, 'Later');
     });
   });
 
@@ -119,7 +118,7 @@ void main() {
     expect(p.username, 'unknown');
     expect(p.friends, ['a', 'b']);
     expect(p.initial, '#', reason: 'empty names must not crash grouping');
-    expect(FirestoreMappers.userProfile('u2', null).name, 'Unknown');
+    expect(FirestoreMappers.userProfile('u2', null).name, 'Unknown user');
   });
 
   test('friend request ids and status', () {

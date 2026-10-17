@@ -4,6 +4,7 @@ import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/styles/box_decorations.dart';
 import 'package:later/features/friends/widgets/friend_requests_count.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class ProfilePageAddFriendsButton extends StatelessWidget {
   final String currentUserUid;
@@ -19,7 +20,7 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
       child: Container(
         width: screenWidth - 32,
         height: 45,
-        decoration: BoxDecorations.whiteCard(),
+        decoration: BoxDecorations.whiteCard(context),
         child: Stack(
           children: [
             Positioned(
@@ -38,8 +39,8 @@ class ProfilePageAddFriendsButton extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 18),
-                  const DefaultText(
-                    'Add friends',
+                  DefaultText(
+                    context.l10n.profileAddFriends,
                     fontWeight: FontWeight.normal,
                     fontSize: 16,
                   ),

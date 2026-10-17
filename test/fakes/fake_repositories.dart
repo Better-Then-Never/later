@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:later/core/errors/app_failure.dart';
@@ -6,7 +7,9 @@ import 'package:later/data/models/app_notification.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/friend_request.dart';
+import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
+import 'package:later/data/models/world.dart';
 import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/repositories/repositories.dart';
 
@@ -87,6 +90,9 @@ class FakeAuthRepository implements AuthRepository {
   @override
   bool hasPassword = true;
 
+  @override
+  bool hasGoogle = false;
+
   /// What the Google picker does on re-authentication: null = cancelled.
   bool? googleReauth = true;
 
@@ -156,6 +162,22 @@ class FakeSettingsRepository implements SettingsRepository {
   }
 
   @override
+  Future<void> savePrivacy(String uid, PrivacySettings privacy) async {
+    _check();
+    docs[uid] = (docs[uid] ?? const UserSettings()).copyWith(privacy: privacy);
+    _changes.add(uid);
+  }
+
+  @override
+  Future<void> saveLanguage(String uid, String languageCode) async {
+    _check();
+    docs[uid] = (docs[uid] ?? const UserSettings()).copyWith(
+      language: languageCode,
+    );
+    _changes.add(uid);
+  }
+
+  @override
   Future<void> setChatMuted(
     String uid,
     String chatId, {
@@ -167,6 +189,30 @@ class FakeSettingsRepository implements SettingsRepository {
       mutedChats: muted
           ? {...current.mutedChats, chatId}
           : ({...current.mutedChats}..remove(chatId)),
+    );
+    _changes.add(uid);
+  }
+
+  @override
+  Future<void> setPinnedFriends(String uid, List<String> friends) async {
+    _check();
+    final current = docs[uid] ?? const UserSettings();
+    docs[uid] = current.copyWith(pinnedFriends: friends);
+    _changes.add(uid);
+  }
+
+  @override
+  Future<void> setChatPinned(
+    String uid,
+    String chatId, {
+    required bool pinned,
+  }) async {
+    _check();
+    final current = docs[uid] ?? const UserSettings();
+    docs[uid] = current.copyWith(
+      pinnedChats: pinned
+          ? [...current.pinnedChats.where((c) => c != chatId), chatId]
+          : ([...current.pinnedChats]..remove(chatId)),
     );
     _changes.add(uid);
   }
@@ -243,6 +289,46 @@ class FakeUserRepository implements UserRepository {
       .where((p) => p.username.startsWith(prefix))
       .take(limit)
       .toList();
+
+  @override
+  Future<void> setShowAchievements(String uid, bool show) async =>
+      put(profiles[uid]!.copyWith(showAchievements: show));
+
+  @override
+  Future<void> setAbout(String uid, String about) async =>
+      put(profiles[uid]!.copyWith(about: about));
+
+  /// Lower-case names people are found by (`nameLower`).
+  final Map<String, String> searchNames = {};
+
+  @override
+  Future<void> setSearchName(String uid, String? lowerCaseName) async {
+    lowerCaseName == null
+        ? searchNames.remove(uid)
+        : searchNames[uid] = lowerCaseName;
+    final p = profiles[uid]!;
+    put(
+      UserProfile(
+        uid: uid,
+        name: p.name,
+        username: p.username,
+        friends: p.friends,
+        favorites: p.favorites,
+        showAchievements: p.showAchievements,
+        about: p.about,
+        searchName: lowerCaseName,
+      ),
+    );
+  }
+
+  @override
+  Future<List<UserProfile>> searchByName(
+    String prefix, {
+    int limit = 20,
+  }) async => [
+    for (final e in searchNames.entries)
+      if (prefix.isNotEmpty && e.value.startsWith(prefix)) profiles[e.key]!,
+  ].take(limit).toList();
 
   @override
   Future<void> setFavorite(String uid, String capsuleId, bool favorite) async {
@@ -433,6 +519,166 @@ class FakeChatRepository implements ChatRepository {
   final List<String> calls = [];
   bool failSends = false;
 
+  /// Photo uploads fail (no connection).
+  bool failUploads = false;
+
+  /// Typing hints by "chatId/uid": when, or null once stopped.
+  final Map<String, DateTime?> typing = {};
+  final _typingChanges = StreamController<void>.broadcast();
+
+  /// [uid]'s typing hint in [chatId] as their app would write it.
+  void hint(String chatId, String uid, DateTime? at) {
+    typing['$chatId/$uid'] = at;
+    _typingChanges.add(null);
+  }
+
+  @override
+  Future<void> setTyping(
+    String chatId,
+    String uid, {
+    required bool typing,
+  }) async {
+    calls.add('typing:$chatId:$uid:$typing');
+    hint(chatId, uid, typing ? now : null);
+  }
+
+  @override
+  Stream<Map<String, DateTime>> watchTyping(String chatId) => seeded(
+    () => {
+      for (final e in typing.entries)
+        if (e.key.startsWith('$chatId/') && e.value != null)
+          e.key.substring(chatId.length + 1): e.value!,
+    },
+    _typingChanges.stream,
+  );
+
+  /// Groups by id. Invited people join at once (as the server would for
+  /// friends) unless their uid is in [refusedInvites].
+  final Map<String, Chat> groups = {};
+  final Set<String> refusedInvites = {};
+  int _groupIds = 0;
+
+  Chat _group(String id) => groups[id] ?? (throw StateError('no group $id'));
+
+  void _putGroup(Chat g) {
+    groups[g.id] = g;
+    _notify();
+  }
+
+  Chat _copyGroup(
+    Chat g, {
+    List<String>? members,
+    String? name,
+    String? lastMessage,
+    String? lastSenderId,
+    Map<String, DateTime>? lastReadAt,
+    bool touch = false,
+  }) => Chat(
+    id: g.id,
+    members: members ?? g.members,
+    name: name ?? g.name,
+    lastMessage: lastMessage ?? g.lastMessage,
+    lastUpdated: touch ? now : g.lastUpdated,
+    lastSenderId: lastSenderId ?? g.lastSenderId,
+    lastReadAt: lastReadAt ?? g.lastReadAt,
+  );
+
+  @override
+  Stream<List<Chat>> watchGroups(String uid) => seeded(
+    () => groups.values.where((g) => g.members.contains(uid)).toList(),
+    _changes.stream,
+  );
+
+  @override
+  Future<String> createGroup({
+    required String creator,
+    required String name,
+    required List<String> invitees,
+  }) async {
+    calls.add('group:$creator:$name:${invitees.join(',')}');
+    if (failSends) throw StateError('create failed');
+    final id = 'g_group${_groupIds++}abcdef';
+    _putGroup(Chat(id: id, members: [creator], name: name, lastUpdated: now));
+    await inviteToGroup(id, by: creator, invitees: invitees);
+    return id;
+  }
+
+  @override
+  Future<void> inviteToGroup(
+    String groupId, {
+    required String by,
+    required List<String> invitees,
+  }) async {
+    calls.add('invite:$groupId:$by:${invitees.join(',')}');
+    final g = _group(groupId);
+    _putGroup(
+      _copyGroup(
+        g,
+        members: [
+          ...g.members,
+          for (final uid in invitees)
+            if (!g.members.contains(uid) && !refusedInvites.contains(uid)) uid,
+        ],
+      ),
+    );
+  }
+
+  @override
+  Future<void> renameGroup(String groupId, String name) async {
+    calls.add('rename:$groupId:$name');
+    _putGroup(_copyGroup(_group(groupId), name: name));
+  }
+
+  @override
+  Future<void> leaveGroup(String groupId, String uid) async {
+    calls.add('leave:$groupId:$uid');
+    final g = _group(groupId);
+    _putGroup(
+      _copyGroup(
+        g,
+        members: [...g.members]..remove(uid),
+        lastReadAt: {...g.lastReadAt}..remove(uid),
+      ),
+    );
+  }
+
+  @override
+  Future<void> markGroupRead(String groupId, String uid) async {
+    calls.add('groupread:$groupId:$uid');
+    final g = _group(groupId);
+    _putGroup(_copyGroup(g, lastReadAt: {...g.lastReadAt, uid: now}));
+  }
+
+  @override
+  Future<void> sendToGroup({
+    required String groupId,
+    required String from,
+    required String text,
+    required String messageId,
+    MessageReply? replyTo,
+    bool forwarded = false,
+  }) async {
+    calls.add('grouptext:$groupId:$from:$text');
+    if (failSends) throw StateError('send failed');
+    final g = _group(groupId);
+    if (!g.members.contains(from)) throw StateError('not a member');
+    final list = messages[groupId] ??= [];
+    if (list.any((m) => m.id == messageId)) return;
+    list.add(
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: text,
+        sentAt: now,
+        replyTo: replyTo,
+        forwarded: forwarded,
+      ),
+    );
+    _putGroup(
+      _copyGroup(g, lastMessage: text, lastSenderId: from, touch: true),
+    );
+  }
+
   /// Clock used for message times and read receipts.
   DateTime now = DateTime(2026, 10, 16, 12);
   int _ids = 0;
@@ -482,12 +728,105 @@ class FakeChatRepository implements ChatRepository {
     required String to,
     required String text,
     required String messageId,
+    MessageReply? replyTo,
+    bool forwarded = false,
+    MessageCapsuleRef? capsuleRef,
   }) async {
-    calls.add('text:$from->$to:$text');
+    calls.add(forwarded ? 'forward:$from->$to:$text' : 'text:$from->$to:$text');
     _add(
       from,
       to,
-      ChatMessage(id: messageId, senderId: from, text: text, sentAt: now),
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: text,
+        sentAt: now,
+        replyTo: replyTo,
+        forwarded: forwarded,
+        capsuleRef: capsuleRef,
+      ),
+    );
+  }
+
+  @override
+  Future<ChatPhoto> uploadPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  }) async {
+    calls.add('upload:$messageId:$localPath');
+    if (failUploads) throw StateError('upload failed');
+    final path = 'chats/${Chat.idBetween(from, to)}/$from/$messageId.jpg';
+    return ChatPhoto(
+      url: 'https://storage.test/$path',
+      path: path,
+      width: 1200,
+      height: 1600,
+    );
+  }
+
+  @override
+  Future<void> sendPhoto({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatPhoto photo,
+    String caption = '',
+    MessageReply? replyTo,
+  }) async {
+    calls.add('photo:$from->$to:${photo.path}:$caption');
+    _add(
+      from,
+      to,
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: caption.trim().isEmpty ? ChatMessage.photoSign : caption.trim(),
+        sentAt: now,
+        type: ChatMessageType.image,
+        replyTo: replyTo,
+      ).withPhoto(photo),
+    );
+  }
+
+  @override
+  Future<ChatAudio> uploadVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required String localPath,
+  }) async {
+    calls.add('uploadvoice:$messageId:$localPath');
+    if (failUploads) throw StateError('upload failed');
+    final path = 'chats/${Chat.idBetween(from, to)}/$from/$messageId.m4a';
+    return ChatAudio(url: 'https://storage.test/$path', path: path);
+  }
+
+  @override
+  Future<void> sendVoice({
+    required String from,
+    required String to,
+    required String messageId,
+    required ChatAudio audio,
+    required int durationMs,
+    required List<int> waveform,
+    MessageReply? replyTo,
+  }) async {
+    calls.add('voice:$from->$to:${audio.path}:$durationMs');
+    _add(
+      from,
+      to,
+      ChatMessage(
+        id: messageId,
+        senderId: from,
+        text: ChatMessage.voiceSign,
+        sentAt: now,
+        type: ChatMessageType.voice,
+        durationMs: durationMs,
+        waveform: waveform,
+        replyTo: replyTo,
+      ).withAudio(audio),
     );
   }
 
@@ -514,8 +853,12 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String chatId, {required String reader}) async {
-    calls.add('read:$chatId:$reader');
+  Future<void> markRead(
+    String chatId, {
+    required String reader,
+    bool receipt = true,
+  }) async {
+    calls.add(receipt ? 'read:$chatId:$reader' : 'unread0:$chatId:$reader');
     final chat = chats[chatId];
     if (chat == null) return;
     chats[chatId] = Chat(
@@ -525,8 +868,72 @@ class FakeChatRepository implements ChatRepository {
       lastUpdated: chat.lastUpdated,
       lastSenderId: chat.lastSenderId,
       unreadCounts: {...chat.unreadCounts, reader: 0},
-      lastReadAt: {...chat.lastReadAt, reader: now},
+      lastReadAt: receipt ? {...chat.lastReadAt, reader: now} : chat.lastReadAt,
     );
+    _notify();
+  }
+
+  @override
+  Future<void> setMessageReaction(
+    String chatId,
+    String messageId, {
+    required String uid,
+    ReactionType? type,
+  }) async {
+    calls.add('react:$messageId:$uid:${type?.name}');
+    if (failSends) throw StateError('react failed');
+    final list = messages[chatId];
+    final i = list?.indexWhere((m) => m.id == messageId) ?? -1;
+    if (i < 0) return;
+    list![i] = list[i].withReaction(uid, type);
+    _notify();
+  }
+
+  @override
+  Future<void> deleteMessage(
+    String chatId,
+    String messageId, {
+    String? imagePath,
+    String? unreadFor,
+  }) async {
+    calls.add(
+      imagePath == null
+          ? 'delete:$chatId:$messageId'
+          : 'delete:$chatId:$messageId:$imagePath',
+    );
+    if (failSends) throw StateError('delete failed');
+    final list = messages[chatId];
+    if (list == null) return;
+    final wasNewest = list.isNotEmpty && list.last.id == messageId;
+    list.removeWhere((m) => m.id == messageId);
+    final chat = chats[chatId];
+    if (wasNewest && chat != null) {
+      final previous = list.lastOrNull;
+      chats[chatId] = Chat(
+        id: chat.id,
+        participants: chat.participants,
+        lastMessage: previous?.text ?? '',
+        lastUpdated: previous?.sentAt ?? now,
+        lastSenderId: previous?.senderId ?? chat.lastSenderId,
+        unreadCounts: chat.unreadCounts,
+        lastReadAt: chat.lastReadAt,
+      );
+    }
+    final after = chats[chatId];
+    if (unreadFor != null && after != null && after.unreadFor(unreadFor) > 0) {
+      chats[chatId] = Chat(
+        id: after.id,
+        participants: after.participants,
+        lastMessage: after.lastMessage,
+        lastUpdated: after.lastUpdated,
+        lastSenderId: after.lastSenderId,
+        unreadCounts: {
+          ...after.unreadCounts,
+          unreadFor: after.unreadFor(unreadFor) - 1,
+        },
+        lastReadAt: after.lastReadAt,
+      );
+    }
     _notify();
   }
 
@@ -561,6 +968,27 @@ class FakeCapsuleRepository implements CapsuleRepository {
   @override
   Future<Capsule?> getById(String id) async => byId?.id == id ? byId : null;
 
+  final _byIdChanges = StreamController<void>.broadcast();
+
+  /// Replaces [byId] and tells [watchById] listeners.
+  void emitById(Capsule? capsule) {
+    byId = capsule;
+    _byIdChanges.add(null);
+  }
+
+  @override
+  Stream<Capsule?> watchById(String id) =>
+      seeded(() => byId?.id == id ? byId : null, _byIdChanges.stream);
+
+  /// Capsules of other users, for [sharedBy].
+  List<Capsule> others = [];
+
+  @override
+  Future<List<Capsule>> sharedBy(String ownerId, {int limit = 30}) async => [
+    for (final c in others)
+      if (c.ownerId == ownerId && c.privacy != CapsulePrivacy.private) c,
+  ];
+
   @override
   Stream<List<Capsule>> watchFriends(List<String> friendIds) =>
       Stream.value(const []);
@@ -572,11 +1000,38 @@ class FakeCapsuleRepository implements CapsuleRepository {
     int limit = 300,
   }) => Stream.value(const []);
 
+  var _ids = 0;
+
+  /// The next creates fail like an upload without network.
+  bool offline = false;
+
+  /// The next creates are refused by the server (rules).
+  bool refuse = false;
+
+  /// Every create call, including failed ones.
+  int attempts = 0;
+
+  @override
+  String newCapsuleId() => 'cap-${++_ids}';
+
   @override
   Future<Capsule> create(CapsuleDraft draft) async {
+    attempts++;
+    if (offline) throw const SocketException('offline');
+    if (refuse) throw StateError('permission-denied');
+    final id = draft.id;
+    if (id != null && created.any((d) => d.id == id)) {
+      return Capsule(
+        id: id,
+        ownerId: draft.ownerId,
+        title: draft.title,
+        privacy: draft.privacy,
+        color: draft.color,
+      );
+    }
     created.add(draft);
     return Capsule(
-      id: 'new-${created.length}',
+      id: id ?? 'new-${created.length}',
       ownerId: draft.ownerId,
       title: draft.title,
       privacy: draft.privacy,
@@ -587,6 +1042,154 @@ class FakeCapsuleRepository implements CapsuleRepository {
   @override
   Future<void> delete(Iterable<Capsule> capsules) async =>
       deleted.addAll(capsules.map((c) => c.id));
+
+  final _coAuthored = StreamController<List<Capsule>>.broadcast();
+  List<Capsule> coAuthored = [];
+
+  /// (capsule id, uid) of every leave.
+  final List<(String, String)> left = [];
+
+  void emitCoAuthored(List<Capsule> list) {
+    coAuthored = list;
+    _coAuthored.add(list);
+  }
+
+  @override
+  Stream<List<Capsule>> watchCoAuthored(String uid) =>
+      seeded(() => coAuthored, _coAuthored.stream);
+
+  @override
+  Future<void> leaveCoAuthors(String capsuleId, String uid) async {
+    left.add((capsuleId, uid));
+    emitCoAuthored([
+      for (final c in coAuthored)
+        if (c.id != capsuleId) c,
+    ]);
+  }
+}
+
+/// In-memory reactions, comments, reports, achievements and announcements.
+class FakeSocialRepository implements SocialRepository {
+  final Map<String, Map<String, ReactionType>> reactions = {};
+  final Map<String, List<CapsuleComment>> comments = {};
+  final Map<String, List<UnlockedAchievement>> achievements = {};
+  List<Announcement> announcements = [];
+  final List<Map<String, Object?>> reports = [];
+  final _changes = StreamController<void>.broadcast();
+  bool failWrites = false;
+  var _ids = 0;
+
+  void changed() => _changes.add(null);
+
+  void _check() {
+    if (failWrites) throw const PermissionFailure('denied');
+  }
+
+  @override
+  Stream<List<CapsuleReaction>> watchReactions(
+    String capsuleId, {
+    int limit = 100,
+  }) => seeded(
+    () => [
+      for (final e in (reactions[capsuleId] ?? const {}).entries)
+        CapsuleReaction(uid: e.key, type: e.value),
+    ].take(limit).toList(),
+    _changes.stream,
+  );
+
+  @override
+  Stream<ReactionType?> watchMyReaction(String capsuleId, String uid) =>
+      seeded(() => reactions[capsuleId]?[uid], _changes.stream);
+
+  @override
+  Future<void> setReaction(
+    String capsuleId,
+    String uid,
+    ReactionType? type,
+  ) async {
+    _check();
+    final map = reactions.putIfAbsent(capsuleId, () => {});
+    type == null ? map.remove(uid) : map[uid] = type;
+    changed();
+  }
+
+  @override
+  Stream<List<CapsuleComment>> watchComments(
+    String capsuleId, {
+    int limit = 200,
+  }) => seeded(() {
+    final all = comments[capsuleId] ?? const <CapsuleComment>[];
+    return all.length <= limit ? [...all] : all.sublist(all.length - limit);
+  }, _changes.stream);
+
+  @override
+  Future<void> addComment(
+    String capsuleId, {
+    required String authorId,
+    required String text,
+    String? replyTo,
+  }) async {
+    _check();
+    comments
+        .putIfAbsent(capsuleId, () => [])
+        .add(
+          CapsuleComment(
+            id: 'c${++_ids}',
+            capsuleId: capsuleId,
+            authorId: authorId,
+            text: text,
+            createdAt: DateTime(2026, 1, 1).add(Duration(minutes: _ids)),
+            replyTo: replyTo,
+          ),
+        );
+    changed();
+  }
+
+  @override
+  Future<void> deleteComment(String capsuleId, String commentId) async {
+    _check();
+    comments[capsuleId]?.removeWhere((c) => c.id == commentId);
+    changed();
+  }
+
+  @override
+  Future<void> report({
+    required String reporterId,
+    required ReportTarget target,
+    required String targetPath,
+    required ReportReason reason,
+    String? details,
+  }) async {
+    _check();
+    reports.add({
+      'reporterId': reporterId,
+      'target': target,
+      'targetPath': targetPath,
+      'reason': reason,
+      'details': details,
+    });
+  }
+
+  @override
+  Stream<List<UnlockedAchievement>> watchAchievements(String uid) =>
+      seeded(() => [...?achievements[uid]], _changes.stream);
+
+  @override
+  Stream<List<Announcement>> watchAnnouncements({int limit = 20}) =>
+      seeded(() => announcements.take(limit).toList(), _changes.stream);
+
+  final Map<String, WorldSummary> worlds = {};
+
+  @override
+  Stream<WorldSummary> watchWorld(String uid) =>
+      seeded(() => worlds[uid] ?? WorldSummary.empty, _changes.stream);
+
+  /// "uid/capsuleId" of every marker written.
+  final List<String> viewed = [];
+
+  @override
+  Future<void> markViewed(String uid, String capsuleId) async =>
+      viewed.add('$uid/$capsuleId');
 }
 
 class FakeImageStorageRepository implements ImageStorageRepository {

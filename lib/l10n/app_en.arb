@@ -1,0 +1,2940 @@
+{
+  "@@locale": "en",
+  "achievementAnimator": "Animator",
+  "achievementAnimatorGoal": "{count, plural, =1{Make 1 loop capsule} other{Make {count} loop capsules}}",
+  "@achievementAnimatorGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementChatterbox": "Chatterbox",
+  "achievementChatterboxGoal": "{count, plural, =1{Write 1 comment} other{Write {count} comments}}",
+  "@achievementChatterboxGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementCollector": "Collector",
+  "achievementCollectorGoal": "{count, plural, =1{Create 1 capsule} other{Create {count} capsules}}",
+  "@achievementCollectorGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementCrowdPleaser": "Crowd pleaser",
+  "achievementCrowdPleaserGoal": "{count, plural, =1{Receive 1 reaction} other{Receive {count} reactions}}",
+  "@achievementCrowdPleaserGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementCurious": "Curious",
+  "@achievementCurious": {
+    "description": "Achievement for opening capsules other people left (B7)."
+  },
+  "achievementCuriousGoal": "{count, plural, =1{Open 1 capsule left by someone else} other{Open {count} capsules left by others}}",
+  "@achievementCuriousGoal": {
+    "description": "Goal of the Curious achievement level.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementEarlyBird": "Early bird",
+  "achievementEarlyBirdGoal": "{count, plural, =1{Create a capsule between 5 and 8 am} other{Create {count} capsules between 5 and 8 am}}",
+  "@achievementEarlyBirdGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementExplorer": "Explorer",
+  "achievementExplorerGoal": "{count, plural, =1{Leave a capsule in 1 place} other{Leave capsules in {count} different places}}",
+  "@achievementExplorerGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementFirstCapsule": "First capsule",
+  "achievementFirstCapsuleGoal": "Create your first capsule",
+  "achievementFriendly": "Friendly",
+  "achievementFriendlyGoal": "{count, plural, =1{Make 1 friend} other{Make {count} friends}}",
+  "@achievementFriendlyGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementNightOwl": "Night owl",
+  "achievementNightOwlGoal": "{count, plural, =1{Create a capsule between midnight and 5 am} other{Create {count} capsules between midnight and 5 am}}",
+  "@achievementNightOwlGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementOpenBook": "Open book",
+  "achievementOpenBookGoal": "{count, plural, =1{Share 1 public capsule} other{Share {count} public capsules}}",
+  "@achievementOpenBookGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementStreak": "On fire",
+  "achievementStreakGoal": "Keep a {count}-day streak",
+  "@achievementStreakGoal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementTraveler": "Traveler",
+  "achievementTravelerGoal": "Travel {km} km between your capsules",
+  "@achievementTravelerGoal": {
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsDescription": "Unlocked by using Later, never by paying",
+  "achievementsLocked": "Locked",
+  "achievementsNoneYet": "Your first one is a capsule away.",
+  "achievementsSeeAll": "See all",
+  "achievementsStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
+  "@achievementsStreakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsStreakKeep": "Make a capsule today to keep it",
+  "achievementsStreakTodayDone": "Today counts already",
+  "achievementsTier": "Level {tier} of {tiers}",
+  "@achievementsTier": {
+    "placeholders": {
+      "tier": {
+        "type": "int"
+      },
+      "tiers": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsTitle": "Achievements",
+  "appName": "Later",
+  "@appName": {
+    "description": "The app's name. Never translated."
+  },
+  "authContinueWithGoogle": "Continue with Google",
+  "@authContinueWithGoogle": {
+    "description": "Accessibility label of the Google sign-in icon."
+  },
+  "authEmailHint": "Email",
+  "@authEmailHint": {
+    "description": "Placeholder of the email field (login, sign-up, password reset)."
+  },
+  "authEnterEmail": "Please enter your email",
+  "authErrorEmailInUse": "The account already exists for that email.",
+  "authErrorEmailTaken": "Another account already uses this email.",
+  "authErrorInvalidCredential": "Wrong email or password.",
+  "authErrorInvalidEmail": "The email address is not valid.",
+  "authErrorMethodDisabled": "This sign-in method is not enabled.",
+  "authErrorPickGoogleAccount": "Please pick the Google account you sign in with.",
+  "authErrorRecentLogin": "Please confirm it is you and try again.",
+  "authErrorTooManyRequests": "Too many attempts. Please try again later.",
+  "authErrorUserDisabled": "This account has been disabled.",
+  "authErrorUserNotFound": "No user found with this email.",
+  "authErrorWeakPassword": "The password provided is too weak.",
+  "authErrorWithMessage": "Error: {message}",
+  "@authErrorWithMessage": {
+    "description": "Snack bar when the password reset email could not be sent.",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "Invalid email address"
+      }
+    }
+  },
+  "authErrorWrongPassword": "Wrong password.",
+  "@authErrorWrongPassword": {
+    "description": "Changing the password, email or deleting the account: the current password is wrong."
+  },
+  "authErrorWrongPasswordProvided": "Wrong password provided.",
+  "authFacebookSoon": "Facebook (coming soon)",
+  "@authFacebookSoon": {
+    "description": "Accessibility label of the Facebook icon (not available yet)."
+  },
+  "authFillAllFields": "Please fill in all fields",
+  "authForgotPassword": "Forgot password?",
+  "authGetStarted": "Get Started",
+  "@authGetStarted": {
+    "description": "Big green button on the welcome page that opens the login page."
+  },
+  "authGoToLogIn": "Log In",
+  "@authGoToLogIn": {
+    "description": "Bold link after authHaveAccount that opens the login page."
+  },
+  "authGoToSignUp": "Sign Up",
+  "@authGoToSignUp": {
+    "description": "Bold link after authNoAccount that opens the sign-up page."
+  },
+  "authGoogleFailed": "Google sign-in failed. Please try again.",
+  "authHaveAccount": "Do you have an account?",
+  "@authHaveAccount": {
+    "description": "Sign-up page, followed by the authGoToLogIn link."
+  },
+  "authHidePassword": "Hide password",
+  "authLegalNotice": "By signing up you agree to the {terms} and {privacy}",
+  "@authLegalNotice": {
+    "description": "Small print on the sign-up page. {terms} and {privacy} are tappable links (authTermsOfUse, authPrivacyPolicy).",
+    "placeholders": {
+      "terms": {
+        "type": "String",
+        "example": "Terms of Use"
+      },
+      "privacy": {
+        "type": "String",
+        "example": "Privacy Policy"
+      }
+    }
+  },
+  "authLinkOpenFailed": "Could not open the page.",
+  "authLogInButton": "Log In",
+  "@authLogInButton": {
+    "description": "Big green button that signs in. Keep it short."
+  },
+  "authLoginSubtitle": "Please log in to continue using our app",
+  "authLoginTitle": "Log In Now",
+  "@authLoginTitle": {
+    "description": "Large heading of the login page."
+  },
+  "authNameHint": "Name",
+  "@authNameHint": {
+    "description": "Placeholder of the display name field on the sign-up page."
+  },
+  "authNoAccount": "Don't have an account?",
+  "@authNoAccount": {
+    "description": "Login page, followed by the authGoToSignUp link."
+  },
+  "authNoFreeUsername": "Could not pick a username. Please sign up.",
+  "@authNoFreeUsername": {
+    "description": "Google sign-in could not choose a free username automatically; the user should use the sign-up form."
+  },
+  "authOrConnectWith": "Or connect with",
+  "@authOrConnectWith": {
+    "description": "Above the Google and Facebook sign-in icons."
+  },
+  "authPasswordHint": "Password",
+  "@authPasswordHint": {
+    "description": "Placeholder of the password field."
+  },
+  "authPermissionCameraText": "And you will be able to create time capsules!",
+  "authPermissionCameraTitle": "Share Camera access with Later",
+  "@authPermissionCameraTitle": {
+    "description": "Title of a permission page shown after sign-in (shrinks to fit one line)."
+  },
+  "authPermissionEnable": "Enable",
+  "@authPermissionEnable": {
+    "description": "Button on a permission page that asks for the permission."
+  },
+  "authPermissionLocationText": "And you will be able to find capsules near you!",
+  "authPermissionLocationTitle": "Share geolocation with us",
+  "authPermissionNotNow": "Not now",
+  "authPermissionNotificationsText": "Stay updated with new followers and capsules!",
+  "authPermissionNotificationsTitle": "Enable notifications",
+  "authPrivacyPolicy": "Privacy Policy",
+  "@authPrivacyPolicy": {
+    "description": "Link inside authLegalNotice: use the grammatical form that fits that sentence."
+  },
+  "authResetDescription": "Enter your email to receive a password reset link",
+  "authResetInvalidEmail": "Invalid email address",
+  "authResetSend": "Send Reset Link",
+  "@authResetSend": {
+    "description": "Button of the password reset dialog. Keep it short (narrow button)."
+  },
+  "authResetSent": "Password reset email sent! Check your inbox.",
+  "authResetTitle": "Reset Password",
+  "@authResetTitle": {
+    "description": "Title of the password reset dialog."
+  },
+  "authResetUserNotFound": "No account found with this email",
+  "authShowPassword": "Show password",
+  "authSignInAgain": "Please sign in again.",
+  "authSignUpButton": "Sign Up",
+  "@authSignUpButton": {
+    "description": "Big green button that creates the account. Keep it short."
+  },
+  "authSignupSubtitle": "Please fill in the details to create your account",
+  "authSignupTitle": "Sign Up Now",
+  "@authSignupTitle": {
+    "description": "Large heading of the sign-up page."
+  },
+  "authTermsOfUse": "Terms of Use",
+  "@authTermsOfUse": {
+    "description": "Link inside authLegalNotice: use the grammatical form that fits that sentence."
+  },
+  "authUsernameHint": "Nickname",
+  "@authUsernameHint": {
+    "description": "Placeholder of the username field on the sign-up page (the unique @name)."
+  },
+  "authWelcomeSubtitle": "Create an account to see your capsules\nand your friends'",
+  "@authWelcomeSubtitle": {
+    "description": "Welcome page text under the title. The line break splits it into two balanced lines."
+  },
+  "authWelcomeTo": "Welcome to",
+  "@authWelcomeTo": {
+    "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
+  },
+  "capsulesBy": "By {name}",
+  "@capsulesBy": {
+    "description": "Screen reader label of the author line on a capsule (opens their profile).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesByWith": "{name} with {others}",
+  "@capsulesByWith": {
+    "description": "Author line on a capsule made with friends: the author, then the co-authors.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      },
+      "others": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesCalendarNext": "Next month",
+  "@capsulesCalendarNext": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesCalendarPrevious": "Previous month",
+  "@capsulesCalendarPrevious": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
+  "@capsulesCameraAccessDenied": {
+    "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
+  },
+  "capsulesCameraExposure": "Brightness",
+  "@capsulesCameraExposure": {
+    "description": "Screen reader label of the camera brightness (exposure) slider."
+  },
+  "capsulesCameraFlashAuto": "Flash auto",
+  "@capsulesCameraFlashAuto": {
+    "description": "Camera flash button, screen reader: the flash fires when it is dark"
+  },
+  "capsulesCameraFlashAutoBadge": "A",
+  "@capsulesCameraFlashAutoBadge": {
+    "description": "One letter on the flash icon for 'automatic'"
+  },
+  "capsulesCameraFlashOff": "Flash off",
+  "@capsulesCameraFlashOff": {
+    "description": "Accessibility label of the flash button while the flash is off."
+  },
+  "capsulesCameraFlashOn": "Flash on",
+  "@capsulesCameraFlashOn": {
+    "description": "Accessibility label of the flash button while the flash is on."
+  },
+  "capsulesCameraFlashTorch": "Light on",
+  "@capsulesCameraFlashTorch": {
+    "description": "Screen reader label of the flash button when the light stays on (torch)."
+  },
+  "capsulesCameraFlashTorchBadge": "L",
+  "@capsulesCameraFlashTorchBadge": {
+    "description": "One letter on the lit bolt when the light stays on (like \"A\" for automatic): the first letter of the word for torch/light."
+  },
+  "capsulesCameraHoldForLoop": "Hold for a loop",
+  "@capsulesCameraHoldForLoop": {
+    "description": "Under the shutter: hold it to record several frames played as a loop"
+  },
+  "capsulesCameraModeLoop": "Loop",
+  "@capsulesCameraModeLoop": {
+    "description": "Camera mode switch: a loop of frames."
+  },
+  "capsulesCameraModePhoto": "Photo",
+  "@capsulesCameraModePhoto": {
+    "description": "Camera mode switch: a photo."
+  },
+  "capsulesCameraStartFailed": "The camera could not be started",
+  "capsulesCameraStartLoop": "Start the loop",
+  "@capsulesCameraStartLoop": {
+    "description": "Screen reader label of the shutter in loop mode."
+  },
+  "capsulesCameraStopLoop": "Stop the loop",
+  "@capsulesCameraStopLoop": {
+    "description": "Screen reader label of the shutter while a loop records."
+  },
+  "capsulesCameraSwitch": "Switch camera",
+  "@capsulesCameraSwitch": {
+    "description": "Accessibility label of the button that switches between the front and back camera."
+  },
+  "capsulesCameraTakePhoto": "Take photo",
+  "@capsulesCameraTakePhoto": {
+    "description": "Accessibility label of the shutter button."
+  },
+  "capsulesCameraTakePhotoOrLoop": "Take photo. Hold to record a loop",
+  "@capsulesCameraTakePhotoOrLoop": {
+    "description": "Screen reader label of the shutter when loops are on"
+  },
+  "capsulesCameraTapForLoop": "Tap to start, tap again to stop",
+  "@capsulesCameraTapForLoop": {
+    "description": "Hint above the shutter in loop mode."
+  },
+  "capsulesCameraUnavailable": "No camera available",
+  "@capsulesCameraUnavailable": {
+    "description": "Shown on the camera screen when the phone has no camera."
+  },
+  "capsulesCameraZoomTo": "Zoom {zoom}×",
+  "@capsulesCameraZoomTo": {
+    "description": "Screen reader label of a zoom stop button.",
+    "placeholders": {
+      "zoom": {
+        "type": "String",
+        "example": "2"
+      }
+    }
+  },
+  "capsulesCoAuthorsDone": "Done",
+  "@capsulesCoAuthorsDone": {
+    "description": "Button closing the co-authors sheet with the pick."
+  },
+  "capsulesCoAuthorsPick": "Who made it with you",
+  "@capsulesCoAuthorsPick": {
+    "description": "Title of the sheet that picks a capsule's co-authors."
+  },
+  "capsulesCoAuthorsTooMany": "Up to {count} co-authors",
+  "@capsulesCoAuthorsTooMany": {
+    "description": "Shown when more co-authors are picked than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesColorBlue": "Blue",
+  "capsulesColorGreen": "Green",
+  "capsulesColorOrange": "Orange",
+  "capsulesColorPurple": "Purple",
+  "capsulesColorRed": "Red",
+  "@capsulesColorRed": {
+    "description": "Colour of the capsule's map pin. Agrees with the word 'colour'."
+  },
+  "capsulesColorYellow": "Yellow",
+  "capsulesCommentDelete": "Delete comment",
+  "capsulesCommentDeleteConfirm": "Delete this comment?",
+  "capsulesCommentDeleteFailed": "Could not delete the comment",
+  "capsulesCommentFailed": "Could not post your comment",
+  "capsulesCommentHint": "Add a comment...",
+  "capsulesCommentTooLong": "Comments can be up to 500 characters",
+  "capsulesComments": "Comments",
+  "capsulesCommentsCount": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
+  "@capsulesCommentsCount": {
+    "description": "Button under a capsule that opens its comments.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCommentsEarlier": "Show earlier comments",
+  "@capsulesCommentsEarlier": {
+    "description": "First row of a long comment thread: loads older comments."
+  },
+  "capsulesCommentsEmpty": "No comments yet",
+  "capsulesCommentsEmptyHint": "Be the first to say something.",
+  "capsulesComposerDone": "Done",
+  "@capsulesComposerDone": {
+    "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesComposerTitle": "Description",
+  "@capsulesComposerTitle": {
+    "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesCreationAllowComments": "Allow comments",
+  "capsulesCreationAllowReactions": "Allow reactions",
+  "capsulesCreationApproximate": "Approximate location",
+  "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
+  "capsulesCreationCoAuthors": "Co-authors",
+  "@capsulesCreationCoAuthors": {
+    "description": "Capsule creation row: friends who made the capsule with the user."
+  },
+  "capsulesCreationCoAuthorsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@capsulesCreationCoAuthorsCount": {
+    "description": "Value of the co-authors row: how many friends are picked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCreationCoAuthorsNone": "Just me",
+  "@capsulesCreationCoAuthorsNone": {
+    "description": "Value of the co-authors row when nobody is picked."
+  },
+  "capsulesCreationColor": "Color",
+  "@capsulesCreationColor": {
+    "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
+  },
+  "capsulesCreationDescriptionHint": "Add description...",
+  "@capsulesCreationDescriptionHint": {
+    "description": "Hint in the capsule description field."
+  },
+  "capsulesCreationOpenAt": "Open At",
+  "@capsulesCreationOpenAt": {
+    "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
+  },
+  "capsulesCreationPreview": "Capsule Preview",
+  "@capsulesCreationPreview": {
+    "description": "Section title above the card that shows how the capsule will look."
+  },
+  "capsulesCreationPrivacy": "Privacy",
+  "@capsulesCreationPrivacy": {
+    "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
+  },
+  "capsulesCreationSelectDate": "Select date",
+  "@capsulesCreationSelectDate": {
+    "description": "Shown in the open date row until a date is picked. Keep it short."
+  },
+  "capsulesCreationSettings": "Capsule Settings",
+  "@capsulesCreationSettings": {
+    "description": "Section title above the privacy, open date and colour rows."
+  },
+  "capsulesCreationShowAuthor": "Show my name",
+  "@capsulesCreationShowAuthor": {
+    "description": "Creation setting: show the author on the capsule."
+  },
+  "capsulesCreationShowAuthorHint": "Others see who left it",
+  "@capsulesCreationShowAuthorHint": {
+    "description": "Under the setting."
+  },
+  "capsulesCreationSpeed": "Speed",
+  "@capsulesCreationSpeed": {
+    "description": "Creation row of a loop capsule: how fast its frames play."
+  },
+  "capsulesCreationSubmit": "Create Capsule",
+  "@capsulesCreationSubmit": {
+    "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
+  },
+  "capsulesCreationTitle": "Create Capsule",
+  "@capsulesCreationTitle": {
+    "description": "Header title of the screen where a new capsule is set up after taking the photo."
+  },
+  "capsulesCreationTitleHint": "Add Title...",
+  "@capsulesCreationTitleHint": {
+    "description": "Hint in the capsule title field (one line, large bold font, narrow: keep it very short)."
+  },
+  "capsulesDefaultTitle": "Capsule",
+  "@capsulesDefaultTitle": {
+    "description": "Title given to a capsule saved without one. It is stored with the capsule."
+  },
+  "capsulesDraftContinue": "Continue",
+  "@capsulesDraftContinue": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftDiscard": "Throw the unfinished capsule away",
+  "@capsulesDraftDiscard": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftTitle": "Unfinished capsule",
+  "@capsulesDraftTitle": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesErrorNoLocation": "We could not detect your location",
+  "capsulesErrorSaveFailed": "Failed to save capsule",
+  "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
+  "@capsulesErrorSavedNotSent": {
+    "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
+  },
+  "capsulesFrameRemove": "Remove frame {number}",
+  "@capsulesFrameRemove": {
+    "description": "Screen reader label of the cross on a frame.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesFramesHint": "hold and drag to move",
+  "@capsulesFramesHint": {
+    "description": "After the frame count: how to reorder frames (lower case, it follows a dot)."
+  },
+  "capsulesFramesTitle": "Frames",
+  "@capsulesFramesTitle": {
+    "description": "Title of the frame strip of a loop being created."
+  },
+  "capsulesLeaveCoAuthors": "Remove me as co-author",
+  "@capsulesLeaveCoAuthors": {
+    "description": "Capsule menu item for a co-author: take themselves off the capsule."
+  },
+  "capsulesLeftCoAuthors": "You are no longer a co-author",
+  "@capsulesLeftCoAuthors": {
+    "description": "Shown after the user took themselves off a capsule."
+  },
+  "capsulesLinkNotShared": "This capsule is not shared with you",
+  "@capsulesLinkNotShared": {
+    "description": "Shown when a capsule link opens a capsule the user may not see (or that is gone)."
+  },
+  "capsulesLoopMark": "Loop",
+  "@capsulesLoopMark": {
+    "description": "Screen reader label of the mark on a loop capsule's picture."
+  },
+  "capsulesOpenInMonth": "In a month",
+  "capsulesOpenInWeek": "In a week",
+  "capsulesOpenInYear": "In a year",
+  "capsulesOpenNow": "Open right away",
+  "@capsulesOpenNow": {
+    "description": "Open date menu: remove the date, the capsule is open at once"
+  },
+  "capsulesOpenPickDate": "Pick a date…",
+  "capsulesOpenTomorrow": "Tomorrow",
+  "@capsulesOpenTomorrow": {
+    "description": "Open date preset"
+  },
+  "capsulesPinBack": "Back to where I am",
+  "@capsulesPinBack": {
+    "description": "Button on the pin map: back to the phone's position."
+  },
+  "capsulesPinHint": "Drag the map to put the capsule on the exact spot, within 1 km.",
+  "@capsulesPinHint": {
+    "description": "How to move the pin; it stays within 1 km."
+  },
+  "capsulesPinTitle": "Move the pin",
+  "@capsulesPinTitle": {
+    "description": "Sheet title (and hint of the place pill): move the capsule's pin."
+  },
+  "capsulesPinTooFar": "A capsule stays within 1 km of where you are.",
+  "@capsulesPinTooFar": {
+    "description": "Shown while the map is dragged past 1 km."
+  },
+  "capsulesPinUse": "Put it here",
+  "@capsulesPinUse": {
+    "description": "Button: the capsule goes to the pin."
+  },
+  "capsulesPrivacyFriends": "Friends",
+  "@capsulesPrivacyFriends": {
+    "description": "Capsule visibility: only the owner's friends can see it."
+  },
+  "capsulesPrivacyPrivate": "Private",
+  "@capsulesPrivacyPrivate": {
+    "description": "Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'."
+  },
+  "capsulesPrivacyPublic": "Public",
+  "@capsulesPrivacyPublic": {
+    "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
+  },
+  "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again.",
+  "capsulesQuickReply": "Reply to the author",
+  "@capsulesQuickReply": {
+    "description": "Screen reader label of the reply button on someone's capsule."
+  },
+  "capsulesQuickReplyHint": "Write to {name}…",
+  "@capsulesQuickReplyHint": {
+    "description": "Hint of the quick reply field (the capsule's author).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesQuickReplySent": "Sent to {name}",
+  "@capsulesQuickReplySent": {
+    "description": "Shown after a quick reply went to the author's chat.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesReactWith": "React with {emoji}",
+  "@capsulesReactWith": {
+    "description": "Accessibility label of a reaction button.",
+    "placeholders": {
+      "emoji": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesReactionFailed": "Could not save your reaction",
+  "capsulesReply": "Reply",
+  "capsulesReplyHint": "Reply to {name}...",
+  "@capsulesReplyHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesReport": "Report",
+  "capsulesReportAbuse": "Harassment or hate",
+  "capsulesReportCapsule": "Report capsule",
+  "capsulesReportNudity": "Nudity",
+  "capsulesReportOther": "Something else",
+  "capsulesReportPrivacy": "Private information",
+  "capsulesReportSent": "Thanks for telling us. The Later team will look at it.",
+  "capsulesReportSpam": "Spam",
+  "capsulesReportTitle": "What is wrong with it?",
+  "capsulesReportViolence": "Violence",
+  "capsulesShare": "Share",
+  "@capsulesShare": {
+    "description": "Screen reader label of the share button in a capsule."
+  },
+  "capsulesShareMessage": "A time capsule on Later: {title}\n{link}",
+  "@capsulesShareMessage": {
+    "description": "Text shared with a capsule link.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://later-da778.web.app/?capsuleId=abc"
+      }
+    }
+  },
+  "capsulesSpeedFast": "Fast",
+  "@capsulesSpeedFast": {
+    "description": "Loop speed: 150 ms per frame."
+  },
+  "capsulesSpeedNormal": "Normal",
+  "@capsulesSpeedNormal": {
+    "description": "Loop speed: 300 ms per frame (default)."
+  },
+  "capsulesSpeedSlow": "Slow",
+  "@capsulesSpeedSlow": {
+    "description": "Loop speed: 500 ms per frame."
+  },
+  "capsulesWith": "With {names}",
+  "@capsulesWith": {
+    "description": "Line on the user's own capsule (or one they co-authored) naming the others who made it.",
+    "placeholders": {
+      "names": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesYou": "You",
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Accessibility label of the back arrow."
+  },
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
+  "commonContinue": "Continue",
+  "commonDelete": "Delete",
+  "commonErrorGeneric": "Something went wrong. Please try again.",
+  "commonLoading": "Loading...",
+  "commonNewCount": "{count, plural, one{{count} new} other{{count} new}}",
+  "@commonNewCount": {
+    "description": "Accessibility label of a red count badge (new messages, requests).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "commonNoConnection": "No connection. Please try again.",
+  "commonRetry": "Try again",
+  "commonSave": "Save",
+  "commonSearchHint": "Search...",
+  "commonSizeBytes": "{size} B",
+  "@commonSizeBytes": {
+    "description": "File size in bytes.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeGigabytes": "{size} GB",
+  "@commonSizeGigabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeKilobytes": "{size} KB",
+  "@commonSizeKilobytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeMegabytes": "{size} MB",
+  "@commonSizeMegabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonUnknownUser": "Unknown user",
+  "commonUnknownUsername": "unknown",
+  "commonUntitled": "Untitled",
+  "@commonUntitled": {
+    "description": "Title of a capsule that has none."
+  },
+  "commonUsernameRequired": "Please enter a username",
+  "commonUsernameRules": "Use 3-30 letters, numbers, dots, dashes or underscores",
+  "@commonUsernameRules": {
+    "description": "Letters are a-z only (Latin, lower case)."
+  },
+  "commonUsernameTaken": "Username already taken",
+  "failureNotFound": "This item no longer exists.",
+  "failurePermission": "You are not allowed to do that.",
+  "friendsAccept": "Accept",
+  "@friendsAccept": {
+    "description": "Button that accepts a received friend request."
+  },
+  "friendsAcceptRequestLabel": "Accept friend request",
+  "@friendsAcceptRequestLabel": {
+    "description": "Accessibility label of the add icon on a suggestion when that user already sent a request."
+  },
+  "friendsAdd": "Add",
+  "@friendsAdd": {
+    "description": "Main button on the profile of someone who is not a friend yet: sends a friend request."
+  },
+  "friendsAddTitle": "Add Friends",
+  "friendsBlock": "Block",
+  "@friendsBlock": {
+    "description": "Menu item and confirm button that block a user."
+  },
+  "friendsBlockConfirm": "Are you sure you want to block this user?",
+  "friendsEmpty": "No friends added yet",
+  "friendsErrorAcceptRequest": "Failed to accept request",
+  "friendsErrorBlock": "Failed to block user",
+  "friendsErrorCancelRequest": "Failed to cancel request",
+  "friendsErrorFollow": "Failed to follow user",
+  "friendsErrorLoadUsers": "Could not load users",
+  "@friendsErrorLoadUsers": {
+    "description": "Shown instead of the suggestions on Add Friends when the search fails; tapping it retries."
+  },
+  "friendsErrorRejectRequest": "Failed to reject request",
+  "friendsErrorRemoveFriend": "Failed to remove friend",
+  "friendsErrorSendRequest": "Failed to send friend request",
+  "friendsErrorUnblock": "Failed to unblock user",
+  "friendsErrorUnfollow": "Failed to unfollow user",
+  "friendsFindByUsernameHint": "Search by @username or scan a friend's QR code. People your friends know show up here.",
+  "friendsFollow": "Follow",
+  "@friendsFollow": {
+    "description": "Button in Manage friendship: get notified about this friend's capsules."
+  },
+  "friendsFollowed": "Following! You'll get notifications about their capsules",
+  "friendsFollowing": "Following",
+  "@friendsFollowing": {
+    "description": "State of the follow button when the user already follows this friend."
+  },
+  "friendsFriendCapsulesEmpty": "Friend's capsules will appear here",
+  "friendsFriendCapsulesTitle": "Friend's capsules",
+  "friendsFromContacts": "From your contacts",
+  "@friendsFromContacts": {
+    "description": "Add friends: look for friends among the phone's contacts (opt-in)."
+  },
+  "friendsFromContactsDenied": "Later needs access to your contacts for this",
+  "@friendsFromContactsDenied": {
+    "description": "Contacts permission was refused."
+  },
+  "friendsFromContactsExplain": "Later reads the email addresses in your contacts on this phone and sends only scrambled fingerprints of them. You see the people who chose to be found; nothing from your contacts is kept. Once an hour.",
+  "@friendsFromContactsExplain": {
+    "description": "Explains what the contacts look-up sends and keeps, before it starts."
+  },
+  "friendsFromContactsFailed": "Could not look for friends now",
+  "@friendsFromContactsFailed": {
+    "description": "The look-up failed."
+  },
+  "friendsFromContactsGo": "Look for friends",
+  "@friendsFromContactsGo": {
+    "description": "Button that starts the contacts look-up."
+  },
+  "friendsFromContactsNone": "None of your contacts can be found on Later yet",
+  "@friendsFromContactsNone": {
+    "description": "No one from the contacts was found."
+  },
+  "friendsFromContactsTooSoon": "You looked a moment ago. Try again in an hour.",
+  "@friendsFromContactsTooSoon": {
+    "description": "The look-up runs once an hour."
+  },
+  "friendsHideSuggestionLabel": "Hide suggestion",
+  "@friendsHideSuggestionLabel": {
+    "description": "Accessibility label of the cross that hides a suggested friend."
+  },
+  "friendsMakeFriends": "Make friends",
+  "@friendsMakeFriends": {
+    "description": "Section title above the suggested people on Add Friends."
+  },
+  "friendsManageFriendship": "Manage friendship",
+  "friendsMutualCount": "{count, plural, =1{1 mutual friend} other{{count} mutual friends}}",
+  "@friendsMutualCount": {
+    "description": "After the @username of a suggested person.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsMyFriendsTitle": "My friends",
+  "friendsMyProfile": "My Profile",
+  "@friendsMyProfile": {
+    "description": "Main button when the opened profile is the user's own."
+  },
+  "friendsNoMatches": "No friends match your search",
+  "friendsNoSuggestions": "No more suggested friends",
+  "friendsOpenChat": "Open chat",
+  "friendsPending": "Pending",
+  "@friendsPending": {
+    "description": "Main button on a profile the user already sent a friend request to."
+  },
+  "friendsQrHint": "Point your camera at the QR code to add a friend",
+  "friendsQrInvalid": "Invalid QR code. Please scan a Later profile QR code.",
+  "friendsQrTitle": "Scan QR Code",
+  "friendsReject": "Reject",
+  "@friendsReject": {
+    "description": "Button that rejects a received friend request."
+  },
+  "friendsRemove": "Remove from friends",
+  "friendsRemoveAction": "Remove",
+  "@friendsRemoveAction": {
+    "description": "Confirm button of the remove-friend dialog."
+  },
+  "friendsRemoveConfirm": "Are you sure you want to remove user from friends?",
+  "friendsRemoving": "Removing...",
+  "friendsReport": "Report",
+  "@friendsReport": {
+    "description": "Menu item that reports a user."
+  },
+  "friendsRequestAccepted": "Friend request accepted!",
+  "friendsRequestAlreadyExists": "Friend request already exists",
+  "@friendsRequestAlreadyExists": {
+    "description": "Toast when the user taps add on someone they already sent a request to."
+  },
+  "friendsRequestCancelled": "Friend request cancelled",
+  "friendsRequestPendingInfo": "Friend request is pending",
+  "friendsRequestReceivedInfo": "This user sent you a friend request",
+  "friendsRequestRejected": "Friend request rejected",
+  "friendsRequestSent": "Friend request sent!",
+  "friendsRequestsButton": "Requests",
+  "@friendsRequestsButton": {
+    "description": "Button on Add Friends that opens the friend requests."
+  },
+  "friendsRequestsEmptySubtitle": "When someone sends you a friend request,\nit will appear here",
+  "friendsRequestsEmptyTitle": "No friend requests",
+  "friendsRequestsReceivedTab": "Received",
+  "@friendsRequestsReceivedTab": {
+    "description": "Toggle on Friend Requests: requests other people sent to the user."
+  },
+  "friendsRequestsSentTab": "Sent",
+  "@friendsRequestsSentTab": {
+    "description": "Toggle on Friend Requests: requests the user sent."
+  },
+  "friendsRequestsTitle": "Friend Requests",
+  "friendsSearchHint": "Find my friends",
+  "@friendsSearchHint": {
+    "description": "Search hint on My friends (searches only among the user's friends). Keep it short."
+  },
+  "friendsSearchPeopleHint": "Name or @username",
+  "@friendsSearchPeopleHint": {
+    "description": "Hint of the people search on Add friends (by name or username)."
+  },
+  "friendsSendCapsule": "Send Capsule",
+  "friendsSendRequestLabel": "Send friend request",
+  "@friendsSendRequestLabel": {
+    "description": "Accessibility label of the add icon on a suggested friend."
+  },
+  "friendsSentEmptySubtitle": "Friend requests you send\nwill appear here",
+  "friendsSentEmptyTitle": "No sent requests",
+  "friendsShareProfile": "Share Profile",
+  "friendsShareProfileTo": "Share profile to ...",
+  "friendsSuggestionRemoved": "Suggested friend removed from the list!",
+  "friendsThisIsYou": "This is your account",
+  "friendsUnfollowed": "Unfollowed successfully",
+  "friendsViewProfile": "View Profile",
+  "@friendsViewProfile": {
+    "description": "Main button on the profile of someone who is already a friend: opens their friend profile."
+  },
+  "historyAddToFavorites": "Add to favorites",
+  "@historyAddToFavorites": {
+    "description": "Accessibility label of the heart on a capsule that is not a favourite."
+  },
+  "historyCapsuleOpened": "Capsule is opened!",
+  "@historyCapsuleOpened": {
+    "description": "Countdown row of a capsule whose opening time has passed."
+  },
+  "historyColorBlue": "Blue",
+  "historyColorGreen": "Green",
+  "historyColorOrange": "Orange",
+  "historyColorPurple": "Purple",
+  "historyColorRed": "Red",
+  "@historyColorRed": {
+    "description": "Capsule pin colour in the filter menu and on the filter button."
+  },
+  "historyColorYellow": "Yellow",
+  "historyCountdown": "{days}d {hours}h {minutes}m {seconds}s",
+  "@historyCountdown": {
+    "description": "Time left until a capsule opens, ticking every second. One short line: use compact unit abbreviations.",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "2"
+      },
+      "hours": {
+        "type": "int",
+        "example": "3"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "4"
+      },
+      "seconds": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "historyCountdownYears": "{years}y {days}d {hours}h {minutes}m",
+  "@historyCountdownYears": {
+    "description": "Time left until a capsule opens when it is a year or more away. One short line: compact unit abbreviations.",
+    "placeholders": {
+      "years": {
+        "type": "int",
+        "example": "1"
+      },
+      "days": {
+        "type": "int",
+        "example": "35"
+      },
+      "hours": {
+        "type": "int",
+        "example": "0"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "historyCreateFirst": "Create a capsule",
+  "historyDeleteConfirm": "{count, plural, one{Delete {count} capsule?} other{Delete {count} capsules?}}",
+  "@historyDeleteConfirm": {
+    "description": "Title of the dialog that confirms deleting the selected capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleteSelected": "Delete ({count})",
+  "@historyDeleteSelected": {
+    "description": "Selection bar button that deletes the selected capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleted": "{count, plural, one{{count} capsule deleted} other{{count} capsules deleted}}",
+  "@historyDeleted": {
+    "description": "Toast after the selected capsules were deleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDistanceFromYou": "{distance} km from you",
+  "@historyDistanceFromYou": {
+    "description": "Distance between the user and the capsule. One short line.",
+    "placeholders": {
+      "distance": {
+        "type": "String",
+        "example": "12.3"
+      }
+    }
+  },
+  "historyDistanceFromYouMiles": "{distance} mi from you",
+  "@historyDistanceFromYouMiles": {
+    "description": "Distance to a capsule in miles (Settings > Map and camera > Distances).",
+    "placeholders": {
+      "distance": {
+        "type": "String",
+        "example": "3.4"
+      }
+    }
+  },
+  "historyDistanceUnknown": "Distance unknown",
+  "@historyDistanceUnknown": {
+    "description": "Distance row when the capsule or the user has no location."
+  },
+  "historyEmpty": "No capsules yet",
+  "historyEmptySubtitle": "Take a photo, leave it at a place and choose when it opens.",
+  "historyErrorDelete": "Could not delete capsules",
+  "historyErrorFavorites": "Could not update favorites",
+  "historyFavoriteAdded": "{title} added to favorites",
+  "@historyFavoriteAdded": {
+    "description": "Toast after the heart is tapped.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach day"
+      }
+    }
+  },
+  "historyFavoriteRemoved": "{title} removed from favorites",
+  "@historyFavoriteRemoved": {
+    "description": "Toast after the heart is tapped again.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach day"
+      }
+    }
+  },
+  "historyFilterAny": "Any",
+  "@historyFilterAny": {
+    "description": "Filter option: every capsule, favourite or not."
+  },
+  "historyFilterBy": "Filter By",
+  "@historyFilterBy": {
+    "description": "Filter button (when no filter is chosen) and title of the filter menu. Short."
+  },
+  "historyFilterCapsule": "Capsule",
+  "@historyFilterCapsule": {
+    "description": "Filter menu group with 'Favorite' and 'Any'."
+  },
+  "historyFilterColor": "Color",
+  "@historyFilterColor": {
+    "description": "Filter menu group: the colour of the capsule pin."
+  },
+  "historyFilterFavorite": "Favorite",
+  "@historyFilterFavorite": {
+    "description": "Filter option (also on the filter button): only capsules marked as favourite."
+  },
+  "historyFilterVisibility": "Visibility",
+  "@historyFilterVisibility": {
+    "description": "Filter menu group: who can see the capsule (public, private, friends)."
+  },
+  "historyLoadError": "Your capsules could not be loaded",
+  "historyNoMatches": "No capsules match your search",
+  "historyNoMatchesSubtitle": "Try another word, or reset the filters.",
+  "historyOnThisDay": "On this day",
+  "@historyOnThisDay": {
+    "description": "Title above the user's capsules made on today's date in earlier years"
+  },
+  "historyPrivacyFriends": "Friends",
+  "@historyPrivacyFriends": {
+    "description": "Capsule visibility: only friends can see it."
+  },
+  "historyPrivacyPrivate": "Private",
+  "historyPrivacyPublic": "Public",
+  "@historyPrivacyPublic": {
+    "description": "Capsule visibility in the filter menu and on the filter button."
+  },
+  "historyRemoveFromFavorites": "Remove from favorites",
+  "@historyRemoveFromFavorites": {
+    "description": "Accessibility label of the heart on a favourite capsule."
+  },
+  "historyReset": "Reset",
+  "@historyReset": {
+    "description": "Button and menu item that clear the sort and/or the filters. Short."
+  },
+  "historySearchHint": "Find Capsules...",
+  "historySelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
+  "@historySelectedCount": {
+    "description": "Selection bar: how many capsules are selected.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historySortBy": "Sort By",
+  "@historySortBy": {
+    "description": "Sort button (when no sort is chosen) and title of the sort menu. Short: the button is a third of the screen."
+  },
+  "historySortClosest": "From Closest",
+  "@historySortClosest": {
+    "description": "Sort option: capsules closest to the user first."
+  },
+  "historySortDistance": "Distance",
+  "@historySortDistance": {
+    "description": "Sort menu group that holds 'From Closest' and 'From Farthest'."
+  },
+  "historySortFarthest": "From Farthest",
+  "historySortNewest": "From Newest",
+  "historySortOldest": "From Oldest",
+  "@historySortOldest": {
+    "description": "Sort option (also shown on the sort button): oldest capsules first."
+  },
+  "historySortRelevance": "Relevance",
+  "@historySortRelevance": {
+    "description": "Sort menu group that holds 'From Oldest' and 'From Newest'."
+  },
+  "historyTitle": "My Capsules",
+  "@historyTitle": {
+    "description": "Title of the History tab: the user's own capsules."
+  },
+  "historyVisibilityFriends": "Friends visibility",
+  "historyVisibilityPrivate": "Private visibility",
+  "historyVisibilityPublic": "Public visibility",
+  "@historyVisibilityPublic": {
+    "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
+  },
+  "historyWaitingUpload": "Waiting for connection",
+  "historyWaitingWifi": "Waiting for Wi-Fi",
+  "@historyWaitingWifi": {
+    "description": "Label of a capsule waiting on the phone because uploads are Wi-Fi only."
+  },
+  "historyYearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
+  "@historyYearsAgo": {
+    "description": "Under an 'On this day' capsule.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleLocked": "Locked",
+  "@mapCapsuleLocked": {
+    "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."
+  },
+  "mapCapsuleNoDescription": "This capsule has no description.",
+  "@mapCapsuleNoDescription": {
+    "description": "Shown in the capsule card opened from the map when the capsule has no description."
+  },
+  "mapCapsuleOpen": "Open",
+  "@mapCapsuleOpen": {
+    "description": "Button in the window above an open capsule's pin: shows the capsule. A verb."
+  },
+  "mapCapsuleOpensIn": "Opens in {time}",
+  "@mapCapsuleOpensIn": {
+    "description": "Countdown in the small window above a locked capsule's pin. {time} is a compact duration made of the mapDuration* parts, e.g. '2d 5h 30m 15s'.",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "2d 5h 30m 15s"
+      }
+    }
+  },
+  "mapCapsuleReady": "Check out what's inside!",
+  "@mapCapsuleReady": {
+    "description": "Line in the small window above a capsule pin when the capsule is already open."
+  },
+  "mapCompass": "Turn the map to north",
+  "@mapCompass": {
+    "description": "Screen reader label of the map compass, shown while the map is turned; a tap points it north."
+  },
+  "mapDurationDays": "{count}d",
+  "@mapDurationDays": {
+    "description": "Days part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "mapDurationHours": "{count}h",
+  "@mapDurationHours": {
+    "description": "Hours part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "mapDurationMinutes": "{count}m",
+  "@mapDurationMinutes": {
+    "description": "Minutes part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "mapDurationSeconds": "{count}s",
+  "@mapDurationSeconds": {
+    "description": "Seconds part of the compact countdown. Keep it as short as possible.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "15"
+      }
+    }
+  },
+  "mapFilter": "Filter the map",
+  "@mapFilter": {
+    "description": "Map button (screen reader): open the map filter."
+  },
+  "mapFilterActive": "{count, plural, =1{Filter the map, 1 choice on} other{Filter the map, {count} choices on}}",
+  "@mapFilterActive": {
+    "description": "Map filter button while some choices narrow the map.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapFilterColors": "Pin colour",
+  "@mapFilterColors": {
+    "description": "Map filter section: pin colours (none chosen = all)."
+  },
+  "mapFilterFriends": "Friends'",
+  "@mapFilterFriends": {
+    "description": "Map filter: friends' capsules."
+  },
+  "mapFilterLocked": "Opening later",
+  "@mapFilterLocked": {
+    "description": "Map filter: capsules that open later."
+  },
+  "mapFilterMine": "Mine",
+  "@mapFilterMine": {
+    "description": "Map filter: the user's own capsules (and co-authored)."
+  },
+  "mapFilterOpen": "Open",
+  "@mapFilterOpen": {
+    "description": "Map filter: capsules already open."
+  },
+  "mapFilterOthers": "Everyone else's",
+  "@mapFilterOthers": {
+    "description": "Map filter: public capsules of people who are not friends."
+  },
+  "mapFilterReset": "Show everything",
+  "@mapFilterReset": {
+    "description": "Map filter: back to showing everything."
+  },
+  "mapFilterState": "Open or not",
+  "@mapFilterState": {
+    "description": "Map filter section: open capsules or ones that open later."
+  },
+  "mapFilterTitle": "On the map",
+  "@mapFilterTitle": {
+    "description": "Title of the map filter sheet."
+  },
+  "mapFilterWhose": "Whose",
+  "@mapFilterWhose": {
+    "description": "Map filter section: whose capsules."
+  },
+  "mapFirstCapsuleBody": "Take a photo here and choose when it opens.",
+  "mapFirstCapsuleTitle": "Leave your first capsule",
+  "mapLocationDenied": "Allow location access to see capsules near you",
+  "@mapLocationDenied": {
+    "description": "Toast on the map when location permission was denied."
+  },
+  "mapLocationServiceOff": "Turn on location to see capsules near you",
+  "@mapLocationServiceOff": {
+    "description": "Toast on the map when the phone's location service is switched off."
+  },
+  "mapLocationUnknown": "We could not detect your location",
+  "@mapLocationUnknown": {
+    "description": "Toast on the map when no position could be found although location is allowed."
+  },
+  "mapMyLocation": "My location",
+  "mapZoomIn": "Zoom in",
+  "@mapZoomIn": {
+    "description": "Screen reader label of the map's + button."
+  },
+  "mapZoomOut": "Zoom out",
+  "@mapZoomOut": {
+    "description": "Screen reader label of the map's − button."
+  },
+  "messagesBlockedByYou": "You blocked this user",
+  "messagesCantSend": "You can't send messages to this user",
+  "messagesCapsuleLabel": "Capsule",
+  "@messagesCapsuleLabel": {
+    "description": "Small label on the photo of a capsule sent in a chat."
+  },
+  "messagesCapsuleUnavailable": "This capsule is no longer available",
+  "messagesChatFallbackTitle": "Chat",
+  "@messagesChatFallbackTitle": {
+    "description": "Chat header title while the friend's name is not known yet."
+  },
+  "messagesChatOptions": "Chat options",
+  "@messagesChatOptions": {
+    "description": "Accessibility label of the chat menu button."
+  },
+  "messagesChatsLoadError": "Couldn't load your chats",
+  "messagesCheckConnection": "Check your connection and try again",
+  "messagesChoosePhoto": "Choose from gallery",
+  "@messagesChoosePhoto": {
+    "description": "Menu item: pick a photo from the phone's gallery for the chat."
+  },
+  "messagesClearConfirm": "Clear",
+  "@messagesClearConfirm": {
+    "description": "Confirm button of the clear-history dialog."
+  },
+  "messagesClearConfirmTitle": "Are you sure you want to clear chat history?",
+  "messagesClearFailed": "Failed to clear history",
+  "messagesCopied": "Copied",
+  "@messagesCopied": {
+    "description": "Toast after copying a message"
+  },
+  "messagesCopy": "Copy",
+  "@messagesCopy": {
+    "description": "Message menu: copy the text"
+  },
+  "messagesDeleteConfirmTitle": "Delete this message for both of you?",
+  "messagesDeleteFailed": "Could not delete the message",
+  "messagesDeleteForEveryone": "Delete for everyone",
+  "@messagesDeleteForEveryone": {
+    "description": "Message menu: delete the user's own message for everyone in the chat."
+  },
+  "messagesDeleteForMe": "Delete for me",
+  "@messagesDeleteForMe": {
+    "description": "Message menu: hide it on this phone only."
+  },
+  "messagesEmptySubtitle": "Say hello to {name}!",
+  "@messagesEmptySubtitle": {
+    "description": "Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesEmptyTitle": "No messages yet",
+  "messagesFindChatsHint": "Find chats",
+  "messagesFindPeople": "Find people: “{query}”",
+  "@messagesFindPeople": {
+    "description": "Row under the chat search: search everyone for the typed text.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "messagesForward": "Forward",
+  "@messagesForward": {
+    "description": "Message menu item."
+  },
+  "messagesForwardTo": "Forward to",
+  "@messagesForwardTo": {
+    "description": "Title of the sheet that picks where to forward a message."
+  },
+  "messagesForwarded": "Forwarded",
+  "@messagesForwarded": {
+    "description": "Small label over a forwarded message."
+  },
+  "messagesForwardedTo": "Forwarded to {name}",
+  "@messagesForwardedTo": {
+    "description": "Shown after forwarding a message.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesGroupAddPeople": "Add people",
+  "@messagesGroupAddPeople": {
+    "description": "Group menu item and title of the page that invites friends."
+  },
+  "messagesGroupCreate": "Create",
+  "@messagesGroupCreate": {
+    "description": "Button that creates the group."
+  },
+  "messagesGroupFailed": "Something went wrong with the group. Try again.",
+  "@messagesGroupFailed": {
+    "description": "Shown when creating, renaming, leaving or inviting to a group fails."
+  },
+  "messagesGroupHello": "Say hello to everyone",
+  "@messagesGroupHello": {
+    "description": "Empty state of a new group chat."
+  },
+  "messagesGroupInvited": "Invited. Your friends join in a moment.",
+  "@messagesGroupInvited": {
+    "description": "Shown after inviting friends to a group (the server adds them)."
+  },
+  "messagesGroupLeave": "Leave group",
+  "@messagesGroupLeave": {
+    "description": "Group menu item."
+  },
+  "messagesGroupLeaveConfirm": "Leave “{name}”? Its messages will no longer show here.",
+  "@messagesGroupLeaveConfirm": {
+    "description": "Confirmation before leaving a group.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Trip"
+      }
+    }
+  },
+  "messagesGroupLeft": "You are no longer in this group",
+  "@messagesGroupLeft": {
+    "description": "Instead of the message field when the user is no longer in the group."
+  },
+  "messagesGroupMembers": "{count, plural, =1{1 member} other{{count} members}}",
+  "@messagesGroupMembers": {
+    "description": "Under a group's name in its header.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesGroupMembersTitle": "Members",
+  "@messagesGroupMembersTitle": {
+    "description": "Group menu item and title of the members list."
+  },
+  "messagesGroupName": "Group name",
+  "@messagesGroupName": {
+    "description": "Hint of the group name field."
+  },
+  "messagesGroupNameTooLong": "A group name can have at most 60 characters",
+  "@messagesGroupNameTooLong": {
+    "description": "Shown when a group name is longer than allowed."
+  },
+  "messagesGroupNeedsName": "Give the group a name",
+  "@messagesGroupNeedsName": {
+    "description": "Shown when creating a group without a name."
+  },
+  "messagesGroupNeedsPeople": "Choose at least one friend",
+  "@messagesGroupNeedsPeople": {
+    "description": "Shown when creating a group without picking friends."
+  },
+  "messagesGroupRename": "Rename group",
+  "@messagesGroupRename": {
+    "description": "Group menu item and title of the rename card."
+  },
+  "messagesGroupSave": "Save",
+  "@messagesGroupSave": {
+    "description": "Button saving a group's new name."
+  },
+  "messagesGroupTooMany": "A group has at most 20 people",
+  "@messagesGroupTooMany": {
+    "description": "Shown when more people are picked than a group holds."
+  },
+  "messagesGroupWho": "Who is in it?",
+  "@messagesGroupWho": {
+    "description": "Title above the friends to pick for a new group."
+  },
+  "messagesInputHint": "Write a message...",
+  "messagesLoadError": "Couldn't load the messages",
+  "messagesMenuBlock": "Block user",
+  "messagesMenuClearHistory": "Clear history",
+  "messagesMenuMute": "Mute notifications",
+  "messagesMenuSearch": "Search",
+  "@messagesMenuSearch": {
+    "description": "Chat menu item. Menu items are one short line (about 22 characters at most)."
+  },
+  "messagesMenuUnblock": "Unblock user",
+  "messagesMenuUnmute": "Unmute notifications",
+  "messagesMicPermission": "Allow the microphone to send voice messages",
+  "@messagesMicPermission": {
+    "description": "Shown when the microphone permission is refused."
+  },
+  "messagesMutedToast": "Chat muted",
+  "messagesNewChatFindFriends": "Find friends",
+  "messagesNewChatNoFriends": "No friends yet",
+  "messagesNewChatNoFriendsSubtitle": "Add some friends to start chatting!",
+  "messagesNewChatNoMatch": "No friends found",
+  "messagesNewChatSearchHint": "Search friends",
+  "messagesNewChatTitle": "New Chat",
+  "messagesNewGroup": "New group",
+  "@messagesNewGroup": {
+    "description": "Button at the top of the new-chat sheet; title of the page that makes a group."
+  },
+  "messagesNoChatsFound": "No chats found",
+  "messagesNoChatsSubtitle": "Tap the new message button to start chatting with friends!",
+  "messagesNoChatsTitle": "No conversations yet",
+  "messagesNoMatchTitle": "No messages found",
+  "messagesNothingMatches": "Nothing matches \"{query}\"",
+  "@messagesNothingMatches": {
+    "description": "Empty search result in the chat list, a chat and the new-chat sheet.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "lunch"
+      }
+    }
+  },
+  "messagesNotificationsMuted": "Notifications muted",
+  "@messagesNotificationsMuted": {
+    "description": "Small line under the friend's name in a muted chat. Keep it short."
+  },
+  "messagesOpenCapsule": "Open capsule {title}",
+  "@messagesOpenCapsule": {
+    "description": "Accessibility label of a capsule's photo in a chat.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Trip to Rome"
+      }
+    }
+  },
+  "messagesOpenGroup": "Open group {name}",
+  "@messagesOpenGroup": {
+    "description": "Screen reader label of a group in the chat list.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Trip"
+      }
+    }
+  },
+  "messagesOpenPhoto": "Open photo",
+  "@messagesOpenPhoto": {
+    "description": "Screen reader label of a photo in a chat bubble."
+  },
+  "messagesPauseVoice": "Pause",
+  "@messagesPauseVoice": {
+    "description": "Screen reader label of the pause button of a voice message."
+  },
+  "messagesPhoto": "Photo",
+  "@messagesPhoto": {
+    "description": "A photo message: chat list preview and quotes (after a camera sign)."
+  },
+  "messagesPhotoCaption": "Add a caption…",
+  "@messagesPhotoCaption": {
+    "description": "Hint of the caption field under a photo about to be sent."
+  },
+  "messagesPhotoUnreadable": "This picture can't be sent",
+  "@messagesPhotoUnreadable": {
+    "description": "Shown when the chosen file cannot be read as a picture."
+  },
+  "messagesPin": "Pin to top",
+  "@messagesPin": {
+    "description": "Chat menu and swipe action: keep the chat at the top of the list."
+  },
+  "messagesPinLimit": "{count, plural, =1{You can pin 1 chat} other{You can pin up to {count} chats}}",
+  "@messagesPinLimit": {
+    "description": "Shown when pinning more chats than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesPinned": "Pinned",
+  "@messagesPinned": {
+    "description": "Screen reader word for the pin mark on a chat row."
+  },
+  "messagesPlayVoice": "Play voice message",
+  "@messagesPlayVoice": {
+    "description": "Screen reader label of the play button of a voice message."
+  },
+  "messagesQuoteGone": "That message is no longer in this chat",
+  "@messagesQuoteGone": {
+    "description": "Shown when the quoted message was deleted or cannot be found."
+  },
+  "messagesReactFailed": "Could not save your reaction",
+  "messagesReceiptFailed": "Not sent · Tap to retry",
+  "messagesReceiptRead": "Read",
+  "@messagesReceiptRead": {
+    "description": "Receipt: the friend has read the message (past participle)."
+  },
+  "messagesReceiptSending": "Sending…",
+  "@messagesReceiptSending": {
+    "description": "Receipt under the user's newest message."
+  },
+  "messagesReceiptSent": "Sent",
+  "messagesRecordVoice": "Record a voice message",
+  "@messagesRecordVoice": {
+    "description": "Screen reader label of the microphone button in the chat input."
+  },
+  "messagesReport": "Report",
+  "@messagesReport": {
+    "description": "Message menu item (someone else's message)."
+  },
+  "messagesReportFailed": "The report could not be sent. Try again.",
+  "@messagesReportFailed": {
+    "description": "Shown when reporting a message fails."
+  },
+  "messagesScrollToLatest": "Scroll to the latest message",
+  "@messagesScrollToLatest": {
+    "description": "Accessibility label of the round button that jumps to the newest message."
+  },
+  "messagesSearchHint": "Search messages",
+  "messagesSend": "Send",
+  "@messagesSend": {
+    "description": "Accessibility label of the send button."
+  },
+  "messagesSendCapsule": "Send a capsule",
+  "@messagesSendCapsule": {
+    "description": "Accessibility label of the capsule button next to the message field."
+  },
+  "messagesSendFailed": "Failed to send message",
+  "messagesSendPhoto": "Send a photo",
+  "@messagesSendPhoto": {
+    "description": "Screen reader label and title of the chat input's photo button."
+  },
+  "messagesSignedOut": "You are signed out",
+  "messagesStartChatWith": "Start chat with {name}",
+  "@messagesStartChatWith": {
+    "description": "Accessibility label of a friend in the new-chat sheet.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesStickers": "Stickers",
+  "@messagesStickers": {
+    "description": "Title of the sticker panel and screen reader label of its button in the message field."
+  },
+  "messagesStickersFaces": "Faces",
+  "@messagesStickersFaces": {
+    "description": "Sticker panel group."
+  },
+  "messagesStickersHands": "Hands",
+  "@messagesStickersHands": {
+    "description": "Sticker panel group (thumbs up, clapping, waving...)."
+  },
+  "messagesStickersHearts": "Hearts and parties",
+  "@messagesStickersHearts": {
+    "description": "Sticker panel group (hearts, party popper, cake...)."
+  },
+  "messagesStickersNature": "Nature",
+  "@messagesStickersNature": {
+    "description": "Sticker panel group (flowers, weather, animals)."
+  },
+  "messagesStickersPlaces": "Places and things",
+  "@messagesStickersPlaces": {
+    "description": "Sticker panel group (camera, map, pin, beach, plane...)."
+  },
+  "messagesStickersRecent": "Recently used",
+  "@messagesStickersRecent": {
+    "description": "Sticker panel group: the ones the user sent lately."
+  },
+  "messagesTakePhoto": "Take a photo",
+  "@messagesTakePhoto": {
+    "description": "Menu item: take a photo with the camera for the chat."
+  },
+  "messagesTitle": "My Laters",
+  "@messagesTitle": {
+    "description": "Title of the messages tab (the list of chats)."
+  },
+  "messagesToday": "Today",
+  "@messagesToday": {
+    "description": "Day separator in a chat."
+  },
+  "messagesTooLong": "This message is too long",
+  "messagesTyping": "typing",
+  "@messagesTyping": {
+    "description": "Under the friend's name in the chat header while they type (animated dots follow)."
+  },
+  "messagesTypingMany": "{count} people are typing",
+  "@messagesTypingMany": {
+    "description": "Group header while several people type (animated dots follow).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesTypingName": "{name} is typing",
+  "@messagesTypingName": {
+    "description": "Group header while one person types (animated dots follow).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesUnmutedToast": "Chat unmuted",
+  "messagesUnpin": "Unpin",
+  "@messagesUnpin": {
+    "description": "Chat menu and swipe action: stop keeping it at the top."
+  },
+  "messagesUnreadDivider": "Unread messages",
+  "@messagesUnreadDivider": {
+    "description": "Line above the first message that was unread when the chat opened."
+  },
+  "messagesVoice": "Voice message",
+  "@messagesVoice": {
+    "description": "A voice message: chat list preview and quotes (after a microphone sign)."
+  },
+  "messagesVoiceCancel": "Cancel recording",
+  "@messagesVoiceCancel": {
+    "description": "Screen reader label of the button that throws a recording away."
+  },
+  "messagesVoiceFailed": "This voice message cannot be played",
+  "@messagesVoiceFailed": {
+    "description": "Shown when a voice message cannot be downloaded or played."
+  },
+  "messagesVoiceRecording": "Recording",
+  "@messagesVoiceRecording": {
+    "description": "Shown next to the timer while a voice message is recorded."
+  },
+  "messagesVoiceSend": "Send voice message",
+  "@messagesVoiceSend": {
+    "description": "Screen reader label of the button that sends a recording."
+  },
+  "messagesVoiceTooShort": "Too short to send",
+  "@messagesVoiceTooShort": {
+    "description": "Shown when a recording is under a second."
+  },
+  "messagesYesterday": "Yesterday",
+  "@messagesYesterday": {
+    "description": "Day separator in a chat and the time label in the chat list."
+  },
+  "messagesYouPrefix": "You: {message}",
+  "@messagesYouPrefix": {
+    "description": "Chat list preview when the user sent the last message.",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "See you tomorrow!"
+      }
+    }
+  },
+  "momentsAchievementLabel": "Achievement unlocked",
+  "@momentsAchievementLabel": {
+    "description": "Small label of the in-app card shown when the server unlocks an achievement."
+  },
+  "momentsAchievementMore": "{count, plural, =1{and 1 more} other{and {count} more}}",
+  "@momentsAchievementMore": {
+    "description": "After the level on the unlock card: other achievements unlocked at the same time.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "momentsStreakBody": "A capsule every day. See you tomorrow!",
+  "@momentsStreakBody": {
+    "description": "Text of the streak milestone card."
+  },
+  "momentsStreakLabel": "Your streak grows",
+  "@momentsStreakLabel": {
+    "description": "Small label of the in-app card when the streak reaches a milestone (3, 7, 14... days)."
+  },
+  "navMap": "Map",
+  "navMessages": "Messages",
+  "navMyCapsules": "My capsules",
+  "navNewCapsule": "New capsule",
+  "navProfile": "Profile",
+  "notificationsAchievementBody": "{name}: you unlocked a new achievement",
+  "@notificationsAchievementBody": {
+    "description": "{name} is the app's name (Later), shown in bold.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleBody": "{name} created a new capsule",
+  "@notificationsCapsuleBody": {
+    "description": "Notification text: a friend created a capsule. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsChannelActivity": "Activity",
+  "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
+  "notificationsChannelActivityNoVibration": "Activity (no vibration)",
+  "@notificationsChannelActivityNoVibration": {
+    "description": "Android notification channel name: activity with sound, without vibration."
+  },
+  "notificationsChannelActivitySilent": "Activity (silent)",
+  "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
+  "notificationsChannelMessages": "Messages",
+  "@notificationsChannelMessages": {
+    "description": "Android notification channel name (phone settings)."
+  },
+  "notificationsChannelMessagesDescription": "New messages from your friends",
+  "notificationsChannelMessagesNoVibration": "Messages (no vibration)",
+  "@notificationsChannelMessagesNoVibration": {
+    "description": "Android notification channel name: messages with sound, without vibration."
+  },
+  "notificationsChannelMessagesSilent": "Messages (silent)",
+  "notificationsChannelMessagesSilentDescription": "New messages, without sound or vibration",
+  "notificationsChannelOther": "Other notifications",
+  "notificationsChannelOtherDescription": "Other notifications from Later",
+  "notificationsCoAuthorBody": "{name} made a capsule with you",
+  "@notificationsCoAuthorBody": {
+    "description": "Notification: a friend added the user as a co-author of a new capsule.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "notificationsCommentBody": "{name} commented on your capsule",
+  "@notificationsCommentBody": {
+    "description": "Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsCommentBodyWithText": "{name} commented: {text}",
+  "@notificationsCommentBodyWithText": {
+    "description": "Notification text: a comment on the user's capsule, followed by the comment itself. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      },
+      "text": {
+        "type": "String",
+        "example": "What a view!"
+      }
+    }
+  },
+  "notificationsDaysAgo": "{count, plural, one{{count}d ago} other{{count}d ago}}",
+  "@notificationsDaysAgo": {
+    "description": "Time of a notification less than a week old; older ones show the date.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDeleteConfirm": "{count, plural, one{Delete {count} notification?} other{Delete {count} notifications?}}",
+  "@notificationsDeleteConfirm": {
+    "description": "Title of the dialog that confirms deleting the selected notifications.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDeleted": "{count, plural, one{{count} notification deleted} other{{count} notifications deleted}}",
+  "@notificationsDeleted": {
+    "description": "Toast after the selected notifications were deleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsEmptyAll": "Your notifications and activity will appear here",
+  "notificationsEmptyComments": "Comments on your Capsules will appear here",
+  "notificationsEmptyReplies": "Replies to your messages will appear here",
+  "notificationsFollowBody": "{name} started following you",
+  "@notificationsFollowBody": {
+    "description": "Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsFriendAcceptedBody": "{name} accepted your friend request",
+  "@notificationsFriendAcceptedBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFriendRequestBody": "{name} wants to be your friend",
+  "@notificationsFriendRequestBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFromLater": "From the Later team",
+  "@notificationsFromLater": {
+    "description": "Label of an announcement in the notifications list."
+  },
+  "notificationsHoursAgo": "{count, plural, one{{count}h ago} other{{count}h ago}}",
+  "@notificationsHoursAgo": {
+    "description": "Time of a notification less than a day old.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsJustNow": "Just now",
+  "@notificationsJustNow": {
+    "description": "Time of a notification less than a minute old."
+  },
+  "notificationsMarkAsRead": "Mark as read",
+  "@notificationsMarkAsRead": {
+    "description": "Accessibility label of the selection bar button that marks the selected notifications as read."
+  },
+  "notificationsMarkedRead": "{count, plural, one{{count} notification marked as read} other{{count} notifications marked as read}}",
+  "@notificationsMarkedRead": {
+    "description": "Toast after marking the selected notifications as read.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsMessageBody": "{name} sent you a message",
+  "@notificationsMessageBody": {
+    "description": "Notification text: a chat message. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsMinutesAgo": "{count, plural, one{{count}m ago} other{{count}m ago}}",
+  "@notificationsMinutesAgo": {
+    "description": "Time of a notification less than an hour old (English abbreviates; write it the way your language shows recent times).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsNowFriends": "You are friends now",
+  "@notificationsNowFriends": {
+    "description": "Under a friend request notification once accepted."
+  },
+  "notificationsReactionBody": "{name} reacted {emoji} to your capsule",
+  "@notificationsReactionBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "emoji": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsReplyBody": "{name} replied to you",
+  "@notificationsReplyBody": {
+    "description": "Notification text: a reply to the user (no reply text stored). The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsReplyBodyWithText": "{name} replied: {text}",
+  "@notificationsReplyBodyWithText": {
+    "description": "Notification text: a reply to the user, followed by the reply itself. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      },
+      "text": {
+        "type": "String",
+        "example": "Thanks!"
+      }
+    }
+  },
+  "notificationsSelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
+  "@notificationsSelectedCount": {
+    "description": "Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsSwipeDelete": "Delete",
+  "@notificationsSwipeDelete": {
+    "description": "Shown behind a notification swiped left: it is deleted."
+  },
+  "notificationsSwipeRead": "Read",
+  "@notificationsSwipeRead": {
+    "description": "Shown behind a notification swiped right: it becomes read."
+  },
+  "notificationsTabAll": "All",
+  "@notificationsTabAll": {
+    "description": "Filter tab: every notification. Tabs sit side by side: keep them short."
+  },
+  "notificationsTabComments": "Comments",
+  "@notificationsTabComments": {
+    "description": "Filter tab (and title of its empty state): comments on the user's capsules. Keep it short."
+  },
+  "notificationsTabReplies": "Replies",
+  "@notificationsTabReplies": {
+    "description": "Filter tab (and title of its empty state): replies. Keep it short."
+  },
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "Title of the notifications page and of its empty state."
+  },
+  "notificationsTypeAchievement": "Achievement",
+  "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeCoAuthor": "Made Together",
+  "@notificationsTypeCoAuthor": {
+    "description": "Title of a notification: a friend made a capsule with the user (co-author)."
+  },
+  "notificationsTypeComment": "New Comment",
+  "notificationsTypeFollow": "New Follower",
+  "@notificationsTypeFollow": {
+    "description": "Title of a notification of this type."
+  },
+  "notificationsTypeFriendAccepted": "New Friend",
+  "notificationsTypeFriendRequest": "Friend Request",
+  "notificationsTypeMessage": "New Message",
+  "notificationsTypeOther": "Notification",
+  "notificationsTypeReaction": "New Reaction",
+  "notificationsTypeReply": "New Reply",
+  "notificationsUnreadBadge": "{count, plural, one{{count} unread notification} other{{count} unread notifications}}",
+  "@notificationsUnreadBadge": {
+    "description": "Accessibility label of the red badge on the notifications bell.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placeNoLocation": "No location",
+  "@placeNoLocation": {
+    "description": "Place pill on a capsule when the phone has no location yet."
+  },
+  "placeUnknown": "Unknown location",
+  "profileAboutPrompt": "Add a few words about you",
+  "@profileAboutPrompt": {
+    "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
+  },
+  "profileAddFriends": "Add friends",
+  "@profileAddFriends": {
+    "description": "Card on the own profile page that opens Add Friends."
+  },
+  "profileBackgroundDelete": "Delete background picture",
+  "@profileBackgroundDelete": {
+    "description": "Red option in the background picture menu."
+  },
+  "profileBackgroundTitle": "Background picture",
+  "@profileBackgroundTitle": {
+    "description": "Title of the menu shown when the user taps their profile background (narrow, large bold text)."
+  },
+  "profileBackgroundUpdated": "Background picture updated successfully!",
+  "profileChoosePinned": "Choose pinned friends",
+  "@profileChoosePinned": {
+    "description": "Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile."
+  },
+  "profileCopyLink": "Copy Link",
+  "@profileCopyLink": {
+    "description": "Button on Share Profile that copies the profile link (half-width button with an icon: keep it short)."
+  },
+  "profileErrorCopyLink": "Failed to copy link",
+  "profileErrorDeleteBackground": "Failed to delete background picture",
+  "profileErrorDeletePicture": "Failed to delete profile picture",
+  "profileErrorShare": "Failed to share profile",
+  "profileErrorUploadBackground": "Failed to upload background picture",
+  "profileErrorUploadPicture": "Failed to upload profile picture",
+  "profileFollowers": "{count, plural, =1{1 follower} other{{count} followers}}",
+  "@profileFollowers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowing": "{count} following",
+  "@profileFollowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFriendsAll": "All",
+  "@profileFriendsAll": {
+    "description": "Link on the profile's friends card to the whole friends list."
+  },
+  "profileFriendsSection": "Friends",
+  "@profileFriendsSection": {
+    "description": "Small title at the top of the friends card on the profile."
+  },
+  "profileImageFromGallery": "Choose from gallery",
+  "@profileImageFromGallery": {
+    "description": "Option in the profile / background picture menu."
+  },
+  "profileImageTakePhoto": "Take a photo",
+  "@profileImageTakePhoto": {
+    "description": "Option in the profile / background picture menu: opens the camera."
+  },
+  "profileLinkCopied": "Link copied to clipboard!",
+  "profileMyCapsules": "My capsules",
+  "@profileMyCapsules": {
+    "description": "Section title on the own profile page."
+  },
+  "profileMyFriends": "My friends",
+  "@profileMyFriends": {
+    "description": "Row under the pinned friends on the profile page: opens the friends list."
+  },
+  "profileNewCapsule": "New capsule",
+  "@profileNewCapsule": {
+    "description": "Screen reader start of the new-capsule buttons on the profile (\"New capsule: For friends\")."
+  },
+  "profileNewForEveryone": "For everyone",
+  "@profileNewForEveryone": {
+    "description": "Profile button: a new capsule for everyone."
+  },
+  "profileNewForFriends": "For friends",
+  "@profileNewForFriends": {
+    "description": "Profile button: a new capsule for friends."
+  },
+  "profileNoFriends": "You have no friends yet",
+  "@profileNoFriends": {
+    "description": "Shown instead of the pinned friends on the profile page when the user has no friends."
+  },
+  "profileNoFriendsAction": "Find people you know",
+  "@profileNoFriendsAction": {
+    "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
+  },
+  "profilePictureDelete": "Delete profile icon",
+  "@profilePictureDelete": {
+    "description": "Red option in the profile picture menu."
+  },
+  "profilePictureTitle": "Profile picture",
+  "@profilePictureTitle": {
+    "description": "Title of the menu shown when the user taps their profile picture (narrow, large bold text)."
+  },
+  "profilePictureUpdated": "Profile picture updated successfully!",
+  "profilePin": "Pin",
+  "@profilePin": {
+    "description": "Quick action: pin the friend at the start of the profile's friends."
+  },
+  "profilePinLimit": "Up to {count} pinned friends",
+  "@profilePinLimit": {
+    "description": "Shown when more friends are pinned than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilePinned": "{name} pinned",
+  "@profilePinned": {
+    "description": "Toast after pinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "profilePinnedHint": "If you choose fewer than 3, random friends from your list will be shown",
+  "@profilePinnedHint": {
+    "description": "Explanation under the title of the pinned friends chooser."
+  },
+  "profilePinnedLimit": "You can only pin up to 3 friends",
+  "@profilePinnedLimit": {
+    "description": "Error when the user ticks a fourth pinned friend."
+  },
+  "profilePinnedTitle": "Choose up to 3 pinned friends",
+  "@profilePinnedTitle": {
+    "description": "Title of the sheet where the user picks the friends pinned to their profile."
+  },
+  "profilePinnedUpdated": "Pinned friends updated successfully!",
+  "profileQrError": "Something went wrong...",
+  "@profileQrError": {
+    "description": "Shown in place of the QR code on Share Profile if it cannot be drawn."
+  },
+  "profileQuickCapsule": "Send a capsule",
+  "@profileQuickCapsule": {
+    "description": "Quick action on a friend in the profile: send them a capsule."
+  },
+  "profileQuickMessage": "Message",
+  "@profileQuickMessage": {
+    "description": "Quick action on a friend in the profile: open the chat."
+  },
+  "profileShare": "Share",
+  "@profileShare": {
+    "description": "Button on Share Profile that opens the system share sheet (half-width button with an icon: keep it short)."
+  },
+  "profileShareHeading": "Share Your Profile",
+  "@profileShareHeading": {
+    "description": "Heading above the QR code on Share Profile."
+  },
+  "profileShareHint": "Others can scan this code with their camera or the app to add you as a friend",
+  "@profileShareHint": {
+    "description": "Blue info card at the bottom of Share Profile."
+  },
+  "profileShareMessage": "Check out {name} on Later!\n{link}",
+  "@profileShareMessage": {
+    "description": "Text passed to the system share sheet when sharing a profile (the user's own or a friend's).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna Smith"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://later.app/u/abc"
+      }
+    }
+  },
+  "profileShareSubject": "Connect with {name} on Later",
+  "@profileShareSubject": {
+    "description": "Subject passed to the system share sheet (used by e-mail apps) when sharing a profile.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna Smith"
+      }
+    }
+  },
+  "profileShareSubtitle": "Let others scan this QR code to add you as a friend",
+  "@profileShareSubtitle": {
+    "description": "Grey line under the heading on Share Profile."
+  },
+  "profileShareTitle": "Share Profile",
+  "@profileShareTitle": {
+    "description": "Page title of Share Profile."
+  },
+  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
+  "@profileStatCapsules": {
+    "description": "Label under the number of the user's capsules on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
+  "@profileStatPlaces": {
+    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatTogether": "with friends",
+  "@profileStatTogether": {
+    "description": "Label under the number of capsules made with friends (co-authors)."
+  },
+  "profileUnpin": "Unpin",
+  "@profileUnpin": {
+    "description": "Quick action: unpin the friend."
+  },
+  "profileUnpinned": "{name} unpinned",
+  "@profileUnpinned": {
+    "description": "Toast after unpinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "profileUpdating": "Updating...",
+  "@profileUpdating": {
+    "description": "Shown on the profile or background picture while it uploads or is deleted."
+  },
+  "profileVerified": "Verified account",
+  "profileViewProfile": "View profile page",
+  "@profileViewProfile": {
+    "description": "Option in the menu of a pinned friend: opens that friend's profile."
+  },
+  "settingsAbout": "About me",
+  "@settingsAbout": {
+    "description": "Settings row and page title: the \"about me\" line on the profile."
+  },
+  "settingsAboutDescription": "A few words under your name, for everyone who opens your profile.",
+  "@settingsAboutDescription": {
+    "description": "Explanation on the \"About me\" page."
+  },
+  "settingsAboutHint": "Collecting sunsets since 2019",
+  "@settingsAboutHint": {
+    "description": "Example text in the empty \"about me\" field."
+  },
+  "settingsAboutLicenses": "Open-source licenses",
+  "settingsAboutOpenFailed": "Could not open the page.",
+  "settingsAboutPrivacy": "Privacy policy",
+  "settingsAboutTerms": "Terms of use",
+  "settingsAboutTooLong": "At most {count} characters",
+  "@settingsAboutTooLong": {
+    "description": "Error when the \"about me\" line is too long.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAboutUpdated": "About me updated",
+  "@settingsAboutUpdated": {
+    "description": "Toast after saving the \"about me\" line."
+  },
+  "settingsAboutVersion": "Version",
+  "settingsAboutVersionUnknown": "unknown",
+  "@settingsAboutVersionUnknown": {
+    "description": "Shown as the app version when it could not be read."
+  },
+  "settingsAppPermissions": "App permissions",
+  "settingsAppearance": "Appearance",
+  "settingsAppearanceDescription": "How Later looks on this phone",
+  "settingsBlockedCount": "{count, plural, one{{count} blocked} other{{count} blocked}}",
+  "@settingsBlockedCount": {
+    "description": "Under the Blocked users row: how many people are blocked (1 or more).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsBlockedDescription": "They cannot message you or send you friend requests",
+  "settingsBlockedEmpty": "Nobody is blocked",
+  "settingsBlockedEmptyHint": "Block someone from their profile\nor from a chat",
+  "@settingsBlockedEmptyHint": {
+    "description": "Empty state of the blocked users list. Two short lines."
+  },
+  "settingsBlockedNobody": "Nobody",
+  "@settingsBlockedNobody": {
+    "description": "Under the Blocked users row when nobody is blocked."
+  },
+  "settingsBlockedUsers": "Blocked users",
+  "settingsCameraBack": "Back camera",
+  "settingsCameraFooter": "The camera that opens when you create a capsule.",
+  "settingsCameraFront": "Front camera",
+  "settingsCompleteProfileDescription": "Choose how your friends will see you",
+  "settingsCompleteProfileNoProfile": "Your account {email} has no profile yet.",
+  "@settingsCompleteProfileNoProfile": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCompleteProfileTitle": "Almost there",
+  "@settingsCompleteProfileTitle": {
+    "description": "Title of the page that asks a signed-in account without a profile for a name and username."
+  },
+  "settingsCustomizeDescription": "Tap a picture to change it",
+  "settingsCustomizeProfile": "Customize profile",
+  "settingsDataAndStorage": "Data and storage",
+  "settingsDeleteAccount": "Delete account",
+  "settingsDeleteButton": "Delete my account",
+  "settingsDeleteConfirm": "Delete your account? This cannot be undone.",
+  "settingsDeleteDescription": "This removes your account and everything in it",
+  "settingsDeleteNote": "Deleting your account removes your profile, pictures, capsules, chats, friends and followers. Your friends will no longer see you or your messages. This cannot be undone.",
+  "settingsDeletedAccount": "Deleted account",
+  "@settingsDeletedAccount": {
+    "description": "Name shown for a blocked user whose account no longer exists."
+  },
+  "settingsDeviceDescription": "How Later looks and works on this phone",
+  "settingsDownloadData": "Download my data",
+  "@settingsDownloadData": {
+    "description": "Data and storage row: export the user's data as a file."
+  },
+  "settingsDownloadDataFailed": "Could not prepare your data",
+  "@settingsDownloadDataFailed": {
+    "description": "Error when the data export could not be made."
+  },
+  "settingsDownloadDataHint": "Your profile, settings, capsules, friends and chats as one file (photos as links).",
+  "@settingsDownloadDataHint": {
+    "description": "Explains what the data export contains."
+  },
+  "settingsEmail": "Email",
+  "settingsEmailDescription": "You sign in to Later with {email}",
+  "@settingsEmailDescription": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsEmailGoogleDescription": "You sign in with Google as {email}",
+  "@settingsEmailGoogleDescription": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsEmailGoogleNote": "Your email comes from your Google account. To use another one, change it in your Google account.",
+  "settingsEmailLinkSent": "We sent a link to {newEmail}. Open it to confirm: your email changes then. Until you do, keep signing in with {currentEmail}.",
+  "@settingsEmailLinkSent": {
+    "placeholders": {
+      "newEmail": {
+        "type": "String"
+      },
+      "currentEmail": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsEmailNewHint": "New email",
+  "settingsEmailSendLink": "Send confirmation link",
+  "@settingsEmailSendLink": {
+    "description": "Button: sends a confirmation link to the new email address. Keep it short."
+  },
+  "settingsErrorChatUpdateFailed": "Could not update the chat.",
+  "settingsErrorCouldNotSave": "Could not save. Please try again.",
+  "settingsErrorCurrentPassword": "Please enter your current password.",
+  "settingsErrorEnterName": "Please enter your name.",
+  "settingsErrorEnterNewName": "Please enter a new name!",
+  "settingsErrorEnterNewUsername": "Please enter a new username!",
+  "settingsErrorEnterPassword": "Please enter your password.",
+  "settingsErrorInvalidEmail": "Please enter a valid email address.",
+  "settingsErrorNameFailed": "Failed to update name!",
+  "settingsErrorPasswordSame": "The new password is the same as the current one.",
+  "settingsErrorPasswordTooShort": "{count, plural, one{The new password needs at least {count} character.} other{The new password needs at least {count} characters.}}",
+  "@settingsErrorPasswordTooShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsErrorPasswordsMismatch": "The new passwords do not match.",
+  "settingsErrorSameEmail": "This is already your email.",
+  "settingsErrorSaveFailed": "Could not save settings.",
+  "settingsErrorSignInAgain": "Please sign in again.",
+  "settingsErrorUsernameFailed": "Failed to update username!",
+  "settingsFaqBlockAnswer": "Block them from their profile or from the chat menu. You can unblock them in Settings > Blocked users.",
+  "settingsFaqBlockQuestion": "How do I stop someone contacting me?",
+  "settingsFaqCapsuleAnswer": "A photo with a title and a note, pinned on the map where you made it. You can set a date: until then the capsule stays locked.",
+  "settingsFaqCapsuleQuestion": "What is a capsule?",
+  "settingsFaqDeleteAnswer": "Settings > Delete account. Everything you made is removed and cannot be brought back.",
+  "settingsFaqDeleteQuestion": "How do I delete my account?",
+  "settingsFaqFriendsAnswer": "Search by username in Friends, scan their QR code, or share your profile link from your profile.",
+  "settingsFaqFriendsQuestion": "How do I add friends?",
+  "settingsFaqNotificationsAnswer": "Check Settings > Notifications: the phone must allow Later to notify you, and push notifications must be on. Quiet hours and muted chats also keep pushes silent.",
+  "settingsFaqNotificationsQuestion": "I do not get notifications",
+  "settingsFaqVisibilityAnswer": "You choose when you create one: only you (Private), your friends (Friends) or everyone (Public).",
+  "@settingsFaqVisibilityAnswer": {
+    "description": "The words in brackets are the visibility options of a capsule (see the glossary)."
+  },
+  "settingsFaqVisibilityQuestion": "Who can see my capsules?",
+  "settingsGoogleConfirmsNote": "Google confirms it is you: pick your account when asked.",
+  "settingsHelp": "Help",
+  "settingsHelpContactFooter": "Emails from the app include your app version and phone. You can also write to {email}.",
+  "@settingsHelpContactFooter": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsHelpContactSupport": "Contact support",
+  "settingsHelpCopied": "Copied. Paste it into your message to us.",
+  "settingsHelpCopyInfo": "Copy app information",
+  "settingsHelpDescription": "Answers and ways to reach us",
+  "settingsHelpNoEmailApp": "No email app found. Write to {email}",
+  "@settingsHelpNoEmailApp": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsHelpReportProblem": "Report a problem",
+  "settingsHelpSubjectProblem": "Later: problem report",
+  "@settingsHelpSubjectProblem": {
+    "description": "Subject of the problem report email that the app prepares. Keep \"Later\"."
+  },
+  "settingsHelpSubjectQuestion": "Later: question",
+  "@settingsHelpSubjectQuestion": {
+    "description": "Subject of the email to support that the app prepares. Keep \"Later\"."
+  },
+  "settingsLanguage": "Language",
+  "settingsLanguageDescription": "The language of the app and of your notifications",
+  "settingsLanguageFooter": "Notifications from Later arrive in this language too.",
+  "settingsLanguageSystem": "Phone's language",
+  "settingsLanguageSystemHint": "Now: {language}",
+  "@settingsLanguageSystemHint": {
+    "description": "Under 'Phone's language': the language that choice gives right now, in its own name (e.g. 'Deutsch').",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLogOut": "Log Out",
+  "settingsLogOutConfirm": "Are you sure you want to log out?",
+  "settingsMapAndCamera": "Map and camera",
+  "settingsMapLookHybrid": "Satellite with labels",
+  "@settingsMapLookHybrid": {
+    "description": "Map type: satellite imagery with street and place names."
+  },
+  "settingsMapLookSatellite": "Satellite",
+  "@settingsMapLookSatellite": {
+    "description": "Map type: satellite imagery without labels."
+  },
+  "settingsMapLookStandard": "Standard",
+  "@settingsMapLookStandard": {
+    "description": "Map type: the normal street map."
+  },
+  "settingsName": "Name",
+  "@settingsName": {
+    "description": "The display name: settings row, page title and input hint."
+  },
+  "settingsNameDescription": "This is how you will be shown on Later, pick a name wisely, so your friends know you by",
+  "settingsNameHint": "Enter new name",
+  "settingsNameUpdated": "Name updated successfully!",
+  "settingsNotifications": "Notifications",
+  "settingsNotificationsAchievements": "Achievements",
+  "settingsNotificationsAllow": "Allow notifications",
+  "settingsNotificationsBlockedFooter": "Your phone does not let Later show notifications, so none arrive whatever you choose below.",
+  "settingsNotificationsCapsules": "New capsules",
+  "settingsNotificationsCapsulesHint": "From people you follow with notifications on",
+  "settingsNotificationsComments": "Comments",
+  "settingsNotificationsCommentsHint": "On your capsules and replies to you",
+  "settingsNotificationsDescription": "Choose what Later tells you about",
+  "settingsNotificationsFollowers": "New followers",
+  "settingsNotificationsFriendRequests": "Friend requests",
+  "settingsNotificationsFriendRequestsHint": "Received and accepted",
+  "settingsNotificationsMessages": "Messages",
+  "settingsNotificationsMuteHint": "Mute a single chat from its menu in Messages.",
+  "settingsNotificationsNews": "News from Later",
+  "settingsNotificationsNewsHint": "Rare announcements from the team",
+  "settingsNotificationsOff": "Off",
+  "@settingsNotificationsOff": {
+    "description": "Under the Notifications row: push notifications are off."
+  },
+  "settingsNotificationsOffInPhone": "Off in your phone settings",
+  "settingsNotificationsOn": "On",
+  "@settingsNotificationsOn": {
+    "description": "Under the Notifications row: push notifications are on."
+  },
+  "settingsNotificationsPreview": "Show message text",
+  "settingsNotificationsPreviewOff": "Pushes say \"New message\" only",
+  "settingsNotificationsPush": "Push notifications",
+  "settingsNotificationsPushOff": "You get no pushes from Later",
+  "settingsNotificationsReactions": "Reactions",
+  "settingsNotificationsSound": "Sound and vibration",
+  "settingsNotificationsStreak": "Streak reminder",
+  "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
+  "settingsNotificationsVibrate": "Vibration",
+  "@settingsNotificationsVibrate": {
+    "description": "Notification settings switch: pushes vibrate."
+  },
+  "settingsNotificationsVibrateNeedsSound": "Comes with the sound",
+  "@settingsNotificationsVibrateNeedsSound": {
+    "description": "Under the vibration switch while sound is off (it is greyed out then)."
+  },
+  "settingsPassword": "Password",
+  "settingsPasswordChanged": "Password changed",
+  "settingsPasswordConfirmsNote": "Your password confirms it is you.",
+  "settingsPasswordCurrent": "Current password",
+  "settingsPasswordDescription": "Choose a password you do not use anywhere else",
+  "settingsPasswordForgot": "Forgot your password?",
+  "settingsPasswordGoogleDescription": "You sign in with Google",
+  "settingsPasswordGoogleNote": "Your account has no Later password: Google confirms it is you. Change your password in your Google account.",
+  "settingsPasswordNew": "{count, plural, one{New password ({count}+ character)} other{New password ({count}+ characters)}}",
+  "@settingsPasswordNew": {
+    "description": "Hint of the new password field with the minimum length.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPasswordRepeat": "Repeat new password",
+  "settingsPasswordResetFailed": "Could not send the link. Please try again.",
+  "settingsPasswordResetSent": "We sent a reset link to {email}",
+  "@settingsPasswordResetSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsPermissionCamera": "Camera",
+  "settingsPermissionCameraDescription": "Access camera to create time capsules",
+  "settingsPermissionDenied": "Denied",
+  "settingsPermissionGranted": "Granted",
+  "@settingsPermissionGranted": {
+    "description": "Status of an app permission."
+  },
+  "settingsPermissionLimited": "Limited",
+  "settingsPermissionLocation": "Location",
+  "settingsPermissionLocationDescription": "Find capsules nearby and location-based features",
+  "settingsPermissionNotificationsDescription": "Receive updates about followers and capsules",
+  "settingsPermissionOpenSettings": "Open Settings",
+  "settingsPermissionPermanentlyDenied": "Permanently Denied",
+  "settingsPermissionProvisional": "Provisional",
+  "@settingsPermissionProvisional": {
+    "description": "Status of an app permission: iOS allows quiet notifications for now."
+  },
+  "settingsPermissionRequiredBody": "This permission has been permanently denied. Please enable it in your device settings.",
+  "settingsPermissionRequiredTitle": "Permission Required",
+  "settingsPermissionRestricted": "Restricted",
+  "settingsPermissionRevokeBody": "To revoke this permission, you need to go to your device settings. This will disable the related features in the app.",
+  "settingsPermissionRevokeTitle": "Revoke Permission",
+  "settingsPermissionsDescription": "What Later may use on this phone",
+  "settingsPhotoQualityHigh": "High (sharper, larger)",
+  "@settingsPhotoQualityHigh": {
+    "description": "Photo quality choice: 2560 px, sharper and larger."
+  },
+  "settingsPhotoQualityStandard": "Standard (sent faster)",
+  "@settingsPhotoQualityStandard": {
+    "description": "Photo quality choice: 1600 px, quicker to upload."
+  },
+  "settingsPrivacy": "Privacy",
+  "settingsPrivacyAchievements": "Show my achievements",
+  "settingsPrivacyAchievementsHint": "Friends see them on your profile",
+  "settingsPrivacyApproximate": "Approximate location",
+  "settingsPrivacyApproximateHint": "Places new capsules within about a kilometre, not at the exact spot",
+  "settingsPrivacyDescription": "What others see and what new capsules start with",
+  "settingsPrivacyFindByContacts": "Found by people with my email",
+  "@settingsPrivacyFindByContacts": {
+    "description": "Privacy switch: people who have the user's email in their contacts may find them (opt-in)."
+  },
+  "settingsPrivacyFindByContactsHint": "People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.",
+  "@settingsPrivacyFindByContactsHint": {
+    "description": "Explains the contacts switch."
+  },
+  "settingsPrivacyFindByName": "Find me by name",
+  "@settingsPrivacyFindByName": {
+    "description": "Privacy switch: others may find the user by searching their name."
+  },
+  "settingsPrivacyFindByNameHint": "People can search for your name. By username they always can.",
+  "@settingsPrivacyFindByNameHint": {
+    "description": "Explains the \"find me by name\" switch."
+  },
+  "settingsPrivacyNewCapsulesFooter": "You can change both for each capsule when you create it.",
+  "settingsPrivacyReadReceipts": "Read receipts",
+  "settingsPrivacyReadReceiptsHint": "Turned off, friends do not see when you have read their messages, and you do not see theirs",
+  "settingsQuietFrom": "Quiet from",
+  "@settingsQuietFrom": {
+    "description": "Title of the time picker for the start of quiet hours."
+  },
+  "settingsQuietHours": "Quiet hours",
+  "settingsQuietHoursFooter": "No pushes during these hours. Messages still arrive in the app.",
+  "settingsQuietHoursFrom": "From",
+  "@settingsQuietHoursFrom": {
+    "description": "Row with the start time of quiet hours."
+  },
+  "settingsQuietHoursUntil": "Until",
+  "@settingsQuietHoursUntil": {
+    "description": "Row with the end time of quiet hours."
+  },
+  "settingsQuietUntil": "Quiet until",
+  "@settingsQuietUntil": {
+    "description": "Title of the time picker for the end of quiet hours."
+  },
+  "settingsSaveToGallery": "Save capsule photos to the gallery",
+  "@settingsSaveToGallery": {
+    "description": "Switch: also save capsule photos to the phone gallery (Android)."
+  },
+  "settingsSaveToGalleryHint": "In Pictures/Later, once the capsule is made.",
+  "@settingsSaveToGalleryHint": {
+    "description": "Explains where the gallery copy goes (folder names stay in English: Android shows them so)."
+  },
+  "settingsSectionAccount": "MY ACCOUNT",
+  "@settingsSectionAccount": {
+    "description": "Upper-case label above a card of rows on the Settings page."
+  },
+  "settingsSectionCamera": "CAMERA",
+  "settingsSectionContact": "CONTACT",
+  "settingsSectionDistances": "DISTANCES",
+  "@settingsSectionDistances": {
+    "description": "Settings section: the unit distances are shown in."
+  },
+  "settingsSectionHow": "HOW",
+  "@settingsSectionHow": {
+    "description": "Label above the switches that shape how pushes look and sound."
+  },
+  "settingsSectionMap": "MAP",
+  "settingsSectionMoreActivity": "ACTIVITY",
+  "settingsSectionNewCapsules": "NEW CAPSULES",
+  "settingsSectionNotificationsPrivacy": "NOTIFICATIONS AND PRIVACY",
+  "settingsSectionNotifyAbout": "NOTIFY ME ABOUT",
+  "@settingsSectionNotifyAbout": {
+    "description": "Label above the switches Messages / New followers / New capsules."
+  },
+  "settingsSectionPhotos": "PHOTOS",
+  "@settingsSectionPhotos": {
+    "description": "Settings section: how capsule photos are sent and kept."
+  },
+  "settingsSectionQuestions": "QUESTIONS",
+  "settingsSectionQuietHours": "QUIET HOURS",
+  "settingsSectionSize": "SIZE",
+  "settingsSectionSupport": "SUPPORT",
+  "settingsSectionTheme": "THEME",
+  "settingsSectionThisPhone": "THIS PHONE",
+  "settingsSectionVisibility": "WHAT OTHERS SEE",
+  "settingsSignInEmail": "Email and password",
+  "@settingsSignInEmail": {
+    "description": "Sign-in method: email address and password."
+  },
+  "settingsSignInMethods": "Sign-in methods",
+  "@settingsSignInMethods": {
+    "description": "Account row: how the user can sign in (email, Google)."
+  },
+  "settingsSignedInWithGoogle": "Signed in with Google",
+  "@settingsSignedInWithGoogle": {
+    "description": "Under the Password row for accounts that sign in with Google only."
+  },
+  "settingsSizeFooter": "Makes everything on screen smaller or larger, text included.",
+  "settingsSizeLarge": "Large",
+  "settingsSizeSmall": "Small",
+  "settingsSizeStandard": "Standard",
+  "settingsStorageCache": "Cache",
+  "settingsStorageClear": "Clear",
+  "settingsStorageClearCache": "Clear cache",
+  "settingsStorageClearConfirm": "Clear the cache? Pictures load again when you need them.",
+  "settingsStorageCleared": "Cache cleared",
+  "settingsStorageClearing": "Clearing...",
+  "settingsStorageDescription": "Space Later uses on this phone",
+  "settingsStorageFooter": "Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.",
+  "settingsSupportInfoApp": "App: Later {version}",
+  "@settingsSupportInfoApp": {
+    "description": "Line of the app information for support (copied or added to support emails).",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportInfoPhone": "Phone: {system}",
+  "@settingsSupportInfoPhone": {
+    "description": "Line of the app information for support: the phone's operating system and its version.",
+    "placeholders": {
+      "system": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportInfoUserId": "User id: {uid}",
+  "@settingsSupportInfoUserId": {
+    "description": "Line of the app information for support: the account's technical id.",
+    "placeholders": {
+      "uid": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsThemeDark": "Dark",
+  "settingsThemeLight": "Light",
+  "settingsThemeSystem": "Same as phone",
+  "settingsTitle": "Settings",
+  "settingsUnblock": "Unblock",
+  "settingsUnblocking": "Unblocking...",
+  "settingsUnitsKilometres": "Kilometres",
+  "@settingsUnitsKilometres": {
+    "description": "Distance unit choice."
+  },
+  "settingsUnitsMiles": "Miles",
+  "@settingsUnitsMiles": {
+    "description": "Distance unit choice."
+  },
+  "settingsUploadsWifiOnly": "Upload on Wi-Fi only",
+  "@settingsUploadsWifiOnly": {
+    "description": "Switch: capsules upload only on Wi-Fi (not on metered mobile data)."
+  },
+  "settingsUploadsWifiOnlyHint": "Capsules made on mobile data wait on the phone for Wi-Fi.",
+  "@settingsUploadsWifiOnlyHint": {
+    "description": "Explains the Wi-Fi only switch."
+  },
+  "settingsUsername": "Username",
+  "settingsUsernameDescription": "This is how your friends find and add you on Later",
+  "settingsUsernameHint": "Enter new username",
+  "settingsUsernameUpdated": "Username updated successfully!",
+  "settingsVisibilityFriends": "Friends",
+  "settingsVisibilityFriendsHint": "Only your friends",
+  "settingsVisibilityPrivate": "Private",
+  "settingsVisibilityPrivateHint": "Only you",
+  "settingsVisibilityPublic": "Public",
+  "settingsVisibilityPublicHint": "Everyone on the map",
+  "settingsYourPassword": "Your password",
+  "@settingsYourPassword": {
+    "description": "Hint of the password field that confirms an account change."
+  },
+  "streakAtRisk": "Today isn't counted yet: leave a capsule before midnight to keep your streak.",
+  "@streakAtRisk": {
+    "description": "Streak card while today is not counted yet (the streak ends tonight without a capsule)."
+  },
+  "streakLongest": "Longest: {count, plural, =1{1 day} other{{count} days}}",
+  "@streakLongest": {
+    "description": "Streak card: the longest streak so far, in days.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakMakeCapsule": "Make a capsule",
+  "@streakMakeCapsule": {
+    "description": "Streak card button (at risk): opens the camera."
+  },
+  "streakSafe": "Today counts. See you tomorrow!",
+  "@streakSafe": {
+    "description": "Streak card once today counts."
+  },
+  "worldCapsules": "{count, plural, =1{1 capsule} other{{count} capsules}}",
+  "@worldCapsules": {
+    "description": "On a country stamp: capsules left there.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
+  "@worldCountriesLabel": {
+    "description": "Under the number of countries in the passport and on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldDescription": "Countries and towns of your capsules",
+  "@worldDescription": {
+    "description": "Under the passport title."
+  },
+  "worldEmpty": "Leave a capsule somewhere new and its country gets a stamp here.",
+  "@worldEmpty": {
+    "description": "Passport without stamps."
+  },
+  "worldFirst": "First: {date}",
+  "@worldFirst": {
+    "description": "On a country stamp: the month of the first capsule there (\"Oct 2026\").",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "worldNote": "Stamps come from capsules made since this update.",
+  "@worldNote": {
+    "description": "Footnote: older capsules have no country, so they are not in the passport."
+  },
+  "worldTitle": "Passport",
+  "@worldTitle": {
+    "description": "The world view (B7): a passport of the countries where the user left capsules."
+  },
+  "worldTownsLabel": "{count, plural, =1{town} other{towns}}",
+  "@worldTownsLabel": {
+    "description": "Under the number of towns in the passport and on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

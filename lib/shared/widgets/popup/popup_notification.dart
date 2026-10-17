@@ -42,11 +42,21 @@ class PopupNotificationState extends State<PopupNotification>
   bool _isExiting = false;
   AnimationController? _exitController;
 
+  /// Reduced motion: the toast is simply there, and simply goes.
+  bool _reduced = false;
+
   @override
   void initState() {
     super.initState();
     _setupEntryAnimations();
     _controller.forward();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduced = AppMotion.reduced(context);
+    if (_reduced && !_isExiting) _controller.value = 1;
   }
 
   void _setupEntryAnimations() {
@@ -88,6 +98,10 @@ class PopupNotificationState extends State<PopupNotification>
   void startExitAnimation() {
     if (_isExiting || !mounted) return;
     _isExiting = true;
+    if (_reduced) {
+      widget.onDismiss();
+      return;
+    }
 
     _exitController = AnimationController(
       duration: AppMotion.slow,
@@ -156,7 +170,7 @@ class PopupNotificationState extends State<PopupNotification>
               borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.black.withAlpha((0.2 * 255).round()),
+                  color: AppColors.mediaBlack.withAlpha((0.2 * 255).round()),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),

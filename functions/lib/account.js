@@ -27,7 +27,7 @@ async function deleteUserData({ db, bucket }, uid) {
   const userRef = db.collection('users').doc(uid);
   const user = await userRef.get();
   const data = user.exists ? user.data() : {};
-  const report = { friends: 0, requests: 0, follows: 0, capsules: 0, chats: 0 };
+  const report = { friends: 0, requests: 0, follows: 0, capsules: 0, chats: 0, reactions: 0, comments: 0 };
 
   // Other users' friend lists.
   const friends = Array.isArray(data.friends) ? data.friends.filter((f) => typeof f === 'string') : [];
@@ -62,18 +62,46 @@ async function deleteUserData({ db, bucket }, uid) {
   await deleteDocs(db, followRefs);
   report.follows = followRefs.length;
 
-  // Capsules (documents here, images with the Storage prefix below).
+  // Capsules with their reactions and comments (images with the Storage
+  // prefix below).
   const capsules = await db.collection('capsules').where('ownerId', '==', uid).get();
-  await deleteDocs(db, capsules.docs.map((d) => d.ref));
+  for (const capsule of capsules.docs) {
+    await db.recursiveDelete(capsule.ref);
+  }
   report.capsules = capsules.size;
+
+  // Reactions and comments on other people's capsules (their counters follow
+  // through the reaction/comment triggers).
+  const [reactions, comments] = await Promise.all([
+    db.collectionGroup('reactions').where('uid', '==', uid).get(),
+    db.collectionGroup('comments').where('authorId', '==', uid).get(),
+  ]);
+  await deleteDocs(db, reactions.docs.map((d) => d.ref));
+  await deleteDocs(db, comments.docs.map((d) => d.ref));
+  report.reactions = reactions.size;
+  report.comments = comments.size;
 
   // Chats with their messages (the other participant loses them too: the
   // conversation partner no longer exists).
   const chats = await db.collection('chats').where('participants', 'array-contains', uid).get();
   for (const chat of chats.docs) {
     await db.recursiveDelete(chat.ref);
+    // Photos sent in the chat, by either participant.
+    await bucket.deleteFiles({ prefix: `chats/${chat.id}/` });
   }
   report.chats = chats.size;
+
+  // Groups go on without the account.
+  const groups = await db.collection('chats').where('members', 'array-contains', uid).get();
+  for (const g of groups.docs) {
+    await g.ref.update({ members: FieldValue.arrayRemove(uid) });
+  }
+  report.groups = groups.size;
+
+  // Their entry in the contacts index and their last contacts request.
+  const indexed = await db.collection('contactIndex').where('uid', '==', uid).get();
+  await deleteDocs(db, indexed.docs.map((d) => d.ref));
+  await db.collection('contactMatches').doc(uid).delete();
 
   // Username reservation, if it is still this user's.
   if (typeof data.username === 'string' && data.username) {
@@ -83,7 +111,7 @@ async function deleteUserData({ db, bucket }, uid) {
   }
 
   // Profile with every subcollection (tokens, notifications, follows,
-  // blocks, settings) and all files.
+  // blocks, settings, achievements, private stats) and all files.
   await db.recursiveDelete(userRef);
   await bucket.deleteFiles({ prefix: `userdata/${uid}/` });
   return report;

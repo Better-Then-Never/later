@@ -2,20 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/app_network_image.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
+import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../../shared/widgets/loop_picture.dart';
+import '../../../shared/widgets/photo_viewer.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Dialog content showing an opened capsule: photo, title, description,
-/// place and creation date. Tapping the place calls [onPlaceTap].
+/// place and creation date. Tapping the place calls [onPlaceTap]; tapping
+/// the photo shows it full screen.
 class CapsulePreviewCard extends StatelessWidget {
   const CapsulePreviewCard({super.key, required this.capsule, this.onPlaceTap});
 
   final Capsule capsule;
   final VoidCallback? onPlaceTap;
+
+  /// The photo's [Hero] tag (by capsule, not URL: capsules may share one).
+  /// Only one widget per route may carry it.
+  static Object photoHeroTag(Capsule capsule) => 'capsule-photo:${capsule.id}';
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +34,10 @@ class CapsulePreviewCard extends StatelessWidget {
     return Container(
       width: screen.width,
       height: screen.height * 0.45,
-      decoration: const BoxDecoration(
-        color: AppColors.white,
+      decoration: BoxDecoration(
+        color: context.palette.surface,
         borderRadius: AppRadii.lCircular,
-        boxShadow: AppShadows.raised,
+        boxShadow: AppShadows.raised(context),
       ),
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -37,11 +46,28 @@ class CapsulePreviewCard extends StatelessWidget {
             SizedBox(
               width: screen.width * 0.45,
               height: double.infinity,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadii.m),
-                child: AppNetworkImage(
-                  url: imageUrl,
-                  cacheWidth: (screen.width * 0.45 * 3).round(),
+              child: GestureDetector(
+                onTap: () => PhotoViewer.show(
+                  context,
+                  imageUrl,
+                  frames: capsule.frames,
+                  frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+                  heroTag: CapsulePreviewCard.photoHeroTag(capsule),
+                ),
+                child: Hero(
+                  tag: CapsulePreviewCard.photoHeroTag(capsule),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadii.m),
+                    // A loop capsule plays its frames.
+                    child: capsule.isLoop
+                        ? LoopPicture(
+                            sources: capsule.frames,
+                            frameDelay: Duration(
+                              milliseconds: capsule.frameDelayMs,
+                            ),
+                          )
+                        : AppNetworkImage(url: imageUrl),
+                  ),
                 ),
               ),
             ),
@@ -60,15 +86,17 @@ class CapsulePreviewCard extends StatelessWidget {
                     fontFamily: kAppFontFamily,
                   ),
                 ),
+                CapsuleAuthorRow(capsule: capsule),
                 const SizedBox(height: 6),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Text(
-                      capsule.description ?? 'This capsule has no description.',
-                      style: const TextStyle(
+                      capsule.description ??
+                          context.l10n.mapCapsuleNoDescription,
+                      style: TextStyle(
                         fontSize: 14,
                         fontFamily: kAppFontFamily,
-                        color: AppColors.textFaint,
+                        color: context.palette.textFaint,
                       ),
                     ),
                   ),

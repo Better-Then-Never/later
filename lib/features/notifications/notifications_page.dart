@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/core/theme/app_palette.dart';
 import 'package:later/features/notifications/notifications_selection_controller.dart';
 import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 import 'package:later/core/errors/app_failure.dart';
@@ -51,11 +53,11 @@ class _NotificationsPageState extends State<NotificationsPage>
         child: child!,
       ),
       child: Scaffold(
-        backgroundColor: AppColors.pageBackground,
+        backgroundColor: context.palette.background,
         body: Column(
           children: [
             PageHeader(
-              mainText: 'Notifications',
+              mainText: context.l10n.notificationsTitle,
               leadingButton: GoBackButton(context: context),
               actionButtonsRow: NotificationFilterTabs(
                 controller: _tabController,
@@ -123,19 +125,19 @@ class _NotificationsPageState extends State<NotificationsPage>
     if (!mounted) return;
     PopupNotificationService.showInfo(
       context: context,
-      message: '$count notification${count > 1 ? 's' : ''} marked as read',
+      message: context.l10n.notificationsMarkedRead(count),
       position: NotificationPosition.bottom,
     );
     _controller.clearSelection();
   }
 
   void _handleDelete() {
+    final l10n = context.l10n;
     ConfirmDialog.show(
       context: context,
-      title:
-          'Delete ${_controller.selectedCount} notification${_controller.selectedCount > 1 ? 's' : ''}?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: l10n.notificationsDeleteConfirm(_controller.selectedCount),
+      confirmText: l10n.commonDelete,
+      cancelText: l10n.commonCancel,
       confirmButtonColor: AppColors.materialRed,
       onConfirm: _performDelete,
     );
@@ -156,7 +158,7 @@ class _NotificationsPageState extends State<NotificationsPage>
     if (!mounted) return;
     PopupNotificationService.showInfo(
       context: context,
-      message: '${ids.length} notification${ids.length > 1 ? 's' : ''} deleted',
+      message: context.l10n.notificationsDeleted(ids.length),
       position: NotificationPosition.bottom,
     );
     _controller.clearSelection();

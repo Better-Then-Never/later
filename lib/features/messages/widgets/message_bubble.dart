@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/chat.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../chat_time.dart';
+import '../emoji_only.dart';
+import 'photo_message.dart';
+import 'voice_message.dart';
 
 /// One message: brand green on the right for the user's own, a white card on
 /// the left for the friend's. Consecutive messages of one sender form a
 /// group; [showTail] squares the bottom corner of the group's last bubble.
 /// Capsule messages show the capsule's photo; tapping it calls
-/// [onCapsuleTap]. A message still sending is shown at once; a failed one is
-/// faded until it is retried.
+/// [onCapsuleTap]. Photos show their picture ([PhotoMessage]) with the
+/// caption under it; tapping calls [onPhotoTap]. A message still sending is
+/// shown at once; a failed one is faded until it is retried.
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
@@ -21,12 +27,26 @@ class MessageBubble extends StatelessWidget {
     required this.isMine,
     this.showTail = false,
     this.onCapsuleTap,
+    this.onPhotoTap,
+    this.replyName,
+    this.onQuoteTap,
+    this.senderName,
   });
+
+  /// In a group, who wrote it (on the first of their messages in a row).
+  final String? senderName;
 
   final ChatMessage message;
   final bool isMine;
   final bool showTail;
   final VoidCallback? onCapsuleTap;
+  final VoidCallback? onPhotoTap;
+
+  /// Whose message [ChatMessage.replyTo] quotes ("You" or the friend).
+  final String? replyName;
+
+  /// Tapping the quote (shows the answered message).
+  final VoidCallback? onQuoteTap;
 
   static const _radius = Radius.circular(AppRadii.m);
   static const _tail = Radius.circular(6);
@@ -34,85 +54,317 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
-    final textColor = isMine ? AppColors.textOnPrimary : AppColors.textPrimary;
+    final palette = context.palette;
+    final textColor = isMine ? AppColors.onAccent : palette.textPrimary;
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
     final failed = message.delivery == MessageDelivery.failed;
+    // A reply's quote and a sender's name span the bubble from the left:
+    // the column is laid out at its natural width and every line stretches.
+    final quoted =
+        message.replyTo != null ||
+        senderName != null ||
+        message.forwarded ||
+        message.capsuleRef != null;
+    // A photo fills its bubble but for a thin frame.
+    final photo = message.type == ChatMessageType.image;
+    final photoWidth = photo
+        ? PhotoMessage.displaySize(message, screen).width
+        : 0.0;
+
+    // One to three emoji alone: large, without the bubble, like a sticker.
+    final emoji = message.type == ChatMessageType.text && !quoted
+        ? EmojiOnly.count(message.text)
+        : null;
+    if (emoji != null) {
+      return Align(
+        alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+        child: Opacity(
+          opacity: failed ? 0.5 : 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Column(
+              crossAxisAlignment: isMine
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message.text.trim(),
+                  style: TextStyle(
+                    fontSize: EmojiOnly.size(emoji),
+                    height: 1.15,
+                  ),
+                ),
+                if (sentAt != null)
+                  Text(
+                    ChatTime.messageTime(
+                      sentAt,
+                      locale: context.l10n.localeName,
+                    ),
+                    style: TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 11,
+                      color: palette.textMuted,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final bubble = Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screen.width * 0.035,
-        vertical: screen.height * 0.009,
-      ),
+      padding: photo
+          ? const EdgeInsets.fromLTRB(4, 4, 4, 6)
+          : EdgeInsets.symmetric(
+              horizontal: screen.width * 0.035,
+              vertical: screen.height * 0.009,
+            ),
       constraints: BoxConstraints(maxWidth: screen.width * 0.72),
       decoration: BoxDecoration(
-        color: isMine ? AppColors.brandGreen : AppColors.surface,
+        color: isMine ? AppColors.brandGreen : palette.surface,
         borderRadius: BorderRadius.only(
           topLeft: _radius,
           topRight: _radius,
           bottomLeft: showTail && !isMine ? _tail : _radius,
           bottomRight: showTail && isMine ? _tail : _radius,
         ),
-        boxShadow: isMine ? null : AppShadows.card,
+        boxShadow: isMine ? null : AppShadows.card(context),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (message.isCapsule) ...[
-            if (imageUrl != null)
-              Semantics(
-                button: true,
-                label: 'Open capsule ${message.text}',
-                child: GestureDetector(
-                  onTap: onCapsuleTap,
-                  child: _CapsulePhoto(
-                    imageUrl: imageUrl,
-                    width: screen.width * 0.6,
-                    height: screen.width * 0.45,
+      child: _NaturalWidth(
+        enabled: quoted,
+        child: Column(
+          crossAxisAlignment: quoted
+              ? CrossAxisAlignment.stretch
+              : CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (message.forwarded)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: Text(
+                  context.l10n.messagesForwarded,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: isMine ? AppColors.onMediaMuted : palette.textMuted,
                   ),
                 ),
               ),
-            const SizedBox(height: 6),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
+            if (senderName case final name?)
+              Padding(
+                padding: EdgeInsets.fromLTRB(photo ? 6 : 0, 0, 0, 2),
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.brandGreen,
+                  ),
+                ),
+              ),
+            // A quick reply from a capsule: the capsule, which opens.
+            if (message.capsuleRef case final ref?)
+              Semantics(
+                button: true,
+                label: context.l10n.messagesOpenCapsule(ref.title),
+                child: GestureDetector(
+                  onTap: onCapsuleTap,
+                  child: ExcludeSemantics(
+                    child: _Quote(
+                      name: context.l10n.messagesCapsuleLabel,
+                      text: ref.title,
+                      onGreen: isMine,
+                    ),
+                  ),
+                ),
+              ),
+            if (message.replyTo case final reply?)
+              GestureDetector(
+                onTap: onQuoteTap,
+                child: _Quote(
+                  name: replyName ?? '',
+                  text: reply.text,
+                  onGreen: isMine,
+                ),
+              ),
+            if (message.isCapsule) ...[
+              if (imageUrl != null)
+                Semantics(
+                  button: true,
+                  label: context.l10n.messagesOpenCapsule(message.text),
+                  child: GestureDetector(
+                    onTap: onCapsuleTap,
+                    child: _CapsulePhoto(
+                      imageUrl: imageUrl,
+                      width: screen.width * 0.6,
+                      height: screen.width * 0.45,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 6),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  message.text,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: screen.height * 0.02,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
+                  ),
+                ),
+              ),
+            ] else if (message.type == ChatMessageType.voice)
+              VoiceMessageView(message: message, onGreen: isMine)
+            else if (photo) ...[
+              PhotoMessage(message: message, onTap: onPhotoTap),
+              if (message.caption.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
+                  child: SizedBox(
+                    width: photoWidth - 12,
+                    child: Text(
+                      message.caption,
+                      style: TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: screen.height * 0.022,
+                        color: textColor,
+                      ),
+                    ),
+                  ),
+                ),
+            ] else
+              Text(
                 message.text,
                 style: TextStyle(
                   fontFamily: kAppFontFamily,
-                  fontSize: screen.height * 0.02,
-                  fontWeight: FontWeight.bold,
+                  fontSize: screen.height * 0.022,
                   color: textColor,
                 ),
               ),
-            ),
-          ] else
-            Text(
-              message.text,
-              style: TextStyle(
-                fontFamily: kAppFontFamily,
-                fontSize: screen.height * 0.022,
-                color: textColor,
+            if (sentAt != null) ...[
+              const SizedBox(height: 2),
+              Padding(
+                padding: EdgeInsets.only(right: photo ? 6 : 0),
+                child: Text(
+                  ChatTime.messageTime(sentAt, locale: context.l10n.localeName),
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 11,
+                    // Muted white on the green bubble, the same in both themes.
+                    color: isMine ? AppColors.onMediaMuted : palette.textMuted,
+                  ),
+                ),
               ),
-            ),
-          if (sentAt != null) ...[
-            const SizedBox(height: 2),
-            Text(
-              ChatTime.messageTime(sentAt),
-              style: TextStyle(
-                fontFamily: kAppFontFamily,
-                fontSize: 11,
-                color: isMine ? AppColors.white70 : AppColors.textMuted,
-              ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
 
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Opacity(opacity: failed ? 0.5 : 1, child: bubble),
+    );
+  }
+}
+
+/// [IntrinsicWidth] only when [enabled] (it costs a second layout pass).
+class _NaturalWidth extends StatelessWidget {
+  const _NaturalWidth({required this.enabled, required this.child});
+
+  final bool enabled;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      enabled ? IntrinsicWidth(child: child) : child;
+}
+
+/// The answered message inside a reply: a coloured edge, the name and the
+/// start of its text.
+class _Quote extends StatelessWidget {
+  const _Quote({required this.name, required this.text, required this.onGreen});
+
+  final String name;
+  final String text;
+
+  /// On the user's own (green) bubble: white tones instead of green.
+  final bool onGreen;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final accent = onGreen ? AppColors.onAccent : AppColors.brandGreen;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: onGreen
+              ? AppColors.onAccent.withAlpha(0x2E)
+              : palette.surfaceMuted,
+          borderRadius: BorderRadius.circular(AppRadii.xxs),
+        ),
+        child: IntrinsicHeight(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: 3,
+                decoration: BoxDecoration(
+                  color: accent,
+                  borderRadius: const BorderRadius.horizontal(
+                    left: Radius.circular(AppRadii.xxs),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 10, 5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold,
+                          color: accent,
+                        ),
+                      ),
+                      Text(
+                        text,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 13,
+                          color: onGreen
+                              ? AppColors.onMediaMuted
+                              : palette.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -138,14 +390,16 @@ class _CapsulePhoto extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            AppNetworkImage(url: imageUrl, cacheWidth: (width * 3).round()),
+            AppNetworkImage(url: imageUrl),
             Positioned(
               top: 8,
               left: 8,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(6, 4, 10, 4),
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
+                // A small card on the photo: it follows the theme, like the
+                // capsule icon (swapped for dark by ThemedAssetBundle).
+                decoration: BoxDecoration(
+                  color: context.palette.surface,
                   borderRadius: AppRadii.lCircular,
                 ),
                 child: Row(
@@ -153,11 +407,11 @@ class _CapsulePhoto extends StatelessWidget {
                   children: [
                     Image.asset(AppIcons.sendCapsule, width: 18, height: 18),
                     const SizedBox(width: 4),
-                    const Text(
-                      'Capsule',
+                    Text(
+                      context.l10n.messagesCapsuleLabel,
                       style: TextStyle(
                         fontFamily: kAppFontFamily,
-                        color: AppColors.textPrimary,
+                        color: context.palette.textPrimary,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),

@@ -1,0 +1,86 @@
+{
+  "appName": "Later",
+  "@appName": {
+    "description": "The app's name. Never translated."
+  },
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "commonRetry": "Try again",
+  "commonLoading": "Loading...",
+  "commonContinue": "Continue",
+  "commonBack": "Back",
+  "@commonBack": {
+    "description": "Accessibility label of the back arrow."
+  },
+  "commonErrorGeneric": "Something went wrong. Please try again.",
+  "commonNoConnection": "No connection. Please try again.",
+  "commonSearchHint": "Search...",
+  "commonUnknownUser": "Unknown user",
+  "commonUnknownUsername": "unknown",
+  "failurePermission": "You are not allowed to do that.",
+  "failureNotFound": "This item no longer exists.",
+  "placeNoLocation": "No location",
+  "placeUnknown": "Unknown location",
+  "@placeNoLocation": {
+    "description": "Place pill on a capsule when the phone has no location yet."
+  },
+  "commonUntitled": "Untitled",
+  "@commonUntitled": {
+    "description": "Title of a capsule that has none."
+  },
+  "commonUsernameRequired": "Please enter a username",
+  "commonUsernameRules": "Use 3-30 letters, numbers, dots, dashes or underscores",
+  "@commonUsernameRules": {
+    "description": "Letters are a-z only (Latin, lower case)."
+  },
+  "commonUsernameTaken": "Username already taken",
+  "commonSizeBytes": "{size} B",
+  "@commonSizeBytes": {
+    "description": "File size in bytes.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeKilobytes": "{size} KB",
+  "@commonSizeKilobytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeMegabytes": "{size} MB",
+  "@commonSizeMegabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeGigabytes": "{size} GB",
+  "@commonSizeGigabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "navMap": "Map",
+  "navMyCapsules": "My capsules",
+  "navNewCapsule": "New capsule",
+  "navMessages": "Messages",
+  "navProfile": "Profile",
+  "commonNewCount": "{count, plural, one{{count} new} other{{count} new}}",
+  "@commonNewCount": {
+    "description": "Accessibility label of a red count badge (new messages, requests).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
+}

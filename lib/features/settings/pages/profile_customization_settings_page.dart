@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../profile/widgets/profile_background_picture.dart';
 import '../../profile/widgets/profile_picture.dart';
 import '../widgets/settings_scaffold.dart';
+import 'about_settings_page.dart';
 import 'name_settings_page.dart';
 import 'username_settings_page.dart';
 
@@ -18,9 +20,10 @@ class ProfileCustomizationSettingsPage extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final backgroundHeight = screenWidth * 0.45;
     final pictureSize = screenWidth * 0.3;
+    final l10n = context.l10n;
     return SettingsScaffold(
-      title: 'Customize profile',
-      description: 'Tap a picture to change it',
+      title: l10n.settingsCustomizeProfile,
+      description: l10n.settingsCustomizeDescription,
       children: [
         Center(
           child: SizedBox(
@@ -47,13 +50,20 @@ class ProfileCustomizationSettingsPage extends StatelessWidget {
           ),
         ),
         SizedBox(height: screenWidth * 0.05),
-        const OptionsSection(
+        OptionsSection(
           children: [
-            OptionsSettingsRow(title: 'Name', navigateTo: NameSettingsPage()),
             OptionsSettingsRow(
-              title: 'Username',
+              title: l10n.settingsName,
+              navigateTo: const NameSettingsPage(),
+            ),
+            OptionsSettingsRow(
+              title: l10n.settingsUsername,
+              navigateTo: const UsernameSettingsPage(),
+            ),
+            OptionsSettingsRow(
+              title: l10n.settingsAbout,
               withDivider: false,
-              navigateTo: UsernameSettingsPage(),
+              navigateTo: const AboutSettingsPage(),
             ),
           ],
         ),

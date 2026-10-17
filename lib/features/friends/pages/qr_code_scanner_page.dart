@@ -4,6 +4,7 @@ import 'package:later/shared/widgets/buttons/go_back_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class QRScannerPage extends StatefulWidget {
   const QRScannerPage({super.key});
@@ -34,10 +35,10 @@ class _QRScannerPageState extends State<QRScannerPage> {
           Navigator.pop(context, scannedData);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: DefaultText(
-                'Invalid QR code. Please scan a Later profile QR code.',
-                color: AppColors.white,
+                context.l10n.friendsQrInvalid,
+                color: AppColors.onAccent,
               ),
               backgroundColor: AppColors.materialRed,
             ),
@@ -60,7 +61,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: AppColors.black,
+      backgroundColor: AppColors.mediaBlack,
 
       body: Stack(
         children: [
@@ -76,9 +77,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 children: [
                   GoBackButton(context: context, isBlack: false),
                   const SizedBox(width: 16),
-                  const DefaultText(
-                    'Scan QR Code',
-                    color: AppColors.white,
+                  DefaultText(
+                    context.l10n.friendsQrTitle,
+                    color: AppColors.onMedia,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
@@ -93,9 +94,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
             right: 20,
             child: Container(
               padding: const EdgeInsets.all(20),
-              child: const DefaultText(
-                'Point your camera at the QR code to add a friend',
-                color: AppColors.white,
+              child: DefaultText(
+                context.l10n.friendsQrHint,
+                color: AppColors.onMedia,
                 fontSize: 16,
               ),
             ),
@@ -116,7 +117,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 height: 56,
                 child: Icon(
                   _isTorchEnabled ? Icons.flash_on : Icons.flash_off,
-                  color: AppColors.white,
+                  color: AppColors.onMedia,
                   size: 24,
                 ),
               ),
@@ -132,7 +133,7 @@ Widget _cameraBorderWithCutout(final double screenWidth) {
   return Container(
     decoration: ShapeDecoration(
       shape: QRScannerOverlayShape(
-        borderColor: AppColors.white,
+        borderColor: AppColors.onMedia,
         borderRadius: 20,
         borderLength: 30,
         borderWidth: 8,
@@ -151,10 +152,10 @@ class QRScannerOverlayShape extends ShapeBorder {
   final double cutOutSize;
 
   const QRScannerOverlayShape({
-    this.borderColor = AppColors.white,
+    this.borderColor = AppColors.onMedia,
     this.borderWidth = 3.0,
     // fromRGBO(0, 0, 0, 80) before: an opacity above 1 is opaque black.
-    this.overlayColor = AppColors.black,
+    this.overlayColor = AppColors.mediaBlack,
     this.borderRadius = 0,
     this.borderLength = 40,
     this.cutOutSize = 250,

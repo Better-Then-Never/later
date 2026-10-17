@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../models/user_profile.dart';
 import '../repositories/repositories.dart';
 import 'firestore_mappers.dart';
@@ -74,12 +75,12 @@ class FirebaseUserRepository implements UserRepository {
     required String username,
   }) async {
     if (await _isTakenByOther(username, uid)) {
-      throw const ValidationFailure('Username already taken');
+      throw ValidationFailure(AppL10n.current.commonUsernameTaken);
     }
     await _db.runTransaction((tx) async {
       final reservation = await tx.get(_usernameDoc(username));
       if (reservation.exists && reservation.data()?['uid'] != uid) {
-        throw const ValidationFailure('Username already taken');
+        throw ValidationFailure(AppL10n.current.commonUsernameTaken);
       }
       tx.set(_usernameDoc(username), {'uid': uid});
       tx.set(_users.doc(uid), {
@@ -94,19 +95,26 @@ class FirebaseUserRepository implements UserRepository {
   }
 
   @override
-  Future<void> updateName(String uid, String name) =>
-      _users.doc(uid).update({'name': name});
+  Future<void> updateName(String uid, String name) async {
+    final doc = _users.doc(uid);
+    // Keeps the name search in step (only for people found by name).
+    final indexed = (await doc.get()).data()?['nameLower'] is String;
+    await doc.update({
+      'name': name,
+      if (indexed) 'nameLower': name.toLowerCase(),
+    });
+  }
 
   @override
   Future<void> changeUsername(String uid, String newUsername) async {
     if (await _isTakenByOther(newUsername, uid)) {
-      throw const ValidationFailure('Username already taken');
+      throw ValidationFailure(AppL10n.current.commonUsernameTaken);
     }
     await _db.runTransaction((tx) async {
       final userDoc = await tx.get(_users.doc(uid));
       final reservation = await tx.get(_usernameDoc(newUsername));
       if (reservation.exists && reservation.data()?['uid'] != uid) {
-        throw const ValidationFailure('Username already taken');
+        throw ValidationFailure(AppL10n.current.commonUsernameTaken);
       }
       final oldUsername = userDoc.data()?['username'];
       DocumentSnapshot<Map<String, dynamic>>? oldReservation;
@@ -157,4 +165,34 @@ class FirebaseUserRepository implements UserRepository {
             ? FieldValue.arrayUnion([capsuleId])
             : FieldValue.arrayRemove([capsuleId]),
       }, SetOptions(merge: true));
+
+  @override
+  Future<void> setShowAchievements(String uid, bool show) =>
+      _users.doc(uid).update({'showAchievements': show});
+
+  @override
+  Future<void> setAbout(String uid, String about) => _users.doc(uid).update({
+    'about': about.isEmpty ? FieldValue.delete() : about,
+  });
+
+  @override
+  Future<void> setSearchName(String uid, String? lowerCaseName) => _users
+      .doc(uid)
+      .update({'nameLower': lowerCaseName ?? FieldValue.delete()});
+
+  @override
+  Future<List<UserProfile>> searchByName(
+    String prefix, {
+    int limit = 20,
+  }) async {
+    if (prefix.isEmpty) return const [];
+    final snap = await _users
+        .where('nameLower', isGreaterThanOrEqualTo: prefix)
+        .where('nameLower', isLessThan: '$prefix\uf8ff')
+        .limit(limit)
+        .get();
+    return snap.docs
+        .map((doc) => FirestoreMappers.userProfile(doc.id, doc.data()))
+        .toList();
+  }
 }

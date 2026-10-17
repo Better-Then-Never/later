@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
-import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../../core/theme/app_palette.dart';
+import '../../core/l10n/l10n.dart';
 
 class DefaultSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final DefaultIconButton? trailingButton;
-  final String hintText;
+
+  /// "Search..." in the app's language when null.
+  final String? hintText;
   final Color? color;
   final void Function(String value)? onChanged;
   final FocusNode? searchFocusNode;
@@ -16,7 +19,7 @@ class DefaultSearchBar extends StatelessWidget {
     super.key,
     required this.controller,
     this.trailingButton,
-    this.hintText = 'Search...',
+    this.hintText,
     this.color,
     this.searchFocusNode,
     this.onChanged,
@@ -29,9 +32,10 @@ class DefaultSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        // A full tap target (D-24): the field itself is 44 dp tall.
+        constraints: const BoxConstraints(minHeight: 44),
         decoration: BoxDecoration(
-          color: color ?? AppColors.surfaceMuted,
+          color: color ?? context.palette.surfaceMuted,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Row(
@@ -40,8 +44,8 @@ class DefaultSearchBar extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Image.asset(
                 AppIcons.friendsLookFor,
-                width: screenWidth * 0.07,
-                height: screenWidth * 0.07,
+                width: 24,
+                height: 24,
               ),
             ),
             Expanded(
@@ -49,13 +53,16 @@ class DefaultSearchBar extends StatelessWidget {
                 focusNode: searchFocusNode,
                 controller: controller,
                 decoration: InputDecoration(
-                  hintText: hintText,
+                  hintText: hintText ?? context.l10n.commonSearchHint,
                   border: InputBorder.none,
                   isDense: true,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
+                // Body size (F-31: it was 22 sp, bigger than the titles of
+                // the rows it searches).
                 style: const TextStyle(
                   fontFamily: kAppFontFamily,
-                  fontSize: 22,
+                  fontSize: 17,
                 ),
                 onChanged: (value) {
                   if (onChanged != null) {

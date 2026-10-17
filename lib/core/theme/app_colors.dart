@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Every colour used by the app. Values reproduce the original design exactly
-/// (see docs/refactor/DESIGN_SPEC.md §2); do not "tidy" them.
+/// Colours that are the same in light and dark: brand and accent colours,
+/// and content drawn on them or on photos. Everything that changes with the
+/// theme (surfaces, text, greys, dividers, shadows) is in AppPalette
+/// (`context.palette`). Values reproduce the original design exactly (see
+/// docs/refactor/DESIGN_SPEC.md §2); do not "tidy" them.
 abstract final class AppColors {
   // Brand and accents
   static const brandGreen = Color(0xFF56C92E);
@@ -16,60 +19,26 @@ abstract final class AppColors {
   static const pendingYellow = Color(0xFFFDDB07);
   static const warningOrange = Color(0xFFFF9800);
 
-  // Neutral scale: the Material greys the screens already used, named so no
-  // screen needs raw `Colors.*` (docs/polish/DESIGN_DECISIONS.md §1).
-  static const white = Color(0xFFFFFFFF);
-  static const black = Color(0xFF000000);
-  static const black45 = Color(0x73000000);
-  static const black87 = Color(0xDD000000);
-  static const white70 = Color(0xB3FFFFFF);
-  static const grey100 = Color(0xFFF5F5F5);
-  static const grey200 = Color(0xFFEEEEEE);
-  static const grey300 = Color(0xFFE0E0E0);
-  static const grey400 = Color(0xFFBDBDBD);
-  static const grey500 = Color(0xFF9E9E9E);
-  static const grey600 = Color(0xFF757575);
-  static const grey700 = Color(0xFF616161);
-  static const grey800 = Color(0xFF424242);
+  // Content on colour and on photos: the same in light and dark.
+  /// Text and icons on brand green, danger red, info blue.
+  static const onAccent = Color(0xFFFFFFFF);
+
+  /// Text and icons drawn over photos and the camera preview.
+  static const onMedia = Color(0xFFFFFFFF);
+  static const onMediaMuted = Color(0xB3FFFFFF);
+
+  /// Dark veils over photos (gradients, captions, the camera).
+  static const mediaScrim = Color(0x73000000);
+  static const mediaScrimStrong = Color(0xDD000000);
+  static const mediaBlack = Color(0xFF000000);
+  static const mediaShade = Color(0x78000000);
+
+  /// Darker shades of [infoBlue] for text on its tinted cards.
   static const infoBlue600 = Color(0xFF1E88E5);
   static const infoBlue700 = Color(0xFF1976D2);
 
-  // Surfaces
-  static const pageBackground = Color(0xFFF6F6F6);
-  static const pageBackgroundAlt = Color(0xFFF5F5F5);
-  static const surface = Colors.white;
-  static const surfaceMuted = Color(0xFFEAEAEA);
-  static const pill = Color(0xD9D9D9D9);
-  static const divider = Color(0xFFD3D3D3);
-  static const emptyAvatar = Color(0xFFDFDFDF);
-  static const emptyBackground = Color(0xFFBBBBBB);
-  static const placeholderGrey = Color(0xFFE0E0E0);
-  static const iconGrey = Color(0xFF9E9E9E);
-  static const popupDefault = Color(0xFF424242);
-
-  // Text
-  static const textPrimary = Colors.black;
-  static const textSecondary = Color(0xFF5E5E5E);
-  static const textTertiary = Color(0xFF6A6A6A);
-  static const textMuted = Color(0xFF757575);
-  static const textFaint = Color(0x8A000000);
-  static const textOnPrimary = Colors.white;
-
-  // Selection / status
-  static const selectedNotification = Color(0xFFBBDEFB);
-  static const unreadNotification = Color(0xFFE3F2FD);
-  static const selectedCapsule = Color(0x6467CFFF);
-  static const infoCardFill = Color(0x1A2196F3);
-  static const infoCardBorder = Color(0x4D2196F3);
-
-  // Overlays and shadows
-  static const barrier = Color(0x80000000);
-  static const shadowCard = Color(0x1F000000); // black12
-  static const shadowRaised = Color(0x42000000); // black26
-  static const shadowHeader = Color(0x78000000); // black, alpha 120
-
-  // Map heatmap gradient
-  static const heatmapLow = Colors.green;
-  static const heatmapMid = Colors.yellow;
-  static const heatmapHigh = Colors.red;
+  // Map heatmap (F-16): one brand green that deepens with density; no red
+  // (red means danger in the app), no yellow (muddy over the dark map).
+  static const heatmapLow = Color(0x5956C92E);
+  static const heatmapHigh = brandGreen;
 }

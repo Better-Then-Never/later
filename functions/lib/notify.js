@@ -4,6 +4,7 @@
 
 const { FieldValue } = require('firebase-admin/firestore');
 const prefs = require('./prefs');
+const i18n = require('./i18n');
 
 /** Longest message text shown in a push. */
 const PREVIEW_LENGTH = 150;
@@ -90,13 +91,13 @@ function delivery(category, sound, { tag } = {}) {
   };
 }
 
-function followMessage(notification, token, sound = true) {
-  const userName = notification.fromUserName || 'Someone';
+function followMessage(notification, token, sound = true, lang = 'en') {
+  const userName = notification.fromUserName || i18n.t(lang, 'someone');
   return {
     token,
     notification: {
-      title: 'New Follower',
-      body: `${userName} started following you`,
+      title: i18n.t(lang, 'followTitle'),
+      body: i18n.t(lang, 'followBody', { name: userName }),
     },
     data: {
       type: 'follow',
@@ -109,12 +110,12 @@ function followMessage(notification, token, sound = true) {
   };
 }
 
-function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true) {
+function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true, lang = 'en') {
   return {
     token,
     notification: {
-      title: 'New Capsule',
-      body: `${creatorName} created a new capsule`,
+      title: i18n.t(lang, 'capsuleTitle'),
+      body: i18n.t(lang, 'capsuleBody', { name: creatorName }),
     },
     data: {
       type: 'capsule',
@@ -127,19 +128,70 @@ function capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound = true
   };
 }
 
-/** Body of a message push: the text, or a neutral line without preview. */
-function messageBody(message, preview) {
-  const capsule = message.type === 'capsule';
-  if (!preview) return capsule ? 'Sent you a capsule' : 'New message';
-  const text = String(message.text || '');
-  const short = text.length > PREVIEW_LENGTH ? `${text.slice(0, PREVIEW_LENGTH - 1)}…` : text;
-  return capsule ? `Sent you a capsule: ${short}` : short;
-}
+/** What a photo message without a caption carries as its text. */
+const PHOTO_SIGN = '📷';
 
-function chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound = true) {
+/** Push to a co-author: a friend made a capsule with them. */
+function coAuthorMessage({ creatorName, ownerId, capsuleId }, token, sound = true, lang = 'en') {
   return {
     token,
-    notification: { title: senderName, body },
+    notification: {
+      title: i18n.t(lang, 'coAuthorTitle'),
+      body: i18n.t(lang, 'coAuthorBody', { name: creatorName }),
+    },
+    data: {
+      type: 'coAuthor',
+      userName: creatorName,
+      userId: ownerId,
+      capsuleId,
+      clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+    },
+    ...delivery('capsules', sound),
+  };
+}
+
+/** Most followers told about one new capsule. */
+const MAX_FOLLOWER_FANOUT = 500;
+
+/** Most co-authors a capsule may have (firestore.rules). */
+const MAX_CO_AUTHORS = 5;
+
+/**
+ * The co-authors of [capsule] worth telling: friends of its owner (the rules
+ * check that too), never the owner, at most five.
+ */
+function coAuthorsOf(capsule, ownerId, ownerFriends) {
+  const list = Array.isArray(capsule.coAuthors) ? capsule.coAuthors : [];
+  const friends = new Set(ownerFriends);
+  return [...new Set(list)]
+    .filter((id) => typeof id === 'string' && id !== ownerId && friends.has(id))
+    .slice(0, MAX_CO_AUTHORS);
+}
+
+/** Body of a message push: the text, or a neutral line without preview. */
+function messageBody(message, preview, lang = 'en') {
+  const capsule = message.type === 'capsule';
+  const photo = message.type === 'image';
+  if (message.type === 'voice') return `🎤 ${i18n.t(lang, 'messageVoice')}`;
+  if (!preview) {
+    return i18n.t(lang, capsule ? 'messageCapsule' : photo ? 'messagePhoto' : 'messageNoPreview');
+  }
+  const short = shorten(String(message.text || ''));
+  if (photo) {
+    return short && short !== PHOTO_SIGN ? `${PHOTO_SIGN} ${short}` : i18n.t(lang, 'messagePhoto');
+  }
+  return capsule ? i18n.t(lang, 'messageCapsuleTitled', { title: short }) : short;
+}
+
+/** [text] shortened to the preview length of a push. */
+function shorten(text) {
+  return text.length > PREVIEW_LENGTH ? `${text.slice(0, PREVIEW_LENGTH - 1)}…` : text;
+}
+
+function chatMessage({ senderName, senderId, chatId, messageId, body, title }, token, sound = true) {
+  return {
+    token,
+    notification: { title: title || senderName, body },
     data: {
       type: 'message',
       userId: senderId,
@@ -162,8 +214,9 @@ async function onNotificationCreated(services, uid, notification) {
   const settings = await prefs.loadSettings(services.db, uid);
   const blocked = prefs.blockedReason(settings, 'follows', now(services));
   if (blocked) return { skipped: blocked };
-  const sound = settings.notifications.sound;
-  return sendToUser(services, uid, (token) => followMessage(notification, token, sound));
+  const sound = prefs.alertOf(settings);
+  const lang = i18n.languageOf(settings);
+  return sendToUser(services, uid, (token) => followMessage(notification, token, sound, lang));
 }
 
 /**
@@ -172,6 +225,9 @@ async function onNotificationCreated(services, uid, notification) {
  * hours. One push per chat at a time on Android (tag = chat id).
  */
 async function onMessageCreated(services, chatId, messageId, message) {
+  if (String(chatId).startsWith('g_')) {
+    return onGroupMessageCreated(services, chatId, messageId, message);
+  }
   const members = String(chatId).split('_');
   const senderId = message && message.senderId;
   if (members.length !== 2 || !senderId || !members.includes(senderId)) return null;
@@ -184,12 +240,56 @@ async function onMessageCreated(services, chatId, messageId, message) {
   if (blocked) return { skipped: blocked };
 
   const sender = await db.collection('users').doc(senderId).get();
-  const senderName = (sender.exists && (sender.get('name') || sender.get('username'))) || 'New message';
-  const body = messageBody(message, settings.notifications.preview);
-  const sound = settings.notifications.sound;
+  const lang = i18n.languageOf(settings);
+  const senderName =
+    (sender.exists && (sender.get('name') || sender.get('username'))) ||
+    i18n.t(lang, 'messageNoPreview');
+  const body = messageBody(message, settings.notifications.preview, lang);
+  const sound = prefs.alertOf(settings);
   return sendToUser(services, to, (token) =>
     chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound),
   );
+}
+
+/** Most people a group push goes to (groups have at most 20 members). */
+const GROUP_PUSH_LIMIT = 20;
+
+/**
+ * A message in group [chatId]: every other member hears it ("Group name",
+ * "Bob: text"), each by their own settings (mutes, quiet hours, previews).
+ */
+async function onGroupMessageCreated(services, chatId, messageId, message) {
+  const { db } = services;
+  const senderId = message && message.senderId;
+  const group = await db.collection('chats').doc(chatId).get();
+  const members = group.exists ? group.get('members') : null;
+  if (!senderId || !Array.isArray(members) || !members.includes(senderId)) return null;
+  const sender = await db.collection('users').doc(senderId).get();
+  const groupName = String(group.get('name') || '');
+  const recipients = members.filter((m) => m !== senderId).slice(0, GROUP_PUSH_LIMIT);
+  const report = {};
+  for (const to of recipients) {
+    const settings = await prefs.loadSettings(db, to);
+    if (settings.mutedChats.includes(chatId)) {
+      report[to] = { skipped: 'muted' };
+      continue;
+    }
+    const blocked = prefs.blockedReason(settings, 'messages', now(services));
+    if (blocked) {
+      report[to] = { skipped: blocked };
+      continue;
+    }
+    const lang = i18n.languageOf(settings);
+    const senderName =
+      (sender.exists && (sender.get('name') || sender.get('username'))) || i18n.t(lang, 'someone');
+    const text = messageBody(message, settings.notifications.preview, lang);
+    const body = settings.notifications.preview ? `${senderName}: ${text}` : text;
+    const sound = prefs.alertOf(settings);
+    report[to] = await sendToUser(services, to, (token) =>
+      chatMessage({ senderName, senderId, chatId, messageId, body, title: groupName || senderName }, token, sound),
+    );
+  }
+  return report;
 }
 
 /**
@@ -198,12 +298,16 @@ async function onMessageCreated(services, chatId, messageId, message) {
  * also friends for friends-only capsules, and only followers who kept
  * notifications on.
  */
-async function capsuleRecipients(db, ownerId, privacy, ownerFriends) {
+async function capsuleRecipients(db, ownerId, privacy, ownerFriends, max = MAX_FOLLOWER_FANOUT) {
   if (privacy === 'private') return [];
+  // Bounded (B6): at most [max] followers; one capsule never fans out to
+  // an unbounded audience. (No ordering: follows written by older app
+  // versions may lack followedAt and an orderBy would leave them out.)
   const followers = await db
     .collection('users')
     .doc(ownerId)
     .collection('followers')
+    .limit(max)
     .get();
   let ids = followers.docs.map((d) => d.id).filter((id) => id !== ownerId);
   if (privacy !== 'public') {
@@ -218,7 +322,10 @@ async function capsuleRecipients(db, ownerId, privacy, ownerFriends) {
   return ids.filter((_, i) => following[i].exists && following[i].get('notificationsEnabled') === true);
 }
 
-/** capsules/{id} was created: notify the owner's followers. */
+/**
+ * capsules/{id} was created: notify its co-authors (whatever its privacy)
+ * and the owner's followers (co-authors hear about it only once).
+ */
 async function onCapsuleCreated(services, capsuleId, capsule) {
   const { db } = services;
   // `creatorId` was what this function used to read (never written, BUG-026).
@@ -231,21 +338,28 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
   const owner = ownerDoc.data();
   const creatorName = owner.username || owner.name || 'Someone';
 
-  const recipients = await capsuleRecipients(db, ownerId, privacy, owner.friends || []);
-  if (recipients.length === 0) return { recipients: 0 };
+  const coAuthors = coAuthorsOf(capsule, ownerId, owner.friends || []);
+  const together = new Set(coAuthors);
+  const recipients = (await capsuleRecipients(db, ownerId, privacy, owner.friends || []))
+    .filter((uid) => !together.has(uid));
+  if (recipients.length === 0 && coAuthors.length === 0) return { recipients: 0 };
   const at = now(services);
 
   // The in-app notification is written for every recipient, with or without
-  // a device token.
-  for (let i = 0; i < recipients.length; i += BATCH_LIMIT) {
+  // a device token. Old apps show an unknown type's stored message.
+  const everyone = [
+    ...coAuthors.map((uid) => ({ uid, type: 'coAuthor', message: 'made a capsule with you' })),
+    ...recipients.map((uid) => ({ uid, type: 'capsule', message: 'created a new capsule' })),
+  ];
+  for (let i = 0; i < everyone.length; i += BATCH_LIMIT) {
     const batch = db.batch();
-    for (const uid of recipients.slice(i, i + BATCH_LIMIT)) {
+    for (const { uid, type, message } of everyone.slice(i, i + BATCH_LIMIT)) {
       batch.set(db.collection('users').doc(uid).collection('notifications').doc(), {
-        type: 'capsule',
+        type,
         fromUserId: ownerId,
         fromUserName: creatorName,
         fromUserAvatar: '',
-        message: 'created a new capsule',
+        message,
         capsuleId,
         timestamp: FieldValue.serverTimestamp(),
         isRead: false,
@@ -257,17 +371,20 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
   // Pushes only for recipients who want capsule pushes now; the in-app
   // notification above is written for everyone.
   const results = await Promise.all(
-    recipients.map(async (uid) => {
+    everyone.map(async ({ uid, type }) => {
       const settings = await prefs.loadSettings(db, uid);
       if (prefs.blockedReason(settings, 'capsules', at)) return { sent: 0, pruned: 0 };
-      const sound = settings.notifications.sound;
+      const sound = prefs.alertOf(settings);
+      const lang = i18n.languageOf(settings);
+      const build = type === 'coAuthor' ? coAuthorMessage : capsuleMessage;
       return sendToUser(services, uid, (token) =>
-        capsuleMessage({ creatorName, ownerId, capsuleId }, token, sound),
+        build({ creatorName, ownerId, capsuleId }, token, sound, lang),
       );
     }),
   );
   return {
     recipients: recipients.length,
+    coAuthors: coAuthors.length,
     sent: results.reduce((n, r) => n + r.sent, 0),
     pruned: results.reduce((n, r) => n + r.pruned, 0),
   };
@@ -310,11 +427,18 @@ module.exports = {
   sendToUser,
   followMessage,
   capsuleMessage,
+  coAuthorMessage,
+  coAuthorsOf,
   onNotificationCreated,
   messageBody,
+  shorten,
+  delivery,
+  now,
   chatMessage,
   onMessageCreated,
+  onGroupMessageCreated,
   capsuleRecipients,
+  MAX_FOLLOWER_FANOUT,
   onCapsuleCreated,
   profileSummary,
 };

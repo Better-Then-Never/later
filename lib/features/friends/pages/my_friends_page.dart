@@ -14,7 +14,8 @@ import '../../../shared/widgets/buttons/go_back_button.dart';
 import '../../users/user_directory.dart';
 import '../friends_store.dart';
 import '../widgets/my_friends/my_friends_grouped_by_letter_list.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// All friends grouped by first letter, with a local search.
 class MyFriendsPage extends StatefulWidget {
@@ -75,8 +76,8 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
       body = grouped.isEmpty
           ? DefaultEmptyInboxInfo(
               message: _query.isEmpty
-                  ? 'No friends added yet'
-                  : 'No friends match your search',
+                  ? context.l10n.friendsEmpty
+                  : context.l10n.friendsNoMatches,
               assetPath: AppIcons.profileFriendSearch,
             )
           : MyFriendsGroupedByLetterList(
@@ -86,18 +87,19 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Column(
         children: [
           PageHeader(
-            mainText: 'My friends',
+            mainText: context.l10n.friendsMyFriendsTitle,
             leadingButton: GoBackButton(context: context),
             searchBar: DefaultSearchBar(
               controller: _searchController,
-              hintText: 'Find my friends',
+              hintText: context.l10n.friendsSearchHint,
               trailingButton: DefaultIconButton(
                 onTap: () => AppRoutes.scanProfileQr(context),
                 assetPath: AppIcons.friendsQrScan,
+                semanticLabel: context.l10n.friendsQrTitle,
                 size: screenWidth * 0.09,
               ),
             ),

@@ -28,3 +28,24 @@ material-icon lib/shared/widgets/app_network_image.dart Icons.image  # original 
 
 
 material-icon lib/features/settings/widgets/settings_scaffold.dart Icons.check_circle  # same check as the success toasts (selected option)
+
+# UX mission: achievement badges draw a Material symbol inside the app's own
+# badge (AchievementIcon); the server registry names the same symbols.
+material-icon lib/features/achievements/achievement_catalog.dart Icons.photo_camera  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.collections  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.public  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.animation  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.local_fire_department  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.explore  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.flight_takeoff  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.favorite  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.chat_bubble  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.group  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.nightlight  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.wb_twilight  # achievement badge
+material-icon lib/features/achievements/achievement_catalog.dart Icons.visibility  # achievement badge
+# The verified mark is the platform's standard badge (no custom artwork).
+material-icon lib/shared/widgets/user/user_name_and_username.dart Icons.verified  # verified badge
+material-icon lib/shared/widgets/user/verified_name.dart Icons.verified  # verified badge
+# Locked capsule on a friend's profile: the same symbol as the history list.
+material-icon lib/features/friends/widgets/profile/friend_capsules_strip.dart Icons.lock_clock  # locked capsule

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/errors/app_failure.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/options/options_input_field.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
@@ -58,37 +59,31 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
   Widget build(BuildContext context) {
     final auth = context.read<AuthRepository>();
     final current = auth.currentEmail ?? '';
+    final l10n = context.l10n;
     if (!auth.hasPassword) {
       return SettingsScaffold(
-        title: 'Email',
-        description: 'You sign in with Google as $current',
-        children: const [
-          SettingsNote(
-            'Your email comes from your Google account. To use another one, '
-            'change it in your Google account.',
-          ),
-        ],
+        title: l10n.settingsEmail,
+        description: l10n.settingsEmailGoogleDescription(current),
+        children: [SettingsNote(l10n.settingsEmailGoogleNote)],
       );
     }
     final gap = SizedBox(height: MediaQuery.of(context).size.height * 0.015);
+    final sentTo = _sentTo;
     return SettingsScaffold(
-      title: 'Email',
-      description: 'You sign in to Later with $current',
-      buttonText: 'Send confirmation link',
+      title: l10n.settingsEmail,
+      description: l10n.settingsEmailDescription(current),
+      buttonText: l10n.settingsEmailSendLink,
       onButton: _save,
       busy: _saving,
       children: [
-        if (_sentTo != null)
-          SettingsNote(
-            'We sent a link to $_sentTo. Open it to confirm: your email '
-            'changes then. Until you do, keep signing in with $current.',
-          ),
+        if (sentTo != null)
+          SettingsNote(l10n.settingsEmailLinkSent(sentTo, current)),
         Center(
           child: Column(
             children: [
               OptionsInputField(
                 controller: _email,
-                hintText: 'New email',
+                hintText: l10n.settingsEmailNewHint,
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
                 textInputAction: TextInputAction.next,
@@ -96,7 +91,7 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
               gap,
               OptionsInputField(
                 controller: _password,
-                hintText: 'Your password',
+                hintText: l10n.settingsYourPassword,
                 obscureText: true,
                 autofillHints: const [AutofillHints.password],
                 textInputAction: TextInputAction.done,
@@ -106,7 +101,7 @@ class _EmailSettingsPageState extends State<EmailSettingsPage> {
             ],
           ),
         ),
-        const SettingsNote('Your password confirms it is you.'),
+        SettingsNote(l10n.settingsPasswordConfirmsNote),
       ],
     );
   }

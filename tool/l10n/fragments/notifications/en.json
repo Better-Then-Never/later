@@ -1,0 +1,279 @@
+{
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "Title of the notifications page and of its empty state."
+  },
+  "notificationsTabAll": "All",
+  "@notificationsTabAll": {
+    "description": "Filter tab: every notification. Tabs sit side by side: keep them short."
+  },
+  "notificationsTabReplies": "Replies",
+  "@notificationsTabReplies": {
+    "description": "Filter tab (and title of its empty state): replies. Keep it short."
+  },
+  "notificationsTabComments": "Comments",
+  "@notificationsTabComments": {
+    "description": "Filter tab (and title of its empty state): comments on the user's capsules. Keep it short."
+  },
+  "notificationsEmptyAll": "Your notifications and activity will appear here",
+  "notificationsEmptyReplies": "Replies to your messages will appear here",
+  "notificationsEmptyComments": "Comments on your Capsules will appear here",
+  "notificationsTypeFollow": "New Follower",
+  "@notificationsTypeFollow": {
+    "description": "Title of a notification of this type."
+  },
+  "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeMessage": "New Message",
+  "notificationsTypeReply": "New Reply",
+  "notificationsTypeComment": "New Comment",
+  "notificationsTypeOther": "Notification",
+  "notificationsFollowBody": "{name} started following you",
+  "@notificationsFollowBody": {
+    "description": "Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsCapsuleBody": "{name} created a new capsule",
+  "@notificationsCapsuleBody": {
+    "description": "Notification text: a friend created a capsule. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsMessageBody": "{name} sent you a message",
+  "@notificationsMessageBody": {
+    "description": "Notification text: a chat message. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsCommentBody": "{name} commented on your capsule",
+  "@notificationsCommentBody": {
+    "description": "Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsCommentBodyWithText": "{name} commented: {text}",
+  "@notificationsCommentBodyWithText": {
+    "description": "Notification text: a comment on the user's capsule, followed by the comment itself. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      },
+      "text": {
+        "type": "String",
+        "example": "What a view!"
+      }
+    }
+  },
+  "notificationsReplyBody": "{name} replied to you",
+  "@notificationsReplyBody": {
+    "description": "Notification text: a reply to the user (no reply text stored). The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsReplyBodyWithText": "{name} replied: {text}",
+  "@notificationsReplyBodyWithText": {
+    "description": "Notification text: a reply to the user, followed by the reply itself. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      },
+      "text": {
+        "type": "String",
+        "example": "Thanks!"
+      }
+    }
+  },
+  "notificationsJustNow": "Just now",
+  "@notificationsJustNow": {
+    "description": "Time of a notification less than a minute old."
+  },
+  "notificationsMinutesAgo": "{count, plural, one{{count}m ago} other{{count}m ago}}",
+  "@notificationsMinutesAgo": {
+    "description": "Time of a notification less than an hour old (English abbreviates; write it the way your language shows recent times).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsHoursAgo": "{count, plural, one{{count}h ago} other{{count}h ago}}",
+  "@notificationsHoursAgo": {
+    "description": "Time of a notification less than a day old.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDaysAgo": "{count, plural, one{{count}d ago} other{{count}d ago}}",
+  "@notificationsDaysAgo": {
+    "description": "Time of a notification less than a week old; older ones show the date.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsSelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
+  "@notificationsSelectedCount": {
+    "description": "Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsMarkAsRead": "Mark as read",
+  "@notificationsMarkAsRead": {
+    "description": "Accessibility label of the selection bar button that marks the selected notifications as read."
+  },
+  "notificationsMarkedRead": "{count, plural, one{{count} notification marked as read} other{{count} notifications marked as read}}",
+  "@notificationsMarkedRead": {
+    "description": "Toast after marking the selected notifications as read.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDeleteConfirm": "{count, plural, one{Delete {count} notification?} other{Delete {count} notifications?}}",
+  "@notificationsDeleteConfirm": {
+    "description": "Title of the dialog that confirms deleting the selected notifications.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDeleted": "{count, plural, one{{count} notification deleted} other{{count} notifications deleted}}",
+  "@notificationsDeleted": {
+    "description": "Toast after the selected notifications were deleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsUnreadBadge": "{count, plural, one{{count} unread notification} other{{count} unread notifications}}",
+  "@notificationsUnreadBadge": {
+    "description": "Accessibility label of the red badge on the notifications bell.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsTypeReaction": "New Reaction",
+  "notificationsTypeFriendRequest": "Friend Request",
+  "notificationsTypeFriendAccepted": "New Friend",
+  "notificationsTypeAchievement": "Achievement",
+  "notificationsReactionBody": "{name} reacted {emoji} to your capsule",
+  "@notificationsReactionBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "emoji": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFriendRequestBody": "{name} wants to be your friend",
+  "@notificationsFriendRequestBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsFriendAcceptedBody": "{name} accepted your friend request",
+  "@notificationsFriendAcceptedBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsAchievementBody": "{name}: you unlocked a new achievement",
+  "@notificationsAchievementBody": {
+    "description": "{name} is the app's name (Later), shown in bold.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsChannelMessages": "Messages",
+  "@notificationsChannelMessages": {
+    "description": "Android notification channel name (phone settings)."
+  },
+  "notificationsChannelMessagesDescription": "New messages from your friends",
+  "notificationsChannelMessagesSilent": "Messages (silent)",
+  "notificationsChannelMessagesSilentDescription": "New messages, without sound or vibration",
+  "notificationsChannelActivity": "Activity",
+  "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
+  "notificationsChannelActivitySilent": "Activity (silent)",
+  "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
+  "notificationsChannelOther": "Other notifications",
+  "notificationsChannelOtherDescription": "Other notifications from Later",
+  "notificationsTypeCoAuthor": "Made Together",
+  "@notificationsTypeCoAuthor": {
+    "description": "Title of a notification: a friend made a capsule with the user (co-author)."
+  },
+  "notificationsCoAuthorBody": "{name} made a capsule with you",
+  "@notificationsCoAuthorBody": {
+    "description": "Notification: a friend added the user as a co-author of a new capsule.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "notificationsChannelMessagesNoVibration": "Messages (no vibration)",
+  "@notificationsChannelMessagesNoVibration": {
+    "description": "Android notification channel name: messages with sound, without vibration."
+  },
+  "notificationsChannelActivityNoVibration": "Activity (no vibration)",
+  "@notificationsChannelActivityNoVibration": {
+    "description": "Android notification channel name: activity with sound, without vibration."
+  },
+  "notificationsFromLater": "From the Later team",
+  "@notificationsFromLater": {
+    "description": "Label of an announcement in the notifications list."
+  },
+  "notificationsSwipeRead": "Read",
+  "@notificationsSwipeRead": {
+    "description": "Shown behind a notification swiped right: it becomes read."
+  },
+  "notificationsSwipeDelete": "Delete",
+  "@notificationsSwipeDelete": {
+    "description": "Shown behind a notification swiped left: it is deleted."
+  },
+  "notificationsNowFriends": "You are friends now",
+  "@notificationsNowFriends": {
+    "description": "Under a friend request notification once accepted."
+  }
+}

@@ -5,12 +5,18 @@ import '../../../app/router/app_routes.dart';
 import '../../../data/models/friend_request.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../profile/share/sharing_service.dart';
+import '../../../shared/widgets/user/user_about_line.dart';
 import '../../../shared/widgets/user/user_name_and_username.dart';
 import '../friend_actions.dart';
 import '../friends_store.dart';
-import '../widgets/profile/add_friend_profile_action_button.dart';
-import '../widgets/profile/add_friend_profile_header.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/options_menu.dart';
+import '../widgets/block_user.dart';
+import '../widgets/profile/add_friend_profile_action_button.dart';
+import '../widgets/report_user.dart';
+import '../widgets/profile/add_friend_profile_header.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Profile of someone who is not (yet) a friend: add, cancel, accept or
 /// reject, live from [FriendsStore].
@@ -35,7 +41,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       case FriendRelation.self:
         PopupNotificationService.showInfo(
           context: context,
-          message: 'This is your account',
+          message: context.l10n.friendsThisIsYou,
           position: NotificationPosition.center,
         );
       case FriendRelation.friends:
@@ -43,17 +49,50 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
       case FriendRelation.requestSent:
         PopupNotificationService.showInfo(
           context: context,
-          message: 'Friend request is pending',
+          message: context.l10n.friendsRequestPendingInfo,
           position: NotificationPosition.center,
         );
       case FriendRelation.requestReceived:
         PopupNotificationService.showInfo(
           context: context,
-          message: 'This user sent you a friend request',
+          message: context.l10n.friendsRequestReceivedInfo,
           position: NotificationPosition.center,
         );
       case FriendRelation.none:
         actions.sendRequest(widget.userId);
+    }
+  }
+
+  /// Report or block someone who is not a friend (strangers can still send
+  /// requests and appear on public capsules).
+  Future<void> _options() async {
+    final l10n = context.l10n;
+    final choice = await showCenteredSheet<String>(
+      context,
+      OptionsMenu(
+        children: [
+          OptionsMenuItem(
+            text: l10n.friendsReport,
+            textColor: AppColors.danger,
+            isFirst: true,
+            onPressed: () => Navigator.of(context).pop('report'),
+          ),
+          const OptionsMenuDivider(),
+          OptionsMenuItem(
+            text: l10n.friendsBlock,
+            textColor: AppColors.danger,
+            isLast: true,
+            onPressed: () => Navigator.of(context).pop('block'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    switch (choice) {
+      case 'report':
+        await reportUser(context, widget.userId);
+      case 'block':
+        await confirmBlockUser(context, widget.userId);
     }
   }
 
@@ -70,7 +109,7 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -88,12 +127,15 @@ class _AddFriendProfilePageState extends State<AddFriendProfilePage> {
                     context: context,
                     userId: userId,
                   ),
+                  onOptions: relation == FriendRelation.self ? null : _options,
                 ),
                 const SizedBox(height: 110),
                 UserNameAndUsername(
+                  showCounts: true,
                   userId: userId,
                   crossAxisAlignment: CrossAxisAlignment.center,
                 ),
+                UserAboutLine(userId: userId),
               ],
             ),
           ),

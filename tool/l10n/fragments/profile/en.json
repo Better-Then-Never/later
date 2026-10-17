@@ -1,0 +1,292 @@
+{
+  "profileAddFriends": "Add friends",
+  "@profileAddFriends": {
+    "description": "Card on the own profile page that opens Add Friends."
+  },
+  "profileBackgroundDelete": "Delete background picture",
+  "@profileBackgroundDelete": {
+    "description": "Red option in the background picture menu."
+  },
+  "profileBackgroundTitle": "Background picture",
+  "@profileBackgroundTitle": {
+    "description": "Title of the menu shown when the user taps their profile background (narrow, large bold text)."
+  },
+  "profileBackgroundUpdated": "Background picture updated successfully!",
+  "profileChoosePinned": "Choose pinned friends",
+  "@profileChoosePinned": {
+    "description": "Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile."
+  },
+  "profileCopyLink": "Copy Link",
+  "@profileCopyLink": {
+    "description": "Button on Share Profile that copies the profile link (half-width button with an icon: keep it short)."
+  },
+  "profileErrorCopyLink": "Failed to copy link",
+  "profileErrorDeleteBackground": "Failed to delete background picture",
+  "profileErrorDeletePicture": "Failed to delete profile picture",
+  "profileErrorShare": "Failed to share profile",
+  "profileErrorUploadBackground": "Failed to upload background picture",
+  "profileErrorUploadPicture": "Failed to upload profile picture",
+  "profileImageFromGallery": "Choose from gallery",
+  "@profileImageFromGallery": {
+    "description": "Option in the profile / background picture menu."
+  },
+  "profileImageTakePhoto": "Take a photo",
+  "@profileImageTakePhoto": {
+    "description": "Option in the profile / background picture menu: opens the camera."
+  },
+  "profileLinkCopied": "Link copied to clipboard!",
+  "profileMyCapsules": "My capsules",
+  "@profileMyCapsules": {
+    "description": "Section title on the own profile page."
+  },
+  "profileMyFriends": "My friends",
+  "@profileMyFriends": {
+    "description": "Row under the pinned friends on the profile page: opens the friends list."
+  },
+  "profileNoFriends": "You have no friends yet",
+  "@profileNoFriends": {
+    "description": "Shown instead of the pinned friends on the profile page when the user has no friends."
+  },
+  "profilePictureDelete": "Delete profile icon",
+  "@profilePictureDelete": {
+    "description": "Red option in the profile picture menu."
+  },
+  "profilePictureTitle": "Profile picture",
+  "@profilePictureTitle": {
+    "description": "Title of the menu shown when the user taps their profile picture (narrow, large bold text)."
+  },
+  "profilePictureUpdated": "Profile picture updated successfully!",
+  "profilePinnedHint": "If you choose fewer than 3, random friends from your list will be shown",
+  "@profilePinnedHint": {
+    "description": "Explanation under the title of the pinned friends chooser."
+  },
+  "profilePinnedLimit": "You can only pin up to 3 friends",
+  "@profilePinnedLimit": {
+    "description": "Error when the user ticks a fourth pinned friend."
+  },
+  "profilePinnedTitle": "Choose up to 3 pinned friends",
+  "@profilePinnedTitle": {
+    "description": "Title of the sheet where the user picks the friends pinned to their profile."
+  },
+  "profilePinnedUpdated": "Pinned friends updated successfully!",
+  "profileQrError": "Something went wrong...",
+  "@profileQrError": {
+    "description": "Shown in place of the QR code on Share Profile if it cannot be drawn."
+  },
+  "profileShare": "Share",
+  "@profileShare": {
+    "description": "Button on Share Profile that opens the system share sheet (half-width button with an icon: keep it short)."
+  },
+  "profileShareHeading": "Share Your Profile",
+  "@profileShareHeading": {
+    "description": "Heading above the QR code on Share Profile."
+  },
+  "profileShareHint": "Others can scan this code with their camera or the app to add you as a friend",
+  "@profileShareHint": {
+    "description": "Blue info card at the bottom of Share Profile."
+  },
+  "profileShareMessage": "Check out {name} on Later!\n{link}",
+  "@profileShareMessage": {
+    "description": "Text passed to the system share sheet when sharing a profile (the user's own or a friend's).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna Smith"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://later.app/u/abc"
+      }
+    }
+  },
+  "profileShareSubject": "Connect with {name} on Later",
+  "@profileShareSubject": {
+    "description": "Subject passed to the system share sheet (used by e-mail apps) when sharing a profile.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna Smith"
+      }
+    }
+  },
+  "profileShareSubtitle": "Let others scan this QR code to add you as a friend",
+  "@profileShareSubtitle": {
+    "description": "Grey line under the heading on Share Profile."
+  },
+  "profileShareTitle": "Share Profile",
+  "@profileShareTitle": {
+    "description": "Page title of Share Profile."
+  },
+  "profileUpdating": "Updating...",
+  "@profileUpdating": {
+    "description": "Shown on the profile or background picture while it uploads or is deleted."
+  },
+  "profileViewProfile": "View profile page",
+  "@profileViewProfile": {
+    "description": "Option in the menu of a pinned friend: opens that friend's profile."
+  },
+  "profileFollowers": "{count, plural, =1{1 follower} other{{count} followers}}",
+  "@profileFollowers": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowing": "{count} following",
+  "@profileFollowing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileVerified": "Verified account",
+  "profileFriendsSection": "Friends",
+  "profileNoFriendsAction": "Find people you know",
+  "@profileFriendsSection": {
+    "description": "Small title at the top of the friends card on the profile."
+  },
+  "@profileNoFriendsAction": {
+    "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
+  },
+  "profileAboutPrompt": "Add a few words about you",
+  "@profileAboutPrompt": {
+    "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
+  },
+  "profilePinLimit": "Up to {count} pinned friends",
+  "@profilePinLimit": {
+    "description": "Shown when more friends are pinned than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFriendsAll": "All",
+  "@profileFriendsAll": {
+    "description": "Link on the profile's friends card to the whole friends list."
+  },
+  "profileQuickMessage": "Message",
+  "@profileQuickMessage": {
+    "description": "Quick action on a friend in the profile: open the chat."
+  },
+  "profileQuickCapsule": "Send a capsule",
+  "@profileQuickCapsule": {
+    "description": "Quick action on a friend in the profile: send them a capsule."
+  },
+  "profilePin": "Pin",
+  "@profilePin": {
+    "description": "Quick action: pin the friend at the start of the profile's friends."
+  },
+  "profileUnpin": "Unpin",
+  "@profileUnpin": {
+    "description": "Quick action: unpin the friend."
+  },
+  "profilePinned": "{name} pinned",
+  "@profilePinned": {
+    "description": "Toast after pinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "profileUnpinned": "{name} unpinned",
+  "@profileUnpinned": {
+    "description": "Toast after unpinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
+  "@profileStatCapsules": {
+    "description": "Label under the number of the user's capsules on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
+  "@profileStatPlaces": {
+    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatTogether": "with friends",
+  "@profileStatTogether": {
+    "description": "Label under the number of capsules made with friends (co-authors)."
+  },
+  "profileNewCapsule": "New capsule",
+  "@profileNewCapsule": {
+    "description": "Screen reader start of the new-capsule buttons on the profile (\"New capsule: For friends\")."
+  },
+  "profileNewForFriends": "For friends",
+  "@profileNewForFriends": {
+    "description": "Profile button: a new capsule for friends."
+  },
+  "profileNewForEveryone": "For everyone",
+  "@profileNewForEveryone": {
+    "description": "Profile button: a new capsule for everyone."
+  },
+  "worldTitle": "Passport",
+  "@worldTitle": {
+    "description": "The world view (B7): a passport of the countries where the user left capsules."
+  },
+  "worldDescription": "Countries and towns of your capsules",
+  "@worldDescription": {
+    "description": "Under the passport title."
+  },
+  "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
+  "@worldCountriesLabel": {
+    "description": "Under the number of countries in the passport and on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldTownsLabel": "{count, plural, =1{town} other{towns}}",
+  "@worldTownsLabel": {
+    "description": "Under the number of towns in the passport and on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldCapsules": "{count, plural, =1{1 capsule} other{{count} capsules}}",
+  "@worldCapsules": {
+    "description": "On a country stamp: capsules left there.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "worldFirst": "First: {date}",
+  "@worldFirst": {
+    "description": "On a country stamp: the month of the first capsule there (\"Oct 2026\").",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "worldEmpty": "Leave a capsule somewhere new and its country gets a stamp here.",
+  "@worldEmpty": {
+    "description": "Passport without stamps."
+  },
+  "worldNote": "Stamps come from capsules made since this update.",
+  "@worldNote": {
+    "description": "Footnote: older capsules have no country, so they are not in the passport."
+  }
+}

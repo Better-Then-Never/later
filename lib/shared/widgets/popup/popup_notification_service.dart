@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:later/shared/widgets/popup/popup_notification.dart';
 import 'package:later/core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 enum NotificationPosition { top, center, bottom }
 
@@ -14,8 +15,8 @@ class PopupNotificationService {
     required BuildContext context,
     required String message,
     Color? backgroundColor,
-    Color textColor = AppColors.white,
-    Color iconColor = AppColors.white,
+    Color textColor = AppColors.onAccent,
+    Color iconColor = AppColors.onAccent,
     IconData? icon,
     Duration duration = const Duration(seconds: 2),
     double topOffset = 50,
@@ -27,14 +28,18 @@ class PopupNotificationService {
 
     hide();
 
-    final overlay = Overlay.of(context);
+    // A navigator's own context (the root one, after a card closed) sits
+    // above its overlay: use the navigator's.
+    final overlay =
+        Overlay.maybeOf(context) ?? Navigator.maybeOf(context)?.overlay;
+    if (overlay == null) return;
     _currentKey = GlobalKey<PopupNotificationState>();
 
     _overlayEntry = OverlayEntry(
       builder: (context) => PopupNotification(
         key: _currentKey,
         message: message,
-        backgroundColor: backgroundColor ?? AppColors.grey800,
+        backgroundColor: backgroundColor ?? context.palette.toastNeutral,
         textColor: textColor,
         iconColor: iconColor,
         icon: icon,

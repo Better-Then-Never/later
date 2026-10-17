@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/models/user_settings.dart';
 import '../../data/repositories/repositories.dart';
 
-/// The signed-in user's account settings (notification preferences, muted
-/// chats), live from `users/{uid}/settings/app`.
+/// The signed-in user's account settings (notification preferences, privacy,
+/// muted chats, language for pushes), live from `users/{uid}/settings/app`.
 ///
 /// Changes apply at once and roll back if the save fails. The Cloud
 /// Functions read the same document before every push.
@@ -26,12 +27,92 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
   UserSettings _settings = const UserSettings();
   bool _loaded = false;
   bool _offsetChecked = false;
+  String? _wantedLanguage;
+  String? _savingLanguage;
 
   UserSettings get settings => _settings;
   NotificationSettings get notifications => _settings.notifications;
+  PrivacySettings get privacy => _settings.privacy;
   Set<String> get mutedChats => _settings.mutedChats;
   bool get isLoaded => _loaded;
   bool isMuted(String chatId) => _settings.mutedChats.contains(chatId);
+
+  List<String> get pinnedChats => _settings.pinnedChats;
+
+  bool isPinned(String chatId) => _settings.pinnedChats.contains(chatId);
+
+  List<String> get pinnedFriends => _settings.pinnedFriends;
+
+  /// The friends first on the profile, in this order; at most
+  /// [UserSettings.maxPinnedFriends].
+  Future<AppFailure?> setPinnedFriends(List<String> friends) async {
+    final uid = _uid;
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
+    if (friends.length > UserSettings.maxPinnedFriends) {
+      return ValidationFailure(
+        AppL10n.current.profilePinLimit(UserSettings.maxPinnedFriends),
+      );
+    }
+    if (listEquals(friends, _settings.pinnedFriends)) return null;
+    final previous = _settings;
+    _settings = _settings.copyWith(pinnedFriends: friends);
+    notifyListeners();
+    try {
+      await _repo.setPinnedFriends(uid, friends);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning('Pinning friends failed', error: e, stackTrace: st);
+      if (_uid == uid) {
+        _settings = previous;
+        notifyListeners();
+      }
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorSaveFailed,
+      );
+    }
+  }
+
+  /// Keeps chat [chatId] at the top of the list, or not; at most
+  /// [UserSettings.maxPinned].
+  Future<AppFailure?> setChatPinned(
+    String chatId, {
+    required bool pinned,
+  }) async {
+    final uid = _uid;
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
+    if (pinned == isPinned(chatId)) return null;
+    if (pinned && _settings.pinnedChats.length >= UserSettings.maxPinned) {
+      return ValidationFailure(
+        AppL10n.current.messagesPinLimit(UserSettings.maxPinned),
+      );
+    }
+    final previous = _settings;
+    _settings = _settings.copyWith(
+      pinnedChats: pinned
+          ? [..._settings.pinnedChats, chatId]
+          : ([..._settings.pinnedChats]..remove(chatId)),
+    );
+    notifyListeners();
+    try {
+      await _repo.setChatPinned(uid, chatId, pinned: pinned);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning('Pinning the chat failed', error: e, stackTrace: st);
+      if (_uid == uid) {
+        _settings = previous;
+        notifyListeners();
+      }
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorChatUpdateFailed,
+      );
+    }
+  }
 
   @override
   void attach(String uid) {
@@ -44,6 +125,7 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
             _loaded = true;
             notifyListeners();
             _syncUtcOffset();
+            _syncLanguage();
           },
           onError: (Object e, StackTrace st) {
             // Defaults stay in place; the server applies the same ones.
@@ -66,6 +148,7 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
     _settings = const UserSettings();
     _loaded = false;
     _offsetChecked = false;
+    _savingLanguage = null;
     notifyListeners();
   }
 
@@ -76,7 +159,9 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
   /// previous settings are back in place).
   Future<AppFailure?> updateNotifications(NotificationSettings next) async {
     final uid = _uid;
-    if (uid == null) return const PermissionFailure('Please sign in again.');
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
     final previous = _settings;
     final withOffset = next.copyWith(utcOffsetMinutes: _utcOffset());
     _settings = _settings.copyWith(notifications: withOffset);
@@ -90,14 +175,69 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
         _settings = previous;
         notifyListeners();
       }
-      return AppFailure.from(e, fallbackMessage: 'Could not save settings.');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorSaveFailed,
+      );
     }
+  }
+
+  /// Saves [next] like [updateNotifications].
+  Future<AppFailure?> updatePrivacy(PrivacySettings next) async {
+    final uid = _uid;
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
+    final previous = _settings;
+    _settings = _settings.copyWith(privacy: next);
+    notifyListeners();
+    try {
+      await _repo.savePrivacy(uid, next);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning('Saving privacy failed', error: e, stackTrace: st);
+      if (_uid == uid) {
+        _settings = previous;
+        notifyListeners();
+      }
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorSaveFailed,
+      );
+    }
+  }
+
+  /// The language the app is showing ([code]); saved once it differs from
+  /// the stored one, so pushes arrive in it. Cheap to call on every build.
+  void syncLanguage(String code) {
+    _wantedLanguage = code;
+    _syncLanguage();
+  }
+
+  void _syncLanguage() {
+    final uid = _uid;
+    final wanted = _wantedLanguage;
+    if (uid == null || !_loaded || wanted == null) return;
+    if (_settings.language == wanted || _savingLanguage == wanted) return;
+    _savingLanguage = wanted;
+    unawaited(
+      _repo.saveLanguage(uid, wanted).catchError((Object e, StackTrace st) {
+        AppLogger.warning(
+          'Saving the language failed',
+          error: e,
+          stackTrace: st,
+        );
+        if (_savingLanguage == wanted) _savingLanguage = null;
+      }),
+    );
   }
 
   /// Mutes or unmutes pushes (and the unread badge) for [chatId].
   Future<AppFailure?> setChatMuted(String chatId, {required bool muted}) async {
     final uid = _uid;
-    if (uid == null) return const PermissionFailure('Please sign in again.');
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
     final previous = _settings;
     _settings = _settings.copyWith(
       mutedChats: muted
@@ -114,18 +254,23 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
         _settings = previous;
         notifyListeners();
       }
-      return AppFailure.from(e, fallbackMessage: 'Could not update the chat.');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorChatUpdateFailed,
+      );
     }
   }
 
-  /// Quiet hours are in local time: when the device's offset changed since
-  /// they were saved (travel, daylight saving), save the new offset once.
+  /// Quiet hours and the streak reminder are in local time: when the
+  /// device's offset changed since they were saved (travel, daylight saving),
+  /// save the new offset once.
   void _syncUtcOffset() {
     if (_offsetChecked) return;
     _offsetChecked = true;
     final n = _settings.notifications;
     final offset = _utcOffset();
-    if (!n.quietHours.enabled || n.utcOffsetMinutes == offset) return;
+    final usesLocalTime = n.quietHours.enabled || n.streakReminder;
+    if (!usesLocalTime || n.utcOffsetMinutes == offset) return;
     unawaited(updateNotifications(n));
   }
 }

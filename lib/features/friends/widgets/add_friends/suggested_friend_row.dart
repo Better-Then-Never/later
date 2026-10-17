@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/assets/app_assets.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/user/user_round_avatar.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/user/verified_name.dart';
+import '../../../../core/l10n/l10n.dart';
+import '../../../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 /// One suggestion: avatar, name, @username, add (or pending) and hide.
@@ -14,6 +16,9 @@ class SuggestedFriendRow extends StatelessWidget {
   final String userId;
   final String name;
   final String username;
+
+  /// Friends in common, shown after the username when there are any.
+  final int mutualFriends;
   final FriendRelation relation;
   final VoidCallback onTapProfile;
   final VoidCallback onSendRequest;
@@ -25,6 +30,7 @@ class SuggestedFriendRow extends StatelessWidget {
     required this.userId,
     required this.name,
     required this.username,
+    this.mutualFriends = 0,
     required this.relation,
     required this.onTapProfile,
     required this.onSendRequest,
@@ -42,26 +48,30 @@ class SuggestedFriendRow extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 0),
-          leading: UserRoundAvatar(userId: userId, radius: screenWidth * 0.07),
-          title: Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          leading: UserRoundAvatar(
+            userId: userId,
+            radius: UserRoundAvatar.listRadius(screenWidth),
+          ),
+          title: VerifiedName(
+            uid: userId,
+            name: name,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
               fontFamily: kAppFontFamily,
-              color: AppColors.black,
+              color: context.palette.textPrimary,
             ),
           ),
           subtitle: Text(
-            '@$username',
+            mutualFriends > 0
+                ? '@$username · ${context.l10n.friendsMutualCount(mutualFriends)}'
+                : '@$username',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: screenWidth * 0.04,
               fontFamily: kAppFontFamily,
-              color: AppColors.textSecondary,
+              color: context.palette.textSecondary,
             ),
           ),
           trailing: Row(
@@ -76,9 +86,9 @@ class SuggestedFriendRow extends StatelessWidget {
                   : Semantics(
                       button: true,
                       label: relation == FriendRelation.requestReceived
-                          ? 'Accept friend request'
-                          : 'Send friend request',
-                      child: GestureDetector(
+                          ? context.l10n.friendsAcceptRequestLabel
+                          : context.l10n.friendsSendRequestLabel,
+                      child: _Target(
                         onTap: onSendRequest,
                         child: Image.asset(
                           AppIcons.profileAddFriend,
@@ -87,11 +97,10 @@ class SuggestedFriendRow extends StatelessWidget {
                         ),
                       ),
                     ),
-              const SizedBox(width: 8),
               Semantics(
                 button: true,
-                label: 'Hide suggestion',
-                child: GestureDetector(
+                label: context.l10n.friendsHideSuggestionLabel,
+                child: _Target(
                   onTap: onRemove,
                   child: Image.asset(
                     AppIcons.friendsDeleteReset,
@@ -106,4 +115,19 @@ class SuggestedFriendRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A 44 dp tap target around a smaller picture (D-24).
+class _Target extends StatelessWidget {
+  const _Target({required this.onTap, required this.child});
+
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: onTap,
+    child: SizedBox.square(dimension: 44, child: Center(child: child)),
+  );
 }

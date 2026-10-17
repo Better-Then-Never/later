@@ -24,7 +24,7 @@ class DefaultTextButton extends StatelessWidget {
       padding: contentPadding ?? EdgeInsets.zero,
       child: TextButton(
         onPressed: onTap,
-        style: style ?? TextButtonStyles.profileTextButtonStyle(),
+        style: style ?? TextButtonStyles.profileTextButtonStyle(context),
         child: DefaultText(text, fontSize: size ?? 16),
       ),
     );

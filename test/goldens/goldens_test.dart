@@ -25,6 +25,10 @@ import 'package:later/features/profile/widgets/image_options_sheet.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/features/settings/device_settings_store.dart';
+import 'package:later/data/services/preferences_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> _loadFont(String family, List<String> paths) async {
   final loader = FontLoader(family);
@@ -54,6 +58,9 @@ Future<void> _loadFonts() async {
 
 /// Decodes every asset image on screen so it appears in the golden.
 Future<void> _precacheImages(WidgetTester tester) async {
+  // Picture lookups (fake, immediate) finish first: avatars then show their
+  // final image, not the skeleton of a pending lookup.
+  await tester.pump();
   await tester.runAsync(() async {
     for (final element in find.byType(Image).evaluate()) {
       final image = element.widget as Image;
@@ -79,9 +86,15 @@ Widget _app(Widget child) => MultiProvider(
     ChangeNotifierProvider(
       create: (_) => ProfileImageCache(FakeImageStorageRepository()),
     ),
+    ChangeNotifierProvider(
+      create: (_) => DeviceSettingsStore(PreferencesStore()),
+    ),
   ],
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
+    locale: const Locale('en'),
+    supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: ThemeData(fontFamily: kAppFontFamily),
     home: Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
@@ -96,6 +109,7 @@ Widget _app(Widget child) => MultiProvider(
 
 void main() {
   setUpAll(_loadFonts);
+  setUp(() => SharedPreferences.setMockInitialValues({}));
 
   Future<void> phone(WidgetTester tester) async {
     tester.view

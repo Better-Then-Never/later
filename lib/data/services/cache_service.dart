@@ -1,18 +1,28 @@
 import 'dart:io';
 
 import 'package:flutter/painting.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
+import 'app_image_cache.dart';
 
 /// Files the app can always make again: photos taken or picked for a
 /// capsule or a profile picture, shared QR images (all in the temporary
 /// directory), and pictures held in memory.
 class CacheService {
-  CacheService({Future<Directory> Function()? directory})
-    : _directory = directory ?? getTemporaryDirectory;
+  CacheService({
+    Future<Directory> Function()? directory,
+    Future<void> Function()? clearDownloads,
+  }) : _directory = directory ?? getTemporaryDirectory,
+       _clearDownloads = clearDownloads ?? AppImageCache.clear;
 
   final Future<Directory> Function() _directory;
+
+  /// Empties the downloaded photos' index (their files are in the
+  /// temporary directory too).
+  final Future<void> Function() _clearDownloads;
 
   /// Bytes on disk plus decoded pictures in memory.
   Future<int> size() async {
@@ -43,6 +53,7 @@ class CacheService {
     PaintingBinding.instance.imageCache
       ..clear()
       ..clearLiveImages();
+    await _clearDownloads();
     try {
       final dir = await _directory();
       if (!dir.existsSync()) return;
@@ -58,13 +69,19 @@ class CacheService {
     }
   }
 
-  /// "0 B", "512 KB", "3.4 MB".
+  /// "0 B", "512 KB", "3.4 MB" (units and decimal comma follow the app's
+  /// language: "3,4 МБ").
   static String format(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).round()} KB';
-    if (bytes < 1024 * 1024 * 1024) {
-      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    final l10n = AppL10n.current;
+    final whole = NumberFormat.decimalPattern(l10n.localeName);
+    final tenth = NumberFormat('0.0', l10n.localeName);
+    if (bytes < 1024) return l10n.commonSizeBytes(whole.format(bytes));
+    if (bytes < 1024 * 1024) {
+      return l10n.commonSizeKilobytes(whole.format((bytes / 1024).round()));
     }
-    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+    if (bytes < 1024 * 1024 * 1024) {
+      return l10n.commonSizeMegabytes(tenth.format(bytes / (1024 * 1024)));
+    }
+    return l10n.commonSizeGigabytes(tenth.format(bytes / (1024 * 1024 * 1024)));
   }
 }

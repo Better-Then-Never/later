@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'user_round_avatar.dart';
-import '../../../core/theme/app_colors.dart';
+import 'verified_name.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../../../core/theme/app_palette.dart';
 
 class UserListTile extends StatelessWidget {
   final String uid;
@@ -25,24 +26,27 @@ class UserListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
-      leading: UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
-      title: Text(
-        name,
+      leading: UserRoundAvatar(
+        userId: uid,
+        radius: UserRoundAvatar.listRadius(screenWidth),
+      ),
+      title: VerifiedName(
+        uid: uid,
+        name: name,
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: screenWidth * 0.045,
           fontFamily: kAppFontFamily,
-          color: AppColors.black,
+          color: context.palette.textPrimary,
         ),
         maxLines: 2,
-        overflow: TextOverflow.ellipsis,
       ),
       subtitle: Text(
         '@$username',
         style: TextStyle(
           fontSize: screenWidth * 0.04,
           fontFamily: kAppFontFamily,
-          color: AppColors.textSecondary,
+          color: context.palette.textSecondary,
         ),
       ),
       trailing: trailing,

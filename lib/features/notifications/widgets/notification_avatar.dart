@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../../data/services/app_image_cache.dart';
 import '../../../data/services/profile_image_cache.dart';
+import '../../../shared/widgets/user/user_placeholder.dart';
 
 /// Sender avatar: the URL stored on the notification, else the sender's
-/// current profile picture, else the "no photo" placeholder (BUG-031: empty
-/// or asset-path avatars used to throw and render a grey circle).
+/// current profile picture, else their [UserPlaceholder] (F-40), or the "no
+/// photo" drawing for notifications without a sender (BUG-031: empty or
+/// asset-path avatars used to throw and render a grey circle).
 class NotificationAvatar extends StatelessWidget {
   const NotificationAvatar({
     super.key,
@@ -28,11 +31,26 @@ class NotificationAvatar extends StatelessWidget {
       (cache) => cache.url(userId ?? '', ProfileImageKind.profile),
     );
     final url = avatarUrl ?? cached;
+    final sender = userId;
+    if (url == null && sender != null && sender.isNotEmpty) {
+      return ClipOval(
+        child: SizedBox.square(
+          dimension: radius * 2,
+          child: UserPlaceholder(userId: sender),
+        ),
+      );
+    }
     return CircleAvatar(
       radius: radius,
-      backgroundColor: AppColors.placeholderGrey,
+      backgroundColor: context.palette.skeleton,
       backgroundImage: url != null
-          ? NetworkImage(url)
+          ? AppImageCache.provider(
+              url,
+              width: AppImageCache.decodeWidth(
+                radius * 2,
+                MediaQuery.devicePixelRatioOf(context),
+              ),
+            )
           : const AssetImage(AppIcons.profileNoPhoto) as ImageProvider,
       onBackgroundImageError: url != null ? (_, _) {} : null,
     );

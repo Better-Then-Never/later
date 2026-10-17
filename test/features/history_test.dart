@@ -6,13 +6,19 @@ import 'package:later/data/models/geo_position.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/services/geocoding_service.dart';
 import 'package:later/features/history/favorites_store.dart';
+import 'package:later/features/history/history_page.dart';
 import 'package:later/features/history/history_controller.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/history/widgets/capsule_list_tile.dart';
+import 'package:later/features/history/widgets/capsule_selection_action_bar.dart';
 import 'package:later/features/map/current_location.dart';
+import 'package:later/features/map/map_focus.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
+import '../helpers/test_app.dart';
+import 'package:later/features/settings/device_settings_store.dart';
+import 'package:later/data/services/preferences_store.dart';
 
 Capsule _c(
   String id, {
@@ -78,7 +84,7 @@ void main() {
         ..resetFilters()
         ..setFavoritesOnly(true);
       expect(ids(c.apply(list, favorites: {'b'})), ['b']);
-      expect(c.activeFilterLabel, 'Favorite');
+      expect(c.activeFilterLabel(), 'Favorite');
     });
 
     test('date sorts put a pending timestamp (null) as newest', () {
@@ -86,7 +92,7 @@ void main() {
       expect(ids(c.apply(list)), ['a', 'b', 'n']);
       c.setSort(HistorySort.newest);
       expect(ids(c.apply(list)), ['n', 'b', 'a']);
-      expect(c.activeSortLabel, 'From Newest');
+      expect(c.activeSortLabel(), 'From Newest');
     });
 
     test('distance sorts keep capsules without a location last', () {
@@ -100,6 +106,22 @@ void main() {
         'a',
         'n',
       ], reason: 'unknown position: unchanged order');
+    });
+
+    test('button labels name the active sort and filters', () {
+      final c = HistoryController();
+      expect(c.activeSortLabel(), 'Sort By');
+      expect(c.activeFilterLabel(), 'Filter By');
+      c
+        ..setSort(HistorySort.farthest)
+        ..setColorFilter(CapsuleColor.purple)
+        ..setPrivacyFilter(CapsulePrivacy.friends)
+        ..setFavoritesOnly(true);
+      expect(c.activeSortLabel(), 'From Farthest');
+      expect(c.activeFilterLabel(), 'Purple · Friends · Favorite');
+      c.resetAll();
+      expect(c.activeSortLabel(), 'Sort By');
+      expect(c.activeFilterLabel(), 'Filter By');
     });
 
     test('selection drops capsules that disappeared', () {
@@ -128,6 +150,49 @@ void main() {
       expect(store.capsules, isEmpty);
       expect(store.isLoaded, isFalse);
     });
+
+    test(
+      'capsules made with friends join the list; deleting one leaves it',
+      () async {
+        final theirs = Capsule(
+          id: 'theirs',
+          ownerId: 'anna',
+          title: 'Together',
+          privacy: CapsulePrivacy.private,
+          color: CapsuleColor.blue,
+          createdAt: DateTime(2024, 3),
+          coAuthors: const ['me'],
+        );
+        final repo = FakeCapsuleRepository()
+          ..own = [
+            _c('new', createdAt: DateTime(2024, 4)),
+            _c('old', createdAt: DateTime(2024, 1)),
+          ]
+          ..coAuthored = [theirs];
+        final store = OwnCapsulesStore(repo)..attach('me');
+        await pumpEventQueue();
+        expect(
+          [for (final c in store.capsules) c.id],
+          ['new', 'theirs', 'old'],
+        );
+        expect(store.isCoAuthored('theirs'), isTrue);
+        expect(store.isCoAuthored('new'), isFalse);
+
+        expect(await store.delete(['theirs']), isNull);
+        expect(repo.deleted, isEmpty, reason: 'never deletes theirs');
+        expect(repo.left, [('theirs', 'me')]);
+        await pumpEventQueue();
+        expect([for (final c in store.capsules) c.id], ['new', 'old']);
+
+        repo.emitCoAuthored([theirs]);
+        await pumpEventQueue();
+        expect(await store.leave('theirs'), isNull);
+        expect(repo.left, hasLength(2));
+        store
+          ..detach()
+          ..dispose();
+      },
+    );
   });
 
   group('FavoritesStore (BUG-066)', () {
@@ -200,9 +265,12 @@ void main() {
         MultiProvider(
           providers: [
             Provider(create: (_) => GeocodingService()),
+            ChangeNotifierProvider(
+              create: (_) => DeviceSettingsStore(PreferencesStore()),
+            ),
             ChangeNotifierProvider(create: (_) => CurrentLocation()),
           ],
-          child: MaterialApp(
+          child: testApp(
             home: Scaffold(
               body: CapsuleListTile(
                 capsule: _c(
@@ -227,4 +295,116 @@ void main() {
       expect(find.byIcon(Icons.lock_clock), findsOneWidget);
     },
   );
+
+  testWidgets('a capsule shows its countdown, distance and date', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => CurrentLocation()..update(const GeoPosition(0, 0)),
+          ),
+        ],
+        child: testApp(
+          home: Scaffold(
+            body: CapsuleListTile(
+              capsule: _c(
+                'x',
+                title: 'Trip',
+                privacy: CapsulePrivacy.private,
+                location: const GeoPosition(0, 0.1),
+                createdAt: DateTime(2026, 1, 5),
+                openAt: DateTime.now().add(
+                  const Duration(days: 3, hours: 1, minutes: 30),
+                ),
+              ),
+              isFavorite: true,
+              onFavoriteTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.textContaining(RegExp(r'^3d 1h \d+m \d+s$')), findsOneWidget);
+    expect(find.text('Private visibility'), findsOneWidget);
+    expect(find.text('11.1 km from you'), findsOneWidget);
+    expect(find.text('05.01.2026'), findsOneWidget);
+    // No geocoder in tests: the place pill says so instead of staying empty.
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pump();
+    expect(find.text('Unknown location'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.label == 'Remove from favorites',
+      ),
+      findsOneWidget,
+    );
+    // Stop the countdown's timer before the test ends.
+    await tester.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('the selection bar counts the capsules', (tester) async {
+    await tester.pumpWidget(
+      testApp(
+        home: Scaffold(
+          body: SelectionActionBar(count: 2, onCancel: () {}, onDelete: () {}),
+        ),
+      ),
+    );
+
+    expect(find.text('2 selected'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
+    expect(find.text('Delete (2)'), findsOneWidget);
+  });
+
+  testWidgets('empty: what a capsule is and a way to make one; no match: '
+      'a way back to all of them', (tester) async {
+    final repo = FakeCapsuleRepository();
+    final store = OwnCapsulesStore(repo)..attach('me');
+    final favorites = FavoritesStore(FakeUserRepository())..attach('me');
+    addTearDown(() {
+      store
+        ..detach()
+        ..dispose();
+      favorites
+        ..detach()
+        ..dispose();
+    });
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: store),
+          ChangeNotifierProvider.value(value: favorites),
+          ChangeNotifierProvider(create: (_) => CurrentLocation()),
+          ChangeNotifierProvider(create: (_) => MapFocus()),
+          Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
+        ],
+        child: testApp(home: const Scaffold(body: HistoryPage())),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('No capsules yet'), findsOneWidget);
+    expect(find.text('Create a capsule'), findsOneWidget);
+
+    repo.emitOwn([_c('a', title: 'Beach')]);
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), 'zzz');
+    await tester.pump();
+    expect(find.text('No capsules match your search'), findsOneWidget);
+    await tester.tap(find.text('Reset').last);
+    await tester.pump();
+    expect(find.text('Beach'), findsOneWidget);
+    // Stop the tile's countdown before the test ends.
+    await tester.pumpWidget(const SizedBox());
+  });
 }

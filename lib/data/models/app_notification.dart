@@ -6,6 +6,17 @@ enum NotificationType {
   message,
   reply,
   comment,
+
+  /// Someone reacted to the user's capsule (Cloud Functions, social.js).
+  reaction,
+  friendRequest,
+  friendAccepted,
+
+  /// The user unlocked an achievement tier (gamification.js).
+  achievement,
+
+  /// A friend made a capsule with the user (notify.js).
+  coAuthor,
   other;
 
   static NotificationType parse(Object? value) {
@@ -14,16 +25,6 @@ enum NotificationType {
     }
     return other;
   }
-
-  /// Title shown in the list (same mapping as before the refactor).
-  String get title => switch (this) {
-    NotificationType.follow => 'New Follower',
-    NotificationType.capsule => 'New Capsule',
-    NotificationType.message => 'New Message',
-    NotificationType.reply => 'New Reply',
-    NotificationType.comment => 'New Comment',
-    NotificationType.other => 'Notification',
-  };
 }
 
 /// An in-app notification (`users/{uid}/notifications/{id}`).
@@ -39,6 +40,8 @@ class AppNotification {
     this.thumbnailImageUrl,
     this.timestamp,
     this.capsuleId,
+    this.reaction,
+    this.achievementId,
   });
 
   final String id;
@@ -57,7 +60,11 @@ class AppNotification {
   final bool isRead;
   final String? capsuleId;
 
-  String get title => type.title;
+  /// The emoji of a reaction notification.
+  final String? reaction;
+
+  /// Which achievement an achievement notification is about.
+  final String? achievementId;
 
   AppNotification markedRead() => AppNotification(
     id: id,
@@ -70,5 +77,7 @@ class AppNotification {
     thumbnailImageUrl: thumbnailImageUrl,
     timestamp: timestamp,
     capsuleId: capsuleId,
+    reaction: reaction,
+    achievementId: achievementId,
   );
 }

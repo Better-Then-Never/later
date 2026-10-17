@@ -1,0 +1,508 @@
+{
+  "settingsTitle": "Settings",
+  "settingsSectionAccount": "MY ACCOUNT",
+  "@settingsSectionAccount": {
+    "description": "Upper-case label above a card of rows on the Settings page."
+  },
+  "settingsName": "Name",
+  "@settingsName": {
+    "description": "The display name: settings row, page title and input hint."
+  },
+  "settingsUsername": "Username",
+  "settingsEmail": "Email",
+  "settingsPassword": "Password",
+  "settingsSignedInWithGoogle": "Signed in with Google",
+  "@settingsSignedInWithGoogle": {
+    "description": "Under the Password row for accounts that sign in with Google only."
+  },
+  "settingsCustomizeProfile": "Customize profile",
+  "settingsSectionNotificationsPrivacy": "NOTIFICATIONS AND PRIVACY",
+  "settingsNotifications": "Notifications",
+  "settingsNotificationsOn": "On",
+  "@settingsNotificationsOn": {
+    "description": "Under the Notifications row: push notifications are on."
+  },
+  "settingsNotificationsOff": "Off",
+  "@settingsNotificationsOff": {
+    "description": "Under the Notifications row: push notifications are off."
+  },
+  "settingsBlockedUsers": "Blocked users",
+  "settingsBlockedNobody": "Nobody",
+  "@settingsBlockedNobody": {
+    "description": "Under the Blocked users row when nobody is blocked."
+  },
+  "settingsBlockedCount": "{count, plural, one{{count} blocked} other{{count} blocked}}",
+  "@settingsBlockedCount": {
+    "description": "Under the Blocked users row: how many people are blocked (1 or more).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAppPermissions": "App permissions",
+  "settingsSectionThisPhone": "THIS PHONE",
+  "settingsMapAndCamera": "Map and camera",
+  "settingsDataAndStorage": "Data and storage",
+  "settingsSectionSupport": "SUPPORT",
+  "settingsHelp": "Help",
+  "settingsAbout": "About me",
+  "@settingsAbout": {
+    "description": "Settings row and page title: the \"about me\" line on the profile."
+  },
+  "settingsLogOut": "Log Out",
+  "settingsLogOutConfirm": "Are you sure you want to log out?",
+  "settingsDeleteAccount": "Delete account",
+  "settingsAboutOpenFailed": "Could not open the page.",
+  "settingsAboutVersion": "Version",
+  "settingsAboutVersionUnknown": "unknown",
+  "@settingsAboutVersionUnknown": {
+    "description": "Shown as the app version when it could not be read."
+  },
+  "settingsAboutPrivacy": "Privacy policy",
+  "settingsAboutTerms": "Terms of use",
+  "settingsAboutLicenses": "Open-source licenses",
+  "settingsBlockedDescription": "They cannot message you or send you friend requests",
+  "settingsBlockedEmpty": "Nobody is blocked",
+  "settingsBlockedEmptyHint": "Block someone from their profile\nor from a chat",
+  "@settingsBlockedEmptyHint": {
+    "description": "Empty state of the blocked users list. Two short lines."
+  },
+  "settingsDeletedAccount": "Deleted account",
+  "@settingsDeletedAccount": {
+    "description": "Name shown for a blocked user whose account no longer exists."
+  },
+  "settingsUnblock": "Unblock",
+  "settingsUnblocking": "Unblocking...",
+  "settingsCompleteProfileTitle": "Almost there",
+  "@settingsCompleteProfileTitle": {
+    "description": "Title of the page that asks a signed-in account without a profile for a name and username."
+  },
+  "settingsCompleteProfileDescription": "Choose how your friends will see you",
+  "settingsCompleteProfileNoProfile": "Your account {email} has no profile yet.",
+  "@settingsCompleteProfileNoProfile": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDeleteConfirm": "Delete your account? This cannot be undone.",
+  "settingsDeleteDescription": "This removes your account and everything in it",
+  "settingsDeleteButton": "Delete my account",
+  "settingsDeleteNote": "Deleting your account removes your profile, pictures, capsules, chats, friends and followers. Your friends will no longer see you or your messages. This cannot be undone.",
+  "settingsYourPassword": "Your password",
+  "@settingsYourPassword": {
+    "description": "Hint of the password field that confirms an account change."
+  },
+  "settingsGoogleConfirmsNote": "Google confirms it is you: pick your account when asked.",
+  "settingsDeviceDescription": "How Later looks and works on this phone",
+  "settingsSectionMap": "MAP",
+  "settingsSectionCamera": "CAMERA",
+  "settingsCameraFooter": "The camera that opens when you create a capsule.",
+  "settingsMapLookStandard": "Standard",
+  "@settingsMapLookStandard": {
+    "description": "Map type: the normal street map."
+  },
+  "settingsMapLookSatellite": "Satellite",
+  "@settingsMapLookSatellite": {
+    "description": "Map type: satellite imagery without labels."
+  },
+  "settingsMapLookHybrid": "Satellite with labels",
+  "@settingsMapLookHybrid": {
+    "description": "Map type: satellite imagery with street and place names."
+  },
+  "settingsCameraBack": "Back camera",
+  "settingsCameraFront": "Front camera",
+  "settingsEmailGoogleDescription": "You sign in with Google as {email}",
+  "@settingsEmailGoogleDescription": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsEmailGoogleNote": "Your email comes from your Google account. To use another one, change it in your Google account.",
+  "settingsEmailDescription": "You sign in to Later with {email}",
+  "@settingsEmailDescription": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsEmailSendLink": "Send confirmation link",
+  "@settingsEmailSendLink": {
+    "description": "Button: sends a confirmation link to the new email address. Keep it short."
+  },
+  "settingsEmailLinkSent": "We sent a link to {newEmail}. Open it to confirm: your email changes then. Until you do, keep signing in with {currentEmail}.",
+  "@settingsEmailLinkSent": {
+    "placeholders": {
+      "newEmail": {
+        "type": "String"
+      },
+      "currentEmail": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsEmailNewHint": "New email",
+  "settingsPasswordConfirmsNote": "Your password confirms it is you.",
+  "settingsHelpDescription": "Answers and ways to reach us",
+  "settingsSectionQuestions": "QUESTIONS",
+  "settingsSectionContact": "CONTACT",
+  "settingsHelpContactFooter": "Emails from the app include your app version and phone. You can also write to {email}.",
+  "@settingsHelpContactFooter": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsHelpContactSupport": "Contact support",
+  "settingsHelpReportProblem": "Report a problem",
+  "settingsHelpCopyInfo": "Copy app information",
+  "settingsHelpSubjectQuestion": "Later: question",
+  "@settingsHelpSubjectQuestion": {
+    "description": "Subject of the email to support that the app prepares. Keep \"Later\"."
+  },
+  "settingsHelpSubjectProblem": "Later: problem report",
+  "@settingsHelpSubjectProblem": {
+    "description": "Subject of the problem report email that the app prepares. Keep \"Later\"."
+  },
+  "settingsHelpCopied": "Copied. Paste it into your message to us.",
+  "settingsHelpNoEmailApp": "No email app found. Write to {email}",
+  "@settingsHelpNoEmailApp": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsFaqCapsuleQuestion": "What is a capsule?",
+  "settingsFaqCapsuleAnswer": "A photo with a title and a note, pinned on the map where you made it. You can set a date: until then the capsule stays locked.",
+  "settingsFaqVisibilityQuestion": "Who can see my capsules?",
+  "settingsFaqVisibilityAnswer": "You choose when you create one: only you (Private), your friends (Friends) or everyone (Public).",
+  "@settingsFaqVisibilityAnswer": {
+    "description": "The words in brackets are the visibility options of a capsule (see the glossary)."
+  },
+  "settingsFaqFriendsQuestion": "How do I add friends?",
+  "settingsFaqFriendsAnswer": "Search by username in Friends, scan their QR code, or share your profile link from your profile.",
+  "settingsFaqNotificationsQuestion": "I do not get notifications",
+  "settingsFaqNotificationsAnswer": "Check Settings > Notifications: the phone must allow Later to notify you, and push notifications must be on. Quiet hours and muted chats also keep pushes silent.",
+  "settingsFaqBlockQuestion": "How do I stop someone contacting me?",
+  "settingsFaqBlockAnswer": "Block them from their profile or from the chat menu. You can unblock them in Settings > Blocked users.",
+  "settingsFaqDeleteQuestion": "How do I delete my account?",
+  "settingsFaqDeleteAnswer": "Settings > Delete account. Everything you made is removed and cannot be brought back.",
+  "settingsSupportInfoApp": "App: Later {version}",
+  "@settingsSupportInfoApp": {
+    "description": "Line of the app information for support (copied or added to support emails).",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportInfoPhone": "Phone: {system}",
+  "@settingsSupportInfoPhone": {
+    "description": "Line of the app information for support: the phone's operating system and its version.",
+    "placeholders": {
+      "system": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsSupportInfoUserId": "User id: {uid}",
+  "@settingsSupportInfoUserId": {
+    "description": "Line of the app information for support: the account's technical id.",
+    "placeholders": {
+      "uid": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsNameUpdated": "Name updated successfully!",
+  "settingsNameDescription": "This is how you will be shown on Later, pick a name wisely, so your friends know you by",
+  "settingsNameHint": "Enter new name",
+  "settingsQuietFrom": "Quiet from",
+  "@settingsQuietFrom": {
+    "description": "Title of the time picker for the start of quiet hours."
+  },
+  "settingsQuietUntil": "Quiet until",
+  "@settingsQuietUntil": {
+    "description": "Title of the time picker for the end of quiet hours."
+  },
+  "settingsNotificationsDescription": "Choose what Later tells you about",
+  "settingsNotificationsBlockedFooter": "Your phone does not let Later show notifications, so none arrive whatever you choose below.",
+  "settingsNotificationsAllow": "Allow notifications",
+  "settingsNotificationsOffInPhone": "Off in your phone settings",
+  "settingsNotificationsPush": "Push notifications",
+  "settingsNotificationsPushOff": "You get no pushes from Later",
+  "settingsSectionNotifyAbout": "NOTIFY ME ABOUT",
+  "@settingsSectionNotifyAbout": {
+    "description": "Label above the switches Messages / New followers / New capsules."
+  },
+  "settingsNotificationsMessages": "Messages",
+  "settingsNotificationsFollowers": "New followers",
+  "settingsNotificationsCapsules": "New capsules",
+  "settingsNotificationsCapsulesHint": "From people you follow with notifications on",
+  "settingsSectionHow": "HOW",
+  "@settingsSectionHow": {
+    "description": "Label above the switches that shape how pushes look and sound."
+  },
+  "settingsNotificationsPreview": "Show message text",
+  "settingsNotificationsPreviewOff": "Pushes say \"New message\" only",
+  "settingsNotificationsSound": "Sound and vibration",
+  "settingsSectionQuietHours": "QUIET HOURS",
+  "settingsQuietHoursFooter": "No pushes during these hours. Messages still arrive in the app.",
+  "settingsQuietHours": "Quiet hours",
+  "settingsQuietHoursFrom": "From",
+  "@settingsQuietHoursFrom": {
+    "description": "Row with the start time of quiet hours."
+  },
+  "settingsQuietHoursUntil": "Until",
+  "@settingsQuietHoursUntil": {
+    "description": "Row with the end time of quiet hours."
+  },
+  "settingsNotificationsMuteHint": "Mute a single chat from its menu in Messages.",
+  "settingsPasswordChanged": "Password changed",
+  "settingsPasswordResetSent": "We sent a reset link to {email}",
+  "@settingsPasswordResetSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsPasswordResetFailed": "Could not send the link. Please try again.",
+  "settingsPasswordGoogleDescription": "You sign in with Google",
+  "settingsPasswordGoogleNote": "Your account has no Later password: Google confirms it is you. Change your password in your Google account.",
+  "settingsPasswordDescription": "Choose a password you do not use anywhere else",
+  "settingsPasswordCurrent": "Current password",
+  "settingsPasswordNew": "{count, plural, one{New password ({count}+ character)} other{New password ({count}+ characters)}}",
+  "@settingsPasswordNew": {
+    "description": "Hint of the new password field with the minimum length.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPasswordRepeat": "Repeat new password",
+  "settingsPasswordForgot": "Forgot your password?",
+  "settingsPermissionsDescription": "What Later may use on this phone",
+  "settingsPermissionCamera": "Camera",
+  "settingsPermissionCameraDescription": "Access camera to create time capsules",
+  "settingsPermissionLocation": "Location",
+  "settingsPermissionLocationDescription": "Find capsules nearby and location-based features",
+  "settingsPermissionNotificationsDescription": "Receive updates about followers and capsules",
+  "settingsPermissionGranted": "Granted",
+  "@settingsPermissionGranted": {
+    "description": "Status of an app permission."
+  },
+  "settingsPermissionDenied": "Denied",
+  "settingsPermissionRestricted": "Restricted",
+  "settingsPermissionLimited": "Limited",
+  "settingsPermissionPermanentlyDenied": "Permanently Denied",
+  "settingsPermissionProvisional": "Provisional",
+  "@settingsPermissionProvisional": {
+    "description": "Status of an app permission: iOS allows quiet notifications for now."
+  },
+  "settingsPermissionRevokeTitle": "Revoke Permission",
+  "settingsPermissionRevokeBody": "To revoke this permission, you need to go to your device settings. This will disable the related features in the app.",
+  "settingsPermissionRequiredTitle": "Permission Required",
+  "settingsPermissionRequiredBody": "This permission has been permanently denied. Please enable it in your device settings.",
+  "settingsPermissionOpenSettings": "Open Settings",
+  "settingsCustomizeDescription": "Tap a picture to change it",
+  "settingsStorageDescription": "Space Later uses on this phone",
+  "settingsStorageFooter": "Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.",
+  "settingsStorageCache": "Cache",
+  "settingsStorageClearCache": "Clear cache",
+  "settingsStorageClearing": "Clearing...",
+  "settingsStorageClearConfirm": "Clear the cache? Pictures load again when you need them.",
+  "settingsStorageClear": "Clear",
+  "settingsStorageCleared": "Cache cleared",
+  "settingsUsernameUpdated": "Username updated successfully!",
+  "settingsUsernameDescription": "This is how your friends find and add you on Later",
+  "settingsUsernameHint": "Enter new username",
+  "settingsErrorEnterName": "Please enter your name.",
+  "settingsErrorCouldNotSave": "Could not save. Please try again.",
+  "settingsErrorEnterNewName": "Please enter a new name!",
+  "settingsErrorNameFailed": "Failed to update name!",
+  "settingsErrorEnterNewUsername": "Please enter a new username!",
+  "settingsErrorUsernameFailed": "Failed to update username!",
+  "settingsErrorCurrentPassword": "Please enter your current password.",
+  "settingsErrorPasswordTooShort": "{count, plural, one{The new password needs at least {count} character.} other{The new password needs at least {count} characters.}}",
+  "@settingsErrorPasswordTooShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsErrorPasswordsMismatch": "The new passwords do not match.",
+  "settingsErrorPasswordSame": "The new password is the same as the current one.",
+  "settingsErrorInvalidEmail": "Please enter a valid email address.",
+  "settingsErrorSameEmail": "This is already your email.",
+  "settingsErrorEnterPassword": "Please enter your password.",
+  "settingsErrorSignInAgain": "Please sign in again.",
+  "settingsErrorSaveFailed": "Could not save settings.",
+  "settingsErrorChatUpdateFailed": "Could not update the chat.",
+  "settingsAppearance": "Appearance",
+  "settingsAppearanceDescription": "How Later looks on this phone",
+  "settingsSectionTheme": "THEME",
+  "settingsThemeSystem": "Same as phone",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsSectionSize": "SIZE",
+  "settingsSizeSmall": "Small",
+  "settingsSizeStandard": "Standard",
+  "settingsSizeLarge": "Large",
+  "settingsSizeFooter": "Makes everything on screen smaller or larger, text included.",
+  "settingsLanguage": "Language",
+  "settingsLanguageDescription": "The language of the app and of your notifications",
+  "settingsLanguageSystem": "Phone's language",
+  "settingsLanguageSystemHint": "Now: {language}",
+  "@settingsLanguageSystemHint": {
+    "description": "Under 'Phone's language': the language that choice gives right now, in its own name (e.g. 'Deutsch').",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsLanguageFooter": "Notifications from Later arrive in this language too.",
+  "settingsPrivacy": "Privacy",
+  "settingsPrivacyDescription": "What others see and what new capsules start with",
+  "settingsSectionNewCapsules": "NEW CAPSULES",
+  "settingsVisibilityPublic": "Public",
+  "settingsVisibilityPublicHint": "Everyone on the map",
+  "settingsVisibilityFriends": "Friends",
+  "settingsVisibilityFriendsHint": "Only your friends",
+  "settingsVisibilityPrivate": "Private",
+  "settingsVisibilityPrivateHint": "Only you",
+  "settingsPrivacyApproximate": "Approximate location",
+  "settingsPrivacyApproximateHint": "Places new capsules within about a kilometre, not at the exact spot",
+  "settingsPrivacyNewCapsulesFooter": "You can change both for each capsule when you create it.",
+  "settingsSectionVisibility": "WHAT OTHERS SEE",
+  "settingsPrivacyReadReceipts": "Read receipts",
+  "settingsPrivacyReadReceiptsHint": "Turned off, friends do not see when you have read their messages, and you do not see theirs",
+  "settingsPrivacyAchievements": "Show my achievements",
+  "settingsPrivacyAchievementsHint": "Friends see them on your profile",
+  "settingsSectionMoreActivity": "ACTIVITY",
+  "settingsNotificationsFriendRequests": "Friend requests",
+  "settingsNotificationsFriendRequestsHint": "Received and accepted",
+  "settingsNotificationsReactions": "Reactions",
+  "settingsNotificationsComments": "Comments",
+  "settingsNotificationsCommentsHint": "On your capsules and replies to you",
+  "settingsNotificationsAchievements": "Achievements",
+  "settingsNotificationsStreak": "Streak reminder",
+  "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
+  "settingsNotificationsNews": "News from Later",
+  "settingsNotificationsNewsHint": "Rare announcements from the team",
+  "settingsAboutDescription": "A few words under your name, for everyone who opens your profile.",
+  "@settingsAboutDescription": {
+    "description": "Explanation on the \"About me\" page."
+  },
+  "settingsAboutHint": "Collecting sunsets since 2019",
+  "@settingsAboutHint": {
+    "description": "Example text in the empty \"about me\" field."
+  },
+  "settingsAboutUpdated": "About me updated",
+  "@settingsAboutUpdated": {
+    "description": "Toast after saving the \"about me\" line."
+  },
+  "settingsAboutTooLong": "At most {count} characters",
+  "@settingsAboutTooLong": {
+    "description": "Error when the \"about me\" line is too long.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPrivacyFindByName": "Find me by name",
+  "@settingsPrivacyFindByName": {
+    "description": "Privacy switch: others may find the user by searching their name."
+  },
+  "settingsPrivacyFindByNameHint": "People can search for your name. By username they always can.",
+  "@settingsPrivacyFindByNameHint": {
+    "description": "Explains the \"find me by name\" switch."
+  },
+  "settingsSectionDistances": "DISTANCES",
+  "@settingsSectionDistances": {
+    "description": "Settings section: the unit distances are shown in."
+  },
+  "settingsUnitsKilometres": "Kilometres",
+  "@settingsUnitsKilometres": {
+    "description": "Distance unit choice."
+  },
+  "settingsUnitsMiles": "Miles",
+  "@settingsUnitsMiles": {
+    "description": "Distance unit choice."
+  },
+  "settingsSectionPhotos": "PHOTOS",
+  "@settingsSectionPhotos": {
+    "description": "Settings section: how capsule photos are sent and kept."
+  },
+  "settingsPhotoQualityStandard": "Standard (sent faster)",
+  "@settingsPhotoQualityStandard": {
+    "description": "Photo quality choice: 1600 px, quicker to upload."
+  },
+  "settingsPhotoQualityHigh": "High (sharper, larger)",
+  "@settingsPhotoQualityHigh": {
+    "description": "Photo quality choice: 2560 px, sharper and larger."
+  },
+  "settingsSaveToGallery": "Save capsule photos to the gallery",
+  "@settingsSaveToGallery": {
+    "description": "Switch: also save capsule photos to the phone gallery (Android)."
+  },
+  "settingsSaveToGalleryHint": "In Pictures/Later, once the capsule is made.",
+  "@settingsSaveToGalleryHint": {
+    "description": "Explains where the gallery copy goes (folder names stay in English: Android shows them so)."
+  },
+  "settingsSignInMethods": "Sign-in methods",
+  "@settingsSignInMethods": {
+    "description": "Account row: how the user can sign in (email, Google)."
+  },
+  "settingsSignInEmail": "Email and password",
+  "@settingsSignInEmail": {
+    "description": "Sign-in method: email address and password."
+  },
+  "settingsDownloadData": "Download my data",
+  "@settingsDownloadData": {
+    "description": "Data and storage row: export the user's data as a file."
+  },
+  "settingsDownloadDataHint": "Your profile, settings, capsules, friends and chats as one file (photos as links).",
+  "@settingsDownloadDataHint": {
+    "description": "Explains what the data export contains."
+  },
+  "settingsDownloadDataFailed": "Could not prepare your data",
+  "@settingsDownloadDataFailed": {
+    "description": "Error when the data export could not be made."
+  },
+  "settingsPrivacyFindByContacts": "Found by people with my email",
+  "@settingsPrivacyFindByContacts": {
+    "description": "Privacy switch: people who have the user's email in their contacts may find them (opt-in)."
+  },
+  "settingsPrivacyFindByContactsHint": "People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.",
+  "@settingsPrivacyFindByContactsHint": {
+    "description": "Explains the contacts switch."
+  },
+  "settingsUploadsWifiOnly": "Upload on Wi-Fi only",
+  "@settingsUploadsWifiOnly": {
+    "description": "Switch: capsules upload only on Wi-Fi (not on metered mobile data)."
+  },
+  "settingsUploadsWifiOnlyHint": "Capsules made on mobile data wait on the phone for Wi-Fi.",
+  "@settingsUploadsWifiOnlyHint": {
+    "description": "Explains the Wi-Fi only switch."
+  },
+  "settingsNotificationsVibrate": "Vibration",
+  "@settingsNotificationsVibrate": {
+    "description": "Notification settings switch: pushes vibrate."
+  },
+  "settingsNotificationsVibrateNeedsSound": "Comes with the sound",
+  "@settingsNotificationsVibrateNeedsSound": {
+    "description": "Under the vibration switch while sound is off (it is greyed out then)."
+  }
+}

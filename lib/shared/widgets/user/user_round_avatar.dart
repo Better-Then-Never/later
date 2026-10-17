@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'user_profile_image.dart';
 
@@ -10,6 +12,12 @@ class UserRoundAvatar extends StatelessWidget {
     required this.userId,
     required this.radius,
   });
+
+  /// The avatar of a person in a list row: 7 % of the screen width, at most
+  /// 54 dp across, because ListTile caps its leading widget at 56 dp and a
+  /// bigger circle was squashed into an ellipse on wide phones (F-30).
+  static double listRadius(double screenWidth) =>
+      math.min(screenWidth * 0.07, 27);
 
   @override
   Widget build(BuildContext context) {

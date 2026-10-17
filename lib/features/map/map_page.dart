@@ -1,39 +1,62 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart' show Geolocator;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/router/app_routes.dart';
 import '../../app/session/session_controller.dart';
+import '../../app/shell/selected_page.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
+import '../../app/shell/navbar_widget.dart';
+import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_palette.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
+import '../../data/services/preferences_store.dart';
+import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/later_loading_bar.dart';
 import '../settings/device_settings_store.dart';
 import 'current_location.dart';
+import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
+import 'map_styles.dart';
+import '../history/own_capsules_store.dart';
 import 'widgets/capsule_info_panel.dart';
-import 'widgets/capsule_preview_card.dart';
+import 'widgets/first_capsule_hint.dart';
+import 'widgets/map_compass.dart';
+import '../capsules/social/capsule_detail_dialog.dart';
+import 'widgets/map_filter_sheet.dart';
+import '../achievements/streak_pill.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Read here: a provider's create callback must not depend on the theme.
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return ChangeNotifierProvider(
-      create: (context) => MapController(
-        capsules: context.read<CapsuleRepository>(),
-        location: context.read<LocationService>(),
-        currentLocation: context.read<CurrentLocation>(),
-        session: context.read<SessionController>(),
-      )..start(),
+      create: (context) =>
+          MapController(
+              capsules: context.read<CapsuleRepository>(),
+              location: context.read<LocationService>(),
+              currentLocation: context.read<CurrentLocation>(),
+              session: context.read<SessionController>(),
+              prefs: context.read<PreferencesStore>(),
+            )
+            ..setDarkIcons(dark)
+            ..start(),
       child: const _MapView(),
     );
   }
@@ -46,27 +69,241 @@ class _MapView extends StatefulWidget {
   State<_MapView> createState() => _MapViewState();
 }
 
+/// Zoom in and out: one pill of two 52 dp halves, the signs drawn in the
+/// hand-drawn icons' rounded stroke (no icon font).
+class _ZoomButtons extends StatelessWidget {
+  const _ZoomButtons({required this.onZoomIn, required this.onZoomOut});
+
+  final VoidCallback onZoomIn;
+  final VoidCallback onZoomOut;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    Widget half(String label, VoidCallback onTap, {required bool plus}) =>
+        Semantics(
+          button: true,
+          label: label,
+          child: AppPressable(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onTap,
+              child: SizedBox.square(
+                dimension: _MyLocationButton.size,
+                child: CustomPaint(
+                  painter: _SignPainter(plus: plus, color: palette.icon),
+                ),
+              ),
+            ),
+          ),
+        );
+    return Container(
+      decoration: BoxDecoration(
+        color: palette.surface,
+        borderRadius: BorderRadius.circular(_MyLocationButton.size / 2),
+        border: palette.isDark ? Border.all(color: palette.cardBorder) : null,
+        boxShadow: AppShadows.raised(context),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          half(context.l10n.mapZoomIn, onZoomIn, plus: true),
+          Container(width: 28, height: 1, color: palette.divider),
+          half(context.l10n.mapZoomOut, onZoomOut, plus: false),
+        ],
+      ),
+    );
+  }
+}
+
+class _SignPainter extends CustomPainter {
+  const _SignPainter({required this.plus, required this.color});
+
+  final bool plus;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 2.6
+      ..strokeCap = StrokeCap.round;
+    final c = size.center(Offset.zero);
+    const arm = 9.0;
+    canvas.drawLine(c - const Offset(arm, 0), c + const Offset(arm, 0), paint);
+    if (plus) {
+      canvas.drawLine(
+        c - const Offset(0, arm),
+        c + const Offset(0, arm),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_SignPainter old) =>
+      old.plus != plus || old.color != color;
+}
+
+/// Round button above the navigation bar that brings the map to the user,
+/// drawn with the map's own "you" figure.
+/// Opens the map filter; a green dot while it leaves something out.
+class _FilterButton extends StatelessWidget {
+  const _FilterButton({required this.active, required this.onTap});
+
+  final int active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = context.l10n;
+    return Semantics(
+      button: true,
+      label: active == 0 ? l10n.mapFilter : l10n.mapFilterActive(active),
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: _MyLocationButton.size,
+                height: _MyLocationButton.size,
+                padding: const EdgeInsets.all(13),
+                decoration: BoxDecoration(
+                  color: palette.surface,
+                  shape: BoxShape.circle,
+                  border: palette.isDark
+                      ? Border.all(color: palette.cardBorder)
+                      : null,
+                  boxShadow: AppShadows.raised(context),
+                ),
+                child: Image.asset(AppIcons.historyFilter),
+              ),
+              if (active > 0)
+                Positioned(
+                  right: 2,
+                  top: 2,
+                  child: Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: AppColors.brandGreen,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: palette.surface, width: 2),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MyLocationButton extends StatelessWidget {
+  const _MyLocationButton({required this.onTap});
+
+  static const size = 52.0;
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Semantics(
+      button: true,
+      label: context.l10n.mapMyLocation,
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: size,
+            height: size,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: palette.surface,
+              shape: BoxShape.circle,
+              border: palette.isDark
+                  ? Border.all(color: palette.cardBorder)
+                  : null,
+              boxShadow: AppShadows.raised(context),
+            ),
+            child: Image.asset(AppIcons.mapPinUser),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _MapViewState extends State<_MapView> {
   final _mapController = Completer<GoogleMapController>();
-  final _infoWindow = CustomInfoWindowController();
+
+  /// Which way the map is turned, in degrees (0 = north up); only the compass
+  /// listens, so turning the map does not rebuild the page.
+  final _bearing = ValueNotifier<double>(0);
+
+  /// The theme the marker icons were drawn for. A theme switch restyles the
+  /// map in place (two local styles, no map ID) and redraws the icons.
+  bool? _builtDark;
+  CameraPosition? _lastCamera;
+
+  /// The capsule whose card is open (F-17: our own card replaces the
+  /// info-window package, which re-opened itself after being closed).
+  Capsule? _selected;
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
 
-  /// Cloud-based map styles (Google Cloud Console "Map Management").
-  static final _mapId = Platform.isAndroid
-      ? '12b4f975aba292b65ac044ea'
-      : '12b4f975aba292b627a4b587';
+  /// "Leave your first capsule" was closed on this phone for this account
+  /// (hidden until that is known).
+  bool _hintClosed = true;
+  static const _hintKey = 'first_capsule_hint';
 
   @override
   void initState() {
     super.initState();
     _focus = context.read<MapFocus>()..addListener(_onFocusRequested);
+    selectedPageNotifier.addListener(_onTabChanged);
+    unawaited(_loadHint());
+  }
+
+  Future<void> _loadHint() async {
+    final uid = context.read<SessionController>().uid;
+    if (uid == null) return;
+    final closed =
+        await context.read<PreferencesStore>().string(uid, _hintKey) ==
+        'closed';
+    if (mounted && !closed) setState(() => _hintClosed = false);
+  }
+
+  void _closeHint() {
+    setState(() => _hintClosed = true);
+    final uid = context.read<SessionController>().uid;
+    if (uid != null) {
+      unawaited(
+        context.read<PreferencesStore>().setString(uid, _hintKey, 'closed'),
+      );
+    }
+  }
+
+  /// Leaving the map tab closes the card.
+  void _onTabChanged() {
+    if (selectedPageNotifier.value != AppTabs.map) _select(null);
+  }
+
+  void _select(Capsule? capsule) {
+    if (!mounted || capsule?.id == _selected?.id) return;
+    setState(() => _selected = capsule);
   }
 
   @override
   void dispose() {
     _focus.removeListener(_onFocusRequested);
-    _infoWindow.dispose();
+    selectedPageNotifier.removeListener(_onTabChanged);
+    _bearing.dispose();
     super.dispose();
   }
 
@@ -83,86 +320,192 @@ class _MapViewState extends State<_MapView> {
     final capsule = _focus.take();
     final location = capsule?.location;
     if (capsule == null || location == null || !mounted) return;
-    _infoWindow.hideInfoWindow?.call();
+    _select(null);
     final target = LatLng(location.latitude, location.longitude);
     AppLogger.debug('Map focus: ${capsule.id}');
     await controller.animateCamera(CameraUpdate.newLatLngZoom(target, 18));
     AppLogger.debug('Map focus: camera moved');
-    if (!mounted) return;
-    _infoWindow.addInfoWindow?.call(_infoPanel(capsule), target);
+    _select(capsule);
+  }
+
+  Future<void> _zoomBy(CameraUpdate update) async {
+    unawaited(HapticFeedback.selectionClick());
+    final controller = await _mapController.future;
+    await controller.animateCamera(update);
+  }
+
+  /// The compass: the map turns back to north (and flat), staying where it is.
+  Future<void> _faceNorth() async {
+    final camera = _lastCamera;
+    if (camera == null) return;
+    unawaited(HapticFeedback.selectionClick());
+    final controller = await _mapController.future;
+    await controller.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: camera.target, zoom: camera.zoom),
+      ),
+    );
+  }
+
+  /// A tap on a numbered bubble: the camera moves in on its capsules.
+  Future<void> _zoomTo(MapItem cluster) async {
+    final controller = await _mapController.future;
+    final b = cluster.bounds!;
+    if ((b.north - b.south).abs() < 1e-4 && (b.east - b.west).abs() < 1e-4) {
+      // All in one spot: closer, around it.
+      final zoom = await controller.getZoomLevel();
+      await controller.animateCamera(
+        CameraUpdate.newLatLngZoom(
+          LatLng(cluster.at.latitude, cluster.at.longitude),
+          zoom + 2,
+        ),
+      );
+      return;
+    }
+    await controller.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(b.south, b.west),
+          northeast: LatLng(b.north, b.east),
+        ),
+        64,
+      ),
+    );
   }
 
   Widget _infoPanel(Capsule capsule) => CapsuleInfoPanel(
     capsule: capsule,
-    onMoreInfo: () => showDialog<void>(
-      context: context,
-      builder: (dialogContext) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(16),
-        child: CapsulePreviewCard(
-          capsule: capsule,
-          // Back to the capsule's place on the map.
-          onPlaceTap: () {
-            Navigator.of(dialogContext).pop();
-            _focus.focus(capsule);
-          },
-        ),
-      ),
+    onMoreInfo: () => CapsuleDetailDialog.show(
+      context,
+      capsule,
+      // Back to the capsule's place on the map.
+      onPlaceTap: () => _focus.focus(capsule),
     ),
   );
+
+  Future<void> _goToMe(MapController map) async {
+    unawaited(HapticFeedback.selectionClick());
+    final position = await map.locateMe();
+    if (!mounted) return;
+    if (position == null) {
+      final l10n = context.l10n;
+      final availability = map.availability;
+      PopupNotificationService.showError(
+        context: context,
+        message: switch (availability) {
+          LocationAvailability.serviceDisabled => l10n.mapLocationServiceOff,
+          LocationAvailability.denied ||
+          LocationAvailability.deniedForever => l10n.mapLocationDenied,
+          LocationAvailability.available => l10n.mapLocationUnknown,
+        },
+        position: NotificationPosition.top,
+      );
+      // Only the system settings can turn these back on.
+      if (availability == LocationAvailability.deniedForever) {
+        unawaited(Geolocator.openAppSettings());
+      } else if (availability == LocationAvailability.serviceDisabled) {
+        unawaited(context.read<LocationService>().openSettings());
+      }
+      return;
+    }
+    final controller = await _mapController.future;
+    final zoom = await controller.getZoomLevel();
+    await controller.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(position.latitude, position.longitude),
+        zoom < 14 ? 15 : zoom,
+      ),
+    );
+  }
 
   void _reportLocationProblem(MapController map) {
     if (_reportedLocationProblem || !map.usedFallbackCamera) return;
     _reportedLocationProblem = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      final l10n = context.l10n;
       PopupNotificationService.showError(
         context: context,
         message: switch (map.availability) {
-          LocationAvailability.serviceDisabled =>
-            'Turn on location to see capsules near you',
-          LocationAvailability.denied || LocationAvailability.deniedForever =>
-            'Allow location access to see capsules near you',
-          LocationAvailability.available => 'We could not detect your location',
+          LocationAvailability.serviceDisabled => l10n.mapLocationServiceOff,
+          LocationAvailability.denied ||
+          LocationAvailability.deniedForever => l10n.mapLocationDenied,
+          LocationAvailability.available => l10n.mapLocationUnknown,
         },
         position: NotificationPosition.top,
       );
     });
   }
 
+  // Marker and heatmap sets are rebuilt only when the capsules, the icons or
+  // the zoom band change (F-10): a new Marker carries a new tap closure, so
+  // rebuilding them on every position update or frame made the plugin send
+  // every marker to the native map again.
+  Object? _capsuleMarkersKey;
+  Set<Marker> _capsuleMarkers = const {};
+  Object? _heatmapsKey;
+  Set<Heatmap> _heatmapsCache = const {};
+  GeoPosition? _userMarkerAt;
+  Marker? _userMarker;
+
   Set<Marker> _markers(MapController map) {
     final icons = map.icons!;
-    final markers = <Marker>{};
     final me = map.myPosition;
-    if (me != null) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('_currentLocation'),
-          icon: icons.user,
-          position: LatLng(me.latitude, me.longitude),
-        ),
-      );
+    if (me != _userMarkerAt || _userMarker?.icon != icons.user) {
+      _userMarkerAt = me;
+      _userMarker = me == null
+          ? null
+          : Marker(
+              markerId: const MarkerId('_currentLocation'),
+              icon: icons.user,
+              position: LatLng(me.latitude, me.longitude),
+            );
     }
-    if (!map.showMarkers) return markers;
-    for (final capsule in map.visibleCapsules) {
-      final location = capsule.location!;
-      final position = LatLng(location.latitude, location.longitude);
-      markers.add(
-        Marker(
-          markerId: MarkerId(capsule.id),
-          position: position,
-          icon: icons.forColor(capsule.color),
-          onTap: () =>
-              _infoWindow.addInfoWindow?.call(_infoPanel(capsule), position),
-        ),
-      );
+    // Only what is on screen, clustered (MapController.items): every marker
+    // update runs on Android's main thread.
+    final key = (map.itemsVersion, icons.capsulePins);
+    if (key != _capsuleMarkersKey) {
+      _capsuleMarkersKey = key;
+      _capsuleMarkers = {
+        for (final item in map.items)
+          if (item.capsule case final capsule?)
+            Marker(
+              markerId: MarkerId(capsule.id),
+              position: LatLng(
+                capsule.location!.latitude,
+                capsule.location!.longitude,
+              ),
+              icon: icons.forColor(capsule.color),
+              onTap: () => _select(capsule),
+            )
+          else
+            Marker(
+              markerId: MarkerId(item.id),
+              position: LatLng(item.at.latitude, item.at.longitude),
+              icon:
+                  map.clusterIcon(item.count) ?? BitmapDescriptor.defaultMarker,
+              anchor: const Offset(0.5, 0.5),
+              zIndexInt: 1,
+              onTap: () => unawaited(_zoomTo(item)),
+            ),
+      };
     }
-    return markers;
+    final user = _userMarker;
+    return user == null ? _capsuleMarkers : {user, ..._capsuleMarkers};
   }
 
   /// The native heatmap throws on an empty point list (BUG-048), so the
   /// layer is only added when there is something to show.
   Set<Heatmap> _heatmaps(MapController map) {
+    final key = (map.capsulesVersion, map.showMarkers);
+    if (_heatmapsKey == key) return _heatmapsCache;
+    _heatmapsKey = key;
+    // Zoomed in the markers say where capsules are; the glow is only the
+    // overview from afar (F-16).
+    return _heatmapsCache = map.showMarkers ? const {} : _buildHeatmaps(map);
+  }
+
+  Set<Heatmap> _buildHeatmaps(MapController map) {
     final points = [
       for (final c in map.visibleCapsules)
         WeightedLatLng(
@@ -175,10 +518,10 @@ class _MapViewState extends State<_MapView> {
       Heatmap(
         heatmapId: const HeatmapId('capsules_heatmap'),
         data: points,
-        radius: const HeatmapRadius.fromPixels(50),
+        radius: const HeatmapRadius.fromPixels(40),
+        opacity: 0.7,
         gradient: const HeatmapGradient([
           HeatmapGradientColor(AppColors.heatmapLow, 0.2),
-          HeatmapGradientColor(AppColors.heatmapMid, 0.5),
           HeatmapGradientColor(AppColors.heatmapHigh, 1.0),
         ]),
       ),
@@ -187,62 +530,215 @@ class _MapViewState extends State<_MapView> {
 
   @override
   Widget build(BuildContext context) {
-    final map = context.watch<MapController>();
+    final map = context.watch<MapController>()
+      ..pixelRatio = MediaQuery.devicePixelRatioOf(context);
     final look = context.select<DeviceSettingsStore, MapLook>((s) => s.mapLook);
     if (map.state == MapLoadState.loading) {
       return const Center(child: LaterLoadingBar(width: 150, height: 150));
     }
     _reportLocationProblem(map);
 
-    final screen = MediaQuery.sizeOf(context);
     final start = map.initialCamera;
-    return Stack(
-      children: [
-        GoogleMap(
-          mapId: _mapId,
-          mapType: switch (look) {
-            MapLook.standard => MapType.normal,
-            MapLook.satellite => MapType.satellite,
-            MapLook.hybrid => MapType.hybrid,
-          },
-          initialCameraPosition: CameraPosition(
-            target: LatLng(start.latitude, start.longitude),
-            zoom: map.initialCameraZoom,
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    if (_builtDark != null && _builtDark != dark) {
+      unawaited(map.setDarkIcons(dark));
+    }
+    _builtDark = dark;
+    final selected = _selected;
+    final bottom = NavbarWidget.coveredHeight(context) + 12;
+    final cardHeight = CapsuleInfoPanel.heightFor(context);
+    final motion = AppMotion.of(context, AppMotion.emphasized);
+    // A new user: nothing of theirs yet (a capsule waiting to upload counts).
+    final noCapsules = context.select<OwnCapsulesStore, bool>(
+      (s) => s.isLoaded && s.capsules.isEmpty,
+    );
+    final showHint = selected == null && noCapsules && !_hintClosed;
+    // What floats above the bar: the capsule card or the hint.
+    final raised = selected != null
+        ? cardHeight + 12
+        : showHint
+        ? FirstCapsuleHint.heightFor(context) + 12
+        : 0.0;
+    return PopScope(
+      // Back closes the card first.
+      canPop: selected == null,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _select(null);
+      },
+      child: Stack(
+        children: [
+          GoogleMap(
+            style: dark ? MapStyles.dark : MapStyles.light,
+            // The Google logo stays visible above the floating navigation
+            // bar, above the capsule card while it is open, and below the
+            // status bar: it is never covered (F-12, F-14). The zoom buttons
+            // were hidden under the bar (pinch zooms).
+            padding: EdgeInsets.only(
+              top: MediaQuery.viewPaddingOf(context).top,
+              bottom: NavbarWidget.coveredHeight(context) + 4 + raised,
+            ),
+            zoomControlsEnabled: false,
+            // Our compass sits with the zoom and location buttons.
+            compassEnabled: false,
+            // The capsule card replaces Google's marker toolbar.
+            mapToolbarEnabled: false,
+            mapType: switch (look) {
+              MapLook.standard => MapType.normal,
+              MapLook.satellite => MapType.satellite,
+              MapLook.hybrid => MapType.hybrid,
+            },
+            initialCameraPosition:
+                _lastCamera ??
+                CameraPosition(
+                  target: LatLng(start.latitude, start.longitude),
+                  zoom: map.initialCameraZoom,
+                ),
+            onMapCreated: (controller) {
+              if (!_mapController.isCompleted) {
+                _mapController.complete(controller);
+              }
+              if (_focus.pending != null) unawaited(_showFocusedCapsule());
+            },
+            markers: _markers(map),
+            heatmaps: _heatmaps(map),
+            onTap: (_) => _select(null),
+            onCameraMove: (position) {
+              _lastCamera = position;
+              _bearing.value = position.bearing;
+              // Zoomed out past the markers: their card goes too.
+              if (position.zoom < MapController.markerZoomThreshold) {
+                _select(null);
+              }
+              map.onCameraMove(position.zoom);
+            },
+            onCameraIdle: () async {
+              final controller = await _mapController.future;
+              try {
+                final bounds = await controller.getVisibleRegion();
+                final center = GeoPosition(
+                  (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+                  (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
+                );
+                map.onCameraIdle(
+                  center,
+                  await controller.getZoomLevel(),
+                  view: GeoBounds(
+                    south: bounds.southwest.latitude,
+                    west: bounds.southwest.longitude,
+                    north: bounds.northeast.latitude,
+                    east: bounds.northeast.longitude,
+                  ),
+                );
+              } on StateError {
+                // The map went away (the tab was rebuilt) while this ran.
+              }
+            },
           ),
-          onMapCreated: (controller) {
-            _infoWindow.googleMapController = controller;
-            if (!_mapController.isCompleted) {
-              _mapController.complete(controller);
-            }
-            if (_focus.pending != null) unawaited(_showFocusedCapsule());
-          },
-          markers: _markers(map),
-          heatmaps: _heatmaps(map),
-          onTap: (_) => _infoWindow.hideInfoWindow?.call(),
-          onCameraMove: (position) {
-            _infoWindow.onCameraMove?.call();
-            map.onCameraMove(position.zoom);
-          },
-          onCameraIdle: () async {
-            final controller = await _mapController.future;
-            final bounds = await controller.getVisibleRegion();
-            final center = GeoPosition(
-              (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
-              (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
-            );
-            map.onCameraIdle(center, await controller.getZoomLevel());
-          },
-        ),
-        CustomInfoWindow(
-          controller: _infoWindow,
-          height: (screen.height * 0.171).clamp(
-            CapsuleInfoPanel.minHeight,
-            double.infinity,
+          // What the map shows (B5), top left under the status bar.
+          Positioned(
+            top: MediaQuery.viewPaddingOf(context).top + 12,
+            left: 16,
+            child: _FilterButton(
+              active: map.filter.activeCount,
+              onTap: () => MapFilterSheet.show(
+                context,
+                filter: map.filter,
+                onChanged: map.setFilter,
+              ),
+            ),
           ),
-          width: screen.width * 0.58,
-          offset: 60,
-        ),
-      ],
+          // The streak (B7), top right: grey with an orange ring while
+          // today is not counted yet.
+          Positioned(
+            top: MediaQuery.viewPaddingOf(context).top + 12,
+            right: 16,
+            child: const StreakPill(height: _MyLocationButton.size),
+          ),
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            right: 16,
+            // Moves up while a capsule card (or the hint) is shown.
+            bottom: bottom + raised,
+            child: _MyLocationButton(onTap: () => _goToMe(map)),
+          ),
+          // Zoom, above the my-location button (pinch still works).
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            right: 16,
+            bottom: bottom + raised + _MyLocationButton.size + 12,
+            child: _ZoomButtons(
+              onZoomIn: () => unawaited(_zoomBy(CameraUpdate.zoomIn())),
+              onZoomOut: () => unawaited(_zoomBy(CameraUpdate.zoomOut())),
+            ),
+          ),
+          // Compass, above the zoom pill while the map is turned.
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            right: 16,
+            bottom: bottom + raised + _MyLocationButton.size * 3 + 1 + 12 * 2,
+            child: MapCompass(
+              size: _MyLocationButton.size,
+              bearing: _bearing,
+              onTap: () => unawaited(_faceNorth()),
+            ),
+          ),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: bottom,
+            child: AnimatedSwitcher(
+              duration: motion,
+              switchInCurve: AppMotion.emphasizedCurve,
+              switchOutCurve: AppMotion.exit,
+              transitionBuilder: (child, animation) => FadeTransition(
+                opacity: animation,
+                child: SlideTransition(
+                  position: Tween(
+                    begin: const Offset(0, 0.3),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: child,
+                ),
+              ),
+              child: selected == null
+                  ? showHint
+                        ? Center(
+                            key: const ValueKey('hint'),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 440),
+                              child: FirstCapsuleHint(
+                                onTap: () => AppRoutes.toCamera(context),
+                                onClose: _closeHint,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(
+                            key: ValueKey('none'),
+                            width: double.infinity,
+                          )
+                  : GestureDetector(
+                      key: ValueKey(selected.id),
+                      // Swipe down to close.
+                      onVerticalDragEnd: (details) {
+                        if ((details.primaryVelocity ?? 0) > 150) _select(null);
+                      },
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 440),
+                          child: SizedBox(
+                            height: cardHeight,
+                            child: _infoPanel(selected),
+                          ),
+                        ),
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

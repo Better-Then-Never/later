@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../core/l10n/l10n.dart';
 
 /// The app's red count pill (unread notifications, friend requests, unread
 /// messages): a circle for one digit, a pill for more, "99+" above 99, and
@@ -13,11 +14,15 @@ class CountBadge extends StatelessWidget {
     required this.count,
     this.size = 20,
     this.color = AppColors.materialRed,
+    this.semanticsLabel,
   });
 
   final int count;
   final double size;
   final Color color;
+
+  /// What a screen reader says; "3 new" in the app's language by default.
+  final String? semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +50,10 @@ class CountBadge extends StatelessWidget {
           heightFactor: 1,
           child: Text(
             count > 99 ? '99+' : '$count',
-            semanticsLabel: '$count unread',
+            semanticsLabel:
+                semanticsLabel ?? context.l10n.commonNewCount(count),
             style: TextStyle(
-              color: AppColors.white,
+              color: AppColors.onAccent,
               fontSize: size * 0.6,
               fontWeight: FontWeight.bold,
               fontFamily: kAppFontFamily,

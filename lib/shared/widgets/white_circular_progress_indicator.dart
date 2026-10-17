@@ -17,7 +17,7 @@ class WhiteCircularProgressIndicator extends StatelessWidget {
       width: size,
       height: size,
       child: CircularProgressIndicator(
-        color: AppColors.white,
+        color: AppColors.onAccent,
         strokeWidth: strokeWidth,
       ),
     );

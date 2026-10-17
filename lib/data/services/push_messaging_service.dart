@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../models/app_notification.dart';
 import '../../core/theme/app_colors.dart';
@@ -47,7 +48,13 @@ class NotificationTap {
 
 /// FCM + local notifications: permission, token, foreground display and tap
 /// events for all three app states (foreground, background, terminated).
-class PushMessagingService {
+/// Subscribes this device to FCM topics.
+abstract interface class TopicSubscriber {
+  Future<void> subscribeToTopic(String topic);
+  Future<void> unsubscribeFromTopic(String topic);
+}
+
+class PushMessagingService implements TopicSubscriber {
   PushMessagingService({
     FirebaseMessaging? messaging,
     FlutterLocalNotificationsPlugin? localNotifications,
@@ -62,51 +69,74 @@ class PushMessagingService {
 
   /// Android channels, one per kind of push and a silent variant of each
   /// (the user's "Sound" setting picks one on the server,
-  /// functions/lib/prefs.js). Users can tune each in the system settings.
-  static const channels = [
-    AndroidNotificationChannel(
-      'messages',
-      'Messages',
-      description: 'New messages from your friends',
-      importance: Importance.high,
-    ),
-    AndroidNotificationChannel(
-      'messages_silent',
-      'Messages (silent)',
-      description: 'New messages, without sound or vibration',
-      importance: Importance.low,
-      playSound: false,
-      enableVibration: false,
-    ),
-    AndroidNotificationChannel(
-      'activity',
-      'Followers and capsules',
-      description: 'New followers and new capsules of people you follow',
-      importance: Importance.high,
-    ),
-    AndroidNotificationChannel(
-      'activity_silent',
-      'Followers and capsules (silent)',
-      description: 'New followers and capsules, without sound or vibration',
-      importance: Importance.low,
-      playSound: false,
-      enableVibration: false,
-    ),
-    // Pushes from Cloud Functions deployed before the channels above
-    // (and the manifest's default channel).
-    AndroidNotificationChannel(
-      channelId,
-      'Other notifications',
-      description: 'Other notifications from Later',
-      importance: Importance.max,
-    ),
-  ];
+  /// functions/lib/prefs.js). Users can tune each in the system settings;
+  /// names are in the app's language when the channels are (re)created.
+  static List<AndroidNotificationChannel> get channels {
+    final l10n = AppL10n.current;
+    return [
+      AndroidNotificationChannel(
+        'messages',
+        l10n.notificationsChannelMessages,
+        description: l10n.notificationsChannelMessagesDescription,
+        importance: Importance.high,
+      ),
+      AndroidNotificationChannel(
+        'messages_silent',
+        l10n.notificationsChannelMessagesSilent,
+        description: l10n.notificationsChannelMessagesSilentDescription,
+        importance: Importance.low,
+        playSound: false,
+        enableVibration: false,
+      ),
+      // Sound without vibration (Settings > Notifications > Vibration off).
+      AndroidNotificationChannel(
+        'messages_novibrate',
+        l10n.notificationsChannelMessagesNoVibration,
+        description: l10n.notificationsChannelMessagesDescription,
+        importance: Importance.high,
+        enableVibration: false,
+      ),
+      AndroidNotificationChannel(
+        'activity',
+        l10n.notificationsChannelActivity,
+        description: l10n.notificationsChannelActivityDescription,
+        importance: Importance.high,
+      ),
+      AndroidNotificationChannel(
+        'activity_silent',
+        l10n.notificationsChannelActivitySilent,
+        description: l10n.notificationsChannelActivitySilentDescription,
+        importance: Importance.low,
+        playSound: false,
+        enableVibration: false,
+      ),
+      AndroidNotificationChannel(
+        'activity_novibrate',
+        l10n.notificationsChannelActivityNoVibration,
+        description: l10n.notificationsChannelActivityDescription,
+        importance: Importance.high,
+        enableVibration: false,
+      ),
+      // Pushes from Cloud Functions deployed before the channels above
+      // (and the manifest's default channel).
+      AndroidNotificationChannel(
+        channelId,
+        l10n.notificationsChannelOther,
+        description: l10n.notificationsChannelOtherDescription,
+        importance: Importance.max,
+      ),
+    ];
+  }
 
   static const channelId = 'high_importance_channel';
 
   /// The chat on screen: its message pushes are not shown in the
   /// foreground (set by the chat page).
   String? activeChatId;
+
+  /// The app celebrates achievements itself while it runs (B7): their
+  /// pushes are not shown in the foreground.
+  bool achievementsInApp = false;
 
   final _taps = StreamController<NotificationTap>.broadcast();
   final List<StreamSubscription<RemoteMessage>> _subscriptions = [];
@@ -205,6 +235,23 @@ class PushMessagingService {
     }
   }
 
+  /// Topic pushes (announcements, see NewsTopics). Skipped in builds that
+  /// talk to the local emulators: FCM topics are not emulated, so the phone
+  /// would join the real project's topics.
+  @override
+  Future<void> subscribeToTopic(String topic) async {
+    if (_usesEmulator) return;
+    await _messaging.subscribeToTopic(topic);
+  }
+
+  @override
+  Future<void> unsubscribeFromTopic(String topic) async {
+    if (_usesEmulator) return;
+    await _messaging.unsubscribeFromTopic(topic);
+  }
+
+  static const _usesEmulator = bool.fromEnvironment('USE_FIREBASE_EMULATOR');
+
   /// Revokes this device's token so the previous user stops receiving pushes.
   Future<void> deleteToken() async {
     try {
@@ -232,6 +279,7 @@ class PushMessagingService {
     final chatId = tap.type == NotificationType.message ? tap.chatId : null;
     // The user is reading this chat right now.
     if (chatId != null && chatId == activeChatId) return;
+    if (achievementsInApp && tap.type == NotificationType.achievement) return;
     final channel = channels.firstWhere(
       (c) => c.id == notification.android?.channelId,
       orElse: () => channels.last,
@@ -240,7 +288,7 @@ class PushMessagingService {
       await _local.show(
         // One notification per chat, replaced by the next message.
         chatId?.hashCode ?? message.messageId?.hashCode ?? message.hashCode,
-        notification.title ?? 'New Notification',
+        notification.title ?? AppL10n.current.notificationsTypeOther,
         notification.body ?? '',
         NotificationDetails(
           android: AndroidNotificationDetails(

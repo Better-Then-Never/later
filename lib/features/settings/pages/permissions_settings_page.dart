@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 import 'package:later/shared/widgets/buttons/go_back_button.dart';
+import 'package:later/shared/widgets/confirm_dialog.dart';
 import 'package:later/shared/widgets/options/options_section.dart';
 import 'package:later/shared/widgets/page_header.dart';
 
@@ -23,36 +26,24 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
 
   final List<AppPermissionSetting> _permissions = [
     AppPermissionSetting(
-      name: 'Camera',
-      description: 'Access camera to create time capsules',
+      name: (l10n) => l10n.settingsPermissionCamera,
+      description: (l10n) => l10n.settingsPermissionCameraDescription,
       permission: Permission.camera,
       iconAsset: AppIcons.cameraFull,
     ),
     AppPermissionSetting(
-      name: 'Microphone',
-      description: 'Record audio for time capsules',
-      permission: Permission.microphone,
-      iconAsset: AppIcons.capsuleMicrophone,
-    ),
-    AppPermissionSetting(
-      name: 'Location',
-      description: 'Find capsules nearby and location-based features',
+      name: (l10n) => l10n.settingsPermissionLocation,
+      description: (l10n) => l10n.settingsPermissionLocationDescription,
       permission: Platform.isIOS
           ? Permission.locationWhenInUse
           : Permission.location,
       iconAsset: AppIcons.capsuleLocation,
     ),
     AppPermissionSetting(
-      name: 'Notifications',
-      description: 'Receive updates about followers and capsules',
+      name: (l10n) => l10n.settingsNotifications,
+      description: (l10n) => l10n.settingsPermissionNotificationsDescription,
       permission: Permission.notification,
       iconAsset: AppIcons.notificationsBlackFull,
-    ),
-    AppPermissionSetting(
-      name: 'Contacts',
-      description: 'Invite friends and find people you know',
-      permission: Permission.contacts,
-      iconAsset: AppIcons.friendsBook,
     ),
   ];
 
@@ -92,7 +83,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
 
     if (currentStatus?.isGranted ?? false) {
       // Permission is granted, show dialog to revoke
-      _showRevokePermissionDialog(permission);
+      _showSettingsDialog(revoke: true);
     } else {
       // Permission is not granted, request it
       await _requestPermission(permission);
@@ -104,127 +95,48 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
     if (!mounted) return; // BUG-090
 
     if (status.isPermanentlyDenied) {
-      _showPermissionDialog(permission);
+      _showSettingsDialog(revoke: false);
     } else {
       _permissionStatuses[permission] = status;
       if (mounted) setState(() {});
     }
   }
 
-  void _showRevokePermissionDialog(Permission permission) {
-    showDialog(
+  /// Revoking, or asking again after "Don't ask again", happens in the
+  /// system settings.
+  void _showSettingsDialog({required bool revoke}) {
+    final l10n = context.l10n;
+    ConfirmDialog.show(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: const Text(
-            'Revoke Permission',
-            style: TextStyle(
-              fontFamily: kAppFontFamily,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: const Text(
-            'To revoke this permission, you need to go to your device settings. This will disable the related features in the app.',
-            style: TextStyle(fontFamily: kAppFontFamily),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.grey500,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: const Text(
-                'Open Settings',
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.infoBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      title: revoke
+          ? l10n.settingsPermissionRevokeTitle
+          : l10n.settingsPermissionRequiredTitle,
+      message: revoke
+          ? l10n.settingsPermissionRevokeBody
+          : l10n.settingsPermissionRequiredBody,
+      confirmText: l10n.settingsPermissionOpenSettings,
+      confirmButtonColor: AppColors.brandGreen,
+      onConfirm: openAppSettings,
     );
   }
 
-  void _showPermissionDialog(Permission permission) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          title: const Text(
-            'Permission Required',
-            style: TextStyle(
-              fontFamily: kAppFontFamily,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: const Text(
-            'This permission has been permanently denied. Please enable it in your device settings.',
-            style: TextStyle(fontFamily: kAppFontFamily),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.grey500,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                openAppSettings();
-              },
-              child: const Text(
-                'Open Settings',
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.infoBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  String _getPermissionStatusText(PermissionStatus status) {
+  String _getPermissionStatusText(
+    AppLocalizations l10n,
+    PermissionStatus status,
+  ) {
     switch (status) {
       case PermissionStatus.granted:
-        return 'Granted';
+        return l10n.settingsPermissionGranted;
       case PermissionStatus.denied:
-        return 'Denied';
+        return l10n.settingsPermissionDenied;
       case PermissionStatus.restricted:
-        return 'Restricted';
+        return l10n.settingsPermissionRestricted;
       case PermissionStatus.limited:
-        return 'Limited';
+        return l10n.settingsPermissionLimited;
       case PermissionStatus.permanentlyDenied:
-        return 'Permanently Denied';
+        return l10n.settingsPermissionPermanentlyDenied;
       case PermissionStatus.provisional:
-        return 'Provisional';
+        return l10n.settingsPermissionProvisional;
     }
   }
 
@@ -246,14 +158,16 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final palette = context.palette;
+    final l10n = context.l10n;
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackgroundAlt,
+      backgroundColor: palette.backgroundAlt,
       body: Column(
         children: [
           PageHeader(
-            mainText: 'App permissions',
-            description: 'What Later may use on this phone',
+            mainText: l10n.settingsAppPermissions,
+            description: l10n.settingsPermissionsDescription,
             leadingButton: GoBackButton(context: context),
           ),
           Expanded(
@@ -276,11 +190,16 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                       return Container(
                         margin: EdgeInsets.only(bottom: screenHeight * 0.015),
                         decoration: BoxDecoration(
-                          color: AppColors.white,
+                          color: palette.surface,
                           borderRadius: BorderRadius.circular(15),
+                          // A hairline edge in dark, where shadows do not
+                          // show (as on every card); nothing in light.
+                          border: palette.isDark
+                              ? Border.all(color: palette.cardBorder)
+                              : null,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.black.withValues(alpha: 0.05),
+                              color: palette.shadowCard.withValues(alpha: 0.05),
                               blurRadius: 5,
                               offset: const Offset(0, 2),
                             ),
@@ -301,12 +220,12 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                             ),
                           ),
                           title: Text(
-                            permission.name,
-                            style: const TextStyle(
+                            permission.name(l10n),
+                            style: TextStyle(
                               fontFamily: kAppFontFamily,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.black,
+                              color: palette.textPrimary,
                             ),
                           ),
                           subtitle: Column(
@@ -314,11 +233,11 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                             children: [
                               const SizedBox(height: 4),
                               Text(
-                                permission.description,
-                                style: const TextStyle(
+                                permission.description(l10n),
+                                style: TextStyle(
                                   fontFamily: kAppFontFamily,
                                   fontSize: 14,
-                                  color: AppColors.grey600,
+                                  color: palette.textMuted,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -334,7 +253,7 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
-                                  _getPermissionStatusText(status),
+                                  _getPermissionStatusText(l10n, status),
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
@@ -361,8 +280,9 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
 }
 
 class AppPermissionSetting {
-  final String name;
-  final String description;
+  /// The name and what it is for, in the app's language.
+  final String Function(AppLocalizations l10n) name;
+  final String Function(AppLocalizations l10n) description;
   final String iconAsset;
   final Permission permission;
 

@@ -6,6 +6,8 @@ import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/geo_position.dart';
 import '../../../data/services/geocoding_service.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/l10n/l10n.dart';
 
 /// Yellow pill with the place name of a capsule + round icon on the right.
 ///
@@ -44,9 +46,11 @@ class _CapsulePlacePillState extends State<CapsulePlacePill> {
 
   Future<String> _lookup() async {
     final position = widget.position;
-    if (position == null) return 'No location';
-    final name = await context.read<GeocodingService>().placeName(position);
-    return name ?? 'Unknown location';
+    if (position == null) return context.l10n.placeNoLocation;
+    final geocoding = context.read<GeocodingService>();
+    final unknown = context.l10n.placeUnknown;
+    final name = await geocoding.placeName(position);
+    return name ?? unknown;
   }
 
   @override
@@ -68,7 +72,7 @@ class _CapsulePlacePillState extends State<CapsulePlacePill> {
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Text(
-                      snapshot.data ?? 'Loading...',
+                      snapshot.data ?? context.l10n.commonLoading,
                       style: AppTextStyles.pill,
                     ),
                   ),
@@ -81,8 +85,8 @@ class _CapsulePlacePillState extends State<CapsulePlacePill> {
         Container(
           height: widget.height,
           width: widget.height,
-          decoration: const BoxDecoration(
-            color: AppColors.white,
+          decoration: BoxDecoration(
+            color: context.palette.surface,
             shape: BoxShape.circle,
           ),
           child: Image.asset(widget.iconPath),

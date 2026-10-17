@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/shared/widgets/app_segmented_tabs.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
@@ -12,8 +13,8 @@ import '../friend_actions.dart';
 import '../friends_store.dart';
 import '../widgets/requests/friend_requests_received_row.dart';
 import '../widgets/requests/friend_requests_sent_row.dart';
-import '../widgets/requests/friend_requests_toggle_button.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// Received and sent friend requests, live from [FriendsStore]; names come
 /// from [UserDirectory] in one batched lookup.
@@ -50,15 +51,14 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     Widget list;
     if (uids.isEmpty) {
       list = _showReceived
-          ? const DefaultEmptyInboxInfo(
-              message: 'No friend requests',
-              subtitle:
-                  'When someone sends you a friend request,\nit will appear here',
+          ? DefaultEmptyInboxInfo(
+              message: context.l10n.friendsRequestsEmptyTitle,
+              subtitle: context.l10n.friendsRequestsEmptySubtitle,
               assetPath: AppIcons.friendsRequestPage,
             )
-          : const DefaultEmptyInboxInfo(
-              message: 'No sent requests',
-              subtitle: 'Friend requests you send\nwill appear here',
+          : DefaultEmptyInboxInfo(
+              message: context.l10n.friendsSentEmptyTitle,
+              subtitle: context.l10n.friendsSentEmptySubtitle,
               assetPath: AppIcons.friendsRequestPage,
             );
     } else {
@@ -71,8 +71,9 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
           if (profile == null && !directory.isResolved(uid)) {
             return const SizedBox(height: 80, child: Center());
           }
-          final name = profile?.name ?? 'Unknown User';
-          final username = profile?.username ?? 'unknown';
+          final name = profile?.name ?? context.l10n.commonUnknownUser;
+          final username =
+              profile?.username ?? context.l10n.commonUnknownUsername;
           void open() => AppRoutes.toAddFriendProfile(context, uid);
 
           return _showReceived
@@ -100,26 +101,19 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Column(
         children: [
           PageHeader(
-            mainText: 'Friend Requests',
+            mainText: context.l10n.friendsRequestsTitle,
             leadingButton: GoBackButton(context: context),
-            actionButtonsRow: Row(
-              children: [
-                FriendRequestsToggleButton(
-                  onTap: () => setState(() => _showReceived = true),
-                  text: 'Received',
-                  isSelected: _showReceived,
-                ),
-                const SizedBox(width: 12),
-                FriendRequestsToggleButton(
-                  onTap: () => setState(() => _showReceived = false),
-                  text: 'Sent',
-                  isSelected: !_showReceived,
-                ),
+            actionButtonsRow: AppSegmentedTabs(
+              labels: [
+                context.l10n.friendsRequestsReceivedTab,
+                context.l10n.friendsRequestsSentTab,
               ],
+              selected: _showReceived ? 0 : 1,
+              onChanged: (i) => setState(() => _showReceived = i == 0),
             ),
           ),
           Expanded(child: list),

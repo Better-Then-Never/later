@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 
 class NotificationFilterTabs extends StatelessWidget {
   final TabController controller;
@@ -8,7 +10,12 @@ class NotificationFilterTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> filters = ['All', 'Replies', 'Comments'];
+    final l10n = context.l10n;
+    final List<String> filters = [
+      l10n.notificationsTabAll,
+      l10n.notificationsTabReplies,
+      l10n.notificationsTabComments,
+    ];
 
     return Center(
       child: IntrinsicWidth(
@@ -21,8 +28,8 @@ class NotificationFilterTabs extends StatelessWidget {
           ),
           indicatorSize: TabBarIndicatorSize.label,
           dividerColor: Colors.transparent,
-          labelColor: AppColors.white,
-          unselectedLabelColor: AppColors.black,
+          labelColor: AppColors.onAccent,
+          unselectedLabelColor: context.palette.textPrimary,
           labelStyle: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
@@ -44,7 +51,12 @@ class NotificationFilterTabs extends StatelessWidget {
                   horizontal: 16,
                   vertical: 8,
                 ),
-                child: Text(filter),
+                // Longer translations shrink instead of overflowing on
+                // narrow phones; English always fits at full size.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(filter, maxLines: 1),
+                ),
               ),
             );
           }).toList(),

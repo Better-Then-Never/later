@@ -250,7 +250,7 @@
 
         <div class="user-info">
             <div class="user-name" id="userName">Loading...</div>
-            <div class="user-subtitle">wants to connect with you on Later!</div>
+            <div class="user-subtitle" id="userSubtitle">wants to connect with you on Later!</div>
         </div>
 
         <h1>Join Later</h1>
@@ -304,6 +304,11 @@
         const userId = getUrlParameter('userId');
         console.log('User ID from URL:', userId);
 
+        // A shared capsule: only its id travels; the page shows nothing of it
+        // (it may be for friends only) and hands the id to the app.
+        const rawCapsuleId = getUrlParameter('capsuleId');
+        const capsuleId = /^[A-Za-z0-9_-]{1,64}$/.test(rawCapsuleId || '') ? rawCapsuleId : null;
+
         // Show status message
         function showStatus(message, type = 'info') {
             const statusEl = document.getElementById('status');
@@ -317,7 +322,13 @@
 
         // Try to open the app
         function openApp() {
-            if (userId) {
+            if (capsuleId) {
+                showStatus('Opening Later app...', 'info');
+                window.location.href = `later://capsule/${encodeURIComponent(capsuleId)}`;
+                setTimeout(() => {
+                    showStatus('App not installed? Download Later from the buttons above!', 'info');
+                }, 2000);
+            } else if (userId) {
                 const deepLink = `later://profile/${userId}`;
                 console.log('Attempting to open:', deepLink);
 
@@ -342,7 +353,13 @@
         });
 
         // Load user info
-        if (userId) {
+        if (capsuleId) {
+            document.getElementById('userName').textContent = 'A capsule for you';
+            document.getElementById('userSubtitle').textContent = 'Someone shared a time capsule with you on Later.';
+            if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                setTimeout(openApp, 1500);
+            }
+        } else if (userId) {
             // Fetch real user data from Firebase Functions
             fetchUserData(userId);
 

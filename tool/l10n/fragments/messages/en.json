@@ -1,0 +1,446 @@
+{
+  "messagesTitle": "My Laters",
+  "@messagesTitle": {
+    "description": "Title of the messages tab (the list of chats)."
+  },
+  "messagesFindChatsHint": "Find chats",
+  "messagesChatsLoadError": "Couldn't load your chats",
+  "messagesCheckConnection": "Check your connection and try again",
+  "messagesNoChatsTitle": "No conversations yet",
+  "messagesNoChatsSubtitle": "Tap the new message button to start chatting with friends!",
+  "messagesNoChatsFound": "No chats found",
+  "messagesNothingMatches": "Nothing matches \"{query}\"",
+  "@messagesNothingMatches": {
+    "description": "Empty search result in the chat list, a chat and the new-chat sheet.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "lunch"
+      }
+    }
+  },
+  "messagesYouPrefix": "You: {message}",
+  "@messagesYouPrefix": {
+    "description": "Chat list preview when the user sent the last message.",
+    "placeholders": {
+      "message": {
+        "type": "String",
+        "example": "See you tomorrow!"
+      }
+    }
+  },
+  "messagesToday": "Today",
+  "@messagesToday": {
+    "description": "Day separator in a chat."
+  },
+  "messagesYesterday": "Yesterday",
+  "@messagesYesterday": {
+    "description": "Day separator in a chat and the time label in the chat list."
+  },
+  "messagesChatFallbackTitle": "Chat",
+  "@messagesChatFallbackTitle": {
+    "description": "Chat header title while the friend's name is not known yet."
+  },
+  "messagesLoadError": "Couldn't load the messages",
+  "messagesEmptyTitle": "No messages yet",
+  "messagesEmptySubtitle": "Say hello to {name}!",
+  "@messagesEmptySubtitle": {
+    "description": "Empty chat. The name cannot be inflected: phrase it so the name stays in its base form.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesNoMatchTitle": "No messages found",
+  "messagesNotificationsMuted": "Notifications muted",
+  "@messagesNotificationsMuted": {
+    "description": "Small line under the friend's name in a muted chat. Keep it short."
+  },
+  "messagesChatOptions": "Chat options",
+  "@messagesChatOptions": {
+    "description": "Accessibility label of the chat menu button."
+  },
+  "messagesSearchHint": "Search messages",
+  "messagesReceiptSending": "Sending…",
+  "@messagesReceiptSending": {
+    "description": "Receipt under the user's newest message."
+  },
+  "messagesReceiptSent": "Sent",
+  "messagesReceiptRead": "Read",
+  "@messagesReceiptRead": {
+    "description": "Receipt: the friend has read the message (past participle)."
+  },
+  "messagesReceiptFailed": "Not sent · Tap to retry",
+  "messagesScrollToLatest": "Scroll to the latest message",
+  "@messagesScrollToLatest": {
+    "description": "Accessibility label of the round button that jumps to the newest message."
+  },
+  "messagesBlockedByYou": "You blocked this user",
+  "messagesCantSend": "You can't send messages to this user",
+  "messagesCapsuleUnavailable": "This capsule is no longer available",
+  "messagesTooLong": "This message is too long",
+  "messagesSignedOut": "You are signed out",
+  "messagesSendFailed": "Failed to send message",
+  "messagesClearFailed": "Failed to clear history",
+  "messagesClearConfirmTitle": "Are you sure you want to clear chat history?",
+  "messagesClearConfirm": "Clear",
+  "@messagesClearConfirm": {
+    "description": "Confirm button of the clear-history dialog."
+  },
+  "messagesMutedToast": "Chat muted",
+  "messagesUnmutedToast": "Chat unmuted",
+  "messagesMenuSearch": "Search",
+  "@messagesMenuSearch": {
+    "description": "Chat menu item. Menu items are one short line (about 22 characters at most)."
+  },
+  "messagesMenuMute": "Mute notifications",
+  "messagesMenuUnmute": "Unmute notifications",
+  "messagesMenuClearHistory": "Clear history",
+  "messagesMenuBlock": "Block user",
+  "messagesMenuUnblock": "Unblock user",
+  "messagesOpenCapsule": "Open capsule {title}",
+  "@messagesOpenCapsule": {
+    "description": "Accessibility label of a capsule's photo in a chat.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Trip to Rome"
+      }
+    }
+  },
+  "messagesCapsuleLabel": "Capsule",
+  "@messagesCapsuleLabel": {
+    "description": "Small label on the photo of a capsule sent in a chat."
+  },
+  "messagesSendCapsule": "Send a capsule",
+  "@messagesSendCapsule": {
+    "description": "Accessibility label of the capsule button next to the message field."
+  },
+  "messagesInputHint": "Write a message...",
+  "messagesSend": "Send",
+  "@messagesSend": {
+    "description": "Accessibility label of the send button."
+  },
+  "messagesNewChatTitle": "New Chat",
+  "messagesNewChatSearchHint": "Search friends",
+  "messagesNewChatNoFriends": "No friends yet",
+  "messagesNewChatNoFriendsSubtitle": "Add some friends to start chatting!",
+  "messagesNewChatFindFriends": "Find friends",
+  "messagesNewChatNoMatch": "No friends found",
+  "messagesStartChatWith": "Start chat with {name}",
+  "@messagesStartChatWith": {
+    "description": "Accessibility label of a friend in the new-chat sheet.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesCopy": "Copy",
+  "@messagesCopy": {
+    "description": "Message menu: copy the text"
+  },
+  "messagesCopied": "Copied",
+  "@messagesCopied": {
+    "description": "Toast after copying a message"
+  },
+  "messagesDeleteConfirmTitle": "Delete this message for both of you?",
+  "messagesDeleteFailed": "Could not delete the message",
+  "messagesReactFailed": "Could not save your reaction",
+  "messagesPhoto": "Photo",
+  "@messagesPhoto": {
+    "description": "A photo message: chat list preview and quotes (after a camera sign)."
+  },
+  "messagesSendPhoto": "Send a photo",
+  "@messagesSendPhoto": {
+    "description": "Screen reader label and title of the chat input's photo button."
+  },
+  "messagesChoosePhoto": "Choose from gallery",
+  "@messagesChoosePhoto": {
+    "description": "Menu item: pick a photo from the phone's gallery for the chat."
+  },
+  "messagesTakePhoto": "Take a photo",
+  "@messagesTakePhoto": {
+    "description": "Menu item: take a photo with the camera for the chat."
+  },
+  "messagesPhotoCaption": "Add a caption…",
+  "@messagesPhotoCaption": {
+    "description": "Hint of the caption field under a photo about to be sent."
+  },
+  "messagesPhotoUnreadable": "This picture can't be sent",
+  "@messagesPhotoUnreadable": {
+    "description": "Shown when the chosen file cannot be read as a picture."
+  },
+  "messagesOpenPhoto": "Open photo",
+  "@messagesOpenPhoto": {
+    "description": "Screen reader label of a photo in a chat bubble."
+  },
+  "messagesTyping": "typing",
+  "@messagesTyping": {
+    "description": "Under the friend's name in the chat header while they type (animated dots follow)."
+  },
+  "messagesGroupFailed": "Something went wrong with the group. Try again.",
+  "@messagesGroupFailed": {
+    "description": "Shown when creating, renaming, leaving or inviting to a group fails."
+  },
+  "messagesGroupNameTooLong": "A group name can have at most 60 characters",
+  "@messagesGroupNameTooLong": {
+    "description": "Shown when a group name is longer than allowed."
+  },
+  "messagesNewGroup": "New group",
+  "@messagesNewGroup": {
+    "description": "Button at the top of the new-chat sheet; title of the page that makes a group."
+  },
+  "messagesGroupName": "Group name",
+  "@messagesGroupName": {
+    "description": "Hint of the group name field."
+  },
+  "messagesGroupCreate": "Create",
+  "@messagesGroupCreate": {
+    "description": "Button that creates the group."
+  },
+  "messagesGroupWho": "Who is in it?",
+  "@messagesGroupWho": {
+    "description": "Title above the friends to pick for a new group."
+  },
+  "messagesGroupNeedsName": "Give the group a name",
+  "@messagesGroupNeedsName": {
+    "description": "Shown when creating a group without a name."
+  },
+  "messagesGroupNeedsPeople": "Choose at least one friend",
+  "@messagesGroupNeedsPeople": {
+    "description": "Shown when creating a group without picking friends."
+  },
+  "messagesGroupTooMany": "A group has at most 20 people",
+  "@messagesGroupTooMany": {
+    "description": "Shown when more people are picked than a group holds."
+  },
+  "messagesGroupMembers": "{count, plural, =1{1 member} other{{count} members}}",
+  "@messagesGroupMembers": {
+    "description": "Under a group's name in its header.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesTypingName": "{name} is typing",
+  "@messagesTypingName": {
+    "description": "Group header while one person types (animated dots follow).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesTypingMany": "{count} people are typing",
+  "@messagesTypingMany": {
+    "description": "Group header while several people type (animated dots follow).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesGroupLeave": "Leave group",
+  "@messagesGroupLeave": {
+    "description": "Group menu item."
+  },
+  "messagesGroupLeaveConfirm": "Leave “{name}”? Its messages will no longer show here.",
+  "@messagesGroupLeaveConfirm": {
+    "description": "Confirmation before leaving a group.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Trip"
+      }
+    }
+  },
+  "messagesGroupRename": "Rename group",
+  "@messagesGroupRename": {
+    "description": "Group menu item and title of the rename card."
+  },
+  "messagesGroupAddPeople": "Add people",
+  "@messagesGroupAddPeople": {
+    "description": "Group menu item and title of the page that invites friends."
+  },
+  "messagesGroupMembersTitle": "Members",
+  "@messagesGroupMembersTitle": {
+    "description": "Group menu item and title of the members list."
+  },
+  "messagesGroupInvited": "Invited. Your friends join in a moment.",
+  "@messagesGroupInvited": {
+    "description": "Shown after inviting friends to a group (the server adds them)."
+  },
+  "messagesGroupLeft": "You are no longer in this group",
+  "@messagesGroupLeft": {
+    "description": "Instead of the message field when the user is no longer in the group."
+  },
+  "messagesGroupHello": "Say hello to everyone",
+  "@messagesGroupHello": {
+    "description": "Empty state of a new group chat."
+  },
+  "messagesOpenGroup": "Open group {name}",
+  "@messagesOpenGroup": {
+    "description": "Screen reader label of a group in the chat list.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Trip"
+      }
+    }
+  },
+  "messagesGroupSave": "Save",
+  "@messagesGroupSave": {
+    "description": "Button saving a group's new name."
+  },
+  "messagesVoice": "Voice message",
+  "@messagesVoice": {
+    "description": "A voice message: chat list preview and quotes (after a microphone sign)."
+  },
+  "messagesRecordVoice": "Record a voice message",
+  "@messagesRecordVoice": {
+    "description": "Screen reader label of the microphone button in the chat input."
+  },
+  "messagesVoiceRecording": "Recording",
+  "@messagesVoiceRecording": {
+    "description": "Shown next to the timer while a voice message is recorded."
+  },
+  "messagesVoiceCancel": "Cancel recording",
+  "@messagesVoiceCancel": {
+    "description": "Screen reader label of the button that throws a recording away."
+  },
+  "messagesVoiceSend": "Send voice message",
+  "@messagesVoiceSend": {
+    "description": "Screen reader label of the button that sends a recording."
+  },
+  "messagesVoiceTooShort": "Too short to send",
+  "@messagesVoiceTooShort": {
+    "description": "Shown when a recording is under a second."
+  },
+  "messagesMicPermission": "Allow the microphone to send voice messages",
+  "@messagesMicPermission": {
+    "description": "Shown when the microphone permission is refused."
+  },
+  "messagesPlayVoice": "Play voice message",
+  "@messagesPlayVoice": {
+    "description": "Screen reader label of the play button of a voice message."
+  },
+  "messagesPauseVoice": "Pause",
+  "@messagesPauseVoice": {
+    "description": "Screen reader label of the pause button of a voice message."
+  },
+  "messagesVoiceFailed": "This voice message cannot be played",
+  "@messagesVoiceFailed": {
+    "description": "Shown when a voice message cannot be downloaded or played."
+  },
+  "messagesStickers": "Stickers",
+  "@messagesStickers": {
+    "description": "Title of the sticker panel and screen reader label of its button in the message field."
+  },
+  "messagesStickersRecent": "Recently used",
+  "@messagesStickersRecent": {
+    "description": "Sticker panel group: the ones the user sent lately."
+  },
+  "messagesStickersFaces": "Faces",
+  "@messagesStickersFaces": {
+    "description": "Sticker panel group."
+  },
+  "messagesStickersHands": "Hands",
+  "@messagesStickersHands": {
+    "description": "Sticker panel group (thumbs up, clapping, waving...)."
+  },
+  "messagesStickersHearts": "Hearts and parties",
+  "@messagesStickersHearts": {
+    "description": "Sticker panel group (hearts, party popper, cake...)."
+  },
+  "messagesStickersPlaces": "Places and things",
+  "@messagesStickersPlaces": {
+    "description": "Sticker panel group (camera, map, pin, beach, plane...)."
+  },
+  "messagesStickersNature": "Nature",
+  "@messagesStickersNature": {
+    "description": "Sticker panel group (flowers, weather, animals)."
+  },
+  "messagesUnreadDivider": "Unread messages",
+  "@messagesUnreadDivider": {
+    "description": "Line above the first message that was unread when the chat opened."
+  },
+  "messagesDeleteForMe": "Delete for me",
+  "@messagesDeleteForMe": {
+    "description": "Message menu: hide it on this phone only."
+  },
+  "messagesDeleteForEveryone": "Delete for everyone",
+  "@messagesDeleteForEveryone": {
+    "description": "Message menu: delete the user's own message for everyone in the chat."
+  },
+  "messagesForward": "Forward",
+  "@messagesForward": {
+    "description": "Message menu item."
+  },
+  "messagesForwarded": "Forwarded",
+  "@messagesForwarded": {
+    "description": "Small label over a forwarded message."
+  },
+  "messagesForwardTo": "Forward to",
+  "@messagesForwardTo": {
+    "description": "Title of the sheet that picks where to forward a message."
+  },
+  "messagesForwardedTo": "Forwarded to {name}",
+  "@messagesForwardedTo": {
+    "description": "Shown after forwarding a message.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "messagesReport": "Report",
+  "@messagesReport": {
+    "description": "Message menu item (someone else's message)."
+  },
+  "messagesReportFailed": "The report could not be sent. Try again.",
+  "@messagesReportFailed": {
+    "description": "Shown when reporting a message fails."
+  },
+  "messagesQuoteGone": "That message is no longer in this chat",
+  "@messagesQuoteGone": {
+    "description": "Shown when the quoted message was deleted or cannot be found."
+  },
+  "messagesPin": "Pin to top",
+  "@messagesPin": {
+    "description": "Chat menu and swipe action: keep the chat at the top of the list."
+  },
+  "messagesUnpin": "Unpin",
+  "@messagesUnpin": {
+    "description": "Chat menu and swipe action: stop keeping it at the top."
+  },
+  "messagesPinned": "Pinned",
+  "@messagesPinned": {
+    "description": "Screen reader word for the pin mark on a chat row."
+  },
+  "messagesPinLimit": "{count, plural, =1{You can pin 1 chat} other{You can pin up to {count} chats}}",
+  "@messagesPinLimit": {
+    "description": "Shown when pinning more chats than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "messagesFindPeople": "Find people: “{query}”",
+  "@messagesFindPeople": {
+    "description": "Row under the chat search: search everyone for the typed text.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  }
+}

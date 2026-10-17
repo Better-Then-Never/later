@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/theme/app_colors.dart';
+import '../../core/theme/app_palette.dart';
 
 class TextButtonStyles {
-  static ButtonStyle profileTextButtonStyle() {
+  static ButtonStyle profileTextButtonStyle(BuildContext context) {
     return TextButton.styleFrom(
       alignment: Alignment.centerLeft,
-      foregroundColor: AppColors.black,
+      foregroundColor: context.palette.textPrimary,
       textStyle: const TextStyle(fontSize: 16),
       splashFactory: NoSplash.splashFactory,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,

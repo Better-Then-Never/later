@@ -10,6 +10,8 @@ import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:provider/provider.dart';
 import 'package:later/shared/widgets/page_header.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class ShareProfilePage extends StatelessWidget {
   const ShareProfilePage({super.key});
@@ -18,17 +20,19 @@ class ShareProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final palette = context.palette;
+    final l10n = context.l10n;
     // Always the real uid: the QR code and link were built from 'No User'
     // until the profile had loaded (BUG-092).
     final userId = context.read<SessionController>().uid!;
     final profileLink = SharingService.generateProfileLink(userId);
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: palette.background,
       body: Column(
         children: [
           PageHeader(
-            mainText: 'Share Profile',
+            mainText: l10n.profileShareTitle,
             leadingButton: GoBackButton(context: context),
           ),
 
@@ -38,14 +42,14 @@ class ShareProfilePage extends StatelessWidget {
               children: [
                 SizedBox(height: screenHeight * 0.005),
                 DefaultText(
-                  'Share Your Profile',
+                  l10n.profileShareHeading,
                   fontSize: screenWidth * 0.065,
                   fontWeight: FontWeight.bold,
                 ),
                 DefaultText(
-                  'Let others scan this QR code to add you as a friend',
+                  l10n.profileShareSubtitle,
                   fontSize: screenWidth * 0.042,
-                  color: AppColors.grey600,
+                  color: palette.textMuted,
                 ),
                 SizedBox(height: screenHeight * 0.03),
                 ShareProfileQR(
@@ -69,7 +73,7 @@ class ShareProfilePage extends StatelessWidget {
                         child: ElevatedButton.icon(
                           style: ElevatedButtonStyles.roundedButtonStyle(
                             borderRadius: 15,
-                            foregroundColor: AppColors.white,
+                            foregroundColor: AppColors.onAccent,
                             color: AppColors.brandGreen,
                           ),
                           onPressed: () => SharingService.shareUserProfile(
@@ -77,11 +81,15 @@ class ShareProfilePage extends StatelessWidget {
                             userId: userId,
                           ),
                           icon: const Icon(Icons.share, size: 20),
-                          label: DefaultText(
-                            'Share',
-                            fontSize: screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.white,
+                          // Longer translations shrink instead of wrapping.
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: DefaultText(
+                              l10n.profileShare,
+                              fontSize: screenWidth * 0.045,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.onAccent,
+                            ),
                           ),
                         ),
                       ),
@@ -95,18 +103,21 @@ class ShareProfilePage extends StatelessWidget {
                         child: ElevatedButton.icon(
                           style: ElevatedButtonStyles.roundedButtonStyle(
                             borderRadius: 15,
-                            color: AppColors.grey300,
-                            foregroundColor: AppColors.black,
+                            color: palette.skeleton,
+                            foregroundColor: palette.icon,
                           ),
                           onPressed: () => SharingService.copyProfileLink(
                             context: context,
                             userId: userId,
                           ),
                           icon: const Icon(Icons.copy, size: 20),
-                          label: DefaultText(
-                            'Copy Link',
-                            fontSize: screenWidth * 0.045,
-                            fontWeight: FontWeight.bold,
+                          label: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: DefaultText(
+                              l10n.profileCopyLink,
+                              fontSize: screenWidth * 0.045,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -116,7 +127,7 @@ class ShareProfilePage extends StatelessWidget {
                 SizedBox(height: screenHeight * 0.03),
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecorations.lightBlueInfo(),
+                  decoration: BoxDecorations.lightBlueInfo(context),
                   child: Row(
                     children: [
                       const Icon(
@@ -127,9 +138,12 @@ class ShareProfilePage extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: DefaultText(
-                          'Others can scan this code with their camera or the app to add you as a friend',
+                          l10n.profileShareHint,
                           fontSize: screenWidth * 0.037,
-                          color: AppColors.infoBlue700,
+                          // Blue 700 is too dark to read on the dark card.
+                          color: palette.isDark
+                              ? AppColors.infoBlue
+                              : AppColors.infoBlue700,
                         ),
                       ),
                     ],

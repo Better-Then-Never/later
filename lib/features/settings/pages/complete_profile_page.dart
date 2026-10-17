@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/session/session_controller.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../shared/widgets/options/options_input_field.dart';
@@ -65,33 +66,34 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
     final screenHeight = MediaQuery.of(context).size.height;
     final gap = SizedBox(height: screenHeight * 0.015);
     final email = context.select<SessionController, String?>((s) => s.email);
+    final l10n = context.l10n;
     return Scaffold(
-      backgroundColor: AppColors.pageBackgroundAlt,
+      backgroundColor: context.palette.backgroundAlt,
       body: Column(
         children: [
-          const PageHeader(
-            mainText: 'Almost there',
-            description: 'Choose how your friends will see you',
+          PageHeader(
+            mainText: l10n.settingsCompleteProfileTitle,
+            description: l10n.settingsCompleteProfileDescription,
           ),
           Expanded(
             child: ListView(
               padding: EdgeInsets.only(top: screenHeight * 0.02),
               children: [
                 if (email != null)
-                  SettingsNote('Your account $email has no profile yet.'),
+                  SettingsNote(l10n.settingsCompleteProfileNoProfile(email)),
                 Center(
                   child: Column(
                     children: [
                       OptionsInputField(
                         controller: _name,
-                        hintText: 'Name',
+                        hintText: l10n.settingsName,
                         autofillHints: const [AutofillHints.name],
                         textInputAction: TextInputAction.next,
                       ),
                       gap,
                       OptionsInputField(
                         controller: _username,
-                        hintText: 'Username',
+                        hintText: l10n.settingsUsername,
                         autofillHints: const [AutofillHints.newUsername],
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => _save(),
@@ -103,7 +105,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                 OptionsSection(
                   children: [
                     OptionsSettingsRow(
-                      title: 'Log Out',
+                      title: l10n.settingsLogOut,
                       isLast: true,
                       onTap: () => context.read<SessionController>().signOut(),
                     ),
@@ -121,7 +123,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
         ),
         child: DefaultGreenButton(
           onTap: _save,
-          text: 'Continue',
+          text: l10n.commonContinue,
           isLoading: _saving,
         ),
       ),

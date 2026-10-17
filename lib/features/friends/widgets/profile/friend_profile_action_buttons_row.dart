@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:later/core/assets/app_assets.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
 
 class ProfileActionButtonsRow extends StatelessWidget {
@@ -29,6 +30,7 @@ class ProfileActionButtonsRow extends StatelessWidget {
           DefaultIconButton(
             onTap: onBack,
             assetPath: AppIcons.goBackCircle,
+            semanticLabel: context.l10n.commonBack,
             size: 44,
           ),
 
@@ -37,6 +39,7 @@ class ProfileActionButtonsRow extends StatelessWidget {
               DefaultIconButton(
                 onTap: onShare,
                 assetPath: AppIcons.share,
+                semanticLabel: context.l10n.friendsShareProfile,
                 size: 44,
               ),
               if (onOptions != null) ...[
@@ -44,6 +47,9 @@ class ProfileActionButtonsRow extends StatelessWidget {
                 DefaultIconButton(
                   onTap: onOptions!,
                   assetPath: AppIcons.openMenu,
+                  semanticLabel: MaterialLocalizations.of(
+                    context,
+                  ).showMenuTooltip,
                   size: 44,
                 ),
               ],

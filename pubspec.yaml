@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Localization (lib/l10n, built from tool/l10n/fragments).
+  flutter_localizations:
+    sdk: flutter
 
   # Firebase
   firebase_core: ^4.3.0
@@ -26,7 +29,6 @@ dependencies:
   google_maps_flutter: ^2.12.3
   # Pinned to align iOS GoogleUtilities with MLKit (mobile_scanner) in CocoaPods.
   google_maps_flutter_ios: ^2.15.7
-  custom_info_window: ^1.0.1
   geolocator: ^14.0.2
   geocoding: ^4.0.0
 
@@ -52,9 +54,16 @@ dependencies:
   snow_fall_animation: ^0.0.1+3
   intl: ^0.20.2
   collection: ^1.19.1
+  cached_network_image: ^3.4.1
+  flutter_cache_manager: ^3.4.5
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  # Performance and flow tests on a device (integration_test/, test_driver/).
+  integration_test:
+    sdk: flutter
+  flutter_driver:
     sdk: flutter
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
@@ -67,10 +76,14 @@ flutter_icons:
 
 flutter:
   uses-material-design: true
+  # AppLocalizations from lib/l10n/app_*.arb (l10n.yaml).
+  generate: true
 
   # Typed accessors: lib/core/assets/app_assets.dart
   assets:
     - assets/images/
+    # Achievement artwork: <id>.png replaces the Material icon (ACHIEVEMENTS.md).
+    - assets/achievements/
     - assets/animations/
     - assets/icons/auth/
     - assets/icons/camera/
@@ -81,6 +94,16 @@ flutter:
     - assets/icons/messages/
     - assets/icons/navbar/
     - assets/icons/profile/
+    # Dark-theme variants (tool/make_dark_icons.dart), served by ThemedAssetBundle.
+    - assets/icons_dark/auth/
+    - assets/icons_dark/camera/
+    - assets/icons_dark/capsule/
+    - assets/icons_dark/friends/
+    - assets/icons_dark/history/
+    - assets/icons_dark/map/
+    - assets/icons_dark/messages/
+    - assets/icons_dark/navbar/
+    - assets/icons_dark/profile/
 
   # Inria Sans, registered under the family name "Irina" used throughout the app.
   fonts:

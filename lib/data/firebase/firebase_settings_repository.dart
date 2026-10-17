@@ -22,10 +22,50 @@ class FirebaseSettingsRepository implements SettingsRepository {
   ).snapshots().map((doc) => FirestoreMappers.userSettings(doc.data()));
 
   @override
-  Future<void> saveNotifications(String uid, NotificationSettings settings) =>
+  Future<void> saveNotifications(
+    String uid,
+    NotificationSettings settings,
+  ) async {
+    final all = FirestoreMappers.notificationSettings(settings);
+    try {
+      await _doc(uid).set({'notifications': all}, SetOptions(merge: true));
+    } on FirebaseException catch (e) {
+      // Rules deployed before the added categories reject them: keep the
+      // switches those rules know (the others stay on in the meantime).
+      if (e.code != 'permission-denied') rethrow;
+      final known = {
+        for (final entry in all.entries)
+          if (!FirestoreMappers.notificationKeysAdded.contains(entry.key))
+            entry.key: entry.value,
+      };
+      await _doc(uid).set({'notifications': known}, SetOptions(merge: true));
+    }
+  }
+
+  @override
+  Future<void> savePrivacy(String uid, PrivacySettings privacy) =>
       _doc(uid).set({
-        'notifications': FirestoreMappers.notificationSettings(settings),
+        'privacy': FirestoreMappers.privacySettings(privacy),
       }, SetOptions(merge: true));
+
+  @override
+  Future<void> saveLanguage(String uid, String languageCode) =>
+      _doc(uid).set({'language': languageCode}, SetOptions(merge: true));
+
+  @override
+  Future<void> setChatPinned(
+    String uid,
+    String chatId, {
+    required bool pinned,
+  }) => _doc(uid).set({
+    'pinnedChats': pinned
+        ? FieldValue.arrayUnion([chatId])
+        : FieldValue.arrayRemove([chatId]),
+  }, SetOptions(merge: true));
+
+  @override
+  Future<void> setPinnedFriends(String uid, List<String> friends) =>
+      _doc(uid).set({'pinnedFriends': friends}, SetOptions(merge: true));
 
   @override
   Future<void> setChatMuted(String uid, String chatId, {required bool muted}) =>

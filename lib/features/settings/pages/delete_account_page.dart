@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/errors/app_failure.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/options/options_input_field.dart';
@@ -34,8 +35,8 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
     if (_deleting) return;
     ConfirmDialog.show(
       context: context,
-      title: 'Delete your account? This cannot be undone.',
-      confirmText: 'Delete',
+      title: context.l10n.settingsDeleteConfirm,
+      confirmText: context.l10n.commonDelete,
       onConfirm: _delete,
     );
   }
@@ -66,33 +67,28 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
   @override
   Widget build(BuildContext context) {
     final hasPassword = context.read<AuthRepository>().hasPassword;
+    final l10n = context.l10n;
     return SettingsScaffold(
-      title: 'Delete account',
-      description: 'This removes your account and everything in it',
-      buttonText: 'Delete my account',
+      title: l10n.settingsDeleteAccount,
+      description: l10n.settingsDeleteDescription,
+      buttonText: l10n.settingsDeleteButton,
       onButton: _confirm,
       busy: _deleting,
       destructive: true,
       children: [
-        const SettingsNote(
-          'Deleting your account removes your profile, pictures, capsules, '
-          'chats, friends and followers. Your friends will no longer see you '
-          'or your messages. This cannot be undone.',
-        ),
+        SettingsNote(l10n.settingsDeleteNote),
         if (hasPassword)
           Center(
             child: OptionsInputField(
               controller: _password,
-              hintText: 'Your password',
+              hintText: l10n.settingsYourPassword,
               obscureText: true,
               autofillHints: const [AutofillHints.password],
               textInputAction: TextInputAction.done,
             ),
           )
         else
-          const SettingsNote(
-            'Google confirms it is you: pick your account when asked.',
-          ),
+          SettingsNote(l10n.settingsGoogleConfirmsNote),
       ],
     );
   }

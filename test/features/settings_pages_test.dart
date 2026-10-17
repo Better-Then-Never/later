@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/services/cache_service.dart';
 import 'package:later/data/services/preferences_store.dart';
@@ -13,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../fakes/fake_repositories.dart';
+import '../helpers/test_app.dart';
 
 void main() {
   group('DeviceSettingsStore', () {
@@ -44,6 +46,27 @@ void main() {
     test('unknown stored values fall back to the defaults', () {
       expect(MapLook.parse('3d'), MapLook.standard);
       expect(StartCamera.parse(null), StartCamera.back);
+      expect(DistanceUnit.parse('leagues'), DistanceUnit.kilometres);
+      expect(PhotoQuality.parse(null), PhotoQuality.standard);
+    });
+
+    test('units, photo quality and the gallery copy are kept too', () async {
+      final store = DeviceSettingsStore(PreferencesStore())..attach('alice');
+      await pumpEventQueue();
+      expect(store.distanceUnit, DistanceUnit.kilometres);
+      expect(store.photoQuality, PhotoQuality.standard);
+      expect(store.saveToGallery, isFalse);
+      await store.setDistanceUnit(DistanceUnit.miles);
+      await store.setPhotoQuality(PhotoQuality.high);
+      await store.setSaveToGallery(true);
+      store.detach();
+      expect(store.distanceUnit, DistanceUnit.kilometres);
+
+      store.attach('alice');
+      await pumpEventQueue();
+      expect(store.distanceUnit, DistanceUnit.miles);
+      expect(store.photoQuality, PhotoQuality.high);
+      expect(store.saveToGallery, isTrue);
     });
   });
 
@@ -57,17 +80,32 @@ void main() {
       await Directory('${dir.path}/sub').create();
       await File('${dir.path}/sub/b.jpg').writeAsBytes(List.filled(24, 1));
 
-      final cache = CacheService(directory: () async => dir);
+      var downloadsCleared = false;
+      final cache = CacheService(
+        directory: () async => dir,
+        clearDownloads: () async => downloadsCleared = true,
+      );
       expect(await cache.size(), greaterThanOrEqualTo(1024));
       await cache.clear();
       expect(dir.listSync(), isEmpty);
       expect(dir.existsSync(), isTrue);
+      expect(downloadsCleared, isTrue);
     });
 
     test('formats sizes', () {
       expect(CacheService.format(0), '0 B');
       expect(CacheService.format(2048), '2 KB');
       expect(CacheService.format(3 * 1024 * 1024 + 400 * 1024), '3.4 MB');
+    });
+
+    test('formats sizes in the app language', () {
+      addTearDown(() => AppL10n.update(const Locale('en')));
+      const size = 3 * 1024 * 1024 + 400 * 1024;
+      AppL10n.update(const Locale('ru'));
+      expect(CacheService.format(size), '3,4 МБ');
+      AppL10n.update(const Locale('de'));
+      expect(CacheService.format(size), '3,4 MB');
+      expect(CacheService.format(2048), '2 KB');
     });
   });
 
@@ -81,7 +119,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider<SettingsStore>.value(
           value: store,
-          child: const MaterialApp(home: NotificationSettingsPage()),
+          child: testApp(home: const NotificationSettingsPage()),
         ),
       );
       await tester.pumpAndSettle();
@@ -112,7 +150,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider<SettingsStore>.value(
           value: store,
-          child: const MaterialApp(home: NotificationSettingsPage()),
+          child: testApp(home: const NotificationSettingsPage()),
         ),
       );
       await tester.pump();
@@ -130,13 +168,15 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider<SettingsStore>.value(
           value: store,
-          child: const MaterialApp(home: NotificationSettingsPage()),
+          child: testApp(home: const NotificationSettingsPage()),
         ),
       );
       await tester.pumpAndSettle();
       expect(find.text('From'), findsNothing);
 
       await tester.scrollUntilVisible(find.text('Quiet hours'), 100);
+      await tester.ensureVisible(find.text('Quiet hours'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Quiet hours'));
       await tester.pumpAndSettle();
       expect(repo.docs['alice']!.notifications.quietHours.enabled, isTrue);

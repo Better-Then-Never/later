@@ -2,4 +2,7 @@
 <resources>
     <!-- Brand green (#56C92E), used to tint notification icons. -->
     <color name="notification_accent">#FF56C92E</color>
+    <!-- Page background of the app (AppPalette.light.background): the launch
+         screen matches the first Flutter frame. -->
+    <color name="splash_background">#F6F6F6</color>
 </resources>

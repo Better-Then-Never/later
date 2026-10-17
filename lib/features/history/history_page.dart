@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/shell/navbar_widget.dart';
+import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
+import '../../core/config/feature_flags.dart';
+import '../../core/l10n/l10n.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../app/shell/selected_page.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/buttons/default_button_with_icon.dart';
+import '../../shared/widgets/app_sheets.dart';
 import '../../shared/widgets/confirm_dialog.dart';
+import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/page_header.dart';
 import '../map/current_location.dart';
 import '../map/map_focus.dart';
+import 'capsule_labels.dart';
 import 'favorites_store.dart';
 import 'history_controller.dart';
 import 'own_capsules_store.dart';
+import 'on_this_day.dart';
 import 'widgets/capsule_list_tile.dart';
+import 'widgets/on_this_day_strip.dart';
 import 'widgets/capsule_selection_action_bar.dart';
 import 'widgets/menu_item_node.dart';
 import 'widgets/nested_menu.dart';
@@ -50,15 +59,13 @@ class _HistoryPageState extends State<HistoryPage> {
     super.dispose();
   }
 
-  String _plural(int n) => 'capsule${n > 1 ? 's' : ''}';
-
   void _confirmDelete() {
     final count = _controller.selectedCount;
     final ids = _controller.selectedIds;
     final store = context.read<OwnCapsulesStore>();
     ConfirmDialog.show(
       context: context,
-      title: 'Delete $count ${_plural(count)}?',
+      title: context.l10n.historyDeleteConfirm(count),
       onConfirm: () async {
         final failure = await store.delete(ids);
         if (!mounted) return;
@@ -72,7 +79,7 @@ class _HistoryPageState extends State<HistoryPage> {
         }
         PopupNotificationService.showInfo(
           context: context,
-          message: '$count ${_plural(count)} deleted',
+          message: context.l10n.historyDeleted(count),
           position: NotificationPosition.bottom,
         );
         _controller.clearSelection();
@@ -95,8 +102,9 @@ class _HistoryPageState extends State<HistoryPage> {
     final added = favorites.isFavorite(capsule.id);
     PopupNotificationService.showInfo(
       context: context,
-      message:
-          '${capsule.title} ${added ? 'Added to' : 'Removed from'} favorites',
+      message: added
+          ? context.l10n.historyFavoriteAdded(capsule.title)
+          : context.l10n.historyFavoriteRemoved(capsule.title),
       position: NotificationPosition.bottom,
     );
   }
@@ -106,15 +114,21 @@ class _HistoryPageState extends State<HistoryPage> {
       _controller.toggleSelection(capsule.id);
     } else if (capsule.location != null) {
       context.read<MapFocus>().focus(capsule);
-      selectedPageNotifier.value = 0;
+      selectedPageNotifier.value = AppTabs.map;
     }
   }
+
+  /// Sort, Filter and Reset on the shared scale (F-31: they were 5 % of the
+  /// screen tall with 32 dp pictures): tap-target height, list-size icons.
+  static const _controlHeight = 44.0;
+  static const _controlIcon = 24.0;
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
     // The gap between the header buttons has always been 1% of the height.
     final buttonGap = screenHeight * 0.01;
+    final l10n = context.l10n;
 
     return ListenableBuilder(
       listenable: _controller,
@@ -126,11 +140,11 @@ class _HistoryPageState extends State<HistoryPage> {
         child: Column(
           children: [
             PageHeader(
-              mainText: 'My Capsules',
+              mainText: l10n.historyTitle,
               searchBar: DefaultSearchBar(
                 controller: _searchController,
                 searchFocusNode: _searchFocusNode,
-                hintText: 'Find Capsules...',
+                hintText: l10n.historySearchHint,
               ),
               actionButtonsRow: Column(
                 children: [
@@ -138,28 +152,32 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           onTap: () => _openSortMenu(context),
                           assetPath: AppIcons.historySort,
-                          text: _controller.activeSortLabel,
+                          text: _controller.activeSortLabel(l10n),
                         ),
                       ),
                       SizedBox(width: buttonGap),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           assetPath: AppIcons.historyFilter,
-                          text: _controller.activeFilterLabel,
+                          text: _controller.activeFilterLabel(l10n),
                           onTap: () => _openFilterMenu(context),
                         ),
                       ),
                       SizedBox(width: buttonGap),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           onTap: _controller.resetAll,
-                          assetPath: AppIcons.historySort,
-                          text: 'Reset',
+                          // Clear, not sort (F-31: it reused the sort icon).
+                          assetPath: AppIcons.friendsDeleteReset,
+                          text: l10n.historyReset,
                         ),
                       ),
                     ],
@@ -190,9 +208,14 @@ class _HistoryPageState extends State<HistoryPage> {
     if (!store.isLoaded) {
       return const Center(child: CircularProgressIndicator());
     }
+    final l10n = context.l10n;
     final error = store.error;
     if (error != null && store.capsules.isEmpty) {
-      return Center(child: Text(error.message));
+      return DefaultEmptyInboxInfo(
+        message: l10n.historyLoadError,
+        subtitle: error.message,
+        assetPath: AppIcons.navbarHistory,
+      );
     }
 
     final all = store.capsules;
@@ -207,25 +230,50 @@ class _HistoryPageState extends State<HistoryPage> {
       from: here,
     );
     if (shown.isEmpty) {
-      return Center(
-        child: Text(
-          _controller.searchQuery.isEmpty
-              ? 'No capsules yet'
-              : 'No capsules match your search',
-        ),
-      );
+      // Nothing yet: say what a capsule is and offer to make one. Nothing
+      // left after a search or filter: say how to get them back.
+      return all.isEmpty
+          ? DefaultEmptyInboxInfo(
+              message: l10n.historyEmpty,
+              subtitle: l10n.historyEmptySubtitle,
+              assetPath: AppIcons.navbarAdd,
+              actionText: l10n.historyCreateFirst,
+              onAction: () => AppRoutes.toCamera(context),
+            )
+          : DefaultEmptyInboxInfo(
+              message: l10n.historyNoMatches,
+              subtitle: l10n.historyNoMatchesSubtitle,
+              assetPath: AppIcons.profileFriendSearch,
+              actionText: l10n.historyReset,
+              onAction: () {
+                _searchController.clear();
+                _controller.resetFilters();
+              },
+            );
     }
+
+    // The whole list, unsearched and unfiltered: then memories lead it.
+    final now = DateTime.now();
+    final memories = FeatureFlags.memories && !_controller.isNarrowed
+        ? OnThisDay.from(all, now)
+        : const <Capsule>[];
+    final lead = memories.isEmpty ? 0 : 1;
 
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(
         0,
         screenHeight * 0.01,
         0,
-        screenHeight * 0.15,
+        // Clear of the floating navbar (15 % of the height left the last
+        // capsule partly under it on 3-button navigation).
+        NavbarWidget.coveredHeight(context) + 16,
       ),
-      itemCount: shown.length,
-      itemBuilder: (context, i) {
-        final capsule = shown[i];
+      itemCount: shown.length + lead,
+      itemBuilder: (context, index) {
+        if (index < lead) {
+          return OnThisDayStrip(capsules: memories, now: now, onTap: _onTap);
+        }
+        final capsule = shown[index - lead];
         return CapsuleListTile(
           key: ValueKey(capsule.id),
           capsule: capsule,
@@ -234,6 +282,7 @@ class _HistoryPageState extends State<HistoryPage> {
           onFavoriteTap: () => _toggleFavorite(capsule),
           onTap: () => _onTap(capsule),
           onLongPress: () => _controller.toggleSelection(capsule.id),
+          waitingForWifi: store.waitingForWifi,
         );
       },
     );
@@ -241,79 +290,84 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _openFilterMenu(BuildContext context) {
     final controller = _controller;
+    final l10n = context.l10n;
     _searchFocusNode.unfocus();
     FocusScope.of(context).unfocus();
-    showDialog<void>(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: NestedMenu(
-          title: 'Filter By',
-          rootItems: [
-            MenuItemNode(label: 'Reset', onTap: controller.resetFilters),
-            MenuItemNode(
-              label: 'Color',
-              children: [
-                for (final color in CapsuleColor.values)
-                  MenuItemNode(
-                    label: color.label,
-                    onTap: () => controller.setColorFilter(color),
-                  ),
-              ],
-            ),
-            MenuItemNode(
-              label: 'Visibility',
-              children: [
-                for (final privacy in CapsulePrivacy.values)
-                  MenuItemNode(
-                    label: privacy.label,
-                    onTap: () => controller.setPrivacyFilter(privacy),
-                  ),
-              ],
-            ),
-            MenuItemNode(
-              label: 'Capsule',
-              children: [
+    showCenteredSheet<void>(
+      context,
+      NestedMenu(
+        title: l10n.historyFilterBy,
+        rootItems: [
+          MenuItemNode(
+            label: l10n.historyReset,
+            onTap: controller.resetFilters,
+          ),
+          MenuItemNode(
+            label: l10n.historyFilterColor,
+            children: [
+              for (final color in CapsuleColor.values)
                 MenuItemNode(
-                  label: 'Favorite',
-                  onTap: () => controller.setFavoritesOnly(true),
+                  label: color.localizedLabel(l10n),
+                  onTap: () => controller.setColorFilter(color),
+                  selected: controller.colorFilter == color,
                 ),
+            ],
+          ),
+          MenuItemNode(
+            label: l10n.historyFilterVisibility,
+            children: [
+              for (final privacy in CapsulePrivacy.values)
                 MenuItemNode(
-                  label: 'Any',
-                  onTap: () => controller.setFavoritesOnly(false),
+                  label: privacy.localizedLabel(l10n),
+                  onTap: () => controller.setPrivacyFilter(privacy),
+                  selected: controller.privacyFilter == privacy,
                 ),
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+          MenuItemNode(
+            label: l10n.historyFilterCapsule,
+            children: [
+              MenuItemNode(
+                label: l10n.historyFilterFavorite,
+                onTap: () => controller.setFavoritesOnly(true),
+                selected: controller.favoritesOnly,
+              ),
+              MenuItemNode(
+                label: l10n.historyFilterAny,
+                onTap: () => controller.setFavoritesOnly(false),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
   void _openSortMenu(BuildContext context) {
     final controller = _controller;
+    final l10n = context.l10n;
     _searchFocusNode.unfocus();
     FocusScope.of(context).unfocus();
-    MenuItemNode item(HistorySort sort) =>
-        MenuItemNode(label: sort.label!, onTap: () => controller.setSort(sort));
-    showDialog<void>(
-      context: context,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: NestedMenu(
-          title: 'Sort By',
-          rootItems: [
-            MenuItemNode(label: 'Reset', onTap: controller.resetSort),
-            MenuItemNode(
-              label: 'Relevance',
-              children: [item(HistorySort.oldest), item(HistorySort.newest)],
-            ),
-            MenuItemNode(
-              label: 'Distance',
-              children: [item(HistorySort.closest), item(HistorySort.farthest)],
-            ),
-          ],
-        ),
+    MenuItemNode item(HistorySort sort) => MenuItemNode(
+      label: sort.label(l10n)!,
+      onTap: () => controller.setSort(sort),
+      selected: controller.sort == sort,
+    );
+    showCenteredSheet<void>(
+      context,
+      NestedMenu(
+        title: l10n.historySortBy,
+        rootItems: [
+          MenuItemNode(label: l10n.historyReset, onTap: controller.resetSort),
+          MenuItemNode(
+            label: l10n.historySortRelevance,
+            children: [item(HistorySort.oldest), item(HistorySort.newest)],
+          ),
+          MenuItemNode(
+            label: l10n.historySortDistance,
+            children: [item(HistorySort.closest), item(HistorySort.farthest)],
+          ),
+        ],
       ),
     );
   }

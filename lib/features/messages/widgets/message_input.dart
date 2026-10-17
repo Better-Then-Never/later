@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -10,16 +12,39 @@ import '../../../data/models/chat.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 
 /// Text field in the app's white input card, with a send button (disabled
-/// while empty) and, when [onCapsuleTap] is set, a button that sends the
-/// friend a capsule. The field grows to five lines.
+/// while empty), when [onPhotoTap] is set a photo button inside the field,
+/// and when [onCapsuleTap] is set a button that sends the friend a capsule.
+/// The field grows to five lines.
 ///
 /// The text is cleared as soon as it is sent: the message itself appears in
 /// the conversation at once and can be retried there if it fails.
 class MessageInput extends StatefulWidget {
-  const MessageInput({super.key, required this.onSend, this.onCapsuleTap});
+  const MessageInput({
+    super.key,
+    required this.onSend,
+    this.onCapsuleTap,
+    this.onPhotoTap,
+    this.onVoiceTap,
+    this.onStickerTap,
+    this.onChanged,
+    this.focusNode,
+  });
+
+  /// While the field is empty, the send button records a voice message.
+  final VoidCallback? onVoiceTap;
+
+  /// The smiley in the field: big emoji to send at once.
+  final VoidCallback? onStickerTap;
+
+  /// Every change of the text (the typing hint).
+  final ValueChanged<String>? onChanged;
 
   final void Function(String text) onSend;
   final VoidCallback? onCapsuleTap;
+  final VoidCallback? onPhotoTap;
+
+  /// Lets the page put the cursor here (e.g. after choosing Reply).
+  final FocusNode? focusNode;
 
   @override
   State<MessageInput> createState() => _MessageInputState();
@@ -72,8 +97,8 @@ class _MessageInputState extends State<MessageInput> {
             if (onCapsuleTap != null) ...[
               _RoundButton(
                 size: buttonSize,
-                color: AppColors.surface,
-                tooltip: 'Send a capsule',
+                color: context.palette.surface,
+                tooltip: context.l10n.messagesSendCapsule,
                 onTap: onCapsuleTap,
                 child: Padding(
                   padding: EdgeInsets.all(buttonSize * 0.14),
@@ -84,13 +109,15 @@ class _MessageInputState extends State<MessageInput> {
             ],
             Expanded(
               child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
+                decoration: BoxDecoration(
+                  color: context.palette.surface,
                   borderRadius: AppRadii.lCircular,
-                  boxShadow: AppShadows.card,
+                  boxShadow: AppShadows.card(context),
                 ),
                 child: TextField(
                   controller: _controller,
+                  focusNode: widget.focusNode,
+                  onChanged: widget.onChanged,
                   textCapitalization: TextCapitalization.sentences,
                   keyboardType: TextInputType.multiline,
                   minLines: 1,
@@ -101,34 +128,100 @@ class _MessageInputState extends State<MessageInput> {
                   style: TextStyle(
                     fontFamily: kAppFontFamily,
                     fontSize: screen.height * 0.021,
-                    color: AppColors.textPrimary,
+                    color: context.palette.textPrimary,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Write a message...',
+                    hintText: context.l10n.messagesInputHint,
                     hintStyle: TextStyle(
                       fontFamily: kAppFontFamily,
                       fontSize: screen.height * 0.021,
-                      color: AppColors.textMuted,
+                      color: context.palette.textMuted,
                     ),
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: screen.width * 0.045,
                       vertical: screen.height * 0.015,
                     ),
+                    prefixIcon: switch (widget.onStickerTap) {
+                      final onStickerTap? => Semantics(
+                        button: true,
+                        label: context.l10n.messagesStickers,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: onStickerTap,
+                          child: SizedBox(
+                            width: 46,
+                            height: 44,
+                            child: CustomPaint(
+                              painter: _SmileyPainter(
+                                color: context.palette.iconMuted,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      null => null,
+                    },
+                    suffixIcon: switch (widget.onPhotoTap) {
+                      final onPhotoTap? => Semantics(
+                        button: true,
+                        label: context.l10n.messagesSendPhoto,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: onPhotoTap,
+                          child: SizedBox(
+                            width: 48,
+                            height: 44,
+                            child: Center(
+                              child: Image.asset(
+                                AppIcons.cameraFull,
+                                width: 24,
+                                height: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      null => null,
+                    },
                   ),
                 ),
               ),
             ),
             SizedBox(width: screen.width * 0.02),
-            _RoundButton(
-              size: buttonSize,
-              color: AppColors.brandGreen,
-              tooltip: 'Send',
-              onTap: _hasText ? _send : null,
-              child: Padding(
-                padding: EdgeInsets.all(buttonSize * 0.18),
-                child: Image.asset(AppIcons.messagesSend),
-              ),
+            // Send, or the microphone while there is nothing to send.
+            AnimatedSwitcher(
+              duration: AppMotion.of(context, AppMotion.fast),
+              switchInCurve: AppMotion.enter,
+              switchOutCurve: AppMotion.exit,
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: !_hasText && widget.onVoiceTap != null
+                  ? _RoundButton(
+                      key: const ValueKey('voice'),
+                      size: buttonSize,
+                      color: AppColors.brandGreen,
+                      tooltip: context.l10n.messagesRecordVoice,
+                      onTap: widget.onVoiceTap,
+                      child: Padding(
+                        padding: EdgeInsets.all(buttonSize * 0.22),
+                        child: Image.asset(
+                          AppIcons.capsuleMicrophone,
+                          color: AppColors.onAccent,
+                        ),
+                      ),
+                    )
+                  : _RoundButton(
+                      key: const ValueKey('send'),
+                      size: buttonSize,
+                      color: AppColors.brandGreen,
+                      tooltip: context.l10n.messagesSend,
+                      onTap: _hasText ? _send : null,
+                      child: Padding(
+                        padding: EdgeInsets.all(buttonSize * 0.18),
+                        child: Image.asset(AppIcons.messagesSend),
+                      ),
+                    ),
             ),
           ],
         ),
@@ -137,8 +230,41 @@ class _MessageInputState extends State<MessageInput> {
   }
 }
 
+/// A smiley in the hand-drawn icons' round stroke.
+class _SmileyPainter extends CustomPainter {
+  const _SmileyPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero) + const Offset(3, 0);
+    const r = 11.0;
+    final stroke = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    canvas
+      ..drawCircle(c, r, stroke)
+      ..drawCircle(c + const Offset(-3.8, -3), 1.6, Paint()..color = color)
+      ..drawCircle(c + const Offset(3.8, -3), 1.6, Paint()..color = color)
+      ..drawArc(
+        Rect.fromCircle(center: c + const Offset(0, 0.5), radius: 6),
+        0.35,
+        2.44,
+        false,
+        stroke,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_SmileyPainter old) => old.color != color;
+}
+
 class _RoundButton extends StatelessWidget {
   const _RoundButton({
+    super.key,
     required this.size,
     required this.color,
     required this.tooltip,
@@ -173,7 +299,7 @@ class _RoundButton extends StatelessWidget {
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
-                boxShadow: AppShadows.card,
+                boxShadow: AppShadows.card(context),
               ),
               child: child,
             ),

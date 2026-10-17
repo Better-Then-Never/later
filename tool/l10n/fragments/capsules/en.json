@@ -1,0 +1,440 @@
+{
+  "capsulesCameraUnavailable": "No camera available",
+  "@capsulesCameraUnavailable": {
+    "description": "Shown on the camera screen when the phone has no camera."
+  },
+  "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
+  "@capsulesCameraAccessDenied": {
+    "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
+  },
+  "capsulesCameraStartFailed": "The camera could not be started",
+  "capsulesCameraFlashOn": "Flash on",
+  "@capsulesCameraFlashOn": {
+    "description": "Accessibility label of the flash button while the flash is on."
+  },
+  "capsulesCameraFlashOff": "Flash off",
+  "@capsulesCameraFlashOff": {
+    "description": "Accessibility label of the flash button while the flash is off."
+  },
+  "capsulesCameraTakePhoto": "Take photo",
+  "@capsulesCameraTakePhoto": {
+    "description": "Accessibility label of the shutter button."
+  },
+  "capsulesCameraSwitch": "Switch camera",
+  "@capsulesCameraSwitch": {
+    "description": "Accessibility label of the button that switches between the front and back camera."
+  },
+  "capsulesCreationTitle": "Create Capsule",
+  "@capsulesCreationTitle": {
+    "description": "Header title of the screen where a new capsule is set up after taking the photo."
+  },
+  "capsulesCreationSubmit": "Create Capsule",
+  "@capsulesCreationSubmit": {
+    "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
+  },
+  "capsulesCreationPreview": "Capsule Preview",
+  "@capsulesCreationPreview": {
+    "description": "Section title above the card that shows how the capsule will look."
+  },
+  "capsulesCreationSettings": "Capsule Settings",
+  "@capsulesCreationSettings": {
+    "description": "Section title above the privacy, open date and colour rows."
+  },
+  "capsulesCreationTitleHint": "Add Title...",
+  "@capsulesCreationTitleHint": {
+    "description": "Hint in the capsule title field (one line, large bold font, narrow: keep it very short)."
+  },
+  "capsulesCreationDescriptionHint": "Add description...",
+  "@capsulesCreationDescriptionHint": {
+    "description": "Hint in the capsule description field."
+  },
+  "capsulesCreationPrivacy": "Privacy",
+  "@capsulesCreationPrivacy": {
+    "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
+  },
+  "capsulesCreationOpenAt": "Open At",
+  "@capsulesCreationOpenAt": {
+    "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
+  },
+  "capsulesCreationSelectDate": "Select date",
+  "@capsulesCreationSelectDate": {
+    "description": "Shown in the open date row until a date is picked. Keep it short."
+  },
+  "capsulesCreationColor": "Color",
+  "@capsulesCreationColor": {
+    "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
+  },
+  "capsulesPrivacyPublic": "Public",
+  "@capsulesPrivacyPublic": {
+    "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
+  },
+  "capsulesPrivacyFriends": "Friends",
+  "@capsulesPrivacyFriends": {
+    "description": "Capsule visibility: only the owner's friends can see it."
+  },
+  "capsulesPrivacyPrivate": "Private",
+  "@capsulesPrivacyPrivate": {
+    "description": "Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'."
+  },
+  "capsulesColorRed": "Red",
+  "@capsulesColorRed": {
+    "description": "Colour of the capsule's map pin. Agrees with the word 'colour'."
+  },
+  "capsulesColorBlue": "Blue",
+  "capsulesColorGreen": "Green",
+  "capsulesColorYellow": "Yellow",
+  "capsulesColorOrange": "Orange",
+  "capsulesColorPurple": "Purple",
+  "capsulesDefaultTitle": "Capsule",
+  "@capsulesDefaultTitle": {
+    "description": "Title given to a capsule saved without one. It is stored with the capsule."
+  },
+  "capsulesErrorNoLocation": "We could not detect your location",
+  "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
+  "@capsulesErrorSavedNotSent": {
+    "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
+  },
+  "capsulesErrorSaveFailed": "Failed to save capsule",
+  "capsulesComments": "Comments",
+  "capsulesCommentsCount": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
+  "@capsulesCommentsCount": {
+    "description": "Button under a capsule that opens its comments.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCommentHint": "Add a comment...",
+  "capsulesReplyHint": "Reply to {name}...",
+  "@capsulesReplyHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesReply": "Reply",
+  "capsulesCommentsEmpty": "No comments yet",
+  "capsulesCommentsEmptyHint": "Be the first to say something.",
+  "capsulesCommentDelete": "Delete comment",
+  "capsulesCommentDeleteConfirm": "Delete this comment?",
+  "capsulesCommentFailed": "Could not post your comment",
+  "capsulesCommentDeleteFailed": "Could not delete the comment",
+  "capsulesCommentTooLong": "Comments can be up to 500 characters",
+  "capsulesReactionFailed": "Could not save your reaction",
+  "capsulesReactWith": "React with {emoji}",
+  "@capsulesReactWith": {
+    "description": "Accessibility label of a reaction button.",
+    "placeholders": {
+      "emoji": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesReport": "Report",
+  "capsulesReportCapsule": "Report capsule",
+  "capsulesReportTitle": "What is wrong with it?",
+  "capsulesReportSpam": "Spam",
+  "capsulesReportAbuse": "Harassment or hate",
+  "capsulesReportNudity": "Nudity",
+  "capsulesReportViolence": "Violence",
+  "capsulesReportPrivacy": "Private information",
+  "capsulesReportOther": "Something else",
+  "capsulesReportSent": "Thanks for telling us. The Later team will look at it.",
+  "capsulesYou": "You",
+  "capsulesCreationAllowComments": "Allow comments",
+  "capsulesCreationAllowReactions": "Allow reactions",
+  "capsulesCreationApproximate": "Approximate location",
+  "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
+  "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again.",
+  "capsulesOpenTomorrow": "Tomorrow",
+  "@capsulesOpenTomorrow": {
+    "description": "Open date preset"
+  },
+  "capsulesOpenInWeek": "In a week",
+  "capsulesOpenInMonth": "In a month",
+  "capsulesOpenInYear": "In a year",
+  "capsulesOpenPickDate": "Pick a date…",
+  "capsulesOpenNow": "Open right away",
+  "@capsulesOpenNow": {
+    "description": "Open date menu: remove the date, the capsule is open at once"
+  },
+  "capsulesCameraFlashAuto": "Flash auto",
+  "@capsulesCameraFlashAuto": {
+    "description": "Camera flash button, screen reader: the flash fires when it is dark"
+  },
+  "capsulesCameraFlashAutoBadge": "A",
+  "@capsulesCameraFlashAutoBadge": {
+    "description": "One letter on the flash icon for 'automatic'"
+  },
+  "capsulesCameraHoldForLoop": "Hold for a loop",
+  "@capsulesCameraHoldForLoop": {
+    "description": "Under the shutter: hold it to record several frames played as a loop"
+  },
+  "capsulesCameraTakePhotoOrLoop": "Take photo. Hold to record a loop",
+  "@capsulesCameraTakePhotoOrLoop": {
+    "description": "Screen reader label of the shutter when loops are on"
+  },
+  "capsulesCameraFlashTorch": "Light on",
+  "capsulesCameraFlashTorchBadge": "L",
+  "capsulesCameraExposure": "Brightness",
+  "capsulesCameraZoomTo": "Zoom {zoom}×",
+  "@capsulesCameraFlashTorch": {
+    "description": "Screen reader label of the flash button when the light stays on (torch)."
+  },
+  "@capsulesCameraFlashTorchBadge": {
+    "description": "One letter on the lit bolt when the light stays on (like \"A\" for automatic): the first letter of the word for torch/light."
+  },
+  "@capsulesCameraExposure": {
+    "description": "Screen reader label of the camera brightness (exposure) slider."
+  },
+  "@capsulesCameraZoomTo": {
+    "description": "Screen reader label of a zoom stop button.",
+    "placeholders": {
+      "zoom": {
+        "type": "String",
+        "example": "2"
+      }
+    }
+  },
+  "capsulesCommentsEarlier": "Show earlier comments",
+  "@capsulesCommentsEarlier": {
+    "description": "First row of a long comment thread: loads older comments."
+  },
+  "capsulesBy": "By {name}",
+  "@capsulesBy": {
+    "description": "Screen reader label of the author line on a capsule (opens their profile).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesCreationShowAuthor": "Show my name",
+  "@capsulesCreationShowAuthor": {
+    "description": "Creation setting: show the author on the capsule."
+  },
+  "capsulesCreationShowAuthorHint": "Others see who left it",
+  "@capsulesCreationShowAuthorHint": {
+    "description": "Under the setting."
+  },
+  "capsulesLinkNotShared": "This capsule is not shared with you",
+  "@capsulesLinkNotShared": {
+    "description": "Shown when a capsule link opens a capsule the user may not see (or that is gone)."
+  },
+  "capsulesShare": "Share",
+  "@capsulesShare": {
+    "description": "Screen reader label of the share button in a capsule."
+  },
+  "capsulesShareMessage": "A time capsule on Later: {title}\n{link}",
+  "@capsulesShareMessage": {
+    "description": "Text shared with a capsule link.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://later-da778.web.app/?capsuleId=abc"
+      }
+    }
+  },
+  "capsulesQuickReply": "Reply to the author",
+  "@capsulesQuickReply": {
+    "description": "Screen reader label of the reply button on someone's capsule."
+  },
+  "capsulesQuickReplyHint": "Write to {name}…",
+  "@capsulesQuickReplyHint": {
+    "description": "Hint of the quick reply field (the capsule's author).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesQuickReplySent": "Sent to {name}",
+  "@capsulesQuickReplySent": {
+    "description": "Shown after a quick reply went to the author's chat.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesByWith": "{name} with {others}",
+  "@capsulesByWith": {
+    "description": "Author line on a capsule made with friends: the author, then the co-authors.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      },
+      "others": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesWith": "With {names}",
+  "@capsulesWith": {
+    "description": "Line on the user's own capsule (or one they co-authored) naming the others who made it.",
+    "placeholders": {
+      "names": {
+        "type": "String",
+        "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesCreationCoAuthors": "Co-authors",
+  "@capsulesCreationCoAuthors": {
+    "description": "Capsule creation row: friends who made the capsule with the user."
+  },
+  "capsulesCreationCoAuthorsNone": "Just me",
+  "@capsulesCreationCoAuthorsNone": {
+    "description": "Value of the co-authors row when nobody is picked."
+  },
+  "capsulesCreationCoAuthorsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@capsulesCreationCoAuthorsCount": {
+    "description": "Value of the co-authors row: how many friends are picked.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCoAuthorsPick": "Who made it with you",
+  "@capsulesCoAuthorsPick": {
+    "description": "Title of the sheet that picks a capsule's co-authors."
+  },
+  "capsulesCoAuthorsDone": "Done",
+  "@capsulesCoAuthorsDone": {
+    "description": "Button closing the co-authors sheet with the pick."
+  },
+  "capsulesCoAuthorsTooMany": "Up to {count} co-authors",
+  "@capsulesCoAuthorsTooMany": {
+    "description": "Shown when more co-authors are picked than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesLeaveCoAuthors": "Remove me as co-author",
+  "@capsulesLeaveCoAuthors": {
+    "description": "Capsule menu item for a co-author: take themselves off the capsule."
+  },
+  "capsulesLeftCoAuthors": "You are no longer a co-author",
+  "@capsulesLeftCoAuthors": {
+    "description": "Shown after the user took themselves off a capsule."
+  },
+  "capsulesLoopMark": "Loop",
+  "@capsulesLoopMark": {
+    "description": "Screen reader label of the mark on a loop capsule's picture."
+  },
+  "capsulesCreationSpeed": "Speed",
+  "@capsulesCreationSpeed": {
+    "description": "Creation row of a loop capsule: how fast its frames play."
+  },
+  "capsulesSpeedSlow": "Slow",
+  "@capsulesSpeedSlow": {
+    "description": "Loop speed: 500 ms per frame."
+  },
+  "capsulesSpeedNormal": "Normal",
+  "@capsulesSpeedNormal": {
+    "description": "Loop speed: 300 ms per frame (default)."
+  },
+  "capsulesSpeedFast": "Fast",
+  "@capsulesSpeedFast": {
+    "description": "Loop speed: 150 ms per frame."
+  },
+  "capsulesFramesTitle": "Frames",
+  "@capsulesFramesTitle": {
+    "description": "Title of the frame strip of a loop being created."
+  },
+  "capsulesFramesHint": "hold and drag to move",
+  "@capsulesFramesHint": {
+    "description": "After the frame count: how to reorder frames (lower case, it follows a dot)."
+  },
+  "capsulesFrameRemove": "Remove frame {number}",
+  "@capsulesFrameRemove": {
+    "description": "Screen reader label of the cross on a frame.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCameraModePhoto": "Photo",
+  "@capsulesCameraModePhoto": {
+    "description": "Camera mode switch: a photo."
+  },
+  "capsulesCameraModeLoop": "Loop",
+  "@capsulesCameraModeLoop": {
+    "description": "Camera mode switch: a loop of frames."
+  },
+  "capsulesCameraTapForLoop": "Tap to start, tap again to stop",
+  "@capsulesCameraTapForLoop": {
+    "description": "Hint above the shutter in loop mode."
+  },
+  "capsulesCameraStartLoop": "Start the loop",
+  "@capsulesCameraStartLoop": {
+    "description": "Screen reader label of the shutter in loop mode."
+  },
+  "capsulesCameraStopLoop": "Stop the loop",
+  "@capsulesCameraStopLoop": {
+    "description": "Screen reader label of the shutter while a loop records."
+  },
+  "capsulesCalendarPrevious": "Previous month",
+  "@capsulesCalendarPrevious": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesCalendarNext": "Next month",
+  "@capsulesCalendarNext": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesPinTitle": "Move the pin",
+  "@capsulesPinTitle": {
+    "description": "Sheet title (and hint of the place pill): move the capsule's pin."
+  },
+  "capsulesPinHint": "Drag the map to put the capsule on the exact spot, within 1 km.",
+  "@capsulesPinHint": {
+    "description": "How to move the pin; it stays within 1 km."
+  },
+  "capsulesPinTooFar": "A capsule stays within 1 km of where you are.",
+  "@capsulesPinTooFar": {
+    "description": "Shown while the map is dragged past 1 km."
+  },
+  "capsulesPinUse": "Put it here",
+  "@capsulesPinUse": {
+    "description": "Button: the capsule goes to the pin."
+  },
+  "capsulesPinBack": "Back to where I am",
+  "@capsulesPinBack": {
+    "description": "Button on the pin map: back to the phone's position."
+  },
+  "capsulesDraftTitle": "Unfinished capsule",
+  "@capsulesDraftTitle": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftContinue": "Continue",
+  "@capsulesDraftContinue": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftDiscard": "Throw the unfinished capsule away",
+  "@capsulesDraftDiscard": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesComposerTitle": "Description",
+  "@capsulesComposerTitle": {
+    "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesComposerDone": "Done",
+  "@capsulesComposerDone": {
+    "description": "The capsule description composer (a sheet over creation)."
+  }
+}

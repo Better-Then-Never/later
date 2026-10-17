@@ -33,6 +33,14 @@ class NotificationsStore extends ChangeNotifier implements SessionScoped {
   @override
   void attach(String uid) {
     _uid = uid;
+    _subscribe(uid);
+  }
+
+  /// Completes with the first result of the current subscription.
+  Completer<void>? _firstResult;
+
+  void _subscribe(String uid) {
+    _firstResult = Completer<void>();
     _sub = _repo
         .watch(uid, limit: limit)
         .listen(
@@ -41,6 +49,7 @@ class NotificationsStore extends ChangeNotifier implements SessionScoped {
             _loaded = true;
             _error = null;
             notifyListeners();
+            _settle();
           },
           onError: (Object e, StackTrace st) {
             AppLogger.warning(
@@ -51,8 +60,28 @@ class NotificationsStore extends ChangeNotifier implements SessionScoped {
             _error = AppFailure.from(e);
             _loaded = true;
             notifyListeners();
+            _settle();
           },
         );
+  }
+
+  void _settle() {
+    final first = _firstResult;
+    if (first != null && !first.isCompleted) first.complete();
+  }
+
+  /// Pull to refresh: listens again from scratch (a fresh read, and a way
+  /// out of a stream that failed) and completes with its first result, or
+  /// after 10 s.
+  Future<void> refresh() async {
+    final uid = _uid;
+    if (uid == null) return;
+    await _sub?.cancel();
+    _subscribe(uid);
+    await _firstResult!.future.timeout(
+      const Duration(seconds: 10),
+      onTimeout: () {},
+    );
   }
 
   @override
