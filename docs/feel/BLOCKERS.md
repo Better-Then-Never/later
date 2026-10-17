@@ -28,3 +28,8 @@ Anything listed here was **not** checked on the device, or could not be done in 
 - **Light map style** (D-22): the local JSON follows the cloud style's idea; compare it with the cloud style before
   release.
 - **Settings rows are 44 dp** (were 36) to meet the tap-target minimum (D-24); rows with a subtitle are unchanged.
+- **Share icon** (F-43): the profile's share button showed a paper plane, the same picture as "send". It is now the
+  usual share sign (three linked nodes) in the profile icons' ring and stroke weight, drawn by
+  `tool/make_share_icon.dart`; the same drawing is in `docs/feel/icons/share.svg` for review or a designer's
+  redraw. Not rendered from SVG in the app: that would need a new package (flutter_svg), which this session does not
+  add.
