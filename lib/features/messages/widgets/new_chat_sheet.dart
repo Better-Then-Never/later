@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/user_profile.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
@@ -24,7 +25,7 @@ class NewChatSheet extends StatefulWidget {
     context: context,
     backgroundColor: Colors.transparent,
     isScrollControlled: true,
-    barrierColor: AppColors.barrier,
+    barrierColor: context.palette.scrim,
     builder: (_) => const NewChatSheet(),
   );
 
@@ -62,6 +63,8 @@ class _NewChatSheetState extends State<NewChatSheet> {
     final screen = MediaQuery.sizeOf(context);
     final friends = context.watch<FriendsStore>();
     final directory = context.watch<UserDirectory>();
+    final l10n = context.l10n;
+    final palette = context.palette;
 
     final ids = friends.friendIds.toList();
     final visible =
@@ -86,17 +89,17 @@ class _NewChatSheetState extends State<NewChatSheet> {
     } else if (ids.isEmpty) {
       body = DefaultEmptyInboxInfo(
         key: const ValueKey('no-friends'),
-        message: 'No friends yet',
-        subtitle: 'Add some friends to start chatting!',
+        message: l10n.messagesNewChatNoFriends,
+        subtitle: l10n.messagesNewChatNoFriendsSubtitle,
         assetPath: AppIcons.profileMyFriends,
-        actionText: 'Find friends',
+        actionText: l10n.messagesNewChatFindFriends,
         onAction: () => _closeThen(AppRoutes.toAddFriends),
       );
     } else if (visible.isEmpty) {
       body = DefaultEmptyInboxInfo(
         key: const ValueKey('no-match'),
-        message: 'No friends found',
-        subtitle: 'Nothing matches "$_query"',
+        message: l10n.messagesNewChatNoMatch,
+        subtitle: l10n.messagesNothingMatches(_query),
         assetPath: AppIcons.profileFriendSearch,
       );
     } else {
@@ -113,7 +116,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
               decoration: BoxDecorations.whiteCard(context),
               child: Semantics(
                 button: true,
-                label: 'Start chat with ${profile?.name ?? ''}',
+                label: l10n.messagesStartChatWith(profile?.name ?? ''),
                 child: UserListTile(
                   uid: id,
                   name: profile?.name ?? '',
@@ -138,17 +141,17 @@ class _NewChatSheetState extends State<NewChatSheet> {
 
     return Container(
       height: screen.height * 0.7,
-      decoration: const BoxDecoration(
-        color: AppColors.pageBackground,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      decoration: BoxDecoration(
+        color: palette.background,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
       ),
       child: Column(
         children: [
           // Same header as the app's pages: white, rounded bottom.
           Container(
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.all(Radius.circular(25)),
+            decoration: BoxDecoration(
+              color: palette.surface,
+              borderRadius: const BorderRadius.all(Radius.circular(25)),
             ),
             padding: EdgeInsets.fromLTRB(
               screen.width * 0.04,
@@ -164,7 +167,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
                     // Full width, so the close button sits at the edge.
                     const SizedBox(width: double.infinity),
                     Text(
-                      'New Chat',
+                      l10n.messagesNewChatTitle,
                       style: AppTextStyles.pageTitle(
                         context,
                       ).copyWith(fontSize: screen.height * 0.03),
@@ -182,7 +185,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
                 SizedBox(height: screen.height * 0.015),
                 DefaultSearchBar(
                   controller: _searchController,
-                  hintText: 'Search friends',
+                  hintText: l10n.messagesNewChatSearchHint,
                   onChanged: (value) => setState(() => _query = value),
                 ),
               ],

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/chat.dart';
 import '../friends/friends_store.dart';
@@ -202,12 +203,12 @@ class ChatController extends ChangeNotifier {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return null;
     if (trimmed.length > Chat.maxMessageLength) {
-      return const ValidationFailure('This message is too long');
+      return ValidationFailure(AppL10n.current.messagesTooLong);
     }
     final me = myUid;
     final id = _chats.newMessageId(friendUid);
     if (me == null || id == null) {
-      return const AuthFailure('You are signed out');
+      return AuthFailure(AppL10n.current.messagesSignedOut);
     }
     _outbox[id] = ChatMessage(
       id: id,
@@ -248,7 +249,7 @@ class ChatController extends ChangeNotifier {
     if (failure is PermissionFailure) {
       // Most likely blocked since the chat was opened.
       unawaited(_checkBlockedByFriend());
-      return const PermissionFailure("You can't send messages to this user");
+      return PermissionFailure(AppL10n.current.messagesCantSend);
     }
     return failure;
   }

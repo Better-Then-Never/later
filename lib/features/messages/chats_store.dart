@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/models/chat.dart';
@@ -131,11 +132,13 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     required String messageId,
   }) => _run(
     'Failed to send message',
+    AppL10n.current.messagesSendFailed,
     (me) => _chats.sendText(from: me, to: to, text: text, messageId: messageId),
   );
 
   Future<AppFailure?> clearHistory(String friendUid) => _run(
     'Failed to clear history',
+    AppL10n.current.messagesClearFailed,
     (me) => _chats.clearHistory(Chat.idBetween(me, friendUid)),
   );
 
@@ -150,18 +153,22 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     }
   }
 
+  /// Runs [action] as the signed-in user. [logMessage] goes to the log (in
+  /// English); [userMessage] is what the user sees when nothing more
+  /// specific is known.
   Future<AppFailure?> _run(
-    String fallbackMessage,
+    String logMessage,
+    String userMessage,
     Future<void> Function(String me) action,
   ) async {
     final me = _uid;
-    if (me == null) return const AuthFailure('You are signed out');
+    if (me == null) return AuthFailure(AppL10n.current.messagesSignedOut);
     try {
       await action(me);
       return null;
     } catch (e, st) {
-      AppLogger.warning(fallbackMessage, error: e, stackTrace: st);
-      return AppFailure.from(e, fallbackMessage: fallbackMessage);
+      AppLogger.warning(logMessage, error: e, stackTrace: st);
+      return AppFailure.from(e, fallbackMessage: userMessage);
     }
   }
 }

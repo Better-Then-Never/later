@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/chat.dart';
 import '../../../shared/widgets/app_network_image.dart';
@@ -34,7 +36,8 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
-    final textColor = isMine ? AppColors.textOnPrimary : AppColors.textPrimary;
+    final palette = context.palette;
+    final textColor = isMine ? AppColors.onAccent : palette.textPrimary;
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
     final failed = message.delivery == MessageDelivery.failed;
@@ -46,7 +49,7 @@ class MessageBubble extends StatelessWidget {
       ),
       constraints: BoxConstraints(maxWidth: screen.width * 0.72),
       decoration: BoxDecoration(
-        color: isMine ? AppColors.brandGreen : AppColors.surface,
+        color: isMine ? AppColors.brandGreen : palette.surface,
         borderRadius: BorderRadius.only(
           topLeft: _radius,
           topRight: _radius,
@@ -63,7 +66,7 @@ class MessageBubble extends StatelessWidget {
             if (imageUrl != null)
               Semantics(
                 button: true,
-                label: 'Open capsule ${message.text}',
+                label: context.l10n.messagesOpenCapsule(message.text),
                 child: GestureDetector(
                   onTap: onCapsuleTap,
                   child: _CapsulePhoto(
@@ -98,11 +101,12 @@ class MessageBubble extends StatelessWidget {
           if (sentAt != null) ...[
             const SizedBox(height: 2),
             Text(
-              ChatTime.messageTime(sentAt),
+              ChatTime.messageTime(sentAt, locale: context.l10n.localeName),
               style: TextStyle(
                 fontFamily: kAppFontFamily,
                 fontSize: 11,
-                color: isMine ? AppColors.white70 : AppColors.textMuted,
+                // Muted white on the green bubble, the same in both themes.
+                color: isMine ? AppColors.onMediaMuted : palette.textMuted,
               ),
             ),
           ],
@@ -144,8 +148,10 @@ class _CapsulePhoto extends StatelessWidget {
               left: 8,
               child: Container(
                 padding: const EdgeInsets.fromLTRB(6, 4, 10, 4),
-                decoration: const BoxDecoration(
-                  color: AppColors.surface,
+                // A small card on the photo: it follows the theme, like the
+                // capsule icon (swapped for dark by ThemedAssetBundle).
+                decoration: BoxDecoration(
+                  color: context.palette.surface,
                   borderRadius: AppRadii.lCircular,
                 ),
                 child: Row(
@@ -153,11 +159,11 @@ class _CapsulePhoto extends StatelessWidget {
                   children: [
                     Image.asset(AppIcons.sendCapsule, width: 18, height: 18),
                     const SizedBox(width: 4),
-                    const Text(
-                      'Capsule',
+                    Text(
+                      context.l10n.messagesCapsuleLabel,
                       style: TextStyle(
                         fontFamily: kAppFontFamily,
-                        color: AppColors.textPrimary,
+                        color: context.palette.textPrimary,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),

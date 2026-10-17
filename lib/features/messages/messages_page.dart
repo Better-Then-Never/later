@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/l10n/l10n.dart';
+import '../../core/theme/app_palette.dart';
 import '../../data/models/chat.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/styles/box_decorations.dart';
@@ -38,18 +39,18 @@ class _MessagesPageState extends State<MessagesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: Column(
         children: [
           PageHeader(
-            mainText: 'My Laters',
+            mainText: context.l10n.messagesTitle,
             leadingButton: DefaultIconButton(
               onTap: () => NewChatSheet.show(context),
               assetPath: AppIcons.messagesNew,
             ),
             searchBar: DefaultSearchBar(
               controller: _searchController,
-              hintText: 'Find chats',
+              hintText: context.l10n.messagesFindChatsHint,
               onChanged: (value) =>
                   setState(() => _query = value.trim().toLowerCase()),
             ),
@@ -71,6 +72,7 @@ class _ChatList extends StatelessWidget {
     final store = context.watch<ChatsStore>();
     final directory = context.watch<UserDirectory>();
     final me = store.uid ?? '';
+    final l10n = context.l10n;
 
     final Widget body;
     if (!store.isLoaded) {
@@ -78,17 +80,17 @@ class _ChatList extends StatelessWidget {
     } else if (store.hasError) {
       body = DefaultEmptyInboxInfo(
         key: const ValueKey('error'),
-        message: "Couldn't load your chats",
-        subtitle: 'Check your connection and try again',
+        message: l10n.messagesChatsLoadError,
+        subtitle: l10n.messagesCheckConnection,
         assetPath: AppIcons.navbarMessages,
-        actionText: 'Retry',
+        actionText: l10n.commonRetry,
         onAction: store.retry,
       );
     } else if (store.chats.isEmpty) {
-      body = const DefaultEmptyInboxInfo(
-        key: ValueKey('empty'),
-        message: 'No conversations yet',
-        subtitle: 'Tap the new message button to start chatting with friends!',
+      body = DefaultEmptyInboxInfo(
+        key: const ValueKey('empty'),
+        message: l10n.messagesNoChatsTitle,
+        subtitle: l10n.messagesNoChatsSubtitle,
         assetPath: AppIcons.navbarMessages,
       );
     } else {
@@ -104,8 +106,8 @@ class _ChatList extends StatelessWidget {
       body = chats.isEmpty
           ? DefaultEmptyInboxInfo(
               key: const ValueKey('no-match'),
-              message: 'No chats found',
-              subtitle: 'Nothing matches "$query"',
+              message: l10n.messagesNoChatsFound,
+              subtitle: l10n.messagesNothingMatches(query),
               assetPath: AppIcons.profileFriendSearch,
             )
           : ListView.separated(
@@ -122,7 +124,9 @@ class _ChatList extends StatelessWidget {
                   key: ValueKey(chat.id),
                   friendUid: friendUid,
                   name: directory.profile(friendUid)?.name ?? '',
-                  preview: mine ? 'You: ${chat.lastMessage}' : chat.lastMessage,
+                  preview: mine
+                      ? l10n.messagesYouPrefix(chat.lastMessage)
+                      : chat.lastMessage,
                   timestamp: chat.lastUpdated,
                   unread: chat.unreadFor(me),
                   muted: store.isMuted(chat.id),

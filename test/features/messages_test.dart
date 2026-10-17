@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/firebase/firestore_mappers.dart';
 import 'package:later/data/models/capsule.dart';
@@ -106,6 +107,10 @@ void main() {
 
   group('ChatTime', () {
     final now = DateTime(2026, 10, 16, 12);
+
+    // The labels are formatted in the app's language; the app gets the date
+    // symbols from flutter_localizations, a plain test loads them here.
+    setUpAll(initializeDateFormatting);
 
     test('chat list labels', () {
       expect(ChatTime.listLabel(null, now), '12:00');
