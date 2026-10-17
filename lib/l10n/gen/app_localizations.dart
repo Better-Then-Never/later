@@ -572,6 +572,30 @@ abstract class AppLocalizations {
   /// **'Search...'**
   String get commonSearchHint;
 
+  /// File size in bytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} B'**
+  String commonSizeBytes(String size);
+
+  /// No description provided for @commonSizeGigabytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} GB'**
+  String commonSizeGigabytes(String size);
+
+  /// No description provided for @commonSizeKilobytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} KB'**
+  String commonSizeKilobytes(String size);
+
+  /// No description provided for @commonSizeMegabytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} MB'**
+  String commonSizeMegabytes(String size);
+
   /// No description provided for @commonUnknownUser.
   ///
   /// In en, this message translates to:
@@ -583,6 +607,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'unknown'**
   String get commonUnknownUsername;
+
+  /// Title of a capsule that has none.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled'**
+  String get commonUntitled;
+
+  /// No description provided for @commonUsernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a username'**
+  String get commonUsernameRequired;
+
+  /// Letters are a-z only (Latin, lower case).
+  ///
+  /// In en, this message translates to:
+  /// **'Use 3-30 letters, numbers, dots, dashes or underscores'**
+  String get commonUsernameRules;
+
+  /// No description provided for @commonUsernameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'Username already taken'**
+  String get commonUsernameTaken;
 
   /// No description provided for @failureNotFound.
   ///

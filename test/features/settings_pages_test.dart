@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/services/cache_service.dart';
 import 'package:later/data/services/preferences_store.dart';
@@ -68,6 +70,16 @@ void main() {
       expect(CacheService.format(0), '0 B');
       expect(CacheService.format(2048), '2 KB');
       expect(CacheService.format(3 * 1024 * 1024 + 400 * 1024), '3.4 MB');
+    });
+
+    test('formats sizes in the app language', () {
+      addTearDown(() => AppL10n.update(const Locale('en')));
+      const size = 3 * 1024 * 1024 + 400 * 1024;
+      AppL10n.update(const Locale('ru'));
+      expect(CacheService.format(size), '3,4 МБ');
+      AppL10n.update(const Locale('de'));
+      expect(CacheService.format(size), '3,4 MB');
+      expect(CacheService.format(2048), '2 KB');
     });
   });
 

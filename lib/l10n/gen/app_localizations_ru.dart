@@ -261,10 +261,43 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonSearchHint => 'Поиск...';
 
   @override
+  String commonSizeBytes(String size) {
+    return '$size Б';
+  }
+
+  @override
+  String commonSizeGigabytes(String size) {
+    return '$size ГБ';
+  }
+
+  @override
+  String commonSizeKilobytes(String size) {
+    return '$size КБ';
+  }
+
+  @override
+  String commonSizeMegabytes(String size) {
+    return '$size МБ';
+  }
+
+  @override
   String get commonUnknownUser => 'Неизвестный пользователь';
 
   @override
   String get commonUnknownUsername => 'неизвестно';
+
+  @override
+  String get commonUntitled => 'Без названия';
+
+  @override
+  String get commonUsernameRequired => 'Введите имя пользователя';
+
+  @override
+  String get commonUsernameRules =>
+      'Используйте от 3 до 30 латинских букв, цифр, точек, дефисов или подчёркиваний';
+
+  @override
+  String get commonUsernameTaken => 'Это имя пользователя уже занято';
 
   @override
   String get failureNotFound => 'Этот объект больше не существует.';

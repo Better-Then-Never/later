@@ -268,10 +268,43 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonSearchHint => 'Suchen...';
 
   @override
+  String commonSizeBytes(String size) {
+    return '$size B';
+  }
+
+  @override
+  String commonSizeGigabytes(String size) {
+    return '$size GB';
+  }
+
+  @override
+  String commonSizeKilobytes(String size) {
+    return '$size KB';
+  }
+
+  @override
+  String commonSizeMegabytes(String size) {
+    return '$size MB';
+  }
+
+  @override
   String get commonUnknownUser => 'Unbekannter Nutzer';
 
   @override
   String get commonUnknownUsername => 'unbekannt';
+
+  @override
+  String get commonUntitled => 'Ohne Titel';
+
+  @override
+  String get commonUsernameRequired => 'Gib einen Benutzernamen ein';
+
+  @override
+  String get commonUsernameRules =>
+      'Verwende 3 bis 30 Buchstaben (a–z), Ziffern, Punkte, Bindestriche oder Unterstriche';
+
+  @override
+  String get commonUsernameTaken => 'Dieser Benutzername ist schon vergeben';
 
   @override
   String get failureNotFound => 'Dieses Element gibt es nicht mehr.';

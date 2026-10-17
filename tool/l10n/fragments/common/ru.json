@@ -18,5 +18,13 @@
   "failurePermission": "У вас нет прав на это действие.",
   "failureNotFound": "Этот объект больше не существует.",
   "placeNoLocation": "Нет геопозиции",
-  "placeUnknown": "Неизвестное место"
+  "placeUnknown": "Неизвестное место",
+  "commonUntitled": "Без названия",
+  "commonUsernameRequired": "Введите имя пользователя",
+  "commonUsernameRules": "Используйте от 3 до 30 латинских букв, цифр, точек, дефисов или подчёркиваний",
+  "commonUsernameTaken": "Это имя пользователя уже занято",
+  "commonSizeBytes": "{size} Б",
+  "commonSizeKilobytes": "{size} КБ",
+  "commonSizeMegabytes": "{size} МБ",
+  "commonSizeGigabytes": "{size} ГБ"
 }

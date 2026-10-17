@@ -1,3 +1,5 @@
+import '../../core/l10n/l10n.dart';
+
 /// Totals the Cloud Functions keep on `users/{uid}.stats`
 /// (functions/lib/gamification.js, social.js). Read-only for the app.
 class UserStats {
@@ -100,10 +102,10 @@ class UserProfile {
   });
 
   /// Placeholder used while a profile is loading or when it does not exist,
-  /// matching the strings the app showed before ("Unknown"/"unknown").
-  const UserProfile.unknown(this.uid)
-    : name = 'Unknown',
-      username = 'unknown',
+  /// named in the app's language.
+  UserProfile.unknown(this.uid)
+    : name = AppL10n.current.commonUnknownUser,
+      username = AppL10n.current.commonUnknownUsername,
       friends = const [],
       favorites = const {},
       verified = false,
@@ -204,11 +206,12 @@ abstract final class Usernames {
 
   static String normalize(String input) => input.trim().toLowerCase();
 
-  /// Returns an error message, or null when [normalized] is acceptable.
+  /// Returns an error message (in the app's language), or null when
+  /// [normalized] is acceptable.
   static String? validate(String normalized) {
-    if (normalized.isEmpty) return 'Please enter a username';
+    if (normalized.isEmpty) return AppL10n.current.commonUsernameRequired;
     if (!_allowed.hasMatch(normalized)) {
-      return 'Use 3-30 letters, numbers, dots, dashes or underscores';
+      return AppL10n.current.commonUsernameRules;
     }
     return null;
   }

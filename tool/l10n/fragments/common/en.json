@@ -27,5 +27,48 @@
   "placeUnknown": "Unknown location",
   "@placeNoLocation": {
     "description": "Place pill on a capsule when the phone has no location yet."
+  },
+  "commonUntitled": "Untitled",
+  "@commonUntitled": {
+    "description": "Title of a capsule that has none."
+  },
+  "commonUsernameRequired": "Please enter a username",
+  "commonUsernameRules": "Use 3-30 letters, numbers, dots, dashes or underscores",
+  "@commonUsernameRules": {
+    "description": "Letters are a-z only (Latin, lower case)."
+  },
+  "commonUsernameTaken": "Username already taken",
+  "commonSizeBytes": "{size} B",
+  "@commonSizeBytes": {
+    "description": "File size in bytes.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeKilobytes": "{size} KB",
+  "@commonSizeKilobytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeMegabytes": "{size} MB",
+  "@commonSizeMegabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeGigabytes": "{size} GB",
+  "@commonSizeGigabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   }
 }

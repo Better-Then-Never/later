@@ -18,5 +18,13 @@
   "failurePermission": "Nie masz uprawnień do tej czynności.",
   "failureNotFound": "Ten element już nie istnieje.",
   "placeNoLocation": "Brak lokalizacji",
-  "placeUnknown": "Nieznane miejsce"
+  "placeUnknown": "Nieznane miejsce",
+  "commonUntitled": "Bez tytułu",
+  "commonUsernameRequired": "Wpisz nazwę użytkownika",
+  "commonUsernameRules": "Użyj od 3 do 30 liter łacińskich, cyfr, kropek, myślników lub podkreśleń",
+  "commonUsernameTaken": "Ta nazwa użytkownika jest już zajęta",
+  "commonSizeBytes": "{size} B",
+  "commonSizeKilobytes": "{size} KB",
+  "commonSizeMegabytes": "{size} MB",
+  "commonSizeGigabytes": "{size} GB"
 }

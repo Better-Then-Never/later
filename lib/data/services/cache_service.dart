@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/painting.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 
 /// Files the app can always make again: photos taken or picked for a
@@ -58,13 +60,19 @@ class CacheService {
     }
   }
 
-  /// "0 B", "512 KB", "3.4 MB".
+  /// "0 B", "512 KB", "3.4 MB" (units and decimal comma follow the app's
+  /// language: "3,4 МБ").
   static String format(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).round()} KB';
-    if (bytes < 1024 * 1024 * 1024) {
-      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    final l10n = AppL10n.current;
+    final whole = NumberFormat.decimalPattern(l10n.localeName);
+    final tenth = NumberFormat('0.0', l10n.localeName);
+    if (bytes < 1024) return l10n.commonSizeBytes(whole.format(bytes));
+    if (bytes < 1024 * 1024) {
+      return l10n.commonSizeKilobytes(whole.format((bytes / 1024).round()));
     }
-    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+    if (bytes < 1024 * 1024 * 1024) {
+      return l10n.commonSizeMegabytes(tenth.format(bytes / (1024 * 1024)));
+    }
+    return l10n.commonSizeGigabytes(tenth.format(bytes / (1024 * 1024 * 1024)));
   }
 }

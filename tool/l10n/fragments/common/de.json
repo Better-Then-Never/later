@@ -18,5 +18,13 @@
   "failurePermission": "Das darfst du nicht.",
   "failureNotFound": "Dieses Element gibt es nicht mehr.",
   "placeNoLocation": "Kein Standort",
-  "placeUnknown": "Unbekannter Ort"
+  "placeUnknown": "Unbekannter Ort",
+  "commonUntitled": "Ohne Titel",
+  "commonUsernameRequired": "Gib einen Benutzernamen ein",
+  "commonUsernameRules": "Verwende 3 bis 30 Buchstaben (a–z), Ziffern, Punkte, Bindestriche oder Unterstriche",
+  "commonUsernameTaken": "Dieser Benutzername ist schon vergeben",
+  "commonSizeBytes": "{size} B",
+  "commonSizeKilobytes": "{size} KB",
+  "commonSizeMegabytes": "{size} MB",
+  "commonSizeGigabytes": "{size} GB"
 }

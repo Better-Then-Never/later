@@ -190,8 +190,51 @@
   "commonRetry": "Try again",
   "commonSave": "Save",
   "commonSearchHint": "Search...",
+  "commonSizeBytes": "{size} B",
+  "@commonSizeBytes": {
+    "description": "File size in bytes.",
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeGigabytes": "{size} GB",
+  "@commonSizeGigabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeKilobytes": "{size} KB",
+  "@commonSizeKilobytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "commonSizeMegabytes": "{size} MB",
+  "@commonSizeMegabytes": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
   "commonUnknownUser": "Unknown user",
   "commonUnknownUsername": "unknown",
+  "commonUntitled": "Untitled",
+  "@commonUntitled": {
+    "description": "Title of a capsule that has none."
+  },
+  "commonUsernameRequired": "Please enter a username",
+  "commonUsernameRules": "Use 3-30 letters, numbers, dots, dashes or underscores",
+  "@commonUsernameRules": {
+    "description": "Letters are a-z only (Latin, lower case)."
+  },
+  "commonUsernameTaken": "Username already taken",
   "failureNotFound": "This item no longer exists.",
   "failurePermission": "You are not allowed to do that.",
   "friendsAccept": "Accept",

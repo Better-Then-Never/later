@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../models/app_notification.dart';
 import '../models/capsule.dart';
 import '../models/chat.dart';
@@ -57,8 +58,11 @@ abstract final class FirestoreMappers {
     if (data == null) return UserProfile.unknown(uid);
     return UserProfile(
       uid: uid,
-      name: _string(data['name'], 'Unknown'),
-      username: _string(data['username'], 'unknown'),
+      name: _string(data['name'], AppL10n.current.commonUnknownUser),
+      username: _string(
+        data['username'],
+        AppL10n.current.commonUnknownUsername,
+      ),
       friends: _stringList(data['friends']),
       favorites: _stringList(data['favorites']).toSet(),
       verified: data['verified'] == true,
@@ -96,7 +100,7 @@ abstract final class FirestoreMappers {
       id: id,
       // `creatorId` is accepted for documents written by older tooling.
       ownerId: _string(data['ownerId'] ?? data['creatorId'], ''),
-      title: _string(data['title'], 'Untitled'),
+      title: _string(data['title'], AppL10n.current.commonUntitled),
       description: _nonEmptyString(data['description']),
       imageUrl: _nonEmptyString(data['imageUrl']),
       location: location is GeoPoint
@@ -391,7 +395,8 @@ abstract final class FirestoreMappers {
       id: id,
       type: NotificationType.parse(data['type']),
       fromUserId: _nonEmptyString(data['fromUserId']),
-      fromUserName: _string(data['fromUserName'], 'System'),
+      // Sent by the app itself (achievements, announcements).
+      fromUserName: _string(data['fromUserName'], AppL10n.current.appName),
       fromUserAvatarUrl: url(data['fromUserAvatar']),
       message: _string(data['message'], ''),
       thumbnailImageUrl: url(data['thumbnailImage']),

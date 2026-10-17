@@ -107,7 +107,7 @@ void main() {
         FirestoreMappers.notification('x', {}).type,
         NotificationType.other,
       );
-      expect(FirestoreMappers.notification('x', {}).fromUserName, 'System');
+      expect(FirestoreMappers.notification('x', {}).fromUserName, 'Later');
     });
   });
 
@@ -119,7 +119,7 @@ void main() {
     expect(p.username, 'unknown');
     expect(p.friends, ['a', 'b']);
     expect(p.initial, '#', reason: 'empty names must not crash grouping');
-    expect(FirestoreMappers.userProfile('u2', null).name, 'Unknown');
+    expect(FirestoreMappers.userProfile('u2', null).name, 'Unknown user');
   });
 
   test('friend request ids and status', () {

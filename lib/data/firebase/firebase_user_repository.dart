@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../models/user_profile.dart';
 import '../repositories/repositories.dart';
 import 'firestore_mappers.dart';
@@ -74,12 +75,12 @@ class FirebaseUserRepository implements UserRepository {
     required String username,
   }) async {
     if (await _isTakenByOther(username, uid)) {
-      throw const ValidationFailure('Username already taken');
+      throw ValidationFailure(AppL10n.current.commonUsernameTaken);
     }
     await _db.runTransaction((tx) async {
       final reservation = await tx.get(_usernameDoc(username));
       if (reservation.exists && reservation.data()?['uid'] != uid) {
-        throw const ValidationFailure('Username already taken');
+        throw ValidationFailure(AppL10n.current.commonUsernameTaken);
       }
       tx.set(_usernameDoc(username), {'uid': uid});
       tx.set(_users.doc(uid), {
@@ -100,13 +101,13 @@ class FirebaseUserRepository implements UserRepository {
   @override
   Future<void> changeUsername(String uid, String newUsername) async {
     if (await _isTakenByOther(newUsername, uid)) {
-      throw const ValidationFailure('Username already taken');
+      throw ValidationFailure(AppL10n.current.commonUsernameTaken);
     }
     await _db.runTransaction((tx) async {
       final userDoc = await tx.get(_users.doc(uid));
       final reservation = await tx.get(_usernameDoc(newUsername));
       if (reservation.exists && reservation.data()?['uid'] != uid) {
-        throw const ValidationFailure('Username already taken');
+        throw ValidationFailure(AppL10n.current.commonUsernameTaken);
       }
       final oldUsername = userDoc.data()?['username'];
       DocumentSnapshot<Map<String, dynamic>>? oldReservation;
