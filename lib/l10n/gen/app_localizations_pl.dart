@@ -1333,6 +1333,21 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Mapa';
+
+  @override
+  String get navMessages => 'Wiadomości';
+
+  @override
+  String get navMyCapsules => 'Moje kapsuły';
+
+  @override
+  String get navNewCapsule => 'Nowa kapsuła';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
   String notificationsAchievementBody(String name) {
     return '$name: masz nowe osiągnięcie';
   }

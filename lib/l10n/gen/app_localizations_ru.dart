@@ -1326,6 +1326,21 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Карта';
+
+  @override
+  String get navMessages => 'Сообщения';
+
+  @override
+  String get navMyCapsules => 'Мои капсулы';
+
+  @override
+  String get navNewCapsule => 'Новая капсула';
+
+  @override
+  String get navProfile => 'Профиль';
+
+  @override
   String notificationsAchievementBody(String name) {
     return '$name: у вас новое достижение';
   }

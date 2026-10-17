@@ -1294,6 +1294,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Map';
+
+  @override
+  String get navMessages => 'Messages';
+
+  @override
+  String get navMyCapsules => 'My capsules';
+
+  @override
+  String get navNewCapsule => 'New capsule';
+
+  @override
+  String get navProfile => 'Profile';
+
+  @override
   String notificationsAchievementBody(String name) {
     return '$name: you unlocked a new achievement';
   }

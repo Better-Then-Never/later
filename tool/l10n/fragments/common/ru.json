@@ -26,5 +26,10 @@
   "commonSizeBytes": "{size} Б",
   "commonSizeKilobytes": "{size} КБ",
   "commonSizeMegabytes": "{size} МБ",
-  "commonSizeGigabytes": "{size} ГБ"
+  "commonSizeGigabytes": "{size} ГБ",
+  "navMap": "Карта",
+  "navMyCapsules": "Мои капсулы",
+  "navNewCapsule": "Новая капсула",
+  "navMessages": "Сообщения",
+  "navProfile": "Профиль"
 }

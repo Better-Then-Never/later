@@ -70,5 +70,10 @@
         "type": "String"
       }
     }
-  }
+  },
+  "navMap": "Map",
+  "navMyCapsules": "My capsules",
+  "navNewCapsule": "New capsule",
+  "navMessages": "Messages",
+  "navProfile": "Profile"
 }

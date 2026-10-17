@@ -2258,6 +2258,36 @@ abstract class AppLocalizations {
   /// **'You: {message}'**
   String messagesYouPrefix(String message);
 
+  /// No description provided for @navMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get navMap;
+
+  /// No description provided for @navMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get navMessages;
+
+  /// No description provided for @navMyCapsules.
+  ///
+  /// In en, this message translates to:
+  /// **'My capsules'**
+  String get navMyCapsules;
+
+  /// No description provided for @navNewCapsule.
+  ///
+  /// In en, this message translates to:
+  /// **'New capsule'**
+  String get navNewCapsule;
+
+  /// No description provided for @navProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get navProfile;
+
   /// {name} is the app's name (Later), shown in bold.
   ///
   /// In en, this message translates to:

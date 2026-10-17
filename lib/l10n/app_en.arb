@@ -1084,6 +1084,11 @@
       }
     }
   },
+  "navMap": "Map",
+  "navMessages": "Messages",
+  "navMyCapsules": "My capsules",
+  "navNewCapsule": "New capsule",
+  "navProfile": "Profile",
   "notificationsAchievementBody": "{name}: you unlocked a new achievement",
   "@notificationsAchievementBody": {
     "description": "{name} is the app's name (Later), shown in bold.",

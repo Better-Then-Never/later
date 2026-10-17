@@ -26,5 +26,10 @@
   "commonSizeBytes": "{size} B",
   "commonSizeKilobytes": "{size} KB",
   "commonSizeMegabytes": "{size} MB",
-  "commonSizeGigabytes": "{size} GB"
+  "commonSizeGigabytes": "{size} GB",
+  "navMap": "Mapa",
+  "navMyCapsules": "Moje kapsuły",
+  "navNewCapsule": "Nowa kapsuła",
+  "navMessages": "Wiadomości",
+  "navProfile": "Profil"
 }

@@ -1325,6 +1325,21 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Karte';
+
+  @override
+  String get navMessages => 'Nachrichten';
+
+  @override
+  String get navMyCapsules => 'Meine Kapseln';
+
+  @override
+  String get navNewCapsule => 'Neue Kapsel';
+
+  @override
+  String get navProfile => 'Profil';
+
+  @override
   String notificationsAchievementBody(String name) {
     return '$name: Du hast einen neuen Erfolg freigeschaltet';
   }

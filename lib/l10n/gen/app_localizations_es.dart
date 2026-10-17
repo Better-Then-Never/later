@@ -1305,6 +1305,21 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get navMap => 'Mapa';
+
+  @override
+  String get navMessages => 'Mensajes';
+
+  @override
+  String get navMyCapsules => 'Mis cápsulas';
+
+  @override
+  String get navNewCapsule => 'Nueva cápsula';
+
+  @override
+  String get navProfile => 'Perfil';
+
+  @override
   String notificationsAchievementBody(String name) {
     return '$name: desbloqueaste un logro nuevo';
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import '../../features/messages/chats_store.dart';
 import '../../shared/widgets/count_badge.dart';
@@ -32,6 +33,7 @@ class NavbarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
+    final l10n = context.l10n;
     return Padding(
       padding: EdgeInsets.only(bottom: screenHeight * 0.01),
       child: Container(
@@ -48,39 +50,56 @@ class NavbarWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildIcon(context, 0, AppIcons.navbarMap),
-            _buildIcon(context, 1, AppIcons.navbarHistory),
+            _buildIcon(context, 0, AppIcons.navbarMap, l10n.navMap),
+            _buildIcon(context, 1, AppIcons.navbarHistory, l10n.navMyCapsules),
             _buildAddIcon(context, AppIcons.navbarAdd),
             Stack(
               clipBehavior: Clip.none,
               children: [
-                _buildIcon(context, 2, AppIcons.navbarMessages),
+                _buildIcon(
+                  context,
+                  2,
+                  AppIcons.navbarMessages,
+                  l10n.navMessages,
+                ),
                 const Positioned(top: -4, right: -6, child: _UnreadMessages()),
               ],
             ),
-            _buildIcon(context, 3, AppIcons.navbarProfile),
+            _buildIcon(context, 3, AppIcons.navbarProfile, l10n.navProfile),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildIcon(BuildContext context, int index, String assetPath) {
+  /// [label] is what screen readers say (F-34: the tabs had no names).
+  Widget _buildIcon(
+    BuildContext context,
+    int index,
+    String assetPath,
+    String label,
+  ) {
     final isSelected = index == selectedIndex;
 
-    return AppPressable(
-      child: GestureDetector(
-        onTap: () => onItemTapped(index),
-        child: AnimatedContainer(
-          duration: AppMotion.of(context, AppMotion.standard),
-          curve: AppMotion.standardCurve,
-          height: navbarIconHeight * (isSelected ? 1.2 : 1.0),
-          width: navbarIconHeight * (isSelected ? 1.2 : 1.0),
-          child: AnimatedScale(
-            scale: isSelected ? 1.1 : 1.0,
-            duration: AppMotion.of(context, AppMotion.quick),
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      excludeSemantics: true,
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: () => onItemTapped(index),
+          child: AnimatedContainer(
+            duration: AppMotion.of(context, AppMotion.standard),
             curve: AppMotion.standardCurve,
-            child: Image.asset(assetPath),
+            height: navbarIconHeight * (isSelected ? 1.2 : 1.0),
+            width: navbarIconHeight * (isSelected ? 1.2 : 1.0),
+            child: AnimatedScale(
+              scale: isSelected ? 1.1 : 1.0,
+              duration: AppMotion.of(context, AppMotion.quick),
+              curve: AppMotion.standardCurve,
+              child: Image.asset(assetPath),
+            ),
           ),
         ),
       ),
@@ -88,10 +107,15 @@ class NavbarWidget extends StatelessWidget {
   }
 
   Widget _buildAddIcon(BuildContext context, String assetPath) {
-    return AppPressable(
-      child: GestureDetector(
-        onTap: () => AppRoutes.toCamera(context),
-        child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
+    return Semantics(
+      button: true,
+      label: context.l10n.navNewCapsule,
+      excludeSemantics: true,
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: () => AppRoutes.toCamera(context),
+          child: Image.asset(assetPath, height: navbarIconHeight * 1.5),
+        ),
       ),
     );
   }
