@@ -674,6 +674,18 @@ abstract class AppLocalizations {
   /// **'Allow camera access in Settings to take a photo'**
   String get capsulesCameraAccessDenied;
 
+  /// Camera flash button, screen reader: the flash fires when it is dark
+  ///
+  /// In en, this message translates to:
+  /// **'Flash auto'**
+  String get capsulesCameraFlashAuto;
+
+  /// One letter on the flash icon for 'automatic'
+  ///
+  /// In en, this message translates to:
+  /// **'A'**
+  String get capsulesCameraFlashAutoBadge;
+
   /// Accessibility label of the flash button while the flash is off.
   ///
   /// In en, this message translates to:

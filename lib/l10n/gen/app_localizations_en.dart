@@ -395,6 +395,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Allow camera access in Settings to take a photo';
 
   @override
+  String get capsulesCameraFlashAuto => 'Flash auto';
+
+  @override
+  String get capsulesCameraFlashAutoBadge => 'A';
+
+  @override
   String get capsulesCameraFlashOff => 'Flash off';
 
   @override

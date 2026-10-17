@@ -95,6 +95,8 @@
   "authWelcomeSubtitle": "Erstelle ein Konto, um deine Kapseln\nund die deiner Freunde zu sehen",
   "authWelcomeTo": "Willkommen bei",
   "capsulesCameraAccessDenied": "Erlaube den Kamerazugriff in den Einstellungen, um ein Foto aufzunehmen",
+  "capsulesCameraFlashAuto": "Blitz automatisch",
+  "capsulesCameraFlashAutoBadge": "A",
   "capsulesCameraFlashOff": "Blitz aus",
   "capsulesCameraFlashOn": "Blitz an",
   "capsulesCameraStartFailed": "Die Kamera konnte nicht gestartet werden",

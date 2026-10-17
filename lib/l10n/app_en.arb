@@ -295,6 +295,14 @@
   "@capsulesCameraAccessDenied": {
     "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
   },
+  "capsulesCameraFlashAuto": "Flash auto",
+  "@capsulesCameraFlashAuto": {
+    "description": "Camera flash button, screen reader: the flash fires when it is dark"
+  },
+  "capsulesCameraFlashAutoBadge": "A",
+  "@capsulesCameraFlashAutoBadge": {
+    "description": "One letter on the flash icon for 'automatic'"
+  },
   "capsulesCameraFlashOff": "Flash off",
   "@capsulesCameraFlashOff": {
     "description": "Accessibility label of the flash button while the flash is off."

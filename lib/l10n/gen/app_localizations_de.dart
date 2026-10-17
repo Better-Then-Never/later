@@ -404,6 +404,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erlaube den Kamerazugriff in den Einstellungen, um ein Foto aufzunehmen';
 
   @override
+  String get capsulesCameraFlashAuto => 'Blitz automatisch';
+
+  @override
+  String get capsulesCameraFlashAutoBadge => 'A';
+
+  @override
   String get capsulesCameraFlashOff => 'Blitz aus';
 
   @override

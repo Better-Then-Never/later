@@ -95,6 +95,8 @@
   "authWelcomeSubtitle": "Создайте аккаунт и смотрите\nсвои капсулы и капсулы друзей",
   "authWelcomeTo": "Добро пожаловать в",
   "capsulesCameraAccessDenied": "Разрешите доступ к камере в настройках, чтобы сделать фото",
+  "capsulesCameraFlashAuto": "Вспышка: авто",
+  "capsulesCameraFlashAutoBadge": "A",
   "capsulesCameraFlashOff": "Вспышка выключена",
   "capsulesCameraFlashOn": "Вспышка включена",
   "capsulesCameraStartFailed": "Не удалось запустить камеру",

@@ -95,6 +95,8 @@
   "authWelcomeSubtitle": "Załóż konto i oglądaj swoje kapsuły\noraz kapsuły znajomych",
   "authWelcomeTo": "Witaj w",
   "capsulesCameraAccessDenied": "Zezwól na dostęp do aparatu w ustawieniach, żeby zrobić zdjęcie",
+  "capsulesCameraFlashAuto": "Lampa błyskowa: auto",
+  "capsulesCameraFlashAutoBadge": "A",
   "capsulesCameraFlashOff": "Flesz wyłączony",
   "capsulesCameraFlashOn": "Flesz włączony",
   "capsulesCameraStartFailed": "Nie udało się uruchomić aparatu",

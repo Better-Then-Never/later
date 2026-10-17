@@ -64,5 +64,7 @@
   "capsulesOpenInMonth": "Через месяц",
   "capsulesOpenInYear": "Через год",
   "capsulesOpenPickDate": "Выбрать дату…",
-  "capsulesOpenNow": "Открыть сразу"
+  "capsulesOpenNow": "Открыть сразу",
+  "capsulesCameraFlashAuto": "Вспышка: авто",
+  "capsulesCameraFlashAutoBadge": "A"
 }

@@ -401,6 +401,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Permite el acceso a la cámara en Ajustes para hacer una foto';
 
   @override
+  String get capsulesCameraFlashAuto => 'Flash automático';
+
+  @override
+  String get capsulesCameraFlashAutoBadge => 'A';
+
+  @override
   String get capsulesCameraFlashOff => 'Flash desactivado';
 
   @override

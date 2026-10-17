@@ -64,5 +64,7 @@
   "capsulesOpenInMonth": "Za miesiąc",
   "capsulesOpenInYear": "Za rok",
   "capsulesOpenPickDate": "Wybierz datę…",
-  "capsulesOpenNow": "Otwórz od razu"
+  "capsulesOpenNow": "Otwórz od razu",
+  "capsulesCameraFlashAuto": "Lampa błyskowa: auto",
+  "capsulesCameraFlashAutoBadge": "A"
 }

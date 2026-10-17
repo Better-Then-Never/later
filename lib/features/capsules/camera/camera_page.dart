@@ -14,6 +14,7 @@ import '../../../data/models/capsule.dart';
 import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_motion.dart';
+import 'package:later/core/theme/app_text_styles.dart';
 
 /// Why the camera cannot be shown. The message is chosen when the error view
 /// is built, so it follows the app's language.
@@ -40,7 +41,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   CameraController? _controller;
   List<CameraDescription> _cameras = const [];
   CameraLensDirection _lens = CameraLensDirection.back;
-  bool _flashOn = false;
+
+  /// Off, then automatic (fires when it is dark), then always.
+  FlashMode _flash = FlashMode.off;
 
   // Pinch to zoom and tap to focus (F-20/F-21).
   double _minZoom = 1;
@@ -138,9 +141,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     await old?.dispose();
     try {
       await controller.initialize();
-      await controller.setFlashMode(
-        _flashOn ? FlashMode.always : FlashMode.off,
-      );
+      await controller.setFlashMode(_flash);
       final minZoom = await controller.getMinZoomLevel();
       final maxZoom = await controller.getMaxZoomLevel();
       if (mounted) {
@@ -180,10 +181,15 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Future<void> _toggleFlash() async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) return;
-    final next = !_flashOn;
+    final next = switch (_flash) {
+      FlashMode.off => FlashMode.auto,
+      FlashMode.auto => FlashMode.always,
+      _ => FlashMode.off,
+    };
     try {
-      await controller.setFlashMode(next ? FlashMode.always : FlashMode.off);
-      if (mounted) setState(() => _flashOn = next);
+      await controller.setFlashMode(next);
+      unawaited(HapticFeedback.selectionClick());
+      if (mounted) setState(() => _flash = next);
     } on CameraException catch (e) {
       // e.g. front cameras without a flash.
       AppLogger.debug('Flash not available: ${e.code}');
@@ -375,17 +381,45 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     ),
                     Semantics(
                       button: true,
-                      label: _flashOn
-                          ? l10n.capsulesCameraFlashOn
-                          : l10n.capsulesCameraFlashOff,
+                      label: switch (_flash) {
+                        FlashMode.off => l10n.capsulesCameraFlashOff,
+                        FlashMode.auto => l10n.capsulesCameraFlashAuto,
+                        _ => l10n.capsulesCameraFlashOn,
+                      },
                       child: GestureDetector(
                         onTap: _toggleFlash,
-                        child: Image.asset(
-                          _flashOn
-                              ? AppIcons.cameraFlashOn
-                              : AppIcons.cameraFlashOff,
+                        child: SizedBox(
                           width: 40,
                           height: 40,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Image.asset(
+                                _flash == FlashMode.off
+                                    ? AppIcons.cameraFlashOff
+                                    : AppIcons.cameraFlashOn,
+                                width: 40,
+                                height: 40,
+                              ),
+                              // Automatic: the lit bolt with an "A".
+                              if (_flash == FlashMode.auto)
+                                Positioned(
+                                  right: -4,
+                                  bottom: -2,
+                                  child: ExcludeSemantics(
+                                    child: Text(
+                                      l10n.capsulesCameraFlashAutoBadge,
+                                      style: const TextStyle(
+                                        fontFamily: kAppFontFamily,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.onMedia,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -419,6 +419,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Разрешите доступ к камере в настройках, чтобы сделать фото';
 
   @override
+  String get capsulesCameraFlashAuto => 'Вспышка: авто';
+
+  @override
+  String get capsulesCameraFlashAutoBadge => 'A';
+
+  @override
   String get capsulesCameraFlashOff => 'Вспышка выключена';
 
   @override

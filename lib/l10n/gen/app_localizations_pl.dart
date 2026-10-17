@@ -420,6 +420,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Zezwól na dostęp do aparatu w ustawieniach, żeby zrobić zdjęcie';
 
   @override
+  String get capsulesCameraFlashAuto => 'Lampa błyskowa: auto';
+
+  @override
+  String get capsulesCameraFlashAutoBadge => 'A';
+
+  @override
   String get capsulesCameraFlashOff => 'Flesz wyłączony';
 
   @override

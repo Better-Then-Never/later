@@ -159,5 +159,13 @@
   "capsulesOpenNow": "Open right away",
   "@capsulesOpenNow": {
     "description": "Open date menu: remove the date, the capsule is open at once"
+  },
+  "capsulesCameraFlashAuto": "Flash auto",
+  "@capsulesCameraFlashAuto": {
+    "description": "Camera flash button, screen reader: the flash fires when it is dark"
+  },
+  "capsulesCameraFlashAutoBadge": "A",
+  "@capsulesCameraFlashAutoBadge": {
+    "description": "One letter on the flash icon for 'automatic'"
   }
 }
