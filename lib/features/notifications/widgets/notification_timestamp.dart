@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/features/notifications/notification_texts.dart';
 import 'package:later/shared/widgets/default_text.dart';
-import 'package:later/core/theme/app_colors.dart';
 
 class NotificationTimestamp extends StatelessWidget {
   final DateTime timestamp;
@@ -10,26 +12,9 @@ class NotificationTimestamp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultText(
-      _formatTimestamp(timestamp),
+      NotificationTexts.time(timestamp, DateTime.now(), l10n: context.l10n),
       fontSize: 12,
-      color: AppColors.grey600,
+      color: context.palette.textMuted,
     );
-  }
-
-  String _formatTimestamp(DateTime timestamp) {
-    final now = DateTime.now();
-    final difference = now.difference(timestamp);
-
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else {
-      return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
-    }
   }
 }

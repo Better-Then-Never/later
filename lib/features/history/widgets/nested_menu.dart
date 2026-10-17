@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../shared/widgets/default_text.dart';
 import 'menu_item_node.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
@@ -36,7 +36,7 @@ class _NestedMenuState extends State<NestedMenu> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surfaceMuted,
+      color: context.palette.surfaceMuted,
       elevation: 8,
       borderRadius: BorderRadius.circular(20),
       child: Column(

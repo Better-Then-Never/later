@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/core/theme/app_palette.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/shared/widgets/profile_page_divider.dart';
 import 'package:later/core/theme/app_colors.dart';
@@ -18,6 +20,7 @@ class SelectionActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
@@ -26,23 +29,32 @@ class SelectionActionBar extends StatelessWidget {
           const ProfilePageDivider(width: double.infinity),
           Row(
             children: [
-              DefaultText(
-                '$count selected',
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+              // Takes the free space (pushing the buttons right, like a
+              // Spacer) and shrinks when a translation would not fit.
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: DefaultText(
+                      l10n.historySelectedCount(count),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-              const Spacer(),
               TextButton.icon(
                 onPressed: onCancel,
-                icon: const Icon(Icons.close, color: AppColors.black),
-                label: const DefaultText('Cancel'),
+                icon: Icon(Icons.close, color: context.palette.icon),
+                label: DefaultText(l10n.commonCancel),
               ),
               const SizedBox(width: 8),
               TextButton.icon(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete, color: AppColors.redAccent),
                 label: Text(
-                  'Delete ($count)',
+                  l10n.historyDeleteSelected(count),
                   style: const TextStyle(color: AppColors.redAccent),
                 ),
               ),

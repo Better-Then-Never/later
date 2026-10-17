@@ -269,6 +269,183 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsViewProfile => 'Открыть профиль';
 
   @override
+  String get historyAddToFavorites => 'Добавить в избранное';
+
+  @override
+  String get historyCapsuleOpened => 'Капсула открыта!';
+
+  @override
+  String get historyColorBlue => 'Синий';
+
+  @override
+  String get historyColorGreen => 'Зелёный';
+
+  @override
+  String get historyColorOrange => 'Оранжевый';
+
+  @override
+  String get historyColorPurple => 'Фиолетовый';
+
+  @override
+  String get historyColorRed => 'Красный';
+
+  @override
+  String get historyColorYellow => 'Жёлтый';
+
+  @override
+  String historyCountdown(int days, int hours, int minutes, int seconds) {
+    return '$daysд $hoursч $minutesм $secondsс';
+  }
+
+  @override
+  String historyCountdownYears(int years, int days, int hours, int minutes) {
+    return '$yearsг $daysд $hoursч $minutesм';
+  }
+
+  @override
+  String historyDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Удалить $count капсулы?',
+      many: 'Удалить $count капсул?',
+      few: 'Удалить $count капсулы?',
+      one: 'Удалить $count капсулу?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String historyDeleteSelected(int count) {
+    return 'Удалить ($count)';
+  }
+
+  @override
+  String historyDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count капсулы удалено',
+      many: '$count капсул удалено',
+      few: '$count капсулы удалены',
+      one: '$count капсула удалена',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String historyDistanceFromYou(String distance) {
+    return '$distance км от вас';
+  }
+
+  @override
+  String get historyDistanceUnknown => 'Расстояние неизвестно';
+
+  @override
+  String get historyEmpty => 'Пока нет капсул';
+
+  @override
+  String get historyErrorDelete => 'Не удалось удалить капсулы';
+
+  @override
+  String get historyErrorFavorites => 'Не удалось обновить избранное';
+
+  @override
+  String historyFavoriteAdded(String title) {
+    return 'Капсула «$title» добавлена в избранное';
+  }
+
+  @override
+  String historyFavoriteRemoved(String title) {
+    return 'Капсула «$title» убрана из избранного';
+  }
+
+  @override
+  String get historyFilterAny => 'Все';
+
+  @override
+  String get historyFilterBy => 'Фильтр';
+
+  @override
+  String get historyFilterCapsule => 'Капсулы';
+
+  @override
+  String get historyFilterColor => 'Цвет';
+
+  @override
+  String get historyFilterFavorite => 'Избранные';
+
+  @override
+  String get historyFilterVisibility => 'Видимость';
+
+  @override
+  String get historyNoMatches => 'По вашему запросу капсул нет';
+
+  @override
+  String get historyPrivacyFriends => 'Для друзей';
+
+  @override
+  String get historyPrivacyPrivate => 'Личная';
+
+  @override
+  String get historyPrivacyPublic => 'Публичная';
+
+  @override
+  String get historyRemoveFromFavorites => 'Убрать из избранного';
+
+  @override
+  String get historyReset => 'Сбросить';
+
+  @override
+  String get historySearchHint => 'Найти капсулы...';
+
+  @override
+  String historySelectedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Выбрано: $count',
+      many: 'Выбрано: $count',
+      few: 'Выбрано: $count',
+      one: 'Выбрано: $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get historySortBy => 'Сортировка';
+
+  @override
+  String get historySortClosest => 'Сначала ближние';
+
+  @override
+  String get historySortDistance => 'Расстояние';
+
+  @override
+  String get historySortFarthest => 'Сначала дальние';
+
+  @override
+  String get historySortNewest => 'Сначала новые';
+
+  @override
+  String get historySortOldest => 'Сначала старые';
+
+  @override
+  String get historySortRelevance => 'Актуальность';
+
+  @override
+  String get historyTitle => 'Мои капсулы';
+
+  @override
+  String get historyVisibilityFriends => 'Капсула для друзей';
+
+  @override
+  String get historyVisibilityPrivate => 'Личная капсула';
+
+  @override
+  String get historyVisibilityPublic => 'Публичная капсула';
+
+  @override
   String get messagesBlockedByYou => 'Вы заблокировали этого пользователя';
 
   @override
@@ -440,6 +617,193 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String messagesYouPrefix(String message) {
     return 'Вы: $message';
+  }
+
+  @override
+  String notificationsCapsuleBody(String name) {
+    return '$name делится новой капсулой';
+  }
+
+  @override
+  String notificationsCommentBody(String name) {
+    return '$name комментирует вашу капсулу';
+  }
+
+  @override
+  String notificationsCommentBodyWithText(String name, String text) {
+    return '$name комментирует: $text';
+  }
+
+  @override
+  String notificationsDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня назад',
+      many: '$count дней назад',
+      few: '$count дня назад',
+      one: '$count день назад',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsDeleteConfirm(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Удалить $count уведомления?',
+      many: 'Удалить $count уведомлений?',
+      few: 'Удалить $count уведомления?',
+      one: 'Удалить $count уведомление?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count уведомления удалено',
+      many: '$count уведомлений удалено',
+      few: '$count уведомления удалены',
+      one: '$count уведомление удалено',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsEmptyAll =>
+      'Здесь появятся ваши уведомления и активность';
+
+  @override
+  String get notificationsEmptyComments =>
+      'Здесь появятся комментарии к вашим капсулам';
+
+  @override
+  String get notificationsEmptyReplies =>
+      'Здесь появятся ответы на ваши сообщения';
+
+  @override
+  String notificationsFollowBody(String name) {
+    return '$name — ваш новый подписчик';
+  }
+
+  @override
+  String notificationsHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count часа назад',
+      many: '$count часов назад',
+      few: '$count часа назад',
+      one: '$count час назад',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsJustNow => 'Только что';
+
+  @override
+  String get notificationsMarkAsRead => 'Отметить как прочитанные';
+
+  @override
+  String notificationsMarkedRead(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count уведомления прочитано',
+      many: '$count уведомлений прочитано',
+      few: '$count уведомления прочитаны',
+      one: '$count уведомление прочитано',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsMessageBody(String name) {
+    return '$name пишет вам';
+  }
+
+  @override
+  String notificationsMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count минуты назад',
+      many: '$count минут назад',
+      few: '$count минуты назад',
+      one: '$count минуту назад',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String notificationsReplyBody(String name) {
+    return '$name отвечает вам';
+  }
+
+  @override
+  String notificationsReplyBodyWithText(String name, String text) {
+    return '$name отвечает: $text';
+  }
+
+  @override
+  String notificationsSelectedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count выбрано',
+      many: '$count выбрано',
+      few: '$count выбрано',
+      one: '$count выбрано',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get notificationsTabAll => 'Все';
+
+  @override
+  String get notificationsTabComments => 'Комментарии';
+
+  @override
+  String get notificationsTabReplies => 'Ответы';
+
+  @override
+  String get notificationsTitle => 'Уведомления';
+
+  @override
+  String get notificationsTypeCapsule => 'Новая капсула';
+
+  @override
+  String get notificationsTypeComment => 'Новый комментарий';
+
+  @override
+  String get notificationsTypeFollow => 'Новый подписчик';
+
+  @override
+  String get notificationsTypeMessage => 'Новое сообщение';
+
+  @override
+  String get notificationsTypeOther => 'Уведомление';
+
+  @override
+  String get notificationsTypeReply => 'Новый ответ';
+
+  @override
+  String notificationsUnreadBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count непрочитанного уведомления',
+      many: '$count непрочитанных уведомлений',
+      few: '$count непрочитанных уведомления',
+      one: '$count непрочитанное уведомление',
+    );
+    return '$_temp0';
   }
 
   @override

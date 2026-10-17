@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/models/user_profile.dart';
@@ -80,7 +81,10 @@ class FavoritesStore extends ChangeNotifier implements SessionScoped {
         _pending.remove(capsuleId);
         notifyListeners();
       }
-      return AppFailure.from(e, fallbackMessage: 'Could not update favorites');
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.historyErrorFavorites,
+      );
     }
   }
 }

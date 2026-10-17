@@ -157,6 +157,215 @@
   "@friendsViewProfile": {
     "description": "Main button on the profile of someone who is already a friend: opens their friend profile."
   },
+  "historyAddToFavorites": "Add to favorites",
+  "@historyAddToFavorites": {
+    "description": "Accessibility label of the heart on a capsule that is not a favourite."
+  },
+  "historyCapsuleOpened": "Capsule is opened!",
+  "@historyCapsuleOpened": {
+    "description": "Countdown row of a capsule whose opening time has passed."
+  },
+  "historyColorBlue": "Blue",
+  "historyColorGreen": "Green",
+  "historyColorOrange": "Orange",
+  "historyColorPurple": "Purple",
+  "historyColorRed": "Red",
+  "@historyColorRed": {
+    "description": "Capsule pin colour in the filter menu and on the filter button."
+  },
+  "historyColorYellow": "Yellow",
+  "historyCountdown": "{days}d {hours}h {minutes}m {seconds}s",
+  "@historyCountdown": {
+    "description": "Time left until a capsule opens, ticking every second. One short line: use compact unit abbreviations.",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "2"
+      },
+      "hours": {
+        "type": "int",
+        "example": "3"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "4"
+      },
+      "seconds": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "historyCountdownYears": "{years}y {days}d {hours}h {minutes}m",
+  "@historyCountdownYears": {
+    "description": "Time left until a capsule opens when it is a year or more away. One short line: compact unit abbreviations.",
+    "placeholders": {
+      "years": {
+        "type": "int",
+        "example": "1"
+      },
+      "days": {
+        "type": "int",
+        "example": "35"
+      },
+      "hours": {
+        "type": "int",
+        "example": "0"
+      },
+      "minutes": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
+  "historyDeleteConfirm": "{count, plural, one{Delete {count} capsule?} other{Delete {count} capsules?}}",
+  "@historyDeleteConfirm": {
+    "description": "Title of the dialog that confirms deleting the selected capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleteSelected": "Delete ({count})",
+  "@historyDeleteSelected": {
+    "description": "Selection bar button that deletes the selected capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDeleted": "{count, plural, one{{count} capsule deleted} other{{count} capsules deleted}}",
+  "@historyDeleted": {
+    "description": "Toast after the selected capsules were deleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyDistanceFromYou": "{distance} km from you",
+  "@historyDistanceFromYou": {
+    "description": "Distance between the user and the capsule. One short line.",
+    "placeholders": {
+      "distance": {
+        "type": "String",
+        "example": "12.3"
+      }
+    }
+  },
+  "historyDistanceUnknown": "Distance unknown",
+  "@historyDistanceUnknown": {
+    "description": "Distance row when the capsule or the user has no location."
+  },
+  "historyEmpty": "No capsules yet",
+  "historyErrorDelete": "Could not delete capsules",
+  "historyErrorFavorites": "Could not update favorites",
+  "historyFavoriteAdded": "{title} added to favorites",
+  "@historyFavoriteAdded": {
+    "description": "Toast after the heart is tapped.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach day"
+      }
+    }
+  },
+  "historyFavoriteRemoved": "{title} removed from favorites",
+  "@historyFavoriteRemoved": {
+    "description": "Toast after the heart is tapped again.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach day"
+      }
+    }
+  },
+  "historyFilterAny": "Any",
+  "@historyFilterAny": {
+    "description": "Filter option: every capsule, favourite or not."
+  },
+  "historyFilterBy": "Filter By",
+  "@historyFilterBy": {
+    "description": "Filter button (when no filter is chosen) and title of the filter menu. Short."
+  },
+  "historyFilterCapsule": "Capsule",
+  "@historyFilterCapsule": {
+    "description": "Filter menu group with 'Favorite' and 'Any'."
+  },
+  "historyFilterColor": "Color",
+  "@historyFilterColor": {
+    "description": "Filter menu group: the colour of the capsule pin."
+  },
+  "historyFilterFavorite": "Favorite",
+  "@historyFilterFavorite": {
+    "description": "Filter option (also on the filter button): only capsules marked as favourite."
+  },
+  "historyFilterVisibility": "Visibility",
+  "@historyFilterVisibility": {
+    "description": "Filter menu group: who can see the capsule (public, private, friends)."
+  },
+  "historyNoMatches": "No capsules match your search",
+  "historyPrivacyFriends": "Friends",
+  "@historyPrivacyFriends": {
+    "description": "Capsule visibility: only friends can see it."
+  },
+  "historyPrivacyPrivate": "Private",
+  "historyPrivacyPublic": "Public",
+  "@historyPrivacyPublic": {
+    "description": "Capsule visibility in the filter menu and on the filter button."
+  },
+  "historyRemoveFromFavorites": "Remove from favorites",
+  "@historyRemoveFromFavorites": {
+    "description": "Accessibility label of the heart on a favourite capsule."
+  },
+  "historyReset": "Reset",
+  "@historyReset": {
+    "description": "Button and menu item that clear the sort and/or the filters. Short."
+  },
+  "historySearchHint": "Find Capsules...",
+  "historySelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
+  "@historySelectedCount": {
+    "description": "Selection bar: how many capsules are selected.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historySortBy": "Sort By",
+  "@historySortBy": {
+    "description": "Sort button (when no sort is chosen) and title of the sort menu. Short: the button is a third of the screen."
+  },
+  "historySortClosest": "From Closest",
+  "@historySortClosest": {
+    "description": "Sort option: capsules closest to the user first."
+  },
+  "historySortDistance": "Distance",
+  "@historySortDistance": {
+    "description": "Sort menu group that holds 'From Closest' and 'From Farthest'."
+  },
+  "historySortFarthest": "From Farthest",
+  "historySortNewest": "From Newest",
+  "historySortOldest": "From Oldest",
+  "@historySortOldest": {
+    "description": "Sort option (also shown on the sort button): oldest capsules first."
+  },
+  "historySortRelevance": "Relevance",
+  "@historySortRelevance": {
+    "description": "Sort menu group that holds 'From Oldest' and 'From Newest'."
+  },
+  "historyTitle": "My Capsules",
+  "@historyTitle": {
+    "description": "Title of the History tab: the user's own capsules."
+  },
+  "historyVisibilityFriends": "Friends visibility",
+  "historyVisibilityPrivate": "Private visibility",
+  "historyVisibilityPublic": "Public visibility",
+  "@historyVisibilityPublic": {
+    "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
+  },
   "messagesBlockedByYou": "You blocked this user",
   "messagesCantSend": "You can't send messages to this user",
   "messagesCapsuleLabel": "Capsule",
@@ -294,6 +503,192 @@
       "message": {
         "type": "String",
         "example": "See you tomorrow!"
+      }
+    }
+  },
+  "notificationsCapsuleBody": "{name} created a new capsule",
+  "@notificationsCapsuleBody": {
+    "description": "Notification text: a friend created a capsule. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsCommentBody": "{name} commented on your capsule",
+  "@notificationsCommentBody": {
+    "description": "Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsCommentBodyWithText": "{name} commented: {text}",
+  "@notificationsCommentBodyWithText": {
+    "description": "Notification text: a comment on the user's capsule, followed by the comment itself. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      },
+      "text": {
+        "type": "String",
+        "example": "What a view!"
+      }
+    }
+  },
+  "notificationsDaysAgo": "{count, plural, one{{count}d ago} other{{count}d ago}}",
+  "@notificationsDaysAgo": {
+    "description": "Time of a notification less than a week old; older ones show the date.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDeleteConfirm": "{count, plural, one{Delete {count} notification?} other{Delete {count} notifications?}}",
+  "@notificationsDeleteConfirm": {
+    "description": "Title of the dialog that confirms deleting the selected notifications.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsDeleted": "{count, plural, one{{count} notification deleted} other{{count} notifications deleted}}",
+  "@notificationsDeleted": {
+    "description": "Toast after the selected notifications were deleted.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsEmptyAll": "Your notifications and activity will appear here",
+  "notificationsEmptyComments": "Comments on your Capsules will appear here",
+  "notificationsEmptyReplies": "Replies to your messages will appear here",
+  "notificationsFollowBody": "{name} started following you",
+  "@notificationsFollowBody": {
+    "description": "Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsHoursAgo": "{count, plural, one{{count}h ago} other{{count}h ago}}",
+  "@notificationsHoursAgo": {
+    "description": "Time of a notification less than a day old.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsJustNow": "Just now",
+  "@notificationsJustNow": {
+    "description": "Time of a notification less than a minute old."
+  },
+  "notificationsMarkAsRead": "Mark as read",
+  "@notificationsMarkAsRead": {
+    "description": "Accessibility label of the selection bar button that marks the selected notifications as read."
+  },
+  "notificationsMarkedRead": "{count, plural, one{{count} notification marked as read} other{{count} notifications marked as read}}",
+  "@notificationsMarkedRead": {
+    "description": "Toast after marking the selected notifications as read.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsMessageBody": "{name} sent you a message",
+  "@notificationsMessageBody": {
+    "description": "Notification text: a chat message. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsMinutesAgo": "{count, plural, one{{count}m ago} other{{count}m ago}}",
+  "@notificationsMinutesAgo": {
+    "description": "Time of a notification less than an hour old (English abbreviates; write it the way your language shows recent times).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsReplyBody": "{name} replied to you",
+  "@notificationsReplyBody": {
+    "description": "Notification text: a reply to the user (no reply text stored). The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
+  "notificationsReplyBodyWithText": "{name} replied: {text}",
+  "@notificationsReplyBodyWithText": {
+    "description": "Notification text: a reply to the user, followed by the reply itself. The name is bold and cannot be inflected.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "anna"
+      },
+      "text": {
+        "type": "String",
+        "example": "Thanks!"
+      }
+    }
+  },
+  "notificationsSelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
+  "@notificationsSelectedCount": {
+    "description": "Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsTabAll": "All",
+  "@notificationsTabAll": {
+    "description": "Filter tab: every notification. Tabs sit side by side: keep them short."
+  },
+  "notificationsTabComments": "Comments",
+  "@notificationsTabComments": {
+    "description": "Filter tab (and title of its empty state): comments on the user's capsules. Keep it short."
+  },
+  "notificationsTabReplies": "Replies",
+  "@notificationsTabReplies": {
+    "description": "Filter tab (and title of its empty state): replies. Keep it short."
+  },
+  "notificationsTitle": "Notifications",
+  "@notificationsTitle": {
+    "description": "Title of the notifications page and of its empty state."
+  },
+  "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeComment": "New Comment",
+  "notificationsTypeFollow": "New Follower",
+  "@notificationsTypeFollow": {
+    "description": "Title of a notification of this type."
+  },
+  "notificationsTypeMessage": "New Message",
+  "notificationsTypeOther": "Notification",
+  "notificationsTypeReply": "New Reply",
+  "notificationsUnreadBadge": "{count, plural, one{{count} unread notification} other{{count} unread notifications}}",
+  "@notificationsUnreadBadge": {
+    "description": "Accessibility label of the red badge on the notifications bell.",
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },

@@ -614,6 +614,276 @@ abstract class AppLocalizations {
   /// **'View Profile'**
   String get friendsViewProfile;
 
+  /// Accessibility label of the heart on a capsule that is not a favourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to favorites'**
+  String get historyAddToFavorites;
+
+  /// Countdown row of a capsule whose opening time has passed.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule is opened!'**
+  String get historyCapsuleOpened;
+
+  /// No description provided for @historyColorBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get historyColorBlue;
+
+  /// No description provided for @historyColorGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get historyColorGreen;
+
+  /// No description provided for @historyColorOrange.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get historyColorOrange;
+
+  /// No description provided for @historyColorPurple.
+  ///
+  /// In en, this message translates to:
+  /// **'Purple'**
+  String get historyColorPurple;
+
+  /// Capsule pin colour in the filter menu and on the filter button.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get historyColorRed;
+
+  /// No description provided for @historyColorYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow'**
+  String get historyColorYellow;
+
+  /// Time left until a capsule opens, ticking every second. One short line: use compact unit abbreviations.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {hours}h {minutes}m {seconds}s'**
+  String historyCountdown(int days, int hours, int minutes, int seconds);
+
+  /// Time left until a capsule opens when it is a year or more away. One short line: compact unit abbreviations.
+  ///
+  /// In en, this message translates to:
+  /// **'{years}y {days}d {hours}h {minutes}m'**
+  String historyCountdownYears(int years, int days, int hours, int minutes);
+
+  /// Title of the dialog that confirms deleting the selected capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Delete {count} capsule?} other{Delete {count} capsules?}}'**
+  String historyDeleteConfirm(int count);
+
+  /// Selection bar button that deletes the selected capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete ({count})'**
+  String historyDeleteSelected(int count);
+
+  /// Toast after the selected capsules were deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} capsule deleted} other{{count} capsules deleted}}'**
+  String historyDeleted(int count);
+
+  /// Distance between the user and the capsule. One short line.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km from you'**
+  String historyDistanceFromYou(String distance);
+
+  /// Distance row when the capsule or the user has no location.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance unknown'**
+  String get historyDistanceUnknown;
+
+  /// No description provided for @historyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No capsules yet'**
+  String get historyEmpty;
+
+  /// No description provided for @historyErrorDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete capsules'**
+  String get historyErrorDelete;
+
+  /// No description provided for @historyErrorFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update favorites'**
+  String get historyErrorFavorites;
+
+  /// Toast after the heart is tapped.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} added to favorites'**
+  String historyFavoriteAdded(String title);
+
+  /// Toast after the heart is tapped again.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} removed from favorites'**
+  String historyFavoriteRemoved(String title);
+
+  /// Filter option: every capsule, favourite or not.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get historyFilterAny;
+
+  /// Filter button (when no filter is chosen) and title of the filter menu. Short.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter By'**
+  String get historyFilterBy;
+
+  /// Filter menu group with 'Favorite' and 'Any'.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule'**
+  String get historyFilterCapsule;
+
+  /// Filter menu group: the colour of the capsule pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get historyFilterColor;
+
+  /// Filter option (also on the filter button): only capsules marked as favourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get historyFilterFavorite;
+
+  /// Filter menu group: who can see the capsule (public, private, friends).
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get historyFilterVisibility;
+
+  /// No description provided for @historyNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No capsules match your search'**
+  String get historyNoMatches;
+
+  /// Capsule visibility: only friends can see it.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get historyPrivacyFriends;
+
+  /// No description provided for @historyPrivacyPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get historyPrivacyPrivate;
+
+  /// Capsule visibility in the filter menu and on the filter button.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get historyPrivacyPublic;
+
+  /// Accessibility label of the heart on a favourite capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from favorites'**
+  String get historyRemoveFromFavorites;
+
+  /// Button and menu item that clear the sort and/or the filters. Short.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get historyReset;
+
+  /// No description provided for @historySearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Capsules...'**
+  String get historySearchHint;
+
+  /// Selection bar: how many capsules are selected.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} selected} other{{count} selected}}'**
+  String historySelectedCount(int count);
+
+  /// Sort button (when no sort is chosen) and title of the sort menu. Short: the button is a third of the screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get historySortBy;
+
+  /// Sort option: capsules closest to the user first.
+  ///
+  /// In en, this message translates to:
+  /// **'From Closest'**
+  String get historySortClosest;
+
+  /// Sort menu group that holds 'From Closest' and 'From Farthest'.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get historySortDistance;
+
+  /// No description provided for @historySortFarthest.
+  ///
+  /// In en, this message translates to:
+  /// **'From Farthest'**
+  String get historySortFarthest;
+
+  /// No description provided for @historySortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'From Newest'**
+  String get historySortNewest;
+
+  /// Sort option (also shown on the sort button): oldest capsules first.
+  ///
+  /// In en, this message translates to:
+  /// **'From Oldest'**
+  String get historySortOldest;
+
+  /// Sort menu group that holds 'From Oldest' and 'From Newest'.
+  ///
+  /// In en, this message translates to:
+  /// **'Relevance'**
+  String get historySortRelevance;
+
+  /// Title of the History tab: the user's own capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'My Capsules'**
+  String get historyTitle;
+
+  /// No description provided for @historyVisibilityFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends visibility'**
+  String get historyVisibilityFriends;
+
+  /// No description provided for @historyVisibilityPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private visibility'**
+  String get historyVisibilityPrivate;
+
+  /// Info row of a capsule in the list, next to a privacy icon. One short line.
+  ///
+  /// In en, this message translates to:
+  /// **'Public visibility'**
+  String get historyVisibilityPublic;
+
   /// No description provided for @messagesBlockedByYou.
   ///
   /// In en, this message translates to:
@@ -931,6 +1201,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You: {message}'**
   String messagesYouPrefix(String message);
+
+  /// Notification text: a friend created a capsule. The name is bold and cannot be inflected.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} created a new capsule'**
+  String notificationsCapsuleBody(String name);
+
+  /// Notification text: a comment on the user's capsule (no comment text stored). The name is bold and cannot be inflected.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} commented on your capsule'**
+  String notificationsCommentBody(String name);
+
+  /// Notification text: a comment on the user's capsule, followed by the comment itself. The name is bold and cannot be inflected.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} commented: {text}'**
+  String notificationsCommentBodyWithText(String name, String text);
+
+  /// Time of a notification less than a week old; older ones show the date.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count}d ago} other{{count}d ago}}'**
+  String notificationsDaysAgo(int count);
+
+  /// Title of the dialog that confirms deleting the selected notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{Delete {count} notification?} other{Delete {count} notifications?}}'**
+  String notificationsDeleteConfirm(int count);
+
+  /// Toast after the selected notifications were deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} notification deleted} other{{count} notifications deleted}}'**
+  String notificationsDeleted(int count);
+
+  /// No description provided for @notificationsEmptyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Your notifications and activity will appear here'**
+  String get notificationsEmptyAll;
+
+  /// No description provided for @notificationsEmptyComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments on your Capsules will appear here'**
+  String get notificationsEmptyComments;
+
+  /// No description provided for @notificationsEmptyReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies to your messages will appear here'**
+  String get notificationsEmptyReplies;
+
+  /// Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} started following you'**
+  String notificationsFollowBody(String name);
+
+  /// Time of a notification less than a day old.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count}h ago} other{{count}h ago}}'**
+  String notificationsHoursAgo(int count);
+
+  /// Time of a notification less than a minute old.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get notificationsJustNow;
+
+  /// Accessibility label of the selection bar button that marks the selected notifications as read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get notificationsMarkAsRead;
+
+  /// Toast after marking the selected notifications as read.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} notification marked as read} other{{count} notifications marked as read}}'**
+  String notificationsMarkedRead(int count);
+
+  /// Notification text: a chat message. The name is bold and cannot be inflected.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} sent you a message'**
+  String notificationsMessageBody(String name);
+
+  /// Time of a notification less than an hour old (English abbreviates; write it the way your language shows recent times).
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count}m ago} other{{count}m ago}}'**
+  String notificationsMinutesAgo(int count);
+
+  /// Notification text: a reply to the user (no reply text stored). The name is bold and cannot be inflected.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} replied to you'**
+  String notificationsReplyBody(String name);
+
+  /// Notification text: a reply to the user, followed by the reply itself. The name is bold and cannot be inflected.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} replied: {text}'**
+  String notificationsReplyBodyWithText(String name, String text);
+
+  /// Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} selected} other{{count} selected}}'**
+  String notificationsSelectedCount(int count);
+
+  /// Filter tab: every notification. Tabs sit side by side: keep them short.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get notificationsTabAll;
+
+  /// Filter tab (and title of its empty state): comments on the user's capsules. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get notificationsTabComments;
+
+  /// Filter tab (and title of its empty state): replies. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies'**
+  String get notificationsTabReplies;
+
+  /// Title of the notifications page and of its empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// No description provided for @notificationsTypeCapsule.
+  ///
+  /// In en, this message translates to:
+  /// **'New Capsule'**
+  String get notificationsTypeCapsule;
+
+  /// No description provided for @notificationsTypeComment.
+  ///
+  /// In en, this message translates to:
+  /// **'New Comment'**
+  String get notificationsTypeComment;
+
+  /// Title of a notification of this type.
+  ///
+  /// In en, this message translates to:
+  /// **'New Follower'**
+  String get notificationsTypeFollow;
+
+  /// No description provided for @notificationsTypeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'New Message'**
+  String get notificationsTypeMessage;
+
+  /// No description provided for @notificationsTypeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get notificationsTypeOther;
+
+  /// No description provided for @notificationsTypeReply.
+  ///
+  /// In en, this message translates to:
+  /// **'New Reply'**
+  String get notificationsTypeReply;
+
+  /// Accessibility label of the red badge on the notifications bell.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} unread notification} other{{count} unread notifications}}'**
+  String notificationsUnreadBadge(int count);
 
   /// Place pill on a capsule when the phone has no location yet.
   ///

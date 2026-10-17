@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/assets/app_assets.dart';
+import '../../core/l10n/l10n.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../app/shell/selected_page.dart';
@@ -12,6 +13,7 @@ import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/page_header.dart';
 import '../map/current_location.dart';
 import '../map/map_focus.dart';
+import 'capsule_labels.dart';
 import 'favorites_store.dart';
 import 'history_controller.dart';
 import 'own_capsules_store.dart';
@@ -50,15 +52,13 @@ class _HistoryPageState extends State<HistoryPage> {
     super.dispose();
   }
 
-  String _plural(int n) => 'capsule${n > 1 ? 's' : ''}';
-
   void _confirmDelete() {
     final count = _controller.selectedCount;
     final ids = _controller.selectedIds;
     final store = context.read<OwnCapsulesStore>();
     ConfirmDialog.show(
       context: context,
-      title: 'Delete $count ${_plural(count)}?',
+      title: context.l10n.historyDeleteConfirm(count),
       onConfirm: () async {
         final failure = await store.delete(ids);
         if (!mounted) return;
@@ -72,7 +72,7 @@ class _HistoryPageState extends State<HistoryPage> {
         }
         PopupNotificationService.showInfo(
           context: context,
-          message: '$count ${_plural(count)} deleted',
+          message: context.l10n.historyDeleted(count),
           position: NotificationPosition.bottom,
         );
         _controller.clearSelection();
@@ -95,8 +95,9 @@ class _HistoryPageState extends State<HistoryPage> {
     final added = favorites.isFavorite(capsule.id);
     PopupNotificationService.showInfo(
       context: context,
-      message:
-          '${capsule.title} ${added ? 'Added to' : 'Removed from'} favorites',
+      message: added
+          ? context.l10n.historyFavoriteAdded(capsule.title)
+          : context.l10n.historyFavoriteRemoved(capsule.title),
       position: NotificationPosition.bottom,
     );
   }
@@ -115,6 +116,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final screenHeight = MediaQuery.sizeOf(context).height;
     // The gap between the header buttons has always been 1% of the height.
     final buttonGap = screenHeight * 0.01;
+    final l10n = context.l10n;
 
     return ListenableBuilder(
       listenable: _controller,
@@ -126,11 +128,11 @@ class _HistoryPageState extends State<HistoryPage> {
         child: Column(
           children: [
             PageHeader(
-              mainText: 'My Capsules',
+              mainText: l10n.historyTitle,
               searchBar: DefaultSearchBar(
                 controller: _searchController,
                 searchFocusNode: _searchFocusNode,
-                hintText: 'Find Capsules...',
+                hintText: l10n.historySearchHint,
               ),
               actionButtonsRow: Column(
                 children: [
@@ -141,7 +143,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           height: screenHeight * 0.05,
                           onTap: () => _openSortMenu(context),
                           assetPath: AppIcons.historySort,
-                          text: _controller.activeSortLabel,
+                          text: _controller.activeSortLabel(l10n),
                         ),
                       ),
                       SizedBox(width: buttonGap),
@@ -149,7 +151,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         child: DefaultButtonWithIcon(
                           height: screenHeight * 0.05,
                           assetPath: AppIcons.historyFilter,
-                          text: _controller.activeFilterLabel,
+                          text: _controller.activeFilterLabel(l10n),
                           onTap: () => _openFilterMenu(context),
                         ),
                       ),
@@ -159,7 +161,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           height: screenHeight * 0.05,
                           onTap: _controller.resetAll,
                           assetPath: AppIcons.historySort,
-                          text: 'Reset',
+                          text: l10n.historyReset,
                         ),
                       ),
                     ],
@@ -210,8 +212,8 @@ class _HistoryPageState extends State<HistoryPage> {
       return Center(
         child: Text(
           _controller.searchQuery.isEmpty
-              ? 'No capsules yet'
-              : 'No capsules match your search',
+              ? context.l10n.historyEmpty
+              : context.l10n.historyNoMatches,
         ),
       );
     }
@@ -241,6 +243,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _openFilterMenu(BuildContext context) {
     final controller = _controller;
+    final l10n = context.l10n;
     _searchFocusNode.unfocus();
     FocusScope.of(context).unfocus();
     showDialog<void>(
@@ -248,38 +251,41 @@ class _HistoryPageState extends State<HistoryPage> {
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
         child: NestedMenu(
-          title: 'Filter By',
+          title: l10n.historyFilterBy,
           rootItems: [
-            MenuItemNode(label: 'Reset', onTap: controller.resetFilters),
             MenuItemNode(
-              label: 'Color',
+              label: l10n.historyReset,
+              onTap: controller.resetFilters,
+            ),
+            MenuItemNode(
+              label: l10n.historyFilterColor,
               children: [
                 for (final color in CapsuleColor.values)
                   MenuItemNode(
-                    label: color.label,
+                    label: color.localizedLabel(l10n),
                     onTap: () => controller.setColorFilter(color),
                   ),
               ],
             ),
             MenuItemNode(
-              label: 'Visibility',
+              label: l10n.historyFilterVisibility,
               children: [
                 for (final privacy in CapsulePrivacy.values)
                   MenuItemNode(
-                    label: privacy.label,
+                    label: privacy.localizedLabel(l10n),
                     onTap: () => controller.setPrivacyFilter(privacy),
                   ),
               ],
             ),
             MenuItemNode(
-              label: 'Capsule',
+              label: l10n.historyFilterCapsule,
               children: [
                 MenuItemNode(
-                  label: 'Favorite',
+                  label: l10n.historyFilterFavorite,
                   onTap: () => controller.setFavoritesOnly(true),
                 ),
                 MenuItemNode(
-                  label: 'Any',
+                  label: l10n.historyFilterAny,
                   onTap: () => controller.setFavoritesOnly(false),
                 ),
               ],
@@ -292,24 +298,27 @@ class _HistoryPageState extends State<HistoryPage> {
 
   void _openSortMenu(BuildContext context) {
     final controller = _controller;
+    final l10n = context.l10n;
     _searchFocusNode.unfocus();
     FocusScope.of(context).unfocus();
-    MenuItemNode item(HistorySort sort) =>
-        MenuItemNode(label: sort.label!, onTap: () => controller.setSort(sort));
+    MenuItemNode item(HistorySort sort) => MenuItemNode(
+      label: sort.label(l10n)!,
+      onTap: () => controller.setSort(sort),
+    );
     showDialog<void>(
       context: context,
       builder: (_) => Dialog(
         backgroundColor: Colors.transparent,
         child: NestedMenu(
-          title: 'Sort By',
+          title: l10n.historySortBy,
           rootItems: [
-            MenuItemNode(label: 'Reset', onTap: controller.resetSort),
+            MenuItemNode(label: l10n.historyReset, onTap: controller.resetSort),
             MenuItemNode(
-              label: 'Relevance',
+              label: l10n.historySortRelevance,
               children: [item(HistorySort.oldest), item(HistorySort.newest)],
             ),
             MenuItemNode(
-              label: 'Distance',
+              label: l10n.historySortDistance,
               children: [item(HistorySort.closest), item(HistorySort.farthest)],
             ),
           ],

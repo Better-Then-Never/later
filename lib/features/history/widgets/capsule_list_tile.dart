@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
@@ -13,6 +16,7 @@ import '../../map/current_location.dart';
 import '../../../shared/styles/box_decorations.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
+import '../capsule_labels.dart';
 import '../history_controller.dart';
 
 /// One capsule in the History list.
@@ -53,7 +57,7 @@ class CapsuleListTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         decoration: BoxDecorations.whiteCard(
           context,
-        ).copyWith(color: isSelected ? AppColors.selectedCapsule : null),
+        ).copyWith(color: isSelected ? context.palette.selectedCapsule : null),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -90,8 +94,8 @@ class CapsuleListTile extends StatelessWidget {
                       Semantics(
                         button: true,
                         label: isFavorite
-                            ? 'Remove from favorites'
-                            : 'Add to favorites',
+                            ? context.l10n.historyRemoveFromFavorites
+                            : context.l10n.historyAddToFavorites,
                         child: GestureDetector(
                           onTap: onFavoriteTap,
                           child: Icon(
@@ -99,7 +103,7 @@ class CapsuleListTile extends StatelessWidget {
                             size: screen.height * 0.03,
                             color: isFavorite
                                 ? AppColors.materialRed
-                                : AppColors.grey500,
+                                : context.palette.iconMuted,
                           ),
                         ),
                       ),
@@ -123,7 +127,7 @@ class CapsuleListTile extends StatelessWidget {
                             _InfoRow(
                               iconPath: AppIcons.capsulePrivacy,
                               child: _ellipsized(
-                                '${capsule.privacy.label} visibility',
+                                capsule.privacy.visibilityLabel(context.l10n),
                               ),
                             ),
                             SizedBox(height: screen.height * 0.008),
@@ -147,10 +151,14 @@ class CapsuleListTile extends StatelessWidget {
                           if (createdAt != null)
                             _Pill(
                               color: AppColors.brandGreen,
+                              // Day.month.year like the app's other date
+                              // pills, in the app's language.
                               child: _pillText(
                                 context,
-                                '${createdAt.day}.${createdAt.month}.'
-                                '${createdAt.year}',
+                                DateFormat(
+                                  'd.M.y',
+                                  context.l10n.localeName,
+                                ).format(createdAt),
                               ),
                             ),
                         ],
@@ -176,7 +184,7 @@ Widget _pillText(BuildContext context, String text) => Text(
     fontSize: MediaQuery.sizeOf(context).width * 0.04,
     fontFamily: kAppFontFamily,
     fontWeight: FontWeight.bold,
-    color: AppColors.white,
+    color: AppColors.onAccent,
   ),
 );
 
@@ -245,8 +253,9 @@ class _Thumbnail extends StatelessWidget {
     final placeholder = Container(
       width: width,
       height: height,
-      color: AppColors.placeholderGrey,
-      child: const Icon(Icons.lock_clock, color: AppColors.white),
+      color: context.palette.skeleton,
+      // Stands in for the capsule's photo: white glyph in both themes.
+      child: const Icon(Icons.lock_clock, color: AppColors.onMedia),
     );
     final url = this.url;
     if (url == null || url.isEmpty) return placeholder;
@@ -303,7 +312,10 @@ class _PlaceNameState extends State<_PlaceName> {
         final name = snapshot.data;
         return _pillText(
           context,
-          name ?? (widget.capsule.location == null ? 'No location' : ''),
+          name ??
+              (widget.capsule.location == null
+                  ? context.l10n.placeNoLocation
+                  : ''),
         );
       },
     );
@@ -321,10 +333,14 @@ class _Distance extends StatelessWidget {
       (l) => l.position,
     );
     final meters = HistoryController.distanceMeters(here, capsule.location);
+    final l10n = context.l10n;
     return _ellipsized(
       meters == null
-          ? 'Distance unknown'
-          : '${(meters / 1000).toStringAsFixed(1)} km from you',
+          ? l10n.historyDistanceUnknown
+          : l10n.historyDistanceFromYou(
+              // One decimal with the language's separator ("12.3", "12,3").
+              NumberFormat('0.0', l10n.localeName).format(meters / 1000),
+            ),
     );
   }
 }
@@ -335,12 +351,17 @@ class CapsuleCountdown extends StatefulWidget {
 
   final DateTime? openAt;
 
-  static const openedLabel = 'Capsule is opened!';
-
-  static String format(DateTime? openAt, DateTime now) {
-    if (openAt == null) return openedLabel;
+  /// The countdown text in the app's language: widgets pass `context.l10n`,
+  /// without it [AppL10n.current] is used.
+  static String format(
+    DateTime? openAt,
+    DateTime now, {
+    AppLocalizations? l10n,
+  }) {
+    final strings = l10n ?? AppL10n.current;
+    if (openAt == null) return strings.historyCapsuleOpened;
     final diff = openAt.difference(now);
-    if (diff.inSeconds <= 0) return openedLabel;
+    if (diff.inSeconds <= 0) return strings.historyCapsuleOpened;
 
     final years = diff.inDays ~/ 365;
     final days = diff.inDays % 365;
@@ -348,8 +369,8 @@ class CapsuleCountdown extends StatefulWidget {
     final minutes = diff.inMinutes % 60;
     final seconds = diff.inSeconds % 60;
     return years > 0
-        ? '${years}y ${days}d ${hours}h ${minutes}m'
-        : '${days}d ${hours}h ${minutes}m ${seconds}s';
+        ? strings.historyCountdownYears(years, days, hours, minutes)
+        : strings.historyCountdown(days, hours, minutes, seconds);
   }
 
   @override
@@ -399,6 +420,12 @@ class _CapsuleCountdownState extends State<CapsuleCountdown> {
 
   @override
   Widget build(BuildContext context) {
-    return _ellipsized(CapsuleCountdown.format(widget.openAt, DateTime.now()));
+    return _ellipsized(
+      CapsuleCountdown.format(
+        widget.openAt,
+        DateTime.now(),
+        l10n: context.l10n,
+      ),
+    );
   }
 }
