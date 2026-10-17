@@ -167,6 +167,21 @@ exports.acceptGroupInvite = onDocumentCreated(
   ),
 );
 
+// Someone reacted to a chat message: its author hears it
+// (functions/lib/chats.js).
+exports.sendMessageReactionNotification = onDocumentUpdated(
+  'chats/{chatId}/messages/{messageId}',
+  logged('Message reaction', (e) =>
+    chats.onMessageReacted(
+      services(),
+      e.params.chatId,
+      e.params.messageId,
+      data(e.data.before),
+      data(e.data.after),
+    ),
+  ),
+);
+
 // A chat photo's or recording's file is deleted with its message
 // (functions/lib/chats.js).
 exports.deleteChatFile = onDocumentDeleted(

@@ -4,7 +4,7 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { ctx, addUser } = require('./helpers');
+const { ctx, addUser, setSettings, fakeMessaging } = require('./helpers');
 const chats = require('../lib/chats');
 
 const exists = async (path) => (await ctx.bucket.file(path).exists())[0];
@@ -46,6 +46,47 @@ describe('group invites', () => {
     await addUser('newbie', { friends: ['u0'] });
     await db().doc(`chats/${G}`).set({ name: 'Big', members: full, createdBy: 'u0' });
     assert.deepEqual(await invite('newbie', 'u0'), { newbie: 'full' });
+  });
+});
+
+describe('message reactions', () => {
+  const services = (messaging) => ({ db: ctx.db, messaging, now: () => new Date(Date.UTC(2026, 9, 16, 12)) });
+  const before = { senderId: 'alice', text: 'Lunch?', reactions: {} };
+
+  test("the author hears a new reaction from someone else, in their language", async () => {
+    await addUser('alice', { name: 'Alice' }, ['a1']);
+    await addUser('bob', { name: 'Bob' }, ['b1']);
+    await setSettings('alice', { language: 'ru' });
+    const messaging = fakeMessaging();
+    const result = await chats.onMessageReacted(services(messaging), 'alice_bob', 'm1', before, {
+      ...before,
+      reactions: { bob: 'heart' },
+    });
+    assert.equal(result.sent, 1);
+    const [push] = messaging.sent;
+    assert.equal(push.token, 'a1');
+    assert.equal(push.notification.title, 'Bob');
+    assert.equal(push.notification.body, '❤️ на ваше сообщение: Lunch?');
+    assert.equal(push.data.chatId, 'alice_bob');
+  });
+
+  test('own reactions, removals, unknown types, mutes and blocks stay quiet', async () => {
+    await addUser('alice', { name: 'Alice' }, ['a1']);
+    await addUser('bob', { name: 'Bob' }, ['b1']);
+    const quiet = async (b, a) => {
+      const messaging = fakeMessaging();
+      await chats.onMessageReacted(services(messaging), 'alice_bob', 'm1', b, a);
+      return messaging.sent.length === 0;
+    };
+    assert.ok(await quiet(before, { ...before, reactions: { alice: 'heart' } }));
+    assert.ok(await quiet({ ...before, reactions: { bob: 'heart' } }, before));
+    assert.ok(await quiet(before, { ...before, reactions: { bob: 'poop' } }));
+    assert.ok(await quiet(before, { ...before, status: 'read' }));
+    await setSettings('alice', { mutedChats: ['alice_bob'] });
+    assert.ok(await quiet(before, { ...before, reactions: { bob: 'fire' } }));
+    await setSettings('alice', {});
+    await ctx.db.doc('users/alice/blocked/bob').set({ at: 1 });
+    assert.ok(await quiet(before, { ...before, reactions: { bob: 'fire' } }));
   });
 });
 

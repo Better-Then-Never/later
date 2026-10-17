@@ -3,6 +3,10 @@
 'use strict';
 
 const { FieldValue } = require('firebase-admin/firestore');
+const i18n = require('./i18n');
+const notify = require('./notify');
+const prefs = require('./prefs');
+const social = require('./social');
 
 /**
  * chats/{chatId}/messages/{id} was deleted (by its sender, "Clear history"
@@ -63,4 +67,43 @@ async function onGroupInvite({ db }, chatId, uid, invite) {
   return { [uid]: outcome };
 }
 
-module.exports = { onMessageDeleted, onGroupInvite };
+/**
+ * chats/{chatId}/messages/{id} changed: when someone (not its author) newly
+ * reacted, the author hears it ("Anna", "❤️ to your message: text"), by
+ * their message settings; muted chats and blocked people stay quiet. One push
+ * per change (the newest reaction).
+ */
+async function onMessageReacted(services, chatId, messageId, before, after) {
+  if (!before || !after) return null;
+  const author = after.senderId;
+  const was = before.reactions || {};
+  const added = Object.entries(after.reactions || {}).filter(
+    ([uid, type]) => uid !== author && was[uid] !== type && social.REACTIONS[type],
+  );
+  if (!author || added.length === 0) return null;
+  const [reactorId, type] = added[added.length - 1];
+  const { db } = services;
+  const settings = await prefs.loadSettings(db, author);
+  if (settings.mutedChats.includes(chatId)) return { skipped: 'muted' };
+  const blocked = prefs.blockedReason(settings, 'messages', notify.now(services));
+  if (blocked) return { skipped: blocked };
+  if (await social.isBlocked(db, author, reactorId)) return { skipped: 'blocked' };
+  const lang = i18n.languageOf(settings);
+  const reactor = await db.collection('users').doc(reactorId).get();
+  const name =
+    (reactor.exists && (reactor.get('name') || reactor.get('username'))) || i18n.t(lang, 'someone');
+  const emoji = social.REACTIONS[type];
+  const text = notify.shorten(String(after.text || ''));
+  const body = settings.notifications.preview
+    ? i18n.t(lang, 'messageReactionText', { emoji, text })
+    : i18n.t(lang, 'messageReaction', { emoji });
+  return notify.sendToUser(services, author, (token) =>
+    notify.chatMessage(
+      { senderName: name, senderId: reactorId, chatId, messageId, body },
+      token,
+      settings.notifications.sound,
+    ),
+  );
+}
+
+module.exports = { onMessageDeleted, onGroupInvite, onMessageReacted };
