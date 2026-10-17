@@ -276,6 +276,30 @@ describe('message notifications', () => {
     assert.equal(push.android.notification.tag, chatId);
   });
 
+  test('a group message goes to every other member, each by their settings', async () => {
+    await addUser('carol', { name: 'Carol' }, ['c1']);
+    await addUser('dave', { name: 'Dave' }, ['d1']);
+    await setSettings('dave', { mutedChats: ['g_trip12345678'] });
+    await setSettings('carol', { language: 'ru' });
+    await db.doc('chats/g_trip12345678').set({ name: 'Trip', members: ['alice', 'bob', 'carol', 'dave'] });
+    const messaging = fakeMessaging();
+    const report = await notify.onMessageCreated(services(messaging), 'g_trip12345678', 'm1', {
+      senderId: 'alice',
+      text: 'Tomorrow at 9',
+    });
+    assert.deepEqual(Object.keys(report).sort(), ['bob', 'carol', 'dave']);
+    assert.deepEqual(report.dave, { skipped: 'muted' });
+    assert.deepEqual(messaging.sent.map((m) => m.token).sort(), ['b1', 'c1']);
+    const [push] = messaging.sent;
+    assert.equal(push.notification.title, 'Trip');
+    assert.equal(push.notification.body, 'Alice: Tomorrow at 9');
+    assert.equal(push.data.chatId, 'g_trip12345678');
+
+    // Not a member, or no such group: nobody.
+    assert.equal(await notify.onMessageCreated(services(fakeMessaging()), 'g_trip12345678', 'm2', { senderId: 'erin', text: 'x' }), null);
+    assert.equal(await notify.onMessageCreated(services(fakeMessaging()), 'g_none12345678', 'm3', { senderId: 'alice', text: 'x' }), null);
+  });
+
   test('long texts are shortened; capsules say so', () => {
     assert.equal(notify.messageBody({ text: 'x'.repeat(200) }, true).length, 150);
     assert.equal(notify.messageBody({ type: 'capsule', text: 'Trip' }, true), 'Sent you a capsule: Trip');
@@ -360,10 +384,12 @@ describe('account deletion cleanup', () => {
     await bucket.file('userdata/gone/assets/images/profile_image').save('x');
     await bucket.file('userdata/bob/assets/images/profile_image').save('y');
     await bucket.file('chats/bob_gone/bob/p1.jpg').save('z');
+    await db.doc('chats/g_group1234567').set({ name: 'G', members: ['gone', 'bob', 'carol'] });
     await bucket.file('chats/bob_carol/bob/p2.jpg').save('z');
 
     const report = await account.deleteUserData({ db, bucket }, 'gone');
-    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1, reactions: 0, comments: 0 });
+    assert.deepEqual(report, { friends: 1, requests: 1, follows: 2, capsules: 1, chats: 1, groups: 1, reactions: 0, comments: 0 });
+    assert.deepEqual((await db.doc('chats/g_group1234567').get()).get('members'), ['bob', 'carol']);
 
     assert.equal((await users().doc('gone').get()).exists, false);
     assert.equal((await users().doc('gone').collection('settings').doc('app').get()).exists, false);

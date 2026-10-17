@@ -158,6 +158,15 @@ function logged(name, work) {
 
 const data = (snapshot) => (snapshot && snapshot.exists ? snapshot.data() : undefined);
 
+// Someone invited to a group joins if the inviter is their friend
+// (functions/lib/chats.js).
+exports.acceptGroupInvite = onDocumentCreated(
+  'chats/{chatId}/invites/{uid}',
+  logged('Group invite', (e) =>
+    chats.onGroupInvite(services(), e.params.chatId, e.params.uid, data(e.data)),
+  ),
+);
+
 // A chat photo's file is deleted with its message (functions/lib/chats.js).
 exports.deleteChatPhoto = onDocumentDeleted(
   'chats/{chatId}/messages/{messageId}',

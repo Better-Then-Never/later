@@ -91,6 +91,13 @@ async function deleteUserData({ db, bucket }, uid) {
   }
   report.chats = chats.size;
 
+  // Groups go on without the account.
+  const groups = await db.collection('chats').where('members', 'array-contains', uid).get();
+  for (const g of groups.docs) {
+    await g.ref.update({ members: FieldValue.arrayRemove(uid) });
+  }
+  report.groups = groups.size;
+
   // Username reservation, if it is still this user's.
   if (typeof data.username === 'string' && data.username) {
     const reservation = db.collection('usernames').doc(data.username);

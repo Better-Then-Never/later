@@ -453,13 +453,102 @@ service cloud.firestore {
     // chats/{uidA}_{uidB} (uids sorted): the two participants read and write
     // it; nobody writes to someone who blocked them (or whom they blocked).
     // Same shape as the chats of main's app.
+    //
+    // chats/g_{id}: a group. Its members (up to 20) are listed in `members`,
+    // not `participants`, so apps that know only two-person chats never list
+    // it. It starts with its creator alone; members invite people
+    // (invites/{uid}) and a function adds those it accepts: friends of the
+    // inviter who blocked nobody in the group (rules cannot check a list of
+    // people). Any member may rename it or leave.
     match /chats/{chatId} {
       function members() {
         return chatId.split('_');
       }
 
+      function isGroupId() {
+        return chatId.matches('g_[A-Za-z0-9]{10,40}');
+      }
+
       function isMember() {
-        return signedIn() && members().size() == 2 && me() in members();
+        return signedIn() && !isGroupId() && members().size() == 2
+          && me() in members();
+      }
+
+      // A group's members as stored (for its messages and hints).
+      function groupMembers() {
+        return get(/databases/$(database)/documents/chats/$(chatId)).data
+          .get('members', []);
+      }
+
+      function inGroup() {
+        return signedIn() && isGroupId() && me() in groupMembers();
+      }
+
+      // For the group document itself.
+      function inThisGroup() {
+        return signedIn() && isGroupId()
+          && me() in resource.data.get('members', []);
+      }
+
+      function chatMembers() {
+        return isGroupId() ? groupMembers() : members();
+      }
+
+      function validGroupName(n) {
+        return n is string && n.size() > 0 && n.size() <= 60;
+      }
+
+      function isGroupCreate() {
+        let d = request.resource.data;
+        return signedIn() && isGroupId()
+          && d.keys().hasOnly(['members', 'name', 'createdBy', 'createdAt',
+            'lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.members == [me()]
+          && d.createdBy == me() && validGroupName(d.name)
+          && isServerTime(d.createdAt) && d.lastMessage == ''
+          && isServerTime(d.lastUpdated)
+          && d.get('lastSenderId', me()) == me();
+      }
+
+      function isGroupSend() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.lastMessage != '' && validSummary(d) && d.lastSenderId == me();
+      }
+
+      function isGroupRead() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastReadAt'])
+          && d.lastReadAt.diff(resource.data.get('lastReadAt', {}))
+            .affectedKeys().hasOnly([me()])
+          && d.lastReadAt[me()] == request.time;
+      }
+
+      // Deleting the newest message: the summary shows the one before it (any
+      // member's, with its own time), or nothing.
+      function isGroupUndo() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.lastMessage is string && d.lastMessage.size() <= 2000
+          && d.lastUpdated is timestamp && d.lastUpdated <= request.time
+          && d.get('lastSenderId', me()) in resource.data.members;
+      }
+
+      function isGroupRename() {
+        return changed().hasOnly(['name'])
+          && validGroupName(request.resource.data.name);
+      }
+
+      // Leaving: only yourself goes (and your read mark with you).
+      function isGroupLeave() {
+        let d = request.resource.data;
+        return changed().hasOnly(['members', 'lastReadAt'])
+          && d.members.toSet() == resource.data.members.toSet().difference([me()].toSet())
+          && d.members.size() == resource.data.members.size() - 1
+          && (!changed().hasAny(['lastReadAt'])
+            || d.lastReadAt.keys().toSet()
+              == resource.data.get('lastReadAt', {}).keys().toSet()
+                .difference([me()].toSet()));
       }
 
       function other() {
@@ -536,11 +625,14 @@ service cloud.firestore {
       }
 
       // get works before the chat exists (the send transaction reads it).
-      allow get: if isMember();
-      // The app's query: participants array-contains me.
-      allow list: if signedIn() && me() in resource.data.participants;
+      allow get: if isMember() || inThisGroup();
+      // The app's queries: participants (two-person chats) or members
+      // (groups) array-contains me.
+      allow list: if signedIn()
+        && (me() in resource.data.get('participants', [])
+          || me() in resource.data.get('members', []));
 
-      allow create: if isMember() && mayWrite()
+      allow create: if isGroupCreate() || isMember() && mayWrite()
         && members()[0] < members()[1]
         && request.resource.data.keys().hasOnly(['participants', 'lastMessage',
           'lastUpdated', 'createdAt', 'lastSenderId', 'unreadCounts'])
@@ -554,35 +646,56 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['unreadCounts'])
           || (request.resource.data.unreadCounts.keys().hasOnly([other()])
             && request.resource.data.unreadCounts[other()] == 1));
-      allow update: if isMember()
-        && (isSend() || isRead() || isClear() || isUndo());
+      allow update: if (isMember()
+          && (isSend() || isRead() || isClear() || isUndo()))
+        || (inThisGroup()
+          && (isGroupSend() || isGroupRead() || isGroupRename()
+            || isGroupUndo() || isGroupLeave()));
       allow delete: if false;
 
       // typing/{uid} {at: server time}: "uid is typing", written at most
       // every few seconds while they type, deleted when they stop. Only the
       // participants read it; each writes only their own.
+      // invites/{uid} {by, at}: a member asks for uid to join; the function
+      // adds them (or not) and deletes the invite.
+      match /invites/{uid} {
+        allow read: if inGroup();
+        allow create: if inGroup() && uid != me()
+          && !(uid in groupMembers()) && groupMembers().size() < 20
+          && request.resource.data.keys().hasOnly(['by', 'at'])
+          && request.resource.data.by == me()
+          && request.resource.data.at == request.time;
+        allow update, delete: if false;
+      }
+
       match /typing/{uid} {
-        allow read: if isMember();
-        allow create, update: if isMember() && uid == me() && mayWrite()
+        allow read: if isMember() || inGroup();
+        allow create, update: if (isMember() && mayWrite() || inGroup())
+          && uid == me()
           && request.resource.data.keys().hasOnly(['at'])
           && request.resource.data.at == request.time;
-        allow delete: if isMember() && uid == me();
+        allow delete: if (isMember() || inGroup()) && uid == me();
       }
 
       match /messages/{messageId} {
-        allow read: if isMember();
+        allow read: if isMember() || inGroup();
 
-        allow create: if isMember() && mayWrite()
-          && existsAfter(/databases/$(database)/documents/chats/$(chatId))
-          && validMessage(request.resource.data);
+        // In a group: text messages (with replies) only for now.
+        allow create: if (isMember() && mayWrite()
+            && existsAfter(/databases/$(database)/documents/chats/$(chatId))
+            && validMessage(request.resource.data))
+          || (inGroup() && validMessage(request.resource.data)
+            && request.resource.data.get('type', 'text') == 'text');
 
         // The recipient marks messages read; either participant sets or
         // removes their own reaction (reactions {uid: type}).
-        allow update: if isMember()
-          && ((resource.data.senderId != me()
-              && changed().hasOnly(['status'])
-              && request.resource.data.status == 'read')
-            || (changed().hasOnly(['reactions']) && validReactionChange()));
+        allow update: if (isMember()
+            && ((resource.data.senderId != me()
+                && changed().hasOnly(['status'])
+                && request.resource.data.status == 'read')
+              || (changed().hasOnly(['reactions']) && validReactionChange())))
+          || (inGroup() && changed().hasOnly(['reactions'])
+            && validReactionChange());
 
         function validReactionChange() {
           let after = request.resource.data.get('reactions', {});
@@ -593,8 +706,10 @@ service cloud.firestore {
               || after[me()] in ['heart', 'laugh', 'wow', 'sad', 'fire', 'clap']);
         }
 
-        // "Clear history" clears the chat for both participants.
-        allow delete: if isMember();
+        // "Clear history" clears the chat for both participants; in a group
+        // everyone deletes only their own messages.
+        allow delete: if isMember()
+          || (inGroup() && resource.data.senderId == me());
 
         function validMessage(d) {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
@@ -629,7 +744,7 @@ service cloud.firestore {
         function validReply(r) {
           return r is map && r.keys().hasOnly(['id', 'senderId', 'text'])
             && r.id is string && r.id.size() > 0 && r.id.size() <= 200
-            && r.senderId in members()
+            && r.senderId in chatMembers()
             && r.text is string && r.text.size() <= 200;
         }
 

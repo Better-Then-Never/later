@@ -944,3 +944,122 @@ describe('social and gamification (night session)', () => {
     await assertFails(setDoc(doc(as('alice'), 'announcements/a2'), { title: { en: 'Fake' } }));
   });
 });
+
+describe('group chats', () => {
+  const G = 'g_group1abcdef';
+  const group = (db, id = G) => doc(db, `chats/${id}`);
+  const newGroup = (by, members, extra = {}) => ({
+    members,
+    name: 'Trip',
+    createdBy: by,
+    createdAt: serverTimestamp(),
+    lastMessage: '',
+    lastUpdated: serverTimestamp(),
+    ...extra,
+  });
+  /** A group of alice, bob and carol, the way the invite function leaves it. */
+  const make = async () => {
+    await assertSucceeds(setDoc(group(as('alice')), newGroup('alice', ['alice'])));
+    await seed((db) => updateDoc(doc(db, `chats/${G}`), { members: ['alice', 'bob', 'carol'] }));
+  };
+
+  /** What the app does: the message and the summary in one batch. */
+  function say(db, from, extra = {}, id = `m${Math.random().toString(36).slice(2, 8)}`) {
+    const batch = writeBatch(db);
+    batch.update(group(db), { lastMessage: extra.text ?? 'hi', lastUpdated: serverTimestamp(), lastSenderId: from });
+    batch.set(doc(db, `chats/${G}/messages/${id}`), {
+      senderId: from, text: 'hi', timestamp: serverTimestamp(), status: 'sent', ...extra,
+    });
+    return batch.commit();
+  }
+
+  test('a group starts with its creator alone and a name', async () => {
+    const alice = as('alice');
+    await assertSucceeds(setDoc(group(alice), newGroup('alice', ['alice'])));
+    await assertFails(setDoc(group(alice, 'g_group2abcdef'), newGroup('bob', ['bob'])));
+    await assertFails(setDoc(group(alice, 'g_group3abcdef'), newGroup('alice', ['alice', 'bob'])));
+    await assertFails(setDoc(group(alice, 'g_group7abcdef'), newGroup('alice', ['alice'], { name: '' })));
+    await assertFails(setDoc(group(alice, 'g_group8abcdef'), newGroup('alice', ['alice'], { lastMessage: 'x' })));
+    await assertFails(setDoc(group(alice, 'g_group9abcdef'), newGroup('alice', ['alice'], { participants: ['alice', 'bob'] })));
+    // Not a group id: the two-person rules apply.
+    await assertFails(setDoc(group(alice, 'g_x'), newGroup('alice', ['alice'])));
+  });
+
+  test('members invite people; only the function adds them', async () => {
+    await make();
+    const invite = (db, uid) => doc(db, `chats/${G}/invites/${uid}`);
+    await assertSucceeds(setDoc(invite(as('bob'), 'dave'), { by: 'bob', at: serverTimestamp() }));
+    await assertFails(setDoc(invite(as('bob'), 'erin'), { by: 'carol', at: serverTimestamp() }));
+    await assertFails(setDoc(invite(as('bob'), 'carol'), { by: 'bob', at: serverTimestamp() }));
+    await assertFails(setDoc(invite(as('dave'), 'erin'), { by: 'dave', at: serverTimestamp() }));
+    await assertFails(updateDoc(group(as('bob')), { members: ['alice', 'bob', 'carol', 'dave'] }));
+    await assertFails(deleteDoc(invite(as('bob'), 'dave')));
+  });
+
+  test('members read and list it; others cannot; two-person queries do not see it', async () => {
+    await make();
+    await assertSucceeds(getDoc(group(as('bob'))));
+    await assertFails(getDoc(group(as('dave'))));
+    const mine = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'chats'), where('members', 'array-contains', 'bob'), orderBy('lastUpdated', 'desc'), limit(100))),
+    );
+    assert.deepEqual(mine.docs.map((d) => d.id), [G]);
+    const pairs = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'chats'), where('participants', 'array-contains', 'bob'))),
+    );
+    assert.equal(pairs.size, 0);
+    await assertFails(getDocs(query(collection(as('dave'), 'chats'), where('members', 'array-contains', 'bob'))));
+  });
+
+  test('members write text messages, quote each other, react, delete their own', async () => {
+    await make();
+    await assertSucceeds(say(as('bob'), 'bob', {}, 'b1'));
+    await assertSucceeds(say(as('carol'), 'carol', { text: 'yes', replyTo: { id: 'b1', senderId: 'bob', text: 'hi' } }, 'c1'));
+    await assertFails(say(as('carol'), 'carol', { replyTo: { id: 'x', senderId: 'dave', text: 'hi' } }));
+    await assertFails(say(as('dave'), 'dave'));
+    await assertFails(say(as('bob'), 'carol'));
+    // Text only for now (photos and capsules need checks a group cannot do yet).
+    await assertFails(say(as('bob'), 'bob', { type: 'capsule', capsuleId: 'c1' }));
+    await assertFails(say(as('bob'), 'bob', { type: 'image', imageUrl: 'https://x', imagePath: `chats/${G}/bob/p.jpg` }));
+    await assertSucceeds(getDocs(collection(as('alice'), `chats/${G}/messages`)));
+    await assertFails(getDocs(collection(as('dave'), `chats/${G}/messages`)));
+
+    await assertSucceeds(updateDoc(doc(as('alice'), `chats/${G}/messages/b1`), { 'reactions.alice': 'heart' }));
+    await assertFails(updateDoc(doc(as('alice'), `chats/${G}/messages/b1`), { 'reactions.bob': 'heart' }));
+    await assertFails(updateDoc(doc(as('alice'), `chats/${G}/messages/b1`), { status: 'read' }));
+    await assertFails(deleteDoc(doc(as('alice'), `chats/${G}/messages/b1`)));
+    await assertSucceeds(deleteDoc(doc(as('bob'), `chats/${G}/messages/b1`)));
+    // Carol deletes her newest message: the summary goes back to Bob's.
+    await assertSucceeds(deleteDoc(doc(as('carol'), `chats/${G}/messages/c1`)));
+    await assertSucceeds(updateDoc(group(as('carol')), { lastMessage: 'hi', lastUpdated: Timestamp.now(), lastSenderId: 'bob' }));
+    await assertFails(updateDoc(group(as('carol')), { lastMessage: 'hi', lastUpdated: Timestamp.now(), lastSenderId: 'dave' }));
+  });
+
+  test('read marks, renaming, adding and leaving', async () => {
+    await make();
+    const bob = as('bob');
+    await assertSucceeds(updateDoc(group(bob), { 'lastReadAt.bob': serverTimestamp() }));
+    await assertFails(updateDoc(group(bob), { 'lastReadAt.alice': serverTimestamp() }));
+    await assertFails(updateDoc(group(bob), { 'lastReadAt.bob': Timestamp.now() }));
+    await assertSucceeds(updateDoc(group(bob), { name: 'Trip 2026' }));
+    await assertFails(updateDoc(group(bob), { name: '' }));
+    await assertFails(updateDoc(group(as('dave')), { name: 'Mine' }));
+
+    // Dropping someone else is not leaving.
+    await assertFails(updateDoc(group(bob), { members: ['bob', 'carol'] }));
+    await assertFails(updateDoc(group(bob), { createdBy: 'bob' }));
+
+    // Bob leaves, his read mark with him; then he cannot read it.
+    await assertSucceeds(updateDoc(group(bob), { members: ['alice', 'carol'], lastReadAt: {} }));
+    await assertFails(getDoc(group(bob)));
+    await assertFails(getDocs(collection(bob, `chats/${G}/messages`)));
+  });
+
+  test('typing hints in a group: members only, their own', async () => {
+    await make();
+    await assertSucceeds(setDoc(doc(as('bob'), `chats/${G}/typing/bob`), { at: serverTimestamp() }));
+    await assertSucceeds(getDoc(doc(as('carol'), `chats/${G}/typing/bob`)));
+    await assertFails(setDoc(doc(as('dave'), `chats/${G}/typing/dave`), { at: serverTimestamp() }));
+    await assertFails(setDoc(doc(as('bob'), `chats/${G}/typing/carol`), { at: serverTimestamp() }));
+  });
+});

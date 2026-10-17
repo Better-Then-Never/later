@@ -4,10 +4,50 @@
 
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
-const { ctx } = require('./helpers');
+const { ctx, addUser } = require('./helpers');
 const chats = require('../lib/chats');
 
 const exists = async (path) => (await ctx.bucket.file(path).exists())[0];
+
+describe('group invites', () => {
+  const G = 'g_trip12345678';
+  const db = () => ctx.db;
+  const invite = async (uid, by) => {
+    await db().doc(`chats/${G}/invites/${uid}`).set({ by });
+    return chats.onGroupInvite({ db: db() }, G, uid, { by });
+  };
+  const members = async () => (await db().doc(`chats/${G}`).get()).get('members');
+
+  test("a friend of the inviter joins; others do not; the invite goes either way", async () => {
+    await addUser('alice', { friends: ['bob', 'carol'] });
+    await addUser('bob', { friends: ['alice'] });
+    await addUser('carol', { friends: ['alice'] });
+    await addUser('dave', { friends: ['erin'] });
+    await addUser('erin', { friends: ['dave'] });
+    await db().doc(`chats/${G}`).set({ name: 'Trip', members: ['alice'], createdBy: 'alice' });
+
+    assert.deepEqual(await invite('bob', 'alice'), { bob: 'joined' });
+    assert.deepEqual(await members(), ['alice', 'bob']);
+    assert.deepEqual(await invite('dave', 'bob'), { dave: 'not-a-friend' });
+    assert.deepEqual(await invite('bob', 'alice'), { bob: 'already-in' });
+    assert.deepEqual(await invite('carol', 'erin'), { carol: 'not-a-member' });
+    assert.deepEqual(await invite('ghost', 'alice'), { ghost: 'no-account' });
+    assert.equal((await db().collection(`chats/${G}/invites`).get()).size, 0);
+
+    // Carol blocked Bob, who is in it: she is not put next to him.
+    await db().doc('users/carol/blocked/bob').set({ at: 1 });
+    assert.deepEqual(await invite('carol', 'alice'), { carol: 'blocked' });
+    assert.deepEqual(await members(), ['alice', 'bob']);
+  });
+
+  test('a full group takes nobody', async () => {
+    const full = Array.from({ length: 20 }, (_, i) => `u${i}`);
+    await addUser('u0', { friends: ['newbie'] });
+    await addUser('newbie', { friends: ['u0'] });
+    await db().doc(`chats/${G}`).set({ name: 'Big', members: full, createdBy: 'u0' });
+    assert.deepEqual(await invite('newbie', 'u0'), { newbie: 'full' });
+  });
+});
 
 describe('chat photos', () => {
   test("a deleted photo message takes its file along; nothing else is touched", async () => {

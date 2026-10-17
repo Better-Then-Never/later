@@ -150,10 +150,10 @@ function shorten(text) {
   return text.length > PREVIEW_LENGTH ? `${text.slice(0, PREVIEW_LENGTH - 1)}…` : text;
 }
 
-function chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound = true) {
+function chatMessage({ senderName, senderId, chatId, messageId, body, title }, token, sound = true) {
   return {
     token,
-    notification: { title: senderName, body },
+    notification: { title: title || senderName, body },
     data: {
       type: 'message',
       userId: senderId,
@@ -187,6 +187,9 @@ async function onNotificationCreated(services, uid, notification) {
  * hours. One push per chat at a time on Android (tag = chat id).
  */
 async function onMessageCreated(services, chatId, messageId, message) {
+  if (String(chatId).startsWith('g_')) {
+    return onGroupMessageCreated(services, chatId, messageId, message);
+  }
   const members = String(chatId).split('_');
   const senderId = message && message.senderId;
   if (members.length !== 2 || !senderId || !members.includes(senderId)) return null;
@@ -208,6 +211,47 @@ async function onMessageCreated(services, chatId, messageId, message) {
   return sendToUser(services, to, (token) =>
     chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound),
   );
+}
+
+/** Most people a group push goes to (groups have at most 20 members). */
+const GROUP_PUSH_LIMIT = 20;
+
+/**
+ * A message in group [chatId]: every other member hears it ("Group name",
+ * "Bob: text"), each by their own settings (mutes, quiet hours, previews).
+ */
+async function onGroupMessageCreated(services, chatId, messageId, message) {
+  const { db } = services;
+  const senderId = message && message.senderId;
+  const group = await db.collection('chats').doc(chatId).get();
+  const members = group.exists ? group.get('members') : null;
+  if (!senderId || !Array.isArray(members) || !members.includes(senderId)) return null;
+  const sender = await db.collection('users').doc(senderId).get();
+  const groupName = String(group.get('name') || '');
+  const recipients = members.filter((m) => m !== senderId).slice(0, GROUP_PUSH_LIMIT);
+  const report = {};
+  for (const to of recipients) {
+    const settings = await prefs.loadSettings(db, to);
+    if (settings.mutedChats.includes(chatId)) {
+      report[to] = { skipped: 'muted' };
+      continue;
+    }
+    const blocked = prefs.blockedReason(settings, 'messages', now(services));
+    if (blocked) {
+      report[to] = { skipped: blocked };
+      continue;
+    }
+    const lang = i18n.languageOf(settings);
+    const senderName =
+      (sender.exists && (sender.get('name') || sender.get('username'))) || i18n.t(lang, 'someone');
+    const text = messageBody(message, settings.notifications.preview, lang);
+    const body = settings.notifications.preview ? `${senderName}: ${text}` : text;
+    const sound = settings.notifications.sound;
+    report[to] = await sendToUser(services, to, (token) =>
+      chatMessage({ senderName, senderId, chatId, messageId, body, title: groupName || senderName }, token, sound),
+    );
+  }
+  return report;
 }
 
 /**
@@ -336,6 +380,7 @@ module.exports = {
   now,
   chatMessage,
   onMessageCreated,
+  onGroupMessageCreated,
   capsuleRecipients,
   onCapsuleCreated,
   profileSummary,
