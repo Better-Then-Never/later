@@ -96,5 +96,12 @@
   "messagesMicPermission": "Разрешите доступ к микрофону, чтобы отправлять голосовые",
   "messagesPlayVoice": "Воспроизвести голосовое",
   "messagesPauseVoice": "Пауза",
-  "messagesVoiceFailed": "Это голосовое не получается воспроизвести"
+  "messagesVoiceFailed": "Это голосовое не получается воспроизвести",
+  "messagesStickers": "Стикеры",
+  "messagesStickersRecent": "Недавние",
+  "messagesStickersFaces": "Лица",
+  "messagesStickersHands": "Жесты",
+  "messagesStickersHearts": "Сердца и праздники",
+  "messagesStickersPlaces": "Места и вещи",
+  "messagesStickersNature": "Природа"
 }

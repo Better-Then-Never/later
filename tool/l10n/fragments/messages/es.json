@@ -96,5 +96,12 @@
   "messagesMicPermission": "Permite el micrófono para enviar mensajes de voz",
   "messagesPlayVoice": "Reproducir mensaje de voz",
   "messagesPauseVoice": "Pausa",
-  "messagesVoiceFailed": "No se puede reproducir este mensaje de voz"
+  "messagesVoiceFailed": "No se puede reproducir este mensaje de voz",
+  "messagesStickers": "Stickers",
+  "messagesStickersRecent": "Usados recientemente",
+  "messagesStickersFaces": "Caras",
+  "messagesStickersHands": "Gestos",
+  "messagesStickersHearts": "Corazones y fiestas",
+  "messagesStickersPlaces": "Lugares y cosas",
+  "messagesStickersNature": "Naturaleza"
 }

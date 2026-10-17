@@ -1530,6 +1530,27 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get messagesStickers => 'Naklejki';
+
+  @override
+  String get messagesStickersFaces => 'Twarze';
+
+  @override
+  String get messagesStickersHands => 'Gesty';
+
+  @override
+  String get messagesStickersHearts => 'Serca i święta';
+
+  @override
+  String get messagesStickersNature => 'Natura';
+
+  @override
+  String get messagesStickersPlaces => 'Miejsca i rzeczy';
+
+  @override
+  String get messagesStickersRecent => 'Ostatnio używane';
+
+  @override
   String get messagesTakePhoto => 'Zrób zdjęcie';
 
   @override

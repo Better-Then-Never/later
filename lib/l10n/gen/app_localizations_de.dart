@@ -1520,6 +1520,27 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get messagesStickers => 'Sticker';
+
+  @override
+  String get messagesStickersFaces => 'Gesichter';
+
+  @override
+  String get messagesStickersHands => 'Gesten';
+
+  @override
+  String get messagesStickersHearts => 'Herzen und Feste';
+
+  @override
+  String get messagesStickersNature => 'Natur';
+
+  @override
+  String get messagesStickersPlaces => 'Orte und Dinge';
+
+  @override
+  String get messagesStickersRecent => 'Zuletzt verwendet';
+
+  @override
   String get messagesTakePhoto => 'Foto aufnehmen';
 
   @override

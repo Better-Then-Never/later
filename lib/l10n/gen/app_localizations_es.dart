@@ -1496,6 +1496,27 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get messagesStickers => 'Stickers';
+
+  @override
+  String get messagesStickersFaces => 'Caras';
+
+  @override
+  String get messagesStickersHands => 'Gestos';
+
+  @override
+  String get messagesStickersHearts => 'Corazones y fiestas';
+
+  @override
+  String get messagesStickersNature => 'Naturaleza';
+
+  @override
+  String get messagesStickersPlaces => 'Lugares y cosas';
+
+  @override
+  String get messagesStickersRecent => 'Usados recientemente';
+
+  @override
   String get messagesTakePhoto => 'Hacer una foto';
 
   @override

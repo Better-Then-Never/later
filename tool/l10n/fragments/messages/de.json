@@ -96,5 +96,12 @@
   "messagesMicPermission": "Erlaube das Mikrofon, um Sprachnachrichten zu senden",
   "messagesPlayVoice": "Sprachnachricht abspielen",
   "messagesPauseVoice": "Pause",
-  "messagesVoiceFailed": "Diese Sprachnachricht lässt sich nicht abspielen"
+  "messagesVoiceFailed": "Diese Sprachnachricht lässt sich nicht abspielen",
+  "messagesStickers": "Sticker",
+  "messagesStickersRecent": "Zuletzt verwendet",
+  "messagesStickersFaces": "Gesichter",
+  "messagesStickersHands": "Gesten",
+  "messagesStickersHearts": "Herzen und Feste",
+  "messagesStickersPlaces": "Orte und Dinge",
+  "messagesStickersNature": "Natur"
 }

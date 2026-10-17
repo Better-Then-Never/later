@@ -25,12 +25,16 @@ class MessageInput extends StatefulWidget {
     this.onCapsuleTap,
     this.onPhotoTap,
     this.onVoiceTap,
+    this.onStickerTap,
     this.onChanged,
     this.focusNode,
   });
 
   /// While the field is empty, the send button records a voice message.
   final VoidCallback? onVoiceTap;
+
+  /// The smiley in the field: big emoji to send at once.
+  final VoidCallback? onStickerTap;
 
   /// Every change of the text (the typing hint).
   final ValueChanged<String>? onChanged;
@@ -138,6 +142,26 @@ class _MessageInputState extends State<MessageInput> {
                       horizontal: screen.width * 0.045,
                       vertical: screen.height * 0.015,
                     ),
+                    prefixIcon: switch (widget.onStickerTap) {
+                      final onStickerTap? => Semantics(
+                        button: true,
+                        label: context.l10n.messagesStickers,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: onStickerTap,
+                          child: SizedBox(
+                            width: 46,
+                            height: 44,
+                            child: CustomPaint(
+                              painter: _SmileyPainter(
+                                color: context.palette.iconMuted,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      null => null,
+                    },
                     suffixIcon: switch (widget.onPhotoTap) {
                       final onPhotoTap? => Semantics(
                         button: true,
@@ -204,6 +228,38 @@ class _MessageInputState extends State<MessageInput> {
       ),
     );
   }
+}
+
+/// A smiley in the hand-drawn icons' round stroke.
+class _SmileyPainter extends CustomPainter {
+  const _SmileyPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero) + const Offset(3, 0);
+    const r = 11.0;
+    final stroke = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    canvas
+      ..drawCircle(c, r, stroke)
+      ..drawCircle(c + const Offset(-3.8, -3), 1.6, Paint()..color = color)
+      ..drawCircle(c + const Offset(3.8, -3), 1.6, Paint()..color = color)
+      ..drawArc(
+        Rect.fromCircle(center: c + const Offset(0, 0.5), radius: 6),
+        0.35,
+        2.44,
+        false,
+        stroke,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_SmileyPainter old) => old.color != color;
 }
 
 class _RoundButton extends StatelessWidget {

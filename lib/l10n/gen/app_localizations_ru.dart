@@ -1523,6 +1523,27 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get messagesStickers => 'Стикеры';
+
+  @override
+  String get messagesStickersFaces => 'Лица';
+
+  @override
+  String get messagesStickersHands => 'Жесты';
+
+  @override
+  String get messagesStickersHearts => 'Сердца и праздники';
+
+  @override
+  String get messagesStickersNature => 'Природа';
+
+  @override
+  String get messagesStickersPlaces => 'Места и вещи';
+
+  @override
+  String get messagesStickersRecent => 'Недавние';
+
+  @override
   String get messagesTakePhoto => 'Сделать фото';
 
   @override

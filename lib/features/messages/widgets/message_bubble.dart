@@ -9,6 +9,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/chat.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../chat_time.dart';
+import '../emoji_only.dart';
 import 'photo_message.dart';
 import 'voice_message.dart';
 
@@ -66,6 +67,49 @@ class MessageBubble extends StatelessWidget {
     final photoWidth = photo
         ? PhotoMessage.displaySize(message, screen).width
         : 0.0;
+
+    // One to three emoji alone: large, without the bubble, like a sticker.
+    final emoji = message.type == ChatMessageType.text && !quoted
+        ? EmojiOnly.count(message.text)
+        : null;
+    if (emoji != null) {
+      return Align(
+        alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+        child: Opacity(
+          opacity: failed ? 0.5 : 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Column(
+              crossAxisAlignment: isMine
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message.text.trim(),
+                  style: TextStyle(
+                    fontSize: EmojiOnly.size(emoji),
+                    height: 1.15,
+                  ),
+                ),
+                if (sentAt != null)
+                  Text(
+                    ChatTime.messageTime(
+                      sentAt,
+                      locale: context.l10n.localeName,
+                    ),
+                    style: TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 11,
+                      color: palette.textMuted,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final bubble = Container(
       padding: photo

@@ -337,5 +337,33 @@
   "messagesVoiceFailed": "This voice message cannot be played",
   "@messagesVoiceFailed": {
     "description": "Shown when a voice message cannot be downloaded or played."
+  },
+  "messagesStickers": "Stickers",
+  "@messagesStickers": {
+    "description": "Title of the sticker panel and screen reader label of its button in the message field."
+  },
+  "messagesStickersRecent": "Recently used",
+  "@messagesStickersRecent": {
+    "description": "Sticker panel group: the ones the user sent lately."
+  },
+  "messagesStickersFaces": "Faces",
+  "@messagesStickersFaces": {
+    "description": "Sticker panel group."
+  },
+  "messagesStickersHands": "Hands",
+  "@messagesStickersHands": {
+    "description": "Sticker panel group (thumbs up, clapping, waving...)."
+  },
+  "messagesStickersHearts": "Hearts and parties",
+  "@messagesStickersHearts": {
+    "description": "Sticker panel group (hearts, party popper, cake...)."
+  },
+  "messagesStickersPlaces": "Places and things",
+  "@messagesStickersPlaces": {
+    "description": "Sticker panel group (camera, map, pin, beach, plane...)."
+  },
+  "messagesStickersNature": "Nature",
+  "@messagesStickersNature": {
+    "description": "Sticker panel group (flowers, weather, animals)."
   }
 }

@@ -2570,6 +2570,48 @@ abstract class AppLocalizations {
   /// **'Start chat with {name}'**
   String messagesStartChatWith(String name);
 
+  /// Title of the sticker panel and screen reader label of its button in the message field.
+  ///
+  /// In en, this message translates to:
+  /// **'Stickers'**
+  String get messagesStickers;
+
+  /// Sticker panel group.
+  ///
+  /// In en, this message translates to:
+  /// **'Faces'**
+  String get messagesStickersFaces;
+
+  /// Sticker panel group (thumbs up, clapping, waving...).
+  ///
+  /// In en, this message translates to:
+  /// **'Hands'**
+  String get messagesStickersHands;
+
+  /// Sticker panel group (hearts, party popper, cake...).
+  ///
+  /// In en, this message translates to:
+  /// **'Hearts and parties'**
+  String get messagesStickersHearts;
+
+  /// Sticker panel group (flowers, weather, animals).
+  ///
+  /// In en, this message translates to:
+  /// **'Nature'**
+  String get messagesStickersNature;
+
+  /// Sticker panel group (camera, map, pin, beach, plane...).
+  ///
+  /// In en, this message translates to:
+  /// **'Places and things'**
+  String get messagesStickersPlaces;
+
+  /// Sticker panel group: the ones the user sent lately.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently used'**
+  String get messagesStickersRecent;
+
   /// Menu item: take a photo with the camera for the chat.
   ///
   /// In en, this message translates to:

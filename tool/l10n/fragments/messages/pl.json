@@ -96,5 +96,12 @@
   "messagesMicPermission": "Zezwól na mikrofon, aby wysyłać wiadomości głosowe",
   "messagesPlayVoice": "Odtwórz wiadomość głosową",
   "messagesPauseVoice": "Pauza",
-  "messagesVoiceFailed": "Nie można odtworzyć tej wiadomości głosowej"
+  "messagesVoiceFailed": "Nie można odtworzyć tej wiadomości głosowej",
+  "messagesStickers": "Naklejki",
+  "messagesStickersRecent": "Ostatnio używane",
+  "messagesStickersFaces": "Twarze",
+  "messagesStickersHands": "Gesty",
+  "messagesStickersHearts": "Serca i święta",
+  "messagesStickersPlaces": "Miejsca i rzeczy",
+  "messagesStickersNature": "Natura"
 }

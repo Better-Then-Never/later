@@ -48,6 +48,7 @@ import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
 import 'widgets/photo_message.dart';
 import 'widgets/photo_send_card.dart';
+import 'widgets/sticker_sheet.dart';
 import 'widgets/typing_label.dart';
 import 'widgets/voice_recorder_bar.dart';
 import 'voice_player.dart';
@@ -248,6 +249,14 @@ class _ChatViewState extends State<_ChatView> {
           .then(_report),
     );
     _scrollToLatest();
+  }
+
+  /// The smiley: a big emoji goes at once (shown large, like a sticker).
+  Future<void> _sendSticker() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final emoji = await StickerSheet.show(context);
+    if (emoji == null || !mounted) return;
+    _send(emoji);
   }
 
   void _retry(String messageId) {
@@ -495,6 +504,7 @@ class _ChatViewState extends State<_ChatView> {
                   : MessageInput(
                       key: const ValueKey('input'),
                       onSend: _send,
+                      onStickerTap: _sendSticker,
                       onVoiceTap:
                           controller.canSendVoice && VoiceService.isSupported
                           ? _startVoice
