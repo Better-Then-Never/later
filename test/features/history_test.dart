@@ -282,7 +282,7 @@ void main() {
     expect(find.textContaining(RegExp(r'^3d 1h \d+m \d+s$')), findsOneWidget);
     expect(find.text('Private visibility'), findsOneWidget);
     expect(find.text('11.1 km from you'), findsOneWidget);
-    expect(find.text('5.1.2026'), findsOneWidget);
+    expect(find.text('05.01.2026'), findsOneWidget);
     // No geocoder in tests: the place pill says so instead of staying empty.
     await tester.runAsync(() => Future<void>.delayed(Duration.zero));
     await tester.pump();

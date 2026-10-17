@@ -85,7 +85,7 @@ void main() {
       );
       expect(find.textContaining('Opens in 2d 3h '), findsOneWidget);
       expect(find.text('Locked'), findsOneWidget);
-      expect(find.text('16-10-2026'), findsOneWidget);
+      expect(find.text('16.10.2026'), findsOneWidget);
     });
 
     testWidgets('an open capsule can be opened', (tester) async {

@@ -200,7 +200,7 @@ void main() {
       expect(at(const Duration(hours: 2)), '2h ago');
       expect(at(const Duration(days: 1)), '1d ago');
       expect(at(const Duration(days: 6, hours: 23)), '6d ago');
-      expect(at(const Duration(days: 7)), '9/10/2026');
+      expect(at(const Duration(days: 7)), '09.10.2026');
     });
   });
 

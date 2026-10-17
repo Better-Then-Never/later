@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
@@ -9,6 +8,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
+import '../../../core/l10n/app_dates.dart';
 
 /// Small window above a marker: title, creation date, countdown or
 /// "Check out what's inside!", and the Open/Locked button.
@@ -106,10 +106,10 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
             style: AppTextStyles.dialogTitle,
           ),
           Text(
-            DateFormat(
-              'dd-MM-yyyy',
+            AppDates.short(
+              capsule.createdAt ?? DateTime.now(),
               l10n.localeName,
-            ).format(capsule.createdAt ?? DateTime.now()),
+            ),
             style: const TextStyle(fontFamily: kAppFontFamily, fontSize: 16),
           ),
           const SizedBox(height: 8),

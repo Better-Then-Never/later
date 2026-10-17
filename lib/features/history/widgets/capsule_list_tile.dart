@@ -20,6 +20,7 @@ import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../capsule_labels.dart';
 import '../history_controller.dart';
+import '../../../core/l10n/app_dates.dart';
 
 /// One capsule in the History list.
 ///
@@ -165,10 +166,10 @@ class CapsuleListTile extends StatelessWidget {
                               // pills, in the app's language.
                               child: _pillText(
                                 context,
-                                DateFormat(
-                                  'd.M.y',
+                                AppDates.short(
+                                  createdAt,
                                   context.l10n.localeName,
-                                ).format(createdAt),
+                                ),
                               ),
                             ),
                         ],

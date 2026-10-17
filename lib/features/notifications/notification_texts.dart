@@ -1,7 +1,7 @@
-import 'package:intl/intl.dart';
 
 import '../../core/l10n/l10n.dart';
 import '../../data/models/app_notification.dart';
+import '../../core/l10n/app_dates.dart';
 
 /// Titles in the app's language (the model's `title` stays English).
 extension NotificationTypeL10n on NotificationType {
@@ -95,6 +95,6 @@ abstract final class NotificationTexts {
     if (difference.inDays < 7) {
       return strings.notificationsDaysAgo(difference.inDays);
     }
-    return DateFormat('d/M/y', strings.localeName).format(timestamp);
+    return AppDates.short(timestamp, strings.localeName);
   }
 }

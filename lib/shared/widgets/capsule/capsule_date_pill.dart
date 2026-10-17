@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../core/l10n/app_dates.dart';
 
 /// Green pill showing a date as dd.MM.yyyy.
 class CapsuleDatePill extends StatelessWidget {
@@ -35,10 +35,10 @@ class CapsuleDatePill extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
-              DateFormat(
-                'dd.MM.yyyy',
+              AppDates.short(
+                date ?? DateTime.now(),
                 Localizations.localeOf(context).toString(),
-              ).format(date ?? DateTime.now()),
+              ),
               style: AppTextStyles.pill,
             ),
           ),

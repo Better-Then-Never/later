@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
@@ -31,6 +30,7 @@ import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/capsule_image_preview.dart';
+import '../../../core/l10n/app_dates.dart';
 
 class CapsuleCreationPage extends StatelessWidget {
   const CapsuleCreationPage({
@@ -307,9 +307,7 @@ class _CapsuleCreationView extends StatelessWidget {
                                 title: l10n.capsulesCreationOpenAt,
                                 trailing: CapsuleCreationCycledInfo(
                                   infoText: openAt != null
-                                      ? DateFormat.yMMMd(
-                                          l10n.localeName,
-                                        ).format(openAt)
+                                      ? AppDates.short(openAt, l10n.localeName)
                                       : l10n.capsulesCreationSelectDate,
                                 ),
                                 leadingIconPath: AppIcons.capsuleTimer,

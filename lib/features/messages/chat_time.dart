@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../core/l10n/app_dates.dart';
 
 /// Time labels of the chat screens, in the app's language. Widgets pass
 /// `context.l10n`; without it the app-wide [AppL10n.current] is used.
@@ -29,7 +30,7 @@ abstract final class ChatTime {
           ? weekday
           : weekday[0].toUpperCase() + weekday.substring(1);
     }
-    return DateFormat('dd.MM.yyyy', locale).format(at);
+    return AppDates.short(at, locale);
   }
 
   /// Day separator: "Today", "Yesterday", then the full date ("October 16,
