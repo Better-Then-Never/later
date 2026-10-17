@@ -58,6 +58,26 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
   }
 
   @override
+  Future<List<Capsule>> sharedBy(String ownerId, {int limit = 30}) async {
+    // Two equality queries (no composite index; each passes the rules on its
+    // own), merged and sorted here.
+    final snaps = await Future.wait([
+      for (final privacy in [CapsulePrivacy.public, CapsulePrivacy.friends])
+        _capsules
+            .where('ownerId', isEqualTo: ownerId)
+            .where('privacy', isEqualTo: privacy.name)
+            .limit(limit)
+            .get(),
+    ]);
+    final all = [for (final s in snaps) ..._map(s)]
+      ..sort(
+        (a, b) =>
+            (b.takenAt ?? DateTime(0)).compareTo(a.takenAt ?? DateTime(0)),
+      );
+    return all;
+  }
+
+  @override
   Stream<Capsule?> watchById(String id) => _capsules
       .doc(id)
       .snapshots()

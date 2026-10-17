@@ -598,6 +598,15 @@ class FakeCapsuleRepository implements CapsuleRepository {
   Stream<Capsule?> watchById(String id) =>
       seeded(() => byId?.id == id ? byId : null, _byIdChanges.stream);
 
+  /// Capsules of other users, for [sharedBy].
+  List<Capsule> others = [];
+
+  @override
+  Future<List<Capsule>> sharedBy(String ownerId, {int limit = 30}) async => [
+    for (final c in others)
+      if (c.ownerId == ownerId && c.privacy != CapsulePrivacy.private) c,
+  ];
+
   @override
   Stream<List<Capsule>> watchFriends(List<String> friendIds) =>
       Stream.value(const []);

@@ -168,6 +168,10 @@ abstract interface class CapsuleRepository {
   /// when it is deleted or not visible.
   Stream<Capsule?> watchById(String id);
 
+  /// What a friend shares with the user: [ownerId]'s public and friends-only
+  /// capsules, newest first, at most [limit] of each.
+  Future<List<Capsule>> sharedBy(String ownerId, {int limit});
+
   /// Friends-only capsules of [friendIds] (chunked `whereIn`).
   Stream<List<Capsule>> watchFriends(List<String> friendIds);
 

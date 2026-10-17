@@ -12,6 +12,7 @@ import 'package:later/features/profile/widgets/profile_header_background_image.d
 import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:later/shared/widgets/user/user_square_avatar.dart';
 import 'package:later/features/friends/widgets/friend_options_modal.dart';
+import 'package:later/features/friends/widgets/profile/friend_capsules_strip.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/l10n/l10n.dart';
@@ -127,18 +128,7 @@ class YourFriendProfilePage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 8),
-                  Container(
-                    width: screenWidth - 32,
-                    height: 80,
-                    decoration: BoxDecorations.whiteCard(context),
-                    child: Center(
-                      child: DefaultText(
-                        context.l10n.friendsFriendCapsulesEmpty,
-                        fontSize: 16,
-                        color: context.palette.textMuted,
-                      ),
-                    ),
-                  ),
+                  FriendCapsulesStrip(friendUid: friendUid),
                   const SizedBox(height: 16),
                   // Shown when the friend shares them (Settings > Privacy).
                   if (FeatureFlags.achievements &&
