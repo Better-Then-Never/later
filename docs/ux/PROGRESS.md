@@ -102,3 +102,6 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **"On this day" (Tier 3), done:** `OnThisDay.from` + `OnThisDayStrip` at the top of My Capsules when the list is
   not narrowed; `FeatureFlags.memories`. Verified on the emulator with two capsules dated one and two years ago
   (added to the local emulator by an admin script). Flutter 243.
+- **Light-theme pass on tonight's UI:** menus, On this day, chat quotes. Found and fixed: the quote sat at the
+  right edge of the friend's bubble. **Quote jump, done:** tap a quote → the list scrolls to the message (also
+  far up and not yet built) and highlights it; verified with 40 messages in between.
