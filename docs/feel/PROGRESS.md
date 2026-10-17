@@ -12,7 +12,8 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
 | Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
-| Part B (B1..B7) | B1..B7 done (FEATURES_B.md; contacts flagged, icon badge not built); final measurements and gates |
+| Part B (B1..B7) | B1..B7 done (FEATURES_B.md; contacts flagged, icon badge not built) |
+| Final | measured (PERFORMANCE.md "Final", 1 run), gates green, MORNING_SUMMARY.md written, PR ready for review |
 
 ## Log
 ### 2026-10-17
@@ -117,3 +118,10 @@ on #78. Never merged, never deployed. Resume here.
 - Rig: rapid zooming on the map against the emulators ended the Firestore watch stream with RESOURCE_EXHAUSTED
   (HTTP/2 ENHANCE_YOUR_CALM); markers came back after a pause. Opening capsules by link (`later://capsule/<id>`) was
   the reliable way to view many on the phone.
+
+### 2026-10-18
+- Final measurement, one run at the owner's request (all 27 flows; the first attempt stopped at camera_capture:
+  B4 changed the shutter's label, the perf test now taps the new one). Cold start 820 ms. PERFORMANCE.md "Final".
+- The owner skipped the last phone pass (Part B in dark, at 130 % and the tap audit of its screens): BLOCKERS.md.
+- Gates: checks.sh green (404 tests, 1 pre-existing skip), rules 82/82, functions 62/62.
+- MORNING_SUMMARY.md, the STATUS_REVIEW ratings, the Part B still sheet (`docs/feel/after/partb.png`).

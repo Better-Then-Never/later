@@ -52,6 +52,17 @@ Anything listed here was **not** checked on the device, or could not be done in 
 - **Not seen on the phone (B7)**: the burst of dots and the flame's swell (too quick for screenshots); the moment
   cards with TalkBack (they are a live region; test only).
 - **Weekly limit vs daily streak (B7)**: a product decision (FEATURES_B.md, B7). Nothing is limited today.
+- **Part B screens in dark theme, at 130 % text and in English were not looked at on the phone**, and the
+  tap-target audit was not run on them (the owner asked to skip that last phone pass). Tests cover the layouts
+  (the passport stamp at 1.3× text, the 44 dp rules of the shared widgets); the Part A screens were audited.
+
+## Measurements left open (PERFORMANCE.md, "Final")
+- **One run only** for the final numbers (the owner's call): flows at 1.2–1.8 % janky (map_focus, notifications
+  tabs, chat open, the passport, camera open/close, add friends) may be run-to-run spread; not repeated.
+- **Startup's worst frame** grew from 41.9 to 84.6 ms (janky share 6.6 → 6.9 %, cold start faster: 820 ms). Not
+  traced with a detailed timeline.
+- **The compass twist** did not turn the map in the full run (it did in Part A's compass-only run); the rotation
+  was checked by hand in Part A only.
 - **Name search** finds prefixes of the whole name only ("anna f", not "fischer"); existing accounts are found by name
   after they open the new version or after the optional backfill (BACKEND_CHANGES.md §7).
 

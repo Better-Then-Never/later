@@ -202,3 +202,69 @@ Detailed timeline (`KEEP_TIMELINE=1 DETAIL=1`, `tool/dev/slow_frames.dart`) of t
 | tab_switches | 1.0 % (3 of 304 frames) | a tab coming back rebuilds its pictures (each `Image` depends on `TickerMode`, which `TabStack` turns back on) plus a garbage collection | kept: stopping hidden tabs' tickers is what took notifications and the camera to ~0–1 % |
 | startup, worst frame 26.5 → 41.9 ms | | the hidden tabs (My capsules, Messages) build their lists when their data arrives about a second after launch (40 paragraphs of first text layout in one frame); the tabs are kept alive as before; the new motion adds frames (62 → 106) but not this one | not fixed (IDEAS_NOT_DONE.md) |
 
+
+## Final: end of Session A (Part B included)
+Commit `54dde93`, **1 run** on 2026-10-18 (the owner asked for one run instead
+of three), same phone and settings (re-seeded and the app's data cleared before an attempt that stopped at the camera flow; this run followed it; Russian, semantics off). Raw
+table: `docs/feel/perf/final.md`. One run means single values, not medians: a flow at 0.5–1.5 % may move by a frame or
+two between runs (Part A's runs differed by up to 2.5 points on add friends). ✓ = within the budget, ✗ = not.
+
+| Flow | Janky % baseline → A → final | Worst frame ms A → final | p90 ms final | |
+|---|---|---|---|---|
+| startup (launch → home) | 8.1 → 6.6 → 6.9 | 41.9 → **84.6** | 4.1 | ✗ (worst frame grew; below) |
+| tab_switches | 0.3 → 1.0 → **0.7** | 20.5 → 21.7 | 3.8 | ✓ janky, ✗ one frame |
+| history_scroll | 0 → 0 → 0.3 | 5.5 → 8.8 | 3.5 | ✓ |
+| settings_open_close | 12.4 → 3.3 → **0.8** | 14.4 → 14.2 | 4.6 | ✓ |
+| theme_switch | 16.8 → 0.4 → 0.8 | 21.1 → 28.1 | 3.0 | ✓ janky, ✗ one first frame |
+| add_friends_transition | 2.5 → 1.2 → 1.2 | 22.6 → 21.6 | 4.2 | ✗ (at the line) |
+| notifications_tabs | 10.8 → 1.1 → 1.5 | 10.9 → 20.8 | 4.1 | ✗ (day headers and the news row are new on the first open) |
+| chat_open | 3.2 → 1.7 → 1.4 | 15.2 → 12.1 | 4.9 | ✗ (at the line) |
+| chat_scroll | 0 → 0 → 0 | 7.0 → 6.2 | 3.9 | ✓ |
+| chat_options_sheet | 0 → 1.2 → **0.4** | 10.6 → 13.6 | 4.1 | ✓ |
+| map_focus | 0.6 → 0 → 1.8 | 8.0 → 11.1 | 3.5 | ✗ (3 of 163 frames; one run) |
+| capsule_dialog | 0.7 → 0.6 → 0.6 | 17.8 → 9.7 | 3.6 | ✓ |
+| photo_viewer | 0.8 → 0 → 0 | 4.6 → 6.7 | 3.8 | ✓ |
+| map_zoom_out | 0 → 0 → 0 | 4.5 → 5.1 | 3.4 | ✓ |
+| map_pan_heatmap | 0.5 → 0 → 0 | 3.8 → 4.2 | 3.4 | ✓ |
+| map_zoom_in | 0 → 0 → 0 | 4.2 → 6.8 | 3.0 | ✓ |
+| map_pan_markers | 0 → 0 → 0 | 4.0 → 6.5 | 3.1 | ✓ |
+| map_compass | – → 0 → 0 | 4.3 → 4.6 | 3.3 | ✓ (frames; the twist did not turn the map in this run, below) |
+| camera_open_close | 1.2 → 0.6 → 1.2 | 9.6 → 16.1 | 3.8 | ✗ (2 of 170 frames) |
+| camera_capture | 1.4 → 0.7 → 0.6 | 13.8 → 13.3 | 3.1 | ✓ |
+| camera_pinch | – → 0 → 0.9 | 5.8 → 8.4 | 4.8 | ✓ |
+| creation_save | – → 0.4 → 0.4 | 11.5 → 12.3 | 2.9 | ✓ |
+| **Part B flows** | | | | |
+| profile_scroll (B3: the new profile tab) | – → – → 0.3 | – → 8.7 | 3.9 | ✓ |
+| notifications_scroll (B6: days, the team's news) | – → – → 0.6 | – → 11.4 | 3.5 | ✓ |
+| passport_open_scroll (B7: open, scroll the stamps, back) | – → – → 1.3 | – → 11.0 | 5.3 | ✗ (4 of 306 frames; the first check run: 0.3) |
+| map_filter_sheet (B5) | – → – → 0.8 | – → 12.2 | 3.5 | ✓ |
+| streak_card (B7) | – → – → 0 | – → 7.6 | 3.9 | ✓ |
+
+| Timed | Baseline | A | Final | Budget | |
+|---|---|---|---|---|---|
+| Cold start, process → signed-in home (5 launches, median) | 867 ms | 958 ms | **820 ms** (810–829) | < 2 s | ✓ |
+| Launch → home inside the test | 397 ms | 469 ms | 623 ms | | |
+| Camera: tap → shutter feedback frame | 26 ms | 24 ms | **20 ms** | < 300 ms | ✓ |
+| Camera: tap → picture file written | 1,053 ms | 1,083 ms | 1,110 ms | | |
+| Camera: tap → first frame of creation | 1,070 ms | 1,111 ms | 1,131 ms | (< 300 ms perceived: met by the frozen preview) | ✗ |
+| Chat (600 messages): tap → first frame with messages | 21 ms | 23 ms | 23 ms (28, 18) | < 400 ms | ✓ |
+| Creation: save → page closed (emulators, upload included) | – | 1,877 ms | 1,786 ms | | |
+| Theme switch flow, wall time | 22.1 s | 4.9 s | 4.8 s | | ✓ |
+
+**Freezes**: one Android main-thread stall of 54 frames (0.45 s) in the whole run, at the launch; none after it.
+
+**Reading it.**
+- Part B added a lot of screen without making the app heavier: every new flow is at or under 1.3 % janky frames,
+  scrolls and pans stay at 0–0.3 %, and the flows Part A fixed held (settings 0.8 %, theme switch 0.8 %, chat
+  options 0.4 %). Cold start is faster than at checkpoint A (820 vs 958 ms).
+- Over the line by one to three frames: map_focus 1.8 %, notifications_tabs 1.5 %, chat_open 1.4 %, the passport
+  1.3 % (0.3 % in its first run), camera_open_close and add_friends 1.2 %. With one run these are within the spread
+  Part A saw between runs; the notification tab does build more on its first open now (day headers, the
+  announcement row). Not investigated further.
+- **Startup's worst frame doubled** (41.9 → 84.6 ms) while its janky share stayed (6.6 → 6.9 %) and cold start got
+  faster. Part A traced this frame to the hidden tabs laying out their lists when their data arrives; the profile tab
+  now holds more (the passport row, quick actions) and starts the moments and limits readers. Not traced with a
+  detailed timeline in this session (BLOCKERS.md, IDEAS_NOT_DONE.md "Hidden tabs building their lists at startup").
+- **The compass twist** did not turn the map in this full run (bearing 0 after it and after the tap), while the
+  compass-only run of Part A turned it to 296°. In the full run the map has been focused, zoomed and panned before;
+  the gesture's frames were measured (0 %), the rotation itself was not reproduced. Checked by hand in Part A.

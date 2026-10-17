@@ -1,0 +1,7 @@
+launch 1: first frame 810 ms, home 810 ms
+launch 2: first frame 817 ms, home 817 ms
+launch 3: first frame 824 ms, home 824 ms
+launch 4: first frame 829 ms, home 829 ms
+launch 5: first frame 820 ms, home 820 ms
+median first frame: 820 ms
+median home: 820 ms

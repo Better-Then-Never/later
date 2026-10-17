@@ -578,3 +578,13 @@ numbers in `docs/feel/PERFORMANCE.md`. Push delivery is still unverified (no dev
 | 21 | Fixed (B4). |
 | 22 | Fixed (B7). |
 | 10, 15, 18–20 | Unchanged. |
+
+### Ratings at the end of Session A
+| Area | Checkpoint A | Now | Why |
+|---|---|---|---|
+| Smoothness and feel | 7/10 | 7.5/10 | Part B added many screens at 0–1.3 % janky frames, settings fell to 0.8 %, cold start to 820 ms. Opening things still costs a frame or three, and startup's worst frame grew to 84.6 ms (one run; PERFORMANCE.md "Final"). |
+| Style consistency | 7.5/10 | 7.5/10 | New screens use the same tokens, motion and cards; checked in light Russian only (dark, 130 % and the tap audit of Part B screens skipped, BLOCKERS). |
+| Notifications reliability | 4/10 | 5.5/10 | The tab, routing (tested), group and co-author events, vibration, capped fan-out and fewer trigger runs; still not one push delivered end to end. |
+| Chat quality | 5/10 | 7.5/10 | Photos, an offline queue, typing, groups, voice, stickers, swipes, pins, forward, report, delete for me. Groups have no media; no iOS voice. |
+| Feature completeness against the prompts | 5/10 | 8.5/10 | B1–B7 built and seen on the phone; contacts suggestions flagged off; the icon badge not built. |
+| Overall readiness to ship | 5/10 | 6/10 | Much more is built and measured on Android hardware, but the backend of #78 and #79 is undeployed (BACKEND_CHANGES.md has the steps), no push was delivered, and nothing ran on iOS. |
