@@ -342,12 +342,18 @@ class _PlaceNameState extends State<_PlaceName> {
       future: _name,
       builder: (context, snapshot) {
         final name = snapshot.data;
+        final l10n = context.l10n;
+        // Never an empty pill: a quiet ellipsis while looking it up, the
+        // same fallback as the other place pills when the lookup fails
+        // (offline, geocoder not ready).
         return _pillText(
           context,
           name ??
               (widget.capsule.location == null
-                  ? context.l10n.placeNoLocation
-                  : ''),
+                  ? l10n.placeNoLocation
+                  : snapshot.connectionState == ConnectionState.done
+                  ? l10n.placeUnknown
+                  : '…'),
         );
       },
     );

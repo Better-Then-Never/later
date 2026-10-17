@@ -283,6 +283,10 @@ void main() {
     expect(find.text('Private visibility'), findsOneWidget);
     expect(find.text('11.1 km from you'), findsOneWidget);
     expect(find.text('5.1.2026'), findsOneWidget);
+    // No geocoder in tests: the place pill says so instead of staying empty.
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pump();
+    expect(find.text('Unknown location'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (w) => w is Semantics && w.properties.label == 'Remove from favorites',
