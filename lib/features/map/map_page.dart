@@ -364,7 +364,7 @@ class _MapViewState extends State<_MapView> {
     final raised = selected != null
         ? cardHeight + 12
         : showHint
-        ? FirstCapsuleHint.height + 12
+        ? FirstCapsuleHint.heightFor(context) + 12
         : 0.0;
     return PopScope(
       // Back closes the card first.

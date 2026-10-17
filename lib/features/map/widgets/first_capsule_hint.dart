@@ -20,8 +20,10 @@ class FirstCapsuleHint extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onClose;
 
-  /// Fixed, so the map can keep its Google logo above the card (F-12).
-  static const height = 88.0;
+  /// Known in advance, so the map can keep its Google logo above the card
+  /// (F-12); grows with the system text size (D-21).
+  static double heightFor(BuildContext context) =>
+      88 * MediaQuery.textScalerOf(context).scale(16) / 16;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +36,7 @@ class FirstCapsuleHint extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           child: Container(
-            height: height,
+            height: heightFor(context),
             padding: const EdgeInsets.fromLTRB(14, 10, 4, 10),
             decoration: BoxDecorations.whiteCard(context),
             child: Row(
