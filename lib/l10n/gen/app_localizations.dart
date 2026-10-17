@@ -266,12 +266,6 @@ abstract class AppLocalizations {
   /// **'Your first one is a capsule away.'**
   String get achievementsNoneYet;
 
-  /// No description provided for @achievementsProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'{value} of {goal}'**
-  String achievementsProgress(String value, String goal);
-
   /// No description provided for @achievementsSeeAll.
   ///
   /// In en, this message translates to:
@@ -1046,12 +1040,6 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get commonCancel;
 
-  /// No description provided for @commonClose.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get commonClose;
-
   /// No description provided for @commonConfirm.
   ///
   /// In en, this message translates to:
@@ -1069,12 +1057,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get commonDelete;
-
-  /// No description provided for @commonDone.
-  ///
-  /// In en, this message translates to:
-  /// **'Done'**
-  String get commonDone;
 
   /// No description provided for @commonErrorGeneric.
   ///

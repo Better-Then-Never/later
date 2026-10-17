@@ -7,11 +7,9 @@
   "commonConfirm": "Confirm",
   "commonSave": "Save",
   "commonDelete": "Delete",
-  "commonClose": "Close",
   "commonRetry": "Try again",
   "commonLoading": "Loading...",
   "commonContinue": "Continue",
-  "commonDone": "Done",
   "commonBack": "Back",
   "@commonBack": {
     "description": "Accessibility label of the back arrow."

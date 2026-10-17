@@ -104,17 +104,6 @@
   "achievementsDescription": "Unlocked by using Later, never by paying",
   "achievementsLocked": "Locked",
   "achievementsNoneYet": "Your first one is a capsule away.",
-  "achievementsProgress": "{value} of {goal}",
-  "@achievementsProgress": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      },
-      "goal": {
-        "type": "String"
-      }
-    }
-  },
   "achievementsSeeAll": "See all",
   "achievementsStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
   "@achievementsStreakDays": {
@@ -456,11 +445,9 @@
     "description": "Accessibility label of the back arrow."
   },
   "commonCancel": "Cancel",
-  "commonClose": "Close",
   "commonConfirm": "Confirm",
   "commonContinue": "Continue",
   "commonDelete": "Delete",
-  "commonDone": "Done",
   "commonErrorGeneric": "Something went wrong. Please try again.",
   "commonLoading": "Loading...",
   "commonNoConnection": "No connection. Please try again.",

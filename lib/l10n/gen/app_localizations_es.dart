@@ -168,11 +168,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'El primero está a una cápsula de distancia.';
 
   @override
-  String achievementsProgress(String value, String goal) {
-    return '$value de $goal';
-  }
-
-  @override
   String get achievementsSeeAll => 'Ver todos';
 
   @override
@@ -607,9 +602,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commonCancel => 'Cancelar';
 
   @override
-  String get commonClose => 'Cerrar';
-
-  @override
   String get commonConfirm => 'Confirmar';
 
   @override
@@ -617,9 +609,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get commonDelete => 'Eliminar';
-
-  @override
-  String get commonDone => 'Listo';
 
   @override
   String get commonErrorGeneric => 'Algo salió mal. Inténtalo de nuevo.';

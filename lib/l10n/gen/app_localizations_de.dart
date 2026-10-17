@@ -167,11 +167,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get achievementsNoneYet => 'Dein erster ist nur eine Kapsel entfernt.';
 
   @override
-  String achievementsProgress(String value, String goal) {
-    return '$value von $goal';
-  }
-
-  @override
   String get achievementsSeeAll => 'Alle';
 
   @override
@@ -616,9 +611,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonCancel => 'Abbrechen';
 
   @override
-  String get commonClose => 'Schließen';
-
-  @override
   String get commonConfirm => 'Bestätigen';
 
   @override
@@ -626,9 +618,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get commonDelete => 'Löschen';
-
-  @override
-  String get commonDone => 'Fertig';
 
   @override
   String get commonErrorGeneric =>

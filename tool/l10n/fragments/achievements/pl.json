@@ -5,7 +5,6 @@
   "achievementsNoneYet": "Do pierwszego dzieli cię jedna kapsuła.",
   "achievementsLocked": "Zablokowane",
   "achievementsTier": "Poziom {tier} z {tiers}",
-  "achievementsProgress": "{value} z {goal}",
   "achievementsStreakDays": "{count, plural, one{Seria: {count} dzień} few{Seria: {count} dni} many{Seria: {count} dni} other{Seria: {count} dnia}}",
   "achievementsStreakTodayDone": "Dzisiejszy dzień już się liczy",
   "achievementsStreakKeep": "Utwórz dziś kapsułę, żeby utrzymać serię",

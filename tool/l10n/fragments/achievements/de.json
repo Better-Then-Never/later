@@ -5,7 +5,6 @@
   "achievementsNoneYet": "Dein erster ist nur eine Kapsel entfernt.",
   "achievementsLocked": "Gesperrt",
   "achievementsTier": "Stufe {tier} von {tiers}",
-  "achievementsProgress": "{value} von {goal}",
   "achievementsStreakDays": "{count, plural, =1{Serie: 1 Tag} other{Serie: {count} Tage}}",
   "achievementsStreakTodayDone": "Heute zählt schon",
   "achievementsStreakKeep": "Erstelle heute eine Kapsel, um sie zu halten",

@@ -5,7 +5,6 @@
   "achievementsNoneYet": "До первого — всего одна капсула.",
   "achievementsLocked": "Закрыто",
   "achievementsTier": "Уровень {tier} из {tiers}",
-  "achievementsProgress": "{value} из {goal}",
   "achievementsStreakDays": "{count, plural, one{Серия: {count} день} few{Серия: {count} дня} many{Серия: {count} дней} other{Серия: {count} дня}}",
   "achievementsStreakTodayDone": "Сегодня уже засчитано",
   "achievementsStreakKeep": "Создайте капсулу сегодня, чтобы не прервать серию",

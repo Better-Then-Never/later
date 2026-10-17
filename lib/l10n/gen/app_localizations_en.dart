@@ -167,11 +167,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get achievementsNoneYet => 'Your first one is a capsule away.';
 
   @override
-  String achievementsProgress(String value, String goal) {
-    return '$value of $goal';
-  }
-
-  @override
   String get achievementsSeeAll => 'See all';
 
   @override
@@ -600,9 +595,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonCancel => 'Cancel';
 
   @override
-  String get commonClose => 'Close';
-
-  @override
   String get commonConfirm => 'Confirm';
 
   @override
@@ -610,9 +602,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonDelete => 'Delete';
-
-  @override
-  String get commonDone => 'Done';
 
   @override
   String get commonErrorGeneric => 'Something went wrong. Please try again.';

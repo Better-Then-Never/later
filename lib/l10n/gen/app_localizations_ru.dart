@@ -185,11 +185,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get achievementsNoneYet => 'До первого — всего одна капсула.';
 
   @override
-  String achievementsProgress(String value, String goal) {
-    return '$value из $goal';
-  }
-
-  @override
   String get achievementsSeeAll => 'Все';
 
   @override
@@ -627,9 +622,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonCancel => 'Отмена';
 
   @override
-  String get commonClose => 'Закрыть';
-
-  @override
   String get commonConfirm => 'Подтвердить';
 
   @override
@@ -637,9 +629,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get commonDelete => 'Удалить';
-
-  @override
-  String get commonDone => 'Готово';
 
   @override
   String get commonErrorGeneric => 'Что-то пошло не так. Попробуйте ещё раз.';
