@@ -230,6 +230,27 @@ void main() {
       c.dispose();
     });
 
+    test('with read receipts off nothing is told and nothing shown', () async {
+      await say('bob', 'me', 'Hello');
+      final c = ChatController(
+        friendUid: 'bob',
+        chats: chats,
+        friends: friends,
+        readReceipts: () => false,
+      );
+      await pumpEventQueue();
+      expect(chatRepo.calls, contains('unread0:bob_me:me'));
+      expect(chatRepo.calls.where((x) => x.startsWith('read:')), isEmpty);
+      expect(chats.chatWith('bob')!.unreadFor('me'), 0);
+
+      expect(await c.send('hi'), isNull);
+      chatRepo.now = chatRepo.now.add(const Duration(minutes: 1));
+      await chatRepo.markRead(Chat.idBetween('me', 'bob'), reader: 'bob');
+      await pumpEventQueue();
+      expect(c.receipt, ReceiptStatus.sent);
+      c.dispose();
+    });
+
     test('a failed message stays, can be retried, and never doubles', () async {
       final c = open();
       await pumpEventQueue();

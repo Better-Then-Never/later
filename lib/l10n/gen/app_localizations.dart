@@ -1646,6 +1646,18 @@ abstract class AppLocalizations {
   /// **'App permissions'**
   String get settingsAppPermissions;
 
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsAppearanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'How Later looks on this phone'**
+  String get settingsAppearanceDescription;
+
   /// Under the Blocked users row: how many people are blocked (1 or more).
   ///
   /// In en, this message translates to:
@@ -2054,6 +2066,36 @@ abstract class AppLocalizations {
   /// **'Later: question'**
   String get settingsHelpSubjectQuestion;
 
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The language of the app and of your notifications'**
+  String get settingsLanguageDescription;
+
+  /// No description provided for @settingsLanguageFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications from Later arrive in this language too.'**
+  String get settingsLanguageFooter;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone\'s language'**
+  String get settingsLanguageSystem;
+
+  /// Under 'Phone's language': the language that choice gives right now, in its own name (e.g. 'Deutsch').
+  ///
+  /// In en, this message translates to:
+  /// **'Now: {language}'**
+  String settingsLanguageSystemHint(String language);
+
   /// No description provided for @settingsLogOut.
   ///
   /// In en, this message translates to:
@@ -2120,6 +2162,12 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get settingsNotifications;
 
+  /// No description provided for @settingsNotificationsAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievements'**
+  String get settingsNotificationsAchievements;
+
   /// No description provided for @settingsNotificationsAllow.
   ///
   /// In en, this message translates to:
@@ -2144,6 +2192,18 @@ abstract class AppLocalizations {
   /// **'From people you follow with notifications on'**
   String get settingsNotificationsCapsulesHint;
 
+  /// No description provided for @settingsNotificationsComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get settingsNotificationsComments;
+
+  /// No description provided for @settingsNotificationsCommentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'On your capsules and replies to you'**
+  String get settingsNotificationsCommentsHint;
+
   /// No description provided for @settingsNotificationsDescription.
   ///
   /// In en, this message translates to:
@@ -2156,6 +2216,18 @@ abstract class AppLocalizations {
   /// **'New followers'**
   String get settingsNotificationsFollowers;
 
+  /// No description provided for @settingsNotificationsFriendRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend requests'**
+  String get settingsNotificationsFriendRequests;
+
+  /// No description provided for @settingsNotificationsFriendRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Received and accepted'**
+  String get settingsNotificationsFriendRequestsHint;
+
   /// No description provided for @settingsNotificationsMessages.
   ///
   /// In en, this message translates to:
@@ -2167,6 +2239,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mute a single chat from its menu in Messages.'**
   String get settingsNotificationsMuteHint;
+
+  /// No description provided for @settingsNotificationsNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News from Later'**
+  String get settingsNotificationsNews;
+
+  /// No description provided for @settingsNotificationsNewsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rare announcements from the team'**
+  String get settingsNotificationsNewsHint;
 
   /// Under the Notifications row: push notifications are off.
   ///
@@ -2210,11 +2294,29 @@ abstract class AppLocalizations {
   /// **'You get no pushes from Later'**
   String get settingsNotificationsPushOff;
 
+  /// No description provided for @settingsNotificationsReactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactions'**
+  String get settingsNotificationsReactions;
+
   /// No description provided for @settingsNotificationsSound.
   ///
   /// In en, this message translates to:
   /// **'Sound and vibration'**
   String get settingsNotificationsSound;
+
+  /// No description provided for @settingsNotificationsStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak reminder'**
+  String get settingsNotificationsStreak;
+
+  /// No description provided for @settingsNotificationsStreakHint.
+  ///
+  /// In en, this message translates to:
+  /// **'In the evening, when your streak would end tonight'**
+  String get settingsNotificationsStreakHint;
 
   /// No description provided for @settingsPassword.
   ///
@@ -2414,6 +2516,66 @@ abstract class AppLocalizations {
   /// **'What Later may use on this phone'**
   String get settingsPermissionsDescription;
 
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsPrivacyAchievements.
+  ///
+  /// In en, this message translates to:
+  /// **'Show my achievements'**
+  String get settingsPrivacyAchievements;
+
+  /// No description provided for @settingsPrivacyAchievementsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends see them on your profile'**
+  String get settingsPrivacyAchievementsHint;
+
+  /// No description provided for @settingsPrivacyApproximate.
+  ///
+  /// In en, this message translates to:
+  /// **'Approximate location'**
+  String get settingsPrivacyApproximate;
+
+  /// No description provided for @settingsPrivacyApproximateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Places new capsules within about a kilometre, not at the exact spot'**
+  String get settingsPrivacyApproximateHint;
+
+  /// No description provided for @settingsPrivacyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'What others see and what new capsules start with'**
+  String get settingsPrivacyDescription;
+
+  /// No description provided for @settingsPrivacyNewCapsulesFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change both for each capsule when you create it.'**
+  String get settingsPrivacyNewCapsulesFooter;
+
+  /// No description provided for @settingsPrivacyReadReceipts.
+  ///
+  /// In en, this message translates to:
+  /// **'Read receipts'**
+  String get settingsPrivacyReadReceipts;
+
+  /// No description provided for @settingsPrivacyReadReceiptsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off, friends do not see when you have read their messages, and you do not see theirs'**
+  String get settingsPrivacyReadReceiptsHint;
+
+  /// No description provided for @settingsPrivacyVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to'**
+  String get settingsPrivacyVisibility;
+
   /// Title of the time picker for the start of quiet hours.
   ///
   /// In en, this message translates to:
@@ -2480,6 +2642,18 @@ abstract class AppLocalizations {
   /// **'MAP'**
   String get settingsSectionMap;
 
+  /// No description provided for @settingsSectionMoreActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVITY'**
+  String get settingsSectionMoreActivity;
+
+  /// No description provided for @settingsSectionNewCapsules.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW CAPSULES'**
+  String get settingsSectionNewCapsules;
+
   /// No description provided for @settingsSectionNotificationsPrivacy.
   ///
   /// In en, this message translates to:
@@ -2504,11 +2678,23 @@ abstract class AppLocalizations {
   /// **'QUIET HOURS'**
   String get settingsSectionQuietHours;
 
+  /// No description provided for @settingsSectionSize.
+  ///
+  /// In en, this message translates to:
+  /// **'SIZE'**
+  String get settingsSectionSize;
+
   /// No description provided for @settingsSectionSupport.
   ///
   /// In en, this message translates to:
   /// **'SUPPORT'**
   String get settingsSectionSupport;
+
+  /// No description provided for @settingsSectionTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'THEME'**
+  String get settingsSectionTheme;
 
   /// No description provided for @settingsSectionThisPhone.
   ///
@@ -2516,11 +2702,41 @@ abstract class AppLocalizations {
   /// **'THIS PHONE'**
   String get settingsSectionThisPhone;
 
+  /// No description provided for @settingsSectionVisibility.
+  ///
+  /// In en, this message translates to:
+  /// **'WHAT OTHERS SEE'**
+  String get settingsSectionVisibility;
+
   /// Under the Password row for accounts that sign in with Google only.
   ///
   /// In en, this message translates to:
   /// **'Signed in with Google'**
   String get settingsSignedInWithGoogle;
+
+  /// No description provided for @settingsSizeFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Makes everything on screen smaller or larger, text included.'**
+  String get settingsSizeFooter;
+
+  /// No description provided for @settingsSizeLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get settingsSizeLarge;
+
+  /// No description provided for @settingsSizeSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get settingsSizeSmall;
+
+  /// No description provided for @settingsSizeStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get settingsSizeStandard;
 
   /// No description provided for @settingsStorageCache.
   ///
@@ -2588,6 +2804,24 @@ abstract class AppLocalizations {
   /// **'User id: {uid}'**
   String settingsSupportInfoUserId(String uid);
 
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as phone'**
+  String get settingsThemeSystem;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -2629,6 +2863,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Username updated successfully!'**
   String get settingsUsernameUpdated;
+
+  /// No description provided for @settingsVisibilityFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get settingsVisibilityFriends;
+
+  /// No description provided for @settingsVisibilityFriendsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your friends'**
+  String get settingsVisibilityFriendsHint;
+
+  /// No description provided for @settingsVisibilityPrivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get settingsVisibilityPrivate;
+
+  /// No description provided for @settingsVisibilityPrivateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you'**
+  String get settingsVisibilityPrivateHint;
+
+  /// No description provided for @settingsVisibilityPublic.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get settingsVisibilityPublic;
+
+  /// No description provided for @settingsVisibilityPublicHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone on the map'**
+  String get settingsVisibilityPublicHint;
 
   /// Hint of the password field that confirms an account change.
   ///

@@ -846,6 +846,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsAppPermissions => 'Permisos de la app';
 
   @override
+  String get settingsAppearance => 'Apariencia';
+
+  @override
+  String get settingsAppearanceDescription =>
+      'Cómo se ve Later en este teléfono';
+
+  @override
   String settingsBlockedCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1101,6 +1108,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsHelpSubjectQuestion => 'Later: pregunta';
 
   @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageDescription =>
+      'El idioma de la app y de tus notificaciones';
+
+  @override
+  String get settingsLanguageFooter =>
+      'Las notificaciones de Later también llegarán en este idioma.';
+
+  @override
+  String get settingsLanguageSystem => 'Idioma del teléfono';
+
+  @override
+  String settingsLanguageSystemHint(String language) {
+    return 'Ahora: $language';
+  }
+
+  @override
   String get settingsLogOut => 'Cerrar sesión';
 
   @override
@@ -1135,6 +1161,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsNotifications => 'Notificaciones';
 
   @override
+  String get settingsNotificationsAchievements => 'Logros';
+
+  @override
   String get settingsNotificationsAllow => 'Permitir notificaciones';
 
   @override
@@ -1149,10 +1178,23 @@ class AppLocalizationsEs extends AppLocalizations {
       'De personas que sigues con las notificaciones activadas';
 
   @override
+  String get settingsNotificationsComments => 'Comentarios';
+
+  @override
+  String get settingsNotificationsCommentsHint =>
+      'En tus cápsulas y respuestas para ti';
+
+  @override
   String get settingsNotificationsDescription => 'Elige de qué te avisa Later';
 
   @override
   String get settingsNotificationsFollowers => 'Nuevos seguidores';
+
+  @override
+  String get settingsNotificationsFriendRequests => 'Solicitudes de amistad';
+
+  @override
+  String get settingsNotificationsFriendRequestsHint => 'Recibidas y aceptadas';
 
   @override
   String get settingsNotificationsMessages => 'Mensajes';
@@ -1160,6 +1202,12 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsNotificationsMuteHint =>
       'Silencia un chat concreto desde su menú en Mensajes.';
+
+  @override
+  String get settingsNotificationsNews => 'Novedades de Later';
+
+  @override
+  String get settingsNotificationsNewsHint => 'Anuncios ocasionales del equipo';
 
   @override
   String get settingsNotificationsOff => 'Desactivadas';
@@ -1186,7 +1234,17 @@ class AppLocalizationsEs extends AppLocalizations {
       'No recibes notificaciones push de Later';
 
   @override
+  String get settingsNotificationsReactions => 'Reacciones';
+
+  @override
   String get settingsNotificationsSound => 'Sonido y vibración';
+
+  @override
+  String get settingsNotificationsStreak => 'Recordatorio de racha';
+
+  @override
+  String get settingsNotificationsStreakHint =>
+      'Por la tarde, si tu racha terminaría hoy';
 
   @override
   String get settingsPassword => 'Contraseña';
@@ -1310,6 +1368,41 @@ class AppLocalizationsEs extends AppLocalizations {
       'Qué puede usar Later en este teléfono';
 
   @override
+  String get settingsPrivacy => 'Privacidad';
+
+  @override
+  String get settingsPrivacyAchievements => 'Mostrar mis logros';
+
+  @override
+  String get settingsPrivacyAchievementsHint =>
+      'Tus amigos los ven en tu perfil';
+
+  @override
+  String get settingsPrivacyApproximate => 'Ubicación aproximada';
+
+  @override
+  String get settingsPrivacyApproximateHint =>
+      'Coloca las cápsulas nuevas a un kilómetro aproximado, no en el punto exacto';
+
+  @override
+  String get settingsPrivacyDescription =>
+      'Qué ven los demás y cómo empiezan las cápsulas nuevas';
+
+  @override
+  String get settingsPrivacyNewCapsulesFooter =>
+      'Puedes cambiar ambas opciones en cada cápsula al crearla.';
+
+  @override
+  String get settingsPrivacyReadReceipts => 'Confirmaciones de lectura';
+
+  @override
+  String get settingsPrivacyReadReceiptsHint =>
+      'Si las desactivas, tus amigos no verán cuándo leíste sus mensajes y tú tampoco verás los suyos';
+
+  @override
+  String get settingsPrivacyVisibility => 'Visible para';
+
+  @override
   String get settingsQuietFrom => 'Silencio desde';
 
   @override
@@ -1344,6 +1437,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSectionMap => 'MAPA';
 
   @override
+  String get settingsSectionMoreActivity => 'ACTIVIDAD';
+
+  @override
+  String get settingsSectionNewCapsules => 'CÁPSULAS NUEVAS';
+
+  @override
   String get settingsSectionNotificationsPrivacy =>
       'NOTIFICACIONES Y PRIVACIDAD';
 
@@ -1357,13 +1456,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSectionQuietHours => 'HORAS DE SILENCIO';
 
   @override
+  String get settingsSectionSize => 'TAMAÑO';
+
+  @override
   String get settingsSectionSupport => 'SOPORTE';
+
+  @override
+  String get settingsSectionTheme => 'TEMA';
 
   @override
   String get settingsSectionThisPhone => 'ESTE TELÉFONO';
 
   @override
+  String get settingsSectionVisibility => 'QUÉ VEN LOS DEMÁS';
+
+  @override
   String get settingsSignedInWithGoogle => 'Sesión iniciada con Google';
+
+  @override
+  String get settingsSizeFooter =>
+      'Hace todo lo que hay en pantalla más pequeño o más grande, también el texto.';
+
+  @override
+  String get settingsSizeLarge => 'Grande';
+
+  @override
+  String get settingsSizeSmall => 'Pequeño';
+
+  @override
+  String get settingsSizeStandard => 'Estándar';
 
   @override
   String get settingsStorageCache => 'Caché';
@@ -1408,6 +1529,15 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get settingsThemeDark => 'Oscuro';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeSystem => 'Igual que el teléfono';
+
+  @override
   String get settingsTitle => 'Ajustes';
 
   @override
@@ -1428,6 +1558,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsUsernameUpdated => '¡Nombre de usuario actualizado!';
+
+  @override
+  String get settingsVisibilityFriends => 'Amigos';
+
+  @override
+  String get settingsVisibilityFriendsHint => 'Solo tus amigos';
+
+  @override
+  String get settingsVisibilityPrivate => 'Privada';
+
+  @override
+  String get settingsVisibilityPrivateHint => 'Solo tú';
+
+  @override
+  String get settingsVisibilityPublic => 'Pública';
+
+  @override
+  String get settingsVisibilityPublicHint => 'Todos en el mapa';
 
   @override
   String get settingsYourPassword => 'Tu contraseña';

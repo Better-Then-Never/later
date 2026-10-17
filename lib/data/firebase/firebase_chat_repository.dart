@@ -136,11 +136,14 @@ class FirebaseChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String chatId, {required String reader}) =>
-      _chats.doc(chatId).update({
-        'unreadCounts.$reader': 0,
-        'lastReadAt.$reader': FieldValue.serverTimestamp(),
-      });
+  Future<void> markRead(
+    String chatId, {
+    required String reader,
+    bool receipt = true,
+  }) => _chats.doc(chatId).update({
+    'unreadCounts.$reader': 0,
+    if (receipt) 'lastReadAt.$reader': FieldValue.serverTimestamp(),
+  });
 
   @override
   Future<void> clearHistory(String chatId) async {

@@ -146,9 +146,13 @@ abstract interface class ChatRepository {
     required Capsule capsule,
   });
 
-  /// [reader] has read [chatId]: their unread count goes to 0 and their read
-  /// receipt to now, in one write.
-  Future<void> markRead(String chatId, {required String reader});
+  /// [reader] has read [chatId]: their unread count goes to 0 and, with
+  /// [receipt], their read receipt to now, in one write.
+  Future<void> markRead(
+    String chatId, {
+    required String reader,
+    bool receipt = true,
+  });
 
   /// Deletes every message of [chatId], for both participants.
   Future<void> clearHistory(String chatId);

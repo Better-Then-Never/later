@@ -26,6 +26,15 @@ class AppearanceController extends ChangeNotifier {
 
   static const supportedLanguages = ['en', 'ru', 'pl', 'de', 'es'];
 
+  /// Each language in its own name (never translated).
+  static const languageNames = {
+    'en': 'English',
+    'ru': 'Русский',
+    'pl': 'Polski',
+    'de': 'Deutsch',
+    'es': 'Español',
+  };
+
   static const _themeKey = 'theme_mode';
   static const _languageKey = 'language';
   static const _uiSizeKey = 'ui_size';

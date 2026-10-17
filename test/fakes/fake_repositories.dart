@@ -535,8 +535,12 @@ class FakeChatRepository implements ChatRepository {
   }
 
   @override
-  Future<void> markRead(String chatId, {required String reader}) async {
-    calls.add('read:$chatId:$reader');
+  Future<void> markRead(
+    String chatId, {
+    required String reader,
+    bool receipt = true,
+  }) async {
+    calls.add(receipt ? 'read:$chatId:$reader' : 'unread0:$chatId:$reader');
     final chat = chats[chatId];
     if (chat == null) return;
     chats[chatId] = Chat(
@@ -546,7 +550,7 @@ class FakeChatRepository implements ChatRepository {
       lastUpdated: chat.lastUpdated,
       lastSenderId: chat.lastSenderId,
       unreadCounts: {...chat.unreadCounts, reader: 0},
-      lastReadAt: {...chat.lastReadAt, reader: now},
+      lastReadAt: receipt ? {...chat.lastReadAt, reader: now} : chat.lastReadAt,
     );
     _notify();
   }

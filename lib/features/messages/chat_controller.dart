@@ -21,8 +21,10 @@ class ChatController extends ChangeNotifier {
     required ChatsStore chats,
     required FriendsStore friends,
     this.pageSize = 50,
+    bool Function()? readReceipts,
   }) : _chats = chats,
-       _friends = friends {
+       _friends = friends,
+       _readReceipts = readReceipts ?? (() => true) {
     _chats.addListener(_onChatsChanged);
     _subscribe();
     unawaited(_checkBlockedByFriend());
@@ -32,6 +34,10 @@ class ChatController extends ChangeNotifier {
   final int pageSize;
   final ChatsStore _chats;
   final FriendsStore _friends;
+
+  /// Settings > Privacy > Read receipts: off, the friend does not learn when
+  /// the user read their messages, and the user does not see it either.
+  final bool Function() _readReceipts;
 
   StreamSubscription<List<ChatMessage>>? _sub;
   late int _limit = pageSize;
@@ -103,7 +109,7 @@ class ChatController extends ChangeNotifier {
       MessageDelivery.sending => ReceiptStatus.sending,
       MessageDelivery.failed => ReceiptStatus.failed,
       MessageDelivery.sent =>
-        last.readBy(chat?.readAtOf(friendUid))
+        _readReceipts() && last.readBy(chat?.readAtOf(friendUid))
             ? ReceiptStatus.read
             : ReceiptStatus.sent,
     };
@@ -155,7 +161,9 @@ class ChatController extends ChangeNotifier {
     if (c.unreadFor(me) == 0) return;
     _markingRead = true;
     unawaited(
-      _chats.markRead(friendUid).whenComplete(() => _markingRead = false),
+      _chats
+          .markRead(friendUid, receipt: _readReceipts())
+          .whenComplete(() => _markingRead = false),
     );
   }
 

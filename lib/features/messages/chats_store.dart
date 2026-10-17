@@ -142,12 +142,17 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     (me) => _chats.clearHistory(Chat.idBetween(me, friendUid)),
   );
 
-  /// The user has read the chat with [friendUid]; failures are only logged.
-  Future<void> markRead(String friendUid) async {
+  /// The user has read the chat with [friendUid] (without telling the friend
+  /// when [receipt] is false); failures are only logged.
+  Future<void> markRead(String friendUid, {bool receipt = true}) async {
     final me = _uid;
     if (me == null || me == friendUid) return;
     try {
-      await _chats.markRead(Chat.idBetween(me, friendUid), reader: me);
+      await _chats.markRead(
+        Chat.idBetween(me, friendUid),
+        reader: me,
+        receipt: receipt,
+      );
     } catch (e) {
       AppLogger.debug('Marking the chat read failed: $e');
     }

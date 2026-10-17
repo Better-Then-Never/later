@@ -663,6 +663,8 @@
     "description": "Shown as the app version when it could not be read."
   },
   "settingsAppPermissions": "App permissions",
+  "settingsAppearance": "Appearance",
+  "settingsAppearanceDescription": "How Later looks on this phone",
   "settingsBlockedCount": "{count, plural, one{{count} blocked} other{{count} blocked}}",
   "@settingsBlockedCount": {
     "description": "Under the Blocked users row: how many people are blocked (1 or more).",
@@ -815,6 +817,19 @@
   "@settingsHelpSubjectQuestion": {
     "description": "Subject of the email to support that the app prepares. Keep \"Later\"."
   },
+  "settingsLanguage": "Language",
+  "settingsLanguageDescription": "The language of the app and of your notifications",
+  "settingsLanguageFooter": "Notifications from Later arrive in this language too.",
+  "settingsLanguageSystem": "Phone's language",
+  "settingsLanguageSystemHint": "Now: {language}",
+  "@settingsLanguageSystemHint": {
+    "description": "Under 'Phone's language': the language that choice gives right now, in its own name (e.g. 'Deutsch').",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
   "settingsLogOut": "Log Out",
   "settingsLogOutConfirm": "Are you sure you want to log out?",
   "settingsMapAndCamera": "Map and camera",
@@ -838,14 +853,21 @@
   "settingsNameHint": "Enter new name",
   "settingsNameUpdated": "Name updated successfully!",
   "settingsNotifications": "Notifications",
+  "settingsNotificationsAchievements": "Achievements",
   "settingsNotificationsAllow": "Allow notifications",
   "settingsNotificationsBlockedFooter": "Your phone does not let Later show notifications, so none arrive whatever you choose below.",
   "settingsNotificationsCapsules": "New capsules",
   "settingsNotificationsCapsulesHint": "From people you follow with notifications on",
+  "settingsNotificationsComments": "Comments",
+  "settingsNotificationsCommentsHint": "On your capsules and replies to you",
   "settingsNotificationsDescription": "Choose what Later tells you about",
   "settingsNotificationsFollowers": "New followers",
+  "settingsNotificationsFriendRequests": "Friend requests",
+  "settingsNotificationsFriendRequestsHint": "Received and accepted",
   "settingsNotificationsMessages": "Messages",
   "settingsNotificationsMuteHint": "Mute a single chat from its menu in Messages.",
+  "settingsNotificationsNews": "News from Later",
+  "settingsNotificationsNewsHint": "Rare announcements from the team",
   "settingsNotificationsOff": "Off",
   "@settingsNotificationsOff": {
     "description": "Under the Notifications row: push notifications are off."
@@ -859,7 +881,10 @@
   "settingsNotificationsPreviewOff": "Pushes say \"New message\" only",
   "settingsNotificationsPush": "Push notifications",
   "settingsNotificationsPushOff": "You get no pushes from Later",
+  "settingsNotificationsReactions": "Reactions",
   "settingsNotificationsSound": "Sound and vibration",
+  "settingsNotificationsStreak": "Streak reminder",
+  "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
   "settingsPassword": "Password",
   "settingsPasswordChanged": "Password changed",
   "settingsPasswordConfirmsNote": "Your password confirms it is you.",
@@ -914,6 +939,16 @@
   "settingsPermissionRevokeBody": "To revoke this permission, you need to go to your device settings. This will disable the related features in the app.",
   "settingsPermissionRevokeTitle": "Revoke Permission",
   "settingsPermissionsDescription": "What Later may use on this phone",
+  "settingsPrivacy": "Privacy",
+  "settingsPrivacyAchievements": "Show my achievements",
+  "settingsPrivacyAchievementsHint": "Friends see them on your profile",
+  "settingsPrivacyApproximate": "Approximate location",
+  "settingsPrivacyApproximateHint": "Places new capsules within about a kilometre, not at the exact spot",
+  "settingsPrivacyDescription": "What others see and what new capsules start with",
+  "settingsPrivacyNewCapsulesFooter": "You can change both for each capsule when you create it.",
+  "settingsPrivacyReadReceipts": "Read receipts",
+  "settingsPrivacyReadReceiptsHint": "Turned off, friends do not see when you have read their messages, and you do not see theirs",
+  "settingsPrivacyVisibility": "Visible to",
   "settingsQuietFrom": "Quiet from",
   "@settingsQuietFrom": {
     "description": "Title of the time picker for the start of quiet hours."
@@ -943,6 +978,8 @@
     "description": "Label above the switches that shape how pushes look and sound."
   },
   "settingsSectionMap": "MAP",
+  "settingsSectionMoreActivity": "ACTIVITY",
+  "settingsSectionNewCapsules": "NEW CAPSULES",
   "settingsSectionNotificationsPrivacy": "NOTIFICATIONS AND PRIVACY",
   "settingsSectionNotifyAbout": "NOTIFY ME ABOUT",
   "@settingsSectionNotifyAbout": {
@@ -950,12 +987,19 @@
   },
   "settingsSectionQuestions": "QUESTIONS",
   "settingsSectionQuietHours": "QUIET HOURS",
+  "settingsSectionSize": "SIZE",
   "settingsSectionSupport": "SUPPORT",
+  "settingsSectionTheme": "THEME",
   "settingsSectionThisPhone": "THIS PHONE",
+  "settingsSectionVisibility": "WHAT OTHERS SEE",
   "settingsSignedInWithGoogle": "Signed in with Google",
   "@settingsSignedInWithGoogle": {
     "description": "Under the Password row for accounts that sign in with Google only."
   },
+  "settingsSizeFooter": "Makes everything on screen smaller or larger, text included.",
+  "settingsSizeLarge": "Large",
+  "settingsSizeSmall": "Small",
+  "settingsSizeStandard": "Standard",
   "settingsStorageCache": "Cache",
   "settingsStorageClear": "Clear",
   "settingsStorageClearCache": "Clear cache",
@@ -991,6 +1035,9 @@
       }
     }
   },
+  "settingsThemeDark": "Dark",
+  "settingsThemeLight": "Light",
+  "settingsThemeSystem": "Same as phone",
   "settingsTitle": "Settings",
   "settingsUnblock": "Unblock",
   "settingsUnblocking": "Unblocking...",
@@ -998,6 +1045,12 @@
   "settingsUsernameDescription": "This is how your friends find and add you on Later",
   "settingsUsernameHint": "Enter new username",
   "settingsUsernameUpdated": "Username updated successfully!",
+  "settingsVisibilityFriends": "Friends",
+  "settingsVisibilityFriendsHint": "Only your friends",
+  "settingsVisibilityPrivate": "Private",
+  "settingsVisibilityPrivateHint": "Only you",
+  "settingsVisibilityPublic": "Public",
+  "settingsVisibilityPublicHint": "Everyone on the map",
   "settingsYourPassword": "Your password",
   "@settingsYourPassword": {
     "description": "Hint of the password field that confirms an account change."

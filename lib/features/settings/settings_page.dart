@@ -3,14 +3,17 @@ import 'package:provider/provider.dart';
 
 import '../../app/session/session_controller.dart';
 import '../../core/l10n/l10n.dart';
+import '../../data/models/capsule.dart';
 import '../../data/repositories/repositories.dart';
 import '../../shared/widgets/confirm_dialog.dart';
 import '../../shared/widgets/default_text.dart';
 import '../../shared/widgets/options/options_section.dart';
 import '../../shared/widgets/options/options_settings_row.dart';
+import '../../app/appearance/appearance_controller.dart';
 import '../friends/friends_store.dart';
 import 'device_settings_store.dart';
 import 'pages/about_page.dart';
+import 'pages/appearance_settings_page.dart';
 import 'pages/blocked_users_page.dart';
 import 'pages/delete_account_page.dart';
 import 'pages/device_settings_page.dart';
@@ -20,6 +23,7 @@ import 'pages/name_settings_page.dart';
 import 'pages/notification_settings_page.dart';
 import 'pages/password_settings_page.dart';
 import 'pages/permissions_settings_page.dart';
+import 'pages/privacy_settings_page.dart';
 import 'pages/profile_customization_settings_page.dart';
 import 'pages/storage_settings_page.dart';
 import 'pages/username_settings_page.dart';
@@ -50,6 +54,14 @@ class SettingsPage extends StatelessWidget {
     );
     final mapLook = context.select<DeviceSettingsStore, MapLook>(
       (s) => s.mapLook,
+    );
+    final themeMode = context.select<AppearanceController, ThemeMode>(
+      (a) => a.themeMode,
+    );
+    // Rebuilds when the language changes (the row shows its name).
+    context.select<AppearanceController, String?>((a) => a.language);
+    final defaultVisibility = context.select<SettingsStore, CapsulePrivacy>(
+      (s) => s.privacy.defaultVisibility,
     );
 
     return SettingsScaffold(
@@ -102,6 +114,13 @@ class SettingsPage extends StatelessWidget {
               navigateTo: const NotificationSettingsPage(),
             ),
             OptionsSettingsRow(
+              title: l10n.settingsPrivacy,
+              subtitle: _value(
+                PrivacySettingsPage.visibilityName(l10n, defaultVisibility),
+              ),
+              navigateTo: const PrivacySettingsPage(),
+            ),
+            OptionsSettingsRow(
               title: l10n.settingsBlockedUsers,
               subtitle: _value(
                 blockedCount == 0
@@ -120,6 +139,18 @@ class SettingsPage extends StatelessWidget {
         OptionsSection(
           title: l10n.settingsSectionThisPhone,
           children: [
+            OptionsSettingsRow(
+              title: l10n.settingsAppearance,
+              subtitle: _value(
+                AppearanceSettingsPage.themeName(l10n, themeMode),
+              ),
+              navigateTo: const AppearanceSettingsPage(),
+            ),
+            OptionsSettingsRow(
+              title: l10n.settingsLanguage,
+              subtitle: _value(LanguageSettingsPage.currentName(context)),
+              navigateTo: const LanguageSettingsPage(),
+            ),
             OptionsSettingsRow(
               title: l10n.settingsMapAndCamera,
               subtitle: _value(mapLook.label),

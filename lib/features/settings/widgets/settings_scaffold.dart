@@ -106,10 +106,14 @@ class SettingsChoiceRow extends StatelessWidget {
     required this.title,
     required this.selected,
     required this.onTap,
+    this.subtitle,
     this.withDivider = true,
   });
 
   final String title;
+
+  /// A grey line under the title (what the option means).
+  final String? subtitle;
   final bool selected;
   final VoidCallback onTap;
   final bool withDivider;
@@ -134,6 +138,13 @@ class SettingsChoiceRow extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: screenWidth * 0.045,
           ),
+          subtitle: subtitle == null
+              ? null
+              : DefaultText(
+                  subtitle!,
+                  textAlign: TextAlign.start,
+                  color: context.palette.textSecondary,
+                ),
           trailing: selected
               ? Icon(
                   Icons.check_circle,

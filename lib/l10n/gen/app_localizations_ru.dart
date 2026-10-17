@@ -834,6 +834,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsAppPermissions => 'Разрешения приложения';
 
   @override
+  String get settingsAppearance => 'Оформление';
+
+  @override
+  String get settingsAppearanceDescription =>
+      'Как Later выглядит на этом телефоне';
+
+  @override
   String settingsBlockedCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1090,6 +1097,25 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsHelpSubjectQuestion => 'Later: вопрос';
 
   @override
+  String get settingsLanguage => 'Язык';
+
+  @override
+  String get settingsLanguageDescription =>
+      'Язык приложения и ваших уведомлений';
+
+  @override
+  String get settingsLanguageFooter =>
+      'Уведомления от Later тоже будут приходить на этом языке.';
+
+  @override
+  String get settingsLanguageSystem => 'Язык телефона';
+
+  @override
+  String settingsLanguageSystemHint(String language) {
+    return 'Сейчас: $language';
+  }
+
+  @override
   String get settingsLogOut => 'Выйти';
 
   @override
@@ -1124,6 +1150,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsNotifications => 'Уведомления';
 
   @override
+  String get settingsNotificationsAchievements => 'Достижения';
+
+  @override
   String get settingsNotificationsAllow => 'Разрешить уведомления';
 
   @override
@@ -1138,6 +1167,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'От подписок, для которых включены уведомления';
 
   @override
+  String get settingsNotificationsComments => 'Комментарии';
+
+  @override
+  String get settingsNotificationsCommentsHint =>
+      'К вашим капсулам и ответы вам';
+
+  @override
   String get settingsNotificationsDescription =>
       'Выберите, о чём Later будет вам сообщать';
 
@@ -1145,11 +1181,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsNotificationsFollowers => 'Новые подписчики';
 
   @override
+  String get settingsNotificationsFriendRequests => 'Заявки в друзья';
+
+  @override
+  String get settingsNotificationsFriendRequestsHint => 'Новые и принятые';
+
+  @override
   String get settingsNotificationsMessages => 'Сообщения';
 
   @override
   String get settingsNotificationsMuteHint =>
       'Отключить уведомления отдельного чата можно в его меню в разделе «Сообщения».';
+
+  @override
+  String get settingsNotificationsNews => 'Новости Later';
+
+  @override
+  String get settingsNotificationsNewsHint => 'Редкие объявления от команды';
 
   @override
   String get settingsNotificationsOff => 'Выключены';
@@ -1176,7 +1224,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Later не будет присылать вам пуши';
 
   @override
+  String get settingsNotificationsReactions => 'Реакции';
+
+  @override
   String get settingsNotificationsSound => 'Звук и вибрация';
+
+  @override
+  String get settingsNotificationsStreak => 'Напоминание о серии';
+
+  @override
+  String get settingsNotificationsStreakHint =>
+      'Вечером, если серия сегодня прервётся';
 
   @override
   String get settingsPassword => 'Пароль';
@@ -1301,6 +1359,41 @@ class AppLocalizationsRu extends AppLocalizations {
       'К чему у Later есть доступ на этом телефоне';
 
   @override
+  String get settingsPrivacy => 'Конфиденциальность';
+
+  @override
+  String get settingsPrivacyAchievements => 'Показывать мои достижения';
+
+  @override
+  String get settingsPrivacyAchievementsHint =>
+      'Друзья видят их в вашем профиле';
+
+  @override
+  String get settingsPrivacyApproximate => 'Примерное местоположение';
+
+  @override
+  String get settingsPrivacyApproximateHint =>
+      'Новые капсулы ставятся в радиусе около километра, а не в точном месте';
+
+  @override
+  String get settingsPrivacyDescription =>
+      'Что видят другие и какими будут новые капсулы';
+
+  @override
+  String get settingsPrivacyNewCapsulesFooter =>
+      'Оба параметра можно изменить для каждой капсулы при создании.';
+
+  @override
+  String get settingsPrivacyReadReceipts => 'Отчёты о прочтении';
+
+  @override
+  String get settingsPrivacyReadReceiptsHint =>
+      'Если выключить, друзья не увидят, что вы прочитали их сообщения, а вы не увидите этого у них';
+
+  @override
+  String get settingsPrivacyVisibility => 'Кто видит';
+
+  @override
   String get settingsQuietFrom => 'Тишина с';
 
   @override
@@ -1335,6 +1428,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsSectionMap => 'КАРТА';
 
   @override
+  String get settingsSectionMoreActivity => 'АКТИВНОСТЬ';
+
+  @override
+  String get settingsSectionNewCapsules => 'НОВЫЕ КАПСУЛЫ';
+
+  @override
   String get settingsSectionNotificationsPrivacy => 'УВЕДОМЛЕНИЯ И ПРИВАТНОСТЬ';
 
   @override
@@ -1347,13 +1446,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsSectionQuietHours => 'ТИХИЕ ЧАСЫ';
 
   @override
+  String get settingsSectionSize => 'РАЗМЕР';
+
+  @override
   String get settingsSectionSupport => 'ПОДДЕРЖКА';
+
+  @override
+  String get settingsSectionTheme => 'ТЕМА';
 
   @override
   String get settingsSectionThisPhone => 'ЭТОТ ТЕЛЕФОН';
 
   @override
+  String get settingsSectionVisibility => 'ЧТО ВИДЯТ ДРУГИЕ';
+
+  @override
   String get settingsSignedInWithGoogle => 'Вход через Google';
+
+  @override
+  String get settingsSizeFooter =>
+      'Делает всё на экране мельче или крупнее, включая текст.';
+
+  @override
+  String get settingsSizeLarge => 'Крупный';
+
+  @override
+  String get settingsSizeSmall => 'Мелкий';
+
+  @override
+  String get settingsSizeStandard => 'Обычный';
 
   @override
   String get settingsStorageCache => 'Кэш';
@@ -1398,6 +1519,15 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get settingsThemeDark => 'Тёмная';
+
+  @override
+  String get settingsThemeLight => 'Светлая';
+
+  @override
+  String get settingsThemeSystem => 'Как на телефоне';
+
+  @override
   String get settingsTitle => 'Настройки';
 
   @override
@@ -1418,6 +1548,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsUsernameUpdated => 'Имя пользователя обновлено!';
+
+  @override
+  String get settingsVisibilityFriends => 'Для друзей';
+
+  @override
+  String get settingsVisibilityFriendsHint => 'Только ваши друзья';
+
+  @override
+  String get settingsVisibilityPrivate => 'Личная';
+
+  @override
+  String get settingsVisibilityPrivateHint => 'Только вы';
+
+  @override
+  String get settingsVisibilityPublic => 'Публичная';
+
+  @override
+  String get settingsVisibilityPublicHint => 'Все на карте';
 
   @override
   String get settingsYourPassword => 'Ваш пароль';
