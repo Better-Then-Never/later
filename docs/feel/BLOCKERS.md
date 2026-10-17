@@ -18,3 +18,13 @@ Anything listed here was **not** checked on the device, or could not be done in 
   - [ ] announcements arrive on the topic of the account's language.
 - Builds that use the emulators skip FCM topic subscriptions (`PushMessagingService`), so topic pushes are not
   testable with the emulator rig at all.
+
+## Owner decisions
+- **Russian text uses the phone's font.** Inria Sans (the app font) has no Cyrillic, so every Russian string falls
+  back to the system font: the typefaces mix, and the first frame of a page costs ~5 ms more in Russian than in
+  English (settings: worst frame 18.4 ms in Russian, 13.3 ms in English; PERFORMANCE.md). "No new fonts" is the rule
+  of this session, so nothing was changed; a Cyrillic-capable cut of the same family (or a matching font) would fix
+  both. Owner to decide.
+- **Light map style** (D-22): the local JSON follows the cloud style's idea; compare it with the cloud style before
+  release.
+- **Settings rows are 44 dp** (were 36) to meet the tap-target minimum (D-24); rows with a subtitle are unchanged.
