@@ -36,16 +36,11 @@
   "authNoFreeUsername": "No pudimos elegir un nombre de usuario. Regístrate, por favor.",
   "authPermissionCameraTitle": "Dale a Later acceso a la cámara",
   "authPermissionCameraText": "¡Y podrás crear cápsulas del tiempo!",
-  "authPermissionMicrophoneTitle": "Dale a Later acceso al micrófono",
-  "authPermissionMicrophoneText": "Sin él, la cámara no funcionará",
   "authPermissionLocationTitle": "Comparte tu ubicación con nosotros",
   "authPermissionLocationText": "¡Y podrás encontrar cápsulas cerca de ti!",
   "authPermissionNotificationsTitle": "Activa las notificaciones",
   "authPermissionNotificationsText": "¡Entérate de nuevos seguidores y cápsulas!",
-  "authPermissionContactsTitle": "Acceso a los contactos",
-  "authPermissionContactsText": "¡Encuentra a tus amigos en tus contactos e invítalos!",
   "authPermissionEnable": "Permitir",
-  "authPermissionGranted": "Permitido",
   "authGoogleFailed": "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
   "authResetUserNotFound": "No hay ninguna cuenta con este correo",
   "authResetInvalidEmail": "Correo electrónico no válido",
@@ -62,5 +57,6 @@
   "authErrorInvalidEmail": "El correo electrónico no es válido.",
   "authErrorUserDisabled": "Esta cuenta está desactivada.",
   "authErrorTooManyRequests": "Demasiados intentos. Inténtalo más tarde.",
-  "authErrorMethodDisabled": "Este método de inicio de sesión no está activado."
+  "authErrorMethodDisabled": "Este método de inicio de sesión no está activado.",
+  "authPermissionNotNow": "Ahora no"
 }

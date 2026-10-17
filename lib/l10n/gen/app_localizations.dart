@@ -338,29 +338,11 @@ abstract class AppLocalizations {
   /// **'Share Camera access with Later'**
   String get authPermissionCameraTitle;
 
-  /// No description provided for @authPermissionContactsText.
-  ///
-  /// In en, this message translates to:
-  /// **'Find and invite friends from your contacts!'**
-  String get authPermissionContactsText;
-
-  /// No description provided for @authPermissionContactsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Access contacts'**
-  String get authPermissionContactsTitle;
-
   /// Button on a permission page that asks for the permission.
   ///
   /// In en, this message translates to:
   /// **'Enable'**
   String get authPermissionEnable;
-
-  /// The same button once the permission is granted (disabled).
-  ///
-  /// In en, this message translates to:
-  /// **'Granted'**
-  String get authPermissionGranted;
 
   /// No description provided for @authPermissionLocationText.
   ///
@@ -374,17 +356,11 @@ abstract class AppLocalizations {
   /// **'Share geolocation with us'**
   String get authPermissionLocationTitle;
 
-  /// "it" is the microphone: video capsules need sound.
+  /// No description provided for @authPermissionNotNow.
   ///
   /// In en, this message translates to:
-  /// **'Camera won\'t work without it'**
-  String get authPermissionMicrophoneText;
-
-  /// No description provided for @authPermissionMicrophoneTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Provide Later with microphone access'**
-  String get authPermissionMicrophoneTitle;
+  /// **'Not now'**
+  String get authPermissionNotNow;
 
   /// No description provided for @authPermissionNotificationsText.
   ///
@@ -3224,18 +3200,6 @@ abstract class AppLocalizations {
   /// **'Access camera to create time capsules'**
   String get settingsPermissionCameraDescription;
 
-  /// No description provided for @settingsPermissionContacts.
-  ///
-  /// In en, this message translates to:
-  /// **'Contacts'**
-  String get settingsPermissionContacts;
-
-  /// No description provided for @settingsPermissionContactsDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Invite friends and find people you know'**
-  String get settingsPermissionContactsDescription;
-
   /// No description provided for @settingsPermissionDenied.
   ///
   /// In en, this message translates to:
@@ -3265,18 +3229,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Find capsules nearby and location-based features'**
   String get settingsPermissionLocationDescription;
-
-  /// No description provided for @settingsPermissionMicrophone.
-  ///
-  /// In en, this message translates to:
-  /// **'Microphone'**
-  String get settingsPermissionMicrophone;
-
-  /// No description provided for @settingsPermissionMicrophoneDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Record audio for time capsules'**
-  String get settingsPermissionMicrophoneDescription;
 
   /// No description provided for @settingsPermissionNotificationsDescription.
   ///
@@ -3391,12 +3343,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Turned off, friends do not see when you have read their messages, and you do not see theirs'**
   String get settingsPrivacyReadReceiptsHint;
-
-  /// No description provided for @settingsPrivacyVisibility.
-  ///
-  /// In en, this message translates to:
-  /// **'Visible to'**
-  String get settingsPrivacyVisibility;
 
   /// Title of the time picker for the start of quiet hours.
   ///

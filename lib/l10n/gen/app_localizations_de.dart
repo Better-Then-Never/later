@@ -140,17 +140,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authPermissionCameraTitle => 'Gib Later Zugriff auf die Kamera';
 
   @override
-  String get authPermissionContactsText =>
-      'Finde Freunde in deinen Kontakten und lade sie ein!';
-
-  @override
-  String get authPermissionContactsTitle => 'Zugriff auf Kontakte';
-
-  @override
   String get authPermissionEnable => 'Erlauben';
-
-  @override
-  String get authPermissionGranted => 'Erlaubt';
 
   @override
   String get authPermissionLocationText =>
@@ -160,11 +150,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authPermissionLocationTitle => 'Teile deinen Standort mit uns';
 
   @override
-  String get authPermissionMicrophoneText =>
-      'Ohne Mikrofon funktioniert die Kamera nicht';
-
-  @override
-  String get authPermissionMicrophoneTitle => 'Gib Later Zugriff aufs Mikrofon';
+  String get authPermissionNotNow => 'Nicht jetzt';
 
   @override
   String get authPermissionNotificationsText =>
@@ -1893,13 +1879,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Kamerazugriff, um Zeitkapseln zu erstellen';
 
   @override
-  String get settingsPermissionContacts => 'Kontakte';
-
-  @override
-  String get settingsPermissionContactsDescription =>
-      'Freunde einladen und Leute finden, die du kennst';
-
-  @override
   String get settingsPermissionDenied => 'Abgelehnt';
 
   @override
@@ -1914,13 +1893,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsPermissionLocationDescription =>
       'Kapseln in der Nähe und standortbasierte Funktionen';
-
-  @override
-  String get settingsPermissionMicrophone => 'Mikrofon';
-
-  @override
-  String get settingsPermissionMicrophoneDescription =>
-      'Ton für Zeitkapseln aufnehmen';
 
   @override
   String get settingsPermissionNotificationsDescription =>
@@ -1987,9 +1959,6 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsPrivacyReadReceiptsHint =>
       'Ausgeschaltet sehen Freunde nicht, wann du ihre Nachrichten gelesen hast, und du siehst es bei ihnen auch nicht';
-
-  @override
-  String get settingsPrivacyVisibility => 'Sichtbar für';
 
   @override
   String get settingsQuietFrom => 'Ruhe ab';

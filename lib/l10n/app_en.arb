@@ -112,23 +112,13 @@
   "@authPermissionCameraTitle": {
     "description": "Title of a permission page shown after sign-in (shrinks to fit one line)."
   },
-  "authPermissionContactsText": "Find and invite friends from your contacts!",
-  "authPermissionContactsTitle": "Access contacts",
   "authPermissionEnable": "Enable",
   "@authPermissionEnable": {
     "description": "Button on a permission page that asks for the permission."
   },
-  "authPermissionGranted": "Granted",
-  "@authPermissionGranted": {
-    "description": "The same button once the permission is granted (disabled)."
-  },
   "authPermissionLocationText": "And you will be able to find capsules near you!",
   "authPermissionLocationTitle": "Share geolocation with us",
-  "authPermissionMicrophoneText": "Camera won't work without it",
-  "@authPermissionMicrophoneText": {
-    "description": "\"it\" is the microphone: video capsules need sound."
-  },
-  "authPermissionMicrophoneTitle": "Provide Later with microphone access",
+  "authPermissionNotNow": "Not now",
   "authPermissionNotificationsText": "Stay updated with new followers and capsules!",
   "authPermissionNotificationsTitle": "Enable notifications",
   "authPrivacyPolicy": "Privacy Policy",
@@ -1546,8 +1536,6 @@
   },
   "settingsPermissionCamera": "Camera",
   "settingsPermissionCameraDescription": "Access camera to create time capsules",
-  "settingsPermissionContacts": "Contacts",
-  "settingsPermissionContactsDescription": "Invite friends and find people you know",
   "settingsPermissionDenied": "Denied",
   "settingsPermissionGranted": "Granted",
   "@settingsPermissionGranted": {
@@ -1556,8 +1544,6 @@
   "settingsPermissionLimited": "Limited",
   "settingsPermissionLocation": "Location",
   "settingsPermissionLocationDescription": "Find capsules nearby and location-based features",
-  "settingsPermissionMicrophone": "Microphone",
-  "settingsPermissionMicrophoneDescription": "Record audio for time capsules",
   "settingsPermissionNotificationsDescription": "Receive updates about followers and capsules",
   "settingsPermissionOpenSettings": "Open Settings",
   "settingsPermissionPermanentlyDenied": "Permanently Denied",
@@ -1580,7 +1566,6 @@
   "settingsPrivacyNewCapsulesFooter": "You can change both for each capsule when you create it.",
   "settingsPrivacyReadReceipts": "Read receipts",
   "settingsPrivacyReadReceiptsHint": "Turned off, friends do not see when you have read their messages, and you do not see theirs",
-  "settingsPrivacyVisibility": "Visible to",
   "settingsQuietFrom": "Quiet from",
   "@settingsQuietFrom": {
     "description": "Title of the time picker for the start of quiet hours."

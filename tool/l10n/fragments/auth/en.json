@@ -130,24 +130,13 @@
     "description": "Title of a permission page shown after sign-in (shrinks to fit one line)."
   },
   "authPermissionCameraText": "And you will be able to create time capsules!",
-  "authPermissionMicrophoneTitle": "Provide Later with microphone access",
-  "authPermissionMicrophoneText": "Camera won't work without it",
-  "@authPermissionMicrophoneText": {
-    "description": "\"it\" is the microphone: video capsules need sound."
-  },
   "authPermissionLocationTitle": "Share geolocation with us",
   "authPermissionLocationText": "And you will be able to find capsules near you!",
   "authPermissionNotificationsTitle": "Enable notifications",
   "authPermissionNotificationsText": "Stay updated with new followers and capsules!",
-  "authPermissionContactsTitle": "Access contacts",
-  "authPermissionContactsText": "Find and invite friends from your contacts!",
   "authPermissionEnable": "Enable",
   "@authPermissionEnable": {
     "description": "Button on a permission page that asks for the permission."
-  },
-  "authPermissionGranted": "Granted",
-  "@authPermissionGranted": {
-    "description": "The same button once the permission is granted (disabled)."
   },
   "authGoogleFailed": "Google sign-in failed. Please try again.",
   "authResetUserNotFound": "No account found with this email",
@@ -168,5 +157,6 @@
   "authErrorInvalidEmail": "The email address is not valid.",
   "authErrorUserDisabled": "This account has been disabled.",
   "authErrorTooManyRequests": "Too many attempts. Please try again later.",
-  "authErrorMethodDisabled": "This sign-in method is not enabled."
+  "authErrorMethodDisabled": "This sign-in method is not enabled.",
+  "authPermissionNotNow": "Not now"
 }

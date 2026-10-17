@@ -57,6 +57,7 @@ class _AuthGateState extends State<AuthGate> {
         if (_permissionsGrantedFor != uid) {
           return PermissionGatePage(
             key: ValueKey('gate-$uid'),
+            uid: uid,
             onAllGranted: () => setState(() => _permissionsGrantedFor = uid),
           );
         }

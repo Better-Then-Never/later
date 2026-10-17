@@ -293,13 +293,9 @@
   "settingsPermissionsDescription": "What Later may use on this phone",
   "settingsPermissionCamera": "Camera",
   "settingsPermissionCameraDescription": "Access camera to create time capsules",
-  "settingsPermissionMicrophone": "Microphone",
-  "settingsPermissionMicrophoneDescription": "Record audio for time capsules",
   "settingsPermissionLocation": "Location",
   "settingsPermissionLocationDescription": "Find capsules nearby and location-based features",
   "settingsPermissionNotificationsDescription": "Receive updates about followers and capsules",
-  "settingsPermissionContacts": "Contacts",
-  "settingsPermissionContactsDescription": "Invite friends and find people you know",
   "settingsPermissionGranted": "Granted",
   "@settingsPermissionGranted": {
     "description": "Status of an app permission."
@@ -379,7 +375,6 @@
   "settingsPrivacy": "Privacy",
   "settingsPrivacyDescription": "What others see and what new capsules start with",
   "settingsSectionNewCapsules": "NEW CAPSULES",
-  "settingsPrivacyVisibility": "Visible to",
   "settingsVisibilityPublic": "Public",
   "settingsVisibilityPublicHint": "Everyone on the map",
   "settingsVisibilityFriends": "Friends",

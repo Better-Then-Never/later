@@ -31,12 +31,6 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
       iconAsset: AppIcons.cameraFull,
     ),
     AppPermissionSetting(
-      name: (l10n) => l10n.settingsPermissionMicrophone,
-      description: (l10n) => l10n.settingsPermissionMicrophoneDescription,
-      permission: Permission.microphone,
-      iconAsset: AppIcons.capsuleMicrophone,
-    ),
-    AppPermissionSetting(
       name: (l10n) => l10n.settingsPermissionLocation,
       description: (l10n) => l10n.settingsPermissionLocationDescription,
       permission: Platform.isIOS
@@ -49,12 +43,6 @@ class _PermissionsSettingsPageState extends State<PermissionsSettingsPage>
       description: (l10n) => l10n.settingsPermissionNotificationsDescription,
       permission: Permission.notification,
       iconAsset: AppIcons.notificationsBlackFull,
-    ),
-    AppPermissionSetting(
-      name: (l10n) => l10n.settingsPermissionContacts,
-      description: (l10n) => l10n.settingsPermissionContactsDescription,
-      permission: Permission.contacts,
-      iconAsset: AppIcons.friendsBook,
     ),
   ];
 

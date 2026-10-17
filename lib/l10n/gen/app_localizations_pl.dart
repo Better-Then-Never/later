@@ -137,17 +137,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get authPermissionCameraTitle => 'Daj Later dostęp do aparatu';
 
   @override
-  String get authPermissionContactsText =>
-      'Znajdź i zaproś znajomych z kontaktów!';
-
-  @override
-  String get authPermissionContactsTitle => 'Dostęp do kontaktów';
-
-  @override
   String get authPermissionEnable => 'Zezwól';
-
-  @override
-  String get authPermissionGranted => 'Zezwolono';
 
   @override
   String get authPermissionLocationText =>
@@ -157,10 +147,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get authPermissionLocationTitle => 'Udostępnij nam swoją lokalizację';
 
   @override
-  String get authPermissionMicrophoneText => 'Bez niego aparat nie zadziała';
-
-  @override
-  String get authPermissionMicrophoneTitle => 'Daj Later dostęp do mikrofonu';
+  String get authPermissionNotNow => 'Nie teraz';
 
   @override
   String get authPermissionNotificationsText =>
@@ -1894,13 +1881,6 @@ class AppLocalizationsPl extends AppLocalizations {
       'Dostęp do aparatu, by tworzyć kapsuły czasu';
 
   @override
-  String get settingsPermissionContacts => 'Kontakty';
-
-  @override
-  String get settingsPermissionContactsDescription =>
-      'Zapraszaj znajomych i znajduj osoby, które znasz';
-
-  @override
   String get settingsPermissionDenied => 'Odrzucone';
 
   @override
@@ -1915,13 +1895,6 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsPermissionLocationDescription =>
       'Kapsuły w pobliżu i funkcje oparte na lokalizacji';
-
-  @override
-  String get settingsPermissionMicrophone => 'Mikrofon';
-
-  @override
-  String get settingsPermissionMicrophoneDescription =>
-      'Nagrywanie dźwięku do kapsuł czasu';
 
   @override
   String get settingsPermissionNotificationsDescription =>
@@ -1988,9 +1961,6 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsPrivacyReadReceiptsHint =>
       'Po wyłączeniu znajomi nie zobaczą, kiedy przeczytasz ich wiadomości, a ty nie zobaczysz tego u nich';
-
-  @override
-  String get settingsPrivacyVisibility => 'Kto widzi';
 
   @override
   String get settingsQuietFrom => 'Cisza od';

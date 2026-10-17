@@ -137,17 +137,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authPermissionCameraTitle => 'Дайте Later доступ к камере';
 
   @override
-  String get authPermissionContactsText =>
-      'Находите друзей из контактов и приглашайте их!';
-
-  @override
-  String get authPermissionContactsTitle => 'Доступ к контактам';
-
-  @override
   String get authPermissionEnable => 'Разрешить';
-
-  @override
-  String get authPermissionGranted => 'Разрешено';
 
   @override
   String get authPermissionLocationText =>
@@ -157,11 +147,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authPermissionLocationTitle => 'Поделитесь с нами геопозицией';
 
   @override
-  String get authPermissionMicrophoneText =>
-      'Без него камера не будет работать';
-
-  @override
-  String get authPermissionMicrophoneTitle => 'Дайте Later доступ к микрофону';
+  String get authPermissionNotNow => 'Не сейчас';
 
   @override
   String get authPermissionNotificationsText =>
@@ -1883,13 +1869,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Чтобы снимать капсулы времени';
 
   @override
-  String get settingsPermissionContacts => 'Контакты';
-
-  @override
-  String get settingsPermissionContactsDescription =>
-      'Чтобы приглашать друзей и находить знакомых';
-
-  @override
   String get settingsPermissionDenied => 'Запрещено';
 
   @override
@@ -1904,13 +1883,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsPermissionLocationDescription =>
       'Капсулы поблизости и функции, связанные с местом';
-
-  @override
-  String get settingsPermissionMicrophone => 'Микрофон';
-
-  @override
-  String get settingsPermissionMicrophoneDescription =>
-      'Чтобы записывать звук для капсул времени';
 
   @override
   String get settingsPermissionNotificationsDescription =>
@@ -1977,9 +1949,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsPrivacyReadReceiptsHint =>
       'Если выключить, друзья не увидят, что вы прочитали их сообщения, а вы не увидите этого у них';
-
-  @override
-  String get settingsPrivacyVisibility => 'Кто видит';
 
   @override
   String get settingsQuietFrom => 'Тишина с';

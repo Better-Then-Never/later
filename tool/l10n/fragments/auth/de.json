@@ -36,16 +36,11 @@
   "authNoFreeUsername": "Wir konnten keinen Benutzernamen wählen. Bitte registriere dich.",
   "authPermissionCameraTitle": "Gib Later Zugriff auf die Kamera",
   "authPermissionCameraText": "Dann kannst du Zeitkapseln erstellen!",
-  "authPermissionMicrophoneTitle": "Gib Later Zugriff aufs Mikrofon",
-  "authPermissionMicrophoneText": "Ohne Mikrofon funktioniert die Kamera nicht",
   "authPermissionLocationTitle": "Teile deinen Standort mit uns",
   "authPermissionLocationText": "Dann findest du Kapseln in deiner Nähe!",
   "authPermissionNotificationsTitle": "Aktiviere Benachrichtigungen",
   "authPermissionNotificationsText": "Erfahre von neuen Followern und Kapseln!",
-  "authPermissionContactsTitle": "Zugriff auf Kontakte",
-  "authPermissionContactsText": "Finde Freunde in deinen Kontakten und lade sie ein!",
   "authPermissionEnable": "Erlauben",
-  "authPermissionGranted": "Erlaubt",
   "authGoogleFailed": "Anmeldung mit Google fehlgeschlagen. Bitte versuche es erneut.",
   "authResetUserNotFound": "Kein Konto mit dieser E-Mail-Adresse gefunden",
   "authResetInvalidEmail": "Ungültige E-Mail-Adresse",
@@ -62,5 +57,6 @@
   "authErrorInvalidEmail": "Die E-Mail-Adresse ist ungültig.",
   "authErrorUserDisabled": "Dieses Konto wurde deaktiviert.",
   "authErrorTooManyRequests": "Zu viele Versuche. Bitte versuche es später erneut.",
-  "authErrorMethodDisabled": "Diese Anmeldemethode ist nicht aktiviert."
+  "authErrorMethodDisabled": "Diese Anmeldemethode ist nicht aktiviert.",
+  "authPermissionNotNow": "Nicht jetzt"
 }

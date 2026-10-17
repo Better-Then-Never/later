@@ -36,16 +36,11 @@
   "authNoFreeUsername": "Не удалось подобрать имя пользователя. Пожалуйста, зарегистрируйтесь.",
   "authPermissionCameraTitle": "Дайте Later доступ к камере",
   "authPermissionCameraText": "И вы сможете создавать капсулы времени!",
-  "authPermissionMicrophoneTitle": "Дайте Later доступ к микрофону",
-  "authPermissionMicrophoneText": "Без него камера не будет работать",
   "authPermissionLocationTitle": "Поделитесь с нами геопозицией",
   "authPermissionLocationText": "И вы сможете находить капсулы рядом с собой!",
   "authPermissionNotificationsTitle": "Включите уведомления",
   "authPermissionNotificationsText": "Узнавайте о новых подписчиках и капсулах!",
-  "authPermissionContactsTitle": "Доступ к контактам",
-  "authPermissionContactsText": "Находите друзей из контактов и приглашайте их!",
   "authPermissionEnable": "Разрешить",
-  "authPermissionGranted": "Разрешено",
   "authGoogleFailed": "Не удалось войти через Google. Попробуйте ещё раз.",
   "authResetUserNotFound": "Аккаунт с этим адресом не найден",
   "authResetInvalidEmail": "Некорректный адрес электронной почты",
@@ -62,5 +57,6 @@
   "authErrorInvalidEmail": "Некорректный адрес электронной почты.",
   "authErrorUserDisabled": "Этот аккаунт отключён.",
   "authErrorTooManyRequests": "Слишком много попыток. Попробуйте позже.",
-  "authErrorMethodDisabled": "Этот способ входа недоступен."
+  "authErrorMethodDisabled": "Этот способ входа недоступен.",
+  "authPermissionNotNow": "Не сейчас"
 }

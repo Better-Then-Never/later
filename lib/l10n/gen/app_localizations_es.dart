@@ -138,17 +138,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get authPermissionCameraTitle => 'Dale a Later acceso a la cámara';
 
   @override
-  String get authPermissionContactsText =>
-      '¡Encuentra a tus amigos en tus contactos e invítalos!';
-
-  @override
-  String get authPermissionContactsTitle => 'Acceso a los contactos';
-
-  @override
   String get authPermissionEnable => 'Permitir';
-
-  @override
-  String get authPermissionGranted => 'Permitido';
 
   @override
   String get authPermissionLocationText =>
@@ -159,11 +149,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Comparte tu ubicación con nosotros';
 
   @override
-  String get authPermissionMicrophoneText => 'Sin él, la cámara no funcionará';
-
-  @override
-  String get authPermissionMicrophoneTitle =>
-      'Dale a Later acceso al micrófono';
+  String get authPermissionNotNow => 'Ahora no';
 
   @override
   String get authPermissionNotificationsText =>
@@ -1868,13 +1854,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'Acceso a la cámara para crear cápsulas del tiempo';
 
   @override
-  String get settingsPermissionContacts => 'Contactos';
-
-  @override
-  String get settingsPermissionContactsDescription =>
-      'Invita a amigos y encuentra a gente que conoces';
-
-  @override
   String get settingsPermissionDenied => 'Denegado';
 
   @override
@@ -1889,13 +1868,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsPermissionLocationDescription =>
       'Cápsulas cercanas y funciones basadas en la ubicación';
-
-  @override
-  String get settingsPermissionMicrophone => 'Micrófono';
-
-  @override
-  String get settingsPermissionMicrophoneDescription =>
-      'Grabar audio para cápsulas del tiempo';
 
   @override
   String get settingsPermissionNotificationsDescription =>
@@ -1962,9 +1934,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsPrivacyReadReceiptsHint =>
       'Si las desactivas, tus amigos no verán cuándo leíste sus mensajes y tú tampoco verás los suyos';
-
-  @override
-  String get settingsPrivacyVisibility => 'Visible para';
 
   @override
   String get settingsQuietFrom => 'Silencio desde';

@@ -36,16 +36,11 @@
   "authNoFreeUsername": "Nie udało się dobrać nazwy użytkownika. Zarejestruj się.",
   "authPermissionCameraTitle": "Daj Later dostęp do aparatu",
   "authPermissionCameraText": "Dzięki temu stworzysz kapsuły czasu!",
-  "authPermissionMicrophoneTitle": "Daj Later dostęp do mikrofonu",
-  "authPermissionMicrophoneText": "Bez niego aparat nie zadziała",
   "authPermissionLocationTitle": "Udostępnij nam swoją lokalizację",
   "authPermissionLocationText": "Dzięki temu znajdziesz kapsuły w pobliżu!",
   "authPermissionNotificationsTitle": "Włącz powiadomienia",
   "authPermissionNotificationsText": "Bądź na bieżąco z nowymi obserwującymi i kapsułami!",
-  "authPermissionContactsTitle": "Dostęp do kontaktów",
-  "authPermissionContactsText": "Znajdź i zaproś znajomych z kontaktów!",
   "authPermissionEnable": "Zezwól",
-  "authPermissionGranted": "Zezwolono",
   "authGoogleFailed": "Nie udało się zalogować przez Google. Spróbuj ponownie.",
   "authResetUserNotFound": "Nie znaleziono konta z tym adresem e-mail",
   "authResetInvalidEmail": "Nieprawidłowy adres e-mail",
@@ -62,5 +57,6 @@
   "authErrorInvalidEmail": "Adres e-mail jest nieprawidłowy.",
   "authErrorUserDisabled": "To konto zostało wyłączone.",
   "authErrorTooManyRequests": "Zbyt wiele prób. Spróbuj ponownie później.",
-  "authErrorMethodDisabled": "Ta metoda logowania jest wyłączona."
+  "authErrorMethodDisabled": "Ta metoda logowania jest wyłączona.",
+  "authPermissionNotNow": "Nie teraz"
 }

@@ -134,17 +134,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPermissionCameraTitle => 'Share Camera access with Later';
 
   @override
-  String get authPermissionContactsText =>
-      'Find and invite friends from your contacts!';
-
-  @override
-  String get authPermissionContactsTitle => 'Access contacts';
-
-  @override
   String get authPermissionEnable => 'Enable';
-
-  @override
-  String get authPermissionGranted => 'Granted';
 
   @override
   String get authPermissionLocationText =>
@@ -154,11 +144,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPermissionLocationTitle => 'Share geolocation with us';
 
   @override
-  String get authPermissionMicrophoneText => 'Camera won\'t work without it';
-
-  @override
-  String get authPermissionMicrophoneTitle =>
-      'Provide Later with microphone access';
+  String get authPermissionNotNow => 'Not now';
 
   @override
   String get authPermissionNotificationsText =>
@@ -1854,13 +1840,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Access camera to create time capsules';
 
   @override
-  String get settingsPermissionContacts => 'Contacts';
-
-  @override
-  String get settingsPermissionContactsDescription =>
-      'Invite friends and find people you know';
-
-  @override
   String get settingsPermissionDenied => 'Denied';
 
   @override
@@ -1875,13 +1854,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsPermissionLocationDescription =>
       'Find capsules nearby and location-based features';
-
-  @override
-  String get settingsPermissionMicrophone => 'Microphone';
-
-  @override
-  String get settingsPermissionMicrophoneDescription =>
-      'Record audio for time capsules';
 
   @override
   String get settingsPermissionNotificationsDescription =>
@@ -1948,9 +1920,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsPrivacyReadReceiptsHint =>
       'Turned off, friends do not see when you have read their messages, and you do not see theirs';
-
-  @override
-  String get settingsPrivacyVisibility => 'Visible to';
 
   @override
   String get settingsQuietFrom => 'Quiet from';
