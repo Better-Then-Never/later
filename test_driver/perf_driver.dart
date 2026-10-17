@@ -15,11 +15,17 @@ Future<void> main() => integrationDriver(
       if (value is Map<String, dynamic>) {
         final timeline = driver.Timeline.fromJson(value);
         final summary = driver.TimelineSummary.summarize(timeline);
-        await summary.writeTimelineToFile(
-          entry.key,
-          pretty: true,
-          includeSummary: true,
-        );
+        try {
+          await summary.writeTimelineToFile(
+            entry.key,
+            pretty: true,
+            includeSummary: true,
+          );
+        } on StateError catch (e) {
+          // A flow that drew no frame (e.g. no chat to open for this
+          // account) is reported instead of ending the run.
+          stderr.writeln('${entry.key}: no frames ($e)');
+        }
       } else {
         numbers[entry.key] = value;
       }

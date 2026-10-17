@@ -39,5 +39,27 @@ Jank sources visible in the baseline (UI thread):
 - **open_chat**: 23 ms first frame; **add_friends_transition**: 21 ms first frame (non-lazy list + 50 avatars);
   **camera_open_close**: 18 ms.
 
+## Mid-mission run (commit 25b5a85, data in `perf/mid`)
+Same harness and account, profile mode, emulator started with `-gpu host` this time: **raster times are not
+comparable with the baseline** (the baseline emulator rendered ~110 ms per frame for any screen; here ~40-55 ms).
+More frames per flow mostly reflect that faster raster. Build (UI thread) times are the comparable budget.
+
+| Flow | Frames | Build avg / p90 / worst (ms) | Raster avg / p90 / worst (ms) |
+|---|---|---|---|
+| add_friends_transition | 49 | 3.9 / 12.2 / 25.9 | 36.3 / 50.2 / 63.8 |
+| camera_open_close | 63 | 3.6 / 7.5 / 54.6 | 53.7 / 78.2 / 321.1 |
+| history_scroll | 216 | 2.1 / 3.8 / 75.9 | 42.9 / 59.9 / 103.8 |
+| map_pan | 135 | 1.5 / 2.5 / 18.0 | 41.8 / 54.3 / 112.6 |
+| notifications_tabs | 100 | 4.1 / 12.3 / 24.4 | 40.8 / 53.3 / 78.6 |
+| settings_open_close | 45 | 5.1 / 17.3 / 46.4 | 40.5 / 55.5 / 101.9 |
+| startup | 43 | 10.1 / 13.2 / 148.3 | 57.5 / 89.9 / 406.5 |
+| tab_switches | 95 | 5.8 / 17.8 / 51.9 | 51.9 / 77.2 / 165.1 |
+
+Startup to home: 2792 ms (baseline 2938 ms). open_chat drew no frame: the test account has no chat yet (the
+driver now reports such a flow instead of aborting). Reading: build p90 stays under one frame (16.7 ms) except
+tab switches and settings, whose p90 is 17-18 ms from the first build of a tab/page; worst frames are first
+builds (startup, first history frame with the new photo decode, camera open). Map pan: build p90 2.5 ms with the
+memoized markers (F-10).
+
 ## After
 (filled at the end of the mission)
