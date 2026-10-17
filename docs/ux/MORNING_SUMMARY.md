@@ -10,7 +10,8 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 - New users are no longer blocked by five permission screens; microphone and contacts are gone.
 - Reactions and comments on capsules, reports, friends-of-friends suggestions, follower counts, verified badge,
   achievements with streaks, announcements you can send (`tools/admin/announce.js`).
-- Capsules made without a connection wait on the phone and upload by themselves.
+- Capsules made without a connection wait on the phone and upload by themselves; tap a capsule's photo to see it
+  full screen.
 - Chat: swipe a message to reply; hold it to react, copy or delete it for both.
 - My Capsules opens with "On this day" when you made capsules on this date in earlier years.
 - Creating a capsule: privacy, colour and the open date (with quick choices) are picked from a menu.
@@ -20,7 +21,8 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 1. Deploy rules, indexes, functions, then run the count backfill (DEPLOY.md).
 2. Confirm the username "amo b3" for the verified badge (BLOCKERS.md).
 3. Add the new data uses to the privacy policy (PRIVACY.md).
-4. Look at the screenshots in `docs/ux/after` and the dark palette sheet in `docs/ux/dark_candidates/sheet.png`.
+4. Look at the screenshots in `docs/ux/after` (tonight's features included) and the dark palette sheet in
+   `docs/ux/dark_candidates/sheet.png`.
 
 ## Health
 `flutter analyze` clean · `flutter test` 249 passing · functions 43/43 · rules 56/56 · nothing deployed, no tags,
