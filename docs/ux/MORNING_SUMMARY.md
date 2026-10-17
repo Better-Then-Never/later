@@ -12,6 +12,8 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
   achievements with streaks, announcements you can send (`tools/admin/announce.js`).
 - Capsules made without a connection wait on the phone and upload by themselves.
 - Chat: swipe a message to reply; hold it to copy or delete it for both.
+- My Capsules opens with "On this day" when you made capsules on this date in earlier years.
+- Creating a capsule: privacy, colour and the open date (with quick choices) are picked from a menu.
 - Settings: Appearance, Language, Privacy (default visibility, approximate location, read receipts).
 
 ## Needs you
@@ -21,5 +23,5 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 4. Look at the screenshots in `docs/ux/after` and the dark palette sheet in `docs/ux/dark_candidates/sheet.png`.
 
 ## Health
-`flutter analyze` clean · `flutter test` 241 passing · functions 43/43 · rules 55/55 · nothing deployed, no tags,
+`flutter analyze` clean · `flutter test` 243 passing · functions 43/43 · rules 55/55 · nothing deployed, no tags,
 no version bump, no secrets committed.

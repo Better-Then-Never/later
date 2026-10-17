@@ -55,6 +55,11 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Admin tools: admin claim, verified badge, announcements, count backfill | on (scripts) | `tools/admin` | self-test |
 | Loop capsules (and the Animator achievement) | flag off | `FeatureFlags.loopCapsules` (data model + rules ready) | – |
 
+## Tier 3
+| Feature | Status | Where | Verified |
+|---|---|---|---|
+| "On this day": your capsules from today's date in earlier years lead My Capsules ("1 year ago", plurals in 5 languages) | on (`FeatureFlags.memories`) | `history/on_this_day.dart`, `on_this_day_strip.dart` | tests, emulator |
+
 ## Backend only
 Server counters for reactions and comments on capsules (`reactionCounts`, `reactionTotal`, `commentCount`); the
 app uses them for large counts.

@@ -25,7 +25,8 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
   page route, so it needs its own transition), list entrance stagger.
 
 ## Tier 3 (not started)
-Onboarding tour, "On this day" memories, a friends feed.
+Onboarding tour, a friends feed; "On this day" as a morning push (the in-app strip is done; a push needs a
+scheduled function per time zone).
 
 ## Explicitly not built (mission rules)
 Ads, music for capsules, public channels, video circles, web version, payments or subscriptions.

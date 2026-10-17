@@ -99,3 +99,6 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   pills, map card, notifications, chat list, creation). CI's format check had failed on cad27e1 (an unformatted
   test file, hidden by cancelled runs before); fixed, and `dart format --set-exit-if-changed` is now part of the
   pre-commit checks.
+- **"On this day" (Tier 3), done:** `OnThisDay.from` + `OnThisDayStrip` at the top of My Capsules when the list is
+  not narrowed; `FeatureFlags.memories`. Verified on the emulator with two capsules dated one and two years ago
+  (added to the local emulator by an admin script). Flutter 243.
