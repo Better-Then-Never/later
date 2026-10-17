@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/router/app_page_route.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
@@ -92,11 +93,9 @@ class AchievementsPanel extends StatelessWidget {
           ..sort((a, b) => b.tier.compareTo(a.tier));
         return InkWell(
           borderRadius: BorderRadius.circular(25),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => AchievementsPage(profile: profile),
-            ),
-          ),
+          onTap: () => Navigator.of(
+            context,
+          ).push(appRoute<void>(AchievementsPage(profile: profile))),
           child: Ink(
             decoration: BoxDecorations.whiteCard(context, borderRadius: 25),
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),

@@ -77,7 +77,7 @@ class OptionsSettingsRow extends StatelessWidget {
             ),
             onTap: navigateTo != null
                 ? () {
-                    Navigator.push(context, fadeRoute<void>(navigateTo!));
+                    Navigator.push(context, appRoute<void>(navigateTo!));
                   }
                 : onTap,
           ),

@@ -30,13 +30,13 @@ abstract final class AppRoutes {
 
   // Auth
   static Future<void> toLogin(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const LoginPage()));
+      Navigator.of(context).push(appRoute(const LoginPage()));
 
   /// From the login page: replaces it when it was pushed (welcome flow),
   /// pushes when it is the root (after a log-out).
   static Future<void> toSignupFromLogin(BuildContext context) {
     final nav = Navigator.of(context);
-    final route = fadeRoute<void>(const SignupPage());
+    final route = appRoute<void>(const SignupPage());
     return nav.canPop() ? nav.pushReplacement(route) : nav.push(route);
   }
 
@@ -49,7 +49,8 @@ abstract final class AppRoutes {
     String? recipientId,
     bool replace = false,
   }) {
-    final route = fadeRoute<void>(
+    // The camera rises like a sheet over the tabs.
+    final route = appSheetRoute<void>(
       CameraPage(initialPrivacy: privacy, recipientId: recipientId),
     );
     final nav = Navigator.of(context);
@@ -65,7 +66,7 @@ abstract final class AppRoutes {
     String? recipientId,
     bool replace = false,
   }) {
-    final route = fadeRoute<void>(
+    final route = appRoute<void>(
       CapsuleCreationPage(
         imagePath: imagePath,
         framePaths: framePaths,
@@ -79,40 +80,40 @@ abstract final class AppRoutes {
 
   // Profile area
   static Future<void> toSettings(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const SettingsPage()));
+      Navigator.of(context).push(appRoute(const SettingsPage()));
 
   static Future<void> toNotifications(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const NotificationsPage()));
+      Navigator.of(context).push(appRoute(const NotificationsPage()));
 
   static Future<void> toShareProfile(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const ShareProfilePage()));
+      Navigator.of(context).push(appRoute(const ShareProfilePage()));
 
   // Friends
   static Future<void> toAddFriends(BuildContext context) =>
-      Navigator.of(context).push(slideUpRoute(const AddFriendsPage()));
+      Navigator.of(context).push(appSheetRoute(const AddFriendsPage()));
 
   static Future<void> toFriendRequests(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const FriendRequestsPage()));
+      Navigator.of(context).push(appRoute(const FriendRequestsPage()));
 
   static Future<void> toMyFriends(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const MyFriendsPage()));
+      Navigator.of(context).push(appRoute(const MyFriendsPage()));
 
   static Future<void> toAddFriendProfile(BuildContext context, String userId) =>
       Navigator.of(
         context,
-      ).push(fadeRoute(AddFriendProfilePage(userId: userId)));
+      ).push(appRoute(AddFriendProfilePage(userId: userId)));
 
   static Future<void> toFriendProfile(BuildContext context, String friendUid) =>
       Navigator.of(
         context,
-      ).push(fadeRoute(YourFriendProfilePage(friendUid: friendUid)));
+      ).push(appRoute(YourFriendProfilePage(friendUid: friendUid)));
 
   // Messages
   static Future<void> toChat(BuildContext context, String friendUid) =>
-      Navigator.of(context).push(fadeRoute(ChatPage(friendUid: friendUid)));
+      Navigator.of(context).push(appRoute(ChatPage(friendUid: friendUid)));
 
   static Future<String?> toQrScanner(BuildContext context) =>
-      Navigator.of(context).push<String>(fadeRoute(const QRScannerPage()));
+      Navigator.of(context).push<String>(appRoute(const QRScannerPage()));
 
   /// Scans a QR code and opens the profile it links to (other codes are
   /// ignored, as before).
