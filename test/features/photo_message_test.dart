@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:later/data/models/chat.dart';
 import 'package:later/features/messages/widgets/message_bubble.dart';
 import 'package:later/features/messages/widgets/photo_message.dart';
+import 'package:later/features/messages/widgets/photo_send_card.dart';
 
 import '../helpers/test_app.dart';
 
@@ -97,5 +98,48 @@ void main() {
 
     await pump(tester, _photo(delivery: MessageDelivery.sending));
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('the send card fits between the status bar and the keyboard', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 3;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 1500);
+    tester.view.padding = const FakeViewPadding(top: 72);
+    tester.view.viewPadding = const FakeViewPadding(top: 72);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      testApp(
+        home: Builder(
+          builder: (context) => TextButton(
+            // No such file: the card shows its 4:3 stand-in, a fixed height
+            // as tall as a photo would be.
+            onPressed: () => PhotoSendCard.show(context, '/nowhere/p.jpg'),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    // Let the file read fail for real, then lay the card out again.
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull, reason: 'no overflow');
+    // The photo starts below the status bar; the caption ends above the
+    // keyboard.
+    Rect inCard(Type type) => tester.getRect(
+      find
+          .descendant(
+            of: find.byType(PhotoSendCard),
+            matching: find.byType(type),
+          )
+          .first,
+    );
+    expect(inCard(ColoredBox).top, greaterThanOrEqualTo(24));
+    expect(inCard(TextField).bottom, lessThanOrEqualTo(800 - 1500 / 3));
   });
 }

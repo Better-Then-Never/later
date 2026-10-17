@@ -44,87 +44,98 @@ class _PhotoSendCardState extends State<PhotoSendCard> {
     final palette = context.palette;
     final screen = MediaQuery.sizeOf(context);
     final width = (screen.width - 32).clamp(0.0, 440.0);
-    return Container(
-      width: width,
-      decoration: BoxDecoration(
-        color: palette.surface,
-        borderRadius: BorderRadius.circular(AppSheets.radius),
+    // Below the status bar; with the keyboard up the photo gives way.
+    return Padding(
+      padding: EdgeInsets.only(
+        top: MediaQuery.viewPaddingOf(context).top + 8,
+        bottom: 8,
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: screen.height * 0.5),
-            child: ColoredBox(
-              color: AppColors.mediaBlack,
-              child: Image.file(
-                File(widget.path),
-                width: width,
-                fit: BoxFit.contain,
-                cacheWidth: (width * MediaQuery.devicePixelRatioOf(context))
-                    .round(),
-                errorBuilder: (_, _, _) => SizedBox(height: width * 0.75),
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(
+          color: palette.surface,
+          borderRadius: BorderRadius.circular(AppSheets.radius),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: screen.height * 0.5),
+                child: ColoredBox(
+                  color: AppColors.mediaBlack,
+                  child: Image.file(
+                    File(widget.path),
+                    width: width,
+                    fit: BoxFit.contain,
+                    cacheWidth: (width * MediaQuery.devicePixelRatioOf(context))
+                        .round(),
+                    errorBuilder: (_, _, _) => SizedBox(height: width * 0.75),
+                  ),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _caption,
-                    autofocus: false,
-                    minLines: 1,
-                    maxLines: 3,
-                    textCapitalization: TextCapitalization.sentences,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(Chat.maxMessageLength),
-                    ],
-                    style: TextStyle(
-                      fontFamily: kAppFontFamily,
-                      fontSize: 16,
-                      color: palette.textPrimary,
-                    ),
-                    decoration: InputDecoration(
-                      hintText: l10n.messagesPhotoCaption,
-                      hintStyle: TextStyle(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _caption,
+                      autofocus: false,
+                      minLines: 1,
+                      maxLines: 3,
+                      textCapitalization: TextCapitalization.sentences,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(Chat.maxMessageLength),
+                      ],
+                      style: TextStyle(
                         fontFamily: kAppFontFamily,
                         fontSize: 16,
-                        color: palette.textMuted,
+                        color: palette.textPrimary,
                       ),
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Semantics(
-                  button: true,
-                  label: l10n.messagesSend,
-                  child: AppPressable(
-                    child: GestureDetector(
-                      onTap: _send,
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        padding: const EdgeInsets.all(9),
-                        decoration: const BoxDecoration(
-                          color: AppColors.brandGreen,
-                          shape: BoxShape.circle,
+                      decoration: InputDecoration(
+                        hintText: l10n.messagesPhotoCaption,
+                        hintStyle: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 16,
+                          color: palette.textMuted,
                         ),
-                        child: Image.asset(AppIcons.messagesSend),
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Semantics(
+                    button: true,
+                    label: l10n.messagesSend,
+                    child: AppPressable(
+                      child: GestureDetector(
+                        onTap: _send,
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          padding: const EdgeInsets.all(9),
+                          decoration: const BoxDecoration(
+                            color: AppColors.brandGreen,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Image.asset(AppIcons.messagesSend),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
