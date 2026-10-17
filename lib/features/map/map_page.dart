@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart' show Geolocator;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -10,11 +12,15 @@ import '../../app/session/session_controller.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../app/shell/navbar_widget.dart';
+import '../../core/assets/app_assets.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_palette.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
+import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/later_loading_bar.dart';
 import '../settings/device_settings_store.dart';
@@ -30,13 +36,18 @@ class MapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Read here: a provider's create callback must not depend on the theme.
+    final dark = Theme.of(context).brightness == Brightness.dark;
     return ChangeNotifierProvider(
-      create: (context) => MapController(
-        capsules: context.read<CapsuleRepository>(),
-        location: context.read<LocationService>(),
-        currentLocation: context.read<CurrentLocation>(),
-        session: context.read<SessionController>(),
-      )..start(),
+      create: (context) =>
+          MapController(
+              capsules: context.read<CapsuleRepository>(),
+              location: context.read<LocationService>(),
+              currentLocation: context.read<CurrentLocation>(),
+              session: context.read<SessionController>(),
+            )
+            ..setDarkIcons(dark)
+            ..start(),
       child: const _MapView(),
     );
   }
@@ -47,6 +58,42 @@ class _MapView extends StatefulWidget {
 
   @override
   State<_MapView> createState() => _MapViewState();
+}
+
+/// Round button above the navigation bar that brings the map to the user,
+/// drawn with the map's own "you" figure.
+class _MyLocationButton extends StatelessWidget {
+  const _MyLocationButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Semantics(
+      button: true,
+      label: context.l10n.mapMyLocation,
+      child: AppPressable(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 52,
+            height: 52,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: palette.surface,
+              shape: BoxShape.circle,
+              border: palette.isDark
+                  ? Border.all(color: palette.cardBorder)
+                  : null,
+              boxShadow: AppShadows.raised(context),
+            ),
+            child: Image.asset(AppIcons.mapPinUser),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _MapViewState extends State<_MapView> {
@@ -119,6 +166,41 @@ class _MapViewState extends State<_MapView> {
       ),
     ),
   );
+
+  Future<void> _goToMe(MapController map) async {
+    unawaited(HapticFeedback.selectionClick());
+    final position = await map.locateMe();
+    if (!mounted) return;
+    if (position == null) {
+      final l10n = context.l10n;
+      final availability = map.availability;
+      PopupNotificationService.showError(
+        context: context,
+        message: switch (availability) {
+          LocationAvailability.serviceDisabled => l10n.mapLocationServiceOff,
+          LocationAvailability.denied ||
+          LocationAvailability.deniedForever => l10n.mapLocationDenied,
+          LocationAvailability.available => l10n.mapLocationUnknown,
+        },
+        position: NotificationPosition.top,
+      );
+      // Only the system settings can turn these back on.
+      if (availability == LocationAvailability.deniedForever) {
+        unawaited(Geolocator.openAppSettings());
+      } else if (availability == LocationAvailability.serviceDisabled) {
+        unawaited(context.read<LocationService>().openSettings());
+      }
+      return;
+    }
+    final controller = await _mapController.future;
+    final zoom = await controller.getZoomLevel();
+    await controller.animateCamera(
+      CameraUpdate.newLatLngZoom(
+        LatLng(position.latitude, position.longitude),
+        zoom < 14 ? 15 : zoom,
+      ),
+    );
+  }
 
   void _reportLocationProblem(MapController map) {
     if (_reportedLocationProblem || !map.usedFallbackCamera) return;
@@ -209,6 +291,7 @@ class _MapViewState extends State<_MapView> {
     if (_builtDark != null && _builtDark != dark) {
       _mapController = Completer<GoogleMapController>();
       _infoWindow.hideInfoWindow?.call();
+      unawaited(map.setDarkIcons(dark));
     }
     _builtDark = dark;
     return Stack(
@@ -260,6 +343,11 @@ class _MapViewState extends State<_MapView> {
             );
             map.onCameraIdle(center, await controller.getZoomLevel());
           },
+        ),
+        Positioned(
+          right: 16,
+          bottom: NavbarWidget.coveredHeight(context) + 12,
+          child: _MyLocationButton(onTap: () => _goToMe(map)),
         ),
         CustomInfoWindow(
           controller: _infoWindow,

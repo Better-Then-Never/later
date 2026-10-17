@@ -753,6 +753,7 @@
   "@mapLocationUnknown": {
     "description": "Toast on the map when no position could be found although location is allowed."
   },
+  "mapMyLocation": "My location",
   "messagesBlockedByYou": "You blocked this user",
   "messagesCantSend": "You can't send messages to this user",
   "messagesCapsuleLabel": "Capsule",

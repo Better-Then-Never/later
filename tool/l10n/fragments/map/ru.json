@@ -10,5 +10,6 @@
   "mapDurationSeconds": "{count}с",
   "mapCapsuleOpen": "Открыть",
   "mapCapsuleLocked": "Закрыта",
-  "mapCapsuleNoDescription": "У этой капсулы нет описания."
+  "mapCapsuleNoDescription": "У этой капсулы нет описания.",
+  "mapMyLocation": "Моё местоположение"
 }

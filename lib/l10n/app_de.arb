@@ -242,6 +242,7 @@
   "mapLocationDenied": "Erlaube den Standortzugriff, um Kapseln in deiner Nähe zu sehen",
   "mapLocationServiceOff": "Schalte die Ortung ein, um Kapseln in deiner Nähe zu sehen",
   "mapLocationUnknown": "Wir konnten deinen Standort nicht ermitteln",
+  "mapMyLocation": "Mein Standort",
   "messagesBlockedByYou": "Du hast diesen Nutzer blockiert",
   "messagesCantSend": "Du kannst diesem Nutzer keine Nachrichten senden",
   "messagesCapsuleLabel": "Kapsel",

@@ -832,6 +832,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapLocationUnknown => 'Не удалось определить вашу геопозицию';
 
   @override
+  String get mapMyLocation => 'Моё местоположение';
+
+  @override
   String get messagesBlockedByYou => 'Вы заблокировали этого пользователя';
 
   @override

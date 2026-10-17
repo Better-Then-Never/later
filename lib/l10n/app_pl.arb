@@ -242,6 +242,7 @@
   "mapLocationDenied": "Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu",
   "mapLocationServiceOff": "Włącz lokalizację, żeby widzieć kapsuły w pobliżu",
   "mapLocationUnknown": "Nie udało się ustalić twojej lokalizacji",
+  "mapMyLocation": "Moja lokalizacja",
   "messagesBlockedByYou": "Ten użytkownik jest zablokowany",
   "messagesCantSend": "Nie możesz wysyłać wiadomości temu użytkownikowi",
   "messagesCapsuleLabel": "Kapsuła",

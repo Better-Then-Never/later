@@ -847,6 +847,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wir konnten deinen Standort nicht ermitteln';
 
   @override
+  String get mapMyLocation => 'Mein Standort';
+
+  @override
   String get messagesBlockedByYou => 'Du hast diesen Nutzer blockiert';
 
   @override

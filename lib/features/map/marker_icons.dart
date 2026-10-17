@@ -16,11 +16,16 @@ class MarkerIcons {
   BitmapDescriptor forColor(CapsuleColor color) =>
       _capsules[color] ?? _capsules[CapsuleColor.red]!;
 
-  static Future<MarkerIcons>? _loading;
+  static final Map<bool, Future<MarkerIcons>> _loading = {};
 
-  static Future<MarkerIcons> load() => _loading ??= _load();
+  /// Markers are drawn by the map itself, outside the themed asset bundle:
+  /// in [dark] mode the user's figure comes from the dark icon set (a white
+  /// figure; the black one vanished on the dark map). Capsule pins keep their
+  /// white faces in both themes.
+  static Future<MarkerIcons> load({bool dark = false}) =>
+      _loading[dark] ??= _load(dark);
 
-  static Future<MarkerIcons> _load() async {
+  static Future<MarkerIcons> _load(bool dark) async {
     final capsules = <CapsuleColor, BitmapDescriptor>{};
     for (final color in CapsuleColor.values) {
       capsules[color] = await BitmapDescriptor.asset(
@@ -30,7 +35,12 @@ class MarkerIcons {
     }
     final user = await BitmapDescriptor.asset(
       const ImageConfiguration(size: Size(64, 64)),
-      AppIcons.mapPinUser,
+      dark
+          ? AppIcons.mapPinUser.replaceFirst(
+              AppAssetDirs.icons,
+              AppAssetDirs.iconsDark,
+            )
+          : AppIcons.mapPinUser,
     );
     return MarkerIcons._(capsules, user);
   }

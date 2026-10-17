@@ -10,5 +10,6 @@
   "mapDurationSeconds": "{count}s",
   "mapCapsuleOpen": "Öffnen",
   "mapCapsuleLocked": "Gesperrt",
-  "mapCapsuleNoDescription": "Diese Kapsel hat keine Beschreibung."
+  "mapCapsuleNoDescription": "Diese Kapsel hat keine Beschreibung.",
+  "mapMyLocation": "Mein Standort"
 }

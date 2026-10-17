@@ -1556,6 +1556,12 @@ abstract class AppLocalizations {
   /// **'We could not detect your location'**
   String get mapLocationUnknown;
 
+  /// No description provided for @mapMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My location'**
+  String get mapMyLocation;
+
   /// No description provided for @messagesBlockedByYou.
   ///
   /// In en, this message translates to:

@@ -106,7 +106,7 @@ class MapController extends ChangeNotifier {
     final uid = _session.uid;
     if (uid == null) return;
 
-    _icons = await MarkerIcons.load();
+    _icons = await MarkerIcons.load(dark: _darkIcons);
     _availability = await _location.availability();
     // Fastest first: a position already known in this session, then the
     // OS last-known fix (instant), and only then wait for a fresh fix.
@@ -122,12 +122,7 @@ class MapController extends ChangeNotifier {
     _state = MapLoadState.ready;
     notifyListeners();
 
-    if (_availability == LocationAvailability.available) {
-      _positionSub = _location.positions().listen((p) {
-        _currentLocation.update(p);
-        notifyListeners();
-      }, onError: (Object e) => AppLogger.debug('Position stream: $e'));
-    }
+    if (_availability == LocationAvailability.available) _followPosition();
 
     _ownSub = _capsules
         .watchOwn(uid)
@@ -138,6 +133,47 @@ class MapController extends ChangeNotifier {
     _session.addListener(_onSessionChanged);
     _onSessionChanged();
     _loadPublicBand(initialCamera.latitude);
+  }
+
+  bool _darkIcons = false;
+
+  /// Theme of the markers (see [MarkerIcons.load]); call before [start] and
+  /// whenever the theme changes.
+  Future<void> setDarkIcons(bool dark) async {
+    if (dark == _darkIcons) return;
+    _darkIcons = dark;
+    if (_icons == null) return; // start() loads them
+    final icons = await MarkerIcons.load(dark: dark);
+    if (_disposed || dark != _darkIcons) return;
+    _icons = icons;
+    notifyListeners();
+  }
+
+  void _followPosition() {
+    _positionSub ??= _location.positions().listen((p) {
+      _currentLocation.update(p);
+      notifyListeners();
+    }, onError: (Object e) => AppLogger.debug('Position stream: $e'));
+  }
+
+  /// The my-location button (F-13): asks for the permission when it was
+  /// not given yet, then returns where the user is; null when that is not
+  /// possible ([availability] says why).
+  Future<GeoPosition?> locateMe() async {
+    _availability = await _location.availability(request: true);
+    if (_disposed) return null;
+    if (_availability != LocationAvailability.available) {
+      notifyListeners();
+      return null;
+    }
+    _followPosition();
+    final position =
+        _currentLocation.position ??
+        await _location.currentPosition(timeout: const Duration(seconds: 5));
+    if (_disposed) return null;
+    _currentLocation.update(position);
+    notifyListeners();
+    return position;
   }
 
   void _onSessionChanged() {

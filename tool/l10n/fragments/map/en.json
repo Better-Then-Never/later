@@ -76,5 +76,6 @@
   "mapCapsuleNoDescription": "This capsule has no description.",
   "@mapCapsuleNoDescription": {
     "description": "Shown in the capsule card opened from the map when the capsule has no description."
-  }
+  },
+  "mapMyLocation": "My location"
 }

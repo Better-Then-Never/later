@@ -840,6 +840,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mapLocationUnknown => 'Nie udało się ustalić twojej lokalizacji';
 
   @override
+  String get mapMyLocation => 'Moja lokalizacja';
+
+  @override
   String get messagesBlockedByYou => 'Ten użytkownik jest zablokowany';
 
   @override

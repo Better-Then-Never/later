@@ -825,6 +825,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapLocationUnknown => 'We could not detect your location';
 
   @override
+  String get mapMyLocation => 'My location';
+
+  @override
   String get messagesBlockedByYou => 'You blocked this user';
 
   @override
