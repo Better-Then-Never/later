@@ -6,11 +6,13 @@ import 'package:later/data/models/geo_position.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/data/services/geocoding_service.dart';
 import 'package:later/features/history/favorites_store.dart';
+import 'package:later/features/history/history_page.dart';
 import 'package:later/features/history/history_controller.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/history/widgets/capsule_list_tile.dart';
 import 'package:later/features/history/widgets/capsule_selection_action_bar.dart';
 import 'package:later/features/map/current_location.dart';
+import 'package:later/features/map/map_focus.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
@@ -309,5 +311,46 @@ void main() {
     expect(find.text('2 selected'), findsOneWidget);
     expect(find.text('Cancel'), findsOneWidget);
     expect(find.text('Delete (2)'), findsOneWidget);
+  });
+
+  testWidgets('empty: what a capsule is and a way to make one; no match: '
+      'a way back to all of them', (tester) async {
+    final repo = FakeCapsuleRepository();
+    final store = OwnCapsulesStore(repo)..attach('me');
+    final favorites = FavoritesStore(FakeUserRepository())..attach('me');
+    addTearDown(() {
+      store
+        ..detach()
+        ..dispose();
+      favorites
+        ..detach()
+        ..dispose();
+    });
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: store),
+          ChangeNotifierProvider.value(value: favorites),
+          ChangeNotifierProvider(create: (_) => CurrentLocation()),
+          ChangeNotifierProvider(create: (_) => MapFocus()),
+          Provider(create: (_) => GeocodingService()),
+        ],
+        child: testApp(home: const Scaffold(body: HistoryPage())),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('No capsules yet'), findsOneWidget);
+    expect(find.text('Create a capsule'), findsOneWidget);
+
+    repo.emitOwn([_c('a', title: 'Beach')]);
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), 'zzz');
+    await tester.pump();
+    expect(find.text('No capsules match your search'), findsOneWidget);
+    await tester.tap(find.text('Reset').last);
+    await tester.pump();
+    expect(find.text('Beach'), findsOneWidget);
+    // Stop the tile's countdown before the test ends.
+    await tester.pumpWidget(const SizedBox());
   });
 }

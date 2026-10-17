@@ -1664,6 +1664,12 @@ abstract class AppLocalizations {
   /// **'{years}y {days}d {hours}h {minutes}m'**
   String historyCountdownYears(int years, int days, int hours, int minutes);
 
+  /// No description provided for @historyCreateFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a capsule'**
+  String get historyCreateFirst;
+
   /// Title of the dialog that confirms deleting the selected capsules.
   ///
   /// In en, this message translates to:
@@ -1699,6 +1705,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No capsules yet'**
   String get historyEmpty;
+
+  /// No description provided for @historyEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo, leave it at a place and choose when it opens.'**
+  String get historyEmptySubtitle;
 
   /// No description provided for @historyErrorDelete.
   ///
@@ -1760,11 +1772,23 @@ abstract class AppLocalizations {
   /// **'Visibility'**
   String get historyFilterVisibility;
 
+  /// No description provided for @historyLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your capsules could not be loaded'**
+  String get historyLoadError;
+
   /// No description provided for @historyNoMatches.
   ///
   /// In en, this message translates to:
   /// **'No capsules match your search'**
   String get historyNoMatches;
+
+  /// No description provided for @historyNoMatchesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another word, or reset the filters.'**
+  String get historyNoMatchesSubtitle;
 
   /// Title above the user's capsules made on today's date in earlier years
   ///

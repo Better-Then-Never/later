@@ -971,6 +971,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get historyCreateFirst => 'Utwórz kapsułę';
+
+  @override
   String historyDeleteConfirm(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1013,6 +1016,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get historyEmpty => 'Nie masz jeszcze kapsuł';
 
   @override
+  String get historyEmptySubtitle =>
+      'Zrób zdjęcie, zostaw je w miejscu i wybierz, kiedy się otworzy.';
+
+  @override
   String get historyErrorDelete => 'Nie udało się usunąć kapsuł';
 
   @override
@@ -1047,7 +1054,14 @@ class AppLocalizationsPl extends AppLocalizations {
   String get historyFilterVisibility => 'Widoczność';
 
   @override
+  String get historyLoadError => 'Nie udało się wczytać twoich kapsuł';
+
+  @override
   String get historyNoMatches => 'Żadna kapsuła nie pasuje do wyszukiwania';
+
+  @override
+  String get historyNoMatchesSubtitle =>
+      'Spróbuj innego słowa albo zresetuj filtry.';
 
   @override
   String get historyOnThisDay => 'Tego dnia';

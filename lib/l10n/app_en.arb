@@ -715,6 +715,7 @@
       }
     }
   },
+  "historyCreateFirst": "Create a capsule",
   "historyDeleteConfirm": "{count, plural, one{Delete {count} capsule?} other{Delete {count} capsules?}}",
   "@historyDeleteConfirm": {
     "description": "Title of the dialog that confirms deleting the selected capsules.",
@@ -757,6 +758,7 @@
     "description": "Distance row when the capsule or the user has no location."
   },
   "historyEmpty": "No capsules yet",
+  "historyEmptySubtitle": "Take a photo, leave it at a place and choose when it opens.",
   "historyErrorDelete": "Could not delete capsules",
   "historyErrorFavorites": "Could not update favorites",
   "historyFavoriteAdded": "{title} added to favorites",
@@ -803,7 +805,9 @@
   "@historyFilterVisibility": {
     "description": "Filter menu group: who can see the capsule (public, private, friends)."
   },
+  "historyLoadError": "Your capsules could not be loaded",
   "historyNoMatches": "No capsules match your search",
+  "historyNoMatchesSubtitle": "Try another word, or reset the filters.",
   "historyOnThisDay": "On this day",
   "@historyOnThisDay": {
     "description": "Title above the user's capsules made on today's date in earlier years"

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
@@ -11,6 +12,7 @@ import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/buttons/default_button_with_icon.dart';
 import '../../shared/widgets/app_sheets.dart';
 import '../../shared/widgets/confirm_dialog.dart';
+import '../../shared/widgets/default_empty_inbox_info.dart';
 import '../../shared/widgets/default_search_bar.dart';
 import '../../shared/widgets/page_header.dart';
 import '../map/current_location.dart';
@@ -197,9 +199,14 @@ class _HistoryPageState extends State<HistoryPage> {
     if (!store.isLoaded) {
       return const Center(child: CircularProgressIndicator());
     }
+    final l10n = context.l10n;
     final error = store.error;
     if (error != null && store.capsules.isEmpty) {
-      return Center(child: Text(error.message));
+      return DefaultEmptyInboxInfo(
+        message: l10n.historyLoadError,
+        subtitle: error.message,
+        assetPath: AppIcons.navbarHistory,
+      );
     }
 
     final all = store.capsules;
@@ -214,13 +221,26 @@ class _HistoryPageState extends State<HistoryPage> {
       from: here,
     );
     if (shown.isEmpty) {
-      return Center(
-        child: Text(
-          _controller.searchQuery.isEmpty
-              ? context.l10n.historyEmpty
-              : context.l10n.historyNoMatches,
-        ),
-      );
+      // Nothing yet: say what a capsule is and offer to make one. Nothing
+      // left after a search or filter: say how to get them back.
+      return all.isEmpty
+          ? DefaultEmptyInboxInfo(
+              message: l10n.historyEmpty,
+              subtitle: l10n.historyEmptySubtitle,
+              assetPath: AppIcons.navbarAdd,
+              actionText: l10n.historyCreateFirst,
+              onAction: () => AppRoutes.toCamera(context),
+            )
+          : DefaultEmptyInboxInfo(
+              message: l10n.historyNoMatches,
+              subtitle: l10n.historyNoMatchesSubtitle,
+              assetPath: AppIcons.profileFriendSearch,
+              actionText: l10n.historyReset,
+              onAction: () {
+                _searchController.clear();
+                _controller.resetFilters();
+              },
+            );
     }
 
     // The whole list, unsearched and unfiltered: then memories lead it.

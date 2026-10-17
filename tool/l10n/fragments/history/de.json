@@ -46,5 +46,9 @@
   "historyErrorDelete": "Kapseln konnten nicht gelöscht werden",
   "historyWaitingUpload": "Wartet auf Verbindung",
   "historyOnThisDay": "An diesem Tag",
-  "historyYearsAgo": "{count, plural, =1{Vor einem Jahr} other{Vor {count} Jahren}}"
+  "historyYearsAgo": "{count, plural, =1{Vor einem Jahr} other{Vor {count} Jahren}}",
+  "historyEmptySubtitle": "Mach ein Foto, lass es an einem Ort und wähle, wann es sich öffnet.",
+  "historyCreateFirst": "Kapsel erstellen",
+  "historyNoMatchesSubtitle": "Versuche ein anderes Wort oder setze die Filter zurück.",
+  "historyLoadError": "Deine Kapseln konnten nicht geladen werden"
 }

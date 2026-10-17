@@ -221,5 +221,9 @@
         "type": "int"
       }
     }
-  }
+  },
+  "historyEmptySubtitle": "Take a photo, leave it at a place and choose when it opens.",
+  "historyCreateFirst": "Create a capsule",
+  "historyNoMatchesSubtitle": "Try another word, or reset the filters.",
+  "historyLoadError": "Your capsules could not be loaded"
 }

@@ -46,5 +46,9 @@
   "historyErrorDelete": "Nie udało się usunąć kapsuł",
   "historyWaitingUpload": "Czeka na sieć",
   "historyOnThisDay": "Tego dnia",
-  "historyYearsAgo": "{count, plural, one{Rok temu} few{{count} lata temu} many{{count} lat temu} other{{count} roku temu}}"
+  "historyYearsAgo": "{count, plural, one{Rok temu} few{{count} lata temu} many{{count} lat temu} other{{count} roku temu}}",
+  "historyEmptySubtitle": "Zrób zdjęcie, zostaw je w miejscu i wybierz, kiedy się otworzy.",
+  "historyCreateFirst": "Utwórz kapsułę",
+  "historyNoMatchesSubtitle": "Spróbuj innego słowa albo zresetuj filtry.",
+  "historyLoadError": "Nie udało się wczytać twoich kapsuł"
 }

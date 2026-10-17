@@ -46,5 +46,9 @@
   "historyErrorDelete": "Не удалось удалить капсулы",
   "historyWaitingUpload": "Ждёт интернета",
   "historyOnThisDay": "В этот день",
-  "historyYearsAgo": "{count, plural, one{{count} год назад} few{{count} года назад} many{{count} лет назад} other{{count} года назад}}"
+  "historyYearsAgo": "{count, plural, one{{count} год назад} few{{count} года назад} many{{count} лет назад} other{{count} года назад}}",
+  "historyEmptySubtitle": "Сделайте фото, оставьте его в месте и выберите, когда оно откроется.",
+  "historyCreateFirst": "Создать капсулу",
+  "historyNoMatchesSubtitle": "Попробуйте другое слово или сбросьте фильтры.",
+  "historyLoadError": "Не удалось загрузить ваши капсулы"
 }

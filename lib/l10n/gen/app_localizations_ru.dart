@@ -963,6 +963,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get historyCreateFirst => 'Создать капсулу';
+
+  @override
   String historyDeleteConfirm(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1005,6 +1008,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyEmpty => 'Пока нет капсул';
 
   @override
+  String get historyEmptySubtitle =>
+      'Сделайте фото, оставьте его в месте и выберите, когда оно откроется.';
+
+  @override
   String get historyErrorDelete => 'Не удалось удалить капсулы';
 
   @override
@@ -1039,7 +1046,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyFilterVisibility => 'Видимость';
 
   @override
+  String get historyLoadError => 'Не удалось загрузить ваши капсулы';
+
+  @override
   String get historyNoMatches => 'По вашему запросу капсул нет';
+
+  @override
+  String get historyNoMatchesSubtitle =>
+      'Попробуйте другое слово или сбросьте фильтры.';
 
   @override
   String get historyOnThisDay => 'В этот день';
