@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../data/firebase/firebase_auth_repository.dart';
 import '../data/firebase/firebase_capsule_repository.dart';
 import '../data/firebase/firebase_chat_repository.dart';
+import '../data/firebase/firebase_config_repository.dart';
 import '../data/firebase/firebase_contact_match_repository.dart';
 import '../data/firebase/firebase_friends_repository.dart';
 import '../data/firebase/firebase_image_storage_repository.dart';
@@ -41,6 +42,7 @@ import '../features/notifications/push_registration.dart';
 import '../features/settings/device_settings_store.dart';
 import '../features/settings/settings_store.dart';
 import 'appearance/appearance_controller.dart';
+import 'entitlements_store.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
 import 'session/session_controller.dart';
@@ -77,6 +79,7 @@ class _AppScopeState extends State<AppScope> {
   final ImageStorageRepository _images = FirebaseImageStorageRepository();
   final SettingsRepository _settings = FirebaseSettingsRepository();
   final SocialRepository _social = FirebaseSocialRepository();
+  final ConfigRepository _config = FirebaseConfigRepository();
   final ContactMatchRepository _contactMatches =
       FirebaseContactMatchRepository();
   final _location = const LocationService();
@@ -108,6 +111,7 @@ class _AppScopeState extends State<AppScope> {
   late final _chatsStore = ChatsStore(_chats);
   late final _settingsStore = SettingsStore(_settings);
   late final _deviceSettings = DeviceSettingsStore(_prefs);
+  late final _entitlements = EntitlementsStore(_config);
   late final _friendsStore = FriendsStore(
     friends: _friends,
     users: _users,
@@ -141,6 +145,7 @@ class _AppScopeState extends State<AppScope> {
         _chatsStore,
         _settingsStore,
         _deviceSettings,
+        _entitlements,
         PushRegistration(push: _push, tokens: _pushTokens),
       ],
     )..start();
@@ -232,6 +237,7 @@ class _AppScopeState extends State<AppScope> {
         ChangeNotifierProvider<DeviceSettingsStore>.value(
           value: _deviceSettings,
         ),
+        ChangeNotifierProvider<EntitlementsStore>.value(value: _entitlements),
       ],
       child: widget.child,
     );

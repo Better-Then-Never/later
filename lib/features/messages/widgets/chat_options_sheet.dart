@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../app/entitlements_store.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../data/models/chat.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
@@ -129,7 +129,7 @@ class ChatOptionsSheet extends StatelessWidget {
       title: page.l10n.messagesGroupAddPeople,
       actionText: page.l10n.messagesGroupAddPeople,
       exclude: members.toSet(),
-      room: Chat.maxGroupMembers - members.length,
+      room: EntitlementsStore.of(page).groupMembers - members.length,
     );
     if (pick == null || !page.mounted) return;
     final failure = await controller.invite(pick.friends);
@@ -192,7 +192,7 @@ class ChatOptionsSheet extends StatelessWidget {
           ),
         ),
         const OptionsMenuDivider(),
-        if (members.length < Chat.maxGroupMembers) ...[
+        if (members.length < EntitlementsStore.of(context).groupMembers) ...[
           OptionsMenuItem(
             text: l10n.messagesGroupAddPeople,
             onPressed: () => then(() => _addPeople(page, controller)),

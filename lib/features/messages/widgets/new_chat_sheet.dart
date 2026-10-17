@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/entitlements_store.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
@@ -34,6 +35,8 @@ Future<void> startGroup(BuildContext root) async {
     title: l10n.messagesNewGroup,
     actionText: l10n.messagesGroupCreate,
     withName: true,
+    // The creator counts too.
+    room: EntitlementsStore.of(root).groupMembers - 1,
   );
   if (pick == null || !root.mounted) return;
   final (id, failure) = await root.read<ChatsStore>().createGroup(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../app/entitlements_store.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
@@ -196,10 +197,12 @@ class _CapsuleCreationView extends StatelessWidget {
       context,
       title: l10n.capsulesCoAuthorsPick,
       actionText: l10n.capsulesCoAuthorsDone,
-      room: Capsule.maxCoAuthors,
+      room: EntitlementsStore.of(context).coAuthors,
       initial: controller.coAuthors.toSet(),
       allowEmpty: true,
-      tooManyText: l10n.capsulesCoAuthorsTooMany(Capsule.maxCoAuthors),
+      tooManyText: l10n.capsulesCoAuthorsTooMany(
+        EntitlementsStore.of(context).coAuthors,
+      ),
     );
     if (pick != null) controller.coAuthors = pick.friends;
   }

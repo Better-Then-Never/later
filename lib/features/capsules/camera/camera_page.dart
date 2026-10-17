@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import '../../../app/entitlements_store.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
@@ -82,8 +83,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   ui.Image? _frozen;
 
   /// Holding the shutter records a loop: frames one after another until
-  /// it is released or [_maxFrames] are taken.
-  static const _maxFrames = 10;
+  /// it is released or [_maxFrames] are taken (the account's limit, B7).
+  int get _maxFrames => EntitlementsStore.of(context).loopFrames;
   bool _looping = false;
   final List<String> _frames = [];
 

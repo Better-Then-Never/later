@@ -365,6 +365,12 @@ abstract interface class SocialRepository {
   Stream<List<Announcement>> watchAnnouncements({int limit});
 }
 
+/// App-wide configuration (read-only for the app).
+abstract interface class ConfigRepository {
+  /// The `entitlements/limits` document (B7), or null when there is none.
+  Future<Map<String, Object?>?> limits();
+}
+
 abstract interface class NotificationRepository {
   Stream<List<AppNotification>> watch(String uid, {int limit});
   Future<void> markRead(String uid, Iterable<String> ids);
