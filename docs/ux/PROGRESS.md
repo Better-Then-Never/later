@@ -117,3 +117,5 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   script that stops on the first failure. Flutter 249.
 - **My Capsules states, done:** empty (what a capsule is + "Create a capsule"), no match ("Reset" clears search
   and filters), load error, all in the shared empty-state style. Flutter 250.
+- **First-capsule hint, done:** map card for users without capsules (frank@later.test on the emulator), camera on
+  tap, closed for good per account (survives a restart, verified), Google logo kept visible. Flutter 255.

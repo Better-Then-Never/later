@@ -62,6 +62,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 ## Tier 3
 | Feature | Status | Where | Verified |
 |---|---|---|---|
+| "Leave your first capsule" card on the map while a user has none; opens the camera, closable for good | on | `map/widgets/first_capsule_hint.dart` | tests (5 languages), emulator |
 | "On this day": your capsules from today's date in earlier years lead My Capsules ("1 year ago", plurals in 5 languages) | on (`FeatureFlags.memories`) | `history/on_this_day.dart`, `on_this_day_strip.dart` | tests, emulator |
 
 ## Backend only

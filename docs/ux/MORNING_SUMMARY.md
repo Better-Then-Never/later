@@ -13,6 +13,7 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 - Capsules made without a connection wait on the phone and upload by themselves; tap a capsule's photo to see it
   full screen.
 - Chat: swipe a message to reply; hold it to react, copy or delete it for both.
+- New users see "Leave your first capsule" on the map until they make one.
 - My Capsules opens with "On this day" when you made capsules on this date in earlier years.
 - Creating a capsule: privacy, colour and the open date (with quick choices) are picked from a menu.
 - Settings: Appearance, Language, Privacy (default visibility, approximate location, read receipts).
@@ -25,5 +26,5 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
    `docs/ux/dark_candidates/sheet.png`.
 
 ## Health
-`flutter analyze` clean · `flutter test` 250 passing · functions 43/43 · rules 56/56 · nothing deployed, no tags,
+`flutter analyze` clean · `flutter test` 255 passing · functions 43/43 · rules 56/56 · nothing deployed, no tags,
 no version bump, no secrets committed.

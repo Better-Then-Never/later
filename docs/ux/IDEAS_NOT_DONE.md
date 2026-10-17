@@ -26,7 +26,7 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
   start; it would need to run when the tab is first shown).
 
 ## Tier 3 (not started)
-Onboarding tour, a friends feed; "On this day" as a morning push (the in-app strip is done; a push needs a
+A longer onboarding tour (the first-capsule card is done), a friends feed; "On this day" as a morning push (the in-app strip is done; a push needs a
 scheduled function per time zone).
 
 ## Explicitly not built (mission rules)
