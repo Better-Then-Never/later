@@ -28,20 +28,23 @@ class AppearanceCrossfade extends StatefulWidget {
 class _AppearanceCrossfadeState extends State<AppearanceCrossfade>
     with SingleTickerProviderStateMixin {
   final _boundary = GlobalKey();
-  late final AnimationController _fade =
-      AnimationController(vsync: this, duration: AppMotion.slow)
-        ..addStatusListener((status) {
-          if (status == AnimationStatus.completed) _clear();
-        });
-  late final Animation<double> _opacity = ReverseAnimation(
-    CurvedAnimation(parent: _fade, curve: AppMotion.standardCurve),
-  );
+  // Created in initState, not lazily: a first use in dispose() would look
+  // up TickerMode on a deactivated element.
+  late final AnimationController _fade;
+  late final Animation<double> _opacity;
   late final AppearanceController _appearance;
   ui.Image? _snapshot;
 
   @override
   void initState() {
     super.initState();
+    _fade = AnimationController(vsync: this, duration: AppMotion.slow)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) _clear();
+      });
+    _opacity = ReverseAnimation(
+      CurvedAnimation(parent: _fade, curve: AppMotion.standardCurve),
+    );
     _appearance = context.read<AppearanceController>()..willChange = _capture;
   }
 

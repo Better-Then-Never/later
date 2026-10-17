@@ -169,7 +169,11 @@ void main() {
     }) async {
       if (_only.isNotEmpty && !_only.split(',').contains(name)) return;
       if (setup != null) await setup();
+      // Wall-clock time of the flow: a frozen app draws no frames (so no
+      // janky ones either), but its flow takes far longer than its waits.
+      final watch = Stopwatch()..start();
       await binding.traceAction(body, reportKey: name);
+      record('${name}_wall_ms', watch.elapsedMilliseconds);
     }
 
     final launch = Stopwatch()..start();
