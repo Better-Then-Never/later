@@ -12,7 +12,7 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
 | Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
-| Part B (B1..B7) | B1..B6 done (FEATURES_B.md; contacts flagged, icon badge not built); B7 next |
+| Part B (B1..B7) | B1..B7 done (FEATURES_B.md; contacts flagged, icon badge not built); final measurements and gates |
 
 ## Log
 ### 2026-10-17
@@ -106,3 +106,14 @@ on #78. Never merged, never deployed. Resume here.
   at once; a catch-up now tells once.
 - Rig: a stale `flutter run` session kept pushing old code, and opening the app again from the launcher ran the
   installed APK instead of the reloaded code (RIG.md §5).
+- B7 done: the streak on the map with its at-risk variant and card; unlock and milestone moments from real events
+  (Part A item 8); capsules viewed and "Curious"; the passport (world summary on the server, country names from
+  Android); `entitlements/limits`; the weekly-limit vs daily-streak note (FEATURES_B.md). Functions 62/62.
+- Found on the phone during B7: a server catch-up of four seeded tiers showed four cards in a row (now one card for
+  a burst, checked again on the phone); "Соединенные Штаты" overflowed its stamp (fixed, with a test).
+- Test gotcha: awaiting a stream subscription's `cancel()` inside a widget test resumes outside the test's fake
+  time, and the next pump never returns (the moments test hung for minutes). `MomentsController.dispose` cancels
+  without waiting.
+- Rig: rapid zooming on the map against the emulators ended the Firestore watch stream with RESOURCE_EXHAUSTED
+  (HTTP/2 ENHANCE_YOUR_CALM); markers came back after a pause. Opening capsules by link (`later://capsule/<id>`) was
+  the reliable way to view many on the phone.

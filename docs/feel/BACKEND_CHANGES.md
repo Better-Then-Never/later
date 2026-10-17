@@ -16,6 +16,7 @@ written for the owner.
 | 7 | Profiles: about, name search (nameLower), pinned friends, privacy switches; contacts index and requests (flagged) | rules, functions, data | unaffected | rules, functions 55/55 | rules; two new functions (gcloud) only with the contacts flag; optional backfill |
 | 8 | Creation: thumb.jpg storage rule; WorkManager (app build only) | storage rules | unaffected | storage rules test | storage rules |
 | 9 | Notifications: `notifications.vibrate`, channels without vibration; achievements checked where stats change (`unlockAchievements` removed); follower fan-out capped at 500 | rules, functions | unaffected (see section 9) | rules 79/79, functions 58/58 | rules, delete one function, functions |
+| 10 | Gamification: capsules viewed (`viewed` markers, `onCapsuleViewed`, "Curious"), the world summary (`countryCode`, `world/summary`), `entitlements/limits` | rules, functions, data | unaffected (see section 10) | rules 82/82, functions 62/62 | rules, one new function (gcloud), functions, one config document |
 
 ## 1. Pushes are logged, not sent, in the Functions emulator
 `functions/index.js`: when `FUNCTIONS_EMULATOR === 'true'` (set only by the Firebase emulator), `services()`
@@ -281,3 +282,50 @@ rules (`vibrate` accepted as a boolean, refused otherwise; the final count is in
    otherwise ask about it during the next step).
 3. `firebase deploy --only functions --project later-da778`
 4. Release the app (the new channels are created by the app on its first start).
+
+## 10. Gamification and exploration (Part B7)
+**Firestore rules**:
+- `users/{uid}/viewed/{capsuleId}` (new): the owner creates a marker `{at: server time}` once (id ≤ 64
+  characters); nobody updates or deletes it from an app; the owner reads it.
+- `users/{uid}/world/{doc}` (new): written by the functions only; read by the owner, and by friends unless
+  `showAchievements` is off (as achievements).
+- `capsules` create: optional `countryCode`, two capital letters (ISO 3166).
+- `entitlements/{doc}` (new): read by every signed-in app, written by nobody (console or the team's tools).
+
+**Functions** (`functions/lib/gamification.js`, `functions/index.js`):
+- `onCapsuleViewed` (new; `users/{uid}/viewed/{capsuleId}` created): counts the marker once in
+  `stats.capsulesViewed` if the capsule is someone else's, already open, and one the user could open (public,
+  shared with them, or a friend's friends-only capsule), records `counted` on the marker (a retried event counts
+  nothing), then checks achievements.
+- `updateCapsuleStats` (changed): a capsule with `countryCode` also updates `users/{uid}/world/summary` (per
+  country: capsules, towns, first and last visit; at most 300 countries and 100 towns each) and
+  `stats.countries` / `stats.cities`, in the same transaction.
+- The achievement registry gains `curious` (`capsulesViewed`: 10, 50, 250, 1000), titles in five languages.
+
+**Data**: `entitlements/limits`, a document to create once (today's numbers; the app uses its defaults while it is
+missing):
+```
+{ capsulesPerWeek: null, loopFrames: 10, coAuthors: 5, groupMembers: 20, pinnedFriends: 3 }
+```
+
+**Old apps**: unaffected. They write no markers and no `countryCode`, and never read the summary or the limits.
+Their capsules count as before; they just add no stamps. A new app against the old rules: the marker write is
+refused quietly, the passport stays empty, and a capsule with `countryCode` is retried without this session's
+fields, then in the legacy shape (`FirebaseCapsuleRepository._setNew`).
+
+**Cost**: a view costs one write the first time a user opens a given capsule, one invocation, one or two reads, and
+the achievement check (two reads). Opening it again costs nothing (the app keeps a set per run; a refused write is
+not billed). The world summary adds one read to the capsule transaction, only for capsules with a country. The
+passport is one document read; the limits are one read per sign-in.
+
+**Tests**: functions 62/62 (views counted once and only when allowed, Curious, the summary: towns, first visit,
+bounds, odd codes); rules (markers once, the summary read like achievements, the country code, the limits).
+
+**Deploy (owner)**:
+1. `firebase deploy --only firestore:rules --project later-da778`
+2. Create `onCapsuleViewed` once with gcloud like the other new Firestore triggers (DEPLOY.md section 2), with
+   `--trigger-event-filters=type=google.cloud.firestore.document.v1.created` and
+   `--trigger-event-filters-path-pattern=document='users/{uid}/viewed/{capsuleId}'`, then
+   `firebase deploy --only functions --project later-da778` (also updates `updateCapsuleStats`).
+3. Create `entitlements/limits` in the console with the values above (optional: the defaults are the same).
+4. Release the app.

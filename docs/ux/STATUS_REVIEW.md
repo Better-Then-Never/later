@@ -517,3 +517,64 @@ was delivered (no dev project; `docs/feel/BLOCKERS.md`). Sections 1–12 above a
 | Notifications reliability | 4/10 | 4/10 | Unchanged until Part B6; still no push delivered. |
 | Chat quality | 5/10 | 5/10 | Unchanged until Part B1. |
 | Overall readiness to ship | 4/10 | 5/10 | Feels much better on Android hardware, but the backend from #78 is still undeployed and nothing ran on iOS. |
+
+## 14. Addendum: Part B, features on the feel foundation (end of Session A)
+
+Same branch, PR, phone and rig as section 13. Every Part B feature is described with its tests and what was seen on
+the phone in `docs/feel/FEATURES_B.md`; server changes and deploy steps in `docs/feel/BACKEND_CHANGES.md`; the final
+numbers in `docs/feel/PERFORMANCE.md`. Push delivery is still unverified (no dev project), and nothing ran on iOS.
+
+### Findings whose status changed
+| ID | Was (section 1 or 13) | Now | Evidence |
+|---|---|---|---|
+| F-24 | PARTIAL | DONE_VERIFIED | The pin can be moved on a map (at most 1 km from the phone); phone (B4). |
+| F-25 | PARTIAL | DONE_VERIFIED | Creation in steps (cards come in one after another), a description composer, the camera photo as a hero; phone (B4; the hero flight itself too quick to see). |
+| F-26 | DONE_VERIFIED | DONE_VERIFIED, wider | Friends' capsules queue too, backoff 30 s → 15 min, Wi-Fi only, uploads in the background through WorkManager; phone (B4; not seen with the process killed). |
+| F-27 | PARTIAL | DONE_VERIFIED | The app's own calendar (month swipe, the language's first weekday); phone, Russian (B4). |
+| F-28 | NOT_DONE | PARTIAL | The description opens a composer sheet (large field, 2000 counter); the title field is unchanged. |
+| F-29 | PARTIAL | DONE_VERIFIED | Co-authors and "show me as the author" in the settings; phone (B2). |
+| F-50 | PARTIAL | DONE_VERIFIED | Share a capsule as a link (`later://capsule`, the web page); phone (B2). |
+| F-51 | NOT_DONE | DONE_VERIFIED | Co-authors: rules, index, notifications, My capsules and the map, "remove me"; phone, both directions (B2). |
+| F-52 | NOT_DONE | DONE_VERIFIED | Quick reply to the author, the capsule attached in the chat; phone (B2). |
+| F-54 | PARTIAL | DONE_VERIFIED | Profile tab redesigned (about me, capsules in numbers, the passport, pinned and recent friends); phone (B3). |
+| F-56 | NOT_DONE | DONE_VERIFIED | Pinned friends with quick actions, synced across phones; phone (B3). |
+| F-57 | PARTIAL | DONE_VERIFIED (name search) / FLAGGED_OFF (contacts) | Search by name, also from the chat search; contacts suggestions built behind a flag, never run on a phone (BLOCKERS). |
+| F-59, F-85 | NOT_DONE | DONE_VERIFIED | About me (100 characters), shown on the profile; phone (B3). |
+| F-60 | NOT_DONE | DONE_VERIFIED | The author is shown on capsules unless hidden; phone (B2). |
+| F-71 | NOT_DONE | DONE_VERIFIED (text) | Group chats with replies, invites, renames; no photos or voice in groups yet (BLOCKERS). |
+| F-72 | NOT_DONE | PARTIAL | Big emoji and a sticker panel; illustrated packs need artwork (owner). |
+| F-73 | NOT_DONE | DONE_VERIFIED (Android) | Voice messages record and play on the phone; the button is hidden on iOS (no recorder written). |
+| F-75 | PARTIAL | PARTIAL | The tab has days, the team's news, swipes and answers in place; every tap is routed and tested; group, co-author and vibration settings on the server. Delivery still unverified (no dev project). |
+| F-76 | PARTIAL | DONE_VERIFIED | Photos, offline queue (text), typing, groups, voice, stickers, swipe actions, pinned chats, forward, report, delete for me, unread divider; phone (B1). |
+| F-90 | PARTIAL | DONE_VERIFIED | The streak on the map with an at-risk variant and a card leading to the camera; the flame swells when the streak grows; a milestone card at 3, 7, 14... days; phone (B7). |
+| F-91 | PARTIAL | DONE_VERIFIED | Unlock cards from real events (one card for a burst), "capsules viewed" with the Curious achievement, a passport of countries and towns; phone (B7). |
+| F-93 | FLAGGED_OFF | DONE_VERIFIED (motion from the real camera not judged) | Photo / Loop switch, frame strip (reorder, remove), speed, loop mark; flag on; phone (B4). |
+
+### Sections 4 to 8, what changed
+- **Notifications (4)**: group messages and co-author invites now notify; the follower fan-out of a new capsule
+  stops at 500; achievements are checked where a stat changes (the `unlockAchievements` trigger on every profile
+  write is gone); a vibration switch with its own channels; announcements in the tab; router tests. The app icon
+  badge is still not built (BLOCKERS).
+- **Chat (5)**: the table's "no" rows are built except edit (not asked) and photos in groups.
+- **Map, camera, creation (6)**: filters (whose, open or later, colours); creation as listed above. Queries are
+  still not viewport-bounded.
+- **Social, settings, gamification (7)**: the missing settings (units, photo quality, save to gallery, sign-in
+  methods, download my data, find me by name) are built; the world-progress view exists; `entitlements/limits` is
+  the one place for limits, with the weekly-limit vs daily-streak note (FEATURES_B.md, B7).
+- **Backend (8)**: rules, functions and indexes grew additively (BACKEND_CHANGES.md sections 2–10, none deployed);
+  the two unbounded server paths of section 8 are fixed (fan-out capped, the user-write trigger removed); own
+  capsules are still read without a bound.
+
+### Section 10, bug by bug (after section 13)
+| # | Now |
+|---|---|
+| 1 | Fixed: announcements are rows of the tab (B6). |
+| 3 | Fixed: Report and Block on strangers' and friends' profiles (B2, B3). |
+| 7 | Fixed: reactions, comments and replies open the capsule, and comments its thread (B2). |
+| 8 | Fixed for text messages (queued across restarts) and friends' capsules (B1, B4); photos wait only while the app runs. |
+| 9 | Fixed: WorkManager uploads with the app closed (B4). |
+| 16 | Fixed: the microphone string is used again (voice messages). |
+| 17 | Partly fixed: fan-out capped, the user-write trigger gone; own capsules still unbounded. |
+| 21 | Fixed (B4). |
+| 22 | Fixed (B7). |
+| 10, 15, 18–20 | Unchanged. |

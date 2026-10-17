@@ -15,3 +15,7 @@
 | Save buttons above the keyboard | The name and username pages keep Save in a bottom bar, under the keyboard while typing (the new About page puts it under the field). Same fix there, not done to keep B3 small. |
 | Search by last name | Needs a word index (`nameWords` array) and an `array-contains` query; the prefix on the whole name covers most searches. |
 | Co-authors on the small map card | The opened capsule names them; the map's info panel has no room without a redesign. |
+| A friend's passport on their profile | The rules already let friends read the summary (like achievements); the entry on a friend's profile was left out to keep B7 small. |
+| Countries for older capsules | A one-time pass on each phone over its own capsules (the platform geocoder, a few dozen distinct places) and a function to rebuild the summary; or a server backfill with a paid geocoding API. |
+| A streak that counts any Later day | Views, reactions and comments are counted already; `nextStreak` would take them as a day too. Waits for the weekly-limit decision (FEATURES_B.md, B7). |
+| A badge for the first stamp of a country | The summary knows when a country is new (`newCountry`); a moment card ("A new stamp: Portugal") would be a small step on top of B7's moments. |

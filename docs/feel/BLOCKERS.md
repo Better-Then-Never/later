@@ -42,6 +42,16 @@ Anything listed here was **not** checked on the device, or could not be done in 
 - **App icon badge (B6)**: not built. Android shows its own mark from the notifications in the tray (not checked on
   the phone). An unread count on the icon needs a third-party package (flutter_app_badger is no longer maintained;
   no other was vetted) or a count query on the server per push. Owner to decide.
+- **Not seen on the phone (B4)**: the camera photo's hero flight into the creation card (too quick for screenshots;
+  the photo is in the card afterwards); the background upload job with the app's process killed (Android keeps
+  WorkManager jobs across process death by design; `am kill` could not kill the app while the job ran); a loop's
+  motion from the real camera (the camera saw only black during that check; seed frames played).
+- **Passport (B7)**: capsules made before this version have no country, so they are not in it (the page says so). A
+  backfill would need a paid geocoding API on the server or a pass over each phone's own capsules (IDEAS). Offline
+  capsules upload without a place. iOS shows country codes instead of names (no native reader written, no Mac here).
+- **Not seen on the phone (B7)**: the burst of dots and the flame's swell (too quick for screenshots); the moment
+  cards with TalkBack (they are a live region; test only).
+- **Weekly limit vs daily streak (B7)**: a product decision (FEATURES_B.md, B7). Nothing is limited today.
 - **Name search** finds prefixes of the whole name only ("anna f", not "fischer"); existing accounts are found by name
   after they open the new version or after the optional backfill (BACKEND_CHANGES.md §7).
 

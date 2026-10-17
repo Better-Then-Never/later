@@ -417,3 +417,93 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
 - Found there: the first accept in place reached five seeded achievements at once and five notifications arrived
   together. Since then a catch-up tells once (test added).
 - **Tests** (app): `notifications_tab_test.dart` (days, News off, both swipes, accept in place).
+
+## B7. Gamification and exploration
+
+### The streak on the map, and its at-risk variant: ON
+- **What**: the streak sits at the top right of the map, as tall as the map's round buttons: the flame and the
+  days. While today does not count yet (the streak ends tonight without a capsule) the flame is grey and the pill
+  has an orange ring; when a capsule counts, the colour comes back and the flame swells. A tap opens a card: the
+  days, "Today isn't counted yet: leave a capsule before midnight to keep your streak" with **Make a capsule** (the
+  camera), or "Today counts. See you tomorrow!", and the longest streak when it was longer. The profile's streak
+  chip has the same variant. The evening reminder push (19:00 local, opt-in) is the server's at-risk variant and is
+  unchanged.
+- **Tests**: `moments_test.dart` (hidden without a streak; at risk: grey flame, the card with the camera button; in
+  colour once today counts).
+- **Phone**: "🔥 4" in colour after the seed; the last day set to yesterday on the emulator: grey flame, orange ring,
+  the card in Russian with "Создать капсулу"; a capsule made from that card brought the colour back (7 days).
+
+### Unlock and milestone moments: ON (Part A item 8, wired to real events)
+- **What**: a card drops in from the top when the server unlocks an achievement level (the badge pops in a burst of
+  dots; "Level 2 of 4") or the streak reaches 3, 7, 14, 30, 50, 100, 200 or 365 days ("Your streak grows"). It
+  leaves after 4 s or on a swipe up; a tap opens the achievements. Levels that arrive together (the server stores a
+  catch-up one document at a time) wait 1.5 s and become one card: the newest, "and N more".
+- **How**: `MomentsController` watches the user's achievement documents and stats. What was celebrated is kept per
+  account on the phone: nothing shows twice, an account's first start on a phone shows nothing old, and levels
+  unlocked while the app was closed show at the next start. While the app runs, achievement pushes are not shown
+  again in the foreground. `MomentToast` queues the cards on the root overlay; reduced motion: no movement.
+- **Tests**: `moments_test.dart` (first start takes what is there as seen, a catch-up is one moment, levels stored one
+  by one are one moment, seen levels survive a restart, a streak milestone once, the card drops in and leaves).
+- **Phone**, every one from a real trigger in the emulators:
+  - a capsule made at 6 days → "Серия растёт · Серия: 7 дней" (the milestone), then the pill in colour;
+  - the same capsule let the server catch up four seeded tiers, shown as four cards in a row (16 s): fixed (one card
+    for a burst), then checked with a second burst: "Жаворонок · Уровень 2 из 2 · и ещё 2";
+  - a friend's reaction → "Любимец публики · Уровень 3 из 3" (screenshot);
+  - viewing capsules → "Любопытный" levels 2 and 3 (screen text; the image was caught with the reaction).
+- **Not seen**: the burst of dots and the flame's swell (too quick for screenshots); the card with TalkBack.
+
+### Capsules viewed and "Curious": ON
+- **What**: opening someone else's open capsule (its card) counts once for the new achievement **Curious** (10, 50,
+  250 and 1,000 capsules), with titles and goals in five languages.
+- **How**: the app writes a marker `users/{uid}/viewed/{capsuleId}` once (rules: create only, server time); the
+  function `onCapsuleViewed` counts it in `stats.capsulesViewed` only for a capsule the user could open (public,
+  shared with them, a friend's), not their own or one they co-authored, already open; it records that it counted, so
+  a retried event does not count again, then checks achievements.
+- **Tests**: functions (counted once, every refused case, Curious at ten), rules (markers), the capsule dialog
+  writes the marker.
+- **Phone**: three capsules of others opened (two from links): 7 → 8 → 9 → 10 views, the markers `counted: true`, and
+  Curious unlocked.
+
+### World progress view (a passport): ON
+- **What**: Profile > **Passport** ("🌍 Passport · 16 countries · 21 towns ›"): the totals, then one stamp per country
+  in the order of the first visit: perforated paper, an inked frame in the app's accents, the flag, the name in the
+  app's language, the capsules, the towns (two, "+2"), the first visit ("Впервые: нояб. 2024 г."). Each stamp leans
+  a little, as if pressed by hand (a fixed tilt). A footnote says that stamps come from capsules made since this
+  update; an empty passport says how to get the first stamp.
+- **How**: cheap reads by design. A new capsule asks the phone's geocoder for its town and country while the
+  creation page is open (cached per 100 m; saving waits at most 2 s more and never fails on it), and carries
+  `placeName` and `countryCode`. The capsule trigger keeps `users/{uid}/world/summary` (one document: per country
+  the capsules, towns and first and last visit; bounded) and `stats.countries` / `stats.cities` in the same
+  transaction. The passport is one document read; the profile row reads the totals from the profile it already has.
+  Country names come from Android in the app's language through a small channel (`later.app/locale`); the app
+  ships no table. Friends may read the summary like achievements (not shown on friends' profiles yet).
+- **Tests**: `world_test.dart` (the summary as read, the geocoder, a new capsule carries town and country, the
+  passport, an empty passport, a long name at 1.3× text), functions (the summary, bounds, odd codes), rules.
+- **Phone**: the passport with the seeded summary (16 countries, 21 towns; Польша, Франция, Швейцария...); the
+  capsule made on the phone carried `countryCode: PL` and its town. Found and fixed there: "Соединенные Штаты"
+  overflowed its stamp by 7.7 px (the content now shrinks a little instead; the test fails without the fix).
+- **Not done**: capsules made before this version have no country, so they are not in the passport (a backfill would
+  need a paid geocoding API on the server, or a pass over the phone's own capsules; IDEAS_NOT_DONE.md). iOS shows
+  country codes instead of names (no native reader written). Offline capsules upload without a place.
+
+### `entitlements/limits`: ON (the extension point; nothing sold, nothing new enforced)
+- **What**: one place for what an account may do: `Limits` (capsules a week, loop frames, co-authors, group size,
+  pinned friends). The defaults are today's numbers. The `entitlements/limits` document may lower them, never above
+  what the rules hold; odd values keep their default. `EntitlementsStore` reads it once per sign-in. The camera's
+  loop frames, co-authors on the creation page and the group size now read from it.
+- `capsulesPerWeek` is null (no limit, as today) and nothing reads it: a weekly limit is a product decision (below).
+- **Tests**: `limits_test.dart` (tolerant, ceilings, one read per sign-in, defaults without the store); rules.
+
+### The weekly limit and the daily streak
+A weekly cap on capsules (the free-plan idea) and a daily streak pull against each other: a 7-day streak needs at
+least seven capsules a week, so any cap under seven makes long streaks impossible on the free plan and punishes
+exactly the people who use Later most. They can live together if:
+1. **A streak day is any real Later day**, not only a new capsule: opening a friend's capsule, answering one, or
+   leaving a reaction or a comment also counts. The habit stays daily; the capsule quota stays weekly. (The server
+   already counts views, reactions and comments; the streak would read them.)
+2. **The cap is never below one a day** (seven or more a week), or it covers only the extras (loops, far open dates,
+   many co-authors), so plain capsules never run out.
+3. **A streak freeze**: a day without a capsule does not end the streak once a week (earned, not bought).
+
+Recommended: 1 and 2 together. Today nothing is limited (`capsulesPerWeek: null`) and the streak counts capsules
+only; switching to 1 is a change in `nextStreak` (functions) and the app's at-risk text.
