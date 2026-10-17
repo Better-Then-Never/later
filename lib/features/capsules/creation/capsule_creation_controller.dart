@@ -14,6 +14,7 @@ import '../../../data/services/gallery_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../map/current_location.dart';
 import '../outbox/capsule_outbox.dart';
+import 'creation_draft.dart';
 
 /// State of the "Create Capsule" screen.
 ///
@@ -40,7 +41,10 @@ class CapsuleCreationController extends ChangeNotifier {
     this.highQuality = false,
     this.saveToGallery = false,
     GalleryService? gallery,
+    CreationDraftStore? drafts,
+    CreationDraft? draft,
   }) : assert(recipientId == null || chats != null),
+       _drafts = drafts,
        _photoPath = imagePath,
        _frames = List.of(framePaths),
        _taken = {imagePath, ...framePaths},
@@ -59,7 +63,15 @@ class CapsuleCreationController extends ChangeNotifier {
                ? CapsulePrivacy.private
                : CapsulePrivacy.public),
        _position = currentLocation.position {
+    if (draft != null) _restore(draft);
     if (_position == null) unawaited(_locate());
+    if (_drafts != null) {
+      addListener(_draftChanged);
+      titleController.addListener(_draftChanged);
+      descriptionController.addListener(_draftChanged);
+      // The photo alone is worth keeping.
+      _draftChanged();
+    }
   }
 
   final String ownerId;
@@ -177,6 +189,99 @@ class CapsuleCreationController extends ChangeNotifier {
   /// When the photo was taken (the page opens right after the shutter).
   final DateTime capturedAt;
 
+  /// Keeps the capsule as left (B4): saved a second after each change, and
+  /// when the page closes, until the capsule is made.
+  final CreationDraftStore? _drafts;
+  Timer? _draftTimer;
+  bool _finished = false;
+
+  /// Camera files copied into the draft folder (camera path -> copy).
+  final Map<String, String> _kept = {};
+
+  void _restore(CreationDraft d) {
+    titleController.text = d.title;
+    descriptionController.text = d.description;
+    if (d.privacy case final p?) _privacy = p;
+    _color = d.color;
+    _openAt = d.openAt;
+    _coAuthors = d.coAuthors;
+    _allowComments = d.allowComments;
+    _allowReactions = d.allowReactions;
+    _showAuthor = d.showAuthor;
+    _precision = d.locationPrecision;
+    _frameDelayMs = d.frameDelayMs;
+    if (d.pin case final pin?) {
+      _here = _position;
+      _position = pin;
+    }
+  }
+
+  void _draftChanged() {
+    if (_drafts == null || _finished || _disposed) return;
+    _draftTimer?.cancel();
+    _draftTimer = Timer(
+      const Duration(seconds: 1),
+      () => unawaited(_saveDraft()),
+    );
+  }
+
+  Future<void> _saveDraft() async {
+    final drafts = _drafts;
+    if (drafts == null || _finished) return;
+    // Read now: the page may be closing (the text fields go with it).
+    final photo = imagePath;
+    final frames = framePaths;
+    final title = titleController.text;
+    final description = descriptionController.text;
+    final pin = _here == null ? null : _position;
+    try {
+      final dir = (await drafts.folder(ownerId)).path;
+      for (final path in [photo, ...frames]) {
+        if (_kept.containsKey(path)) continue;
+        if (path.startsWith(dir)) {
+          _kept[path] = path;
+          continue;
+        }
+        final name = path.split(RegExp(r'[\\/]')).last;
+        final copy = '$dir/${_kept.length}_$name';
+        await File(path).copy(copy);
+        _kept[path] = copy;
+      }
+      if (_finished) return;
+      await drafts.save(
+        ownerId,
+        CreationDraft(
+          imagePath: _kept[photo]!,
+          framePaths: [for (final f in frames) _kept[f]!],
+          title: title,
+          description: description,
+          privacy: _privacy,
+          color: _color,
+          openAt: _openAt,
+          coAuthors: _coAuthors,
+          allowComments: _allowComments,
+          allowReactions: _allowReactions,
+          showAuthor: _showAuthor,
+          locationPrecision: _precision,
+          frameDelayMs: _frameDelayMs,
+          pin: pin,
+          recipientId: recipientId,
+          capturedAt: capturedAt,
+          savedAt: DateTime.now(),
+        ),
+      );
+    } catch (e) {
+      AppLogger.debug('Draft not kept: $e');
+    }
+  }
+
+  /// Made (or kept for later): the draft goes.
+  Future<void> _dropDraft() async {
+    _finished = true;
+    _draftTimer?.cancel();
+    await _drafts?.discard(ownerId);
+  }
+
   /// The friend this capsule is sent to: it is shared with them and posted
   /// into your chat.
   final String? recipientId;
@@ -203,6 +308,20 @@ class CapsuleCreationController extends ChangeNotifier {
   CapsuleColor get color => _color;
   DateTime? get openAt => _openAt;
   GeoPosition? get position => _position;
+
+  /// Where the phone was when the capsule was made (the pin moves around
+  /// it, PinPickerSheet).
+  GeoPosition? get here => _here ?? _position;
+  GeoPosition? _here;
+
+  /// The capsule goes to [spot] instead of where the phone is.
+  void movePin(GeoPosition spot) {
+    _here ??= _position;
+    if (spot == _position) return;
+    _position = spot;
+    notifyListeners();
+  }
+
   bool get isSaving => _saving;
 
   set privacy(CapsulePrivacy value) {
@@ -301,17 +420,18 @@ class CapsuleCreationController extends ChangeNotifier {
             .timeout(uploadTimeout);
       } catch (e) {
         final outbox = _outbox;
-        // No connection: keep it on the phone (not for a friend: the chat
-        // post needs the connection too).
-        if (outbox == null ||
-            recipientId != null ||
-            !CapsuleOutbox.isOffline(e)) {
-          rethrow;
-        }
+        // No connection: keep it on the phone; a friend's capsule goes to
+        // the chat once it is uploaded (the outbox posts it).
+        if (outbox == null || !CapsuleOutbox.isOffline(e)) rethrow;
         AppLogger.info('No connection: capsule $_id kept for later');
         await outbox.enqueue(draft);
         _queued = true;
-        unawaited(_keepInGallery().whenComplete(_deleteTempPhoto));
+        _finished = true;
+        unawaited(
+          _keepInGallery()
+              .whenComplete(_deleteTempPhoto)
+              .whenComplete(_dropDraft),
+        );
         return null;
       }
       final to = recipientId;
@@ -330,7 +450,12 @@ class CapsuleCreationController extends ChangeNotifier {
           );
         }
       }
-      unawaited(_keepInGallery().whenComplete(_deleteTempPhoto));
+      _finished = true;
+      unawaited(
+        _keepInGallery()
+            .whenComplete(_deleteTempPhoto)
+            .whenComplete(_dropDraft),
+      );
       return null;
     } catch (e, st) {
       AppLogger.error('Saving the capsule failed', error: e, stackTrace: st);
@@ -365,6 +490,11 @@ class CapsuleCreationController extends ChangeNotifier {
 
   @override
   void dispose() {
+    // Leaving with a change not kept yet: keep it now.
+    if (_draftTimer?.isActive ?? false) {
+      _draftTimer!.cancel();
+      unawaited(_saveDraft());
+    }
     _disposed = true;
     titleController.dispose();
     descriptionController.dispose();

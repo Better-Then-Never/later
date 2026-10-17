@@ -105,5 +105,15 @@
   "capsulesCameraModeLoop": "Pętla",
   "capsulesCameraTapForLoop": "Dotknij, by zacząć, i jeszcze raz, by skończyć",
   "capsulesCameraStartLoop": "Zacznij pętlę",
-  "capsulesCameraStopLoop": "Zatrzymaj pętlę"
+  "capsulesCameraStopLoop": "Zatrzymaj pętlę",
+  "capsulesCalendarPrevious": "Poprzedni miesiąc",
+  "capsulesCalendarNext": "Następny miesiąc",
+  "capsulesPinTitle": "Przesuń pinezkę",
+  "capsulesPinHint": "Przesuń mapę, by postawić kapsułę dokładnie, do 1 km.",
+  "capsulesPinTooFar": "Kapsuła zostaje do 1 km od ciebie.",
+  "capsulesPinUse": "Postaw tutaj",
+  "capsulesPinBack": "Wróć do mnie",
+  "capsulesDraftTitle": "Niedokończona kapsuła",
+  "capsulesDraftContinue": "Kontynuuj",
+  "capsulesDraftDiscard": "Odrzuć niedokończoną kapsułę"
 }

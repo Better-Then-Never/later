@@ -426,6 +426,12 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get capsulesCalendarNext => 'Następny miesiąc';
+
+  @override
+  String get capsulesCalendarPrevious => 'Poprzedni miesiąc';
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Zezwól na dostęp do aparatu w ustawieniach, żeby zrobić zdjęcie';
 
@@ -639,6 +645,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesDefaultTitle => 'Kapsuła';
 
   @override
+  String get capsulesDraftContinue => 'Kontynuuj';
+
+  @override
+  String get capsulesDraftDiscard => 'Odrzuć niedokończoną kapsułę';
+
+  @override
+  String get capsulesDraftTitle => 'Niedokończona kapsuła';
+
+  @override
   String get capsulesErrorNoLocation =>
       'Nie udało się ustalić twojej lokalizacji';
 
@@ -689,6 +704,22 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesOpenTomorrow => 'Jutro';
+
+  @override
+  String get capsulesPinBack => 'Wróć do mnie';
+
+  @override
+  String get capsulesPinHint =>
+      'Przesuń mapę, by postawić kapsułę dokładnie, do 1 km.';
+
+  @override
+  String get capsulesPinTitle => 'Przesuń pinezkę';
+
+  @override
+  String get capsulesPinTooFar => 'Kapsuła zostaje do 1 km od ciebie.';
+
+  @override
+  String get capsulesPinUse => 'Postaw tutaj';
 
   @override
   String get capsulesPrivacyFriends => 'Dla znajomych';
@@ -1329,6 +1360,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Czeka na sieć';
+
+  @override
+  String get historyWaitingWifi => 'Czeka na Wi-Fi';
 
   @override
   String historyYearsAgo(int count) {
@@ -3108,6 +3142,13 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsUnitsMiles => 'Mile';
+
+  @override
+  String get settingsUploadsWifiOnly => 'Wysyłaj tylko przez Wi-Fi';
+
+  @override
+  String get settingsUploadsWifiOnlyHint =>
+      'Kapsuły zrobione bez Wi-Fi czekają na telefonie na Wi-Fi.';
 
   @override
   String get settingsUsername => 'Nazwa użytkownika';

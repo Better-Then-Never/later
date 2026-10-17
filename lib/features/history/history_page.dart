@@ -282,6 +282,7 @@ class _HistoryPageState extends State<HistoryPage> {
           onFavoriteTap: () => _toggleFavorite(capsule),
           onTap: () => _onTap(capsule),
           onLongPress: () => _controller.toggleSelection(capsule.id),
+          waitingForWifi: store.waitingForWifi,
         );
       },
     );

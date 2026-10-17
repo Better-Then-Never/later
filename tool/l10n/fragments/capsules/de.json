@@ -105,5 +105,15 @@
   "capsulesCameraModeLoop": "Loop",
   "capsulesCameraTapForLoop": "Tippen zum Starten, nochmal zum Stoppen",
   "capsulesCameraStartLoop": "Loop starten",
-  "capsulesCameraStopLoop": "Loop stoppen"
+  "capsulesCameraStopLoop": "Loop stoppen",
+  "capsulesCalendarPrevious": "Vorheriger Monat",
+  "capsulesCalendarNext": "Nächster Monat",
+  "capsulesPinTitle": "Pin verschieben",
+  "capsulesPinHint": "Zieh die Karte, um die Kapsel genau zu setzen, bis 1 km.",
+  "capsulesPinTooFar": "Eine Kapsel bleibt höchstens 1 km von dir entfernt.",
+  "capsulesPinUse": "Hier setzen",
+  "capsulesPinBack": "Zurück zu mir",
+  "capsulesDraftTitle": "Unfertige Kapsel",
+  "capsulesDraftContinue": "Weiter",
+  "capsulesDraftDiscard": "Unfertige Kapsel verwerfen"
 }

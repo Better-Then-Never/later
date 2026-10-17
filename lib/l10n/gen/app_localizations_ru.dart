@@ -425,6 +425,12 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get capsulesCalendarNext => 'Следующий месяц';
+
+  @override
+  String get capsulesCalendarPrevious => 'Предыдущий месяц';
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Разрешите доступ к камере в настройках, чтобы сделать фото';
 
@@ -638,6 +644,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesDefaultTitle => 'Капсула';
 
   @override
+  String get capsulesDraftContinue => 'Продолжить';
+
+  @override
+  String get capsulesDraftDiscard => 'Удалить незаконченную капсулу';
+
+  @override
+  String get capsulesDraftTitle => 'Незаконченная капсула';
+
+  @override
   String get capsulesErrorNoLocation => 'Не удалось определить вашу геопозицию';
 
   @override
@@ -687,6 +702,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesOpenTomorrow => 'Завтра';
+
+  @override
+  String get capsulesPinBack => 'Вернуться ко мне';
+
+  @override
+  String get capsulesPinHint =>
+      'Двигайте карту, чтобы поставить капсулу точно, в пределах 1 км.';
+
+  @override
+  String get capsulesPinTitle => 'Передвинуть метку';
+
+  @override
+  String get capsulesPinTooFar => 'Капсула остаётся в пределах 1 км от вас.';
+
+  @override
+  String get capsulesPinUse => 'Поставить здесь';
 
   @override
   String get capsulesPrivacyFriends => 'Для друзей';
@@ -1320,6 +1351,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Ждёт интернета';
+
+  @override
+  String get historyWaitingWifi => 'Ждёт Wi-Fi';
 
   @override
   String historyYearsAgo(int count) {
@@ -3101,6 +3135,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsUnitsMiles => 'Мили';
+
+  @override
+  String get settingsUploadsWifiOnly => 'Загружать только по Wi-Fi';
+
+  @override
+  String get settingsUploadsWifiOnlyHint =>
+      'Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится.';
 
   @override
   String get settingsUsername => 'Имя пользователя';

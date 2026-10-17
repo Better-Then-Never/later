@@ -51,5 +51,6 @@
   "historyCreateFirst": "Создать капсулу",
   "historyNoMatchesSubtitle": "Попробуйте другое слово или сбросьте фильтры.",
   "historyLoadError": "Не удалось загрузить ваши капсулы",
-  "historyDistanceFromYouMiles": "{distance} миль от вас"
+  "historyDistanceFromYouMiles": "{distance} миль от вас",
+  "historyWaitingWifi": "Ждёт Wi-Fi"
 }

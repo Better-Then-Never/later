@@ -401,6 +401,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get capsulesCalendarNext => 'Next month';
+
+  @override
+  String get capsulesCalendarPrevious => 'Previous month';
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Allow camera access in Settings to take a photo';
 
@@ -608,6 +614,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesDefaultTitle => 'Capsule';
 
   @override
+  String get capsulesDraftContinue => 'Continue';
+
+  @override
+  String get capsulesDraftDiscard => 'Throw the unfinished capsule away';
+
+  @override
+  String get capsulesDraftTitle => 'Unfinished capsule';
+
+  @override
   String get capsulesErrorNoLocation => 'We could not detect your location';
 
   @override
@@ -657,6 +672,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesOpenTomorrow => 'Tomorrow';
+
+  @override
+  String get capsulesPinBack => 'Back to where I am';
+
+  @override
+  String get capsulesPinHint =>
+      'Drag the map to put the capsule on the exact spot, within 1 km.';
+
+  @override
+  String get capsulesPinTitle => 'Move the pin';
+
+  @override
+  String get capsulesPinTooFar =>
+      'A capsule stays within 1 km of where you are.';
+
+  @override
+  String get capsulesPinUse => 'Put it here';
 
   @override
   String get capsulesPrivacyFriends => 'Friends';
@@ -1284,6 +1316,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Waiting for connection';
+
+  @override
+  String get historyWaitingWifi => 'Waiting for Wi-Fi';
 
   @override
   String historyYearsAgo(int count) {
@@ -3013,6 +3048,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsUnitsMiles => 'Miles';
+
+  @override
+  String get settingsUploadsWifiOnly => 'Upload on Wi-Fi only';
+
+  @override
+  String get settingsUploadsWifiOnlyHint =>
+      'Capsules made on mobile data wait on the phone for Wi-Fi.';
 
   @override
   String get settingsUsername => 'Username';

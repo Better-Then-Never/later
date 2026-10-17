@@ -40,6 +40,7 @@ class CapsuleListTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.isSelected = false,
+    this.waitingForWifi = false,
   });
 
   final Capsule capsule;
@@ -48,6 +49,9 @@ class CapsuleListTile extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final bool isSelected;
+
+  /// A waiting capsule waits for Wi-Fi, not for any connection.
+  final bool waitingForWifi;
 
   @override
   Widget build(BuildContext context) {
@@ -205,7 +209,13 @@ class CapsuleListTile extends StatelessWidget {
                                             color: AppColors.warningOrange,
                                             child: _pillText(
                                               context,
-                                              context.l10n.historyWaitingUpload,
+                                              waitingForWifi
+                                                  ? context
+                                                        .l10n
+                                                        .historyWaitingWifi
+                                                  : context
+                                                        .l10n
+                                                        .historyWaitingUpload,
                                             ),
                                           )
                                         : createdAt != null

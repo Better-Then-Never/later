@@ -14,6 +14,7 @@ import '../../features/friends/pages/my_friends_page.dart';
 import '../../features/friends/pages/your_friend_profile_page.dart';
 import '../../features/capsules/camera/camera_page.dart';
 import '../../features/capsules/creation/capsule_creation_page.dart';
+import '../../features/capsules/creation/creation_draft.dart';
 import '../../features/messages/chat_page.dart';
 import '../../features/capsules/social/capsule_detail_dialog.dart';
 import '../../features/map/map_focus.dart';
@@ -73,6 +74,7 @@ abstract final class AppRoutes {
     CapsulePrivacy? privacy,
     String? recipientId,
     bool replace = false,
+    CreationDraft? draft,
   }) {
     final route = appRoute<void>(
       CapsuleCreationPage(
@@ -80,6 +82,7 @@ abstract final class AppRoutes {
         framePaths: framePaths,
         initialPrivacy: privacy,
         recipientId: recipientId,
+        draft: draft,
       ),
     );
     final nav = Navigator.of(context);

@@ -15,6 +15,8 @@ import '../data/firebase/firebase_user_repository.dart';
 import '../data/repositories/repositories.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/services/location_service.dart';
+import '../data/services/network_service.dart';
+import '../features/capsules/outbox/background_uploads.dart';
 import '../data/services/preferences_store.dart';
 import '../data/services/voice_service.dart';
 import '../data/services/profile_image_cache.dart';
@@ -86,7 +88,15 @@ class _AppScopeState extends State<AppScope> {
   final _currentLocation = CurrentLocation();
   late final _imageCache = ProfileImageCache(_images, prefs: _prefs);
   late final _notificationsStore = NotificationsStore(_notifications);
-  late final _outbox = CapsuleOutbox(_capsules);
+  late final _outbox = CapsuleOutbox(
+    _capsules,
+    chats: _chats,
+    // Settings > Map and camera > "Upload on Wi-Fi only".
+    wifiOnly: () => _deviceSettings.uploadsWifiOnly,
+    metered: _network.isMetered,
+    background: BackgroundUploads(),
+  );
+  final _network = NetworkService();
   late final _ownCapsules = OwnCapsulesStore(_capsules, outbox: _outbox);
   late final _favorites = FavoritesStore(_users);
   late final _directory = UserDirectory(_users);

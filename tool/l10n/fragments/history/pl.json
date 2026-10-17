@@ -51,5 +51,6 @@
   "historyCreateFirst": "Utwórz kapsułę",
   "historyNoMatchesSubtitle": "Spróbuj innego słowa albo zresetuj filtry.",
   "historyLoadError": "Nie udało się wczytać twoich kapsuł",
-  "historyDistanceFromYouMiles": "{distance} mil od ciebie"
+  "historyDistanceFromYouMiles": "{distance} mil od ciebie",
+  "historyWaitingWifi": "Czeka na Wi-Fi"
 }

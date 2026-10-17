@@ -63,6 +63,9 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
   AppFailure? _error;
 
   List<Capsule> get capsules => _merged;
+
+  /// Waiting capsules wait for Wi-Fi (Settings: upload on Wi-Fi only).
+  bool get waitingForWifi => _outbox?.waitingForWifi ?? false;
   bool get isLoaded => _loaded;
   AppFailure? get error => _error;
 

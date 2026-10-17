@@ -315,6 +315,14 @@
       }
     }
   },
+  "capsulesCalendarNext": "Next month",
+  "@capsulesCalendarNext": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesCalendarPrevious": "Previous month",
+  "@capsulesCalendarPrevious": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
   "capsulesCameraAccessDenied": "Allow camera access in Settings to take a photo",
   "@capsulesCameraAccessDenied": {
     "description": "Camera screen when camera permission was denied. 'Settings' are the phone's settings."
@@ -523,6 +531,18 @@
   "@capsulesDefaultTitle": {
     "description": "Title given to a capsule saved without one. It is stored with the capsule."
   },
+  "capsulesDraftContinue": "Continue",
+  "@capsulesDraftContinue": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftDiscard": "Throw the unfinished capsule away",
+  "@capsulesDraftDiscard": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftTitle": "Unfinished capsule",
+  "@capsulesDraftTitle": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
   "capsulesErrorNoLocation": "We could not detect your location",
   "capsulesErrorSaveFailed": "Failed to save capsule",
   "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
@@ -573,6 +593,26 @@
   "capsulesOpenTomorrow": "Tomorrow",
   "@capsulesOpenTomorrow": {
     "description": "Open date preset"
+  },
+  "capsulesPinBack": "Back to where I am",
+  "@capsulesPinBack": {
+    "description": "Button on the pin map: back to the phone's position."
+  },
+  "capsulesPinHint": "Drag the map to put the capsule on the exact spot, within 1 km.",
+  "@capsulesPinHint": {
+    "description": "How to move the pin; it stays within 1 km."
+  },
+  "capsulesPinTitle": "Move the pin",
+  "@capsulesPinTitle": {
+    "description": "Sheet title (and hint of the place pill): move the capsule's pin."
+  },
+  "capsulesPinTooFar": "A capsule stays within 1 km of where you are.",
+  "@capsulesPinTooFar": {
+    "description": "Shown while the map is dragged past 1 km."
+  },
+  "capsulesPinUse": "Put it here",
+  "@capsulesPinUse": {
+    "description": "Button: the capsule goes to the pin."
   },
   "capsulesPrivacyFriends": "Friends",
   "@capsulesPrivacyFriends": {
@@ -1148,6 +1188,10 @@
     "description": "Info row of a capsule in the list, next to a privacy icon. One short line."
   },
   "historyWaitingUpload": "Waiting for connection",
+  "historyWaitingWifi": "Waiting for Wi-Fi",
+  "@historyWaitingWifi": {
+    "description": "Label of a capsule waiting on the phone because uploads are Wi-Fi only."
+  },
   "historyYearsAgo": "{count, plural, =1{1 year ago} other{{count} years ago}}",
   "@historyYearsAgo": {
     "description": "Under an 'On this day' capsule.",
@@ -2670,6 +2714,14 @@
   "settingsUnitsMiles": "Miles",
   "@settingsUnitsMiles": {
     "description": "Distance unit choice."
+  },
+  "settingsUploadsWifiOnly": "Upload on Wi-Fi only",
+  "@settingsUploadsWifiOnly": {
+    "description": "Switch: capsules upload only on Wi-Fi (not on metered mobile data)."
+  },
+  "settingsUploadsWifiOnlyHint": "Capsules made on mobile data wait on the phone for Wi-Fi.",
+  "@settingsUploadsWifiOnlyHint": {
+    "description": "Explains the Wi-Fi only switch."
   },
   "settingsUsername": "Username",
   "settingsUsernameDescription": "This is how your friends find and add you on Later",

@@ -680,6 +680,18 @@ abstract class AppLocalizations {
   /// **'{name} with {others}'**
   String capsulesByWith(String name, String others);
 
+  /// Arrow of the capsule calendar (screen reader).
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get capsulesCalendarNext;
+
+  /// Arrow of the capsule calendar (screen reader).
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get capsulesCalendarPrevious;
+
   /// Camera screen when camera permission was denied. 'Settings' are the phone's settings.
   ///
   /// In en, this message translates to:
@@ -1046,6 +1058,24 @@ abstract class AppLocalizations {
   /// **'Capsule'**
   String get capsulesDefaultTitle;
 
+  /// Camera card for a capsule left unfinished (B4 drafts).
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get capsulesDraftContinue;
+
+  /// Camera card for a capsule left unfinished (B4 drafts).
+  ///
+  /// In en, this message translates to:
+  /// **'Throw the unfinished capsule away'**
+  String get capsulesDraftDiscard;
+
+  /// Camera card for a capsule left unfinished (B4 drafts).
+  ///
+  /// In en, this message translates to:
+  /// **'Unfinished capsule'**
+  String get capsulesDraftTitle;
+
   /// No description provided for @capsulesErrorNoLocation.
   ///
   /// In en, this message translates to:
@@ -1141,6 +1171,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tomorrow'**
   String get capsulesOpenTomorrow;
+
+  /// Button on the pin map: back to the phone's position.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to where I am'**
+  String get capsulesPinBack;
+
+  /// How to move the pin; it stays within 1 km.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag the map to put the capsule on the exact spot, within 1 km.'**
+  String get capsulesPinHint;
+
+  /// Sheet title (and hint of the place pill): move the capsule's pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the pin'**
+  String get capsulesPinTitle;
+
+  /// Shown while the map is dragged past 1 km.
+  ///
+  /// In en, this message translates to:
+  /// **'A capsule stays within 1 km of where you are.'**
+  String get capsulesPinTooFar;
+
+  /// Button: the capsule goes to the pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Put it here'**
+  String get capsulesPinUse;
 
   /// Capsule visibility: only the owner's friends can see it.
   ///
@@ -2209,6 +2269,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Waiting for connection'**
   String get historyWaitingUpload;
+
+  /// Label of a capsule waiting on the phone because uploads are Wi-Fi only.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for Wi-Fi'**
+  String get historyWaitingWifi;
 
   /// Under an 'On this day' capsule.
   ///
@@ -5053,6 +5119,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Miles'**
   String get settingsUnitsMiles;
+
+  /// Switch: capsules upload only on Wi-Fi (not on metered mobile data).
+  ///
+  /// In en, this message translates to:
+  /// **'Upload on Wi-Fi only'**
+  String get settingsUploadsWifiOnly;
+
+  /// Explains the Wi-Fi only switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules made on mobile data wait on the phone for Wi-Fi.'**
+  String get settingsUploadsWifiOnlyHint;
 
   /// No description provided for @settingsUsername.
   ///

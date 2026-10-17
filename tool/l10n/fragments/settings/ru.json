@@ -232,5 +232,7 @@
   "settingsDownloadDataHint": "Профиль, настройки, капсулы, друзья и чаты в одном файле (фото — ссылками).",
   "settingsDownloadDataFailed": "Не удалось собрать данные",
   "settingsPrivacyFindByContacts": "Меня находят по моей почте",
-  "settingsPrivacyFindByContactsHint": "Те, у кого ваша почта есть в контактах, могут увидеть вас в подсказках. Хранится только отпечаток подтверждённого адреса."
+  "settingsPrivacyFindByContactsHint": "Те, у кого ваша почта есть в контактах, могут увидеть вас в подсказках. Хранится только отпечаток подтверждённого адреса.",
+  "settingsUploadsWifiOnly": "Загружать только по Wi-Fi",
+  "settingsUploadsWifiOnlyHint": "Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится."
 }

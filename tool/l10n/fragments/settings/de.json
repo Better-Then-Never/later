@@ -232,5 +232,7 @@
   "settingsDownloadDataHint": "Profil, Einstellungen, Kapseln, Freunde und Chats als eine Datei (Fotos als Links).",
   "settingsDownloadDataFailed": "Daten konnten nicht vorbereitet werden",
   "settingsPrivacyFindByContacts": "Über meine E-Mail auffindbar",
-  "settingsPrivacyFindByContactsHint": "Wer deine E-Mail in den Kontakten hat, kann dich als Vorschlag sehen. Gespeichert wird nur ein Fingerabdruck einer bestätigten Adresse."
+  "settingsPrivacyFindByContactsHint": "Wer deine E-Mail in den Kontakten hat, kann dich als Vorschlag sehen. Gespeichert wird nur ein Fingerabdruck einer bestätigten Adresse.",
+  "settingsUploadsWifiOnly": "Nur über WLAN hochladen",
+  "settingsUploadsWifiOnlyHint": "Kapseln ohne WLAN warten auf dem Telefon, bis WLAN da ist."
 }

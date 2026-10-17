@@ -31,11 +31,14 @@ import '../../settings/device_settings_store.dart';
 import '../../settings/settings_store.dart';
 import '../outbox/capsule_outbox.dart';
 import 'capsule_creation_controller.dart';
+import 'creation_draft.dart';
 import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/capsule_image_preview.dart';
 import 'widgets/loop_frame_strip.dart';
+import 'widgets/open_date_calendar.dart';
+import 'widgets/pin_picker_sheet.dart';
 import 'widgets/capsule_submit_button.dart';
 import '../../../core/l10n/app_dates.dart';
 
@@ -46,7 +49,11 @@ class CapsuleCreationPage extends StatelessWidget {
     this.framePaths = const [],
     this.initialPrivacy,
     this.recipientId,
+    this.draft,
   });
+
+  /// An unfinished capsule taken up again (B4).
+  final CreationDraft? draft;
 
   final String imagePath;
 
@@ -88,6 +95,9 @@ class CapsuleCreationPage extends StatelessWidget {
             GalleryService.isSupported &&
             context.read<DeviceSettingsStore>().saveToGallery,
         gallery: GalleryService(),
+        // Kept as left until it is made (B4).
+        drafts: CreationDraftStore(),
+        draft: draft,
       ),
       child: _CapsuleCreationView(
         initialPrivacy: initialPrivacy,
@@ -137,6 +147,19 @@ class _CapsuleCreationView extends StatelessWidget {
       ],
     );
     if (chosen != null) controller.frameDelayMs = chosen;
+  }
+
+  Future<void> _choosePlace(BuildContext context) async {
+    final controller = context.read<CapsuleCreationController>();
+    final here = controller.here;
+    if (here == null) return;
+    final spot = await PinPickerSheet.show(
+      context,
+      here: here,
+      start: controller.position,
+      pinAsset: AppIcons.mapPin(controller.color.name),
+    );
+    if (spot != null) controller.movePin(spot);
   }
 
   Future<void> _chooseColor(BuildContext context) async {
@@ -208,11 +231,12 @@ class _CapsuleCreationView extends StatelessWidget {
       case _OpenChoice.now:
         controller.clearOpenDate();
       case _OpenChoice.pick:
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: controller.openAt ?? now.add(const Duration(days: 1)),
-          firstDate: now.add(const Duration(days: 1)),
-          lastDate: DateTime(now.year + 5),
+        // The app's own calendar (F-27), not the stock picker.
+        final picked = await OpenDateCalendar.show(
+          context,
+          first: now.add(const Duration(days: 1)),
+          last: DateTime(now.year + 5, 12, 31),
+          selected: controller.openAt,
         );
         if (picked != null) controller.setOpenDate(picked);
     }
@@ -352,10 +376,18 @@ class _CapsuleCreationView extends StatelessWidget {
                                       height: screen.height * 0.045,
                                     ),
                                     const SizedBox(height: 8),
-                                    CapsulePlacePill(
-                                      height: screen.height * 0.05,
-                                      iconPath: AppIcons.capsuleLocation,
-                                      position: controller.position,
+                                    // A tap moves the pin (B4).
+                                    Semantics(
+                                      button: controller.position != null,
+                                      hint: l10n.capsulesPinTitle,
+                                      child: GestureDetector(
+                                        onTap: () => _choosePlace(context),
+                                        child: CapsulePlacePill(
+                                          height: screen.height * 0.05,
+                                          iconPath: AppIcons.capsuleLocation,
+                                          position: controller.position,
+                                        ),
+                                      ),
                                     ),
                                     const SizedBox(height: 8),
                                   ],

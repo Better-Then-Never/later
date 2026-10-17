@@ -51,5 +51,6 @@
   "historyCreateFirst": "Kapsel erstellen",
   "historyNoMatchesSubtitle": "Versuche ein anderes Wort oder setze die Filter zurück.",
   "historyLoadError": "Deine Kapseln konnten nicht geladen werden",
-  "historyDistanceFromYouMiles": "{distance} Meilen von dir"
+  "historyDistanceFromYouMiles": "{distance} Meilen von dir",
+  "historyWaitingWifi": "Wartet auf WLAN"
 }

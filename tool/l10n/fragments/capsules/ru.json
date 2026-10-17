@@ -105,5 +105,15 @@
   "capsulesCameraModeLoop": "Луп",
   "capsulesCameraTapForLoop": "Нажмите, чтобы начать, и ещё раз — чтобы остановить",
   "capsulesCameraStartLoop": "Начать луп",
-  "capsulesCameraStopLoop": "Остановить луп"
+  "capsulesCameraStopLoop": "Остановить луп",
+  "capsulesCalendarPrevious": "Предыдущий месяц",
+  "capsulesCalendarNext": "Следующий месяц",
+  "capsulesPinTitle": "Передвинуть метку",
+  "capsulesPinHint": "Двигайте карту, чтобы поставить капсулу точно, в пределах 1 км.",
+  "capsulesPinTooFar": "Капсула остаётся в пределах 1 км от вас.",
+  "capsulesPinUse": "Поставить здесь",
+  "capsulesPinBack": "Вернуться ко мне",
+  "capsulesDraftTitle": "Незаконченная капсула",
+  "capsulesDraftContinue": "Продолжить",
+  "capsulesDraftDiscard": "Удалить незаконченную капсулу"
 }

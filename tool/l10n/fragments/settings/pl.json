@@ -232,5 +232,7 @@
   "settingsDownloadDataHint": "Profil, ustawienia, kapsuły, znajomi i czaty w jednym pliku (zdjęcia jako linki).",
   "settingsDownloadDataFailed": "Nie udało się przygotować danych",
   "settingsPrivacyFindByContacts": "Znajdują mnie po moim e-mailu",
-  "settingsPrivacyFindByContactsHint": "Osoby z twoim e-mailem w kontaktach mogą zobaczyć cię w podpowiedziach. Zapisywany jest tylko odcisk potwierdzonego adresu."
+  "settingsPrivacyFindByContactsHint": "Osoby z twoim e-mailem w kontaktach mogą zobaczyć cię w podpowiedziach. Zapisywany jest tylko odcisk potwierdzonego adresu.",
+  "settingsUploadsWifiOnly": "Wysyłaj tylko przez Wi-Fi",
+  "settingsUploadsWifiOnlyHint": "Kapsuły zrobione bez Wi-Fi czekają na telefonie na Wi-Fi."
 }

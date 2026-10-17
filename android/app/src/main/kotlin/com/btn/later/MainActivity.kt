@@ -50,6 +50,36 @@ class MainActivity : FlutterActivity() {
         gallery = GalleryChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         // Friend suggestions: hashes of the contacts' emails (ContactsChannel.kt).
         contacts = ContactsChannel(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
+        // Waiting capsules uploaded while the app is closed (UploadWorker.kt).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/uploads")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "schedule" -> {
+                        UploadWorker.schedule(
+                            applicationContext,
+                            wifiOnly = call.argument<Boolean>("wifiOnly") ?: false,
+                        )
+                        result.success(null)
+                    }
+                    "cancel" -> {
+                        UploadWorker.cancel(applicationContext)
+                        result.success(null)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        // Whether the network costs money (uploads on Wi-Fi only).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/network")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "isMetered" -> {
+                        val cm = getSystemService(android.content.Context.CONNECTIVITY_SERVICE)
+                            as android.net.ConnectivityManager
+                        result.success(cm.isActiveNetworkMetered)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
         // The signed-in home screen drew its first frame (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->

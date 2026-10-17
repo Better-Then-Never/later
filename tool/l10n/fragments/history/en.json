@@ -235,5 +235,9 @@
         "example": "3.4"
       }
     }
+  },
+  "historyWaitingWifi": "Waiting for Wi-Fi",
+  "@historyWaitingWifi": {
+    "description": "Label of a capsule waiting on the phone because uploads are Wi-Fi only."
   }
 }

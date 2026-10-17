@@ -410,6 +410,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get capsulesCalendarNext => 'Nächster Monat';
+
+  @override
+  String get capsulesCalendarPrevious => 'Vorheriger Monat';
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Erlaube den Kamerazugriff in den Einstellungen, um ein Foto aufzunehmen';
 
@@ -623,6 +629,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesDefaultTitle => 'Kapsel';
 
   @override
+  String get capsulesDraftContinue => 'Weiter';
+
+  @override
+  String get capsulesDraftDiscard => 'Unfertige Kapsel verwerfen';
+
+  @override
+  String get capsulesDraftTitle => 'Unfertige Kapsel';
+
+  @override
   String get capsulesErrorNoLocation =>
       'Wir konnten deinen Standort nicht ermitteln';
 
@@ -674,6 +689,23 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get capsulesOpenTomorrow => 'Morgen';
+
+  @override
+  String get capsulesPinBack => 'Zurück zu mir';
+
+  @override
+  String get capsulesPinHint =>
+      'Zieh die Karte, um die Kapsel genau zu setzen, bis 1 km.';
+
+  @override
+  String get capsulesPinTitle => 'Pin verschieben';
+
+  @override
+  String get capsulesPinTooFar =>
+      'Eine Kapsel bleibt höchstens 1 km von dir entfernt.';
+
+  @override
+  String get capsulesPinUse => 'Hier setzen';
 
   @override
   String get capsulesPrivacyFriends => 'Freunde';
@@ -1312,6 +1344,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get historyWaitingUpload => 'Wartet auf Verbindung';
+
+  @override
+  String get historyWaitingWifi => 'Wartet auf WLAN';
 
   @override
   String historyYearsAgo(int count) {
@@ -3069,6 +3104,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsUnitsMiles => 'Meilen';
+
+  @override
+  String get settingsUploadsWifiOnly => 'Nur über WLAN hochladen';
+
+  @override
+  String get settingsUploadsWifiOnlyHint =>
+      'Kapseln ohne WLAN warten auf dem Telefon, bis WLAN da ist.';
 
   @override
   String get settingsUsername => 'Benutzername';

@@ -52,9 +52,7 @@ class DeviceSettingsPage extends StatelessWidget {
               SettingsChoiceRow(
                 title: quality.label,
                 selected: store.photoQuality == quality,
-                withDivider:
-                    quality != PhotoQuality.values.last ||
-                    GalleryService.isSupported,
+                withDivider: true,
                 onTap: () => store.setPhotoQuality(quality),
               ),
             if (GalleryService.isSupported)
@@ -62,9 +60,15 @@ class DeviceSettingsPage extends StatelessWidget {
                 title: l10n.settingsSaveToGallery,
                 subtitle: l10n.settingsSaveToGalleryHint,
                 value: store.saveToGallery,
-                withDivider: false,
                 onChanged: store.setSaveToGallery,
               ),
+            OptionsSwitchRow(
+              title: l10n.settingsUploadsWifiOnly,
+              subtitle: l10n.settingsUploadsWifiOnlyHint,
+              value: store.uploadsWifiOnly,
+              withDivider: false,
+              onChanged: store.setUploadsWifiOnly,
+            ),
           ],
         ),
         OptionsSection(

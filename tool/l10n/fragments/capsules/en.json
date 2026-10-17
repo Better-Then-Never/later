@@ -388,5 +388,45 @@
   "capsulesCameraStopLoop": "Stop the loop",
   "@capsulesCameraStopLoop": {
     "description": "Screen reader label of the shutter while a loop records."
+  },
+  "capsulesCalendarPrevious": "Previous month",
+  "@capsulesCalendarPrevious": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesCalendarNext": "Next month",
+  "@capsulesCalendarNext": {
+    "description": "Arrow of the capsule calendar (screen reader)."
+  },
+  "capsulesPinTitle": "Move the pin",
+  "@capsulesPinTitle": {
+    "description": "Sheet title (and hint of the place pill): move the capsule's pin."
+  },
+  "capsulesPinHint": "Drag the map to put the capsule on the exact spot, within 1 km.",
+  "@capsulesPinHint": {
+    "description": "How to move the pin; it stays within 1 km."
+  },
+  "capsulesPinTooFar": "A capsule stays within 1 km of where you are.",
+  "@capsulesPinTooFar": {
+    "description": "Shown while the map is dragged past 1 km."
+  },
+  "capsulesPinUse": "Put it here",
+  "@capsulesPinUse": {
+    "description": "Button: the capsule goes to the pin."
+  },
+  "capsulesPinBack": "Back to where I am",
+  "@capsulesPinBack": {
+    "description": "Button on the pin map: back to the phone's position."
+  },
+  "capsulesDraftTitle": "Unfinished capsule",
+  "@capsulesDraftTitle": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftContinue": "Continue",
+  "@capsulesDraftContinue": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesDraftDiscard": "Throw the unfinished capsule away",
+  "@capsulesDraftDiscard": {
+    "description": "Camera card for a capsule left unfinished (B4 drafts)."
   }
 }

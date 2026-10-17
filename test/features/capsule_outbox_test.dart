@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/data/models/geo_position.dart';
 import 'package:later/data/services/location_service.dart';
 import 'package:later/features/capsules/creation/capsule_creation_controller.dart';
+import 'package:later/features/capsules/outbox/background_uploads.dart';
 import 'package:later/features/capsules/outbox/capsule_outbox.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/map/current_location.dart';
@@ -18,6 +20,21 @@ class _NoLocation extends LocationService {
     Duration timeout = const Duration(seconds: 8),
     bool request = false,
   }) async => null;
+}
+
+/// The phone's upload job, recorded.
+class _Job extends BackgroundUploads {
+  final calls = <String>[];
+
+  @override
+  bool get enabled => true;
+
+  @override
+  Future<void> schedule({required bool wifiOnly}) async =>
+      calls.add('schedule wifiOnly=$wifiOnly');
+
+  @override
+  Future<void> cancel() async => calls.add('cancel');
 }
 
 /// Real file I/O finishes on the event loop, not in microtasks.
@@ -218,6 +235,120 @@ void main() {
       c.dispose();
     },
   );
+
+  test('a capsule for a friend waits too, then goes to the chat', () async {
+    final chats = FakeChatRepository();
+    final box = CapsuleOutbox(
+      repo,
+      chats: chats,
+      directory: () async => root,
+      retryEvery: const Duration(hours: 1),
+    )..attach('me');
+    await box.loading;
+    repo.offline = true;
+    final c = CapsuleCreationController(
+      ownerId: 'me',
+      imagePath: await photo(),
+      capsules: repo,
+      location: const _NoLocation(),
+      currentLocation: CurrentLocation()..update(const GeoPosition(52, 21)),
+      recipientId: 'bob',
+      chats: chats,
+      outbox: box,
+    );
+    expect(await c.save(), isNull);
+    expect(c.queued, isTrue);
+    final waiting = box.pending.single;
+    expect(waiting.draft.recipientId, 'bob');
+    expect(waiting.toCapsule().sharedWith, ['me', 'bob']);
+    expect(chats.calls, isEmpty);
+
+    // After a restart: the recipient was kept on disk.
+    box.dispose();
+    repo.offline = false;
+    final again = CapsuleOutbox(
+      repo,
+      chats: chats,
+      directory: () async => root,
+      retryEvery: const Duration(hours: 1),
+    )..attach('me');
+    await again.loading;
+    expect(again.pending, isEmpty);
+    expect(chats.calls, ['capsule:me->bob:${waiting.id}']);
+    again.dispose();
+    c.dispose();
+  });
+
+  test('waits grow while offline, up to the cap; Wi-Fi only waits', () async {
+    var metered = true;
+    var wifiOnly = true;
+    final box = CapsuleOutbox(
+      repo,
+      directory: () async => root,
+      retryEvery: const Duration(hours: 1),
+      maxDelay: const Duration(hours: 5),
+      wifiOnly: () => wifiOnly,
+      metered: () async => metered,
+    )..attach('me');
+    await box.loading;
+    repo.offline = true;
+    final c = creation(await photo(), box);
+    await c.save();
+    expect(box.nextDelay, const Duration(hours: 1));
+
+    // On mobile data with "Wi-Fi only": nothing is tried.
+    final attempts = repo.attempts;
+    await box.retry();
+    expect(box.waitingForWifi, isTrue);
+    expect(repo.attempts, attempts);
+
+    wifiOnly = false;
+    await box.retry();
+    expect(box.waitingForWifi, isFalse);
+    expect(box.nextDelay, const Duration(hours: 2));
+    await box.retry();
+    expect(box.nextDelay, const Duration(hours: 4));
+    await box.retry();
+    expect(box.nextDelay, const Duration(hours: 5), reason: 'capped');
+
+    metered = false;
+    repo.offline = false;
+    await box.retry();
+    expect(box.pending, isEmpty);
+    expect(box.nextDelay, const Duration(hours: 1), reason: 'reset');
+    box.dispose();
+    c.dispose();
+  });
+
+  test('leaving the app hands the uploads to the phone\'s job', () async {
+    final job = _Job();
+    final box = CapsuleOutbox(
+      repo,
+      directory: () async => root,
+      retryEvery: const Duration(milliseconds: 20),
+      background: job,
+      wifiOnly: () => true,
+    )..attach('me');
+    await box.loading;
+    repo.offline = true;
+    final c = creation(await photo(), box);
+    await c.save();
+    final tries = repo.attempts;
+
+    box.didChangeAppLifecycleState(AppLifecycleState.paused);
+    expect(job.calls, ['schedule wifiOnly=true']);
+    // The app's own timer rests while the job has it.
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(repo.attempts, tries);
+
+    repo.offline = false;
+    box.didChangeAppLifecycleState(AppLifecycleState.resumed);
+    expect(job.calls.last, 'cancel');
+    await _until(() => box.pending.isEmpty);
+    expect(box.pending, isEmpty, reason: 'the app took over again');
+    box.dispose();
+    c.dispose();
+  });
 
   test('connection errors are told apart from refusals', () {
     expect(CapsuleOutbox.isOffline(const SocketException('x')), isTrue);

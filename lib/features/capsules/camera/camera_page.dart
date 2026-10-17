@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'dart:ui' as ui;
 
@@ -19,6 +20,8 @@ import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_motion.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../creation/creation_draft.dart';
+import '../../../app/session/session_controller.dart';
 
 /// Why the camera cannot be shown. The message is chosen when the error view
 /// is built, so it follows the app's language.
@@ -87,6 +90,24 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   /// Loop mode: a tap starts the loop and a second tap ends it (in photo
   /// mode a long press still records one).
   bool _loopMode = false;
+
+  /// The capsule left unfinished last time, if any.
+  CreationDraft? _draft;
+  final _drafts = CreationDraftStore();
+
+  Future<void> _loadDraft() async {
+    final uid = context.read<SessionController>().uid;
+    if (uid == null) return;
+    final draft = await _drafts.load(uid);
+    if (mounted && draft != null) setState(() => _draft = draft);
+  }
+
+  Future<void> _discardDraft() async {
+    final uid = context.read<SessionController>().uid;
+    setState(() => _draft = null);
+    if (uid != null) await _drafts.discard(uid);
+  }
+
   _CameraError? _error;
 
   /// 720p, or 1080p for high-quality photos (they go up at up to 2560 px).
@@ -105,6 +126,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         ? ResolutionPreset.veryHigh
         : ResolutionPreset.high;
     unawaited(_setup());
+    unawaited(_loadDraft());
   }
 
   @override
@@ -653,6 +675,25 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   ],
                 ),
               ),
+              // An unfinished capsule: take it up again or let it go (B4).
+              if (_draft case final draft? when !_capturing)
+                Positioned(
+                  top: 72,
+                  left: 12,
+                  right: 12,
+                  child: _DraftCard(
+                    draft: draft,
+                    onContinue: () => AppRoutes.toCapsuleCreation(
+                      context,
+                      imagePath: draft.imagePath,
+                      framePaths: draft.framePaths,
+                      recipientId: draft.recipientId,
+                      draft: draft,
+                      replace: true,
+                    ),
+                    onDiscard: _discardDraft,
+                  ),
+                ),
               // Zoom stops above the shutter (pinch still works).
               if (_zoomStops.length > 1)
                 Positioned(
@@ -1065,6 +1106,89 @@ class _ModeSwitch extends StatelessWidget {
         children: [
           side(l10n.capsulesCameraModePhoto, !loop, false),
           side(l10n.capsulesCameraModeLoop, loop, true),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Unfinished capsule: Continue / ×" over the camera.
+class _DraftCard extends StatelessWidget {
+  const _DraftCard({
+    required this.draft,
+    required this.onContinue,
+    required this.onDiscard,
+  });
+
+  final CreationDraft draft;
+  final VoidCallback onContinue;
+  final VoidCallback onDiscard;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final title = draft.title.trim();
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: AppColors.mediaScrimStrong,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(
+              File(draft.imagePath),
+              width: 44,
+              height: 56,
+              fit: BoxFit.cover,
+              cacheWidth: 132,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title.isEmpty ? l10n.capsulesDraftTitle : title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppColors.onMedia,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: onContinue,
+            child: Text(
+              l10n.capsulesDraftContinue,
+              style: const TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppColors.brandGreen,
+              ),
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: l10n.capsulesDraftDiscard,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onDiscard,
+              child: const SizedBox.square(
+                dimension: 44,
+                child: Center(
+                  child: Text(
+                    '✕',
+                    style: TextStyle(fontSize: 18, color: AppColors.onMedia),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

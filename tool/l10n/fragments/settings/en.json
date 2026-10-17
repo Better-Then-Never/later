@@ -488,5 +488,13 @@
   "settingsPrivacyFindByContactsHint": "People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.",
   "@settingsPrivacyFindByContactsHint": {
     "description": "Explains the contacts switch."
+  },
+  "settingsUploadsWifiOnly": "Upload on Wi-Fi only",
+  "@settingsUploadsWifiOnly": {
+    "description": "Switch: capsules upload only on Wi-Fi (not on metered mobile data)."
+  },
+  "settingsUploadsWifiOnlyHint": "Capsules made on mobile data wait on the phone for Wi-Fi.",
+  "@settingsUploadsWifiOnlyHint": {
+    "description": "Explains the Wi-Fi only switch."
   }
 }

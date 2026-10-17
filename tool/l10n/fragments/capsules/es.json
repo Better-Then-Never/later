@@ -105,5 +105,15 @@
   "capsulesCameraModeLoop": "Bucle",
   "capsulesCameraTapForLoop": "Toca para empezar y otra vez para parar",
   "capsulesCameraStartLoop": "Empezar el bucle",
-  "capsulesCameraStopLoop": "Parar el bucle"
+  "capsulesCameraStopLoop": "Parar el bucle",
+  "capsulesCalendarPrevious": "Mes anterior",
+  "capsulesCalendarNext": "Mes siguiente",
+  "capsulesPinTitle": "Mover el pin",
+  "capsulesPinHint": "Arrastra el mapa para colocar la cápsula con precisión, hasta 1 km.",
+  "capsulesPinTooFar": "Una cápsula queda a 1 km de ti como mucho.",
+  "capsulesPinUse": "Ponerla aquí",
+  "capsulesPinBack": "Volver a donde estoy",
+  "capsulesDraftTitle": "Cápsula sin terminar",
+  "capsulesDraftContinue": "Continuar",
+  "capsulesDraftDiscard": "Descartar la cápsula sin terminar"
 }

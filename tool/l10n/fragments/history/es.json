@@ -51,5 +51,6 @@
   "historyCreateFirst": "Crear una cápsula",
   "historyNoMatchesSubtitle": "Prueba otra palabra o restablece los filtros.",
   "historyLoadError": "No se pudieron cargar tus cápsulas",
-  "historyDistanceFromYouMiles": "A {distance} millas de ti"
+  "historyDistanceFromYouMiles": "A {distance} millas de ti",
+  "historyWaitingWifi": "Esperando Wi-Fi"
 }
