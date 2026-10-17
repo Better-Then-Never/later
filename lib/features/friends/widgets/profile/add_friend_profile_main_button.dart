@@ -3,6 +3,8 @@ import 'package:later/data/models/friend_request.dart';
 import 'package:later/shared/styles/elevated_button_styles.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class AddProfileMainButton extends StatelessWidget {
   final double width;
@@ -27,12 +29,12 @@ class AddProfileMainButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.shadowCard,
+            color: context.palette.shadowCard,
             spreadRadius: 1,
             blurRadius: 16,
-            offset: Offset(0, 6),
+            offset: const Offset(0, 6),
           ),
         ],
         borderRadius: BorderRadius.circular(25),
@@ -50,26 +52,26 @@ class AddProfileMainButton extends StatelessWidget {
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
-                    color: AppColors.white,
+                    color: AppColors.onAccent,
                     strokeWidth: 2,
                   ),
                 )
               : DefaultText(
-                  _getButtonText(),
+                  _getButtonText(context.l10n),
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.white,
+                  color: AppColors.onAccent,
                 ),
         ),
       ),
     );
   }
 
-  String _getButtonText() => switch (relation) {
-    FriendRelation.self => 'My Profile',
-    FriendRelation.requestSent => 'Pending',
-    FriendRelation.friends => 'View Profile',
-    _ => 'Add',
+  String _getButtonText(AppLocalizations l10n) => switch (relation) {
+    FriendRelation.self => l10n.friendsMyProfile,
+    FriendRelation.requestSent => l10n.friendsPending,
+    FriendRelation.friends => l10n.friendsViewProfile,
+    _ => l10n.friendsAdd,
   };
 
   Color _getButtonColor() => switch (relation) {

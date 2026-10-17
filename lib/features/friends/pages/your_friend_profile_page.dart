@@ -13,6 +13,8 @@ import 'package:later/shared/widgets/user/user_name_and_username.dart';
 import 'package:later/shared/widgets/user/user_square_avatar.dart';
 import 'package:later/features/friends/widgets/friend_options_modal.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;
@@ -25,7 +27,7 @@ class YourFriendProfilePage extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColors.pageBackground,
+      backgroundColor: context.palette.background,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -62,8 +64,8 @@ class YourFriendProfilePage extends StatelessWidget {
                             userId: friendUid,
                             nameFontSize: screenWidth * 0.07,
                             usernameFontSize: screenWidth * 0.05,
-                            nameColor: AppColors.white,
-                            usernameColor: AppColors.white,
+                            nameColor: AppColors.onMedia,
+                            usernameColor: AppColors.onMedia,
                             textAlign: TextAlign.left,
                           ),
                         ),
@@ -88,7 +90,7 @@ class YourFriendProfilePage extends StatelessWidget {
                           textFontWeight: FontWeight.bold,
                           onTap: () => AppRoutes.toChat(context, friendUid),
                           assetPath: AppIcons.sendMessage,
-                          text: 'Open chat',
+                          text: context.l10n.friendsOpenChat,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -103,15 +105,15 @@ class YourFriendProfilePage extends StatelessWidget {
                             recipientId: friendUid,
                           ),
                           assetPath: AppIcons.sendCapsule,
-                          text: 'Send Capsule',
+                          text: context.l10n.friendsSendCapsule,
                         ),
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 24),
-                  const DefaultText(
-                    "Friend's capsules",
+                  DefaultText(
+                    context.l10n.friendsFriendCapsulesTitle,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -120,11 +122,11 @@ class YourFriendProfilePage extends StatelessWidget {
                     width: screenWidth - 32,
                     height: 80,
                     decoration: BoxDecorations.whiteCard(context),
-                    child: const Center(
+                    child: Center(
                       child: DefaultText(
-                        "Friend's capsules will appear here",
+                        context.l10n.friendsFriendCapsulesEmpty,
                         fontSize: 16,
-                        color: AppColors.grey600,
+                        color: context.palette.textMuted,
                       ),
                     ),
                   ),

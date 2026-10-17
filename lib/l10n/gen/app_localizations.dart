@@ -212,6 +212,408 @@ abstract class AppLocalizations {
   /// **'You are not allowed to do that.'**
   String get failurePermission;
 
+  /// Button that accepts a received friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get friendsAccept;
+
+  /// Accessibility label of the add icon on a suggestion when that user already sent a request.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept friend request'**
+  String get friendsAcceptRequestLabel;
+
+  /// Main button on the profile of someone who is not a friend yet: sends a friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get friendsAdd;
+
+  /// No description provided for @friendsAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Friends'**
+  String get friendsAddTitle;
+
+  /// Menu item and confirm button that block a user.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get friendsBlock;
+
+  /// No description provided for @friendsBlockConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to block this user?'**
+  String get friendsBlockConfirm;
+
+  /// No description provided for @friendsCapsulesSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules settings'**
+  String get friendsCapsulesSettings;
+
+  /// No description provided for @friendsChatSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat settings'**
+  String get friendsChatSettings;
+
+  /// No description provided for @friendsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends added yet'**
+  String get friendsEmpty;
+
+  /// No description provided for @friendsErrorAcceptRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to accept request'**
+  String get friendsErrorAcceptRequest;
+
+  /// No description provided for @friendsErrorBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to block user'**
+  String get friendsErrorBlock;
+
+  /// No description provided for @friendsErrorCancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to cancel request'**
+  String get friendsErrorCancelRequest;
+
+  /// No description provided for @friendsErrorFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to follow user'**
+  String get friendsErrorFollow;
+
+  /// Shown instead of the suggestions on Add Friends when the search fails; tapping it retries.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load users'**
+  String get friendsErrorLoadUsers;
+
+  /// No description provided for @friendsErrorRejectRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reject request'**
+  String get friendsErrorRejectRequest;
+
+  /// No description provided for @friendsErrorRemoveFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to remove friend'**
+  String get friendsErrorRemoveFriend;
+
+  /// No description provided for @friendsErrorSendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send friend request'**
+  String get friendsErrorSendRequest;
+
+  /// No description provided for @friendsErrorUnblock.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to unblock user'**
+  String get friendsErrorUnblock;
+
+  /// No description provided for @friendsErrorUnfollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to unfollow user'**
+  String get friendsErrorUnfollow;
+
+  /// Button in Manage friendship: get notified about this friend's capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get friendsFollow;
+
+  /// No description provided for @friendsFollowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Following! You\'ll get notifications about their capsules'**
+  String get friendsFollowed;
+
+  /// State of the follow button when the user already follows this friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get friendsFollowing;
+
+  /// No description provided for @friendsFriendCapsulesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend\'s capsules will appear here'**
+  String get friendsFriendCapsulesEmpty;
+
+  /// No description provided for @friendsFriendCapsulesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend\'s capsules'**
+  String get friendsFriendCapsulesTitle;
+
+  /// Accessibility label of the cross that hides a suggested friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide suggestion'**
+  String get friendsHideSuggestionLabel;
+
+  /// Section title above the suggested people on Add Friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Make friends'**
+  String get friendsMakeFriends;
+
+  /// No description provided for @friendsManageFriendship.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage friendship'**
+  String get friendsManageFriendship;
+
+  /// No description provided for @friendsMyFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My friends'**
+  String get friendsMyFriendsTitle;
+
+  /// Main button when the opened profile is the user's own.
+  ///
+  /// In en, this message translates to:
+  /// **'My Profile'**
+  String get friendsMyProfile;
+
+  /// No description provided for @friendsNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends match your search'**
+  String get friendsNoMatches;
+
+  /// No description provided for @friendsNoSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No more suggested friends'**
+  String get friendsNoSuggestions;
+
+  /// No description provided for @friendsOpenChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Open chat'**
+  String get friendsOpenChat;
+
+  /// Main button on a profile the user already sent a friend request to.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get friendsPending;
+
+  /// No description provided for @friendsQrHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at the QR code to add a friend'**
+  String get friendsQrHint;
+
+  /// No description provided for @friendsQrInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid QR code. Please scan a Later profile QR code.'**
+  String get friendsQrInvalid;
+
+  /// No description provided for @friendsQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR Code'**
+  String get friendsQrTitle;
+
+  /// Button that rejects a received friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get friendsReject;
+
+  /// No description provided for @friendsRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from friends'**
+  String get friendsRemove;
+
+  /// Confirm button of the remove-friend dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get friendsRemoveAction;
+
+  /// No description provided for @friendsRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove user from friends?'**
+  String get friendsRemoveConfirm;
+
+  /// No description provided for @friendsRemoving.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing...'**
+  String get friendsRemoving;
+
+  /// Menu item that reports a user.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get friendsReport;
+
+  /// No description provided for @friendsRequestAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request accepted!'**
+  String get friendsRequestAccepted;
+
+  /// Toast when the user taps add on someone they already sent a request to.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request already exists'**
+  String get friendsRequestAlreadyExists;
+
+  /// No description provided for @friendsRequestCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request cancelled'**
+  String get friendsRequestCancelled;
+
+  /// No description provided for @friendsRequestPendingInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request is pending'**
+  String get friendsRequestPendingInfo;
+
+  /// No description provided for @friendsRequestReceivedInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This user sent you a friend request'**
+  String get friendsRequestReceivedInfo;
+
+  /// No description provided for @friendsRequestRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request rejected'**
+  String get friendsRequestRejected;
+
+  /// No description provided for @friendsRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request sent!'**
+  String get friendsRequestSent;
+
+  /// Button on Add Friends that opens the friend requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get friendsRequestsButton;
+
+  /// No description provided for @friendsRequestsEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone sends you a friend request,\nit will appear here'**
+  String get friendsRequestsEmptySubtitle;
+
+  /// No description provided for @friendsRequestsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No friend requests'**
+  String get friendsRequestsEmptyTitle;
+
+  /// Toggle on Friend Requests: requests other people sent to the user.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get friendsRequestsReceivedTab;
+
+  /// Toggle on Friend Requests: requests the user sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get friendsRequestsSentTab;
+
+  /// No description provided for @friendsRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend Requests'**
+  String get friendsRequestsTitle;
+
+  /// Search hint on Add Friends; the search looks people up by @username. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by tag'**
+  String get friendsSearchByTagHint;
+
+  /// Search hint on My friends (searches only among the user's friends). Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Find my friends'**
+  String get friendsSearchHint;
+
+  /// No description provided for @friendsSendCapsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Capsule'**
+  String get friendsSendCapsule;
+
+  /// Accessibility label of the add icon on a suggested friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send friend request'**
+  String get friendsSendRequestLabel;
+
+  /// No description provided for @friendsSentEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend requests you send\nwill appear here'**
+  String get friendsSentEmptySubtitle;
+
+  /// No description provided for @friendsSentEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No sent requests'**
+  String get friendsSentEmptyTitle;
+
+  /// No description provided for @friendsShareProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Profile'**
+  String get friendsShareProfile;
+
+  /// No description provided for @friendsShareProfileTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Share profile to ...'**
+  String get friendsShareProfileTo;
+
+  /// No description provided for @friendsSuggestionRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested friend removed from the list!'**
+  String get friendsSuggestionRemoved;
+
+  /// No description provided for @friendsThisIsYou.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your account'**
+  String get friendsThisIsYou;
+
+  /// No description provided for @friendsUnfollowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollowed successfully'**
+  String get friendsUnfollowed;
+
+  /// Main button on the profile of someone who is already a friend: opens their friend profile.
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get friendsViewProfile;
+
   /// No description provided for @messagesBlockedByYou.
   ///
   /// In en, this message translates to:

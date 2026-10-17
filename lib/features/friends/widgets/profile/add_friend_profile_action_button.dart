@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../data/models/friend_request.dart';
 import 'add_friend_profile_main_button.dart';
 import 'add_friend_profile_request_handle_button.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 
 /// The bottom button(s) of a not-yet-friend's profile for each relation.
@@ -55,7 +56,7 @@ class AddFriendProfileActionButton extends StatelessWidget {
             right: screenWidth * 0.25,
             bottom: screenHeight * 0.1,
             child: AddProfileRequestHandleButton(
-              text: 'Cancel',
+              text: context.l10n.commonCancel,
               isCancelling: isBusy,
               onPressed: onCancel,
               width: screenWidth * 0.5,
@@ -72,7 +73,7 @@ class AddFriendProfileActionButton extends StatelessWidget {
               children: [
                 Expanded(
                   child: AddProfileRequestHandleButton(
-                    text: 'Accept',
+                    text: context.l10n.friendsAccept,
                     color: AppColors.brandGreen,
                     isCancelling: isBusy,
                     onPressed: onAccept,
@@ -84,7 +85,7 @@ class AddFriendProfileActionButton extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: AddProfileRequestHandleButton(
-                    text: 'Reject',
+                    text: context.l10n.friendsReject,
                     isCancelling: isBusy,
                     onPressed: onReject,
                     width: double.infinity,

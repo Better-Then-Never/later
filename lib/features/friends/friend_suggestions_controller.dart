@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
@@ -76,7 +77,10 @@ class FriendSuggestionsController extends ChangeNotifier {
       if (_disposed || request != _request) return;
       AppLogger.warning('User search failed', error: e, stackTrace: st);
       _results = const [];
-      _error = AppFailure.from(e, fallbackMessage: 'Could not load users');
+      _error = AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.friendsErrorLoadUsers,
+      );
     }
     _loading = false;
     notifyListeners();

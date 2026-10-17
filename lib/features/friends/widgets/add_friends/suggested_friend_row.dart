@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../../core/assets/app_assets.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/user/user_round_avatar.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/l10n/l10n.dart';
+import '../../../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 /// One suggestion: avatar, name, @username, add (or pending) and hide.
@@ -51,7 +52,7 @@ class SuggestedFriendRow extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: screenWidth * 0.045,
               fontFamily: kAppFontFamily,
-              color: AppColors.black,
+              color: context.palette.textPrimary,
             ),
           ),
           subtitle: Text(
@@ -61,7 +62,7 @@ class SuggestedFriendRow extends StatelessWidget {
             style: TextStyle(
               fontSize: screenWidth * 0.04,
               fontFamily: kAppFontFamily,
-              color: AppColors.textSecondary,
+              color: context.palette.textSecondary,
             ),
           ),
           trailing: Row(
@@ -76,8 +77,8 @@ class SuggestedFriendRow extends StatelessWidget {
                   : Semantics(
                       button: true,
                       label: relation == FriendRelation.requestReceived
-                          ? 'Accept friend request'
-                          : 'Send friend request',
+                          ? context.l10n.friendsAcceptRequestLabel
+                          : context.l10n.friendsSendRequestLabel,
                       child: GestureDetector(
                         onTap: onSendRequest,
                         child: Image.asset(
@@ -90,7 +91,7 @@ class SuggestedFriendRow extends StatelessWidget {
               const SizedBox(width: 8),
               Semantics(
                 button: true,
-                label: 'Hide suggestion',
+                label: context.l10n.friendsHideSuggestionLabel,
                 child: GestureDetector(
                   onTap: onRemove,
                   child: Image.asset(

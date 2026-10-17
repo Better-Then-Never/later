@@ -7,7 +7,9 @@ import '../../../shared/widgets/popup/popup_notification_service.dart';
 import 'block_user.dart';
 import '../../profile/share/sharing_service.dart';
 import '../friends_store.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 
 class FriendOptionsModal extends StatelessWidget {
@@ -24,7 +26,7 @@ class FriendOptionsModal extends StatelessWidget {
     return OptionsMenu(
       children: [
         OptionsMenuItem(
-          text: 'Manage friendship',
+          text: context.l10n.friendsManageFriendship,
           onPressed: () {
             Navigator.pop(context);
             ManageFriendshipModal.show(context, friendUid);
@@ -33,7 +35,7 @@ class FriendOptionsModal extends StatelessWidget {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: 'Chat settings',
+          text: context.l10n.friendsChatSettings,
           onPressed: () {
             Navigator.pop(context);
             // TODO: Handle chat settings action
@@ -41,7 +43,7 @@ class FriendOptionsModal extends StatelessWidget {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: 'Capsules settings',
+          text: context.l10n.friendsCapsulesSettings,
           onPressed: () {
             Navigator.pop(context);
             // TODO: Handle capsules settings action
@@ -49,7 +51,7 @@ class FriendOptionsModal extends StatelessWidget {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: 'Share profile to ...',
+          text: context.l10n.friendsShareProfileTo,
           onPressed: () {
             Navigator.pop(context);
             // Same share sheet as the share button of the profile page;
@@ -128,8 +130,8 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
       PopupNotificationService.showSuccess(
         context: context,
         message: wasFollowing
-            ? 'Unfollowed successfully'
-            : 'Following! You\'ll get notifications about their capsules',
+            ? context.l10n.friendsUnfollowed
+            : context.l10n.friendsFollowed,
         position: NotificationPosition.bottom,
       );
     }
@@ -139,8 +141,8 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
   Widget build(BuildContext context) {
     return OptionsMenu(
       children: [
-        const _ModalHeader(text: 'Manage friendship'),
-        const OptionsMenuDivider(color: AppColors.black, thickness: 1),
+        _ModalHeader(text: context.l10n.friendsManageFriendship),
+        OptionsMenuDivider(color: context.palette.textPrimary, thickness: 1),
         _FollowButton(
           isFollowing: _isFollowing,
           isLoading: _isLoading,
@@ -148,7 +150,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: 'Report',
+          text: context.l10n.friendsReport,
           onPressed: () {
             Navigator.pop(context);
             // TODO: Handle report action
@@ -157,7 +159,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: 'Block',
+          text: context.l10n.friendsBlock,
           onPressed: () {
             Navigator.pop(context);
             confirmBlockUser(context, widget.friendUid);
@@ -166,7 +168,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
         ),
         const OptionsMenuDivider(),
         OptionsMenuItem(
-          text: 'Remove from friends',
+          text: context.l10n.friendsRemove,
           onPressed: () {
             Navigator.pop(context);
             RemoveFriendConfirmModal.show(context, widget.friendUid);
@@ -231,28 +233,30 @@ class _RemoveFriendConfirmModalState extends State<RemoveFriendConfirmModal> {
       width: 240,
       padding: const EdgeInsets.only(top: 12, bottom: 1, left: 12, right: 12),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'Are you sure you want to remove user from friends?',
+          Text(
+            context.l10n.friendsRemoveConfirm,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               fontFamily: kAppFontFamily,
-              color: AppColors.black,
+              color: context.palette.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
           _ConfirmButton(
-            text: _isRemoving ? 'Removing...' : 'Remove',
+            text: _isRemoving
+                ? context.l10n.friendsRemoving
+                : context.l10n.friendsRemoveAction,
             onPressed: _isRemoving ? null : _removeFriend,
             backgroundColor: AppColors.danger,
-            textColor: AppColors.white,
+            textColor: AppColors.onAccent,
             isLoading: _isRemoving,
           ),
           _CancelButton(
@@ -282,13 +286,18 @@ class _ModalHeader extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              fontFamily: kAppFontFamily,
-              color: AppColors.black,
+          // Longer translations shrink to the card's width instead of
+          // wrapping out of the 37 px row (English fits unchanged).
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                fontFamily: kAppFontFamily,
+                color: context.palette.textPrimary,
+              ),
             ),
           ),
         ),
@@ -316,8 +325,10 @@ class _FollowButton extends StatelessWidget {
       child: TextButton(
         onPressed: onPressed,
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.black,
-          backgroundColor: isFollowing ? AppColors.grey300 : Colors.transparent,
+          foregroundColor: context.palette.textPrimary,
+          backgroundColor: isFollowing
+              ? context.palette.skeleton
+              : Colors.transparent,
           textStyle: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,
@@ -329,11 +340,11 @@ class _FollowButton extends StatelessWidget {
         ),
         child: Center(
           child: isLoading
-              ? const SizedBox(
+              ? SizedBox(
                   width: 16,
                   height: 16,
                   child: CircularProgressIndicator(
-                    color: AppColors.black,
+                    color: context.palette.icon,
                     strokeWidth: 2,
                   ),
                 )
@@ -345,10 +356,14 @@ class _FollowButton extends StatelessWidget {
                           ? Icons.notifications_active
                           : Icons.notifications_outlined,
                       size: 20,
-                      color: AppColors.black,
+                      color: context.palette.icon,
                     ),
                     const SizedBox(width: 8),
-                    Text(isFollowing ? 'Following' : 'Follow'),
+                    Text(
+                      isFollowing
+                          ? context.l10n.friendsFollowing
+                          : context.l10n.friendsFollow,
+                    ),
                   ],
                 ),
         ),
@@ -418,7 +433,7 @@ class _CancelButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: AppColors.textSecondary,
+        foregroundColor: context.palette.textSecondary,
         textStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
@@ -427,7 +442,7 @@ class _CancelButton extends StatelessWidget {
         splashFactory: NoSplash.splashFactory,
         overlayColor: Colors.transparent,
       ),
-      child: const Text('Cancel'),
+      child: Text(context.l10n.commonCancel),
     );
   }
 }

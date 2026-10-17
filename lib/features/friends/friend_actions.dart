@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/errors/app_failure.dart';
+import '../../core/l10n/l10n.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import 'friends_store.dart';
 
@@ -52,7 +53,7 @@ class FriendActions {
     if (_store.sentTo.contains(to)) {
       PopupNotificationService.showInfo(
         context: context,
-        message: 'Friend request already exists',
+        message: context.l10n.friendsRequestAlreadyExists,
         position: position,
       );
       return Future.value();
@@ -60,32 +61,35 @@ class FriendActions {
     return _run(
       to,
       (s) => s.sendRequest(to),
-      message: 'Friend request sent!',
+      message: context.l10n.friendsRequestSent,
       success: true,
     );
   }
 
-  Future<void> cancelRequest(String to) =>
-      _run(to, (s) => s.cancelRequest(to), message: 'Friend request cancelled');
+  Future<void> cancelRequest(String to) => _run(
+    to,
+    (s) => s.cancelRequest(to),
+    message: context.l10n.friendsRequestCancelled,
+  );
 
   Future<void> acceptRequest(String from) => _run(
     from,
     (s) => s.acceptRequest(from),
-    message: 'Friend request accepted!',
+    message: context.l10n.friendsRequestAccepted,
     success: true,
   );
 
   Future<void> rejectRequest(String from) => _run(
     from,
     (s) => s.rejectRequest(from),
-    message: 'Friend request rejected',
+    message: context.l10n.friendsRequestRejected,
   );
 
   void dismissSuggestion(String uid) {
     _store.dismissSuggestion(uid);
     PopupNotificationService.showInfo(
       context: context,
-      message: 'Suggested friend removed from the list!',
+      message: context.l10n.friendsSuggestionRemoved,
       position: position,
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../friends_store.dart';
@@ -13,8 +14,8 @@ Future<void> confirmBlockUser(BuildContext context, String uid) {
   final store = context.read<FriendsStore>();
   return ConfirmDialog.show(
     context: context,
-    title: 'Are you sure you want to block this user?',
-    confirmText: 'Block',
+    title: context.l10n.friendsBlockConfirm,
+    confirmText: context.l10n.friendsBlock,
     onConfirm: () async {
       if (store.isBusy(uid)) return;
       _report((await store.block(uid))?.message);

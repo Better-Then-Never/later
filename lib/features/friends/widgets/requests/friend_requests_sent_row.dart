@@ -4,6 +4,8 @@ import 'package:later/shared/widgets/default_text.dart';
 import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
 import 'package:later/shared/widgets/user/user_round_avatar.dart';
 import 'package:later/core/theme/app_colors.dart';
+import 'package:later/core/theme/app_palette.dart';
+import 'package:later/core/l10n/l10n.dart';
 
 class FriendRequestsSentRow extends StatelessWidget {
   final String name;
@@ -46,12 +48,12 @@ class FriendRequestsSentRow extends StatelessWidget {
                       name,
                       fontWeight: FontWeight.bold,
                       fontSize: screenWidth * 0.045,
-                      color: AppColors.black,
+                      color: context.palette.textPrimary,
                     ),
                     DefaultText(
                       '@$username',
                       fontSize: screenWidth * 0.035,
-                      color: AppColors.grey600,
+                      color: context.palette.textMuted,
                     ),
                   ],
                 ),
@@ -59,7 +61,7 @@ class FriendRequestsSentRow extends StatelessWidget {
               FriendRequestsActionButton(
                 onTap: isBusy ? null : onCancel,
                 color: AppColors.danger,
-                text: 'Cancel',
+                text: context.l10n.commonCancel,
               ),
             ],
           ),
