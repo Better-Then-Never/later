@@ -43,7 +43,8 @@ class LocationService {
           timeLimit: timeout,
         ),
       );
-      return GeoPosition(p.latitude, p.longitude);
+      final position = GeoPosition(p.latitude, p.longitude);
+      return position.isValid ? position : await lastKnownPosition();
     } catch (e) {
       AppLogger.debug('No fresh location fix: $e');
       return lastKnownPosition();
@@ -53,7 +54,9 @@ class LocationService {
   Future<GeoPosition?> lastKnownPosition() async {
     try {
       final p = await Geolocator.getLastKnownPosition();
-      return p == null ? null : GeoPosition(p.latitude, p.longitude);
+      if (p == null) return null;
+      final position = GeoPosition(p.latitude, p.longitude);
+      return position.isValid ? position : null;
     } catch (_) {
       return null;
     }
@@ -63,11 +66,13 @@ class LocationService {
   /// revoked, service turned off) end up on the stream's error channel.
   Stream<GeoPosition> positions({int distanceFilter = 10}) =>
       Geolocator.getPositionStream(
-        locationSettings: LocationSettings(
-          accuracy: LocationAccuracy.high,
-          distanceFilter: distanceFilter,
-        ),
-      ).map((p) => GeoPosition(p.latitude, p.longitude));
+            locationSettings: LocationSettings(
+              accuracy: LocationAccuracy.high,
+              distanceFilter: distanceFilter,
+            ),
+          )
+          .map((p) => GeoPosition(p.latitude, p.longitude))
+          .where((p) => p.isValid);
 
   Future<bool> openSettings() => Geolocator.openLocationSettings();
 }

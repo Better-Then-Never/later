@@ -103,8 +103,12 @@ abstract final class FirestoreMappers {
       title: _string(data['title'], AppL10n.current.commonUntitled),
       description: _nonEmptyString(data['description']),
       imageUrl: _nonEmptyString(data['imageUrl']),
+      // Invalid places (0,0, out of range) are not placed on the map.
       location: location is GeoPoint
-          ? GeoPosition(location.latitude, location.longitude)
+          ? switch (GeoPosition(location.latitude, location.longitude)) {
+              final GeoPosition p when p.isValid => p,
+              _ => null,
+            }
           : null,
       privacy: CapsulePrivacy.parse(data['privacy']),
       color: CapsuleColor.parse(data['color']),

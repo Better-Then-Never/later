@@ -90,6 +90,42 @@ void main() {
     },
   );
 
+  test('approximate location and the capture time reach the draft', () async {
+    final repo = FakeCapsuleRepository();
+    final taken = DateTime(2026, 10, 17, 7, 5);
+    final c = CapsuleCreationController(
+      ownerId: 'me',
+      imagePath: 'does/not/exist.jpg',
+      capsules: repo,
+      location: _FakeLocation(null),
+      currentLocation: CurrentLocation()
+        ..update(const GeoPosition(52.229676, 21.012229)),
+      locationPrecision: LocationPrecision.approximate,
+      capturedAt: taken,
+    );
+    expect(await c.save(), isNull);
+    final draft = repo.created.single;
+    expect(draft.location, const GeoPosition(52.23, 21.01));
+    expect(draft.locationPrecision, LocationPrecision.approximate);
+    expect(draft.capturedAt, taken);
+    expect(draft.utcOffsetMinutes, taken.timeZoneOffset.inMinutes);
+    c.dispose();
+  });
+
+  test('a 0,0 fix is not a place (F-18)', () async {
+    expect(const GeoPosition(0, 0).isValid, isFalse);
+    expect(const GeoPosition(0.00001, -0.00002).isValid, isFalse);
+    expect(const GeoPosition(91, 10).isValid, isFalse);
+    expect(const GeoPosition(0, 12).isValid, isTrue);
+    final repo = FakeCapsuleRepository();
+    final c = build(repo, fresh: const GeoPosition(0, 0));
+    await pumpEventQueue();
+    expect(c.position, isNull);
+    expect(await c.save(), isA<ValidationFailure>());
+    expect(repo.created, isEmpty);
+    c.dispose();
+  });
+
   test('looks the location up when none is known yet', () async {
     final repo = FakeCapsuleRepository();
     final c = build(repo, fresh: const GeoPosition(5, 6));

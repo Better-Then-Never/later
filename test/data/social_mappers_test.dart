@@ -157,6 +157,16 @@ void main() {
       expect(c.placeName, 'Old Town');
     });
 
+    test('invalid places are not placed (F-18)', () {
+      for (final bad in const [GeoPoint(0, 0), GeoPoint(0.00001, 0)]) {
+        final c = FirestoreMappers.capsule('c', {
+          'ownerId': 'u',
+          'location': bad,
+        });
+        expect(c.location, isNull);
+      }
+    });
+
     test('older capsules keep the defaults', () {
       final c = FirestoreMappers.capsule('c2', {'ownerId': 'u1'});
       expect(c.capturedAt, isNull);

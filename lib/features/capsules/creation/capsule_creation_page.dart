@@ -21,6 +21,7 @@ import '../../../shared/widgets/page_header.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
+import '../../settings/settings_store.dart';
 import 'capsule_creation_controller.dart';
 import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
@@ -50,9 +51,18 @@ class CapsuleCreationPage extends StatelessWidget {
         capsules: context.read<CapsuleRepository>(),
         location: context.read<LocationService>(),
         currentLocation: context.read<CurrentLocation>(),
-        initialPrivacy: initialPrivacy,
+        // Settings > Privacy gives the default for a capsule on the map.
+        initialPrivacy:
+            initialPrivacy ??
+            (recipientId == null
+                ? context.read<SettingsStore>().privacy.defaultVisibility
+                : null),
         recipientId: recipientId,
         chats: context.read<ChatRepository>(),
+        locationPrecision: context
+            .read<SettingsStore>()
+            .privacy
+            .locationPrecision,
       ),
       child: _CapsuleCreationView(
         initialPrivacy: initialPrivacy,

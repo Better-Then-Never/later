@@ -29,7 +29,10 @@ class CapsuleCreationController extends ChangeNotifier {
     CapsulePrivacy? initialPrivacy,
     this.recipientId,
     ChatRepository? chats,
+    this.locationPrecision = LocationPrecision.exact,
+    DateTime? capturedAt,
   }) : assert(recipientId == null || chats != null),
+       capturedAt = capturedAt ?? DateTime.now(),
        _capsules = capsules,
        _chats = chats,
        _location = location,
@@ -46,6 +49,12 @@ class CapsuleCreationController extends ChangeNotifier {
 
   final String ownerId;
   final String imagePath;
+
+  /// Settings > Privacy: approximate places are rounded before upload.
+  final LocationPrecision locationPrecision;
+
+  /// When the photo was taken (the page opens right after the shutter).
+  final DateTime capturedAt;
 
   /// The friend this capsule is sent to: it is shared with them and posted
   /// into your chat.
@@ -103,7 +112,7 @@ class CapsuleCreationController extends ChangeNotifier {
 
   Future<void> _locate() async {
     final position = await _location.currentPosition();
-    if (_disposed || position == null) return;
+    if (_disposed || position == null || !position.isValid) return;
     _currentLocation.update(position);
     _position = position;
     notifyListeners();
@@ -130,10 +139,15 @@ class CapsuleCreationController extends ChangeNotifier {
           description: description.isEmpty ? null : description,
           privacy: _privacy,
           color: _color,
-          location: position,
+          location: locationPrecision == LocationPrecision.approximate
+              ? position.approximate
+              : position,
+          locationPrecision: locationPrecision,
           imagePath: imagePath,
           openAt: _openAt,
           recipientId: recipientId,
+          capturedAt: capturedAt,
+          utcOffsetMinutes: capturedAt.timeZoneOffset.inMinutes,
         ),
       );
       final to = recipientId;

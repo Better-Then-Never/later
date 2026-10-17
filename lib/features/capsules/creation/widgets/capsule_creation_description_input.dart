@@ -12,7 +12,8 @@ class CapsuleCreationDescriptionInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const int maxDescriptionLength = 2200;
+    // The rules accept 2000 characters; 2001-2200 used to fail to save.
+    const int maxDescriptionLength = 2000;
     return Expanded(
       child: TextField(
         controller: controller,
