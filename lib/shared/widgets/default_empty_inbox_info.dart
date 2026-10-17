@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/shared/widgets/buttons/default_green_button.dart';
 import 'package:later/shared/widgets/default_text.dart';
 import '../../core/theme/app_palette.dart';
+import '../motion/idle_float.dart';
 
 /// The app's empty and error state: icon (72 px), bold title, grey subtitle
 /// and, when [actionText] is set, a small green button (e.g. "Retry").
@@ -31,7 +32,7 @@ class DefaultEmptyInboxInfo extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(assetPath, width: 72, height: 72),
+            IdleFloat(child: Image.asset(assetPath, width: 72, height: 72)),
             const SizedBox(height: 5),
             DefaultText(
               message,

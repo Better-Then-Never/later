@@ -91,3 +91,17 @@ original and survive its deletion.
 **D-21 Large text:** the app follows the system text size (no clamping). Fixed-height surfaces size themselves
 from the text scale measured at body size (16): Android 14+ scales text nonlinearly, so a large reference size
 under-reports it. First applied to the map capsule card; other fixed-height cards are checked at 130 %.
+
+**D-22 Map styles are local, no map ID (Session A, F-15):** the light map used the cloud style of the Later map ID;
+a map ID cannot change after creation and the dark style (D-07) must not have one, so every theme switch recreated
+the map: a 22 ms native view creation in an 86 ms frame, and a crash path (the old map's idle callback using its
+disposed controller). Both looks are now local JSON styles (`MapStyles.light`, `MapStyles.dark`) and the map
+restyles in place. The light JSON follows the cloud style's idea (blue water, green parks, quiet roads) but is not a
+pixel copy of it: **owner to review** against the cloud style (docs/feel/BLOCKERS.md). Advanced markers (which need a
+map ID) are not used.
+
+**D-23 Theme, language and size switch by crossfade (Session A):** no `ThemeData` lerp; `AppearanceCrossfade` fades
+a still of the old screen over the new one (one rebuild instead of one per frame). Reduced motion: instant.
+
+**D-24 Tap targets (Session A):** every control takes taps on at least 44 × 44 dp, whatever its picture size;
+`DefaultIconButton` enforces it, other custom controls pad their hit area (`behavior: opaque`).

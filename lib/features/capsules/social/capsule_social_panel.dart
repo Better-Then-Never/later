@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/feature_flags.dart';
+import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -14,9 +16,13 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/social.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
+import '../../../shared/motion/reaction_burst.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../history/own_capsules_store.dart';
+import '../../profile/share/sharing_service.dart';
 import 'capsule_comments_sheet.dart';
+import 'quick_reply_card.dart';
 import 'capsule_social_controller.dart';
 
 /// Under an open capsule: the six reactions and the way into its comments
@@ -29,7 +35,13 @@ class CapsuleSocialPanel extends StatelessWidget {
 
   static bool showsAnything(Capsule capsule) =>
       (FeatureFlags.reactions && capsule.allowReactions) ||
-      (FeatureFlags.comments && capsule.allowComments);
+      (FeatureFlags.comments && capsule.allowComments) ||
+      shareable(capsule);
+
+  /// Capsules that can travel as a link: public and friends-only ones
+  /// (whoever opens it still needs to be allowed to see it).
+  static bool shareable(Capsule capsule) =>
+      capsule.privacy != CapsulePrivacy.private;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,7 @@ class CapsuleSocialPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (reactions) CapsuleReactionsBar(controller: controller),
-            if (comments || !controller.isOwner)
+            if (comments || !controller.isOwner || shareable(capsule))
               Row(
                 children: [
                   if (comments)
@@ -78,9 +90,31 @@ class CapsuleSocialPanel extends StatelessWidget {
                     const Spacer(),
                   if (!controller.isOwner)
                     IconButton(
+                      tooltip: context.l10n.capsulesQuickReply,
+                      onPressed: () => QuickReplyCard.show(context, capsule),
+                      icon: Image.asset(AppIcons.reply, width: 22),
+                    ),
+                  if (shareable(capsule))
+                    IconButton(
+                      tooltip: context.l10n.capsulesShare,
+                      onPressed: () => SharingService.shareCapsule(
+                        context: context,
+                        capsule: capsule,
+                      ),
+                      // Painted in the theme's icon colour (the profile's
+                      // share picture is white, for photo headers).
+                      icon: CustomPaint(
+                        size: const Size.square(24),
+                        painter: _ShareSignPainter(color: palette.icon),
+                      ),
+                    ),
+                  if (!controller.isOwner)
+                    IconButton(
                       tooltip: context.l10n.capsulesReportCapsule,
                       onPressed: () => _capsuleMenu(context),
-                      icon: Image.asset(AppIcons.openMenu, width: 24),
+                      // The chat menu's lines (the profile's menu picture is
+                      // white and did not show on this card).
+                      icon: Image.asset(AppIcons.messagesChatMenu, width: 24),
                     ),
                 ],
               ),
@@ -92,26 +126,65 @@ class CapsuleSocialPanel extends StatelessWidget {
 
   Future<void> _capsuleMenu(BuildContext context) async {
     final l10n = context.l10n;
-    final report = await showCenteredSheet<bool>(
+    final coAuthor = controller.capsule.coAuthors.contains(controller.uid);
+    final choice = await showCenteredSheet<_MenuChoice>(
       context,
       OptionsMenu(
         children: [
+          if (coAuthor)
+            OptionsMenuItem(
+              text: l10n.capsulesLeaveCoAuthors,
+              isFirst: true,
+              onPressed: () => Navigator.of(context).pop(_MenuChoice.leave),
+            ),
           OptionsMenuItem(
             text: l10n.capsulesReportCapsule,
             textColor: AppColors.danger,
-            isFirst: true,
+            isFirst: !coAuthor,
             isLast: true,
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(context).pop(_MenuChoice.report),
           ),
         ],
       ),
     );
-    if (report != true || !context.mounted) return;
+    if (choice == null || !context.mounted) return;
+    if (choice == _MenuChoice.leave) return _leave(context);
     await reportFlow(
       context,
       controller,
       target: ReportTarget.capsule,
       targetPath: 'capsules/${controller.capsule.id}',
+    );
+  }
+
+  Future<void> _leave(BuildContext context) =>
+      _leaveCapsule(context, controller.capsule.id);
+}
+
+enum _MenuChoice { leave, report }
+
+/// Takes the user off a capsule they co-authored; it is no longer theirs to
+/// see, so its card closes.
+Future<void> _leaveCapsule(BuildContext context, String capsuleId) async {
+  final l10n = context.l10n;
+  final navigator = Navigator.of(context);
+  final failure = await context.read<OwnCapsulesStore>().leave(capsuleId);
+  if (!context.mounted) return;
+  if (failure != null) {
+    PopupNotificationService.showError(
+      context: context,
+      message: failure.message,
+      position: NotificationPosition.bottom,
+    );
+    return;
+  }
+  await navigator.maybePop();
+  final root = navigator.context;
+  if (root.mounted) {
+    PopupNotificationService.showSuccess(
+      context: root,
+      message: l10n.capsulesLeftCoAuthors,
+      position: NotificationPosition.bottom,
     );
   }
 }
@@ -123,6 +196,36 @@ Future<void> reportFlow(
   required ReportTarget target,
   required String targetPath,
 }) async {
+  final reason = await pickReportReason(context);
+  if (reason == null || !context.mounted) return;
+  final failure = await controller.report(
+    target: target,
+    targetPath: targetPath,
+    reason: reason,
+  );
+  if (context.mounted) showReportResult(context, failure);
+}
+
+/// Thanks the user, or says why the report did not go.
+void showReportResult(BuildContext context, AppFailure? failure) {
+  if (failure != null) {
+    PopupNotificationService.showError(
+      context: context,
+      message: failure.message,
+      position: NotificationPosition.bottom,
+    );
+  } else {
+    PopupNotificationService.showSuccess(
+      context: context,
+      message: context.l10n.capsulesReportSent,
+      position: NotificationPosition.bottom,
+    );
+  }
+}
+
+/// Why the user reports something (a capsule, a comment, a message), or
+/// null when they back out.
+Future<ReportReason?> pickReportReason(BuildContext context) {
   final l10n = context.l10n;
   final reasons = {
     ReportReason.spam: l10n.capsulesReportSpam,
@@ -132,7 +235,7 @@ Future<void> reportFlow(
     ReportReason.privacy: l10n.capsulesReportPrivacy,
     ReportReason.other: l10n.capsulesReportOther,
   };
-  final reason = await showCenteredSheet<ReportReason>(
+  return showCenteredSheet<ReportReason>(
     context,
     OptionsMenu(
       children: [
@@ -160,26 +263,6 @@ Future<void> reportFlow(
       ],
     ),
   );
-  if (reason == null || !context.mounted) return;
-  final failure = await controller.report(
-    target: target,
-    targetPath: targetPath,
-    reason: reason,
-  );
-  if (!context.mounted) return;
-  if (failure != null) {
-    PopupNotificationService.showError(
-      context: context,
-      message: failure.message,
-      position: NotificationPosition.bottom,
-    );
-  } else {
-    PopupNotificationService.showSuccess(
-      context: context,
-      message: l10n.capsulesReportSent,
-      position: NotificationPosition.bottom,
-    );
-  }
 }
 
 /// The six reactions in equal slots; the user's choice is tinted green and
@@ -242,9 +325,12 @@ class CapsuleReactionsBar extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                type.emoji,
-                                style: const TextStyle(fontSize: 18),
+                              ReactionBurst(
+                                active: mine == type,
+                                child: Text(
+                                  type.emoji,
+                                  style: const TextStyle(fontSize: 18),
+                                ),
                               ),
                               if ((counts[type] ?? 0) > 0) ...[
                                 const SizedBox(width: 3),
@@ -271,4 +357,34 @@ class CapsuleReactionsBar extends StatelessWidget {
       ],
     );
   }
+}
+
+/// The usual share sign: three nodes, two links, in the icons' round stroke.
+class _ShareSignPainter extends CustomPainter {
+  const _ShareSignPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final a = Offset(w * 0.74, h * 0.2);
+    final b = Offset(w * 0.24, h * 0.5);
+    final c = Offset(w * 0.74, h * 0.8);
+    final line = Paint()
+      ..color = color
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    canvas
+      ..drawLine(a, b, line)
+      ..drawLine(b, c, line);
+    final dot = Paint()..color = color;
+    for (final o in [a, b, c]) {
+      canvas.drawCircle(o, w * 0.13, dot);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ShareSignPainter old) => old.color != color;
 }

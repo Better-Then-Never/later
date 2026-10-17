@@ -79,5 +79,70 @@
   },
   "mapMyLocation": "My location",
   "mapFirstCapsuleTitle": "Leave your first capsule",
-  "mapFirstCapsuleBody": "Take a photo here and choose when it opens."
+  "mapFirstCapsuleBody": "Take a photo here and choose when it opens.",
+  "mapZoomIn": "Zoom in",
+  "mapZoomOut": "Zoom out",
+  "@mapZoomIn": {
+    "description": "Screen reader label of the map's + button."
+  },
+  "@mapZoomOut": {
+    "description": "Screen reader label of the map's − button."
+  },
+  "mapCompass": "Turn the map to north",
+  "@mapCompass": {
+    "description": "Screen reader label of the map compass, shown while the map is turned; a tap points it north."
+  },
+  "mapFilter": "Filter the map",
+  "@mapFilter": {
+    "description": "Map button (screen reader): open the map filter."
+  },
+  "mapFilterActive": "{count, plural, =1{Filter the map, 1 choice on} other{Filter the map, {count} choices on}}",
+  "@mapFilterActive": {
+    "description": "Map filter button while some choices narrow the map.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapFilterTitle": "On the map",
+  "@mapFilterTitle": {
+    "description": "Title of the map filter sheet."
+  },
+  "mapFilterWhose": "Whose",
+  "@mapFilterWhose": {
+    "description": "Map filter section: whose capsules."
+  },
+  "mapFilterMine": "Mine",
+  "@mapFilterMine": {
+    "description": "Map filter: the user's own capsules (and co-authored)."
+  },
+  "mapFilterFriends": "Friends'",
+  "@mapFilterFriends": {
+    "description": "Map filter: friends' capsules."
+  },
+  "mapFilterOthers": "Everyone else's",
+  "@mapFilterOthers": {
+    "description": "Map filter: public capsules of people who are not friends."
+  },
+  "mapFilterState": "Open or not",
+  "@mapFilterState": {
+    "description": "Map filter section: open capsules or ones that open later."
+  },
+  "mapFilterOpen": "Open",
+  "@mapFilterOpen": {
+    "description": "Map filter: capsules already open."
+  },
+  "mapFilterLocked": "Opening later",
+  "@mapFilterLocked": {
+    "description": "Map filter: capsules that open later."
+  },
+  "mapFilterColors": "Pin colour",
+  "@mapFilterColors": {
+    "description": "Map filter section: pin colours (none chosen = all)."
+  },
+  "mapFilterReset": "Show everything",
+  "@mapFilterReset": {
+    "description": "Map filter: back to showing everything."
+  }
 }

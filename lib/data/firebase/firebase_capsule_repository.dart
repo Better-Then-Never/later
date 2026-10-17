@@ -35,11 +35,17 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       _storage.ref('userdata/$ownerId/capsules/$capsuleId/image.jpg');
 
   /// Frame [index] of a loop capsule (storage.rules allow frame_0..9).
+  Reference _thumbRef(String ownerId, String capsuleId) =>
+      _storage.ref('userdata/$ownerId/capsules/$capsuleId/thumb.jpg');
+
   Reference _frameRef(String ownerId, String capsuleId, int index) =>
       _storage.ref('userdata/$ownerId/capsules/$capsuleId/frame_$index.jpg');
 
   /// At most this many frames are kept (storage.rules, firestore.rules).
   static const maxFrames = 10;
+
+  /// Longest side of the thumbnail (lists, chats, the map card).
+  static const thumbSize = 400;
 
   List<Capsule> _map(QuerySnapshot<Map<String, dynamic>> snap) =>
       snap.docs.map((d) => FirestoreMappers.capsule(d.id, d.data())).toList();
@@ -50,6 +56,20 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       .orderBy('createdAt', descending: true)
       .snapshots()
       .map(_map);
+
+  @override
+  Stream<List<Capsule>> watchCoAuthored(String uid) => _capsules
+      .where('coAuthors', arrayContains: uid)
+      .orderBy('createdAt', descending: true)
+      .limit(100)
+      .snapshots()
+      .map(_map);
+
+  @override
+  Future<void> leaveCoAuthors(String capsuleId, String uid) =>
+      _capsules.doc(capsuleId).update({
+        'coAuthors': FieldValue.arrayRemove([uid]),
+      });
 
   @override
   Future<Capsule?> getById(String id) async {
@@ -151,7 +171,11 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
     // the outbox) must not keep uploading for the default 10 minutes.
     _storage.setMaxUploadRetryTime(const Duration(seconds: 45));
     final imageRef = _imageRef(draft.ownerId, doc.id);
-    final bytes = await _processor.capsuleJpegFromFile(draft.imagePath);
+    final bytes = await _processor.capsuleJpegFromFile(
+      draft.imagePath,
+      maxDimension: draft.highQuality ? 2560 : 1600,
+      quality: draft.highQuality ? 90 : 85,
+    );
     await imageRef.putData(bytes, SettableMetadata(contentType: 'image/jpeg'));
     final imageUrl = await imageRef.getDownloadURL();
     // A loop capsule: its frames too, smaller than the photo (they are
@@ -164,6 +188,24 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
           ]
         : const <Reference>[];
     var frameUrls = const <String>[];
+    // A small copy for lists, chats and the map card. Rules deployed before
+    // it refuse it: the capsule is then saved without one.
+    final thumbRef = _thumbRef(draft.ownerId, doc.id);
+    String? thumbUrl;
+    try {
+      final thumb = await _processor.capsuleJpegFromFile(
+        draft.imagePath,
+        maxDimension: thumbSize,
+        quality: 75,
+      );
+      await thumbRef.putData(
+        thumb,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+      thumbUrl = await thumbRef.getDownloadURL();
+    } catch (e) {
+      AppLogger.warning('No thumbnail for the capsule', error: e);
+    }
     try {
       frameUrls = await Future.wait([
         for (var i = 0; i < frameRefs.length; i++)
@@ -186,12 +228,14 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
           draft,
           imageUrl: imageUrl,
           frameUrls: frameUrls,
+          thumbUrl: thumbUrl,
         ),
       );
     } catch (_) {
       // Do not leave orphaned images behind.
       await Future.wait([
         _deleteImage(imageRef),
+        if (thumbUrl != null) _deleteImage(thumbRef),
         ...frameRefs.map(_deleteImage),
       ]);
       rethrow;
@@ -202,6 +246,7 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       title: draft.title,
       description: draft.description,
       imageUrl: imageUrl,
+      thumbUrl: thumbUrl,
       location: draft.location,
       privacy: draft.privacy,
       color: draft.color,
@@ -214,6 +259,7 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       capturedAt: draft.capturedAt,
       utcOffsetMinutes: draft.utcOffsetMinutes,
       showAuthor: draft.showAuthor,
+      coAuthors: draft.coAuthors,
       allowComments: draft.allowComments,
       allowReactions: draft.allowReactions,
       locationPrecision: draft.locationPrecision,
@@ -224,20 +270,27 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
   }
 
   /// Rules deployed before the added capsule fields reject them: the capsule
-  /// is then saved without them, once, so the app may ship before the rules.
+  /// is then saved without the newest ones, and failing that without any,
+  /// so the app may ship before the rules.
   Future<void> _setNew(
     DocumentReference<Map<String, dynamic>> doc,
     Map<String, dynamic> data,
   ) async {
-    try {
-      await doc.set(data);
-    } on FirebaseException catch (e) {
-      final legacy = FirestoreMappers.legacyCapsule(data);
-      if (e.code != 'permission-denied' || legacy.length == data.length) {
-        rethrow;
+    final tries = [
+      data,
+      FirestoreMappers.withoutLatest(data),
+      FirestoreMappers.legacyCapsule(data),
+    ];
+    for (var i = 0; i < tries.length; i++) {
+      // A shape no smaller than the last one would be refused again.
+      if (i > 0 && tries[i].length == tries[i - 1].length) continue;
+      try {
+        await doc.set(tries[i]);
+        return;
+      } on FirebaseException catch (e) {
+        if (e.code != 'permission-denied' || i == tries.length - 1) rethrow;
+        AppLogger.warning('Capsule rejected with the added fields, retrying');
       }
-      AppLogger.warning('Capsule rejected with the added fields, retrying');
-      await doc.set(legacy);
     }
   }
 
@@ -254,6 +307,7 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
     await Future.wait([
       for (final c in list) ...[
         _deleteImage(_imageRef(c.ownerId, c.id)),
+        if (c.thumbUrl != null) _deleteImage(_thumbRef(c.ownerId, c.id)),
         for (var i = 0; i < c.frames.length && i < maxFrames; i++)
           _deleteImage(_frameRef(c.ownerId, c.id, i)),
       ],

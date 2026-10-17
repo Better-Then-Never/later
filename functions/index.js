@@ -17,6 +17,8 @@ const account = require('./lib/account');
 const social = require('./lib/social');
 const gamification = require('./lib/gamification');
 const broadcast = require('./lib/broadcast');
+const chats = require('./lib/chats');
+const contacts = require('./lib/contacts');
 
 admin.initializeApp();
 
@@ -29,9 +31,27 @@ setGlobalOptions({
   serviceAccount: 'later-functions@later-da778.iam.gserviceaccount.com',
 });
 
+// In the Functions emulator pushes are logged, not sent: FCM is not emulated,
+// and a real send would go out with this machine's credentials
+// (docs/feel/RIG.md).
+const loggedMessaging = {
+  async send(message) {
+    logger.info('push not sent (emulator)', { message });
+    return 'emulator';
+  },
+  async sendEach(messages) {
+    logger.info('pushes not sent (emulator)', { messages });
+    return {
+      successCount: messages.length,
+      failureCount: 0,
+      responses: messages.map(() => ({ success: true })),
+    };
+  },
+};
+
 const services = () => ({
   db: admin.firestore(),
-  messaging: admin.messaging(),
+  messaging: process.env.FUNCTIONS_EMULATOR === 'true' ? loggedMessaging : admin.messaging(),
   bucket: admin.storage().bucket(),
 });
 
@@ -139,6 +159,62 @@ function logged(name, work) {
 
 const data = (snapshot) => (snapshot && snapshot.exists ? snapshot.data() : undefined);
 
+// Suggestions from contacts (functions/lib/contacts.js), opt-in: the index
+// follows "people with my email find me"; a request is answered once.
+exports.syncContactIndex = onDocumentWritten(
+  'users/{uid}/settings/app',
+  logged('Contact index', (event) =>
+    contacts.syncContactIndex(
+      { db: admin.firestore(), auth: admin.auth() },
+      event.params.uid,
+      data(event.data && event.data.before),
+      data(event.data && event.data.after),
+    ),
+  ),
+);
+
+exports.matchContacts = onDocumentWritten(
+  'contactMatches/{uid}',
+  logged('Contact matches', (event) =>
+    contacts.matchContacts(
+      { db: admin.firestore() },
+      event.params.uid,
+      data(event.data && event.data.after),
+    ),
+  ),
+);
+
+// Someone invited to a group joins if the inviter is their friend
+// (functions/lib/chats.js).
+exports.acceptGroupInvite = onDocumentCreated(
+  'chats/{chatId}/invites/{uid}',
+  logged('Group invite', (e) =>
+    chats.onGroupInvite(services(), e.params.chatId, e.params.uid, data(e.data)),
+  ),
+);
+
+// Someone reacted to a chat message: its author hears it
+// (functions/lib/chats.js).
+exports.sendMessageReactionNotification = onDocumentUpdated(
+  'chats/{chatId}/messages/{messageId}',
+  logged('Message reaction', (e) =>
+    chats.onMessageReacted(
+      services(),
+      e.params.chatId,
+      e.params.messageId,
+      data(e.data.before),
+      data(e.data.after),
+    ),
+  ),
+);
+
+// A chat photo's or recording's file is deleted with its message
+// (functions/lib/chats.js).
+exports.deleteChatFile = onDocumentDeleted(
+  'chats/{chatId}/messages/{messageId}',
+  logged('Chat file', (e) => chats.onMessageDeleted(services(), e.params.chatId, data(e.data))),
+);
+
 exports.countFollowerAdded = onDocumentCreated(
   'users/{uid}/followers/{follower}',
   logged('Follower count', (e) => social.onFollowerChanged(services(), e.params.uid, 1)),
@@ -158,22 +234,38 @@ exports.countFollowingRemoved = onDocumentDeleted(
 
 exports.onReactionWritten = onDocumentWritten(
   'capsules/{capsuleId}/reactions/{uid}',
-  logged('Reaction', (e) =>
-    social.onReactionWritten(
+  logged('Reaction', async (e) => {
+    const result = await social.onReactionWritten(
       services(),
       e.params.capsuleId,
       e.params.uid,
       data(e.data && e.data.before),
       data(e.data && e.data.after),
-    ),
-  ),
+    );
+    // The owner received one more reaction (Crowd pleaser).
+    if (result && result.ownerId) {
+      await gamification.checkAchievements(services(), result.ownerId);
+    }
+    return result;
+  }),
 );
 
 exports.onCommentCreated = onDocumentCreated(
   'capsules/{capsuleId}/comments/{commentId}',
-  logged('Comment', (e) =>
-    social.onCommentCreated(services(), e.params.capsuleId, e.params.commentId, data(e.data)),
-  ),
+  logged('Comment', async (e) => {
+    const comment = data(e.data);
+    const result = await social.onCommentCreated(
+      services(),
+      e.params.capsuleId,
+      e.params.commentId,
+      comment,
+    );
+    // The author wrote one more comment (Chatterbox).
+    if (comment && comment.authorId) {
+      await gamification.checkAchievements(services(), comment.authorId);
+    }
+    return result;
+  }),
 );
 exports.onCommentDeleted = onDocumentDeleted(
   'capsules/{capsuleId}/comments/{commentId}',
@@ -188,34 +280,47 @@ exports.onFriendRequestCreated = onDocumentCreated(
 );
 exports.onFriendRequestUpdated = onDocumentUpdated(
   'friend_requests/{requestId}',
-  logged('Friend request accepted', (e) =>
-    social.onFriendRequestUpdated(
+  logged('Friend request accepted', async (e) => {
+    const before = data(e.data && e.data.before);
+    const after = data(e.data && e.data.after);
+    const result = await social.onFriendRequestUpdated(
       services(),
       e.params.requestId,
-      data(e.data && e.data.before),
-      data(e.data && e.data.after),
-    ),
-  ),
+      before,
+      after,
+    );
+    // Both have one more friend (Friendly).
+    if (result !== null && after) {
+      await gamification.checkAchievements(services(), after.fromUserId);
+      await gamification.checkAchievements(services(), after.toUserId);
+    }
+    return result;
+  }),
 );
 
 // ---- gamification: stats, streaks, achievements (functions/lib/gamification.js)
 
+// Counts a new capsule, then unlocks what its stats reached. The former
+// unlockAchievements trigger ran on every users/{uid} write (profile
+// edits, pins, favourites); achievements are now checked only where a
+// counted stat changes: here, reactions, comments, accepted friends (B6).
 exports.updateCapsuleStats = onDocumentCreated(
   'capsules/{capsuleId}',
-  logged('Capsule stats', (e) =>
-    gamification.onCapsuleCreated(services(), e.params.capsuleId, data(e.data)),
-  ),
+  logged('Capsule stats', async (e) => {
+    const capsule = data(e.data);
+    const result = await gamification.onCapsuleCreated(services(), e.params.capsuleId, capsule);
+    if (capsule && capsule.ownerId) {
+      await gamification.checkAchievements(services(), capsule.ownerId);
+    }
+    return result;
+  }),
 );
 
-exports.unlockAchievements = onDocumentUpdated(
-  'users/{uid}',
-  logged('Achievements', (e) =>
-    gamification.onUserUpdated(
-      services(),
-      e.params.uid,
-      data(e.data && e.data.before),
-      data(e.data && e.data.after),
-    ),
+// The app opened someone else's capsule for the first time (B7).
+exports.onCapsuleViewed = onDocumentCreated(
+  'users/{uid}/viewed/{capsuleId}',
+  logged('Capsule viewed', (e) =>
+    gamification.onCapsuleViewed(services(), e.params.uid, e.params.capsuleId),
   ),
 );
 

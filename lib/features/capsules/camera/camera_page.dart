@@ -1,21 +1,28 @@
+import 'dart:io';
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import '../../../app/entitlements_store.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/logging/app_logger.dart';
+import '../../../core/logging/perf_marks.dart';
 import '../../../data/models/capsule.dart';
 import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_motion.dart';
 import 'package:later/core/theme/app_text_styles.dart';
+import '../creation/creation_draft.dart';
+import '../../../app/session/session_controller.dart';
 
 /// Why the camera cannot be shown. The message is chosen when the error view
 /// is built, so it follows the app's language.
@@ -51,6 +58,14 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   double _maxZoom = 1;
   double _zoom = 1;
   double _zoomAtStart = 1;
+
+  /// Exposure compensation (EV) after a tap to focus: the slider shows for
+  /// a few seconds beside the picture.
+  double _minExposure = 0;
+  double _maxExposure = 0;
+  double _exposure = 0;
+  bool _showExposure = false;
+  Timer? _exposureHint;
   bool _showZoom = false;
   Timer? _zoomHint;
   Offset? _focusAt;
@@ -60,27 +75,66 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   bool _shutterBlink = false;
   bool _capturing = false;
 
+  /// The preview as it was at the tap, held still while CameraX takes the
+  /// picture (about a second on the reference phone): the moment is
+  /// visibly caught at once, and moving the phone afterwards changes
+  /// nothing on screen (docs/feel/PERFORMANCE.md, camera).
+  final _previewKey = GlobalKey();
+  ui.Image? _frozen;
+
   /// Holding the shutter records a loop: frames one after another until
-  /// it is released or [_maxFrames] are taken.
-  static const _maxFrames = 10;
+  /// it is released or [_maxFrames] are taken (the account's limit, B7).
+  int get _maxFrames => EntitlementsStore.of(context).loopFrames;
   bool _looping = false;
   final List<String> _frames = [];
+
+  /// Loop mode: a tap starts the loop and a second tap ends it (in photo
+  /// mode a long press still records one).
+  bool _loopMode = false;
+
+  /// The capsule left unfinished last time, if any.
+  CreationDraft? _draft;
+  final _drafts = CreationDraftStore();
+
+  Future<void> _loadDraft() async {
+    final uid = context.read<SessionController>().uid;
+    if (uid == null) return;
+    final draft = await _drafts.load(uid);
+    if (mounted && draft != null) setState(() => _draft = draft);
+  }
+
+  Future<void> _discardDraft() async {
+    final uid = context.read<SessionController>().uid;
+    setState(() => _draft = null);
+    if (uid != null) await _drafts.discard(uid);
+  }
+
   _CameraError? _error;
+
+  /// 720p, or 1080p for high-quality photos (they go up at up to 2560 px).
+  ResolutionPreset _preset = ResolutionPreset.high;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // The camera chosen in Settings > Map and camera.
-    if (context.read<DeviceSettingsStore>().startCamera == StartCamera.front) {
+    // The camera and the photo size chosen in Settings > Map and camera.
+    final device = context.read<DeviceSettingsStore>();
+    if (device.startCamera == StartCamera.front) {
       _lens = CameraLensDirection.front;
     }
+    _preset = device.photoQuality == PhotoQuality.high
+        ? ResolutionPreset.veryHigh
+        : ResolutionPreset.high;
     unawaited(_setup());
+    unawaited(_loadDraft());
   }
 
   @override
   void dispose() {
     _zoomHint?.cancel();
+    _exposureHint?.cancel();
+    _frozen?.dispose();
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_controller?.dispose());
     super.dispose();
@@ -140,7 +194,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     if (_cameras.isEmpty) return;
     final controller = CameraController(
       _cameraFor(_lens),
-      ResolutionPreset.high,
+      _preset,
       enableAudio: false,
     );
     final old = _controller;
@@ -151,6 +205,13 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       await controller.setFlashMode(_flash);
       final minZoom = await controller.getMinZoomLevel();
       final maxZoom = await controller.getMaxZoomLevel();
+      var minExposure = 0.0, maxExposure = 0.0;
+      try {
+        minExposure = await controller.getMinExposureOffset();
+        maxExposure = await controller.getMaxExposureOffset();
+      } on CameraException catch (e) {
+        AppLogger.debug('No exposure control: ${e.code}');
+      }
       if (mounted) {
         setState(() {
           _error = null;
@@ -158,6 +219,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           // Beyond 8x the preview is mostly noise.
           _maxZoom = maxZoom.clamp(minZoom, 8.0);
           _zoom = minZoom;
+          _minExposure = minExposure;
+          _maxExposure = maxExposure;
+          _exposure = 0;
         });
       }
     } on CameraException catch (e) {
@@ -188,18 +252,27 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   Future<void> _toggleFlash() async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) return;
+    // Off, automatic, on, and the light that stays on (torch).
     final next = switch (_flash) {
       FlashMode.off => FlashMode.auto,
       FlashMode.auto => FlashMode.always,
-      _ => FlashMode.off,
+      FlashMode.always => FlashMode.torch,
+      FlashMode.torch => FlashMode.off,
     };
     try {
       await controller.setFlashMode(next);
       unawaited(HapticFeedback.selectionClick());
       if (mounted) setState(() => _flash = next);
     } on CameraException catch (e) {
-      // e.g. front cameras without a flash.
-      AppLogger.debug('Flash not available: ${e.code}');
+      // e.g. front cameras without a flash; a camera without a torch skips
+      // to off.
+      AppLogger.debug('Flash mode $next not available: ${e.code}');
+      if (next == FlashMode.torch) {
+        try {
+          await controller.setFlashMode(FlashMode.off);
+          if (mounted) setState(() => _flash = FlashMode.off);
+        } on CameraException catch (_) {}
+      }
     }
   }
 
@@ -209,16 +282,21 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       return;
     }
     unawaited(HapticFeedback.mediumImpact());
+    final frozen = _freeze();
     setState(() {
       _capturing = true;
       _shutterBlink = true;
+      _frozen = frozen;
     });
+    PerfMarks.nextFrame('camera.feedback');
     Future<void>.delayed(const Duration(milliseconds: 120), () {
       if (mounted) setState(() => _shutterBlink = false);
     });
     try {
       final picture = await controller.takePicture();
+      PerfMarks.now('camera.file');
       if (!mounted) return;
+      PerfMarks.nextFrame('creation.firstFrame');
       await AppRoutes.toCapsuleCreation(
         context,
         imagePath: picture.path,
@@ -228,7 +306,30 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       );
     } on CameraException catch (e) {
       AppLogger.warning('Taking the picture failed', error: e);
-      if (mounted) setState(() => _capturing = false);
+      if (mounted) {
+        setState(() {
+          _capturing = false;
+          _frozen?.dispose();
+          _frozen = null;
+        });
+      }
+    }
+  }
+
+  /// A still of the preview as it is now, or null when it cannot be taken.
+  ui.Image? _freeze() {
+    if (AppMotion.reduced(context)) return null;
+    final boundary = _previewKey.currentContext?.findRenderObject();
+    if (boundary is! RenderRepaintBoundary || !boundary.hasSize) return null;
+    try {
+      final still = boundary.toImageSync(
+        pixelRatio: MediaQuery.devicePixelRatioOf(context),
+      );
+      AppLogger.debug('Camera freeze: ${still.width}x${still.height}');
+      return still;
+    } catch (e) {
+      AppLogger.debug('Camera freeze unavailable: $e');
+      return null;
     }
   }
 
@@ -277,6 +378,56 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     if (_looping) setState(() => _looping = false);
   }
 
+  /// The usual zoom steps this camera can do.
+  List<double> get _zoomStops => [
+    for (final stop in const [0.5, 1.0, 2.0, 5.0])
+      if (stop >= _minZoom - 0.01 && stop <= _maxZoom + 0.01) stop,
+  ];
+
+  /// Eases the zoom to [target] in a few steps (about 150 ms).
+  Future<void> _zoomTo(double target) async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
+    unawaited(HapticFeedback.selectionClick());
+    final from = _zoom;
+    final steps = AppMotion.reduced(context) ? 1 : 6;
+    for (var i = 1; i <= steps; i++) {
+      final t = AppMotion.standardCurve.transform(i / steps);
+      final z = from + (target - from) * t;
+      if (!mounted) return;
+      setState(() => _zoom = z);
+      try {
+        await controller.setZoomLevel(z);
+      } on CameraException catch (e) {
+        AppLogger.debug('Zoom failed: ${e.code}');
+        return;
+      }
+      if (i < steps) {
+        await Future<void>.delayed(const Duration(milliseconds: 25));
+      }
+    }
+  }
+
+  Future<void> _setExposure(double value) async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) return;
+    setState(() => _exposure = value);
+    _keepExposureVisible();
+    try {
+      await controller.setExposureOffset(value);
+    } on CameraException catch (e) {
+      AppLogger.debug('Exposure failed: ${e.code}');
+    }
+  }
+
+  void _keepExposureVisible() {
+    _exposureHint?.cancel();
+    if (!_showExposure) setState(() => _showExposure = true);
+    _exposureHint = Timer(const Duration(seconds: 3), () {
+      if (mounted) setState(() => _showExposure = false);
+    });
+  }
+
   void _onScaleStart(ScaleStartDetails _) => _zoomAtStart = _zoom;
 
   Future<void> _onScaleUpdate(ScaleUpdateDetails details) async {
@@ -310,6 +461,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       _focusAt = details.localPosition;
       _focusTick++;
     });
+    if (_maxExposure > _minExposure) _keepExposureVisible();
     unawaited(HapticFeedback.selectionClick());
     try {
       if (controller.value.focusPointSupported) {
@@ -355,57 +507,109 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                child: CameraPreview(
-                  controller,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onScaleStart: _onScaleStart,
-                      onScaleUpdate: _onScaleUpdate,
-                      onTapUp: (d) => _onTapToFocus(d, constraints.biggest),
-                      child: Stack(
-                        children: [
-                          if (_focusAt case final Offset at)
-                            Positioned(
-                              left: at.dx - 32,
-                              top: at.dy - 32,
-                              child: _FocusRing(key: ValueKey(_focusTick)),
-                            ),
-                          Align(
-                            alignment: const Alignment(0, 0.85),
-                            child: AnimatedOpacity(
-                              opacity: _showZoom ? 1 : 0,
-                              duration: AppMotion.of(context, AppMotion.fast),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
+                child: RepaintBoundary(
+                  key: _previewKey,
+                  child: CameraPreview(
+                    controller,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) => GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onScaleStart: _onScaleStart,
+                        onScaleUpdate: _onScaleUpdate,
+                        onTapUp: (d) => _onTapToFocus(d, constraints.biggest),
+                        child: Stack(
+                          children: [
+                            // The frozen photo flies into the capsule card
+                            // (the creation page's preview, B4).
+                            if (_frozen case final frozen?)
+                              Positioned.fill(
+                                child: Hero(
+                                  tag: 'creation-photo',
+                                  flightShuttleBuilder:
+                                      (context, animation, _, _, _) =>
+                                          AnimatedBuilder(
+                                            animation: animation,
+                                            builder: (context, _) => ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                              child: RawImage(
+                                                image: frozen,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                  child: RawImage(
+                                    image: frozen,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.mediaScrim,
-                                  borderRadius: BorderRadius.circular(12),
+                              ),
+                            if (_focusAt case final Offset at)
+                              Positioned(
+                                left: at.dx - 32,
+                                top: at.dy - 32,
+                                child: _FocusRing(key: ValueKey(_focusTick)),
+                              ),
+                            // Brightness, for a few seconds after a tap to
+                            // focus (cameras without exposure control: none).
+                            if (_maxExposure > _minExposure)
+                              Positioned(
+                                right: 8,
+                                top: constraints.maxHeight / 2 - 90,
+                                child: IgnorePointer(
+                                  ignoring: !_showExposure,
+                                  child: AnimatedOpacity(
+                                    opacity: _showExposure ? 1 : 0,
+                                    duration: AppMotion.of(
+                                      context,
+                                      AppMotion.fast,
+                                    ),
+                                    child: _ExposureSlider(
+                                      value: _exposure,
+                                      min: _minExposure,
+                                      max: _maxExposure,
+                                      label: l10n.capsulesCameraExposure,
+                                      onChanged: _setExposure,
+                                    ),
+                                  ),
                                 ),
-                                child: Text(
-                                  '${_zoom.toStringAsFixed(1)}×',
-                                  style: const TextStyle(
-                                    color: AppColors.onMedia,
-                                    fontWeight: FontWeight.bold,
+                              ),
+                            Align(
+                              alignment: const Alignment(0, 0.85),
+                              child: AnimatedOpacity(
+                                opacity: _showZoom ? 1 : 0,
+                                duration: AppMotion.of(context, AppMotion.fast),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mediaScrim,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    '${_zoom.toStringAsFixed(1)}×',
+                                    style: const TextStyle(
+                                      color: AppColors.onMedia,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          IgnorePointer(
-                            child: AnimatedOpacity(
-                              opacity: _shutterBlink ? 0.85 : 0,
-                              duration: AppMotion.quick,
-                              child: const ColoredBox(
-                                color: AppColors.onMedia,
-                                child: SizedBox.expand(),
+                            IgnorePointer(
+                              child: AnimatedOpacity(
+                                opacity: _shutterBlink ? 0.85 : 0,
+                                duration: AppMotion.quick,
+                                child: const ColoredBox(
+                                  color: AppColors.onMedia,
+                                  child: SizedBox.expand(),
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -436,41 +640,53 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                       label: switch (_flash) {
                         FlashMode.off => l10n.capsulesCameraFlashOff,
                         FlashMode.auto => l10n.capsulesCameraFlashAuto,
+                        FlashMode.torch => l10n.capsulesCameraFlashTorch,
                         _ => l10n.capsulesCameraFlashOn,
                       },
                       child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: _toggleFlash,
-                        child: SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              Image.asset(
-                                _flash == FlashMode.off
-                                    ? AppIcons.cameraFlashOff
-                                    : AppIcons.cameraFlashOn,
-                                width: 40,
-                                height: 40,
-                              ),
-                              // Automatic: the lit bolt with an "A".
-                              if (_flash == FlashMode.auto)
-                                Positioned(
-                                  right: -4,
-                                  bottom: -2,
-                                  child: ExcludeSemantics(
-                                    child: Text(
-                                      l10n.capsulesCameraFlashAutoBadge,
-                                      style: const TextStyle(
-                                        fontFamily: kAppFontFamily,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.onMedia,
+                        // A 44 dp target around the 40 dp picture.
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                Image.asset(
+                                  _flash == FlashMode.off
+                                      ? AppIcons.cameraFlashOff
+                                      : AppIcons.cameraFlashOn,
+                                  width: 40,
+                                  height: 40,
+                                ),
+                                // Automatic: the lit bolt with an "A"; the
+                                // light that stays on: with its own letter.
+                                if (_flash == FlashMode.auto ||
+                                    _flash == FlashMode.torch)
+                                  Positioned(
+                                    right: -4,
+                                    bottom: -2,
+                                    child: ExcludeSemantics(
+                                      child: Text(
+                                        _flash == FlashMode.auto
+                                            ? l10n.capsulesCameraFlashAutoBadge
+                                            : l10n.capsulesCameraFlashTorchBadge,
+                                        style: const TextStyle(
+                                          fontFamily: kAppFontFamily,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.onMedia,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -478,15 +694,67 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   ],
                 ),
               ),
-              // How to record a loop, until one is being recorded.
-              if (FeatureFlags.loopCapsules && !_capturing)
+              // An unfinished capsule: take it up again or let it go (B4).
+              if (_draft case final draft? when !_capturing)
+                Positioned(
+                  top: 72,
+                  left: 12,
+                  right: 12,
+                  child: _DraftCard(
+                    draft: draft,
+                    onContinue: () => AppRoutes.toCapsuleCreation(
+                      context,
+                      imagePath: draft.imagePath,
+                      framePaths: draft.framePaths,
+                      recipientId: draft.recipientId,
+                      draft: draft,
+                      replace: true,
+                    ),
+                    onDiscard: _discardDraft,
+                  ),
+                ),
+              // Zoom stops above the shutter (pinch still works).
+              if (_zoomStops.length > 1)
                 Positioned(
                   bottom: 112,
                   left: 0,
                   right: 0,
+                  child: Center(
+                    child: _ZoomStops(
+                      stops: _zoomStops,
+                      zoom: _zoom,
+                      label: l10n.capsulesCameraZoomTo,
+                      onSelected: (stop) => unawaited(_zoomTo(stop)),
+                    ),
+                  ),
+                ),
+              // Photo or loop, until something is being taken.
+              if (FeatureFlags.loopCapsules && !_capturing)
+                Positioned(
+                  bottom: 196,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: _ModeSwitch(
+                      loop: _loopMode,
+                      onChanged: (loop) {
+                        unawaited(HapticFeedback.selectionClick());
+                        setState(() => _loopMode = loop);
+                      },
+                    ),
+                  ),
+                ),
+              // How to record a loop, until one is being recorded.
+              if (FeatureFlags.loopCapsules && !_capturing)
+                Positioned(
+                  bottom: 160,
+                  left: 0,
+                  right: 0,
                   child: ExcludeSemantics(
                     child: Text(
-                      l10n.capsulesCameraHoldForLoop,
+                      _loopMode
+                          ? l10n.capsulesCameraTapForLoop
+                          : l10n.capsulesCameraHoldForLoop,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: kAppFontFamily,
@@ -507,15 +775,22 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 child: Center(
                   child: Semantics(
                     button: true,
-                    label: FeatureFlags.loopCapsules
+                    label: !FeatureFlags.loopCapsules
+                        ? l10n.capsulesCameraTakePhoto
+                        : !_loopMode
                         ? l10n.capsulesCameraTakePhotoOrLoop
-                        : l10n.capsulesCameraTakePhoto,
+                        : _looping
+                        ? l10n.capsulesCameraStopLoop
+                        : l10n.capsulesCameraStartLoop,
                     child: GestureDetector(
-                      onTap: _capture,
-                      onLongPressStart: FeatureFlags.loopCapsules
+                      onTap: _loopMode
+                          ? () =>
+                                _looping ? _stopLoop() : unawaited(_startLoop())
+                          : _capture,
+                      onLongPressStart: FeatureFlags.loopCapsules && !_loopMode
                           ? (_) => unawaited(_startLoop())
                           : null,
-                      onLongPressEnd: FeatureFlags.loopCapsules
+                      onLongPressEnd: FeatureFlags.loopCapsules && !_loopMode
                           ? (_) => _stopLoop()
                           : null,
                       child: Stack(
@@ -617,10 +892,10 @@ class _FocusRing extends StatefulWidget {
 
 class _FocusRingState extends State<_FocusRing>
     with SingleTickerProviderStateMixin {
+  // Shrinks in, holds, fades: 350 ms in all (the style rule's longest).
   late final AnimationController _c = AnimationController(
     vsync: this,
-    // Shrinks in, holds, fades: three slow steps.
-    duration: AppMotion.slow * 3,
+    duration: AppMotion.reveal,
   )..forward();
 
   @override
@@ -631,29 +906,309 @@ class _FocusRingState extends State<_FocusRing>
 
   @override
   Widget build(BuildContext context) {
+    final still = AppMotion.reduced(context);
     return IgnorePointer(
       child: AnimatedBuilder(
         animation: _c,
         builder: (context, _) {
           final t = _c.value;
-          final scale =
-              1.25 - 0.25 * Curves.easeOut.transform((t * 3).clamp(0, 1));
-          final opacity = t < 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
-          return Opacity(
-            opacity: opacity,
-            child: Transform.scale(
-              scale: scale,
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.onMedia, width: 2),
+          if (t >= 1) return const SizedBox.shrink();
+          // Reduced motion: the ring just shows where it focused, then goes.
+          final scale = still
+              ? 1.0
+              : 1.25 - 0.25 * Curves.easeOut.transform((t / 0.4).clamp(0, 1));
+          final fade = still || t < 0.7 ? 1.0 : 1 - (t - 0.7) / 0.3;
+          return Transform.scale(
+            scale: scale,
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                // Faded through the colour: no opacity layer.
+                border: Border.all(
+                  color: AppColors.onMedia.withValues(alpha: fade),
+                  width: 2,
                 ),
               ),
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// The zoom steps above the shutter: small labels on the picture, the one
+/// nearest the current zoom marked (and showing the exact zoom).
+class _ZoomStops extends StatelessWidget {
+  const _ZoomStops({
+    required this.stops,
+    required this.zoom,
+    required this.label,
+    required this.onSelected,
+  });
+
+  final List<double> stops;
+  final double zoom;
+  final String Function(String zoom) label;
+  final ValueChanged<double> onSelected;
+
+  static String _format(double v) =>
+      v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
+
+  @override
+  Widget build(BuildContext context) {
+    final nearest = stops.reduce(
+      (a, b) => (a - zoom).abs() <= (b - zoom).abs() ? a : b,
+    );
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: AppColors.mediaScrim,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final stop in stops)
+            Semantics(
+              button: true,
+              selected: stop == nearest,
+              label: label(_format(stop)),
+              excludeSemantics: true,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => onSelected(stop),
+                child: SizedBox.square(
+                  dimension: 44,
+                  child: Center(
+                    child: Text(
+                      stop == nearest ? '${_format(zoom)}×' : _format(stop),
+                      style: TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: stop == nearest ? 15 : 13,
+                        fontWeight: FontWeight.bold,
+                        color: stop == nearest
+                            ? AppColors.placeYellow
+                            : AppColors.onMedia,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A slim vertical brightness slider: drag up for brighter.
+class _ExposureSlider extends StatelessWidget {
+  const _ExposureSlider({
+    required this.value,
+    required this.min,
+    required this.max,
+    required this.label,
+    required this.onChanged,
+  });
+
+  final double value;
+  final double min;
+  final double max;
+  final String label;
+  final ValueChanged<double> onChanged;
+
+  static const _height = 180.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = ((value - min) / (max - min)).clamp(0.0, 1.0);
+    void at(double dy) =>
+        onChanged(max - (dy / _height).clamp(0.0, 1.0) * (max - min));
+    return Semantics(
+      slider: true,
+      label: label,
+      value: value.toStringAsFixed(1),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragUpdate: (d) => at(d.localPosition.dy),
+        onTapDown: (d) => at(d.localPosition.dy),
+        child: SizedBox(
+          width: 44,
+          height: _height,
+          child: CustomPaint(painter: _ExposurePainter(1 - t)),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExposurePainter extends CustomPainter {
+  const _ExposurePainter(this.position);
+
+  /// 0 at the top (brightest), 1 at the bottom.
+  final double position;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final x = size.width / 2;
+    final track = Paint()
+      ..color = AppColors.onMediaMuted
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(x, 8), Offset(x, size.height - 8), track);
+    final y = 8 + (size.height - 16) * position;
+    canvas
+      ..drawCircle(Offset(x, y), 10, Paint()..color = AppColors.placeYellow)
+      ..drawCircle(
+        Offset(x, y),
+        10,
+        Paint()
+          ..color = AppColors.onMedia
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2,
+      );
+  }
+
+  @override
+  bool shouldRepaint(_ExposurePainter old) => old.position != position;
+}
+
+/// "Photo | Loop" above the shutter: a dark pill, the chosen side white.
+class _ModeSwitch extends StatelessWidget {
+  const _ModeSwitch({required this.loop, required this.onChanged});
+
+  final bool loop;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    Widget side(String text, bool selected, bool value) => Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onChanged(value),
+        child: AnimatedContainer(
+          duration: AppMotion.of(context, AppMotion.fast),
+          curve: AppMotion.standardCurve,
+          constraints: const BoxConstraints(minHeight: 44, minWidth: 76),
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.onMedia : Colors.transparent,
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontFamily: kAppFontFamily,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: selected ? AppColors.mediaBlack : AppColors.onMedia,
+            ),
+          ),
+        ),
+      ),
+    );
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColors.mediaScrim,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          side(l10n.capsulesCameraModePhoto, !loop, false),
+          side(l10n.capsulesCameraModeLoop, loop, true),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Unfinished capsule: Continue / ×" over the camera.
+class _DraftCard extends StatelessWidget {
+  const _DraftCard({
+    required this.draft,
+    required this.onContinue,
+    required this.onDiscard,
+  });
+
+  final CreationDraft draft;
+  final VoidCallback onContinue;
+  final VoidCallback onDiscard;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final title = draft.title.trim();
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: AppColors.mediaScrimStrong,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(
+              File(draft.imagePath),
+              width: 44,
+              height: 56,
+              fit: BoxFit.cover,
+              cacheWidth: 132,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title.isEmpty ? l10n.capsulesDraftTitle : title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppColors.onMedia,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: onContinue,
+            child: Text(
+              l10n.capsulesDraftContinue,
+              style: const TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: AppColors.brandGreen,
+              ),
+            ),
+          ),
+          Semantics(
+            button: true,
+            label: l10n.capsulesDraftDiscard,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: onDiscard,
+              child: const SizedBox.square(
+                dimension: 44,
+                child: Center(
+                  child: Text(
+                    '✕',
+                    style: TextStyle(fontSize: 18, color: AppColors.onMedia),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

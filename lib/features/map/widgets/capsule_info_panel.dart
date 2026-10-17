@@ -9,9 +9,15 @@ import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../core/l10n/app_dates.dart';
+import '../../../core/assets/app_assets.dart';
+import '../../../shared/widgets/app_network_image.dart';
+import 'capsule_preview_card.dart';
+import '../../../shared/widgets/loop_mark.dart';
 
-/// Small window above a marker: title, creation date, countdown or
-/// "Check out what's inside!", and the Open/Locked button.
+/// Small window above a marker: the capsule's photo (once it is open; its
+/// pin while locked, so nothing is given away), title, creation date,
+/// countdown or "Check out what's inside!", and the Open/Locked button.
+/// The photo flies into the capsule dialog as a [Hero].
 class CapsuleInfoPanel extends StatefulWidget {
   const CapsuleInfoPanel({
     super.key,
@@ -108,76 +114,150 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         borderRadius: AppRadii.lCircular,
         boxShadow: AppShadows.mapInfo(context),
       ),
-      child: Column(
-        children: [
-          Text(
-            capsule.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.dialogTitle,
-          ),
-          Text(
-            AppDates.short(
-              capsule.createdAt ?? DateTime.now(),
-              l10n.localeName,
+      // The picture takes at most 30 % of the card's width and never more
+      // than its height.
+      child: LayoutBuilder(
+        builder: (context, box) => Row(
+          children: [
+            _Thumbnail(
+              capsule: capsule,
+              isOpen: isOpen,
+              size: [
+                box.maxWidth * 0.3,
+                if (box.hasBoundedHeight) box.maxHeight,
+              ].reduce((a, b) => a < b ? a : b),
             ),
-            style: const TextStyle(fontFamily: kAppFontFamily, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          // Scales down instead of cutting off the countdown when a language
-          // needs more room.
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              isOpen
-                  ? l10n.mapCapsuleReady
-                  : l10n.mapCapsuleOpensIn(
-                      formatDuration(capsule.timeUntilOpen(_now), l10n),
-                    ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: isOpen ? AppColors.brandGreen : AppColors.materialRed,
-                fontFamily: kAppFontFamily,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandGreen,
-                // Locked: the grey of the design, not Flutter's pale
-                // disabled colour (the white label was unreadable on it).
-                disabledBackgroundColor: context.palette.iconMuted,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: AppRadii.lCircular,
-                ),
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
-              ),
-              onPressed: isOpen ? widget.onMoreInfo : null,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  isOpen ? l10n.mapCapsuleOpen : l10n.mapCapsuleLocked,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: kAppFontFamily,
-                    color: AppColors.onAccent,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    capsule.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.dialogTitle,
                   ),
-                ),
+                  Text(
+                    AppDates.short(
+                      capsule.createdAt ?? DateTime.now(),
+                      l10n.localeName,
+                    ),
+                    style: const TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Scales down instead of cutting off the countdown when a language
+                  // needs more room.
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      isOpen
+                          ? l10n.mapCapsuleReady
+                          : l10n.mapCapsuleOpensIn(
+                              formatDuration(capsule.timeUntilOpen(_now), l10n),
+                            ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: isOpen
+                            ? AppColors.brandGreen
+                            : AppColors.materialRed,
+                        fontFamily: kAppFontFamily,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandGreen,
+                        // Locked: the grey of the design, not Flutter's pale
+                        // disabled colour (the white label was unreadable on it).
+                        disabledBackgroundColor: context.palette.iconMuted,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: AppRadii.lCircular,
+                        ),
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 16,
+                        ),
+                      ),
+                      onPressed: isOpen ? widget.onMoreInfo : null,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          isOpen ? l10n.mapCapsuleOpen : l10n.mapCapsuleLocked,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: kAppFontFamily,
+                            color: AppColors.onAccent,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+}
+
+/// The card's picture: the photo of an open capsule (the [Hero] the capsule
+/// dialog's photo flies from), or the capsule's pin on a muted tile while it
+/// is locked.
+class _Thumbnail extends StatelessWidget {
+  const _Thumbnail({
+    required this.capsule,
+    required this.isOpen,
+    required this.size,
+  });
+
+  final Capsule capsule;
+  final bool isOpen;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final url = capsule.thumbUrl ?? capsule.imageUrl;
+    if (isOpen && url != null) {
+      return Hero(
+        tag: CapsulePreviewCard.photoHeroTag(capsule),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadii.m),
+          child: SizedBox.square(
+            dimension: size,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                AppNetworkImage(url: url),
+                if (capsule.isLoop)
+                  const Positioned(left: 6, bottom: 6, child: LoopMark()),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return Container(
+      width: size,
+      height: size,
+      padding: EdgeInsets.all(size * 0.24),
+      decoration: BoxDecoration(
+        color: context.palette.surfaceMuted,
+        borderRadius: BorderRadius.circular(AppRadii.m),
+      ),
+      child: Image.asset(AppIcons.mapPin(capsule.color.name)),
     );
   }
 }

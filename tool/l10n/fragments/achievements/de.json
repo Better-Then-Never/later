@@ -31,5 +31,15 @@
   "achievementNightOwl": "Nachteule",
   "achievementNightOwlGoal": "{count, plural, =1{Erstelle eine Kapsel zwischen Mitternacht und 5 Uhr} other{Erstelle {count} Kapseln zwischen Mitternacht und 5 Uhr}}",
   "achievementEarlyBird": "Frühaufsteher",
-  "achievementEarlyBirdGoal": "{count, plural, =1{Erstelle eine Kapsel zwischen 5 und 8 Uhr} other{Erstelle {count} Kapseln zwischen 5 und 8 Uhr}}"
+  "achievementEarlyBirdGoal": "{count, plural, =1{Erstelle eine Kapsel zwischen 5 und 8 Uhr} other{Erstelle {count} Kapseln zwischen 5 und 8 Uhr}}",
+  "streakAtRisk": "Heute zählt noch nicht: Hinterlasse vor Mitternacht eine Kapsel, um deine Serie zu halten.",
+  "streakSafe": "Heute zählt. Bis morgen!",
+  "streakLongest": "Längste: {count, plural, =1{1 Tag} other{{count} Tage}}",
+  "streakMakeCapsule": "Kapsel erstellen",
+  "momentsAchievementLabel": "Erfolg freigeschaltet",
+  "momentsAchievementMore": "{count, plural, =1{und 1 weiterer} other{und {count} weitere}}",
+  "momentsStreakLabel": "Deine Serie wächst",
+  "momentsStreakBody": "Jeden Tag eine Kapsel. Bis morgen!",
+  "achievementCurious": "Neugierig",
+  "achievementCuriousGoal": "{count, plural, =1{Öffne 1 Kapsel von anderen} other{Öffne {count} Kapseln von anderen}}"
 }

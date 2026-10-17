@@ -237,5 +237,43 @@
   "notificationsChannelActivitySilent": "Activity (silent)",
   "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
   "notificationsChannelOther": "Other notifications",
-  "notificationsChannelOtherDescription": "Other notifications from Later"
+  "notificationsChannelOtherDescription": "Other notifications from Later",
+  "notificationsTypeCoAuthor": "Made Together",
+  "@notificationsTypeCoAuthor": {
+    "description": "Title of a notification: a friend made a capsule with the user (co-author)."
+  },
+  "notificationsCoAuthorBody": "{name} made a capsule with you",
+  "@notificationsCoAuthorBody": {
+    "description": "Notification: a friend added the user as a co-author of a new capsule.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "notificationsChannelMessagesNoVibration": "Messages (no vibration)",
+  "@notificationsChannelMessagesNoVibration": {
+    "description": "Android notification channel name: messages with sound, without vibration."
+  },
+  "notificationsChannelActivityNoVibration": "Activity (no vibration)",
+  "@notificationsChannelActivityNoVibration": {
+    "description": "Android notification channel name: activity with sound, without vibration."
+  },
+  "notificationsFromLater": "From the Later team",
+  "@notificationsFromLater": {
+    "description": "Label of an announcement in the notifications list."
+  },
+  "notificationsSwipeRead": "Read",
+  "@notificationsSwipeRead": {
+    "description": "Shown behind a notification swiped right: it becomes read."
+  },
+  "notificationsSwipeDelete": "Delete",
+  "@notificationsSwipeDelete": {
+    "description": "Shown behind a notification swiped left: it is deleted."
+  },
+  "notificationsNowFriends": "You are friends now",
+  "@notificationsNowFriends": {
+    "description": "Under a friend request notification once accepted."
+  }
 }

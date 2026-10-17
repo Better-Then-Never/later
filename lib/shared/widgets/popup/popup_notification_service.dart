@@ -28,7 +28,11 @@ class PopupNotificationService {
 
     hide();
 
-    final overlay = Overlay.of(context);
+    // A navigator's own context (the root one, after a card closed) sits
+    // above its overlay: use the navigator's.
+    final overlay =
+        Overlay.maybeOf(context) ?? Navigator.maybeOf(context)?.overlay;
+    if (overlay == null) return;
     _currentKey = GlobalKey<PopupNotificationState>();
 
     _overlayEntry = OverlayEntry(

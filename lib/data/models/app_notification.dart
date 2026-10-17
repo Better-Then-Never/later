@@ -14,6 +14,9 @@ enum NotificationType {
 
   /// The user unlocked an achievement tier (gamification.js).
   achievement,
+
+  /// A friend made a capsule with the user (notify.js).
+  coAuthor,
   other;
 
   static NotificationType parse(Object? value) {

@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/router/app_page_route.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/social.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
+import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/styles/box_decorations.dart';
 import '../../shared/widgets/buttons/go_back_button.dart';
 import '../../shared/widgets/page_header.dart';
 import 'achievement_catalog.dart';
 import 'achievement_icon.dart';
+import 'streak_flame.dart';
 
 /// An achievement as one user stands with it: the level the server
 /// unlocked or the stats already reach (whichever is higher), and the next
@@ -92,11 +96,9 @@ class AchievementsPanel extends StatelessWidget {
           ..sort((a, b) => b.tier.compareTo(a.tier));
         return InkWell(
           borderRadius: BorderRadius.circular(25),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => AchievementsPage(profile: profile),
-            ),
-          ),
+          onTap: () => Navigator.of(
+            context,
+          ).push(appRoute<void>(AchievementsPage(profile: profile))),
           child: Ink(
             decoration: BoxDecorations.whiteCard(context, borderRadius: 25),
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -145,13 +147,20 @@ class AchievementsPanel extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemCount: unlocked.length,
                       separatorBuilder: (_, _) => const SizedBox(width: 8),
-                      itemBuilder: (context, i) => Tooltip(
-                        message: unlocked[i].def.title(l10n),
-                        child: AchievementIcon(
-                          icon: unlocked[i].def.icon,
-                          tier: unlocked[i].tier,
-                          tiers: unlocked[i].def.tiers.length,
-                          size: 52,
+                      // One after another the first time (on the card's
+                      // colour: a painted cover, no layer).
+                      itemBuilder: (context, i) => AppEnter(
+                        delay: AppStaggerItem.step * i.clamp(0, 6),
+                        background: palette.surface,
+                        child: Tooltip(
+                          message: unlocked[i].def.title(l10n),
+                          child: AchievementIcon(
+                            id: unlocked[i].def.id,
+                            icon: unlocked[i].def.icon,
+                            tier: unlocked[i].tier,
+                            tiers: unlocked[i].def.tiers.length,
+                            size: 52,
+                          ),
                         ),
                       ),
                     ),
@@ -165,7 +174,8 @@ class AchievementsPanel extends StatelessWidget {
   }
 }
 
-/// "🔥 4-day streak", and whether today already counts.
+/// "🔥 4-day streak", and whether today already counts. At risk (today not
+/// counted yet) the flame is grey and the chip has an orange ring.
 class StreakChip extends StatelessWidget {
   const StreakChip({super.key, required this.profile});
 
@@ -182,12 +192,19 @@ class StreakChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.warningOrange.withValues(alpha: 0.15),
         borderRadius: AppRadii.lCircular,
+        border: today
+            ? null
+            : Border.all(color: AppColors.warningOrange, width: 1.5),
       ),
       child: Text.rich(
         TextSpan(
           children: [
+            WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: StreakFlame(size: 13, greyed: !today),
+            ),
             TextSpan(
-              text: '🔥 ${l10n.achievementsStreakDays(streak)}',
+              text: ' ${l10n.achievementsStreakDays(streak)}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             TextSpan(
@@ -269,6 +286,7 @@ class _AchievementRow extends StatelessWidget {
       child: Row(
         children: [
           AchievementIcon(
+            id: def.id,
             icon: def.icon,
             tier: standing.tier,
             tiers: def.tiers.length,
@@ -313,11 +331,17 @@ class _AchievementRow extends StatelessWidget {
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progress.toDouble(),
-                      minHeight: 6,
-                      backgroundColor: palette.surfaceMuted,
-                      color: AppColors.brandGreen,
+                    // Fills from empty when the page opens.
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0, end: progress.toDouble()),
+                      duration: AppMotion.of(context, AppMotion.reveal),
+                      curve: AppMotion.enter,
+                      builder: (context, value, _) => LinearProgressIndicator(
+                        value: value,
+                        minHeight: 6,
+                        backgroundColor: palette.surfaceMuted,
+                        color: AppColors.brandGreen,
+                      ),
                     ),
                   ),
                 ],

@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
 import '../helpers/test_app.dart';
+import 'package:later/features/settings/device_settings_store.dart';
+import 'package:later/data/services/preferences_store.dart';
 
 Capsule _c(
   String id, {
@@ -148,6 +150,49 @@ void main() {
       expect(store.capsules, isEmpty);
       expect(store.isLoaded, isFalse);
     });
+
+    test(
+      'capsules made with friends join the list; deleting one leaves it',
+      () async {
+        final theirs = Capsule(
+          id: 'theirs',
+          ownerId: 'anna',
+          title: 'Together',
+          privacy: CapsulePrivacy.private,
+          color: CapsuleColor.blue,
+          createdAt: DateTime(2024, 3),
+          coAuthors: const ['me'],
+        );
+        final repo = FakeCapsuleRepository()
+          ..own = [
+            _c('new', createdAt: DateTime(2024, 4)),
+            _c('old', createdAt: DateTime(2024, 1)),
+          ]
+          ..coAuthored = [theirs];
+        final store = OwnCapsulesStore(repo)..attach('me');
+        await pumpEventQueue();
+        expect(
+          [for (final c in store.capsules) c.id],
+          ['new', 'theirs', 'old'],
+        );
+        expect(store.isCoAuthored('theirs'), isTrue);
+        expect(store.isCoAuthored('new'), isFalse);
+
+        expect(await store.delete(['theirs']), isNull);
+        expect(repo.deleted, isEmpty, reason: 'never deletes theirs');
+        expect(repo.left, [('theirs', 'me')]);
+        await pumpEventQueue();
+        expect([for (final c in store.capsules) c.id], ['new', 'old']);
+
+        repo.emitCoAuthored([theirs]);
+        await pumpEventQueue();
+        expect(await store.leave('theirs'), isNull);
+        expect(repo.left, hasLength(2));
+        store
+          ..detach()
+          ..dispose();
+      },
+    );
   });
 
   group('FavoritesStore (BUG-066)', () {
@@ -220,6 +265,9 @@ void main() {
         MultiProvider(
           providers: [
             Provider(create: (_) => GeocodingService()),
+            ChangeNotifierProvider(
+              create: (_) => DeviceSettingsStore(PreferencesStore()),
+            ),
             ChangeNotifierProvider(create: (_) => CurrentLocation()),
           ],
           child: testApp(
@@ -255,6 +303,9 @@ void main() {
       MultiProvider(
         providers: [
           Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
           ChangeNotifierProvider(
             create: (_) => CurrentLocation()..update(const GeoPosition(0, 0)),
           ),
@@ -334,6 +385,9 @@ void main() {
           ChangeNotifierProvider(create: (_) => CurrentLocation()),
           ChangeNotifierProvider(create: (_) => MapFocus()),
           Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
         ],
         child: testApp(home: const Scaffold(body: HistoryPage())),
       ),

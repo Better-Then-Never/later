@@ -79,7 +79,7 @@ service cloud.firestore {
         let keys = changed();
         return isMe(uid)
           && keys.hasOnly(['name', 'username', 'friends', 'favorites',
-            'showAchievements',
+            'showAchievements', 'about', 'nameLower',
             // Legacy fields of older app versions may only be removed.
             'email', 'fcmToken', 'fcmTokenUpdatedAt', 'blockedUsers'])
           && (!keys.hasAny(['name']) || validName(d.name))
@@ -89,6 +89,14 @@ service cloud.firestore {
             || (d.favorites is list && d.favorites.size() <= 1000))
           && (!keys.hasAny(['friends']) || ownFriendsChange(uid))
           && (!keys.hasAny(['showAchievements']) || d.showAchievements is bool)
+          // A few words under the name.
+          && (!keys.hasAny(['about'])
+            || (d.get('about', '') is string && d.get('about', '').size() <= 100))
+          // The name in lower case, for search by name; removed when the
+          // user does not want to be found by name. Old apps change the name
+          // without it (the index then lags until the new app fixes it).
+          && (!keys.hasAny(['nameLower']) || !d.keys().hasAny(['nameLower'])
+            || d.nameLower == d.name.lower())
           && !(keys.hasAny(['email']) && d.keys().hasAny(['email']))
           && !(keys.hasAny(['fcmToken']) && d.keys().hasAny(['fcmToken']))
           && !(keys.hasAny(['fcmTokenUpdatedAt'])
@@ -145,7 +153,7 @@ service cloud.firestore {
           return n is map
             && n.keys().hasOnly(['enabled', 'messages', 'follows', 'capsules',
               'friendRequests', 'reactions', 'comments', 'achievements', 'news',
-              'streakReminder', 'preview', 'sound', 'quietHours',
+              'streakReminder', 'preview', 'sound', 'vibrate', 'quietHours',
               'utcOffsetMinutes'])
             && isBool(n, 'enabled') && isBool(n, 'messages')
             && isBool(n, 'follows') && isBool(n, 'capsules')
@@ -153,6 +161,7 @@ service cloud.firestore {
             && isBool(n, 'comments') && isBool(n, 'achievements')
             && isBool(n, 'news') && isBool(n, 'streakReminder')
             && isBool(n, 'preview') && isBool(n, 'sound')
+            && isBool(n, 'vibrate')
             && q is map && q.keys().hasOnly(['enabled', 'start', 'end'])
             && isBool(q, 'enabled') && isMinute(q, 'start') && isMinute(q, 'end')
             && n.get('utcOffsetMinutes', 0) is int
@@ -163,7 +172,9 @@ service cloud.firestore {
         function validPrivacy(p) {
           return p is map
             && p.keys().hasOnly(['defaultVisibility', 'readReceipts',
-              'locationPrecision', 'contactSuggestions'])
+              'locationPrecision', 'contactSuggestions', 'findByName',
+              'findByContacts'])
+            && isBool(p, 'findByName') && isBool(p, 'findByContacts')
             && p.get('defaultVisibility', 'public') in ['public', 'friends', 'private']
             && isBool(p, 'readReceipts') && isBool(p, 'contactSuggestions')
             && p.get('locationPrecision', 'exact') in ['exact', 'approximate'];
@@ -171,12 +182,16 @@ service cloud.firestore {
 
         function validSettings(d) {
           return d.keys().hasOnly(['notifications', 'mutedChats', 'language',
-              'privacy'])
+              'privacy', 'pinnedChats', 'pinnedFriends'])
+            && d.get('pinnedFriends', []) is list
+            && d.get('pinnedFriends', []).size() <= 10
             && validNotifications(d.get('notifications', {}))
             && d.get('language', 'en') in ['en', 'ru', 'pl', 'de', 'es']
             && validPrivacy(d.get('privacy', {}))
             && d.get('mutedChats', []) is list
-            && d.get('mutedChats', []).size() <= 500;
+            && d.get('mutedChats', []).size() <= 500
+            && d.get('pinnedChats', []) is list
+            && d.get('pinnedChats', []).size() <= 10;
         }
       }
 
@@ -188,6 +203,28 @@ service cloud.firestore {
             && get(/databases/$(database)/documents/users/$(uid)).data.get('showAchievements', true) == true
             && me() in get(/databases/$(database)/documents/users/$(uid)).data.get('friends', []));
         allow write: if false;
+      }
+
+      // Countries and towns of the user's capsules (B7), kept by the
+      // functions; seen like the achievements.
+      match /world/{doc} {
+        allow read: if isMe(uid)
+          || (signedIn()
+            && get(/databases/$(database)/documents/users/$(uid)).data.get('showAchievements', true) == true
+            && me() in get(/databases/$(database)/documents/users/$(uid)).data.get('friends', []));
+        allow write: if false;
+      }
+
+      // Capsules of others the user opened (B7): one marker each, written
+      // once by the app (never changed); a function counts it
+      // (stats.capsulesViewed) and records that it did.
+      match /viewed/{capsuleId} {
+        allow read: if isMe(uid);
+        allow create: if isMe(uid)
+          && capsuleId.size() <= 64
+          && request.resource.data.keys().hasOnly(['at'])
+          && isServerTime(request.resource.data.at);
+        allow update, delete: if false;
       }
 
       // Server-side bookkeeping (place cells, last position): owner only.
@@ -318,7 +355,9 @@ service cloud.firestore {
           || (resource.data.privacy == 'friends'
             && resource.data.ownerId in myFriends())
           // A capsule sent to a friend (see validCapsule).
-          || me() in resource.data.get('sharedWith', []);
+          || me() in resource.data.get('sharedWith', [])
+          // Its co-authors.
+          || me() in resource.data.get('coAuthors', []);
       }
 
       allow get: if signedIn() && (resource == null || canSee());
@@ -326,7 +365,13 @@ service cloud.firestore {
 
       allow create: if signedIn() && validCapsule();
       allow delete: if signedIn() && resource.data.ownerId == me();
-      allow update: if false;
+      // Nobody edits a capsule; a co-author may only take themselves off it.
+      allow update: if signedIn() && me() in resource.data.get('coAuthors', [])
+        && changed().hasOnly(['coAuthors'])
+        && request.resource.data.coAuthors.toSet()
+          == resource.data.coAuthors.toSet().difference([me()].toSet())
+        && request.resource.data.coAuthors.size()
+          == resource.data.coAuthors.size() - 1;
 
       // Reactions: one per person (document id = uid), counted by a function.
       match /reactions/{uid} {
@@ -372,7 +417,7 @@ service cloud.firestore {
             'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
             'sharedWith', 'capturedAt', 'utcOffsetMinutes', 'showAuthor',
             'allowComments', 'allowReactions', 'locationPrecision', 'frames',
-            'frameDelayMs', 'thumbUrl', 'placeName'])
+            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors', 'countryCode'])
           && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
             'privacy', 'createdAt', 'color'])
           && d.ownerId == me()
@@ -399,10 +444,13 @@ service cloud.firestore {
           && d.get('frameDelayMs', 300) >= 80 && d.get('frameDelayMs', 300) <= 2000
           && (d.get('thumbUrl', '') is string && d.get('thumbUrl', '').size() <= 2048)
           && (d.get('placeName', '') is string && d.get('placeName', '').size() <= 200)
+          && (d.get('countryCode', 'XX') is string
+            && d.get('countryCode', 'XX').matches('^[A-Z]{2}$'))
           && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
           && isServerTime(d.createdAt)
           && (d.get('isScheduled', false) is bool)
           && (d.get('openAt', null) == null || d.openAt is timestamp)
+          && validCoAuthors(d.get('coAuthors', []))
           // Sent to a friend: shared with exactly the owner and the recipient.
           && (!d.keys().hasAny(['sharedWith'])
             || (d.sharedWith is list && d.sharedWith.size() == 2
@@ -421,7 +469,43 @@ service cloud.firestore {
       return c.ownerId == me()
         || c.privacy == 'public'
         || (c.privacy == 'friends' && c.ownerId in myFriends())
-        || me() in c.get('sharedWith', []);
+        || me() in c.get('sharedWith', [])
+        || me() in c.get('coAuthors', []);
+    }
+
+    // Up to five co-authors of a capsule: each a friend of its owner (who
+    // is not one of them). Rules have no loops, hence one check per place.
+    function validCoAuthors(c) {
+      return c is list && c.size() <= 5 && !(me() in c)
+        && c.toSet().size() == c.size()
+        && (c.size() < 1 || c[0] in myFriends())
+        && (c.size() < 2 || c[1] in myFriends())
+        && (c.size() < 3 || c[2] in myFriends())
+        && (c.size() < 4 || c[3] in myFriends())
+        && (c.size() < 5 || c[4] in myFriends());
+    }
+
+    // ---- suggestions from contacts (opt-in; functions/lib/contacts.js) -----
+
+    // Hashes of the verified emails of people who chose to be found: only
+    // the functions read or write them.
+    match /contactIndex/{hash} {
+      allow read, write: if false;
+    }
+
+    // One request an hour: the hashes of the user's contacts' emails; the
+    // function answers in place (matches) and drops the hashes.
+    match /contactMatches/{uid} {
+      allow get: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['hashes', 'at', 'status'])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.hashes is list
+        && request.resource.data.hashes.size() <= 1000
+        && isServerTime(request.resource.data.at)
+        && (resource == null
+          || request.time > resource.data.at + duration.value(1, 'h'));
+      allow delete: if isMe(uid);
     }
 
     // ---- reports and announcements -------------------------------------------
@@ -443,6 +527,13 @@ service cloud.firestore {
     }
 
     // Announcements: written by the admin-only sendAnnouncement function.
+    // The app's limits (B7, entitlements/limits): read by every signed-in
+    // app, written from the console or by the team's tools only.
+    match /entitlements/{doc} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
     match /announcements/{announcementId} {
       allow read: if signedIn();
       allow write: if false;
@@ -453,13 +544,102 @@ service cloud.firestore {
     // chats/{uidA}_{uidB} (uids sorted): the two participants read and write
     // it; nobody writes to someone who blocked them (or whom they blocked).
     // Same shape as the chats of main's app.
+    //
+    // chats/g_{id}: a group. Its members (up to 20) are listed in `members`,
+    // not `participants`, so apps that know only two-person chats never list
+    // it. It starts with its creator alone; members invite people
+    // (invites/{uid}) and a function adds those it accepts: friends of the
+    // inviter who blocked nobody in the group (rules cannot check a list of
+    // people). Any member may rename it or leave.
     match /chats/{chatId} {
       function members() {
         return chatId.split('_');
       }
 
+      function isGroupId() {
+        return chatId.matches('g_[A-Za-z0-9]{10,40}');
+      }
+
       function isMember() {
-        return signedIn() && members().size() == 2 && me() in members();
+        return signedIn() && !isGroupId() && members().size() == 2
+          && me() in members();
+      }
+
+      // A group's members as stored (for its messages and hints).
+      function groupMembers() {
+        return get(/databases/$(database)/documents/chats/$(chatId)).data
+          .get('members', []);
+      }
+
+      function inGroup() {
+        return signedIn() && isGroupId() && me() in groupMembers();
+      }
+
+      // For the group document itself.
+      function inThisGroup() {
+        return signedIn() && isGroupId()
+          && me() in resource.data.get('members', []);
+      }
+
+      function chatMembers() {
+        return isGroupId() ? groupMembers() : members();
+      }
+
+      function validGroupName(n) {
+        return n is string && n.size() > 0 && n.size() <= 60;
+      }
+
+      function isGroupCreate() {
+        let d = request.resource.data;
+        return signedIn() && isGroupId()
+          && d.keys().hasOnly(['members', 'name', 'createdBy', 'createdAt',
+            'lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.members == [me()]
+          && d.createdBy == me() && validGroupName(d.name)
+          && isServerTime(d.createdAt) && d.lastMessage == ''
+          && isServerTime(d.lastUpdated)
+          && d.get('lastSenderId', me()) == me();
+      }
+
+      function isGroupSend() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.lastMessage != '' && validSummary(d) && d.lastSenderId == me();
+      }
+
+      function isGroupRead() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastReadAt'])
+          && d.lastReadAt.diff(resource.data.get('lastReadAt', {}))
+            .affectedKeys().hasOnly([me()])
+          && d.lastReadAt[me()] == request.time;
+      }
+
+      // Deleting the newest message: the summary shows the one before it (any
+      // member's, with its own time), or nothing.
+      function isGroupUndo() {
+        let d = request.resource.data;
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+          && d.lastMessage is string && d.lastMessage.size() <= 2000
+          && d.lastUpdated is timestamp && d.lastUpdated <= request.time
+          && d.get('lastSenderId', me()) in resource.data.members;
+      }
+
+      function isGroupRename() {
+        return changed().hasOnly(['name'])
+          && validGroupName(request.resource.data.name);
+      }
+
+      // Leaving: only yourself goes (and your read mark with you).
+      function isGroupLeave() {
+        let d = request.resource.data;
+        return changed().hasOnly(['members', 'lastReadAt'])
+          && d.members.toSet() == resource.data.members.toSet().difference([me()].toSet())
+          && d.members.size() == resource.data.members.size() - 1
+          && (!changed().hasAny(['lastReadAt'])
+            || d.lastReadAt.keys().toSet()
+              == resource.data.get('lastReadAt', {}).keys().toSet()
+                .difference([me()].toSet()));
       }
 
       function other() {
@@ -523,12 +703,26 @@ service cloud.firestore {
           && (!changed().hasAny(['unreadCounts']) || d.unreadCounts == {});
       }
 
+      // The sender took back a message the other had not read yet: one
+      // fewer unread for the other (never below zero, never your own).
+      function unreadDroppedByOne() {
+        return unreadChanged().hasOnly([other()])
+          && unreadAfter(other()) == unreadBefore(other()) - 1
+          && unreadAfter(other()) >= 0;
+      }
+
+      function isUnreadDrop() {
+        return changed().hasOnly(['unreadCounts']) && unreadDroppedByOne();
+      }
+
       // Deleting the newest message: the summary shows the one before it
-      // again, by either participant and with its own time; unread counts
-      // stay as they are.
+      // again, by either participant and with its own time; the unread count
+      // drops by one if the other had not read it.
       function isUndo() {
         let d = request.resource.data;
-        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId'])
+        return changed().hasOnly(['lastMessage', 'lastUpdated', 'lastSenderId',
+            'unreadCounts'])
+          && (!changed().hasAny(['unreadCounts']) || unreadDroppedByOne())
           && d.lastMessage is string && d.lastMessage != ''
           && d.lastMessage.size() <= 2000
           && d.lastUpdated is timestamp && d.lastUpdated <= request.time
@@ -536,11 +730,14 @@ service cloud.firestore {
       }
 
       // get works before the chat exists (the send transaction reads it).
-      allow get: if isMember();
-      // The app's query: participants array-contains me.
-      allow list: if signedIn() && me() in resource.data.participants;
+      allow get: if isMember() || inThisGroup();
+      // The app's queries: participants (two-person chats) or members
+      // (groups) array-contains me.
+      allow list: if signedIn()
+        && (me() in resource.data.get('participants', [])
+          || me() in resource.data.get('members', []));
 
-      allow create: if isMember() && mayWrite()
+      allow create: if isGroupCreate() || isMember() && mayWrite()
         && members()[0] < members()[1]
         && request.resource.data.keys().hasOnly(['participants', 'lastMessage',
           'lastUpdated', 'createdAt', 'lastSenderId', 'unreadCounts'])
@@ -554,24 +751,56 @@ service cloud.firestore {
         && (!request.resource.data.keys().hasAny(['unreadCounts'])
           || (request.resource.data.unreadCounts.keys().hasOnly([other()])
             && request.resource.data.unreadCounts[other()] == 1));
-      allow update: if isMember()
-        && (isSend() || isRead() || isClear() || isUndo());
+      allow update: if (isMember()
+          && (isSend() || isRead() || isClear() || isUndo() || isUnreadDrop()))
+        || (inThisGroup()
+          && (isGroupSend() || isGroupRead() || isGroupRename()
+            || isGroupUndo() || isGroupLeave()));
       allow delete: if false;
 
-      match /messages/{messageId} {
-        allow read: if isMember();
+      // typing/{uid} {at: server time}: "uid is typing", written at most
+      // every few seconds while they type, deleted when they stop. Only the
+      // participants read it; each writes only their own.
+      // invites/{uid} {by, at}: a member asks for uid to join; the function
+      // adds them (or not) and deletes the invite.
+      match /invites/{uid} {
+        allow read: if inGroup();
+        allow create: if inGroup() && uid != me()
+          && !(uid in groupMembers()) && groupMembers().size() < 20
+          && request.resource.data.keys().hasOnly(['by', 'at'])
+          && request.resource.data.by == me()
+          && request.resource.data.at == request.time;
+        allow update, delete: if false;
+      }
 
-        allow create: if isMember() && mayWrite()
-          && existsAfter(/databases/$(database)/documents/chats/$(chatId))
-          && validMessage(request.resource.data);
+      match /typing/{uid} {
+        allow read: if isMember() || inGroup();
+        allow create, update: if (isMember() && mayWrite() || inGroup())
+          && uid == me()
+          && request.resource.data.keys().hasOnly(['at'])
+          && request.resource.data.at == request.time;
+        allow delete: if (isMember() || inGroup()) && uid == me();
+      }
+
+      match /messages/{messageId} {
+        allow read: if isMember() || inGroup();
+
+        // In a group: text messages (with replies) only for now.
+        allow create: if (isMember() && mayWrite()
+            && existsAfter(/databases/$(database)/documents/chats/$(chatId))
+            && validMessage(request.resource.data))
+          || (inGroup() && validMessage(request.resource.data)
+            && request.resource.data.get('type', 'text') == 'text');
 
         // The recipient marks messages read; either participant sets or
         // removes their own reaction (reactions {uid: type}).
-        allow update: if isMember()
-          && ((resource.data.senderId != me()
-              && changed().hasOnly(['status'])
-              && request.resource.data.status == 'read')
-            || (changed().hasOnly(['reactions']) && validReactionChange()));
+        allow update: if (isMember()
+            && ((resource.data.senderId != me()
+                && changed().hasOnly(['status'])
+                && request.resource.data.status == 'read')
+              || (changed().hasOnly(['reactions']) && validReactionChange())))
+          || (inGroup() && changed().hasOnly(['reactions'])
+            && validReactionChange());
 
         function validReactionChange() {
           let after = request.resource.data.get('reactions', {});
@@ -582,19 +811,60 @@ service cloud.firestore {
               || after[me()] in ['heart', 'laugh', 'wow', 'sad', 'fire', 'clap']);
         }
 
-        // "Clear history" clears the chat for both participants.
-        allow delete: if isMember();
+        // "Clear history" clears the chat for both participants; in a group
+        // everyone deletes only their own messages.
+        allow delete: if isMember()
+          || (inGroup() && resource.data.senderId == me());
 
         function validMessage(d) {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
-              'type', 'capsuleId', 'imageUrl', 'replyTo'])
+              'type', 'capsuleId', 'imageUrl', 'replyTo', 'imagePath', 'width',
+              'height', 'audioUrl', 'audioPath', 'durationMs', 'waveform',
+              'forwarded', 'capsuleRef'])
+            && (!d.keys().hasAny(['capsuleRef']) || validCapsuleRef(d.capsuleRef))
             && (!d.keys().hasAny(['replyTo']) || validReply(d.replyTo))
+            && d.get('forwarded', true) == true
             && d.senderId == me()
             && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
             && isServerTime(d.timestamp)
             && d.status == 'sent'
             && (!d.keys().hasAny(['type']) || d.type == 'text'
-              || (d.type == 'capsule' && validCapsuleMessage(d)));
+              || (d.type == 'capsule' && validCapsuleMessage(d))
+              || (d.type == 'image' && validImageMessage(d))
+              || (d.type == 'voice' && validVoiceMessage(d)));
+        }
+
+        // A voice message: a recording the sender uploaded to this chat's
+        // folder (.m4a), its length (up to 5 minutes) and up to 64 loudness
+        // bars. The text is a microphone sign for older app versions.
+        function validVoiceMessage(d) {
+          return d.audioUrl is string && d.audioUrl.size() <= 2048
+            && d.audioPath is string
+            && d.audioPath.matches('chats/' + chatId + '/' + me() + '/[A-Za-z0-9]{1,40}[.]m4a')
+            && d.durationMs is int && d.durationMs > 0 && d.durationMs <= 300000
+            && d.get('waveform', []) is list && d.get('waveform', []).size() <= 64;
+        }
+
+        // A photo: a file the sender uploaded to this chat's folder in
+        // Storage (storage.rules), its download URL and its size in pixels
+        // (so the bubble has its shape before the picture arrives). The text
+        // is the caption, or a camera sign for older app versions to show.
+        function validImageMessage(d) {
+          return d.imageUrl is string && d.imageUrl.size() <= 2048
+            && d.imagePath is string
+            && d.imagePath.matches('chats/' + chatId + '/' + me() + '/[A-Za-z0-9]{1,40}[.]jpg')
+            && d.get('width', 1) is int && d.get('width', 1) > 0
+            && d.get('width', 1) <= 10000
+            && d.get('height', 1) is int && d.get('height', 1) > 0
+            && d.get('height', 1) <= 10000;
+        }
+
+        // A quick reply from a capsule names it: its id and a short title
+        // (opening it still goes through the capsule's own rules).
+        function validCapsuleRef(r) {
+          return r is map && r.keys().hasOnly(['id', 'title'])
+            && r.id is string && r.id.size() > 0 && r.id.size() <= 200
+            && r.title is string && r.title.size() <= 140;
         }
 
         // A reply quotes a message of this chat: its id, its sender and a
@@ -602,7 +872,7 @@ service cloud.firestore {
         function validReply(r) {
           return r is map && r.keys().hasOnly(['id', 'senderId', 'text'])
             && r.id is string && r.id.size() > 0 && r.id.size() <= 200
-            && r.senderId in members()
+            && r.senderId in chatMembers()
             && r.text is string && r.text.size() <= 200;
         }
 

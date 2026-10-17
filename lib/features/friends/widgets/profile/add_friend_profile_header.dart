@@ -11,6 +11,9 @@ class AddFriendProfileHeader extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onShare;
 
+  /// Report and block (none on the user's own profile).
+  final VoidCallback? onOptions;
+
   const AddFriendProfileHeader({
     super.key,
     required this.userId,
@@ -18,6 +21,7 @@ class AddFriendProfileHeader extends StatelessWidget {
     required this.avatarRadius,
     required this.onBack,
     required this.onShare,
+    this.onOptions,
   });
 
   @override
@@ -29,7 +33,11 @@ class AddFriendProfileHeader extends StatelessWidget {
       children: [
         UserRoundedBackgroundImage(userId: userId, height: bgHeight),
         ShadowTopOverlay(width: screenWidth),
-        ProfileActionButtonsRow(onBack: onBack, onShare: onShare),
+        ProfileActionButtonsRow(
+          onBack: onBack,
+          onShare: onShare,
+          onOptions: onOptions,
+        ),
         AddFriendProfileAvatar(
           userId: userId,
           screenWidth: screenWidth,

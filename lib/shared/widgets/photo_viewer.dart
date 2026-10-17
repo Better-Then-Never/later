@@ -19,39 +19,52 @@ class PhotoViewer extends StatefulWidget {
     required this.url,
     this.frames = const [],
     this.frameDelay = const Duration(milliseconds: 300),
+    this.heroTag,
   });
 
   final String url;
+
+  /// The tapped picture's [Hero] tag: the photo flies from it to full screen
+  /// and back.
+  final Object? heroTag;
 
   /// A loop capsule's frames: played instead of [url].
   final List<String> frames;
   final Duration frameDelay;
 
+  /// Opens [url] full screen. With [heroTag] the photo flies from the
+  /// tapped picture; the black behind it fades in as a painted colour (a
+  /// page-wide fade would draw the whole screen offscreen every frame).
   static Future<void> show(
     BuildContext context,
     String url, {
     List<String> frames = const [],
     Duration frameDelay = const Duration(milliseconds: 300),
+    Object? heroTag,
   }) {
-    final duration = AppMotion.of(context, AppMotion.standard);
+    final reduced = AppMotion.reduced(context);
     return Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: false,
-        transitionDuration: duration,
-        reverseTransitionDuration: duration,
-        pageBuilder: (_, _, _) =>
-            PhotoViewer(url: url, frames: frames, frameDelay: frameDelay),
+        transitionDuration: reduced ? Duration.zero : AppMotion.emphasized,
+        reverseTransitionDuration: reduced ? Duration.zero : AppMotion.standard,
+        pageBuilder: (_, _, _) => PhotoViewer(
+          url: url,
+          frames: frames,
+          frameDelay: frameDelay,
+          heroTag: heroTag,
+        ),
+        // The page itself moves in only without a hero: the photo grows a
+        // little as it fades (one picture-sized layer, briefly).
         transitionsBuilder: (_, animation, _, child) {
+          if (heroTag != null || reduced) return child;
           final curved = CurvedAnimation(
             parent: animation,
             curve: AppMotion.emphasizedCurve,
           );
-          return FadeTransition(
-            opacity: curved,
-            child: ScaleTransition(
-              scale: Tween(begin: 0.94, end: 1.0).animate(curved),
-              child: child,
-            ),
+          return ScaleTransition(
+            scale: Tween(begin: 0.94, end: 1.0).animate(curved),
+            child: child,
           );
         },
       ),
@@ -158,8 +171,27 @@ class _PhotoViewerState extends State<PhotoViewer>
     final ImageProvider image = url.startsWith('file:')
         ? FileImage(File.fromUri(Uri.parse(url)))
         : AppImageCache.provider(url, width: width);
-    // The black fades as the photo is dragged away.
+    // The black fades as the photo is dragged away, and with the route.
+    final route = ModalRoute.of(context)?.animation;
     final fade = (1 - _drag.abs() / (_dismissDistance * 3)).clamp(0.0, 1.0);
+    Widget photo = widget.frames.length > 1
+        ? LoopPicture(
+            sources: widget.frames,
+            frameDelay: widget.frameDelay,
+            fit: BoxFit.contain,
+            decodeWidth: size.width * 2,
+          )
+        : Image(
+            image: image,
+            fit: BoxFit.contain,
+            gaplessPlayback: true,
+            errorBuilder: (_, _, _) => const SizedBox.shrink(),
+          );
+    if (widget.heroTag case final tag?) {
+      photo = Hero(tag: tag, child: photo);
+    } else if (route != null) {
+      photo = FadeTransition(opacity: route, child: photo);
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -168,7 +200,17 @@ class _PhotoViewerState extends State<PhotoViewer>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          ColoredBox(color: AppColors.mediaBlack.withValues(alpha: fade)),
+          if (route == null)
+            ColoredBox(color: AppColors.mediaBlack.withValues(alpha: fade))
+          else
+            AnimatedBuilder(
+              animation: route,
+              builder: (_, _) => ColoredBox(
+                color: AppColors.mediaBlack.withValues(
+                  alpha: fade * route.value.clamp(0, 1),
+                ),
+              ),
+            ),
           GestureDetector(
             onDoubleTapDown: (d) => _doubleTapAt = d.localPosition,
             onDoubleTap: _onDoubleTap,
@@ -181,19 +223,7 @@ class _PhotoViewerState extends State<PhotoViewer>
                 minScale: 1,
                 maxScale: 4,
                 onInteractionEnd: (_) => setState(() {}),
-                child: widget.frames.length > 1
-                    ? LoopPicture(
-                        sources: widget.frames,
-                        frameDelay: widget.frameDelay,
-                        fit: BoxFit.contain,
-                        decodeWidth: size.width * 2,
-                      )
-                    : Image(
-                        image: image,
-                        fit: BoxFit.contain,
-                        gaplessPlayback: true,
-                        errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                      ),
+                child: photo,
               ),
             ),
           ),
@@ -202,8 +232,11 @@ class _PhotoViewerState extends State<PhotoViewer>
             child: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(12),
-                child: Opacity(
-                  opacity: fade,
+                child: FadeTransition(
+                  // A small layer: just the button.
+                  opacity: route == null
+                      ? AlwaysStoppedAnimation(fade)
+                      : route.drive(Tween(begin: 0, end: fade)),
                   child: DefaultIconButton(
                     onTap: () => Navigator.of(context).pop(),
                     assetPath: AppIcons.cameraBack,

@@ -126,11 +126,111 @@ describe('achievements', () => {
     assert.equal((await users().doc('ana').collection('achievements').doc('collector').get()).get('tier'), 1);
   });
 
+  test('checked where a stat changes: from the profile and what is stored', async () => {
+    const messaging = fakeMessaging();
+    const s = services(at('2026-10-16T12:00:00Z'), messaging);
+    await addUser('ben', { stats: { capsules: 6, reactionsReceived: 10 }, friends: ['a'] });
+    // First capsule was unlocked before; Collector and Crowd pleaser are new.
+    await users().doc('ben').collection('achievements').doc('first_capsule').set({ id: 'first_capsule', tier: 0 });
+    const result = await g.checkAchievements(s, 'ben');
+    assert.deepEqual(result.unlocked.sort(), ['collector:0', 'crowd_pleaser:0', 'friendly:0']);
+    // Nothing new: no writes, no pushes.
+    assert.equal(await g.checkAchievements(s, 'ben'), null);
+    // Three reached at once: stored, but told once (no burst of pushes).
+    const stored = await users().doc('ben').collection('achievements').get();
+    assert.equal(stored.size, 4);
+    const notes = await users().doc('ben').collection('notifications').get();
+    assert.equal(notes.size, 1, 'a catch-up tells once');
+    assert.equal(await g.checkAchievements(s, 'nobody'), null);
+  });
+
   test('every achievement has a title in all five languages and ascending tiers', () => {
     for (const a of g.ACHIEVEMENTS) {
       for (const lang of ['en', 'ru', 'pl', 'de', 'es']) assert.ok(a.title[lang], `${a.id} ${lang}`);
       assert.deepEqual([...a.tiers].sort((x, y) => x - y), a.tiers, a.id);
     }
+  });
+});
+
+describe('world summary (B7)', () => {
+  test('countries and towns from new capsules, bounded and tolerant', async () => {
+    await addUser('ana');
+    const s = services(at('2026-10-16T12:00:00Z'));
+    const world = async () => (await users().doc('ana').collection('world').doc('summary').get()).data();
+    await g.onCapsuleCreated(s, 'c1', capsule('2026-10-16T09:00:00Z', { countryCode: 'DE', placeName: 'Berlin' }));
+    await g.onCapsuleCreated(s, 'c2', capsule('2026-10-15T09:00:00Z', { countryCode: 'DE', placeName: 'Berlin' }));
+    await g.onCapsuleCreated(s, 'c3', capsule('2026-10-16T10:00:00Z', { countryCode: 'DE', placeName: 'St. Pauli/Hamburg' }));
+    const r = await g.onCapsuleCreated(s, 'c4', capsule('2026-10-16T11:00:00Z', { countryCode: 'PL', placeName: 'Kraków' }));
+    assert.deepEqual(r.world, { country: 'PL', newCountry: true, newCity: true });
+    // Older capsules, odd codes and names change nothing.
+    await g.onCapsuleCreated(s, 'c5', capsule('2026-10-16T11:00:00Z'));
+    await g.onCapsuleCreated(s, 'c6', capsule('2026-10-16T11:00:00Z', { countryCode: 'pl', placeName: 'x' }));
+    const w = await world();
+    assert.equal(w.countryCount, 2);
+    assert.equal(w.cityCount, 3);
+    assert.equal(w.countries.DE.capsules, 3);
+    assert.deepEqual(w.countries.DE.cities, { Berlin: 2, 'St Pauli Hamburg': 1 });
+    assert.equal(w.countries.DE.first.toDate().toISOString(), '2026-10-15T09:00:00.000Z');
+    assert.equal(w.countries.PL.cities['Kraków'], 1);
+    const st = await stats('ana');
+    assert.equal(st.countries, 2);
+    assert.equal(st.cities, 3);
+  });
+
+  test('a full summary stops growing', () => {
+    let world = null;
+    for (let i = 0; i < 300; i++) {
+      const code = String.fromCharCode(65 + Math.floor(i / 26)) + String.fromCharCode(65 + (i % 26));
+      world = g.nextWorld(world, code, null, at('2026-10-16T12:00:00Z')).world;
+    }
+    assert.equal(g.nextWorld(world, 'ZZ', null, at('2026-10-16T12:00:00Z')), null);
+    assert.equal(g.nextWorld(world, 'AA', null, at('2026-10-16T12:00:00Z')).world.countries.AA.capsules, 2);
+    assert.equal(g.cityOf({ placeName: '__name__' }), null);
+    assert.equal(g.countryOf({ countryCode: 'DEU' }), null);
+  });
+});
+
+describe('capsules viewed (B7)', () => {
+  const capsules = () => ctx.db.collection('capsules');
+  const mark = (uid, id) => users().doc(uid).collection('viewed').doc(id);
+  const view = async (s, uid, id) => {
+    await mark(uid, id).set({ at: Timestamp.now() });
+    return g.onCapsuleViewed(s, uid, id);
+  };
+
+  test('someone else\'s open capsule counts once; the rest never', async () => {
+    const s = services(at('2026-10-16T12:00:00Z'));
+    await addUser('vic', { stats: {} });
+    await addUser('own', { friends: ['vic'] });
+    await addUser('far', { friends: [] });
+    const open = Timestamp.fromDate(at('2026-10-01T00:00:00Z'));
+    const later = Timestamp.fromDate(at('2027-01-01T00:00:00Z'));
+    await capsules().doc('pub').set({ ownerId: 'far', privacy: 'public', openAt: open });
+    await capsules().doc('fr').set({ ownerId: 'own', privacy: 'friends', openAt: open });
+    await capsules().doc('stranger').set({ ownerId: 'far', privacy: 'friends', openAt: open });
+    await capsules().doc('locked').set({ ownerId: 'far', privacy: 'public', openAt: later });
+    await capsules().doc('mine').set({ ownerId: 'vic', privacy: 'public' });
+    await capsules().doc('co').set({ ownerId: 'own', privacy: 'friends', coAuthors: ['vic'] });
+
+    assert.deepEqual(await view(s, 'vic', 'pub'), { counted: true });
+    assert.deepEqual(await view(s, 'vic', 'fr'), { counted: true });
+    for (const id of ['stranger', 'locked', 'mine', 'co', 'missing']) {
+      assert.deepEqual(await view(s, 'vic', id), { counted: false }, id);
+    }
+    // A retried event counts nothing again.
+    assert.deepEqual(await g.onCapsuleViewed(s, 'vic', 'pub'), { counted: false });
+    assert.equal((await stats('vic')).capsulesViewed, 2);
+    assert.equal((await mark('vic', 'pub').get()).get('counted'), true);
+    assert.equal((await mark('vic', 'locked').get()).get('counted'), false);
+  });
+
+  test('ten views unlock Curious', async () => {
+    const s = services(at('2026-10-16T12:00:00Z'));
+    await addUser('vic', { stats: { capsulesViewed: 9 } });
+    await capsules().doc('pub').set({ ownerId: 'far', privacy: 'public' });
+    await view(s, 'vic', 'pub');
+    const curious = await users().doc('vic').collection('achievements').doc('curious').get();
+    assert.equal(curious.get('tier'), 0);
   });
 });
 

@@ -7,6 +7,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/styles/box_decorations.dart';
 import '../../../shared/widgets/count_badge.dart';
+import '../../../shared/widgets/pin_mark.dart';
 import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../chat_time.dart';
 
@@ -23,9 +24,21 @@ class ChatListItem extends StatelessWidget {
     this.timestamp,
     this.unread = 0,
     this.muted = false,
+    this.avatar,
+    this.semanticsLabel,
+    this.pinned = false,
   });
 
+  /// Kept at the top of the list (a small pin by the time).
+  final bool pinned;
+
   final String friendUid;
+
+  /// Instead of the friend's picture (a group's).
+  final Widget? avatar;
+
+  /// Read by a screen reader instead of the name.
+  final String? semanticsLabel;
   final String name;
 
   /// Last message, already prefixed with "You: " for the user's own.
@@ -50,12 +63,15 @@ class ChatListItem extends StatelessWidget {
             horizontal: screen.width * 0.02,
             vertical: 2,
           ),
-          leading: UserRoundAvatar(
-            userId: friendUid,
-            radius: UserRoundAvatar.listRadius(screen.width),
-          ),
+          leading:
+              avatar ??
+              UserRoundAvatar(
+                userId: friendUid,
+                radius: UserRoundAvatar.listRadius(screen.width),
+              ),
           title: Text(
             name,
+            semanticsLabel: semanticsLabel,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.listName(context),
@@ -92,9 +108,20 @@ class ChatListItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              CountBadge(
-                count: unread,
-                color: muted ? palette.iconMuted : AppColors.materialRed,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (pinned)
+                    Semantics(
+                      label: context.l10n.messagesPinned,
+                      child: PinMark(color: palette.iconMuted, size: 16),
+                    ),
+                  if (pinned && unread > 0) const SizedBox(width: 6),
+                  CountBadge(
+                    count: unread,
+                    color: muted ? palette.iconMuted : AppColors.materialRed,
+                  ),
+                ],
               ),
             ],
           ),

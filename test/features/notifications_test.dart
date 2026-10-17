@@ -83,6 +83,20 @@ void main() {
       await pumpEventQueue();
       expect(store.notifications.map((n) => n.id), ['b', 'c']);
     });
+
+    test('pull to refresh reads again and ends with the fresh list', () async {
+      repo.put('alice', [_n('a')]);
+      store.attach('alice');
+      await pumpEventQueue();
+      // Changed without the stream saying so (as a failed stream would).
+      repo.byUser['alice'] = [_n('new'), _n('a')];
+      await store.refresh();
+      expect(store.notifications.map((n) => n.id), ['new', 'a']);
+      // Still live afterwards.
+      repo.put('alice', [_n('newer'), _n('new'), _n('a')]);
+      await pumpEventQueue();
+      expect(store.notifications.first.id, 'newer');
+    });
   });
 
   group('NotificationTap', () {
@@ -186,6 +200,7 @@ void main() {
           'Friend Request',
           'New Friend',
           'Achievement',
+          'Made Together',
           'Notification',
         ],
       );
@@ -295,6 +310,7 @@ void main() {
       text(server('friendAccepted'), 'Zoe'),
       'Zoe accepted your friend request',
     );
+    expect(text(server('coAuthor'), 'Zoe'), 'Zoe made a capsule with you');
     final achievement = server('achievement');
     expect(achievement.fromUserName, 'Later');
     expect(

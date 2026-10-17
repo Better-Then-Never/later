@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart'
+    show BitmapDescriptor;
 
 import '../../app/session/session_controller.dart';
 import '../../core/logging/app_logger.dart';
@@ -8,8 +10,12 @@ import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
+import 'cluster_icons.dart';
 import 'current_location.dart';
+import 'map_clusters.dart';
 import 'marker_icons.dart';
+import '../../data/services/preferences_store.dart';
+import 'map_filter.dart';
 
 enum MapLoadState { loading, ready }
 
@@ -27,7 +33,9 @@ class MapController extends ChangeNotifier {
     required LocationService location,
     required CurrentLocation currentLocation,
     required SessionController session,
-  }) : _capsules = capsules,
+    PreferencesStore? prefs,
+  }) : _prefs = prefs,
+       _capsules = capsules,
        _location = location,
        _currentLocation = currentLocation,
        _session = session;
@@ -36,6 +44,30 @@ class MapController extends ChangeNotifier {
   final LocationService _location;
   final CurrentLocation _currentLocation;
   final SessionController _session;
+  final PreferencesStore? _prefs;
+
+  static const _filterKey = 'map_filter';
+
+  /// What the map shows (B5); everything by default.
+  MapFilter _filter = MapFilter.all;
+  MapFilter get filter => _filter;
+
+  void setFilter(MapFilter value) {
+    if (value == _filter) return;
+    _set(() => _filter = value);
+    final uid = _session.uid;
+    final prefs = _prefs;
+    if (uid != null && prefs != null) {
+      unawaited(prefs.setString(uid, _filterKey, value.encode()));
+    }
+  }
+
+  Future<void> _loadFilter(String uid) async {
+    final saved = await _prefs?.string(uid, _filterKey);
+    if (_disposed || saved == null) return;
+    final filter = MapFilter.decode(saved);
+    if (filter != _filter) _set(() => _filter = filter);
+  }
 
   /// Camera used when no position is known at all.
   static const fallbackCamera = GeoPosition(20, 0);
@@ -59,12 +91,14 @@ class MapController extends ChangeNotifier {
   double? _bandCenter;
 
   List<Capsule> _own = const [];
+  List<Capsule> _coAuthored = const [];
   List<Capsule> _friends = const [];
   List<Capsule> _public = const [];
   List<String> _friendIds = const [];
 
   StreamSubscription<GeoPosition>? _positionSub;
   StreamSubscription<List<Capsule>>? _ownSub;
+  StreamSubscription<List<Capsule>>? _coSub;
   StreamSubscription<List<Capsule>>? _friendsSub;
   StreamSubscription<List<Capsule>>? _publicSub;
   bool _disposed = false;
@@ -90,13 +124,66 @@ class MapController extends ChangeNotifier {
   /// per change of the capsule lists.
   List<Capsule> get visibleCapsules => _visible ??= _computeVisible();
 
+  /// What the map shows at marker zoom: pins and numbered bubbles for the
+  /// part on screen (see [clusterCapsules]), recomputed when the camera stops
+  /// or the capsules change, never while it moves. Empty until the first
+  /// camera stop and below [markerZoomThreshold] (the heatmap shows then).
+  List<MapItem> get items => _items;
+  List<MapItem> _items = const [];
+
+  /// Changes whenever [items] change: the map page rebuilds markers only then.
+  int get itemsVersion => _itemsVersion;
+  int _itemsVersion = 0;
+
+  GeoBounds? _view;
+  int _clusterRun = 0;
+  final Map<String, BitmapDescriptor> _clusterIcons = {};
+
+  /// Device pixel ratio for the bubble bitmaps (set by the map page).
+  double pixelRatio = 3;
+
+  /// The bubble for a cluster of [count] (ready whenever [items] has it).
+  BitmapDescriptor? clusterIcon(int count) =>
+      _clusterIcons[ClusterIcons.label(count)];
+
+  Future<void> _recluster() async {
+    final view = _view;
+    final run = ++_clusterRun;
+    if (view == null || !showMarkers) {
+      if (_items.isEmpty) return;
+      _items = const [];
+      _itemsVersion++;
+      notifyListeners();
+      return;
+    }
+    final items = clusterCapsules(visibleCapsules, view: view, zoom: _zoom);
+    for (final item in items) {
+      if (!item.isCluster) continue;
+      final label = ClusterIcons.label(item.count);
+      if (_clusterIcons.containsKey(label)) continue;
+      _clusterIcons[label] = await ClusterIcons.forCount(
+        item.count,
+        pixelRatio,
+      );
+    }
+    if (_disposed || run != _clusterRun) return;
+    _items = items;
+    _itemsVersion++;
+    notifyListeners();
+  }
+
   List<Capsule> _computeVisible() {
     final uid = _session.uid;
     final friends = _friendIds.toSet();
+    final now = DateTime.now();
     final byId = <String, Capsule>{};
-    for (final c in [..._public, ..._friends, ..._own]) {
+    for (final c in [..._public, ..._friends, ..._own, ..._coAuthored]) {
       if (c.location == null) continue; // malformed: cannot be placed
-      if (isVisibleTo(c, uid: uid, friendIds: friends)) byId[c.id] = c;
+      if (!isVisibleTo(c, uid: uid, friendIds: friends)) continue;
+      if (!_filter.accepts(c, uid: uid, friendIds: friends, now: now)) {
+        continue;
+      }
+      byId[c.id] = c;
     }
     return List.unmodifiable(byId.values);
   }
@@ -113,12 +200,14 @@ class MapController extends ChangeNotifier {
     required Set<String> friendIds,
   }) =>
       c.ownerId == uid ||
+      (uid != null && c.coAuthors.contains(uid)) ||
       c.privacy == CapsulePrivacy.public ||
       (c.privacy == CapsulePrivacy.friends && friendIds.contains(c.ownerId));
 
   Future<void> start() async {
     final uid = _session.uid;
     if (uid == null) return;
+    unawaited(_loadFilter(uid));
 
     _icons = await MarkerIcons.load(dark: _darkIcons);
     _availability = await _location.availability();
@@ -143,6 +232,12 @@ class MapController extends ChangeNotifier {
         .listen(
           (list) => _set(() => _own = list),
           onError: _logStreamError('own'),
+        );
+    _coSub = _capsules
+        .watchCoAuthored(uid)
+        .listen(
+          (list) => _set(() => _coAuthored = list),
+          onError: _logStreamError('co-authored'),
         );
     _session.addListener(_onSessionChanged);
     _onSessionChanged();
@@ -219,13 +314,16 @@ class MapController extends ChangeNotifier {
         );
   }
 
-  /// Called when the camera stops moving.
-  void onCameraIdle(GeoPosition center, double zoom) {
+  /// Called when the camera stops moving, with the part of the map on
+  /// screen.
+  void onCameraIdle(GeoPosition center, double zoom, {GeoBounds? view}) {
     final band = _bandCenter;
     if (band == null || (center.latitude - band).abs() > _bandHalfHeight / 2) {
       _loadPublicBand(center.latitude);
     }
     _setZoom(zoom);
+    if (view != null) _view = view;
+    unawaited(_recluster());
   }
 
   /// Called while the camera moves; only crossing the marker threshold
@@ -243,6 +341,7 @@ class MapController extends ChangeNotifier {
     _capsulesChanged();
     if (_disposed) return;
     update();
+    unawaited(_recluster());
     AppLogger.debug(
       'Map capsules: own=${_own.length} friends=${_friends.length} '
       'public=${_public.length} visible=${visibleCapsules.length}',
@@ -263,6 +362,7 @@ class MapController extends ChangeNotifier {
     _session.removeListener(_onSessionChanged);
     unawaited(_positionSub?.cancel());
     unawaited(_ownSub?.cancel());
+    unawaited(_coSub?.cancel());
     unawaited(_friendsSub?.cancel());
     unawaited(_publicSub?.cancel());
     super.dispose();

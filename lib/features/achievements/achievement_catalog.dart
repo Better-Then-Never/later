@@ -143,6 +143,14 @@ abstract final class AchievementCatalog {
       title: (l) => l.achievementEarlyBird,
       goal: (l, t) => l.achievementEarlyBirdGoal(_i(t)),
     ),
+    AchievementDef(
+      id: 'curious',
+      tiers: const [10, 50, 250, 1000],
+      icon: Icons.visibility,
+      metric: (p) => p.stats.capsulesViewed,
+      title: (l) => l.achievementCurious,
+      goal: (l, t) => l.achievementCuriousGoal(_i(t)),
+    ),
   ];
 
   /// What the app shows: achievements of features that are switched on.

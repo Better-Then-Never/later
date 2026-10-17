@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/capsule.dart';
 import '../models/social.dart';
+import '../models/world.dart';
 import '../repositories/repositories.dart';
 import 'firestore_mappers.dart';
 
@@ -10,6 +11,9 @@ class FirebaseSocialRepository implements SocialRepository {
     : _db = firestore ?? FirebaseFirestore.instance;
 
   final FirebaseFirestore _db;
+
+  /// Markers written in this run (one try per capsule).
+  final _viewed = <String>{};
 
   DocumentReference<Map<String, dynamic>> _capsule(String id) =>
       _db.collection(FirestorePaths.capsules).doc(id);
@@ -117,6 +121,32 @@ class FirebaseSocialRepository implements SocialRepository {
             .map((d) => FirestoreMappers.achievement(d.id, d.data()))
             .toList(),
       );
+
+  @override
+  Future<void> markViewed(String uid, String capsuleId) async {
+    if (!_viewed.add('$uid/$capsuleId')) return;
+    try {
+      // Written once: the rules refuse a second write to the same marker
+      // (no read first, so a capsule seen before costs nothing).
+      await _db
+          .collection(FirestorePaths.users)
+          .doc(uid)
+          .collection(FirestorePaths.viewed)
+          .doc(capsuleId)
+          .set({'at': FieldValue.serverTimestamp()});
+    } catch (_) {
+      // Seen before (refused), or offline: nothing to count again.
+    }
+  }
+
+  @override
+  Stream<WorldSummary> watchWorld(String uid) => _db
+      .collection(FirestorePaths.users)
+      .doc(uid)
+      .collection(FirestorePaths.world)
+      .doc(FirestorePaths.worldSummary)
+      .snapshots()
+      .map((snap) => FirestoreMappers.world(snap.data()));
 
   @override
   Stream<List<Announcement>> watchAnnouncements({int limit = 20}) => _db

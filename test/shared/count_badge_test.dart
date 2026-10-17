@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/shared/widgets/count_badge.dart';
 
-Widget _inRow(Widget badge) => MaterialApp(
+import '../helpers/test_app.dart';
+
+Widget _inRow(Widget badge) => testApp(
   home: Scaffold(
     body: SizedBox(
       width: 400,
@@ -24,6 +26,16 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('99+'), findsOneWidget);
     expect(tester.getSize(find.byType(CountBadge)).width, lessThan(60));
+  });
+
+  testWidgets('a screen reader hears the count in the app language', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(_inRow(const CountBadge(count: 3)));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel(RegExp(r'\b3 new\b')), findsOneWidget);
+    semantics.dispose();
   });
 
   testWidgets('takes no space at zero', (tester) async {

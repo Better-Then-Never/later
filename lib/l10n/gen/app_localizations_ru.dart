@@ -73,6 +73,22 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get achievementCurious => 'Любопытный';
+
+  @override
+  String achievementCuriousGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Откройте $count чужой капсулы',
+      many: 'Откройте $count чужих капсул',
+      few: 'Откройте $count чужие капсулы',
+      one: 'Откройте $count чужую капсулу',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get achievementEarlyBird => 'Жаворонок';
 
   @override
@@ -415,8 +431,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authWelcomeTo => 'Добро пожаловать в';
 
   @override
+  String capsulesBy(String name) {
+    return 'Автор: $name';
+  }
+
+  @override
+  String capsulesByWith(String name, String others) {
+    return '$name и $others';
+  }
+
+  @override
+  String get capsulesCalendarNext => 'Следующий месяц';
+
+  @override
+  String get capsulesCalendarPrevious => 'Предыдущий месяц';
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Разрешите доступ к камере в настройках, чтобы сделать фото';
+
+  @override
+  String get capsulesCameraExposure => 'Яркость';
 
   @override
   String get capsulesCameraFlashAuto => 'Вспышка: авто';
@@ -431,10 +466,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCameraFlashOn => 'Вспышка включена';
 
   @override
+  String get capsulesCameraFlashTorch => 'Фонарик включён';
+
+  @override
+  String get capsulesCameraFlashTorchBadge => 'Ф';
+
+  @override
   String get capsulesCameraHoldForLoop => 'Удерживайте для лупа';
 
   @override
+  String get capsulesCameraModeLoop => 'Луп';
+
+  @override
+  String get capsulesCameraModePhoto => 'Фото';
+
+  @override
   String get capsulesCameraStartFailed => 'Не удалось запустить камеру';
+
+  @override
+  String get capsulesCameraStartLoop => 'Начать луп';
+
+  @override
+  String get capsulesCameraStopLoop => 'Остановить луп';
 
   @override
   String get capsulesCameraSwitch => 'Сменить камеру';
@@ -447,7 +500,27 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сделать фото. Удерживайте, чтобы снять луп';
 
   @override
+  String get capsulesCameraTapForLoop =>
+      'Нажмите, чтобы начать, и ещё раз — чтобы остановить';
+
+  @override
   String get capsulesCameraUnavailable => 'Камера недоступна';
+
+  @override
+  String capsulesCameraZoomTo(String zoom) {
+    return 'Увеличение $zoom×';
+  }
+
+  @override
+  String get capsulesCoAuthorsDone => 'Готово';
+
+  @override
+  String get capsulesCoAuthorsPick => 'С кем вы его сделали';
+
+  @override
+  String capsulesCoAuthorsTooMany(int count) {
+    return 'Не больше $count соавторов';
+  }
 
   @override
   String get capsulesColorBlue => 'Синий';
@@ -504,10 +577,19 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get capsulesCommentsEarlier => 'Показать более ранние';
+
+  @override
   String get capsulesCommentsEmpty => 'Комментариев пока нет';
 
   @override
   String get capsulesCommentsEmptyHint => 'Напишите первым.';
+
+  @override
+  String get capsulesComposerDone => 'Готово';
+
+  @override
+  String get capsulesComposerTitle => 'Описание';
 
   @override
   String get capsulesCreationAllowComments => 'Разрешить комментарии';
@@ -521,6 +603,25 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get capsulesCreationApproximateHint =>
       'Примерно в километре, а не точно';
+
+  @override
+  String get capsulesCreationCoAuthors => 'Соавторы';
+
+  @override
+  String capsulesCreationCoAuthorsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count друга',
+      many: '$count друзей',
+      few: '$count друга',
+      one: '$count друг',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCreationCoAuthorsNone => 'Только я';
 
   @override
   String get capsulesCreationColor => 'Цвет';
@@ -544,6 +645,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCreationSettings => 'Настройки капсулы';
 
   @override
+  String get capsulesCreationShowAuthor => 'Показывать моё имя';
+
+  @override
+  String get capsulesCreationShowAuthorHint => 'Другие увидят, кто её оставил';
+
+  @override
+  String get capsulesCreationSpeed => 'Скорость';
+
+  @override
   String get capsulesCreationSubmit => 'Создать капсулу';
 
   @override
@@ -556,6 +666,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesDefaultTitle => 'Капсула';
 
   @override
+  String get capsulesDraftContinue => 'Продолжить';
+
+  @override
+  String get capsulesDraftDiscard => 'Удалить незаконченную капсулу';
+
+  @override
+  String get capsulesDraftTitle => 'Незаконченная капсула';
+
+  @override
   String get capsulesErrorNoLocation => 'Не удалось определить вашу геопозицию';
 
   @override
@@ -564,6 +683,29 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get capsulesErrorSavedNotSent =>
       'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
+
+  @override
+  String capsulesFrameRemove(int number) {
+    return 'Убрать кадр $number';
+  }
+
+  @override
+  String get capsulesFramesHint => 'удерживайте и тяните';
+
+  @override
+  String get capsulesFramesTitle => 'Кадры';
+
+  @override
+  String get capsulesLeaveCoAuthors => 'Убрать меня из соавторов';
+
+  @override
+  String get capsulesLeftCoAuthors => 'Вы больше не соавтор';
+
+  @override
+  String get capsulesLinkNotShared => 'Эта капсула вам не открыта';
+
+  @override
+  String get capsulesLoopMark => 'Луп';
 
   @override
   String get capsulesOpenInMonth => 'Через месяц';
@@ -584,6 +726,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesOpenTomorrow => 'Завтра';
 
   @override
+  String get capsulesPinBack => 'Вернуться ко мне';
+
+  @override
+  String get capsulesPinHint =>
+      'Двигайте карту, чтобы поставить капсулу точно, в пределах 1 км.';
+
+  @override
+  String get capsulesPinTitle => 'Передвинуть метку';
+
+  @override
+  String get capsulesPinTooFar => 'Капсула остаётся в пределах 1 км от вас.';
+
+  @override
+  String get capsulesPinUse => 'Поставить здесь';
+
+  @override
   String get capsulesPrivacyFriends => 'Для друзей';
 
   @override
@@ -595,6 +753,19 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get capsulesQueued =>
       'Сохранено на телефоне. Загрузится, когда появится интернет.';
+
+  @override
+  String get capsulesQuickReply => 'Ответить автору';
+
+  @override
+  String capsulesQuickReplyHint(String name) {
+    return 'Напишите $name…';
+  }
+
+  @override
+  String capsulesQuickReplySent(String name) {
+    return 'Отправлено: $name';
+  }
 
   @override
   String capsulesReactWith(String emoji) {
@@ -644,6 +815,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesReportViolence => 'Насилие';
 
   @override
+  String get capsulesShare => 'Поделиться';
+
+  @override
+  String capsulesShareMessage(String title, String link) {
+    return 'Капсула времени в Later: $title\n$link';
+  }
+
+  @override
+  String get capsulesSpeedFast => 'Быстро';
+
+  @override
+  String get capsulesSpeedNormal => 'Обычно';
+
+  @override
+  String get capsulesSpeedSlow => 'Медленно';
+
+  @override
+  String capsulesWith(String names) {
+    return 'Вместе с: $names';
+  }
+
+  @override
   String get capsulesYou => 'Вы';
 
   @override
@@ -666,6 +859,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get commonLoading => 'Загрузка...';
+
+  @override
+  String commonNewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count нового',
+      many: '$count новых',
+      few: '$count новых',
+      one: '$count новое',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get commonNoConnection => 'Нет соединения. Попробуйте ещё раз.';
@@ -796,6 +1002,31 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsFriendCapsulesTitle => 'Капсулы друга';
 
   @override
+  String get friendsFromContacts => 'Из ваших контактов';
+
+  @override
+  String get friendsFromContactsDenied =>
+      'Для этого Later нужен доступ к контактам';
+
+  @override
+  String get friendsFromContactsExplain =>
+      'Later прочитает адреса почты в контактах на этом телефоне и отправит только их зашифрованные отпечатки. Вы увидите тех, кто разрешил себя находить; из контактов ничего не сохраняется. Раз в час.';
+
+  @override
+  String get friendsFromContactsFailed => 'Сейчас не удалось найти друзей';
+
+  @override
+  String get friendsFromContactsGo => 'Искать друзей';
+
+  @override
+  String get friendsFromContactsNone =>
+      'Никого из ваших контактов пока нельзя найти в Later';
+
+  @override
+  String get friendsFromContactsTooSoon =>
+      'Вы только что искали. Попробуйте через час.';
+
+  @override
   String get friendsHideSuggestionLabel => 'Скрыть рекомендацию';
 
   @override
@@ -905,10 +1136,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsRequestsTitle => 'Заявки в друзья';
 
   @override
-  String get friendsSearchByTagHint => 'Поиск по нику';
+  String get friendsSearchHint => 'Поиск среди друзей';
 
   @override
-  String get friendsSearchHint => 'Поиск среди друзей';
+  String get friendsSearchPeopleHint => 'Имя или @ник';
 
   @override
   String get friendsSendCapsule => 'Отправить капсулу';
@@ -1012,6 +1243,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String historyDistanceFromYou(String distance) {
     return '$distance км от вас';
+  }
+
+  @override
+  String historyDistanceFromYouMiles(String distance) {
+    return '$distance миль от вас';
   }
 
   @override
@@ -1139,6 +1375,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyWaitingUpload => 'Ждёт интернета';
 
   @override
+  String get historyWaitingWifi => 'Ждёт Wi-Fi';
+
+  @override
   String historyYearsAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1169,6 +1408,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapCapsuleReady => 'Посмотрите, что внутри!';
 
   @override
+  String get mapCompass => 'Повернуть карту на север';
+
+  @override
   String mapDurationDays(int count) {
     return '$countд';
   }
@@ -1187,6 +1429,52 @@ class AppLocalizationsRu extends AppLocalizations {
   String mapDurationSeconds(int count) {
     return '$countс';
   }
+
+  @override
+  String get mapFilter => 'Фильтр карты';
+
+  @override
+  String mapFilterActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Фильтр карты, включено $count',
+      many: 'Фильтр карты, включено $count',
+      few: 'Фильтр карты, включено $count',
+      one: 'Фильтр карты, включён $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapFilterColors => 'Цвет метки';
+
+  @override
+  String get mapFilterFriends => 'Друзей';
+
+  @override
+  String get mapFilterLocked => 'Откроются позже';
+
+  @override
+  String get mapFilterMine => 'Мои';
+
+  @override
+  String get mapFilterOpen => 'Открытые';
+
+  @override
+  String get mapFilterOthers => 'Остальных';
+
+  @override
+  String get mapFilterReset => 'Показать всё';
+
+  @override
+  String get mapFilterState => 'Открыты ли';
+
+  @override
+  String get mapFilterTitle => 'На карте';
+
+  @override
+  String get mapFilterWhose => 'Чьи';
 
   @override
   String get mapFirstCapsuleBody =>
@@ -1208,6 +1496,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mapMyLocation => 'Моё местоположение';
+
+  @override
+  String get mapZoomIn => 'Приблизить';
+
+  @override
+  String get mapZoomOut => 'Отдалить';
 
   @override
   String get messagesBlockedByYou => 'Вы заблокировали этого пользователя';
@@ -1235,6 +1529,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Проверьте подключение и попробуйте ещё раз';
 
   @override
+  String get messagesChoosePhoto => 'Выбрать из галереи';
+
+  @override
   String get messagesClearConfirm => 'Очистить';
 
   @override
@@ -1257,6 +1554,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesDeleteFailed => 'Не удалось удалить сообщение';
 
   @override
+  String get messagesDeleteForEveryone => 'Удалить у всех';
+
+  @override
+  String get messagesDeleteForMe => 'Удалить у меня';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return '$name ждёт вашего привета!';
   }
@@ -1266,6 +1569,94 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Поиск чатов';
+
+  @override
+  String messagesFindPeople(String query) {
+    return 'Найти людей: «$query»';
+  }
+
+  @override
+  String get messagesForward => 'Переслать';
+
+  @override
+  String get messagesForwardTo => 'Переслать';
+
+  @override
+  String get messagesForwarded => 'Пересланное';
+
+  @override
+  String messagesForwardedTo(String name) {
+    return 'Переслано: $name';
+  }
+
+  @override
+  String get messagesGroupAddPeople => 'Добавить людей';
+
+  @override
+  String get messagesGroupCreate => 'Создать';
+
+  @override
+  String get messagesGroupFailed =>
+      'С группой что-то пошло не так. Попробуйте ещё раз.';
+
+  @override
+  String get messagesGroupHello => 'Поздоровайтесь со всеми';
+
+  @override
+  String get messagesGroupInvited =>
+      'Приглашения отправлены. Друзья появятся через мгновение.';
+
+  @override
+  String get messagesGroupLeave => 'Выйти из группы';
+
+  @override
+  String messagesGroupLeaveConfirm(String name) {
+    return 'Выйти из «$name»? Её сообщения больше не будут здесь видны.';
+  }
+
+  @override
+  String get messagesGroupLeft => 'Вы больше не в этой группе';
+
+  @override
+  String messagesGroupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count участника',
+      many: '$count участников',
+      few: '$count участника',
+      one: '$count участник',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesGroupMembersTitle => 'Участники';
+
+  @override
+  String get messagesGroupName => 'Название группы';
+
+  @override
+  String get messagesGroupNameTooLong =>
+      'В названии группы не больше 60 символов';
+
+  @override
+  String get messagesGroupNeedsName => 'Дайте группе название';
+
+  @override
+  String get messagesGroupNeedsPeople => 'Выберите хотя бы одного друга';
+
+  @override
+  String get messagesGroupRename => 'Переименовать группу';
+
+  @override
+  String get messagesGroupSave => 'Сохранить';
+
+  @override
+  String get messagesGroupTooMany => 'В группе не больше 20 человек';
+
+  @override
+  String get messagesGroupWho => 'Кто в группе?';
 
   @override
   String get messagesInputHint => 'Напишите сообщение...';
@@ -1292,6 +1683,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesMenuUnmute => 'Включить уведомления';
 
   @override
+  String get messagesMicPermission =>
+      'Разрешите доступ к микрофону, чтобы отправлять голосовые';
+
+  @override
   String get messagesMutedToast => 'Уведомления чата отключены';
 
   @override
@@ -1312,6 +1707,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesNewChatTitle => 'Новый чат';
+
+  @override
+  String get messagesNewGroup => 'Новая группа';
 
   @override
   String get messagesNoChatsFound => 'Чаты не найдены';
@@ -1340,6 +1738,51 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String messagesOpenGroup(String name) {
+    return 'Открыть группу $name';
+  }
+
+  @override
+  String get messagesOpenPhoto => 'Открыть фото';
+
+  @override
+  String get messagesPauseVoice => 'Пауза';
+
+  @override
+  String get messagesPhoto => 'Фото';
+
+  @override
+  String get messagesPhotoCaption => 'Добавьте подпись…';
+
+  @override
+  String get messagesPhotoUnreadable => 'Эту картинку нельзя отправить';
+
+  @override
+  String get messagesPin => 'Закрепить';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Можно закрепить до $count чата',
+      many: 'Можно закрепить до $count чатов',
+      few: 'Можно закрепить до $count чатов',
+      one: 'Можно закрепить $count чат',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Закреплён';
+
+  @override
+  String get messagesPlayVoice => 'Воспроизвести голосовое';
+
+  @override
+  String get messagesQuoteGone => 'Этого сообщения больше нет в чате';
+
+  @override
   String get messagesReactFailed => 'Не удалось сохранить реакцию';
 
   @override
@@ -1354,6 +1797,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesReceiptSent => 'Отправлено';
+
+  @override
+  String get messagesRecordVoice => 'Записать голосовое';
+
+  @override
+  String get messagesReport => 'Пожаловаться';
+
+  @override
+  String get messagesReportFailed =>
+      'Жалобу не удалось отправить. Попробуйте ещё раз.';
 
   @override
   String get messagesScrollToLatest => 'К последнему сообщению';
@@ -1371,12 +1824,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesSendFailed => 'Не удалось отправить сообщение';
 
   @override
+  String get messagesSendPhoto => 'Отправить фото';
+
+  @override
   String get messagesSignedOut => 'Вы вышли из аккаунта';
 
   @override
   String messagesStartChatWith(String name) {
     return 'Начать чат: $name';
   }
+
+  @override
+  String get messagesStickers => 'Стикеры';
+
+  @override
+  String get messagesStickersFaces => 'Лица';
+
+  @override
+  String get messagesStickersHands => 'Жесты';
+
+  @override
+  String get messagesStickersHearts => 'Сердца и праздники';
+
+  @override
+  String get messagesStickersNature => 'Природа';
+
+  @override
+  String get messagesStickersPlaces => 'Места и вещи';
+
+  @override
+  String get messagesStickersRecent => 'Недавние';
+
+  @override
+  String get messagesTakePhoto => 'Сделать фото';
 
   @override
   String get messagesTitle => 'Мои Laters';
@@ -1388,7 +1868,52 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesTooLong => 'Сообщение слишком длинное';
 
   @override
+  String get messagesTyping => 'печатает';
+
+  @override
+  String messagesTypingMany(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Печатают $count человека',
+      many: 'Печатают $count человек',
+      few: 'Печатают $count человека',
+      one: 'Печатает $count человек',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String messagesTypingName(String name) {
+    return '$name печатает';
+  }
+
+  @override
   String get messagesUnmutedToast => 'Уведомления чата включены';
+
+  @override
+  String get messagesUnpin => 'Открепить';
+
+  @override
+  String get messagesUnreadDivider => 'Непрочитанные сообщения';
+
+  @override
+  String get messagesVoice => 'Голосовое сообщение';
+
+  @override
+  String get messagesVoiceCancel => 'Отменить запись';
+
+  @override
+  String get messagesVoiceFailed => 'Это голосовое не получается воспроизвести';
+
+  @override
+  String get messagesVoiceRecording => 'Запись';
+
+  @override
+  String get messagesVoiceSend => 'Отправить голосовое';
+
+  @override
+  String get messagesVoiceTooShort => 'Слишком коротко, чтобы отправить';
 
   @override
   String get messagesYesterday => 'Вчера';
@@ -1397,6 +1922,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String messagesYouPrefix(String message) {
     return 'Вы: $message';
   }
+
+  @override
+  String get momentsAchievementLabel => 'Новое достижение';
+
+  @override
+  String momentsAchievementMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'и ещё $count',
+      many: 'и ещё $count',
+      few: 'и ещё $count',
+      one: 'и ещё $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get momentsStreakBody => 'Капсула каждый день. До завтра!';
+
+  @override
+  String get momentsStreakLabel => 'Серия растёт';
 
   @override
   String get navMap => 'Карта';
@@ -1431,6 +1978,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Подписчики, заявки в друзья, реакции, комментарии и новые капсулы';
 
   @override
+  String get notificationsChannelActivityNoVibration =>
+      'Активность (без вибрации)';
+
+  @override
   String get notificationsChannelActivitySilent => 'Активность (без звука)';
 
   @override
@@ -1445,6 +1996,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Новые сообщения от друзей';
 
   @override
+  String get notificationsChannelMessagesNoVibration =>
+      'Сообщения (без вибрации)';
+
+  @override
   String get notificationsChannelMessagesSilent => 'Сообщения (без звука)';
 
   @override
@@ -1457,6 +2012,11 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notificationsChannelOtherDescription =>
       'Другие уведомления от Later';
+
+  @override
+  String notificationsCoAuthorBody(String name) {
+    return 'Совместная капсула от $name';
+  }
 
   @override
   String notificationsCommentBody(String name) {
@@ -1535,6 +2095,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationsFromLater => 'От команды Later';
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1585,6 +2148,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationsNowFriends => 'Теперь вы друзья';
+
+  @override
   String notificationsReactionBody(String name, String emoji) {
     return '$name реагирует $emoji на вашу капсулу';
   }
@@ -1613,6 +2179,12 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationsSwipeDelete => 'Удалить';
+
+  @override
+  String get notificationsSwipeRead => 'Прочитано';
+
+  @override
   String get notificationsTabAll => 'Все';
 
   @override
@@ -1629,6 +2201,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationsTypeCapsule => 'Новая капсула';
+
+  @override
+  String get notificationsTypeCoAuthor => 'Вместе';
 
   @override
   String get notificationsTypeComment => 'Новый комментарий';
@@ -1674,13 +2249,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get placeUnknown => 'Неизвестное место';
 
   @override
+  String get profileAboutPrompt => 'Расскажите немного о себе';
+
+  @override
   String get profileAddFriends => 'Добавить друзей';
-
-  @override
-  String get profileAddToMapEveryone => 'На карту | Для всех';
-
-  @override
-  String get profileAddToMapFriends => 'На карту | Для друзей';
 
   @override
   String get profileBackgroundDelete => 'Удалить фон';
@@ -1742,6 +2314,12 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get profileFriendsAll => 'Все';
+
+  @override
+  String get profileFriendsSection => 'Друзья';
+
+  @override
   String get profileImageFromGallery => 'Выбрать из галереи';
 
   @override
@@ -1757,7 +2335,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileMyFriends => 'Мои друзья';
 
   @override
+  String get profileNewCapsule => 'Новая капсула';
+
+  @override
+  String get profileNewForEveryone => 'Для всех';
+
+  @override
+  String get profileNewForFriends => 'Для друзей';
+
+  @override
   String get profileNoFriends => 'У вас пока нет друзей';
+
+  @override
+  String get profileNoFriendsAction => 'Найдите знакомых';
 
   @override
   String get profilePictureDelete => 'Удалить фото профиля';
@@ -1767,6 +2357,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profilePictureUpdated => 'Фото профиля обновлено!';
+
+  @override
+  String get profilePin => 'Закрепить';
+
+  @override
+  String profilePinLimit(int count) {
+    return 'Не больше $count закреплённых друзей';
+  }
+
+  @override
+  String profilePinned(String name) {
+    return '$name: закреплено';
+  }
 
   @override
   String get profilePinnedHint =>
@@ -1783,6 +2386,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileQrError => 'Что-то пошло не так...';
+
+  @override
+  String get profileQuickCapsule => 'Отправить капсулу';
+
+  @override
+  String get profileQuickMessage => 'Написать';
 
   @override
   String get profileShare => 'Поделиться';
@@ -1812,6 +2421,43 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileShareTitle => 'Поделиться профилем';
 
   @override
+  String profileStatCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'капсулы',
+      many: 'капсул',
+      few: 'капсулы',
+      one: 'капсула',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileStatPlaces(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'места',
+      many: 'мест',
+      few: 'места',
+      one: 'место',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileStatTogether => 'с друзьями';
+
+  @override
+  String get profileUnpin => 'Открепить';
+
+  @override
+  String profileUnpinned(String name) {
+    return '$name: откреплено';
+  }
+
+  @override
   String get profileUpdating => 'Секунду...';
 
   @override
@@ -1821,7 +2467,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileViewProfile => 'Открыть профиль';
 
   @override
-  String get settingsAbout => 'О приложении';
+  String get settingsAbout => 'О себе';
+
+  @override
+  String get settingsAboutDescription =>
+      'Пара слов под вашим именем для всех, кто откроет профиль.';
+
+  @override
+  String get settingsAboutHint => 'Собираю закаты с 2019 года';
 
   @override
   String get settingsAboutLicenses => 'Лицензии открытого ПО';
@@ -1834,6 +2487,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsAboutTerms => 'Условия использования';
+
+  @override
+  String settingsAboutTooLong(int count) {
+    return 'Не больше $count символов';
+  }
+
+  @override
+  String get settingsAboutUpdated => 'Раздел «О себе» обновлён';
 
   @override
   String get settingsAboutVersion => 'Версия';
@@ -1937,6 +2598,16 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsDeviceDescription =>
       'Как Later выглядит и работает на этом телефоне';
+
+  @override
+  String get settingsDownloadData => 'Скачать мои данные';
+
+  @override
+  String get settingsDownloadDataFailed => 'Не удалось собрать данные';
+
+  @override
+  String get settingsDownloadDataHint =>
+      'Профиль, настройки, капсулы, друзья и чаты в одном файле (фото — ссылками).';
 
   @override
   String get settingsEmail => 'Электронная почта';
@@ -2248,6 +2919,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Вечером, если серия сегодня прервётся';
 
   @override
+  String get settingsNotificationsVibrate => 'Вибрация';
+
+  @override
+  String get settingsNotificationsVibrateNeedsSound =>
+      'Работает вместе со звуком';
+
+  @override
   String get settingsPassword => 'Пароль';
 
   @override
@@ -2356,6 +3034,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'К чему у Later есть доступ на этом телефоне';
 
   @override
+  String get settingsPhotoQualityHigh => 'Высокое (чётче, тяжелее)';
+
+  @override
+  String get settingsPhotoQualityStandard => 'Обычное (отправка быстрее)';
+
+  @override
   String get settingsPrivacy => 'Приватность';
 
   @override
@@ -2375,6 +3059,20 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Что видят другие и какими будут новые капсулы';
+
+  @override
+  String get settingsPrivacyFindByContacts => 'Меня находят по моей почте';
+
+  @override
+  String get settingsPrivacyFindByContactsHint =>
+      'Те, у кого ваша почта есть в контактах, могут увидеть вас в подсказках. Хранится только отпечаток подтверждённого адреса.';
+
+  @override
+  String get settingsPrivacyFindByName => 'Искать меня по имени';
+
+  @override
+  String get settingsPrivacyFindByNameHint =>
+      'Вас можно найти поиском по имени. По имени пользователя — всегда.';
 
   @override
   String get settingsPrivacyNewCapsulesFooter =>
@@ -2407,6 +3105,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsQuietUntil => 'Тишина до';
 
   @override
+  String get settingsSaveToGallery => 'Сохранять фото капсул в галерею';
+
+  @override
+  String get settingsSaveToGalleryHint =>
+      'В папку Pictures/Later, когда капсула создана.';
+
+  @override
   String get settingsSectionAccount => 'МОЙ АККАУНТ';
 
   @override
@@ -2414,6 +3119,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionContact => 'СВЯЗЬ С НАМИ';
+
+  @override
+  String get settingsSectionDistances => 'РАССТОЯНИЯ';
 
   @override
   String get settingsSectionHow => 'КАК';
@@ -2432,6 +3140,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionNotifyAbout => 'О ЧЁМ УВЕДОМЛЯТЬ';
+
+  @override
+  String get settingsSectionPhotos => 'ФОТО';
 
   @override
   String get settingsSectionQuestions => 'ВОПРОСЫ';
@@ -2453,6 +3164,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionVisibility => 'ЧТО ВИДЯТ ДРУГИЕ';
+
+  @override
+  String get settingsSignInEmail => 'Почта и пароль';
+
+  @override
+  String get settingsSignInMethods => 'Способы входа';
 
   @override
   String get settingsSignedInWithGoogle => 'Вход через Google';
@@ -2531,6 +3248,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsUnblocking => 'Разблокируем...';
 
   @override
+  String get settingsUnitsKilometres => 'Километры';
+
+  @override
+  String get settingsUnitsMiles => 'Мили';
+
+  @override
+  String get settingsUploadsWifiOnly => 'Загружать только по Wi-Fi';
+
+  @override
+  String get settingsUploadsWifiOnlyHint =>
+      'Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится.';
+
+  @override
   String get settingsUsername => 'Имя пользователя';
 
   @override
@@ -2563,4 +3293,85 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Ваш пароль';
+
+  @override
+  String get streakAtRisk =>
+      'Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.';
+
+  @override
+  String streakLongest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count дней',
+      few: '$count дня',
+      one: '$count день',
+    );
+    return 'Рекорд: $_temp0';
+  }
+
+  @override
+  String get streakMakeCapsule => 'Создать капсулу';
+
+  @override
+  String get streakSafe => 'Сегодня засчитано. До завтра!';
+
+  @override
+  String worldCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count капсулы',
+      many: '$count капсул',
+      few: '$count капсулы',
+      one: '$count капсула',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String worldCountriesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'страны',
+      many: 'стран',
+      few: 'страны',
+      one: 'страна',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get worldDescription => 'Страны и города ваших капсул';
+
+  @override
+  String get worldEmpty =>
+      'Оставьте капсулу в новом месте, и здесь появится штамп её страны.';
+
+  @override
+  String worldFirst(String date) {
+    return 'Впервые: $date';
+  }
+
+  @override
+  String get worldNote =>
+      'Штампы получают капсулы, созданные после этого обновления.';
+
+  @override
+  String get worldTitle => 'Паспорт';
+
+  @override
+  String worldTownsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'города',
+      many: 'городов',
+      few: 'города',
+      one: 'город',
+    );
+    return '$_temp0';
+  }
 }

@@ -21,6 +21,7 @@ import 'package:later/data/models/user_profile.dart';
 import 'package:later/features/achievements/achievements_view.dart';
 import 'package:later/features/users/user_directory.dart';
 import 'package:provider/provider.dart';
+import 'package:later/shared/widgets/user/user_about_line.dart';
 
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;
@@ -86,6 +87,7 @@ class YourFriendProfilePage extends StatelessWidget {
               ],
             ),
 
+            UserAboutLine(userId: friendUid),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(

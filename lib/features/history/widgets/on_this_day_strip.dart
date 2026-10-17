@@ -27,6 +27,18 @@ class OnThisDayStrip extends StatelessWidget {
   static const _cardWidth = 104.0;
   static const _photoHeight = 132.0;
 
+  /// The strip's height: the photo and its two lines (14 and 13 sp) at the
+  /// phone's text size. A fixed 44 dp for the lines overflowed at 130 %
+  /// (D-21; each size scaled on its own, as Android 14+ scales nonlinearly).
+  static double heightFor(BuildContext context) {
+    final scaler = MediaQuery.textScalerOf(context);
+    const lineHeight = 1.35;
+    return _photoHeight +
+        4 +
+        (scaler.scale(14) + scaler.scale(13)) * lineHeight +
+        6;
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -47,7 +59,7 @@ class OnThisDayStrip extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SizedBox(
-            height: _photoHeight + 44,
+            height: heightFor(context),
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: capsules.length,

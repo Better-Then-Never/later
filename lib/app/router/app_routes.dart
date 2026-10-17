@@ -14,7 +14,16 @@ import '../../features/friends/pages/my_friends_page.dart';
 import '../../features/friends/pages/your_friend_profile_page.dart';
 import '../../features/capsules/camera/camera_page.dart';
 import '../../features/capsules/creation/capsule_creation_page.dart';
+import '../../features/capsules/creation/creation_draft.dart';
 import '../../features/messages/chat_page.dart';
+import '../../features/capsules/social/capsule_detail_dialog.dart';
+import '../../features/map/map_focus.dart';
+import '../../core/l10n/l10n.dart';
+import '../../core/logging/app_logger.dart';
+import '../../data/repositories/repositories.dart';
+import '../../shared/widgets/popup/popup_notification_service.dart';
+import '../shell/selected_page.dart';
+import 'package:provider/provider.dart';
 import 'app_link_handler.dart';
 import 'app_page_route.dart';
 
@@ -30,13 +39,13 @@ abstract final class AppRoutes {
 
   // Auth
   static Future<void> toLogin(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const LoginPage()));
+      Navigator.of(context).push(appRoute(const LoginPage()));
 
   /// From the login page: replaces it when it was pushed (welcome flow),
   /// pushes when it is the root (after a log-out).
   static Future<void> toSignupFromLogin(BuildContext context) {
     final nav = Navigator.of(context);
-    final route = fadeRoute<void>(const SignupPage());
+    final route = appRoute<void>(const SignupPage());
     return nav.canPop() ? nav.pushReplacement(route) : nav.push(route);
   }
 
@@ -49,7 +58,8 @@ abstract final class AppRoutes {
     String? recipientId,
     bool replace = false,
   }) {
-    final route = fadeRoute<void>(
+    // The camera rises like a sheet over the tabs.
+    final route = appSheetRoute<void>(
       CameraPage(initialPrivacy: privacy, recipientId: recipientId),
     );
     final nav = Navigator.of(context);
@@ -64,13 +74,15 @@ abstract final class AppRoutes {
     CapsulePrivacy? privacy,
     String? recipientId,
     bool replace = false,
+    CreationDraft? draft,
   }) {
-    final route = fadeRoute<void>(
+    final route = appRoute<void>(
       CapsuleCreationPage(
         imagePath: imagePath,
         framePaths: framePaths,
         initialPrivacy: privacy,
         recipientId: recipientId,
+        draft: draft,
       ),
     );
     final nav = Navigator.of(context);
@@ -79,40 +91,43 @@ abstract final class AppRoutes {
 
   // Profile area
   static Future<void> toSettings(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const SettingsPage()));
+      Navigator.of(context).push(appRoute(const SettingsPage()));
 
   static Future<void> toNotifications(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const NotificationsPage()));
+      Navigator.of(context).push(appRoute(const NotificationsPage()));
 
   static Future<void> toShareProfile(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const ShareProfilePage()));
+      Navigator.of(context).push(appRoute(const ShareProfilePage()));
 
   // Friends
-  static Future<void> toAddFriends(BuildContext context) =>
-      Navigator.of(context).push(slideUpRoute(const AddFriendsPage()));
+  static Future<void> toAddFriends(BuildContext context, {String query = ''}) =>
+      Navigator.of(context).push(appSheetRoute(AddFriendsPage(query: query)));
 
   static Future<void> toFriendRequests(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const FriendRequestsPage()));
+      Navigator.of(context).push(appRoute(const FriendRequestsPage()));
 
   static Future<void> toMyFriends(BuildContext context) =>
-      Navigator.of(context).push(fadeRoute(const MyFriendsPage()));
+      Navigator.of(context).push(appRoute(const MyFriendsPage()));
 
   static Future<void> toAddFriendProfile(BuildContext context, String userId) =>
       Navigator.of(
         context,
-      ).push(fadeRoute(AddFriendProfilePage(userId: userId)));
+      ).push(appRoute(AddFriendProfilePage(userId: userId)));
 
   static Future<void> toFriendProfile(BuildContext context, String friendUid) =>
       Navigator.of(
         context,
-      ).push(fadeRoute(YourFriendProfilePage(friendUid: friendUid)));
+      ).push(appRoute(YourFriendProfilePage(friendUid: friendUid)));
 
   // Messages
   static Future<void> toChat(BuildContext context, String friendUid) =>
-      Navigator.of(context).push(fadeRoute(ChatPage(friendUid: friendUid)));
+      Navigator.of(context).push(appRoute(ChatPage(friendUid: friendUid)));
+
+  static Future<void> toGroupChat(BuildContext context, String groupId) =>
+      Navigator.of(context).push(appRoute(ChatPage.group(groupId: groupId)));
 
   static Future<String?> toQrScanner(BuildContext context) =>
-      Navigator.of(context).push<String>(fadeRoute(const QRScannerPage()));
+      Navigator.of(context).push<String>(appRoute(const QRScannerPage()));
 
   /// Scans a QR code and opens the profile it links to (other codes are
   /// ignored, as before).
@@ -122,6 +137,36 @@ abstract final class AppRoutes {
     final userId = AppLinkHandler.profileUserId(result);
     if (userId != null && context.mounted) {
       await toAddFriendProfile(context, userId);
+    }
+  }
+
+  /// Capsule link from outside: the capsule over the map (its place in
+  /// view when it has one), or a note when the user may not see it.
+  static Future<void> openCapsuleFromLink(String capsuleId) async {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+    final l10n = context.l10n;
+    Capsule? capsule;
+    try {
+      capsule = await context.read<CapsuleRepository>().getById(capsuleId);
+    } catch (e) {
+      AppLogger.warning('Could not open the linked capsule', error: e);
+    }
+    final root = navigatorKey.currentContext;
+    if (root == null || !root.mounted) return;
+    if (capsule == null) {
+      PopupNotificationService.showError(
+        context: root,
+        message: l10n.capsulesLinkNotShared,
+        position: NotificationPosition.top,
+      );
+      return;
+    }
+    backToRoot();
+    selectedPageNotifier.value = AppTabs.map;
+    if (capsule.location != null) root.read<MapFocus>().focus(capsule);
+    if (capsule.isOpen(DateTime.now())) {
+      await CapsuleDetailDialog.show(root, capsule);
     }
   }
 

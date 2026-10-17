@@ -31,5 +31,15 @@
   "achievementNightOwl": "Ave nocturna",
   "achievementNightOwlGoal": "{count, plural, =1{Crea una cápsula entre la medianoche y las 5} other{Crea {count} cápsulas entre la medianoche y las 5}}",
   "achievementEarlyBird": "Madrugador",
-  "achievementEarlyBirdGoal": "{count, plural, =1{Crea una cápsula entre las 5 y las 8} other{Crea {count} cápsulas entre las 5 y las 8}}"
+  "achievementEarlyBirdGoal": "{count, plural, =1{Crea una cápsula entre las 5 y las 8} other{Crea {count} cápsulas entre las 5 y las 8}}",
+  "streakAtRisk": "Hoy aún no cuenta: deja una cápsula antes de medianoche para mantener tu racha.",
+  "streakSafe": "Hoy cuenta. ¡Hasta mañana!",
+  "streakLongest": "La más larga: {count, plural, =1{1 día} other{{count} días}}",
+  "streakMakeCapsule": "Crear una cápsula",
+  "momentsAchievementLabel": "Logro desbloqueado",
+  "momentsAchievementMore": "{count, plural, =1{y 1 más} other{y {count} más}}",
+  "momentsStreakLabel": "Tu racha crece",
+  "momentsStreakBody": "Una cápsula cada día. ¡Hasta mañana!",
+  "achievementCurious": "Curioso",
+  "achievementCuriousGoal": "{count, plural, =1{Abre 1 cápsula de otra persona} other{Abre {count} cápsulas de otras personas}}"
 }

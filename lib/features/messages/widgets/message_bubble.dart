@@ -9,13 +9,17 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/chat.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../chat_time.dart';
+import '../emoji_only.dart';
+import 'photo_message.dart';
+import 'voice_message.dart';
 
 /// One message: brand green on the right for the user's own, a white card on
 /// the left for the friend's. Consecutive messages of one sender form a
 /// group; [showTail] squares the bottom corner of the group's last bubble.
 /// Capsule messages show the capsule's photo; tapping it calls
-/// [onCapsuleTap]. A message still sending is shown at once; a failed one is
-/// faded until it is retried.
+/// [onCapsuleTap]. Photos show their picture ([PhotoMessage]) with the
+/// caption under it; tapping calls [onPhotoTap]. A message still sending is
+/// shown at once; a failed one is faded until it is retried.
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
@@ -23,14 +27,20 @@ class MessageBubble extends StatelessWidget {
     required this.isMine,
     this.showTail = false,
     this.onCapsuleTap,
+    this.onPhotoTap,
     this.replyName,
     this.onQuoteTap,
+    this.senderName,
   });
+
+  /// In a group, who wrote it (on the first of their messages in a row).
+  final String? senderName;
 
   final ChatMessage message;
   final bool isMine;
   final bool showTail;
   final VoidCallback? onCapsuleTap;
+  final VoidCallback? onPhotoTap;
 
   /// Whose message [ChatMessage.replyTo] quotes ("You" or the friend).
   final String? replyName;
@@ -49,15 +59,69 @@ class MessageBubble extends StatelessWidget {
     final imageUrl = message.imageUrl;
     final sentAt = message.sentAt;
     final failed = message.delivery == MessageDelivery.failed;
-    // A reply's quote spans the bubble: the column is laid out at its
-    // natural width and every line stretches to it.
-    final quoted = message.replyTo != null;
+    // A reply's quote and a sender's name span the bubble from the left:
+    // the column is laid out at its natural width and every line stretches.
+    final quoted =
+        message.replyTo != null ||
+        senderName != null ||
+        message.forwarded ||
+        message.capsuleRef != null;
+    // A photo fills its bubble but for a thin frame.
+    final photo = message.type == ChatMessageType.image;
+    final photoWidth = photo
+        ? PhotoMessage.displaySize(message, screen).width
+        : 0.0;
+
+    // One to three emoji alone: large, without the bubble, like a sticker.
+    final emoji = message.type == ChatMessageType.text && !quoted
+        ? EmojiOnly.count(message.text)
+        : null;
+    if (emoji != null) {
+      return Align(
+        alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+        child: Opacity(
+          opacity: failed ? 0.5 : 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Column(
+              crossAxisAlignment: isMine
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  message.text.trim(),
+                  style: TextStyle(
+                    fontSize: EmojiOnly.size(emoji),
+                    height: 1.15,
+                  ),
+                ),
+                if (sentAt != null)
+                  Text(
+                    ChatTime.messageTime(
+                      sentAt,
+                      locale: context.l10n.localeName,
+                    ),
+                    style: TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 11,
+                      color: palette.textMuted,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
 
     final bubble = Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: screen.width * 0.035,
-        vertical: screen.height * 0.009,
-      ),
+      padding: photo
+          ? const EdgeInsets.fromLTRB(4, 4, 4, 6)
+          : EdgeInsets.symmetric(
+              horizontal: screen.width * 0.035,
+              vertical: screen.height * 0.009,
+            ),
       constraints: BoxConstraints(maxWidth: screen.width * 0.72),
       decoration: BoxDecoration(
         color: isMine ? AppColors.brandGreen : palette.surface,
@@ -77,6 +141,50 @@ class MessageBubble extends StatelessWidget {
               : CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (message.forwarded)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: Text(
+                  context.l10n.messagesForwarded,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: isMine ? AppColors.onMediaMuted : palette.textMuted,
+                  ),
+                ),
+              ),
+            if (senderName case final name?)
+              Padding(
+                padding: EdgeInsets.fromLTRB(photo ? 6 : 0, 0, 0, 2),
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.brandGreen,
+                  ),
+                ),
+              ),
+            // A quick reply from a capsule: the capsule, which opens.
+            if (message.capsuleRef case final ref?)
+              Semantics(
+                button: true,
+                label: context.l10n.messagesOpenCapsule(ref.title),
+                child: GestureDetector(
+                  onTap: onCapsuleTap,
+                  child: ExcludeSemantics(
+                    child: _Quote(
+                      name: context.l10n.messagesCapsuleLabel,
+                      text: ref.title,
+                      onGreen: isMine,
+                    ),
+                  ),
+                ),
+              ),
             if (message.replyTo case final reply?)
               GestureDetector(
                 onTap: onQuoteTap,
@@ -113,6 +221,25 @@ class MessageBubble extends StatelessWidget {
                   ),
                 ),
               ),
+            ] else if (message.type == ChatMessageType.voice)
+              VoiceMessageView(message: message, onGreen: isMine)
+            else if (photo) ...[
+              PhotoMessage(message: message, onTap: onPhotoTap),
+              if (message.caption.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
+                  child: SizedBox(
+                    width: photoWidth - 12,
+                    child: Text(
+                      message.caption,
+                      style: TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: screen.height * 0.022,
+                        color: textColor,
+                      ),
+                    ),
+                  ),
+                ),
             ] else
               Text(
                 message.text,
@@ -124,14 +251,17 @@ class MessageBubble extends StatelessWidget {
               ),
             if (sentAt != null) ...[
               const SizedBox(height: 2),
-              Text(
-                ChatTime.messageTime(sentAt, locale: context.l10n.localeName),
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  fontSize: 11,
-                  // Muted white on the green bubble, the same in both themes.
-                  color: isMine ? AppColors.onMediaMuted : palette.textMuted,
+              Padding(
+                padding: EdgeInsets.only(right: photo ? 6 : 0),
+                child: Text(
+                  ChatTime.messageTime(sentAt, locale: context.l10n.localeName),
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 11,
+                    // Muted white on the green bubble, the same in both themes.
+                    color: isMine ? AppColors.onMediaMuted : palette.textMuted,
+                  ),
                 ),
               ),
             ],

@@ -46,9 +46,9 @@
   "settingsDataAndStorage": "Data and storage",
   "settingsSectionSupport": "SUPPORT",
   "settingsHelp": "Help",
-  "settingsAbout": "About",
+  "settingsAbout": "About me",
   "@settingsAbout": {
-    "description": "Settings row and page with the app version and legal documents."
+    "description": "Settings row and page title: the \"about me\" line on the profile."
   },
   "settingsLogOut": "Log Out",
   "settingsLogOutConfirm": "Are you sure you want to log out?",
@@ -399,5 +399,110 @@
   "settingsNotificationsStreak": "Streak reminder",
   "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
   "settingsNotificationsNews": "News from Later",
-  "settingsNotificationsNewsHint": "Rare announcements from the team"
+  "settingsNotificationsNewsHint": "Rare announcements from the team",
+  "settingsAboutDescription": "A few words under your name, for everyone who opens your profile.",
+  "@settingsAboutDescription": {
+    "description": "Explanation on the \"About me\" page."
+  },
+  "settingsAboutHint": "Collecting sunsets since 2019",
+  "@settingsAboutHint": {
+    "description": "Example text in the empty \"about me\" field."
+  },
+  "settingsAboutUpdated": "About me updated",
+  "@settingsAboutUpdated": {
+    "description": "Toast after saving the \"about me\" line."
+  },
+  "settingsAboutTooLong": "At most {count} characters",
+  "@settingsAboutTooLong": {
+    "description": "Error when the \"about me\" line is too long.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPrivacyFindByName": "Find me by name",
+  "@settingsPrivacyFindByName": {
+    "description": "Privacy switch: others may find the user by searching their name."
+  },
+  "settingsPrivacyFindByNameHint": "People can search for your name. By username they always can.",
+  "@settingsPrivacyFindByNameHint": {
+    "description": "Explains the \"find me by name\" switch."
+  },
+  "settingsSectionDistances": "DISTANCES",
+  "@settingsSectionDistances": {
+    "description": "Settings section: the unit distances are shown in."
+  },
+  "settingsUnitsKilometres": "Kilometres",
+  "@settingsUnitsKilometres": {
+    "description": "Distance unit choice."
+  },
+  "settingsUnitsMiles": "Miles",
+  "@settingsUnitsMiles": {
+    "description": "Distance unit choice."
+  },
+  "settingsSectionPhotos": "PHOTOS",
+  "@settingsSectionPhotos": {
+    "description": "Settings section: how capsule photos are sent and kept."
+  },
+  "settingsPhotoQualityStandard": "Standard (sent faster)",
+  "@settingsPhotoQualityStandard": {
+    "description": "Photo quality choice: 1600 px, quicker to upload."
+  },
+  "settingsPhotoQualityHigh": "High (sharper, larger)",
+  "@settingsPhotoQualityHigh": {
+    "description": "Photo quality choice: 2560 px, sharper and larger."
+  },
+  "settingsSaveToGallery": "Save capsule photos to the gallery",
+  "@settingsSaveToGallery": {
+    "description": "Switch: also save capsule photos to the phone gallery (Android)."
+  },
+  "settingsSaveToGalleryHint": "In Pictures/Later, once the capsule is made.",
+  "@settingsSaveToGalleryHint": {
+    "description": "Explains where the gallery copy goes (folder names stay in English: Android shows them so)."
+  },
+  "settingsSignInMethods": "Sign-in methods",
+  "@settingsSignInMethods": {
+    "description": "Account row: how the user can sign in (email, Google)."
+  },
+  "settingsSignInEmail": "Email and password",
+  "@settingsSignInEmail": {
+    "description": "Sign-in method: email address and password."
+  },
+  "settingsDownloadData": "Download my data",
+  "@settingsDownloadData": {
+    "description": "Data and storage row: export the user's data as a file."
+  },
+  "settingsDownloadDataHint": "Your profile, settings, capsules, friends and chats as one file (photos as links).",
+  "@settingsDownloadDataHint": {
+    "description": "Explains what the data export contains."
+  },
+  "settingsDownloadDataFailed": "Could not prepare your data",
+  "@settingsDownloadDataFailed": {
+    "description": "Error when the data export could not be made."
+  },
+  "settingsPrivacyFindByContacts": "Found by people with my email",
+  "@settingsPrivacyFindByContacts": {
+    "description": "Privacy switch: people who have the user's email in their contacts may find them (opt-in)."
+  },
+  "settingsPrivacyFindByContactsHint": "People with your email in their contacts may see you as a suggestion. Only a fingerprint of a confirmed address is stored.",
+  "@settingsPrivacyFindByContactsHint": {
+    "description": "Explains the contacts switch."
+  },
+  "settingsUploadsWifiOnly": "Upload on Wi-Fi only",
+  "@settingsUploadsWifiOnly": {
+    "description": "Switch: capsules upload only on Wi-Fi (not on metered mobile data)."
+  },
+  "settingsUploadsWifiOnlyHint": "Capsules made on mobile data wait on the phone for Wi-Fi.",
+  "@settingsUploadsWifiOnlyHint": {
+    "description": "Explains the Wi-Fi only switch."
+  },
+  "settingsNotificationsVibrate": "Vibration",
+  "@settingsNotificationsVibrate": {
+    "description": "Notification settings switch: pushes vibrate."
+  },
+  "settingsNotificationsVibrateNeedsSound": "Comes with the sound",
+  "@settingsNotificationsVibrateNeedsSound": {
+    "description": "Under the vibration switch while sound is off (it is greyed out then)."
+  }
 }

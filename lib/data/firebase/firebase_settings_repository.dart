@@ -53,6 +53,21 @@ class FirebaseSettingsRepository implements SettingsRepository {
       _doc(uid).set({'language': languageCode}, SetOptions(merge: true));
 
   @override
+  Future<void> setChatPinned(
+    String uid,
+    String chatId, {
+    required bool pinned,
+  }) => _doc(uid).set({
+    'pinnedChats': pinned
+        ? FieldValue.arrayUnion([chatId])
+        : FieldValue.arrayRemove([chatId]),
+  }, SetOptions(merge: true));
+
+  @override
+  Future<void> setPinnedFriends(String uid, List<String> friends) =>
+      _doc(uid).set({'pinnedFriends': friends}, SetOptions(merge: true));
+
+  @override
   Future<void> setChatMuted(String uid, String chatId, {required bool muted}) =>
       _doc(uid).set({
         'mutedChats': muted

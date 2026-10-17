@@ -29,14 +29,45 @@ service firebase.storage {
         && imageUpload(5 * 1024 * 1024);
     }
 
-    // Capsule photos (the app stores them as image.jpg, compressed) and the
-    // frames of a loop capsule (frame_0.jpg ... frame_9.jpg, smaller).
+    // Capsule photos (the app stores them as image.jpg, compressed), a
+    // small thumb.jpg for lists and chats, and the frames of a loop capsule
+    // (frame_0.jpg ... frame_9.jpg, smaller).
     match /userdata/{uid}/capsules/{capsuleId}/{file} {
       allow read: if isMe(uid);
       allow write: if isMe(uid)
         && ((file == 'image.jpg' && imageUpload(10 * 1024 * 1024))
+          || (file == 'thumb.jpg' && imageUpload(512 * 1024))
           || (file.matches('frame_[0-9][.]jpg')
             && imageUpload(3 * 1024 * 1024)));
+    }
+
+    // Recordings: audio files below [maxBytes].
+    function audioUpload(maxBytes) {
+      return request.resource.contentType.matches('audio/.*')
+        && request.resource.size <= maxBytes;
+    }
+
+    // Photos (.jpg) and voice messages (.m4a) sent in a chat
+    // (chats/{uidA_uidB}/{sender}/{id}): the sender uploads and may delete
+    // them; both participants may read. The app reads them through download
+    // URLs, like capsule photos.
+    match /chats/{chatId}/{senderId}/{name} {
+      function members() {
+        return chatId.split('_');
+      }
+
+      allow read: if signedIn() && members().size() == 2
+        && request.auth.uid in members();
+      // resource == null: a sent photo is never replaced (the emulator treats
+      // writing over an existing file as a create too).
+      allow create: if resource == null && isMe(senderId)
+        && members().size() == 2
+        && senderId in members()
+        && ((name.matches('[A-Za-z0-9]{1,40}[.]jpg')
+            && imageUpload(5 * 1024 * 1024))
+          || (name.matches('[A-Za-z0-9]{1,40}[.]m4a')
+            && audioUpload(5 * 1024 * 1024)));
+      allow delete: if isMe(senderId);
     }
 
     match /{allPaths=**} {

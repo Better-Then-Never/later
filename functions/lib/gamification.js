@@ -13,6 +13,9 @@ const STREAK_WINDOW_MS = 48 * 60 * 60 * 1000;
 /** Geohash length for "places": 5 characters ≈ 4.9 × 4.9 km. */
 const PLACE_PRECISION = 5;
 const MAX_PLACES = 5000;
+/** Bounds of the world summary (one document per user, well under 1 MB). */
+const MAX_COUNTRIES = 300;
+const MAX_CITIES_PER_COUNTRY = 100;
 
 /**
  * The achievement registry. `metric` is a field of users/{uid}.stats (or
@@ -46,6 +49,8 @@ const ACHIEVEMENTS = Object.freeze([
     title: { en: 'Night owl', ru: 'Сова', pl: 'Nocny marek', de: 'Nachteule', es: 'Ave nocturna' } },
   { id: 'early_bird', metric: 'morningCapsules', tiers: [1, 10], icon: 'wb_twilight',
     title: { en: 'Early bird', ru: 'Жаворонок', pl: 'Ranny ptaszek', de: 'Frühaufsteher', es: 'Madrugador' } },
+  { id: 'curious', metric: 'capsulesViewed', tiers: [10, 50, 250, 1000], icon: 'visibility',
+    title: { en: 'Curious', ru: 'Любопытный', pl: 'Ciekawski', de: 'Neugierig', es: 'Curioso' } },
 ]);
 
 // ---- helpers ------------------------------------------------------------------
@@ -113,6 +118,57 @@ function nextStreak(stats, day) {
   return { streakCurrent: next, streakLongest: Math.max(longest, next), streakLastDay: day };
 }
 
+// ---- the world summary (B7) ----------------------------------------------------
+
+/** The capsule's country ("PL"), as the app's geocoder gave it, or null. */
+function countryOf(capsule) {
+  const code = capsule && capsule.countryCode;
+  return typeof code === 'string' && /^[A-Z]{2}$/.test(code) ? code : null;
+}
+
+/** The capsule's town as a map key (no dots or slashes, at most 80 characters), or null. */
+function cityOf(capsule) {
+  const name = capsule && capsule.placeName;
+  if (typeof name !== 'string') return null;
+  const clean = name.replace(/[./]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+  return clean && !/^__.*__$/.test(clean) ? clean : null;
+}
+
+/**
+ * The summary after one more capsule in [country] / [city] captured at
+ * [when]: per country the capsules, the towns (capsules each) and the first
+ * and last visit; totals for the profile. Null when the summary is full.
+ * Stamps stay when a capsule is deleted, like a passport's.
+ */
+function nextWorld(world, country, city, when) {
+  const countries = { ...((world && world.countries) || {}) };
+  const known = countries[country];
+  if (!known && Object.keys(countries).length >= MAX_COUNTRIES) return null;
+  const entry = known
+    ? { ...known, cities: { ...(known.cities || {}) } }
+    : { capsules: 0, cities: {}, first: when, last: when };
+  entry.capsules = (entry.capsules || 0) + 1;
+  const first = toDate(entry.first);
+  const last = toDate(entry.last);
+  if (!first || when < first) entry.first = when;
+  if (!last || when > last) entry.last = when;
+  let newCity = false;
+  if (city) {
+    if (typeof entry.cities[city] === 'number') entry.cities[city] += 1;
+    else if (Object.keys(entry.cities).length < MAX_CITIES_PER_COUNTRY) {
+      entry.cities[city] = 1;
+      newCity = true;
+    }
+  }
+  countries[country] = entry;
+  const cityCount = Object.values(countries).reduce((n, c) => n + Object.keys(c.cities || {}).length, 0);
+  return {
+    world: { countries, countryCount: Object.keys(countries).length, cityCount, updatedAt: when },
+    newCountry: !known,
+    newCity,
+  };
+}
+
 // ---- capsule created: stats and streak ----------------------------------------
 
 /**
@@ -136,8 +192,15 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
 
   const userRef = db.collection('users').doc(ownerId);
   const privateRef = userRef.collection('private').doc('gamification');
+  const worldRef = userRef.collection('world').doc('summary');
+  const country = countryOf(capsule);
   return db.runTransaction(async (tx) => {
-    const [user, priv] = await Promise.all([tx.get(userRef), tx.get(privateRef)]);
+    const [user, priv, saved] = await Promise.all([
+      tx.get(userRef),
+      tx.get(privateRef),
+      // Read only for capsules that know their country.
+      country ? tx.get(worldRef) : null,
+    ]);
     const stats = (user.exists && user.get('stats')) || {};
     const p = priv.exists ? priv.data() : {};
     const update = {
@@ -174,9 +237,23 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
       }
       privUpdate.last = location;
     }
+    let world = null;
+    if (country && user.exists) {
+      world = nextWorld(saved.exists ? saved.data() : null, country, cityOf(capsule), captured);
+      if (world) {
+        tx.set(worldRef, world.world);
+        update['stats.countries'] = world.world.countryCount;
+        update['stats.cities'] = world.world.cityCount;
+      }
+    }
     if (user.exists) tx.update(userRef, update);
     if (Object.keys(privUpdate).length) tx.set(privateRef, privUpdate, { merge: true });
-    return { counted: user.exists, streak, fresh };
+    return {
+      counted: user.exists,
+      streak,
+      fresh,
+      world: world && { country, newCountry: world.newCountry, newCity: world.newCity },
+    };
   });
 }
 
@@ -202,14 +279,48 @@ function tierFor(tiers, value) {
  * threshold, once (the achievement document keeps the highest tier).
  */
 async function onUserUpdated(services, uid, before, after) {
-  const { db } = services;
   const was = metricsOf(before);
   const is = metricsOf(after);
   const candidates = ACHIEVEMENTS.filter(
     (a) => tierFor(a.tiers, is[a.metric]) > tierFor(a.tiers, was[a.metric]),
   );
   if (candidates.length === 0) return null;
+  return unlock(services, uid, is, candidates);
+}
+
+/**
+ * After a counted stat of [uid] changed (B6): the stat writers call this
+ * instead of a trigger on every users/{uid} write (profile edits, pins,
+ * favourites...). Two reads: the profile and the stored achievements;
+ * unlocks every tier reached and not stored yet.
+ */
+async function checkAchievements(services, uid) {
+  const { db } = services;
+  if (typeof uid !== 'string' || !uid) return null;
+  const userRef = db.collection('users').doc(uid);
+  const [user, stored] = await Promise.all([
+    userRef.get(),
+    userRef.collection('achievements').get(),
+  ]);
+  if (!user.exists) return null;
+  const is = metricsOf(user.data());
+  const storedTier = new Map(
+    stored.docs.map((d) => [d.id, Number.isInteger(d.get('tier')) ? d.get('tier') : -1]),
+  );
+  const candidates = ACHIEVEMENTS.filter(
+    (a) => tierFor(a.tiers, is[a.metric]) > (storedTier.has(a.id) ? storedTier.get(a.id) : -1),
+  );
+  if (candidates.length === 0) return null;
+  // A catch-up (several tiers reached since the last check, or levels added
+  // later) tells the user once; the rest are stored quietly and show on the
+  // profile.
+  return unlock(services, uid, is, candidates, { notifyAtMost: 1 });
+}
+
+async function unlock(services, uid, is, candidates, { notifyAtMost = Infinity } = {}) {
+  const { db } = services;
   const unlocked = [];
+  let told = 0;
   for (const a of candidates) {
     const tier = tierFor(a.tiers, is[a.metric]);
     const ref = db.collection('users').doc(uid).collection('achievements').doc(a.id);
@@ -228,6 +339,8 @@ async function onUserUpdated(services, uid, before, after) {
     });
     if (!isNew) continue;
     unlocked.push(`${a.id}:${tier}`);
+    if (told >= notifyAtMost) continue;
+    told++;
     await social.deliver(
       services,
       uid,
@@ -242,6 +355,53 @@ async function onUserUpdated(services, uid, before, after) {
     );
   }
   return { unlocked };
+}
+
+// ---- capsules viewed (B7) --------------------------------------------------------
+
+/**
+ * Whether [uid] may count a view of [capsule] (someone else's capsule they
+ * could open, already open). The app writes the marker only for those; this
+ * keeps a hand-written marker from counting.
+ */
+async function viewCounts(db, uid, capsule, now) {
+  if (!capsule || !capsule.ownerId || capsule.ownerId === uid) return false;
+  const coAuthors = Array.isArray(capsule.coAuthors) ? capsule.coAuthors : [];
+  if (coAuthors.includes(uid)) return false;
+  const openAt = toDate(capsule.openAt);
+  if (openAt && openAt > now) return false;
+  if (capsule.privacy === 'public') return true;
+  const sharedWith = Array.isArray(capsule.sharedWith) ? capsule.sharedWith : [];
+  if (sharedWith.includes(uid)) return true;
+  if (capsule.privacy !== 'friends') return false;
+  const owner = await db.collection('users').doc(capsule.ownerId).get();
+  const friends = (owner.exists && owner.get('friends')) || [];
+  return Array.isArray(friends) && friends.includes(uid);
+}
+
+/**
+ * users/{uid}/viewed/{capsuleId} created (the app opened someone else's
+ * capsule for the first time): counts it once in stats.capsulesViewed (the
+ * marker records that it was counted, so a retried event does not count it
+ * again), then unlocks what that reached ("Curious").
+ * Cost: one capsule read (and the owner for friends-only capsules), one
+ * transaction, the achievement check.
+ */
+async function onCapsuleViewed(services, uid, capsuleId) {
+  const { db } = services;
+  const capsule = await db.collection('capsules').doc(capsuleId).get();
+  const counts = await viewCounts(db, uid, capsule.exists ? capsule.data() : null, notify.now(services));
+  const userRef = db.collection('users').doc(uid);
+  const markRef = userRef.collection('viewed').doc(capsuleId);
+  const counted = await db.runTransaction(async (tx) => {
+    const [mark, user] = await Promise.all([tx.get(markRef), tx.get(userRef)]);
+    if (!mark.exists || mark.get('counted') !== undefined || !user.exists) return false;
+    tx.update(markRef, { counted: counts });
+    if (counts) tx.update(userRef, { 'stats.capsulesViewed': FieldValue.increment(1) });
+    return counts;
+  });
+  if (counted) await checkAchievements(services, uid);
+  return { counted };
 }
 
 // ---- streak reminder ------------------------------------------------------------
@@ -283,7 +443,7 @@ async function sendStreakReminders(services, reminderHour = 19) {
         body: i18n.t(lang, 'streakBody', { days: stats.streakCurrent }),
       },
       data: { type: 'streak', clickAction: 'FLUTTER_NOTIFICATION_CLICK' },
-      ...notify.delivery('activity', settings.notifications.sound),
+      ...notify.delivery('activity', prefs.alertOf(settings)),
     }));
     sent += result.sent;
   }
@@ -300,7 +460,12 @@ module.exports = {
   nextStreak,
   validLocation,
   tierFor,
+  countryOf,
+  cityOf,
+  nextWorld,
   onCapsuleCreated,
   onUserUpdated,
+  checkAchievements,
+  onCapsuleViewed,
   sendStreakReminders,
 };

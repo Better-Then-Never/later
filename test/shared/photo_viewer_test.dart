@@ -86,4 +86,44 @@ void main() {
     expect(find.byType(PhotoViewer), findsNothing);
     expect(find.text('photo'), findsOneWidget, reason: 'back on the dialog');
   });
+
+  testWidgets('with a hero tag the photo flies; no page-wide fade', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        home: Builder(
+          builder: (context) => Center(
+            child: GestureDetector(
+              onTap: () =>
+                  PhotoViewer.show(context, 'file:///nope.jpg', heroTag: 'p'),
+              child: const Hero(
+                tag: 'p',
+                child: SizedBox(width: 80, height: 80, child: Text('thumb')),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('thumb'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 60));
+    // Mid-flight: the viewer's photo is a hero, and nothing fades the page.
+    expect(
+      find.byWidgetPredicate((w) => w is Hero && w.tag == 'p'),
+      findsWidgets,
+    );
+    expect(
+      find.ancestor(
+        of: find.byType(PhotoViewer),
+        matching: find.byType(FadeTransition),
+      ),
+      findsNothing,
+    );
+    await tester.pumpAndSettle();
+    expect(find.byType(PhotoViewer), findsOneWidget);
+  });
 }

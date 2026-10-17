@@ -1,8 +1,11 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/features/history/on_this_day.dart';
+import 'package:later/features/history/widgets/on_this_day_strip.dart';
+
+import '../helpers/test_app.dart';
 
 Capsule _c(
   String id, {
@@ -66,4 +69,40 @@ void main() {
     expect(say('de', 2), 'Vor 2 Jahren');
     expect(say('es', 1), 'Hace 1 año');
   });
+
+  for (final scale in [1.0, 1.3, 2.0]) {
+    for (final language in ['ru', 'de']) {
+      testWidgets('the strip fits its text at $scale in $language', (
+        tester,
+      ) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 3;
+        addTearDown(tester.view.reset);
+        final now = DateTime(2026, 10, 17, 9);
+        await tester.pumpWidget(
+          testApp(
+            locale: Locale(language),
+            home: MediaQuery(
+              data: MediaQueryData(
+                size: const Size(360, 800),
+                textScaler: TextScaler.linear(scale),
+              ),
+              child: Scaffold(
+                body: OnThisDayStrip(
+                  capsules: [
+                    _c('Lake picnic', createdAt: DateTime(2025, 10, 17)),
+                    _c('First snow', createdAt: DateTime(2024, 10, 17)),
+                  ],
+                  now: now,
+                  onTap: (_) {},
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
 }

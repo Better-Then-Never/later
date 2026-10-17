@@ -4,11 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:snow_fall_animation/snow_fall_animation.dart';
 
 import '../core/l10n/l10n.dart';
-import '../core/theme/app_motion.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/themed_asset_bundle.dart';
 import '../features/settings/settings_store.dart';
 import 'appearance/appearance_controller.dart';
+import 'appearance/appearance_crossfade.dart';
 import 'appearance/ui_scale_view.dart';
 import 'router/app_routes.dart';
 import 'session/auth_gate.dart';
@@ -49,9 +49,9 @@ class LaterApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: appearance.themeMode,
-      // Switching theme crossfades every colour (AppPalette.lerp).
-      themeAnimationDuration: AppMotion.slow,
-      themeAnimationCurve: AppMotion.standardCurve,
+      // No colour lerp: AppearanceCrossfade fades a picture of the old look
+      // instead (one rebuild, not one per frame).
+      themeAnimationDuration: Duration.zero,
       locale: appearance.locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -61,28 +61,30 @@ class LaterApp extends StatelessWidget {
         // Pushes are written by the server in the language the app shows.
         context.read<SettingsStore>().syncLanguage(locale.languageCode);
         final brightness = Theme.of(context).brightness;
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: systemBarsFor(brightness),
-          child: ThemedAssets(
-            dark: brightness == Brightness.dark,
-            child: UiScaleView(
-              scale: appearance.uiSize.scale,
-              // Seasonal snowfall drawn over every screen (part of the design).
-              child: Stack(
-                children: [
-                  child ?? const SizedBox(),
-                  if (snow)
-                    const IgnorePointer(
-                      child: SnowFallAnimation(
-                        config: SnowfallConfig(
-                          numberOfSnowflakes: 15,
-                          speed: 0.5,
-                          useEmoji: true,
-                          customEmojis: ['❄️', '❅', '❆'],
+        return AppearanceCrossfade(
+          child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: systemBarsFor(brightness),
+            child: ThemedAssets(
+              dark: brightness == Brightness.dark,
+              child: UiScaleView(
+                scale: appearance.uiSize.scale,
+                // Seasonal snowfall drawn over every screen (part of the design).
+                child: Stack(
+                  children: [
+                    child ?? const SizedBox(),
+                    if (snow)
+                      const IgnorePointer(
+                        child: SnowFallAnimation(
+                          config: SnowfallConfig(
+                            numberOfSnowflakes: 15,
+                            speed: 0.5,
+                            useEmoji: true,
+                            customEmojis: ['❄️', '❅', '❆'],
+                          ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

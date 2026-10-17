@@ -86,8 +86,22 @@ async function deleteUserData({ db, bucket }, uid) {
   const chats = await db.collection('chats').where('participants', 'array-contains', uid).get();
   for (const chat of chats.docs) {
     await db.recursiveDelete(chat.ref);
+    // Photos sent in the chat, by either participant.
+    await bucket.deleteFiles({ prefix: `chats/${chat.id}/` });
   }
   report.chats = chats.size;
+
+  // Groups go on without the account.
+  const groups = await db.collection('chats').where('members', 'array-contains', uid).get();
+  for (const g of groups.docs) {
+    await g.ref.update({ members: FieldValue.arrayRemove(uid) });
+  }
+  report.groups = groups.size;
+
+  // Their entry in the contacts index and their last contacts request.
+  const indexed = await db.collection('contactIndex').where('uid', '==', uid).get();
+  await deleteDocs(db, indexed.docs.map((d) => d.ref));
+  await db.collection('contactMatches').doc(uid).delete();
 
   // Username reservation, if it is still this user's.
   if (typeof data.username === 'string' && data.username) {

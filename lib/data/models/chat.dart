@@ -1,20 +1,47 @@
+import 'package:flutter/foundation.dart' show listEquals;
+
 import 'capsule.dart';
 
 /// A conversation between two users (`chats/{uidA}_{uidB}`, uids sorted so
-/// both sides compute the same id).
+/// both sides compute the same id), or a group (`chats/g_{id}`, [members]
+/// and a [name]).
 class Chat {
   const Chat({
     required this.id,
-    required this.participants,
+    this.participants = const [],
     this.lastMessage = '',
     this.lastUpdated,
     this.lastSenderId,
     this.unreadCounts = const {},
     this.lastReadAt = const {},
+    this.members = const [],
+    this.name = '',
   });
 
   final String id;
+
+  /// The two people of a two-person chat (empty for groups).
   final List<String> participants;
+
+  /// A group's people (2-20; empty for two-person chats).
+  final List<String> members;
+
+  /// A group's name.
+  final String name;
+
+  /// Most people in a group (firestore.rules).
+  static const maxGroupMembers = 20;
+
+  /// Longest group name.
+  static const maxGroupName = 60;
+
+  static bool isGroupId(String id) => id.startsWith('g_');
+
+  bool get isGroup => isGroupId(id);
+
+  /// Everyone in it but [uid].
+  List<String> othersThan(String uid) =>
+      (isGroup ? members : participants).where((p) => p != uid).toList();
 
   /// Text of the newest message (a capsule's title for capsules); empty
   /// before the first message and after the history was cleared.
@@ -29,7 +56,15 @@ class Chat {
   /// When each participant last read the chat (read receipts).
   final Map<String, DateTime> lastReadAt;
 
-  int unreadFor(String uid) => unreadCounts[uid] ?? 0;
+  /// Messages [uid] has not read. A group keeps no counts: 1 while it has
+  /// something newer from someone else than [uid]'s read mark.
+  int unreadFor(String uid) {
+    if (!isGroup) return unreadCounts[uid] ?? 0;
+    final updated = lastUpdated;
+    if (!hasMessages || lastSenderId == uid || updated == null) return 0;
+    final read = lastReadAt[uid];
+    return read == null || updated.isAfter(read) ? 1 : 0;
+  }
 
   DateTime? readAtOf(String uid) => lastReadAt[uid];
 
@@ -58,7 +93,10 @@ class Chat {
       _mapEquals(other.unreadCounts, unreadCounts) &&
       _mapEquals(other.lastReadAt, lastReadAt) &&
       other.participants.length == participants.length &&
-      other.participants.every(participants.contains);
+      other.participants.every(participants.contains) &&
+      other.name == name &&
+      other.members.length == members.length &&
+      other.members.every(members.contains);
 
   @override
   int get hashCode => Object.hash(id, lastMessage, lastUpdated, lastSenderId);
@@ -66,10 +104,45 @@ class Chat {
 
 enum ChatMessageType {
   text,
-  capsule;
+  capsule,
 
-  static ChatMessageType parse(Object? value) =>
-      value == 'capsule' ? capsule : text;
+  /// A photo (with an optional caption as its text).
+  image,
+
+  /// A voice recording (its text is a microphone sign for older apps).
+  voice;
+
+  static ChatMessageType parse(Object? value) => switch (value) {
+    'capsule' => capsule,
+    'image' => image,
+    'voice' => voice,
+    _ => text,
+  };
+}
+
+/// A recording of a voice message, uploaded: its download URL and its file
+/// in Storage (`chats/{chatId}/{sender}/{messageId}.m4a`).
+class ChatAudio {
+  const ChatAudio({required this.url, required this.path});
+
+  final String url;
+  final String path;
+}
+
+/// A photo of a message, uploaded: its download URL, its file in Storage
+/// (`chats/{chatId}/{sender}/{messageId}.jpg`) and its size in pixels.
+class ChatPhoto {
+  const ChatPhoto({
+    required this.url,
+    required this.path,
+    required this.width,
+    required this.height,
+  });
+
+  final String url;
+  final String path;
+  final int width;
+  final int height;
 }
 
 /// Where a message of this user is on its way to the server.
@@ -84,6 +157,25 @@ enum MessageDelivery {
   sent,
 }
 
+/// The capsule a message answers (a quick reply from the capsule): enough
+/// to show and open it.
+class MessageCapsuleRef {
+  const MessageCapsuleRef({required this.id, required this.title});
+
+  /// The title keeps this many characters.
+  static const maxTitle = 140;
+
+  final String id;
+  final String title;
+
+  @override
+  bool operator ==(Object other) =>
+      other is MessageCapsuleRef && other.id == id && other.title == title;
+
+  @override
+  int get hashCode => Object.hash(id, title);
+}
+
 /// The message a reply quotes: enough to show it without loading it.
 class MessageReply {
   const MessageReply({
@@ -95,13 +187,15 @@ class MessageReply {
   /// The quote keeps this many characters of the original.
   static const maxText = 140;
 
-  factory MessageReply.of(ChatMessage message) {
-    final runes = message.text.runes;
+  /// [text] replaces the message's own (e.g. "📷 Photo" for a photo).
+  factory MessageReply.of(ChatMessage message, {String? text}) {
+    final source = text ?? message.text;
+    final runes = source.runes;
     return MessageReply(
       id: message.id,
       senderId: message.senderId,
       text: runes.length <= maxText
-          ? message.text
+          ? source
           : '${String.fromCharCodes(runes.take(maxText))}…',
     );
   }
@@ -135,7 +229,35 @@ class ChatMessage {
     this.delivery = MessageDelivery.sent,
     this.replyTo,
     this.reactions = const {},
+    this.imagePath,
+    this.width,
+    this.height,
+    this.localPath,
+    this.audioUrl,
+    this.audioPath,
+    this.durationMs,
+    this.waveform = const [],
+    this.forwarded = false,
+    this.capsuleRef,
   });
+
+  /// The capsule this message answers (a quick reply).
+  final MessageCapsuleRef? capsuleRef;
+
+  /// Sent on from another conversation (marked "Forwarded").
+  final bool forwarded;
+
+  /// The text of a photo without a caption (older app versions show it).
+  static const photoSign = '📷';
+
+  /// The text of a voice message (older app versions show it).
+  static const voiceSign = '🎤';
+
+  /// Longest voice message.
+  static const maxVoice = Duration(minutes: 5);
+
+  /// Bars in a voice message's waveform.
+  static const waveformBars = 40;
 
   final String id;
   final String senderId;
@@ -147,17 +269,7 @@ class ChatMessage {
   /// Each participant's reaction, by uid.
   final Map<String, ReactionType> reactions;
 
-  ChatMessage withReaction(String uid, ReactionType? type) => ChatMessage(
-    id: id,
-    senderId: senderId,
-    text: text,
-    sentAt: sentAt,
-    isRead: isRead,
-    type: this.type,
-    capsuleId: capsuleId,
-    imageUrl: imageUrl,
-    delivery: delivery,
-    replyTo: replyTo,
+  ChatMessage withReaction(String uid, ReactionType? type) => _copy(
     reactions: {
       for (final e in reactions.entries)
         if (e.key != uid) e.key: e.value,
@@ -170,9 +282,27 @@ class ChatMessage {
   final bool isRead;
   final ChatMessageType type;
 
-  /// For capsule messages: the shared capsule and its photo.
+  /// For capsule messages: the shared capsule and its photo. For photos:
+  /// [imageUrl] and the file in Storage ([imagePath]).
   final String? capsuleId;
   final String? imageUrl;
+  final String? imagePath;
+
+  /// A photo's size in pixels (its shape before it arrives); null for older
+  /// messages and other types.
+  final int? width;
+  final int? height;
+
+  /// A photo or voice message sent from this phone: the file on the phone,
+  /// used until (and after) the server has it, so it never reloads.
+  final String? localPath;
+
+  /// For voice messages: the recording's URL and its file in Storage, its
+  /// length and loudness bars (0-100, [waveformBars] of them).
+  final String? audioUrl;
+  final String? audioPath;
+  final int? durationMs;
+  final List<int> waveform;
   final MessageDelivery delivery;
 
   /// Read by the recipient: from the chat's `lastReadAt` (current app) or the
@@ -185,7 +315,31 @@ class ChatMessage {
         !at.isAfter(recipientReadAt);
   }
 
-  ChatMessage withDelivery(MessageDelivery value) => ChatMessage(
+  ChatMessage withDelivery(MessageDelivery value) => _copy(delivery: value);
+
+  ChatMessage withLocalPath(String? path) => _copy(localPath: path);
+
+  ChatMessage withPhoto(ChatPhoto photo) => _copy(
+    imageUrl: photo.url,
+    imagePath: photo.path,
+    width: photo.width,
+    height: photo.height,
+  );
+
+  ChatMessage withAudio(ChatAudio audio) =>
+      _copy(audioUrl: audio.url, audioPath: audio.path);
+
+  ChatMessage _copy({
+    MessageDelivery? delivery,
+    Map<String, ReactionType>? reactions,
+    String? imageUrl,
+    String? imagePath,
+    int? width,
+    int? height,
+    String? localPath,
+    String? audioUrl,
+    String? audioPath,
+  }) => ChatMessage(
     id: id,
     senderId: senderId,
     text: text,
@@ -193,13 +347,34 @@ class ChatMessage {
     isRead: isRead,
     type: type,
     capsuleId: capsuleId,
-    imageUrl: imageUrl,
-    delivery: value,
+    imageUrl: imageUrl ?? this.imageUrl,
+    delivery: delivery ?? this.delivery,
     replyTo: replyTo,
-    reactions: reactions,
+    reactions: reactions ?? this.reactions,
+    imagePath: imagePath ?? this.imagePath,
+    width: width ?? this.width,
+    height: height ?? this.height,
+    localPath: localPath ?? this.localPath,
+    audioUrl: audioUrl ?? this.audioUrl,
+    audioPath: audioPath ?? this.audioPath,
+    durationMs: durationMs,
+    waveform: waveform,
+    forwarded: forwarded,
+    capsuleRef: capsuleRef,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
+
+  /// A photo message (its picture may still be on its way).
+  bool get isPhoto =>
+      type == ChatMessageType.image && (imageUrl != null || localPath != null);
+
+  /// What was written with a photo; empty for none.
+  String get caption => text == photoSign ? '' : text;
+
+  /// A voice message (its recording may still be on its way).
+  bool get isVoice =>
+      type == ChatMessageType.voice && (audioUrl != null || localPath != null);
 
   @override
   bool operator ==(Object other) =>
@@ -214,6 +389,16 @@ class ChatMessage {
       other.imageUrl == imageUrl &&
       other.delivery == delivery &&
       other.replyTo == replyTo &&
+      other.imagePath == imagePath &&
+      other.width == width &&
+      other.height == height &&
+      other.localPath == localPath &&
+      other.audioUrl == audioUrl &&
+      other.audioPath == audioPath &&
+      other.durationMs == durationMs &&
+      other.forwarded == forwarded &&
+      other.capsuleRef == capsuleRef &&
+      listEquals(other.waveform, waveform) &&
       _mapEquals(other.reactions, reactions);
 
   @override

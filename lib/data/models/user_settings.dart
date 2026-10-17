@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show listEquals;
+
 import 'capsule.dart';
 
 /// When pushes stay silent, in minutes after midnight, local time.
@@ -45,6 +47,7 @@ class NotificationSettings {
     this.streakReminder = false,
     this.preview = true,
     this.sound = true,
+    this.vibrate = true,
     this.quietHours = const QuietHours(),
     this.utcOffsetMinutes = 0,
   });
@@ -70,6 +73,9 @@ class NotificationSettings {
 
   /// Sound and vibration (a silent channel otherwise).
   final bool sound;
+
+  /// Vibration with the sound (pushes without sound never vibrate).
+  final bool vibrate;
   final QuietHours quietHours;
 
   /// The device's offset from UTC when saved (quiet hours are local time).
@@ -88,6 +94,7 @@ class NotificationSettings {
     bool? streakReminder,
     bool? preview,
     bool? sound,
+    bool? vibrate,
     QuietHours? quietHours,
     int? utcOffsetMinutes,
   }) => NotificationSettings(
@@ -103,6 +110,7 @@ class NotificationSettings {
     streakReminder: streakReminder ?? this.streakReminder,
     preview: preview ?? this.preview,
     sound: sound ?? this.sound,
+    vibrate: vibrate ?? this.vibrate,
     quietHours: quietHours ?? this.quietHours,
     utcOffsetMinutes: utcOffsetMinutes ?? this.utcOffsetMinutes,
   );
@@ -122,6 +130,7 @@ class NotificationSettings {
       other.streakReminder == streakReminder &&
       other.preview == preview &&
       other.sound == sound &&
+      other.vibrate == vibrate &&
       other.quietHours == quietHours &&
       other.utcOffsetMinutes == utcOffsetMinutes;
 
@@ -139,6 +148,7 @@ class NotificationSettings {
     streakReminder,
     preview,
     sound,
+    vibrate,
     quietHours,
     utcOffsetMinutes,
   );
@@ -151,6 +161,8 @@ class PrivacySettings {
     this.readReceipts = true,
     this.locationPrecision = LocationPrecision.exact,
     this.contactSuggestions = false,
+    this.findByName = true,
+    this.findByContacts = false,
   });
 
   /// What the creation screen starts with.
@@ -163,16 +175,27 @@ class PrivacySettings {
   /// Whether the app may suggest people from the phone's contacts.
   final bool contactSuggestions;
 
+  /// Whether others find the user by their name (by username always).
+  final bool findByName;
+
+  /// Whether people with the user's (verified) email in their contacts may
+  /// see them as a suggestion.
+  final bool findByContacts;
+
   PrivacySettings copyWith({
     CapsulePrivacy? defaultVisibility,
     bool? readReceipts,
     LocationPrecision? locationPrecision,
     bool? contactSuggestions,
+    bool? findByName,
+    bool? findByContacts,
   }) => PrivacySettings(
     defaultVisibility: defaultVisibility ?? this.defaultVisibility,
     readReceipts: readReceipts ?? this.readReceipts,
     locationPrecision: locationPrecision ?? this.locationPrecision,
     contactSuggestions: contactSuggestions ?? this.contactSuggestions,
+    findByName: findByName ?? this.findByName,
+    findByContacts: findByContacts ?? this.findByContacts,
   );
 
   @override
@@ -181,7 +204,9 @@ class PrivacySettings {
       other.defaultVisibility == defaultVisibility &&
       other.readReceipts == readReceipts &&
       other.locationPrecision == locationPrecision &&
-      other.contactSuggestions == contactSuggestions;
+      other.contactSuggestions == contactSuggestions &&
+      other.findByName == findByName &&
+      other.findByContacts == findByContacts;
 
   @override
   int get hashCode => Object.hash(
@@ -189,6 +214,8 @@ class PrivacySettings {
     readReceipts,
     locationPrecision,
     contactSuggestions,
+    findByName,
+    findByContacts,
   );
 }
 
@@ -199,8 +226,22 @@ class UserSettings {
     this.notifications = const NotificationSettings(),
     this.privacy = const PrivacySettings(),
     this.mutedChats = const {},
+    this.pinnedChats = const [],
+    this.pinnedFriends = const [],
     this.language,
   });
+
+  /// Most friends pinned at the start of the profile's friends.
+  static const maxPinnedFriends = 3;
+
+  /// Friends first on the profile, first pinned first (on every phone).
+  final List<String> pinnedFriends;
+
+  /// Most chats kept at the top of the list.
+  static const maxPinned = 3;
+
+  /// Chats kept at the top of the list, first pinned first.
+  final List<String> pinnedChats;
 
   final NotificationSettings notifications;
   final PrivacySettings privacy;
@@ -215,11 +256,15 @@ class UserSettings {
     NotificationSettings? notifications,
     PrivacySettings? privacy,
     Set<String>? mutedChats,
+    List<String>? pinnedChats,
+    List<String>? pinnedFriends,
     String? language,
   }) => UserSettings(
     notifications: notifications ?? this.notifications,
     privacy: privacy ?? this.privacy,
     mutedChats: mutedChats ?? this.mutedChats,
+    pinnedChats: pinnedChats ?? this.pinnedChats,
+    pinnedFriends: pinnedFriends ?? this.pinnedFriends,
     language: language ?? this.language,
   );
 
@@ -230,7 +275,9 @@ class UserSettings {
       other.privacy == privacy &&
       other.language == language &&
       other.mutedChats.length == mutedChats.length &&
-      other.mutedChats.containsAll(mutedChats);
+      other.mutedChats.containsAll(mutedChats) &&
+      listEquals(other.pinnedChats, pinnedChats) &&
+      listEquals(other.pinnedFriends, pinnedFriends);
 
   @override
   int get hashCode =>

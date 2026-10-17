@@ -52,7 +52,6 @@
   "friendsRequestsReceivedTab": "Erhalten",
   "friendsRequestsSentTab": "Gesendet",
   "friendsRequestsTitle": "Freundschaftsanfragen",
-  "friendsSearchByTagHint": "Nutzername suchen",
   "friendsSearchHint": "Freunde durchsuchen",
   "friendsSendCapsule": "Kapsel senden",
   "friendsSendRequestLabel": "Freundschaftsanfrage senden",
@@ -65,5 +64,13 @@
   "friendsUnfollowed": "Du folgst dieser Person nicht mehr",
   "friendsViewProfile": "Profil ansehen",
   "friendsMutualCount": "{count, plural, =1{1 gemeinsamer Freund} other{{count} gemeinsame Freunde}}",
-  "friendsFindByUsernameHint": "Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen."
+  "friendsFindByUsernameHint": "Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen.",
+  "friendsSearchPeopleHint": "Name oder @Nutzername",
+  "friendsFromContacts": "Aus deinen Kontakten",
+  "friendsFromContactsExplain": "Later liest die E-Mail-Adressen in den Kontakten auf diesem Telefon und sendet nur verschlüsselte Fingerabdrücke davon. Du siehst die Leute, die gefunden werden wollen; aus deinen Kontakten wird nichts gespeichert. Einmal pro Stunde.",
+  "friendsFromContactsGo": "Freunde suchen",
+  "friendsFromContactsNone": "Noch keiner deiner Kontakte ist in Later auffindbar",
+  "friendsFromContactsTooSoon": "Du hast gerade erst gesucht. Versuch es in einer Stunde.",
+  "friendsFromContactsDenied": "Dafür braucht Later Zugriff auf deine Kontakte",
+  "friendsFromContactsFailed": "Die Suche hat gerade nicht geklappt"
 }

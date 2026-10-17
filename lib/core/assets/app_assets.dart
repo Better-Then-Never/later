@@ -6,6 +6,10 @@
 abstract final class AppAssetDirs {
   static const icons = 'assets/icons/';
   static const iconsDark = 'assets/icons_dark/';
+
+  /// Optional artwork per achievement, named by its id with .png (see
+  /// docs/ux/ACHIEVEMENTS.md).
+  static const achievements = 'assets/achievements/';
 }
 
 abstract final class AppImages {

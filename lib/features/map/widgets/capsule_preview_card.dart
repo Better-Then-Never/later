@@ -6,6 +6,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
+import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/capsule/capsule_date_pill.dart';
 import '../../../shared/widgets/capsule/capsule_place_pill.dart';
 import '../../../shared/widgets/loop_picture.dart';
@@ -20,6 +21,10 @@ class CapsulePreviewCard extends StatelessWidget {
 
   final Capsule capsule;
   final VoidCallback? onPlaceTap;
+
+  /// The photo's [Hero] tag (by capsule, not URL: capsules may share one).
+  /// Only one widget per route may carry it.
+  static Object photoHeroTag(Capsule capsule) => 'capsule-photo:${capsule.id}';
 
   @override
   Widget build(BuildContext context) {
@@ -47,18 +52,22 @@ class CapsulePreviewCard extends StatelessWidget {
                   imageUrl,
                   frames: capsule.frames,
                   frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+                  heroTag: CapsulePreviewCard.photoHeroTag(capsule),
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadii.m),
-                  // A loop capsule plays its frames.
-                  child: capsule.isLoop
-                      ? LoopPicture(
-                          sources: capsule.frames,
-                          frameDelay: Duration(
-                            milliseconds: capsule.frameDelayMs,
-                          ),
-                        )
-                      : AppNetworkImage(url: imageUrl),
+                child: Hero(
+                  tag: CapsulePreviewCard.photoHeroTag(capsule),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppRadii.m),
+                    // A loop capsule plays its frames.
+                    child: capsule.isLoop
+                        ? LoopPicture(
+                            sources: capsule.frames,
+                            frameDelay: Duration(
+                              milliseconds: capsule.frameDelayMs,
+                            ),
+                          )
+                        : AppNetworkImage(url: imageUrl),
+                  ),
                 ),
               ),
             ),
@@ -77,6 +86,7 @@ class CapsulePreviewCard extends StatelessWidget {
                     fontFamily: kAppFontFamily,
                   ),
                 ),
+                CapsuleAuthorRow(capsule: capsule),
                 const SizedBox(height: 6),
                 Expanded(
                   child: SingleChildScrollView(

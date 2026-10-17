@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
@@ -11,6 +13,10 @@ import 'package:later/features/capsules/creation/capsule_creation_controller.dar
 import 'package:later/features/map/current_location.dart';
 
 import '../fakes/fake_repositories.dart';
+import 'package:flutter/services.dart';
+import 'package:later/data/services/gallery_service.dart';
+import 'package:later/features/capsules/creation/widgets/pin_picker_sheet.dart';
+import 'package:later/features/capsules/creation/creation_draft.dart';
 
 class _FakeLocation extends LocationService {
   _FakeLocation(this.position);
@@ -35,6 +41,8 @@ class _SlowCapsules extends FakeCapsuleRepository {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   CapsuleCreationController build(
     FakeCapsuleRepository repo, {
     GeoPosition? known,
@@ -107,6 +115,156 @@ void main() {
     expect(draft.locationPrecision, LocationPrecision.approximate);
     expect(draft.capturedAt, taken);
     expect(draft.utcOffsetMinutes, taken.timeZoneOffset.inMinutes);
+    c.dispose();
+  });
+
+  test(
+    'high quality reaches the draft; the photo goes to the gallery',
+    () async {
+      final dir = await Directory.systemTemp.createTemp('later_gallery_test');
+      addTearDown(() => dir.delete(recursive: true));
+      final photo = File('${dir.path}/photo.jpg')..writeAsBytesSync([1, 2, 3]);
+      final saved = <String>[];
+      const channel = MethodChannel('test/gallery');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async {
+            final path = (call.arguments as Map)['path'] as String;
+            // Still there: the gallery copy comes before the clean-up.
+            if (File(path).existsSync()) saved.add(path);
+            return true;
+          });
+      final repo = FakeCapsuleRepository();
+      final c = CapsuleCreationController(
+        ownerId: 'me',
+        imagePath: photo.path,
+        capsules: repo,
+        location: _FakeLocation(null),
+        currentLocation: CurrentLocation()..update(const GeoPosition(1, 2)),
+        highQuality: true,
+        saveToGallery: true,
+        gallery: GalleryService(channel: channel),
+      );
+      expect(await c.save(), isNull);
+      expect(repo.created.single.highQuality, isTrue);
+      await pumpEventQueue();
+      expect(saved, [photo.path]);
+      expect(photo.existsSync(), isFalse, reason: 'temp photo deleted after');
+      c.dispose();
+    },
+  );
+
+  test(
+    'a loop: frames removed and moved, its speed, two frames at least',
+    () async {
+      final repo = FakeCapsuleRepository();
+      final c = CapsuleCreationController(
+        ownerId: 'me',
+        imagePath: 'f0.jpg',
+        framePaths: const ['f0.jpg', 'f1.jpg', 'f2.jpg', 'f3.jpg'],
+        capsules: repo,
+        location: _FakeLocation(null),
+        currentLocation: CurrentLocation()..update(const GeoPosition(1, 2)),
+      );
+      c.moveFrame(3, 0); // f3 first
+      expect(c.framePaths, ['f3.jpg', 'f0.jpg', 'f1.jpg', 'f2.jpg']);
+      expect(c.imagePath, 'f3.jpg', reason: 'the first frame is the picture');
+      c.moveFrame(0, 2);
+      expect(c.framePaths, ['f0.jpg', 'f3.jpg', 'f1.jpg', 'f2.jpg']);
+      c
+        ..removeFrame(1)
+        ..removeFrame(1);
+      expect(c.framePaths, ['f0.jpg', 'f2.jpg']);
+      expect(c.canRemoveFrame, isFalse);
+      c.removeFrame(0);
+      expect(c.framePaths, hasLength(2), reason: 'still a loop');
+      c.frameDelayMs = 150;
+      expect(await c.save(), isNull);
+      final draft = repo.created.single;
+      expect(draft.framePaths, ['f0.jpg', 'f2.jpg']);
+      expect(draft.imagePath, 'f0.jpg');
+      expect(draft.frameDelayMs, 150);
+      c.dispose();
+    },
+  );
+
+  test('the pin moves within 1 km of where the phone is', () async {
+    const here = GeoPosition(52.2297, 21.0122);
+    // 0.005° north is about 556 m: allowed as it is.
+    const near = GeoPosition(52.2347, 21.0122);
+    expect(PinPickerSheet.clamp(here, near, 1000), near);
+    // 0.05° north is about 5.6 km: pulled back onto the 1 km circle.
+    final far = PinPickerSheet.clamp(
+      here,
+      const GeoPosition(52.2797, 21.0122),
+      1000,
+    );
+    expect(far.latitude, closeTo(52.2387, 0.0003));
+    expect(far.longitude, closeTo(21.0122, 0.00001));
+
+    final repo = FakeCapsuleRepository();
+    final c = build(repo, known: here)..movePin(near);
+    expect(c.position, near);
+    expect(c.here, here, reason: 'the phone stays the centre');
+    expect(await c.save(), isNull);
+    expect(repo.created.single.location, near);
+    c.dispose();
+  });
+
+  test('left unfinished, it is kept; taken up again; gone once made', () async {
+    final dir = await Directory.systemTemp.createTemp('later_drafts_test');
+    addTearDown(() => dir.delete(recursive: true));
+    final store = CreationDraftStore(directory: () async => dir);
+    final shot = File('${dir.path}/camera.jpg')..writeAsBytesSync([1, 2, 3]);
+    final repo = FakeCapsuleRepository();
+    final first = CapsuleCreationController(
+      ownerId: 'me',
+      imagePath: shot.path,
+      capsules: repo,
+      location: _FakeLocation(null),
+      currentLocation: CurrentLocation()..update(const GeoPosition(1, 2)),
+      drafts: store,
+    );
+    first.titleController.text = 'Half done';
+    first
+      ..color = CapsuleColor.blue
+      ..movePin(const GeoPosition(1.001, 2));
+    // Leaving the page keeps what was there at once.
+    first.dispose();
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    final kept = await store.load('me');
+    expect(kept, isNotNull);
+    expect(kept!.title, 'Half done');
+    expect(kept.color, CapsuleColor.blue);
+    expect(kept.pin, const GeoPosition(1.001, 2));
+    expect(kept.imagePath, isNot(shot.path), reason: 'a copy of its own');
+    expect(File(kept.imagePath).existsSync(), isTrue);
+
+    final again = CapsuleCreationController(
+      ownerId: 'me',
+      imagePath: kept.imagePath,
+      capsules: repo,
+      location: _FakeLocation(null),
+      currentLocation: CurrentLocation()..update(const GeoPosition(1, 2)),
+      drafts: store,
+      draft: kept,
+    );
+    expect(again.titleController.text, 'Half done');
+    expect(again.color, CapsuleColor.blue);
+    expect(again.position, const GeoPosition(1.001, 2));
+    expect(await again.save(), isNull);
+    expect(repo.created.single.location, const GeoPosition(1.001, 2));
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(await store.load('me'), isNull, reason: 'made: the draft goes');
+    again.dispose();
+  });
+
+  test('co-authors reach the draft, five at most', () async {
+    final repo = FakeCapsuleRepository();
+    final c = build(repo, known: const GeoPosition(52.2297, 21.0122))
+      ..coAuthors = ['a', 'b', 'c', 'd', 'e', 'f'];
+    expect(c.coAuthors, ['a', 'b', 'c', 'd', 'e']);
+    expect(await c.save(), isNull);
+    expect(repo.created.single.coAuthors, ['a', 'b', 'c', 'd', 'e']);
     c.dispose();
   });
 

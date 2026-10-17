@@ -10,7 +10,8 @@ import 'package:later/core/assets/app_assets.dart';
 import 'package:later/core/theme/app_dimens.dart';
 import 'package:later/core/theme/app_palette.dart';
 
-const double navbarIconHeight = 46.0;
+/// Tab pictures (F-34: they were 46 dp in an 80 dp bar).
+const double navbarIconHeight = 40.0;
 
 class NavbarWidget extends StatelessWidget {
   final int selectedIndex;
@@ -21,7 +22,13 @@ class NavbarWidget extends StatelessWidget {
     required this.onItemTapped,
   });
 
-  static const double barHeight = 80;
+  /// The pill's height (was 80, F-34).
+  static const double barHeight = 68;
+
+  /// Each tab's slot: fixed, so a tab growing when selected never pushes
+  /// its neighbours (they shifted a few dp at every switch), and a 48 dp
+  /// tap target.
+  static const double _slot = 48;
 
   /// How much of the bottom of the screen the floating bar covers, system
   /// navigation included (the map keeps its logo and controls above it).
@@ -89,16 +96,20 @@ class NavbarWidget extends StatelessWidget {
       child: AppPressable(
         child: GestureDetector(
           onTap: () => onItemTapped(index),
-          child: AnimatedContainer(
-            duration: AppMotion.of(context, AppMotion.standard),
-            curve: AppMotion.standardCurve,
-            height: navbarIconHeight * (isSelected ? 1.2 : 1.0),
-            width: navbarIconHeight * (isSelected ? 1.2 : 1.0),
-            child: AnimatedScale(
-              scale: isSelected ? 1.1 : 1.0,
-              duration: AppMotion.of(context, AppMotion.quick),
-              curve: AppMotion.standardCurve,
-              child: Image.asset(assetPath),
+          behavior: HitTestBehavior.opaque,
+          child: SizedBox.square(
+            dimension: _slot,
+            child: Center(
+              child: AnimatedScale(
+                scale: isSelected ? 1.25 : 1.0,
+                duration: AppMotion.of(context, AppMotion.standard),
+                curve: AppMotion.emphasizedCurve,
+                child: Image.asset(
+                  assetPath,
+                  width: navbarIconHeight,
+                  height: navbarIconHeight,
+                ),
+              ),
             ),
           ),
         ),

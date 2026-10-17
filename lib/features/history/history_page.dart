@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../app/shell/navbar_widget.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/config/feature_flags.dart';
@@ -117,6 +118,11 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  /// Sort, Filter and Reset on the shared scale (F-31: they were 5 % of the
+  /// screen tall with 32 dp pictures): tap-target height, list-size icons.
+  static const _controlHeight = 44.0;
+  static const _controlIcon = 24.0;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
@@ -146,7 +152,8 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           onTap: () => _openSortMenu(context),
                           assetPath: AppIcons.historySort,
                           text: _controller.activeSortLabel(l10n),
@@ -155,7 +162,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       SizedBox(width: buttonGap),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           assetPath: AppIcons.historyFilter,
                           text: _controller.activeFilterLabel(l10n),
                           onTap: () => _openFilterMenu(context),
@@ -164,7 +172,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       SizedBox(width: buttonGap),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           onTap: _controller.resetAll,
                           // Clear, not sort (F-31: it reused the sort icon).
                           assetPath: AppIcons.friendsDeleteReset,
@@ -255,7 +264,9 @@ class _HistoryPageState extends State<HistoryPage> {
         0,
         screenHeight * 0.01,
         0,
-        screenHeight * 0.15,
+        // Clear of the floating navbar (15 % of the height left the last
+        // capsule partly under it on 3-button navigation).
+        NavbarWidget.coveredHeight(context) + 16,
       ),
       itemCount: shown.length + lead,
       itemBuilder: (context, index) {
@@ -271,6 +282,7 @@ class _HistoryPageState extends State<HistoryPage> {
           onFavoriteTap: () => _toggleFavorite(capsule),
           onTap: () => _onTap(capsule),
           onLongPress: () => _controller.toggleSelection(capsule.id),
+          waitingForWifi: store.waitingForWifi,
         );
       },
     );

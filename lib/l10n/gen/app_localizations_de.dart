@@ -65,6 +65,20 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get achievementCurious => 'Neugierig';
+
+  @override
+  String achievementCuriousGoal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Öffne $count Kapseln von anderen',
+      one: 'Öffne 1 Kapsel von anderen',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get achievementEarlyBird => 'Frühaufsteher';
 
   @override
@@ -400,8 +414,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get authWelcomeTo => 'Willkommen bei';
 
   @override
+  String capsulesBy(String name) {
+    return 'Von $name';
+  }
+
+  @override
+  String capsulesByWith(String name, String others) {
+    return '$name mit $others';
+  }
+
+  @override
+  String get capsulesCalendarNext => 'Nächster Monat';
+
+  @override
+  String get capsulesCalendarPrevious => 'Vorheriger Monat';
+
+  @override
   String get capsulesCameraAccessDenied =>
       'Erlaube den Kamerazugriff in den Einstellungen, um ein Foto aufzunehmen';
+
+  @override
+  String get capsulesCameraExposure => 'Helligkeit';
 
   @override
   String get capsulesCameraFlashAuto => 'Blitz automatisch';
@@ -416,11 +449,29 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesCameraFlashOn => 'Blitz an';
 
   @override
+  String get capsulesCameraFlashTorch => 'Licht an';
+
+  @override
+  String get capsulesCameraFlashTorchBadge => 'L';
+
+  @override
   String get capsulesCameraHoldForLoop => 'Halten für einen Loop';
+
+  @override
+  String get capsulesCameraModeLoop => 'Loop';
+
+  @override
+  String get capsulesCameraModePhoto => 'Foto';
 
   @override
   String get capsulesCameraStartFailed =>
       'Die Kamera konnte nicht gestartet werden';
+
+  @override
+  String get capsulesCameraStartLoop => 'Loop starten';
+
+  @override
+  String get capsulesCameraStopLoop => 'Loop stoppen';
 
   @override
   String get capsulesCameraSwitch => 'Kamera wechseln';
@@ -433,7 +484,27 @@ class AppLocalizationsDe extends AppLocalizations {
       'Foto aufnehmen. Halten für einen Loop';
 
   @override
+  String get capsulesCameraTapForLoop =>
+      'Tippen zum Starten, nochmal zum Stoppen';
+
+  @override
   String get capsulesCameraUnavailable => 'Keine Kamera verfügbar';
+
+  @override
+  String capsulesCameraZoomTo(String zoom) {
+    return 'Zoom $zoom×';
+  }
+
+  @override
+  String get capsulesCoAuthorsDone => 'Fertig';
+
+  @override
+  String get capsulesCoAuthorsPick => 'Mit wem du sie gemacht hast';
+
+  @override
+  String capsulesCoAuthorsTooMany(int count) {
+    return 'Höchstens $count Mitautoren';
+  }
 
   @override
   String get capsulesColorBlue => 'Blau';
@@ -490,10 +561,19 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get capsulesCommentsEarlier => 'Frühere Kommentare zeigen';
+
+  @override
   String get capsulesCommentsEmpty => 'Noch keine Kommentare';
 
   @override
   String get capsulesCommentsEmptyHint => 'Schreib als Erstes etwas.';
+
+  @override
+  String get capsulesComposerDone => 'Fertig';
+
+  @override
+  String get capsulesComposerTitle => 'Beschreibung';
 
   @override
   String get capsulesCreationAllowComments => 'Kommentare erlauben';
@@ -507,6 +587,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get capsulesCreationApproximateHint =>
       'Etwa einen Kilometer daneben, nicht genau';
+
+  @override
+  String get capsulesCreationCoAuthors => 'Mitautoren';
+
+  @override
+  String capsulesCreationCoAuthorsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Freunde',
+      one: '1 Freund',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get capsulesCreationCoAuthorsNone => 'Nur ich';
 
   @override
   String get capsulesCreationColor => 'Farbe';
@@ -530,6 +627,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesCreationSettings => 'Kapseleinstellungen';
 
   @override
+  String get capsulesCreationShowAuthor => 'Meinen Namen zeigen';
+
+  @override
+  String get capsulesCreationShowAuthorHint =>
+      'Andere sehen, wer sie hinterlassen hat';
+
+  @override
+  String get capsulesCreationSpeed => 'Tempo';
+
+  @override
   String get capsulesCreationSubmit => 'Kapsel erstellen';
 
   @override
@@ -542,6 +649,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesDefaultTitle => 'Kapsel';
 
   @override
+  String get capsulesDraftContinue => 'Weiter';
+
+  @override
+  String get capsulesDraftDiscard => 'Unfertige Kapsel verwerfen';
+
+  @override
+  String get capsulesDraftTitle => 'Unfertige Kapsel';
+
+  @override
   String get capsulesErrorNoLocation =>
       'Wir konnten deinen Standort nicht ermitteln';
 
@@ -552,6 +668,29 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get capsulesErrorSavedNotSent =>
       'Die Kapsel wurde gespeichert, aber nicht gesendet. Tippe noch einmal auf den Button, um es erneut zu versuchen.';
+
+  @override
+  String capsulesFrameRemove(int number) {
+    return 'Bild $number entfernen';
+  }
+
+  @override
+  String get capsulesFramesHint => 'halten und ziehen';
+
+  @override
+  String get capsulesFramesTitle => 'Bilder';
+
+  @override
+  String get capsulesLeaveCoAuthors => 'Mich als Mitautor entfernen';
+
+  @override
+  String get capsulesLeftCoAuthors => 'Du bist kein Mitautor mehr';
+
+  @override
+  String get capsulesLinkNotShared => 'Diese Kapsel ist nicht mit dir geteilt';
+
+  @override
+  String get capsulesLoopMark => 'Loop';
 
   @override
   String get capsulesOpenInMonth => 'In einem Monat';
@@ -572,6 +711,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesOpenTomorrow => 'Morgen';
 
   @override
+  String get capsulesPinBack => 'Zurück zu mir';
+
+  @override
+  String get capsulesPinHint =>
+      'Zieh die Karte, um die Kapsel genau zu setzen, bis 1 km.';
+
+  @override
+  String get capsulesPinTitle => 'Pin verschieben';
+
+  @override
+  String get capsulesPinTooFar =>
+      'Eine Kapsel bleibt höchstens 1 km von dir entfernt.';
+
+  @override
+  String get capsulesPinUse => 'Hier setzen';
+
+  @override
   String get capsulesPrivacyFriends => 'Freunde';
 
   @override
@@ -583,6 +739,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get capsulesQueued =>
       'Auf deinem Handy gespeichert. Wird hochgeladen, sobald du wieder online bist.';
+
+  @override
+  String get capsulesQuickReply => 'Dem Autor antworten';
+
+  @override
+  String capsulesQuickReplyHint(String name) {
+    return 'Schreib $name…';
+  }
+
+  @override
+  String capsulesQuickReplySent(String name) {
+    return 'An $name gesendet';
+  }
 
   @override
   String capsulesReactWith(String emoji) {
@@ -633,6 +802,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesReportViolence => 'Gewalt';
 
   @override
+  String get capsulesShare => 'Teilen';
+
+  @override
+  String capsulesShareMessage(String title, String link) {
+    return 'Eine Zeitkapsel in Later: $title\n$link';
+  }
+
+  @override
+  String get capsulesSpeedFast => 'Schnell';
+
+  @override
+  String get capsulesSpeedNormal => 'Normal';
+
+  @override
+  String get capsulesSpeedSlow => 'Langsam';
+
+  @override
+  String capsulesWith(String names) {
+    return 'Mit $names';
+  }
+
+  @override
   String get capsulesYou => 'Du';
 
   @override
@@ -656,6 +847,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get commonLoading => 'Wird geladen...';
+
+  @override
+  String commonNewCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count neu',
+      one: '$count neu',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get commonNoConnection =>
@@ -794,6 +996,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsFriendCapsulesTitle => 'Kapseln deines Freundes';
 
   @override
+  String get friendsFromContacts => 'Aus deinen Kontakten';
+
+  @override
+  String get friendsFromContactsDenied =>
+      'Dafür braucht Later Zugriff auf deine Kontakte';
+
+  @override
+  String get friendsFromContactsExplain =>
+      'Later liest die E-Mail-Adressen in den Kontakten auf diesem Telefon und sendet nur verschlüsselte Fingerabdrücke davon. Du siehst die Leute, die gefunden werden wollen; aus deinen Kontakten wird nichts gespeichert. Einmal pro Stunde.';
+
+  @override
+  String get friendsFromContactsFailed => 'Die Suche hat gerade nicht geklappt';
+
+  @override
+  String get friendsFromContactsGo => 'Freunde suchen';
+
+  @override
+  String get friendsFromContactsNone =>
+      'Noch keiner deiner Kontakte ist in Later auffindbar';
+
+  @override
+  String get friendsFromContactsTooSoon =>
+      'Du hast gerade erst gesucht. Versuch es in einer Stunde.';
+
+  @override
   String get friendsHideSuggestionLabel => 'Vorschlag ausblenden';
 
   @override
@@ -905,10 +1132,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsRequestsTitle => 'Freundschaftsanfragen';
 
   @override
-  String get friendsSearchByTagHint => 'Nutzername suchen';
+  String get friendsSearchHint => 'Freunde durchsuchen';
 
   @override
-  String get friendsSearchHint => 'Freunde durchsuchen';
+  String get friendsSearchPeopleHint => 'Name oder @Nutzername';
 
   @override
   String get friendsSendCapsule => 'Kapsel senden';
@@ -1008,6 +1235,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String historyDistanceFromYou(String distance) {
     return '$distance km von dir';
+  }
+
+  @override
+  String historyDistanceFromYouMiles(String distance) {
+    return '$distance Meilen von dir';
   }
 
   @override
@@ -1134,6 +1366,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get historyWaitingUpload => 'Wartet auf Verbindung';
 
   @override
+  String get historyWaitingWifi => 'Wartet auf WLAN';
+
+  @override
   String historyYearsAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1162,6 +1397,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapCapsuleReady => 'Schau, was drin ist!';
 
   @override
+  String get mapCompass => 'Karte nach Norden drehen';
+
+  @override
   String mapDurationDays(int count) {
     return '${count}T';
   }
@@ -1180,6 +1418,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String mapDurationSeconds(int count) {
     return '${count}s';
   }
+
+  @override
+  String get mapFilter => 'Karte filtern';
+
+  @override
+  String mapFilterActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Karte filtern, $count Auswahlen aktiv',
+      one: 'Karte filtern, 1 Auswahl aktiv',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapFilterColors => 'Pin-Farbe';
+
+  @override
+  String get mapFilterFriends => 'Von Freunden';
+
+  @override
+  String get mapFilterLocked => 'Öffnen später';
+
+  @override
+  String get mapFilterMine => 'Meine';
+
+  @override
+  String get mapFilterOpen => 'Offen';
+
+  @override
+  String get mapFilterOthers => 'Von anderen';
+
+  @override
+  String get mapFilterReset => 'Alles zeigen';
+
+  @override
+  String get mapFilterState => 'Offen oder nicht';
+
+  @override
+  String get mapFilterTitle => 'Auf der Karte';
+
+  @override
+  String get mapFilterWhose => 'Von wem';
 
   @override
   String get mapFirstCapsuleBody =>
@@ -1202,6 +1484,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mapMyLocation => 'Mein Standort';
+
+  @override
+  String get mapZoomIn => 'Vergrößern';
+
+  @override
+  String get mapZoomOut => 'Verkleinern';
 
   @override
   String get messagesBlockedByYou => 'Du hast diesen Nutzer blockiert';
@@ -1232,6 +1520,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Prüf deine Verbindung und versuch es noch mal';
 
   @override
+  String get messagesChoosePhoto => 'Aus der Galerie wählen';
+
+  @override
   String get messagesClearConfirm => 'Löschen';
 
   @override
@@ -1256,6 +1547,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Nachricht konnte nicht gelöscht werden';
 
   @override
+  String get messagesDeleteForEveryone => 'Für alle löschen';
+
+  @override
+  String get messagesDeleteForMe => 'Für mich löschen';
+
+  @override
   String messagesEmptySubtitle(String name) {
     return 'Sag $name Hallo!';
   }
@@ -1265,6 +1562,92 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Chats suchen';
+
+  @override
+  String messagesFindPeople(String query) {
+    return 'Personen finden: „$query“';
+  }
+
+  @override
+  String get messagesForward => 'Weiterleiten';
+
+  @override
+  String get messagesForwardTo => 'Weiterleiten an';
+
+  @override
+  String get messagesForwarded => 'Weitergeleitet';
+
+  @override
+  String messagesForwardedTo(String name) {
+    return 'Weitergeleitet an $name';
+  }
+
+  @override
+  String get messagesGroupAddPeople => 'Personen hinzufügen';
+
+  @override
+  String get messagesGroupCreate => 'Erstellen';
+
+  @override
+  String get messagesGroupFailed =>
+      'Bei der Gruppe ist etwas schiefgegangen. Versuch es noch einmal.';
+
+  @override
+  String get messagesGroupHello => 'Sag allen Hallo';
+
+  @override
+  String get messagesGroupInvited =>
+      'Eingeladen. Deine Freunde sind gleich dabei.';
+
+  @override
+  String get messagesGroupLeave => 'Gruppe verlassen';
+
+  @override
+  String messagesGroupLeaveConfirm(String name) {
+    return '„$name“ verlassen? Ihre Nachrichten werden hier nicht mehr angezeigt.';
+  }
+
+  @override
+  String get messagesGroupLeft => 'Du bist nicht mehr in dieser Gruppe';
+
+  @override
+  String messagesGroupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Mitglieder',
+      one: '1 Mitglied',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesGroupMembersTitle => 'Mitglieder';
+
+  @override
+  String get messagesGroupName => 'Gruppenname';
+
+  @override
+  String get messagesGroupNameTooLong =>
+      'Ein Gruppenname hat höchstens 60 Zeichen';
+
+  @override
+  String get messagesGroupNeedsName => 'Gib der Gruppe einen Namen';
+
+  @override
+  String get messagesGroupNeedsPeople => 'Wähle mindestens einen Freund aus';
+
+  @override
+  String get messagesGroupRename => 'Gruppe umbenennen';
+
+  @override
+  String get messagesGroupSave => 'Speichern';
+
+  @override
+  String get messagesGroupTooMany => 'Eine Gruppe hat höchstens 20 Personen';
+
+  @override
+  String get messagesGroupWho => 'Wer ist dabei?';
 
   @override
   String get messagesInputHint => 'Schreib eine Nachricht...';
@@ -1292,6 +1675,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesMenuUnmute => 'Stummschaltung aufheben';
 
   @override
+  String get messagesMicPermission =>
+      'Erlaube das Mikrofon, um Sprachnachrichten zu senden';
+
+  @override
   String get messagesMutedToast => 'Chat stummgeschaltet';
 
   @override
@@ -1312,6 +1699,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesNewChatTitle => 'Neuer Chat';
+
+  @override
+  String get messagesNewGroup => 'Neue Gruppe';
 
   @override
   String get messagesNoChatsFound => 'Keine Chats gefunden';
@@ -1340,6 +1730,51 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String messagesOpenGroup(String name) {
+    return 'Gruppe $name öffnen';
+  }
+
+  @override
+  String get messagesOpenPhoto => 'Foto öffnen';
+
+  @override
+  String get messagesPauseVoice => 'Pause';
+
+  @override
+  String get messagesPhoto => 'Foto';
+
+  @override
+  String get messagesPhotoCaption => 'Bildunterschrift hinzufügen…';
+
+  @override
+  String get messagesPhotoUnreadable =>
+      'Dieses Bild kann nicht gesendet werden';
+
+  @override
+  String get messagesPin => 'Anheften';
+
+  @override
+  String messagesPinLimit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Du kannst bis zu $count Chats anheften',
+      one: 'Du kannst 1 Chat anheften',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get messagesPinned => 'Angeheftet';
+
+  @override
+  String get messagesPlayVoice => 'Sprachnachricht abspielen';
+
+  @override
+  String get messagesQuoteGone =>
+      'Diese Nachricht gibt es in diesem Chat nicht mehr';
+
+  @override
   String get messagesReactFailed =>
       'Deine Reaktion konnte nicht gespeichert werden';
 
@@ -1354,6 +1789,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesReceiptSent => 'Gesendet';
+
+  @override
+  String get messagesRecordVoice => 'Sprachnachricht aufnehmen';
+
+  @override
+  String get messagesReport => 'Melden';
+
+  @override
+  String get messagesReportFailed =>
+      'Die Meldung konnte nicht gesendet werden. Versuch es noch einmal.';
 
   @override
   String get messagesScrollToLatest => 'Zur neuesten Nachricht scrollen';
@@ -1371,12 +1816,39 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesSendFailed => 'Nachricht konnte nicht gesendet werden';
 
   @override
+  String get messagesSendPhoto => 'Foto senden';
+
+  @override
   String get messagesSignedOut => 'Du bist abgemeldet';
 
   @override
   String messagesStartChatWith(String name) {
     return 'Chat mit $name starten';
   }
+
+  @override
+  String get messagesStickers => 'Sticker';
+
+  @override
+  String get messagesStickersFaces => 'Gesichter';
+
+  @override
+  String get messagesStickersHands => 'Gesten';
+
+  @override
+  String get messagesStickersHearts => 'Herzen und Feste';
+
+  @override
+  String get messagesStickersNature => 'Natur';
+
+  @override
+  String get messagesStickersPlaces => 'Orte und Dinge';
+
+  @override
+  String get messagesStickersRecent => 'Zuletzt verwendet';
+
+  @override
+  String get messagesTakePhoto => 'Foto aufnehmen';
 
   @override
   String get messagesTitle => 'Meine Laters';
@@ -1388,7 +1860,45 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesTooLong => 'Diese Nachricht ist zu lang';
 
   @override
+  String get messagesTyping => 'schreibt';
+
+  @override
+  String messagesTypingMany(int count) {
+    return '$count Personen schreiben';
+  }
+
+  @override
+  String messagesTypingName(String name) {
+    return '$name schreibt';
+  }
+
+  @override
   String get messagesUnmutedToast => 'Stummschaltung aufgehoben';
+
+  @override
+  String get messagesUnpin => 'Lösen';
+
+  @override
+  String get messagesUnreadDivider => 'Ungelesene Nachrichten';
+
+  @override
+  String get messagesVoice => 'Sprachnachricht';
+
+  @override
+  String get messagesVoiceCancel => 'Aufnahme abbrechen';
+
+  @override
+  String get messagesVoiceFailed =>
+      'Diese Sprachnachricht lässt sich nicht abspielen';
+
+  @override
+  String get messagesVoiceRecording => 'Aufnahme';
+
+  @override
+  String get messagesVoiceSend => 'Sprachnachricht senden';
+
+  @override
+  String get messagesVoiceTooShort => 'Zu kurz zum Senden';
 
   @override
   String get messagesYesterday => 'Gestern';
@@ -1397,6 +1907,26 @@ class AppLocalizationsDe extends AppLocalizations {
   String messagesYouPrefix(String message) {
     return 'Du: $message';
   }
+
+  @override
+  String get momentsAchievementLabel => 'Erfolg freigeschaltet';
+
+  @override
+  String momentsAchievementMore(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'und $count weitere',
+      one: 'und 1 weiterer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get momentsStreakBody => 'Jeden Tag eine Kapsel. Bis morgen!';
+
+  @override
+  String get momentsStreakLabel => 'Deine Serie wächst';
 
   @override
   String get navMap => 'Karte';
@@ -1431,6 +1961,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Follower, Freundschaftsanfragen, Reaktionen, Kommentare und neue Kapseln';
 
   @override
+  String get notificationsChannelActivityNoVibration =>
+      'Aktivität (ohne Vibration)';
+
+  @override
   String get notificationsChannelActivitySilent => 'Aktivität (lautlos)';
 
   @override
@@ -1445,6 +1979,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Neue Nachrichten von deinen Freunden';
 
   @override
+  String get notificationsChannelMessagesNoVibration =>
+      'Nachrichten (ohne Vibration)';
+
+  @override
   String get notificationsChannelMessagesSilent => 'Nachrichten (lautlos)';
 
   @override
@@ -1457,6 +1995,11 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get notificationsChannelOtherDescription =>
       'Andere Benachrichtigungen von Later';
+
+  @override
+  String notificationsCoAuthorBody(String name) {
+    return '$name hat eine Kapsel mit dir gemacht';
+  }
 
   @override
   String notificationsCommentBody(String name) {
@@ -1529,6 +2072,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsFromLater => 'Vom Later-Team';
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1573,6 +2119,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsNowFriends => 'Ihr seid jetzt Freunde';
+
+  @override
   String notificationsReactionBody(String name, String emoji) {
     return '$name hat mit $emoji auf deine Kapsel reagiert';
   }
@@ -1599,6 +2148,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsSwipeDelete => 'Löschen';
+
+  @override
+  String get notificationsSwipeRead => 'Gelesen';
+
+  @override
   String get notificationsTabAll => 'Alle';
 
   @override
@@ -1615,6 +2170,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get notificationsTypeCapsule => 'Neue Kapsel';
+
+  @override
+  String get notificationsTypeCoAuthor => 'Gemeinsam';
 
   @override
   String get notificationsTypeComment => 'Neuer Kommentar';
@@ -1658,13 +2216,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get placeUnknown => 'Unbekannter Ort';
 
   @override
+  String get profileAboutPrompt => 'Schreib ein paar Worte über dich';
+
+  @override
   String get profileAddFriends => 'Freunde hinzufügen';
-
-  @override
-  String get profileAddToMapEveryone => 'Auf die Karte | Für alle';
-
-  @override
-  String get profileAddToMapFriends => 'Auf die Karte | Nur für Freunde';
 
   @override
   String get profileBackgroundDelete => 'Hintergrundbild löschen';
@@ -1720,6 +2275,12 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get profileFriendsAll => 'Alle';
+
+  @override
+  String get profileFriendsSection => 'Freunde';
+
+  @override
   String get profileImageFromGallery => 'Aus Galerie wählen';
 
   @override
@@ -1735,7 +2296,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileMyFriends => 'Meine Freunde';
 
   @override
+  String get profileNewCapsule => 'Neue Kapsel';
+
+  @override
+  String get profileNewForEveryone => 'Für alle';
+
+  @override
+  String get profileNewForFriends => 'Für Freunde';
+
+  @override
   String get profileNoFriends => 'Du hast noch keine Freunde';
+
+  @override
+  String get profileNoFriendsAction => 'Finde Leute, die du kennst';
 
   @override
   String get profilePictureDelete => 'Profilbild löschen';
@@ -1745,6 +2318,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profilePictureUpdated => 'Profilbild aktualisiert!';
+
+  @override
+  String get profilePin => 'Anheften';
+
+  @override
+  String profilePinLimit(int count) {
+    return 'Höchstens $count angeheftete Freunde';
+  }
+
+  @override
+  String profilePinned(String name) {
+    return '$name angeheftet';
+  }
 
   @override
   String get profilePinnedHint =>
@@ -1761,6 +2347,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileQrError => 'Etwas ist schiefgelaufen...';
+
+  @override
+  String get profileQuickCapsule => 'Kapsel senden';
+
+  @override
+  String get profileQuickMessage => 'Nachricht';
 
   @override
   String get profileShare => 'Teilen';
@@ -1790,6 +2382,39 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileShareTitle => 'Profil teilen';
 
   @override
+  String profileStatCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Kapseln',
+      one: 'Kapsel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileStatPlaces(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Orte',
+      one: 'Ort',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileStatTogether => 'mit Freunden';
+
+  @override
+  String get profileUnpin => 'Lösen';
+
+  @override
+  String profileUnpinned(String name) {
+    return '$name gelöst';
+  }
+
+  @override
   String get profileUpdating => 'Aktualisiere...';
 
   @override
@@ -1799,7 +2424,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileViewProfile => 'Profil ansehen';
 
   @override
-  String get settingsAbout => 'Über die App';
+  String get settingsAbout => 'Über mich';
+
+  @override
+  String get settingsAboutDescription =>
+      'Ein paar Worte unter deinem Namen für alle, die dein Profil öffnen.';
+
+  @override
+  String get settingsAboutHint => 'Sammle Sonnenuntergänge seit 2019';
 
   @override
   String get settingsAboutLicenses => 'Open-Source-Lizenzen';
@@ -1812,6 +2444,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsAboutTerms => 'Nutzungsbedingungen';
+
+  @override
+  String settingsAboutTooLong(int count) {
+    return 'Höchstens $count Zeichen';
+  }
+
+  @override
+  String get settingsAboutUpdated => '„Über mich“ aktualisiert';
 
   @override
   String get settingsAboutVersion => 'Version';
@@ -1912,6 +2552,17 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsDeviceDescription =>
       'Wie Later auf diesem Handy aussieht und funktioniert';
+
+  @override
+  String get settingsDownloadData => 'Meine Daten herunterladen';
+
+  @override
+  String get settingsDownloadDataFailed =>
+      'Daten konnten nicht vorbereitet werden';
+
+  @override
+  String get settingsDownloadDataHint =>
+      'Profil, Einstellungen, Kapseln, Freunde und Chats als eine Datei (Fotos als Links).';
 
   @override
   String get settingsEmail => 'E-Mail';
@@ -2230,6 +2881,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Abends, wenn deine Serie heute enden würde';
 
   @override
+  String get settingsNotificationsVibrate => 'Vibration';
+
+  @override
+  String get settingsNotificationsVibrateNeedsSound =>
+      'Nur zusammen mit dem Ton';
+
+  @override
   String get settingsPassword => 'Passwort';
 
   @override
@@ -2338,6 +2996,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Was Later auf diesem Handy nutzen darf';
 
   @override
+  String get settingsPhotoQualityHigh => 'Hoch (schärfer, größer)';
+
+  @override
+  String get settingsPhotoQualityStandard => 'Standard (schneller gesendet)';
+
+  @override
   String get settingsPrivacy => 'Datenschutz';
 
   @override
@@ -2357,6 +3021,20 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Was andere sehen und wie neue Kapseln starten';
+
+  @override
+  String get settingsPrivacyFindByContacts => 'Über meine E-Mail auffindbar';
+
+  @override
+  String get settingsPrivacyFindByContactsHint =>
+      'Wer deine E-Mail in den Kontakten hat, kann dich als Vorschlag sehen. Gespeichert wird nur ein Fingerabdruck einer bestätigten Adresse.';
+
+  @override
+  String get settingsPrivacyFindByName => 'Per Name auffindbar';
+
+  @override
+  String get settingsPrivacyFindByNameHint =>
+      'Man kann nach deinem Namen suchen. Nach dem Benutzernamen immer.';
 
   @override
   String get settingsPrivacyNewCapsulesFooter =>
@@ -2389,6 +3067,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsQuietUntil => 'Ruhe bis';
 
   @override
+  String get settingsSaveToGallery => 'Kapselfotos in der Galerie speichern';
+
+  @override
+  String get settingsSaveToGalleryHint =>
+      'In Pictures/Later, sobald die Kapsel erstellt ist.';
+
+  @override
   String get settingsSectionAccount => 'MEIN KONTO';
 
   @override
@@ -2396,6 +3081,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSectionContact => 'KONTAKT';
+
+  @override
+  String get settingsSectionDistances => 'ENTFERNUNGEN';
 
   @override
   String get settingsSectionHow => 'WIE';
@@ -2417,6 +3105,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsSectionNotifyAbout => 'BENACHRICHTIGEN BEI';
 
   @override
+  String get settingsSectionPhotos => 'FOTOS';
+
+  @override
   String get settingsSectionQuestions => 'FRAGEN';
 
   @override
@@ -2436,6 +3127,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsSectionVisibility => 'WAS ANDERE SEHEN';
+
+  @override
+  String get settingsSignInEmail => 'E-Mail und Passwort';
+
+  @override
+  String get settingsSignInMethods => 'Anmeldemethoden';
 
   @override
   String get settingsSignedInWithGoogle => 'Angemeldet mit Google';
@@ -2514,6 +3211,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsUnblocking => 'Wird aufgehoben...';
 
   @override
+  String get settingsUnitsKilometres => 'Kilometer';
+
+  @override
+  String get settingsUnitsMiles => 'Meilen';
+
+  @override
+  String get settingsUploadsWifiOnly => 'Nur über WLAN hochladen';
+
+  @override
+  String get settingsUploadsWifiOnlyHint =>
+      'Kapseln ohne WLAN warten auf dem Telefon, bis WLAN da ist.';
+
+  @override
   String get settingsUsername => 'Benutzername';
 
   @override
@@ -2546,4 +3256,76 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Dein Passwort';
+
+  @override
+  String get streakAtRisk =>
+      'Heute zählt noch nicht: Hinterlasse vor Mitternacht eine Kapsel, um deine Serie zu halten.';
+
+  @override
+  String streakLongest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage',
+      one: '1 Tag',
+    );
+    return 'Längste: $_temp0';
+  }
+
+  @override
+  String get streakMakeCapsule => 'Kapsel erstellen';
+
+  @override
+  String get streakSafe => 'Heute zählt. Bis morgen!';
+
+  @override
+  String worldCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Kapseln',
+      one: '1 Kapsel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String worldCountriesLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Länder',
+      one: 'Land',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get worldDescription => 'Länder und Orte deiner Kapseln';
+
+  @override
+  String get worldEmpty =>
+      'Hinterlasse eine Kapsel an einem neuen Ort, und ihr Land bekommt hier einen Stempel.';
+
+  @override
+  String worldFirst(String date) {
+    return 'Zuerst: $date';
+  }
+
+  @override
+  String get worldNote => 'Stempel gibt es für Kapseln ab diesem Update.';
+
+  @override
+  String get worldTitle => 'Reisepass';
+
+  @override
+  String worldTownsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Orte',
+      one: 'Ort',
+    );
+    return '$_temp0';
+  }
 }

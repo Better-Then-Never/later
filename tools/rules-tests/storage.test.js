@@ -67,6 +67,46 @@ describe('profile images', () => {
   });
 });
 
+describe('chat photos', () => {
+  const photo = (who, path = 'chats/alice_bob/alice/m1.jpg') => ref(storage(who), path);
+
+  test('the sender uploads to their folder of the chat; both participants read', async () => {
+    await assertSucceeds(uploadBytes(photo('alice'), bytes(), jpeg));
+    await assertSucceeds(getBytes(photo('alice')));
+    await assertSucceeds(getBytes(photo('bob')));
+    await assertFails(getBytes(photo('carol')));
+    await assertFails(getBytes(photo(null)));
+  });
+
+  test('not in your name, not in a chat you are not part of, only small jpegs', async () => {
+    await assertFails(uploadBytes(photo('bob'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('carol', 'chats/alice_bob/carol/m1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice/alice/m1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob_carol/alice/m1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m1.png'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m-1.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice'), bytes(), { contentType: 'text/plain' }));
+    await assertFails(uploadBytes(photo('alice'), new Uint8Array(5 * 1024 * 1024 + 1), jpeg));
+  });
+
+  test('voice messages: .m4a audio in the same folder', async () => {
+    const m4a = { contentType: 'audio/mp4' };
+    await assertSucceeds(uploadBytes(photo('alice', 'chats/alice_bob/alice/v1.m4a'), bytes(), m4a));
+    await assertSucceeds(getBytes(photo('bob', 'chats/alice_bob/alice/v1.m4a')));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v2.m4a'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v3.jpg'), bytes(), m4a));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v4.mp3'), bytes(), m4a));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v5.m4a'), new Uint8Array(5 * 1024 * 1024 + 1), m4a));
+  });
+
+  test('only the sender deletes; nobody replaces a sent photo', async () => {
+    await assertSucceeds(uploadBytes(photo('alice', 'chats/alice_bob/alice/m2.jpg'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m2.jpg'), bytes(), jpeg));
+    await assertFails(deleteObject(photo('bob', 'chats/alice_bob/alice/m2.jpg')));
+    await assertSucceeds(deleteObject(photo('alice', 'chats/alice_bob/alice/m2.jpg')));
+  });
+});
+
 describe('capsule images', () => {
   test('owner writes image.jpg; others cannot read or write', async () => {
     await assertSucceeds(uploadBytes(ref(storage('alice'), 'userdata/alice/capsules/c1/image.jpg'), bytes(), jpeg));
@@ -86,7 +126,15 @@ describe('capsule images', () => {
     await assertFails(uploadBytes(frame(2), new Uint8Array(3 * 1024 * 1024 + 1), jpeg));
   });
 
+  test('a small thumbnail next to the photo', async () => {
+    const thumb = (who = 'alice') => ref(storage(who), 'userdata/alice/capsules/c4/thumb.jpg');
+    await assertSucceeds(uploadBytes(thumb(), bytes(), jpeg));
+    await assertFails(uploadBytes(thumb('bob'), bytes(), jpeg));
+    await assertFails(uploadBytes(thumb(), new Uint8Array(512 * 1024 + 1), jpeg));
+  });
+
   test('everything else is closed', async () => {
+    await assertFails(uploadBytes(ref(storage('alice'), 'chats/x.jpg'), bytes(), jpeg));
     await assertFails(uploadBytes(ref(storage('alice'), 'public/x.jpg'), bytes(), jpeg));
   });
 });

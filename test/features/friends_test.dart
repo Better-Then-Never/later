@@ -1,15 +1,18 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/errors/app_failure.dart';
+import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/friend_request.dart';
 import 'package:later/data/models/user_profile.dart';
+import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/services/preferences_store.dart';
 import 'package:later/features/friends/friend_suggestions_controller.dart';
 import 'package:later/features/friends/friends_store.dart';
 import 'package:later/features/friends/pages/my_friends_page.dart';
 import 'package:later/features/friends/pinned_friends_controller.dart';
+import 'package:later/features/messages/chats_store.dart';
+import 'package:later/features/settings/settings_store.dart';
 import 'package:later/features/users/user_directory.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -165,6 +168,26 @@ void main() {
       c.dispose();
     });
 
+    test('finds people by name too, usernames first, never yourself', () async {
+      users
+        ..put(_p('dan', name: 'Erin Daniels'))
+        ..searchNames['dan'] = 'erin daniels'
+        ..searchNames['erin'] = 'erin'
+        ..searchNames['me'] = 'erin me';
+      final c = FriendSuggestionsController(
+        users: users,
+        directory: UserDirectory(users),
+        friends: store(),
+        debounce: Duration.zero,
+      );
+      await pumpEventQueue();
+      c.search('Erin');
+      await Future<void>.delayed(Duration.zero);
+      await pumpEventQueue();
+      expect(c.results.map((u) => u.uid), ['erin', 'dan']);
+      c.dispose();
+    });
+
     test('without a query: friends of friends, most mutual first', () async {
       users
         ..put(_p('me', friends: ['bob', 'carl']))
@@ -204,31 +227,86 @@ void main() {
   group('PinnedFriendsController', () {
     setUp(() => SharedPreferences.setMockInitialValues({}));
 
-    test('stale pins are ignored and the order is stable', () async {
-      users.put(_p('me', friends: ['bob', 'dave', 'erin', 'zed']));
-      final prefs = PreferencesStore();
-      await prefs.setPinnedFriends('me', ['gone', 'erin']);
-      final s = store();
-      final c = PinnedFriendsController(
-        friends: s,
+    late FakeSettingsRepository settingsRepo;
+    late SettingsStore settings;
+    late ChatsStore chats;
+
+    PinnedFriendsController controller({
+      List<String> pins = const [],
+      PreferencesStore? prefs,
+    }) {
+      settingsRepo = FakeSettingsRepository()
+        ..docs['me'] = UserSettings(pinnedFriends: pins);
+      settings = SettingsStore(settingsRepo, utcOffsetMinutes: () => 0)
+        ..attach('me');
+      final chatRepo = FakeChatRepository()
+        ..chats['dave_me'] = Chat(
+          id: 'dave_me',
+          participants: const ['dave', 'me'],
+          lastMessage: 'hi',
+          lastUpdated: DateTime(2026, 10, 2),
+        )
+        ..chats['bob_me'] = Chat(
+          id: 'bob_me',
+          participants: const ['bob', 'me'],
+          lastMessage: 'yo',
+          lastUpdated: DateTime(2026, 10, 1),
+        )
+        ..chats['me_stranger'] = Chat(
+          id: 'me_stranger',
+          participants: const ['me', 'stranger'],
+          lastMessage: 'old friend',
+          lastUpdated: DateTime(2026, 10, 3),
+        );
+      chats = ChatsStore(chatRepo)..attach('me');
+      return PinnedFriendsController(
+        friends: store(),
+        settings: settings,
+        chats: chats,
         prefs: prefs,
-        random: Random(1),
       );
-      await pumpEventQueue();
+    }
 
-      expect(c.isLoading, isFalse);
-      expect(c.pinnedUids, ['erin'], reason: 'former friend dropped');
-      final shown = c.displayFriends;
-      expect(shown, hasLength(3));
-      expect(shown.first, 'erin');
-      s.dismissSuggestion('x'); // Unrelated change: no reshuffle.
-      expect(c.displayFriends, shown);
+    test(
+      'pins first (on every phone), then recent chats, then the rest',
+      () async {
+        users.put(_p('me', friends: ['bob', 'dave', 'erin', 'zed']));
+        final c = controller(pins: ['gone', 'erin']);
+        await pumpEventQueue();
 
-      await c.setPinnedFriends(['bob', 'gone']);
-      expect(await prefs.pinnedFriends('me'), ['bob']);
-      expect(c.displayFriends.first, 'bob');
-      c.dispose();
-    });
+        expect(c.isLoading, isFalse);
+        expect(c.pinnedUids, ['erin'], reason: 'former friend dropped');
+        expect(c.displayFriends, ['erin', 'dave', 'bob', 'zed']);
+
+        expect(await c.togglePin('zed'), isNull);
+        expect(settingsRepo.docs['me']!.pinnedFriends, ['erin', 'zed']);
+        expect(c.displayFriends.take(2), ['erin', 'zed']);
+        await pumpEventQueue();
+        expect(await c.togglePin('erin'), isNull);
+        expect(c.pinnedUids, ['zed']);
+        c.dispose();
+      },
+    );
+
+    test(
+      'three at most; pins kept on this phone move to the account',
+      () async {
+        users.put(_p('me', friends: ['bob', 'dave', 'erin', 'zed']));
+        final prefs = PreferencesStore();
+        await prefs.setPinnedFriends('me', ['bob', 'dave']);
+        final c = controller(prefs: prefs);
+        await pumpEventQueue();
+        expect(c.pinnedUids, ['bob', 'dave'], reason: 'migrated once');
+        expect(settingsRepo.docs['me']!.pinnedFriends, ['bob', 'dave']);
+
+        expect(await c.togglePin('erin'), isNull);
+        // The fake delivers settings a turn late; a real tap comes later too.
+        await pumpEventQueue();
+        expect(await c.togglePin('zed'), isA<ValidationFailure>());
+        expect(c.pinnedUids, ['bob', 'dave', 'erin']);
+        c.dispose();
+      },
+    );
   });
 
   test('friends with an empty name are grouped under # (BUG-077)', () {

@@ -50,7 +50,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Later uses your location to pin time capsules where you create them and to show capsules nearby.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Later needs the microphone for the camera you use to create time capsules.</string>
+	<string>Later uses the microphone to record voice messages in your chats.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Later uses the camera to take the photo of a time capsule and to scan friends' QR codes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

@@ -5,6 +5,7 @@ import '../../../app/router/app_routes.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import 'block_user.dart';
+import 'report_user.dart';
 import '../../profile/share/sharing_service.dart';
 import '../friends_store.dart';
 import '../../../core/l10n/l10n.dart';
@@ -137,7 +138,7 @@ class _ManageFriendshipModalState extends State<ManageFriendshipModal> {
           text: context.l10n.friendsReport,
           onPressed: () {
             Navigator.pop(context);
-            // TODO: Handle report action
+            reportUser(context, widget.friendUid);
           },
           textColor: AppColors.danger,
         ),

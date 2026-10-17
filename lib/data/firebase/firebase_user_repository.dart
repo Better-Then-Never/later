@@ -95,8 +95,15 @@ class FirebaseUserRepository implements UserRepository {
   }
 
   @override
-  Future<void> updateName(String uid, String name) =>
-      _users.doc(uid).update({'name': name});
+  Future<void> updateName(String uid, String name) async {
+    final doc = _users.doc(uid);
+    // Keeps the name search in step (only for people found by name).
+    final indexed = (await doc.get()).data()?['nameLower'] is String;
+    await doc.update({
+      'name': name,
+      if (indexed) 'nameLower': name.toLowerCase(),
+    });
+  }
 
   @override
   Future<void> changeUsername(String uid, String newUsername) async {
@@ -162,4 +169,30 @@ class FirebaseUserRepository implements UserRepository {
   @override
   Future<void> setShowAchievements(String uid, bool show) =>
       _users.doc(uid).update({'showAchievements': show});
+
+  @override
+  Future<void> setAbout(String uid, String about) => _users.doc(uid).update({
+    'about': about.isEmpty ? FieldValue.delete() : about,
+  });
+
+  @override
+  Future<void> setSearchName(String uid, String? lowerCaseName) => _users
+      .doc(uid)
+      .update({'nameLower': lowerCaseName ?? FieldValue.delete()});
+
+  @override
+  Future<List<UserProfile>> searchByName(
+    String prefix, {
+    int limit = 20,
+  }) async {
+    if (prefix.isEmpty) return const [];
+    final snap = await _users
+        .where('nameLower', isGreaterThanOrEqualTo: prefix)
+        .where('nameLower', isLessThan: '$prefix\uf8ff')
+        .limit(limit)
+        .get();
+    return snap.docs
+        .map((doc) => FirestoreMappers.userProfile(doc.id, doc.data()))
+        .toList();
+  }
 }

@@ -24,6 +24,7 @@ const {
   writeBatch,
   runTransaction,
   serverTimestamp,
+  increment,
   arrayUnion,
   arrayRemove,
   deleteField,
@@ -132,6 +133,23 @@ describe('users', () => {
     );
     await assertFails(updateDoc(doc(as('carol'), 'users/alice'), { name: 'X' }));
     await assertFails(updateDoc(doc(as('alice'), 'users/alice'), { name: '' }));
+  });
+
+  test('a few words about yourself, and the lower-case name for search', async () => {
+    const alice = doc(as('alice'), 'users/alice');
+    await assertSucceeds(updateDoc(alice, { about: 'Collecting sunsets' }));
+    await assertFails(updateDoc(alice, { about: 'x'.repeat(101) }));
+    await assertFails(updateDoc(alice, { about: 42 }));
+    await assertFails(updateDoc(doc(as('carol'), 'users/alice'), { about: 'hi' }));
+    await assertSucceeds(updateDoc(alice, { name: 'Alice Walker', nameLower: 'alice walker' }));
+    await assertFails(updateDoc(alice, { nameLower: 'someone else' }));
+    // An old app renames without it; the index lags but the rename works.
+    await assertSucceeds(updateDoc(alice, { name: 'Ally' }));
+    await assertSucceeds(updateDoc(alice, { nameLower: deleteField() }));
+    const found = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'users'), where('nameLower', '>=', 'al'), where('nameLower', '<', 'al\uf8ff'), limit(20))),
+    );
+    assert.equal(found.size, 0, 'removed from the name index');
   });
 
   test('legacy private fields may only be removed', async () => {
@@ -365,6 +383,33 @@ describe('capsules', () => {
     await assertFails(setDoc(doc(db, 'capsules/new5'), { ...fresh, title: '' }));
   });
 
+  test('co-authors: friends of the owner, up to five; they see it and may leave it', async () => {
+    const db = as('alice');
+    const fresh = (coAuthors, privacy = 'private') => ({
+      ...capsule('alice', privacy),
+      createdAt: serverTimestamp(),
+      coAuthors,
+    });
+    await assertSucceeds(setDoc(doc(db, 'capsules/co1'), fresh(['bob'])));
+    await assertFails(setDoc(doc(db, 'capsules/co2'), fresh(['carol'])), 'not a friend');
+    await assertFails(setDoc(doc(db, 'capsules/co3'), fresh(['alice'])));
+    await assertFails(setDoc(doc(db, 'capsules/co4'), fresh(['bob', 'bob'])));
+    await assertFails(setDoc(doc(db, 'capsules/co5'), fresh(['bob', 'b2', 'b3', 'b4', 'b5', 'b6'])));
+    await assertFails(setDoc(doc(db, 'capsules/co6'), fresh('bob')));
+    // Bob sees Alice's private capsule because he is a co-author; Carol does not.
+    await assertSucceeds(getDoc(doc(as('bob'), 'capsules/co1')));
+    await assertFails(getDoc(doc(as('carol'), 'capsules/co1')));
+    const mine = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'capsules'), where('coAuthors', 'array-contains', 'bob'))),
+    );
+    assert.deepEqual(mine.docs.map((d) => d.id), ['co1']);
+    // Only taking yourself off; nothing else changes.
+    await assertFails(updateDoc(doc(as('bob'), 'capsules/co1'), { title: 'Mine now' }));
+    await assertFails(updateDoc(doc(as('alice'), 'capsules/co1'), { coAuthors: [] }));
+    await assertSucceeds(updateDoc(doc(as('bob'), 'capsules/co1'), { coAuthors: [] }));
+    await assertFails(getDoc(doc(as('bob'), 'capsules/co1')));
+  });
+
   test('visibility: own, friends-only of friends, public; never others\' private', async () => {
     const db = as('alice');
     await assertSucceeds(getDoc(doc(db, 'capsules/alicePrivate')));
@@ -507,6 +552,61 @@ describe('chats', () => {
     );
   });
 
+  test('in a chat that exists, a message and +1 unread go as one batched write (works offline)', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    const batched = (db, from, to, unread = increment(1), id = 'q1') => {
+      const batch = writeBatch(db);
+      batch.update(chatRef(db), {
+        lastMessage: 'queued',
+        lastUpdated: serverTimestamp(),
+        lastSenderId: from,
+        [`unreadCounts.${to}`]: unread,
+      });
+      batch.set(doc(db, `chats/alice_bob/messages/${id}`), {
+        senderId: from, text: 'queued', timestamp: serverTimestamp(), status: 'sent',
+      });
+      return batch.commit();
+    };
+    await assertSucceeds(batched(as('alice'), 'alice', 'bob'));
+    assert.equal(await unreadOf('bob'), 2);
+    await assertSucceeds(batched(as('bob'), 'bob', 'alice', increment(1), 'q2'));
+    assert.equal(await unreadOf('alice'), 1);
+    // Still exactly one more, never two; never your own count.
+    await assertFails(batched(as('alice'), 'alice', 'bob', increment(2), 'q3'));
+    await assertFails(batched(as('alice'), 'alice', 'alice', increment(1), 'q4'));
+    // A message id that exists cannot be written again.
+    await assertFails(batched(as('alice'), 'alice', 'bob', increment(1), 'q1'));
+  });
+
+  test('typing hints: your own, server time only, read by the other participant', async () => {
+    const hint = (db, uid, chatId = 'alice_bob') => doc(db, `chats/${chatId}/typing/${uid}`);
+    await assertSucceeds(setDoc(hint(as('alice'), 'alice'), { at: serverTimestamp() }));
+    await assertSucceeds(setDoc(hint(as('alice'), 'alice'), { at: serverTimestamp() }));
+    await assertSucceeds(getDoc(hint(as('bob'), 'alice')));
+    await assertFails(getDoc(hint(as('carol'), 'alice')));
+    // Not for someone else, not a made-up time, nothing else in it.
+    await assertFails(setDoc(hint(as('bob'), 'alice'), { at: serverTimestamp() }));
+    await assertFails(setDoc(hint(as('alice'), 'alice'), { at: Timestamp.now() }));
+    await assertFails(setDoc(hint(as('alice'), 'alice'), { at: serverTimestamp(), text: 'hi' }));
+    await assertFails(setDoc(hint(as('carol'), 'carol', 'alice_bob'), { at: serverTimestamp() }));
+    await assertFails(deleteDoc(hint(as('bob'), 'alice')));
+    await assertSucceeds(deleteDoc(hint(as('alice'), 'alice')));
+  });
+
+  test("taking back an unread message drops the other's count by exactly one", async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    assert.equal(await unreadOf('bob'), 2);
+    const alice = as('alice');
+    await assertSucceeds(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-1) }));
+    assert.equal(await unreadOf('bob'), 1);
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-2) }));
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.alice': increment(-1) }));
+    await assertSucceeds(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-1) }));
+    // Never below zero.
+    await assertFails(updateDoc(chatRef(alice), { 'unreadCounts.bob': increment(-1) }));
+  });
+
   test('deleting the newest message puts the one before it back in the summary', async () => {
     await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'from bob' }));
     await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'oops' }));
@@ -516,7 +616,8 @@ describe('chats', () => {
     await assertSucceeds(
       updateDoc(chatRef(alice), { lastMessage: 'from bob', lastUpdated: earlier, lastSenderId: 'bob' }),
     );
-    // Not a stranger as the sender, no future time, no empty text, no counts.
+    // Not a stranger as the sender, no future time, no empty text, no counts
+    // other than one fewer for the other (see the next test).
     await assertFails(updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'carol' }));
     await assertFails(
       updateDoc(chatRef(alice), {
@@ -525,7 +626,7 @@ describe('chats', () => {
     );
     await assertFails(updateDoc(chatRef(alice), { lastMessage: '', lastUpdated: earlier, lastSenderId: 'bob' }));
     await assertFails(
-      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob', 'unreadCounts.bob': 0 }),
+      updateDoc(chatRef(alice), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob', 'unreadCounts.bob': 5 }),
     );
     await assertFails(updateDoc(chatRef(as('carol')), { lastMessage: 'x', lastUpdated: earlier, lastSenderId: 'bob' }));
   });
@@ -559,6 +660,72 @@ describe('chats', () => {
     await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: { ...quote, extra: 1 } }));
     await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: { ...quote, id: '' } }));
     await assertFails(send(as('alice'), 'alice', 'bob', { replyTo: 'm1' }));
+  });
+
+  test('a photo message points at a file of this chat sent by its sender', async () => {
+    const photo = (who, extra = {}) => ({
+      type: 'image',
+      text: '📷',
+      imageUrl: 'https://firebasestorage.googleapis.com/v0/b/x/o/p?alt=media&token=t',
+      imagePath: `chats/alice_bob/${who}/m1.jpg`,
+      width: 1200,
+      height: 1600,
+      ...extra,
+    });
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', photo('alice')));
+    await assertSucceeds(send(as('bob'), 'bob', 'alice', photo('bob', { text: 'Look!' })));
+    // Size is optional (older drafts); the caption may be the camera sign.
+    const { width, height, ...noSize } = photo('alice');
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', noSize));
+    // Someone else's file, another chat's folder, odd names, no file at all.
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('bob')));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imagePath: 'chats/alice_carol/alice/m1.jpg' })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imagePath: 'chats/alice_bob/alice/../x.jpg' })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imagePath: 'chats/alice_bob/alice/m1.png' })));
+    const { imagePath, ...noFile } = photo('alice');
+    await assertFails(send(as('alice'), 'alice', 'bob', noFile));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { imageUrl: 'x'.repeat(2049) })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { width: 0 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { height: 20000 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { width: '1200' })));
+    // Still a message: the text cannot be empty.
+    await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { text: '' })));
+  });
+
+  test('a voice message points at a recording of this chat by its sender', async () => {
+    const voice = (who, extra = {}) => ({
+      type: 'voice',
+      text: '🎤',
+      audioUrl: 'https://firebasestorage.googleapis.com/v0/b/x/o/v?alt=media&token=t',
+      audioPath: `chats/alice_bob/${who}/v1.m4a`,
+      durationMs: 4200,
+      waveform: Array.from({ length: 40 }, (_, i) => i * 2),
+      ...extra,
+    });
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', voice('alice')));
+    const { waveform, ...noBars } = voice('alice');
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', noBars));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('bob')));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { audioPath: 'chats/alice_bob/alice/v1.mp3' })));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { durationMs: 0 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { durationMs: 300001 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { waveform: Array(65).fill(1) })));
+    const { durationMs, ...noLength } = voice('alice');
+    await assertFails(send(as('alice'), 'alice', 'bob', noLength));
+  });
+
+  test('a quick reply names the capsule it answers, briefly', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'Love it', capsuleRef: { id: 'c1', title: 'Sunset' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: { id: '', title: 'Sunset' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: { id: 'c1', title: 'x'.repeat(141) } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: { id: 'c1', title: 't', imageUrl: 'u' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: 'c1' }));
+  });
+
+  test('a forwarded message says so, and nothing else', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: true }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: false }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: 'yes' }));
   });
 
   test("sending like main's app (no unread counts) is still allowed", async () => {
@@ -694,6 +861,75 @@ describe('chats', () => {
   });
 });
 
+describe('suggestions from contacts', () => {
+  const hashes = [
+    'a'.repeat(64),
+    'b'.repeat(64),
+  ];
+
+  test('nobody reads or writes the index from the app', async () => {
+    await assertFails(getDoc(doc(as('alice'), `contactIndex/${hashes[0]}`)));
+    await assertFails(setDoc(doc(as('alice'), `contactIndex/${hashes[0]}`), { uid: 'alice' }));
+  });
+
+  test('a request of your own, at most once an hour; only you read the answer', async () => {
+    const mine = doc(as('alice'), 'contactMatches/alice');
+    const ask = { hashes, at: serverTimestamp(), status: 'pending' };
+    await assertSucceeds(setDoc(mine, ask));
+    await assertSucceeds(getDoc(mine));
+    await assertFails(getDoc(doc(as('bob'), 'contactMatches/alice')));
+    await assertFails(setDoc(doc(as('bob'), 'contactMatches/alice'), ask));
+    await assertFails(setDoc(mine, ask), 'again within the hour');
+    await assertFails(setDoc(doc(as('bob'), 'contactMatches/bob'), { ...ask, status: 'done', matches: ['x'] }));
+    await assertFails(
+      setDoc(doc(as('bob'), 'contactMatches/bob'), { ...ask, hashes: Array.from({ length: 1001 }, () => hashes[0]) }),
+    );
+    // An hour later it may ask again.
+    await seed((db) => setDoc(doc(db, 'contactMatches/carol'), { at: new Date(Date.now() - 2 * 3600 * 1000), status: 'done', matches: [] }));
+    await assertSucceeds(setDoc(doc(as('carol'), 'contactMatches/carol'), ask));
+    await assertSucceeds(deleteDoc(mine));
+  });
+});
+
+describe('entitlements (B7)', () => {
+  test('every signed-in app reads the limits; nobody writes them', async () => {
+    await seed((db) => setDoc(doc(db, 'entitlements/limits'), { loopFrames: 10 }));
+    await assertSucceeds(getDoc(doc(as('alice'), 'entitlements/limits')));
+    await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), 'entitlements/limits')));
+    await assertFails(setDoc(doc(as('alice'), 'entitlements/limits'), { loopFrames: 99 }));
+  });
+});
+
+describe('world (B7)', () => {
+  test('the summary is read like achievements, written by nobody', async () => {
+    await seed(async (db) => {
+      await setDoc(doc(db, 'users/alice'), { uid: 'alice', name: 'Alice', username: 'alice', friends: ['bob'] });
+      await setDoc(doc(db, 'users/alice/world/summary'), { countries: {} });
+    });
+    await assertSucceeds(getDoc(doc(as('alice'), 'users/alice/world/summary')));
+    await assertSucceeds(getDoc(doc(as('bob'), 'users/alice/world/summary')));
+    await assertFails(getDoc(doc(as('carol'), 'users/alice/world/summary')));
+    await assertFails(setDoc(doc(as('alice'), 'users/alice/world/summary'), { countries: {} }));
+  });
+});
+
+describe('capsules viewed (B7)', () => {
+  const mark = (db, uid, id) => doc(db, `users/${uid}/viewed/${id}`);
+
+  test('the owner writes each marker once, with the server time', async () => {
+    const alice = as('alice');
+    await assertSucceeds(setDoc(mark(alice, 'alice', 'c1'), { at: serverTimestamp() }));
+    // Seen before: refused (the function counted it already).
+    await assertFails(setDoc(mark(alice, 'alice', 'c1'), { at: serverTimestamp() }));
+    await assertFails(deleteDoc(mark(alice, 'alice', 'c1')));
+    await assertFails(setDoc(mark(alice, 'alice', 'c2'), { at: serverTimestamp(), counted: true }));
+    await assertFails(setDoc(mark(alice, 'alice', 'c3'), { at: new Date(2020, 1, 1) }));
+    await assertFails(setDoc(mark(as('bob'), 'alice', 'c4'), { at: serverTimestamp() }));
+    await assertSucceeds(getDoc(mark(alice, 'alice', 'c1')));
+    await assertFails(getDoc(mark(as('bob'), 'alice', 'c1')));
+  });
+});
+
 describe('settings', () => {
   const settingsRef = (db, uid = 'alice') => doc(db, `users/${uid}/settings/app`);
   const valid = {
@@ -713,6 +949,17 @@ describe('settings', () => {
     const alice = as('alice');
     await assertSucceeds(setDoc(settingsRef(alice), valid, { merge: true }));
     await assertSucceeds(setDoc(settingsRef(alice), { mutedChats: arrayUnion('alice_bob') }, { merge: true }));
+    // Pinned chats: a short list.
+    await assertSucceeds(setDoc(settingsRef(alice), { pinnedChats: arrayUnion('alice_bob') }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { pinnedChats: Array.from({ length: 11 }, (_, i) => `c${i}`) }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { pinnedChats: 'alice_bob' }, { merge: true }));
+    // Pinned friends on the profile: a short list, on every phone.
+    await assertSucceeds(setDoc(settingsRef(alice), { pinnedFriends: ['bob', 'carol'] }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { pinnedFriends: Array.from({ length: 11 }, (_, i) => `u${i}`) }, { merge: true }));
+    // Found by name, or not.
+    await assertSucceeds(setDoc(settingsRef(alice), { privacy: { findByName: false } }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { privacy: { findByName: 'no' } }, { merge: true }));
+    await assertSucceeds(setDoc(settingsRef(alice), { privacy: { findByContacts: true } }, { merge: true }));
     await assertSucceeds(getDoc(settingsRef(alice)));
     await assertFails(getDoc(settingsRef(as('bob'), 'alice')));
     await assertFails(setDoc(settingsRef(as('bob'), 'alice'), valid));
@@ -727,6 +974,9 @@ describe('settings', () => {
     await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, quietHours: { enabled: true, start: 2000, end: 0 } } }));
     await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, utcOffsetMinutes: 5000 } }));
     await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, extra: true } }));
+    // Vibration (B6): a switch; missing means on.
+    await assertSucceeds(setDoc(settingsRef(alice), { notifications: { ...n, vibrate: false } }));
+    await assertFails(setDoc(settingsRef(alice), { notifications: { ...n, vibrate: 'off' } }));
     await assertFails(setDoc(settingsRef(alice), { ...valid, isAdmin: true }));
     await assertFails(setDoc(settingsRef(alice), { mutedChats: 'alice_bob' }));
   });
@@ -814,7 +1064,11 @@ describe('social and gamification (night session)', () => {
       frameDelayMs: 250,
       thumbUrl: 'https://thumb',
       placeName: 'Grindelwald',
+      countryCode: 'CH',
     })));
+    // The country is an ISO code (B7).
+    await assertFails(setDoc(doc(db, 'capsules/a6'), fresh({ countryCode: 'che' })));
+    await assertFails(setDoc(doc(db, 'capsules/a7'), fresh({ countryCode: 7 })));
     await assertFails(setDoc(doc(db, 'capsules/a2'), fresh({ location: new GeoPoint(0, 0) })));
     await assertFails(setDoc(doc(db, 'capsules/a3'), fresh({ capturedAt: Timestamp.fromMillis(Date.now() + 3600 * 1000) })));
     await assertFails(setDoc(doc(db, 'capsules/a4'), fresh({ frames: Array(11).fill('https://f') })));
@@ -870,5 +1124,124 @@ describe('social and gamification (night session)', () => {
     await assertSucceeds(getDoc(doc(as('carol'), 'announcements/a1')));
     await assertFails(getDoc(doc(anon(), 'announcements/a1')));
     await assertFails(setDoc(doc(as('alice'), 'announcements/a2'), { title: { en: 'Fake' } }));
+  });
+});
+
+describe('group chats', () => {
+  const G = 'g_group1abcdef';
+  const group = (db, id = G) => doc(db, `chats/${id}`);
+  const newGroup = (by, members, extra = {}) => ({
+    members,
+    name: 'Trip',
+    createdBy: by,
+    createdAt: serverTimestamp(),
+    lastMessage: '',
+    lastUpdated: serverTimestamp(),
+    ...extra,
+  });
+  /** A group of alice, bob and carol, the way the invite function leaves it. */
+  const make = async () => {
+    await assertSucceeds(setDoc(group(as('alice')), newGroup('alice', ['alice'])));
+    await seed((db) => updateDoc(doc(db, `chats/${G}`), { members: ['alice', 'bob', 'carol'] }));
+  };
+
+  /** What the app does: the message and the summary in one batch. */
+  function say(db, from, extra = {}, id = `m${Math.random().toString(36).slice(2, 8)}`) {
+    const batch = writeBatch(db);
+    batch.update(group(db), { lastMessage: extra.text ?? 'hi', lastUpdated: serverTimestamp(), lastSenderId: from });
+    batch.set(doc(db, `chats/${G}/messages/${id}`), {
+      senderId: from, text: 'hi', timestamp: serverTimestamp(), status: 'sent', ...extra,
+    });
+    return batch.commit();
+  }
+
+  test('a group starts with its creator alone and a name', async () => {
+    const alice = as('alice');
+    await assertSucceeds(setDoc(group(alice), newGroup('alice', ['alice'])));
+    await assertFails(setDoc(group(alice, 'g_group2abcdef'), newGroup('bob', ['bob'])));
+    await assertFails(setDoc(group(alice, 'g_group3abcdef'), newGroup('alice', ['alice', 'bob'])));
+    await assertFails(setDoc(group(alice, 'g_group7abcdef'), newGroup('alice', ['alice'], { name: '' })));
+    await assertFails(setDoc(group(alice, 'g_group8abcdef'), newGroup('alice', ['alice'], { lastMessage: 'x' })));
+    await assertFails(setDoc(group(alice, 'g_group9abcdef'), newGroup('alice', ['alice'], { participants: ['alice', 'bob'] })));
+    // Not a group id: the two-person rules apply.
+    await assertFails(setDoc(group(alice, 'g_x'), newGroup('alice', ['alice'])));
+  });
+
+  test('members invite people; only the function adds them', async () => {
+    await make();
+    const invite = (db, uid) => doc(db, `chats/${G}/invites/${uid}`);
+    await assertSucceeds(setDoc(invite(as('bob'), 'dave'), { by: 'bob', at: serverTimestamp() }));
+    await assertFails(setDoc(invite(as('bob'), 'erin'), { by: 'carol', at: serverTimestamp() }));
+    await assertFails(setDoc(invite(as('bob'), 'carol'), { by: 'bob', at: serverTimestamp() }));
+    await assertFails(setDoc(invite(as('dave'), 'erin'), { by: 'dave', at: serverTimestamp() }));
+    await assertFails(updateDoc(group(as('bob')), { members: ['alice', 'bob', 'carol', 'dave'] }));
+    await assertFails(deleteDoc(invite(as('bob'), 'dave')));
+  });
+
+  test('members read and list it; others cannot; two-person queries do not see it', async () => {
+    await make();
+    await assertSucceeds(getDoc(group(as('bob'))));
+    await assertFails(getDoc(group(as('dave'))));
+    const mine = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'chats'), where('members', 'array-contains', 'bob'), orderBy('lastUpdated', 'desc'), limit(100))),
+    );
+    assert.deepEqual(mine.docs.map((d) => d.id), [G]);
+    const pairs = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'chats'), where('participants', 'array-contains', 'bob'))),
+    );
+    assert.equal(pairs.size, 0);
+    await assertFails(getDocs(query(collection(as('dave'), 'chats'), where('members', 'array-contains', 'bob'))));
+  });
+
+  test('members write text messages, quote each other, react, delete their own', async () => {
+    await make();
+    await assertSucceeds(say(as('bob'), 'bob', {}, 'b1'));
+    await assertSucceeds(say(as('carol'), 'carol', { text: 'yes', replyTo: { id: 'b1', senderId: 'bob', text: 'hi' } }, 'c1'));
+    await assertFails(say(as('carol'), 'carol', { replyTo: { id: 'x', senderId: 'dave', text: 'hi' } }));
+    await assertFails(say(as('dave'), 'dave'));
+    await assertFails(say(as('bob'), 'carol'));
+    // Text only for now (photos and capsules need checks a group cannot do yet).
+    await assertFails(say(as('bob'), 'bob', { type: 'capsule', capsuleId: 'c1' }));
+    await assertFails(say(as('bob'), 'bob', { type: 'image', imageUrl: 'https://x', imagePath: `chats/${G}/bob/p.jpg` }));
+    await assertSucceeds(getDocs(collection(as('alice'), `chats/${G}/messages`)));
+    await assertFails(getDocs(collection(as('dave'), `chats/${G}/messages`)));
+
+    await assertSucceeds(updateDoc(doc(as('alice'), `chats/${G}/messages/b1`), { 'reactions.alice': 'heart' }));
+    await assertFails(updateDoc(doc(as('alice'), `chats/${G}/messages/b1`), { 'reactions.bob': 'heart' }));
+    await assertFails(updateDoc(doc(as('alice'), `chats/${G}/messages/b1`), { status: 'read' }));
+    await assertFails(deleteDoc(doc(as('alice'), `chats/${G}/messages/b1`)));
+    await assertSucceeds(deleteDoc(doc(as('bob'), `chats/${G}/messages/b1`)));
+    // Carol deletes her newest message: the summary goes back to Bob's.
+    await assertSucceeds(deleteDoc(doc(as('carol'), `chats/${G}/messages/c1`)));
+    await assertSucceeds(updateDoc(group(as('carol')), { lastMessage: 'hi', lastUpdated: Timestamp.now(), lastSenderId: 'bob' }));
+    await assertFails(updateDoc(group(as('carol')), { lastMessage: 'hi', lastUpdated: Timestamp.now(), lastSenderId: 'dave' }));
+  });
+
+  test('read marks, renaming, adding and leaving', async () => {
+    await make();
+    const bob = as('bob');
+    await assertSucceeds(updateDoc(group(bob), { 'lastReadAt.bob': serverTimestamp() }));
+    await assertFails(updateDoc(group(bob), { 'lastReadAt.alice': serverTimestamp() }));
+    await assertFails(updateDoc(group(bob), { 'lastReadAt.bob': Timestamp.now() }));
+    await assertSucceeds(updateDoc(group(bob), { name: 'Trip 2026' }));
+    await assertFails(updateDoc(group(bob), { name: '' }));
+    await assertFails(updateDoc(group(as('dave')), { name: 'Mine' }));
+
+    // Dropping someone else is not leaving.
+    await assertFails(updateDoc(group(bob), { members: ['bob', 'carol'] }));
+    await assertFails(updateDoc(group(bob), { createdBy: 'bob' }));
+
+    // Bob leaves, his read mark with him; then he cannot read it.
+    await assertSucceeds(updateDoc(group(bob), { members: ['alice', 'carol'], lastReadAt: {} }));
+    await assertFails(getDoc(group(bob)));
+    await assertFails(getDocs(collection(bob, `chats/${G}/messages`)));
+  });
+
+  test('typing hints in a group: members only, their own', async () => {
+    await make();
+    await assertSucceeds(setDoc(doc(as('bob'), `chats/${G}/typing/bob`), { at: serverTimestamp() }));
+    await assertSucceeds(getDoc(doc(as('carol'), `chats/${G}/typing/bob`)));
+    await assertFails(setDoc(doc(as('dave'), `chats/${G}/typing/dave`), { at: serverTimestamp() }));
+    await assertFails(setDoc(doc(as('bob'), `chats/${G}/typing/carol`), { at: serverTimestamp() }));
   });
 });

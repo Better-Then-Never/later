@@ -203,11 +203,31 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
                       assetPath: AppIcons.messagesNew,
                     );
                   }
+                  // The first row offers older comments when there are.
+                  final more = _c.canLoadMoreComments ? 1 : 0;
                   return ListView.builder(
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                    itemCount: thread.length,
+                    itemCount: thread.length + more,
                     itemBuilder: (context, index) {
-                      final comment = thread[index];
+                      if (index < more) {
+                        return Center(
+                          child: _c.isLoadingMoreComments
+                              ? const Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: SizedBox.square(
+                                    dimension: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                )
+                              : TextButton(
+                                  onPressed: _c.loadMoreComments,
+                                  child: Text(l10n.capsulesCommentsEarlier),
+                                ),
+                        );
+                      }
+                      final comment = thread[index - more];
                       return _CommentRow(
                         key: ValueKey(comment.id),
                         comment: comment,

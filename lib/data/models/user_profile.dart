@@ -16,6 +16,9 @@ class UserStats {
     this.commentsWritten = 0,
     this.nightCapsules = 0,
     this.morningCapsules = 0,
+    this.capsulesViewed = 0,
+    this.countries = 0,
+    this.cities = 0,
   });
 
   final int capsules;
@@ -35,6 +38,13 @@ class UserStats {
   final int nightCapsules;
   final int morningCapsules;
 
+  /// Capsules of others the user opened, each counted once (B7).
+  final int capsulesViewed;
+
+  /// Countries and towns with a capsule (the world view, B7).
+  final int countries;
+  final int cities;
+
   /// The streak as of [now] (local time): it ends when a whole day passed
   /// without a capsule, even before the server notices.
   int streakAt(DateTime now) {
@@ -47,6 +57,9 @@ class UserStats {
 
   /// Whether today already counts for the streak.
   bool extendedToday(DateTime now) => streakLastDay == _day(now);
+
+  /// A streak that ends tonight unless a capsule counts today (B7).
+  bool atRisk(DateTime now) => streakAt(now) > 0 && !extendedToday(now);
 
   static String _day(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-'
@@ -67,7 +80,10 @@ class UserStats {
       other.reactionsReceived == reactionsReceived &&
       other.commentsWritten == commentsWritten &&
       other.nightCapsules == nightCapsules &&
-      other.morningCapsules == morningCapsules;
+      other.morningCapsules == morningCapsules &&
+      other.capsulesViewed == capsulesViewed &&
+      other.countries == countries &&
+      other.cities == cities;
 
   @override
   int get hashCode => Object.hash(
@@ -83,6 +99,9 @@ class UserStats {
     commentsWritten,
     nightCapsules,
     morningCapsules,
+    capsulesViewed,
+    countries,
+    cities,
   );
 }
 
@@ -99,7 +118,12 @@ class UserProfile {
     this.followingCount = 0,
     this.showAchievements = true,
     this.stats = const UserStats(),
+    this.about = '',
+    this.searchName,
   });
+
+  /// Longest "about me" line (firestore.rules).
+  static const maxAbout = 100;
 
   /// Placeholder used while a profile is loading or when it does not exist,
   /// named in the app's language.
@@ -112,7 +136,9 @@ class UserProfile {
       followerCount = 0,
       followingCount = 0,
       showAchievements = true,
-      stats = const UserStats();
+      stats = const UserStats(),
+      about = '',
+      searchName = null;
 
   final String uid;
   final String name;
@@ -131,12 +157,20 @@ class UserProfile {
   final bool showAchievements;
   final UserStats stats;
 
+  /// A few words under the name; empty when none.
+  final String about;
+
+  /// The lower-case name others search by (`nameLower`); null when the user
+  /// is not found by name (or an older app never wrote it).
+  final String? searchName;
+
   UserProfile copyWith({
     String? name,
     String? username,
     List<String>? friends,
     Set<String>? favorites,
     bool? showAchievements,
+    String? about,
   }) => UserProfile(
     uid: uid,
     name: name ?? this.name,
@@ -148,6 +182,8 @@ class UserProfile {
     followingCount: followingCount,
     showAchievements: showAchievements ?? this.showAchievements,
     stats: stats,
+    about: about ?? this.about,
+    searchName: searchName,
   );
 
   /// First letter used to group friend lists; never throws on empty names.

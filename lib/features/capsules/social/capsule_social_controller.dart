@@ -21,13 +21,37 @@ class CapsuleSocialController extends ChangeNotifier {
     required this.uid,
     required SocialRepository social,
     this.reactionLimit = 100,
+    this.commentPage = 200,
   }) : _social = social {
     _reactionsSub = _social
         .watchReactions(capsule.id, limit: reactionLimit)
         .listen(_onReactions, onError: _onError('reactions'));
+    _subscribeComments();
+  }
+
+  /// Comments are loaded this many at a time, newest first.
+  final int commentPage;
+  late int _commentLimit = commentPage;
+  bool _loadingMoreComments = false;
+
+  /// Older comments may exist before the first loaded one.
+  bool get canLoadMoreComments => _comments.length >= _commentLimit;
+  bool get isLoadingMoreComments => _loadingMoreComments;
+
+  void _subscribeComments() {
+    unawaited(_commentsSub?.cancel());
     _commentsSub = _social
-        .watchComments(capsule.id)
+        .watchComments(capsule.id, limit: _commentLimit)
         .listen(_onComments, onError: _onError('comments'));
+  }
+
+  /// Loads the next page of older comments.
+  void loadMoreComments() {
+    if (_loadingMoreComments || !canLoadMoreComments || _disposed) return;
+    _loadingMoreComments = true;
+    _commentLimit += commentPage;
+    _notify();
+    _subscribeComments();
   }
 
   final Capsule capsule;
@@ -105,6 +129,7 @@ class CapsuleSocialController extends ChangeNotifier {
   }
 
   void _onComments(List<CapsuleComment> comments) {
+    _loadingMoreComments = false;
     _comments = comments;
     _commentsLoaded = true;
     _notify();

@@ -18,6 +18,8 @@ const DEFAULT_NOTIFICATIONS = Object.freeze({
   streakReminder: false,
   preview: true,
   sound: true,
+  // Vibration with the sound (B6); a silent push never vibrates.
+  vibrate: true,
   quietHours: Object.freeze({ enabled: false, start: 22 * 60, end: 7 * 60 }),
   // Device offset from UTC when the settings were saved (quiet hours are in
   // the user's local time).
@@ -47,6 +49,7 @@ function normalize(data) {
       streakReminder: bool(n.streakReminder, d.streakReminder),
       preview: bool(n.preview, d.preview),
       sound: bool(n.sound, d.sound),
+      vibrate: bool(n.vibrate, d.vibrate),
       quietHours: {
         enabled: bool(q.enabled, d.quietHours.enabled),
         start: minutes(q.start, d.quietHours.start),
@@ -95,10 +98,24 @@ function blockedReason(settings, category, now = new Date()) {
   return null;
 }
 
-/** Android channel: one per kind, with a silent variant when sound is off. */
+/**
+ * How a push alerts: true (sound and vibration), 'novibrate' (sound only)
+ * or false (neither).
+ */
+function alertOf(settings) {
+  const n = settings.notifications;
+  if (!n.sound) return false;
+  return n.vibrate === false ? 'novibrate' : true;
+}
+
+/**
+ * Android channel: one per kind, with a silent variant when sound is off
+ * and one without vibration ([sound] is what [alertOf] returns).
+ */
 function channelFor(category, sound) {
   const base = category === 'messages' ? 'messages' : 'activity';
-  return sound ? base : `${base}_silent`;
+  if (!sound) return `${base}_silent`;
+  return sound === 'novibrate' ? `${base}_novibrate` : base;
 }
 
 module.exports = {
@@ -108,4 +125,5 @@ module.exports = {
   inQuietHours,
   blockedReason,
   channelFor,
+  alertOf,
 };

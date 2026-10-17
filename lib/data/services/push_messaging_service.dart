@@ -88,6 +88,14 @@ class PushMessagingService implements TopicSubscriber {
         playSound: false,
         enableVibration: false,
       ),
+      // Sound without vibration (Settings > Notifications > Vibration off).
+      AndroidNotificationChannel(
+        'messages_novibrate',
+        l10n.notificationsChannelMessagesNoVibration,
+        description: l10n.notificationsChannelMessagesDescription,
+        importance: Importance.high,
+        enableVibration: false,
+      ),
       AndroidNotificationChannel(
         'activity',
         l10n.notificationsChannelActivity,
@@ -100,6 +108,13 @@ class PushMessagingService implements TopicSubscriber {
         description: l10n.notificationsChannelActivitySilentDescription,
         importance: Importance.low,
         playSound: false,
+        enableVibration: false,
+      ),
+      AndroidNotificationChannel(
+        'activity_novibrate',
+        l10n.notificationsChannelActivityNoVibration,
+        description: l10n.notificationsChannelActivityDescription,
+        importance: Importance.high,
         enableVibration: false,
       ),
       // Pushes from Cloud Functions deployed before the channels above
@@ -118,6 +133,10 @@ class PushMessagingService implements TopicSubscriber {
   /// The chat on screen: its message pushes are not shown in the
   /// foreground (set by the chat page).
   String? activeChatId;
+
+  /// The app celebrates achievements itself while it runs (B7): their
+  /// pushes are not shown in the foreground.
+  bool achievementsInApp = false;
 
   final _taps = StreamController<NotificationTap>.broadcast();
   final List<StreamSubscription<RemoteMessage>> _subscriptions = [];
@@ -216,14 +235,22 @@ class PushMessagingService implements TopicSubscriber {
     }
   }
 
-  /// Topic pushes (announcements, see NewsTopics).
+  /// Topic pushes (announcements, see NewsTopics). Skipped in builds that
+  /// talk to the local emulators: FCM topics are not emulated, so the phone
+  /// would join the real project's topics.
   @override
-  Future<void> subscribeToTopic(String topic) =>
-      _messaging.subscribeToTopic(topic);
+  Future<void> subscribeToTopic(String topic) async {
+    if (_usesEmulator) return;
+    await _messaging.subscribeToTopic(topic);
+  }
 
   @override
-  Future<void> unsubscribeFromTopic(String topic) =>
-      _messaging.unsubscribeFromTopic(topic);
+  Future<void> unsubscribeFromTopic(String topic) async {
+    if (_usesEmulator) return;
+    await _messaging.unsubscribeFromTopic(topic);
+  }
+
+  static const _usesEmulator = bool.fromEnvironment('USE_FIREBASE_EMULATOR');
 
   /// Revokes this device's token so the previous user stops receiving pushes.
   Future<void> deleteToken() async {
@@ -252,6 +279,7 @@ class PushMessagingService implements TopicSubscriber {
     final chatId = tap.type == NotificationType.message ? tap.chatId : null;
     // The user is reading this chat right now.
     if (chatId != null && chatId == activeChatId) return;
+    if (achievementsInApp && tap.type == NotificationType.achievement) return;
     final channel = channels.firstWhere(
       (c) => c.id == notification.android?.channelId,
       orElse: () => channels.last,

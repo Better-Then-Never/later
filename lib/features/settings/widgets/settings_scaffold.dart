@@ -5,6 +5,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../shared/widgets/buttons/go_back_button.dart';
 import '../../../shared/widgets/default_text.dart';
+import '../../../shared/widgets/options/settings_row_layout.dart';
 import '../../../shared/widgets/page_header.dart';
 
 /// Frame of every settings page: the white header with a back button, a
@@ -123,36 +124,37 @@ class SettingsChoiceRow extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     return Column(
       children: [
-        ListTile(
-          dense: true,
+        Semantics(
           selected: selected,
-          minVerticalPadding: 6,
-          visualDensity: const VisualDensity(vertical: -3),
-          contentPadding: EdgeInsets.only(
-            left: screenWidth * 0.05,
-            right: screenWidth * 0.05,
+          button: true,
+          child: SettingsRowLayout(
+            verticalPadding: 6,
+            padding: EdgeInsets.only(
+              left: screenWidth * 0.05,
+              right: screenWidth * 0.05,
+            ),
+            title: DefaultText(
+              title,
+              textAlign: TextAlign.start,
+              fontWeight: FontWeight.bold,
+              fontSize: screenWidth * 0.045,
+            ),
+            subtitle: subtitle == null
+                ? null
+                : DefaultText(
+                    subtitle!,
+                    textAlign: TextAlign.start,
+                    color: context.palette.textSecondary,
+                  ),
+            trailing: selected
+                ? Icon(
+                    Icons.check_circle,
+                    color: AppColors.brandGreen,
+                    size: screenWidth * 0.065,
+                  )
+                : null,
+            onTap: onTap,
           ),
-          title: DefaultText(
-            title,
-            textAlign: TextAlign.start,
-            fontWeight: FontWeight.bold,
-            fontSize: screenWidth * 0.045,
-          ),
-          subtitle: subtitle == null
-              ? null
-              : DefaultText(
-                  subtitle!,
-                  textAlign: TextAlign.start,
-                  color: context.palette.textSecondary,
-                ),
-          trailing: selected
-              ? Icon(
-                  Icons.check_circle,
-                  color: AppColors.brandGreen,
-                  size: screenWidth * 0.065,
-                )
-              : null,
-          onTap: onTap,
         ),
         if (withDivider)
           Divider(height: 1, thickness: 1, color: context.palette.divider),

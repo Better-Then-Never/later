@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -40,6 +42,20 @@ abstract final class AppImageCache {
         null,
         CachedNetworkImageProvider(url, cacheManager: manager),
       );
+
+  /// Puts a picture the app just uploaded into the cache under its URL, so
+  /// showing it later reads the disk instead of downloading it again.
+  static Future<void> seed(String url, List<int> bytes) async {
+    try {
+      await manager.putFile(
+        url,
+        Uint8List.fromList(bytes),
+        fileExtension: 'jpg',
+      );
+    } catch (e) {
+      AppLogger.debug('Could not cache $url: $e');
+    }
+  }
 
   /// Forget one picture (the user replaced or deleted it).
   static Future<void> evict(String url) async {

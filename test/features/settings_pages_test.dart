@@ -46,6 +46,27 @@ void main() {
     test('unknown stored values fall back to the defaults', () {
       expect(MapLook.parse('3d'), MapLook.standard);
       expect(StartCamera.parse(null), StartCamera.back);
+      expect(DistanceUnit.parse('leagues'), DistanceUnit.kilometres);
+      expect(PhotoQuality.parse(null), PhotoQuality.standard);
+    });
+
+    test('units, photo quality and the gallery copy are kept too', () async {
+      final store = DeviceSettingsStore(PreferencesStore())..attach('alice');
+      await pumpEventQueue();
+      expect(store.distanceUnit, DistanceUnit.kilometres);
+      expect(store.photoQuality, PhotoQuality.standard);
+      expect(store.saveToGallery, isFalse);
+      await store.setDistanceUnit(DistanceUnit.miles);
+      await store.setPhotoQuality(PhotoQuality.high);
+      await store.setSaveToGallery(true);
+      store.detach();
+      expect(store.distanceUnit, DistanceUnit.kilometres);
+
+      store.attach('alice');
+      await pumpEventQueue();
+      expect(store.distanceUnit, DistanceUnit.miles);
+      expect(store.photoQuality, PhotoQuality.high);
+      expect(store.saveToGallery, isTrue);
     });
   });
 

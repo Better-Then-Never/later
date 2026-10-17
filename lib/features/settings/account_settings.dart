@@ -45,6 +45,34 @@ abstract final class AccountSettings {
     }
   }
 
+  /// The "about me" line, trimmed; empty removes it.
+  static Future<AppFailure?> saveAbout(
+    UserRepository users,
+    String uid,
+    String input,
+  ) async {
+    final about = input.trim();
+    if (about.length > UserProfile.maxAbout) {
+      return ValidationFailure(
+        AppL10n.current.settingsAboutTooLong(UserProfile.maxAbout),
+      );
+    }
+    try {
+      await users.setAbout(uid, about);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning(
+        'Saving the about line failed',
+        error: e,
+        stackTrace: st,
+      );
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorCouldNotSave,
+      );
+    }
+  }
+
   static Future<AppFailure?> saveName(
     UserRepository users,
     String uid,

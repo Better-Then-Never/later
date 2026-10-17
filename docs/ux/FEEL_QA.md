@@ -1,5 +1,8 @@
 # FEEL_QA.md: how it feels, screen by screen
 
+> **Superseded for the phone** by `docs/feel/FEEL_QA.md` (checked on a Galaxy S20 FE, PR #79). This page is the
+> night session's emulator pass and stays as it was.
+
 Checked by hand on the emulator (dark theme, English and Russian). ✓ = good, △ = acceptable with a note,
 ✗ = still rough (in IDEAS_NOT_DONE.md).
 

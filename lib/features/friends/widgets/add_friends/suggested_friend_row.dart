@@ -88,7 +88,7 @@ class SuggestedFriendRow extends StatelessWidget {
                       label: relation == FriendRelation.requestReceived
                           ? context.l10n.friendsAcceptRequestLabel
                           : context.l10n.friendsSendRequestLabel,
-                      child: GestureDetector(
+                      child: _Target(
                         onTap: onSendRequest,
                         child: Image.asset(
                           AppIcons.profileAddFriend,
@@ -97,11 +97,10 @@ class SuggestedFriendRow extends StatelessWidget {
                         ),
                       ),
                     ),
-              const SizedBox(width: 8),
               Semantics(
                 button: true,
                 label: context.l10n.friendsHideSuggestionLabel,
-                child: GestureDetector(
+                child: _Target(
                   onTap: onRemove,
                   child: Image.asset(
                     AppIcons.friendsDeleteReset,
@@ -116,4 +115,19 @@ class SuggestedFriendRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A 44 dp tap target around a smaller picture (D-24).
+class _Target extends StatelessWidget {
+  const _Target({required this.onTap, required this.child});
+
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+    behavior: HitTestBehavior.opaque,
+    onTap: onTap,
+    child: SizedBox.square(dimension: 44, child: Center(child: child)),
+  );
 }

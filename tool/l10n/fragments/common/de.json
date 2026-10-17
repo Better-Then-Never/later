@@ -29,5 +29,6 @@
   "navMyCapsules": "Meine Kapseln",
   "navNewCapsule": "Neue Kapsel",
   "navMessages": "Nachrichten",
-  "navProfile": "Profil"
+  "navProfile": "Profil",
+  "commonNewCount": "{count, plural, one{{count} neu} other{{count} neu}}"
 }

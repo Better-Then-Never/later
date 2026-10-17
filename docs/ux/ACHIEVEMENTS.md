@@ -10,7 +10,7 @@ the server's unlock document and the user's stats.
 | first_capsule | stats.capsules | 1 | photo_camera |
 | collector | stats.capsules | 5, 25, 100, 500 | collections |
 | open_book | stats.publicCapsules | 1, 10, 50 | public |
-| animator | stats.loopCapsules | 1, 10 | animation (hidden: loop capsules are not built, `FeatureFlags.loopCapsules`) |
+| animator | stats.loopCapsules | 1, 10 | animation (hidden while loop capsules are behind `FeatureFlags.loopCapsules`: built, not switched on) |
 | streak | stats.streakLongest | 3, 7, 14, 30, 100 | local_fire_department |
 | explorer | stats.places (≈5 km cells) | 3, 10, 25, 100 | explore |
 | traveler | stats.distanceKm between consecutive capsules | 100, 1000, 10000 | flight_takeoff |
@@ -33,9 +33,16 @@ when the previous counted day was yesterday. The app shows it until a whole day 
 "achievement" push and in-app notification (category `achievements`).
 
 ## Badge
-`AchievementIcon`: the Material symbol on a round plate, with a ring of as many segments as levels; filled
-segments show the level. Plate colours by level: brand green, info blue, warning orange, danger red, place yellow
-(existing accents only). Locked: grey.
+`AchievementIcon`: the symbol on a round plate, with a ring of as many segments as levels; filled segments show
+the level. Plate colours by level: brand green, info blue, warning orange, danger red, place yellow (existing
+accents only). Locked: grey.
+
+**Artwork.** The symbol is `assets/achievements/<id>.png` when that file exists (for example
+`assets/achievements/collector.png`), else the Material icon of the table above. Adding artwork needs no code: drop
+the PNG in (square, transparent background, at least 144 px so it is sharp at 3x), rebuild. A locked badge tints it
+grey. Which files exist is read from the asset manifest once at startup (`AchievementIcon.preloadArt`). SVG artwork is
+not supported: it would need the flutter_svg package, which is not a dependency (export PNGs instead). Tested in
+`test/features/achievement_art_test.dart`. (Before Session A this override was described in D-16 but not built.)
 
 ## Adding an achievement
 1. `functions/lib/gamification.js`: add to `ACHIEVEMENTS` (id, metric, tiers, icon, titles in 5 languages) and make

@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
@@ -21,6 +22,8 @@ import '../../../shared/widgets/profile_page_divider.dart';
 import '../capsule_labels.dart';
 import '../history_controller.dart';
 import '../../../core/l10n/app_dates.dart';
+import '../../settings/device_settings_store.dart';
+import '../../../shared/widgets/loop_mark.dart';
 
 /// One capsule in the History list.
 ///
@@ -37,6 +40,7 @@ class CapsuleListTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.isSelected = false,
+    this.waitingForWifi = false,
   });
 
   final Capsule capsule;
@@ -46,137 +50,215 @@ class CapsuleListTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final bool isSelected;
 
+  /// A waiting capsule waits for Wi-Fi, not for any connection.
+  final bool waitingForWifi;
+
   @override
   Widget build(BuildContext context) {
     final screen = MediaQuery.sizeOf(context);
     final createdAt = capsule.createdAt;
 
+    final heart = screen.height * 0.03;
+    // The heart's 44 dp tap target, centred on the heart and reaching into
+    // the card's padding, so the card keeps its height (D-24).
+    const padding = 14.0;
+    final heartTarget = padding + heart / 2 - 22;
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(14),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         decoration: BoxDecorations.whiteCard(
           context,
         ).copyWith(color: isSelected ? context.palette.selectedCapsule : null),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(17),
-              child: _Thumbnail(
-                url: capsule.imageUrl,
-                width: screen.width * 0.2,
-                height: screen.height * 0.15,
-              ),
-            ),
-            SizedBox(width: screen.width * 0.04),
-            Expanded(
-              child: Column(
+            Padding(
+              padding: const EdgeInsets.all(padding),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DefaultText(
-                          capsule.title,
-                          fontWeight: FontWeight.w500,
-                          fontSize: screen.width * 0.04,
-                          textAlign: TextAlign.start,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(17),
+                    child: Stack(
+                      children: [
+                        _Thumbnail(
+                          url: capsule.thumbUrl ?? capsule.imageUrl,
+                          width: screen.width * 0.2,
+                          height: screen.height * 0.15,
                         ),
-                      ),
-                      Image.asset(
-                        AppIcons.capsulePin(capsule.color.name),
-                        width: screen.height * 0.025,
-                      ),
-                      SizedBox(width: screen.width * 0.01),
-                      Semantics(
-                        button: true,
-                        label: isFavorite
-                            ? context.l10n.historyRemoveFromFavorites
-                            : context.l10n.historyAddToFavorites,
-                        child: GestureDetector(
-                          onTap: onFavoriteTap,
-                          child: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border,
-                            size: screen.height * 0.03,
-                            color: isFavorite
-                                ? AppColors.materialRed
-                                : context.palette.iconMuted,
+                        if (capsule.isLoop)
+                          const Positioned(
+                            left: 6,
+                            bottom: 6,
+                            child: LoopMark(),
                           ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  SizedBox(height: screen.height * 0.004),
-                  const ProfilePageDivider(width: double.infinity),
-                  SizedBox(height: screen.height * 0.016),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  SizedBox(width: screen.width * 0.04),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           children: [
-                            _InfoRow(
-                              iconPath: AppIcons.capsuleTimer,
-                              child: CapsuleCountdown(openAt: capsule.openAt),
-                            ),
-                            SizedBox(height: screen.height * 0.008),
-                            _InfoRow(
-                              iconPath: AppIcons.capsulePrivacy,
-                              child: _ellipsized(
-                                capsule.privacy.visibilityLabel(context.l10n),
+                            Expanded(
+                              child: DefaultText(
+                                capsule.title,
+                                fontWeight: FontWeight.w500,
+                                fontSize: screen.width * 0.04,
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                            SizedBox(height: screen.height * 0.008),
-                            _InfoRow(
-                              iconPath: AppIcons.capsuleLocation,
-                              child: _Distance(capsule: capsule),
+                            Image.asset(
+                              AppIcons.capsulePin(capsule.color.name),
+                              width: screen.height * 0.025,
+                            ),
+                            SizedBox(width: screen.width * 0.01),
+                            // Taps land on the target over it (below).
+                            ExcludeSemantics(
+                              child: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                size: heart,
+                                color: isFavorite
+                                    ? AppColors.materialRed
+                                    : context.palette.iconMuted,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          SizedBox(height: screen.height * 0.005),
-                          _Pill(
-                            color: AppColors.placeYellow,
-                            child: _PlaceName(capsule: capsule),
-                          ),
-                          SizedBox(height: screen.height * 0.005),
-                          if (capsule.pending)
-                            _Pill(
-                              color: AppColors.warningOrange,
-                              child: _pillText(
-                                context,
-                                context.l10n.historyWaitingUpload,
-                              ),
-                            )
-                          else if (createdAt != null)
-                            _Pill(
-                              color: AppColors.brandGreen,
-                              // Day.month.year like the app's other date
-                              // pills, in the app's language.
-                              child: _pillText(
-                                context,
-                                AppDates.short(
-                                  createdAt,
-                                  context.l10n.localeName,
-                                ),
+                        SizedBox(height: screen.height * 0.004),
+                        const ProfilePageDivider(width: double.infinity),
+                        SizedBox(height: screen.height * 0.016),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _InfoRow(
+                                    iconPath: AppIcons.capsuleTimer,
+                                    child: CapsuleCountdown(
+                                      openAt: capsule.openAt,
+                                    ),
+                                  ),
+                                  SizedBox(height: screen.height * 0.008),
+                                  _InfoRow(
+                                    iconPath: AppIcons.capsulePrivacy,
+                                    child: _ellipsized(
+                                      capsule.privacy.visibilityLabel(
+                                        context.l10n,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: screen.height * 0.008),
+                                  _InfoRow(
+                                    iconPath: AppIcons.capsuleLocation,
+                                    child: _Distance(capsule: capsule),
+                                  ),
+                                ],
                               ),
                             ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 12),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                SizedBox(height: screen.height * 0.005),
+                                _Pill(
+                                  color: AppColors.placeYellow,
+                                  child: _PlaceName(capsule: capsule),
+                                ),
+                                SizedBox(height: screen.height * 0.005),
+                                // Waiting → uploaded morphs in place (the capsule
+                                // keeps its id): the pill crossfades and resizes.
+                                AnimatedSize(
+                                  duration: AppMotion.of(
+                                    context,
+                                    AppMotion.standard,
+                                  ),
+                                  curve: AppMotion.standardCurve,
+                                  alignment: Alignment.centerRight,
+                                  child: AnimatedSwitcher(
+                                    duration: AppMotion.of(
+                                      context,
+                                      AppMotion.standard,
+                                    ),
+                                    switchInCurve: AppMotion.enter,
+                                    switchOutCurve: AppMotion.exit,
+                                    transitionBuilder: (child, animation) =>
+                                        FadeTransition(
+                                          opacity: animation,
+                                          child: ScaleTransition(
+                                            scale: Tween(
+                                              begin: 0.85,
+                                              end: 1.0,
+                                            ).animate(animation),
+                                            child: child,
+                                          ),
+                                        ),
+                                    child: capsule.pending
+                                        ? _Pill(
+                                            key: const ValueKey('pending'),
+                                            color: AppColors.warningOrange,
+                                            child: _pillText(
+                                              context,
+                                              waitingForWifi
+                                                  ? context
+                                                        .l10n
+                                                        .historyWaitingWifi
+                                                  : context
+                                                        .l10n
+                                                        .historyWaitingUpload,
+                                            ),
+                                          )
+                                        : createdAt != null
+                                        ? _Pill(
+                                            key: const ValueKey('date'),
+                                            color: AppColors.brandGreen,
+                                            // Day.month.year like the app's other
+                                            // date pills, in the app's language.
+                                            child: _pillText(
+                                              context,
+                                              AppDates.short(
+                                                createdAt,
+                                                context.l10n.localeName,
+                                              ),
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
+              ),
+            ),
+            Positioned(
+              top: heartTarget,
+              right: heartTarget,
+              width: 44,
+              height: 44,
+              child: Semantics(
+                button: true,
+                label: isFavorite
+                    ? context.l10n.historyRemoveFromFavorites
+                    : context.l10n.historyAddToFavorites,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onFavoriteTap,
+                ),
               ),
             ),
           ],
@@ -219,7 +301,7 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.color, required this.child});
+  const _Pill({super.key, required this.color, required this.child});
 
   final Color color;
   final Widget child;
@@ -373,16 +455,27 @@ class _Distance extends StatelessWidget {
     );
     final meters = HistoryController.distanceMeters(here, capsule.location);
     final l10n = context.l10n;
+    final miles =
+        context.select<DeviceSettingsStore, DistanceUnit>(
+          (s) => s.distanceUnit,
+        ) ==
+        DistanceUnit.miles;
+    if (meters == null) return _ellipsized(l10n.historyDistanceUnknown);
+    // One decimal with the language's separator ("12.3", "12,3").
+    final number = NumberFormat(
+      '0.0',
+      l10n.localeName,
+    ).format(miles ? meters / metersPerMile : meters / 1000);
     return _ellipsized(
-      meters == null
-          ? l10n.historyDistanceUnknown
-          : l10n.historyDistanceFromYou(
-              // One decimal with the language's separator ("12.3", "12,3").
-              NumberFormat('0.0', l10n.localeName).format(meters / 1000),
-            ),
+      miles
+          ? l10n.historyDistanceFromYouMiles(number)
+          : l10n.historyDistanceFromYou(number),
     );
   }
 }
+
+/// Metres in a statute mile.
+const metersPerMile = 1609.344;
 
 /// "Capsule is opened!" or the time left until it opens.
 class CapsuleCountdown extends StatefulWidget {

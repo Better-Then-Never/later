@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
 import '../helpers/test_app.dart';
+import 'package:later/core/config/feature_flags.dart';
 
 UserProfile _profile({UserStats stats = const UserStats(), int friends = 0}) =>
     UserProfile(
@@ -34,6 +35,7 @@ void main() {
       'friendly': [1, 10, 50],
       'night_owl': [1, 10],
       'early_bird': [1, 10],
+      'curious': [10, 50, 250, 1000],
     };
     expect({for (final a in AchievementCatalog.all) a.id: a.tiers}, server);
   });
@@ -51,10 +53,10 @@ void main() {
     expect(of('collector').nextGoal, 100);
     expect(of('friendly').tier, 1, reason: 'the server already said level 2');
     expect(of('open_book').unlocked, isFalse);
+    // The Animator follows loop capsules (FeatureFlags).
     expect(
       standings.any((s) => s.def.id == 'animator'),
-      isFalse,
-      reason: 'loop capsules are not in the app yet (FeatureFlags)',
+      FeatureFlags.loopCapsules,
     );
   });
 

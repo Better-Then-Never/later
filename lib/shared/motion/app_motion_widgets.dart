@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_motion.dart';
+import '../../core/theme/app_palette.dart';
+import 'tint_painter.dart';
 
 /// Press feedback for buttons and tappable cards: scales down slightly while
 /// pressed. The child keeps handling the tap; this only listens to pointers.
@@ -66,16 +68,26 @@ class AppFadeSwitcher extends StatelessWidget {
 /// Fades and lifts a widget in the first time it is built (a message that
 /// just arrived, an item added to a list). Set [animate] to false for items
 /// that were already there.
+///
+/// The fade is a cover in the page's [background] colour that thins out
+/// over the child, not opacity: on a plain background it looks the same,
+/// but opacity on Impeller draws every row offscreen on every frame (a
+/// staggered list of ten rows cost 9–13 ms of raster per frame,
+/// docs/feel/PERFORMANCE.md).
 class AppEnter extends StatefulWidget {
   const AppEnter({
     super.key,
     required this.child,
     this.animate = true,
     this.delay = Duration.zero,
+    this.background,
   });
 
   final Widget child;
   final bool animate;
+
+  /// What is behind the widget; the page background by default.
+  final Color? background;
 
   /// Waits this long before coming in (rows of a list, one after another).
   final Duration delay;
@@ -126,13 +138,16 @@ class _AppEnterState extends State<AppEnter>
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(
-      opacity: _curve,
-      child: SlideTransition(
-        position: Tween(
-          begin: const Offset(0, 0.15),
-          end: Offset.zero,
-        ).animate(_curve),
+    return SlideTransition(
+      position: Tween(
+        begin: const Offset(0, 0.15),
+        end: Offset.zero,
+      ).animate(_curve),
+      child: CustomPaint(
+        foregroundPainter: TintPainter(
+          ReverseAnimation(_curve),
+          widget.background ?? context.palette.background,
+        ),
         child: widget.child,
       ),
     );

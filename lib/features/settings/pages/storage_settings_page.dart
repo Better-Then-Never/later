@@ -8,6 +8,7 @@ import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
 import '../widgets/settings_scaffold.dart';
+import '../data_export.dart';
 
 /// How much space the cache takes, and a way to free it.
 class StorageSettingsPage extends StatefulWidget {
@@ -59,6 +60,23 @@ class _StorageSettingsPageState extends State<StorageSettingsPage> {
     );
   }
 
+  bool _exporting = false;
+
+  Future<void> _export() async {
+    if (_exporting) return;
+    setState(() => _exporting = true);
+    final failure = await DataExport.share(context);
+    if (!mounted) return;
+    setState(() => _exporting = false);
+    if (failure != null) {
+      PopupNotificationService.showError(
+        context: context,
+        message: failure.message,
+        position: NotificationPosition.bottom,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = _size;
@@ -87,6 +105,18 @@ class _StorageSettingsPageState extends State<StorageSettingsPage> {
                   : l10n.settingsStorageClearCache,
               withDivider: false,
               onTap: _confirmClear,
+            ),
+          ],
+        ),
+        OptionsSection(
+          footer: l10n.settingsDownloadDataHint,
+          children: [
+            OptionsSettingsRow(
+              title: _exporting
+                  ? l10n.commonLoading
+                  : l10n.settingsDownloadData,
+              withDivider: false,
+              onTap: _export,
             ),
           ],
         ),

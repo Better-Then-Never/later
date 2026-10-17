@@ -48,18 +48,34 @@ void main() {
   testWidgets('AppEnter fades in, or shows at once when motion is reduced', (
     tester,
   ) async {
-    double opacity() => tester
-        .widget<FadeTransition>(
-          find.descendant(
-            of: find.byType(AppEnter),
-            matching: find.byType(FadeTransition),
-          ),
-        )
-        .opacity
-        .value;
+    // How far in it is: the fade (a thinning cover) and the lift share one
+    // curve, read from the lift. 1 = fully in.
+    double opacity() =>
+        1 -
+        tester
+                .widget<SlideTransition>(
+                  find.descendant(
+                    of: find.byType(AppEnter),
+                    matching: find.byType(SlideTransition),
+                  ),
+                )
+                .position
+                .value
+                .dy /
+            0.15;
 
     await tester.pumpWidget(_app(const AppEnter(child: Text('Hi'))));
     expect(opacity(), lessThan(1));
+    // No opacity layer: on Impeller it draws the widget offscreen per frame.
+    expect(
+      find.descendant(
+        of: find.byType(AppEnter),
+        matching: find.byWidgetPredicate(
+          (w) => w is FadeTransition || w is Opacity,
+        ),
+      ),
+      findsNothing,
+    );
     await tester.pumpAndSettle();
     expect(opacity(), 1);
 
@@ -83,17 +99,21 @@ void main() {
 
   testWidgets('the first rows of a list come in one after another, later ones '
       'simply appear', (tester) async {
-    double opacity(String key) => tester
-        .widget<FadeTransition>(
-          find
-              .descendant(
-                of: find.byKey(ValueKey(key)),
-                matching: find.byType(FadeTransition),
-              )
-              .first,
-        )
-        .opacity
-        .value;
+    double opacity(String key) =>
+        1 -
+        tester
+                .widget<SlideTransition>(
+                  find
+                      .descendant(
+                        of: find.byKey(ValueKey(key)),
+                        matching: find.byType(SlideTransition),
+                      )
+                      .first,
+                )
+                .position
+                .value
+                .dy /
+            0.15;
 
     Widget list(int rows) => _app(
       AppStaggerScope(

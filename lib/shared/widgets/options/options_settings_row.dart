@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/app/router/app_page_route.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/shared/widgets/default_text.dart';
+import 'package:later/shared/widgets/options/settings_row_layout.dart';
 import 'package:later/core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 
@@ -10,6 +11,9 @@ class OptionsSettingsRow extends StatelessWidget {
   final Widget? subtitle;
   final Widget? trailing;
   final String? leadingIconPath;
+
+  /// Paints a coloured picture in the row's ink (the black icons' look).
+  final bool tintLeadingIcon;
   final bool isLast;
   final bool withDivider;
   final VoidCallback? onTap;
@@ -25,6 +29,7 @@ class OptionsSettingsRow extends StatelessWidget {
     this.navigateTo,
     this.trailing,
     this.leadingIconPath,
+    this.tintLeadingIcon = false,
     this.minVerticalPadding = 6,
     this.withDivider = true,
   });
@@ -32,55 +37,45 @@ class OptionsSettingsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final iconSize = screenWidth * 0.09;
     return Column(
       children: [
-        Theme(
-          data: Theme.of(context).copyWith(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            hoverColor: Colors.transparent,
+        SettingsRowLayout(
+          padding: EdgeInsets.only(
+            left: screenWidth * 0.05,
+            right: screenWidth * 0.03,
           ),
-          child: ListTile(
-            dense: true,
-            minVerticalPadding: minVerticalPadding,
-            visualDensity: const VisualDensity(vertical: -3),
-
-            title: DefaultText(
-              title,
-              textAlign: TextAlign.start,
-              fontWeight: FontWeight.bold,
-              fontSize: screenWidth * 0.045,
-              color: isLast ? AppColors.danger : context.palette.textPrimary,
-            ),
-            subtitle: subtitle,
-            leading: leadingIconPath != null
-                ? Image.asset(
-                    leadingIconPath!,
-                    width: screenWidth * 0.09,
-                    height: screenWidth * 0.09,
-                  )
-                : null,
-            trailing: isLast
-                ? null
-                : trailing ??
-                      (Opacity(
-                        opacity: 0.3,
-                        child: Image.asset(
-                          AppIcons.goHere,
-                          width: screenWidth * 0.09,
-                          height: screenWidth * 0.09,
-                        ),
-                      )),
-            contentPadding: EdgeInsets.only(
-              left: screenWidth * 0.05,
-              right: screenWidth * 0.03,
-            ),
-            onTap: navigateTo != null
-                ? () {
-                    Navigator.push(context, fadeRoute<void>(navigateTo!));
-                  }
-                : onTap,
+          verticalPadding: minVerticalPadding,
+          title: DefaultText(
+            title,
+            textAlign: TextAlign.start,
+            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.045,
+            color: isLast ? AppColors.danger : context.palette.textPrimary,
           ),
+          subtitle: subtitle,
+          leading: leadingIconPath != null
+              ? Image.asset(
+                  leadingIconPath!,
+                  width: iconSize,
+                  height: iconSize,
+                  color: tintLeadingIcon ? context.palette.icon : null,
+                )
+              : null,
+          trailing: isLast
+              ? null
+              : trailing ??
+                    Image.asset(
+                      AppIcons.goHere,
+                      width: iconSize,
+                      height: iconSize,
+                      // Dimmed in its own paint (an Opacity widget would
+                      // be a layer per row).
+                      opacity: const AlwaysStoppedAnimation(0.3),
+                    ),
+          onTap: navigateTo != null
+              ? () => Navigator.push(context, appRoute<void>(navigateTo!))
+              : onTap,
         ),
         if (!isLast && withDivider)
           Divider(

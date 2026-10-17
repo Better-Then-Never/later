@@ -8,6 +8,7 @@ import '../models/friend_request.dart';
 import '../models/geo_position.dart';
 import '../models/social.dart';
 import '../models/user_profile.dart';
+import '../models/world.dart';
 import '../models/user_settings.dart';
 
 /// Collection and field names in one place.
@@ -27,6 +28,11 @@ abstract final class FirestorePaths {
   static const reactions = 'reactions';
   static const comments = 'comments';
   static const achievements = 'achievements';
+  static const viewed = 'viewed';
+  static const world = 'world';
+
+  /// The one document in users/{uid}/world.
+  static const worldSummary = 'summary';
   static const announcements = 'announcements';
   static const reports = 'reports';
 
@@ -54,6 +60,15 @@ abstract final class FirestoreMappers {
   static List<String> _stringList(Object? value) =>
       value is Iterable ? value.whereType<String>().toList() : const [];
 
+  /// The Storage emulator's address in emulator builds (bootstrap), whose
+  /// download links are plain http; null in real builds.
+  static String? storageEmulatorOrigin;
+
+  /// Loop frames are download links: https, or the local emulator's.
+  static bool _isFrameUrl(String url) =>
+      url.startsWith('https://') ||
+      (storageEmulatorOrigin != null && url.startsWith(storageEmulatorOrigin!));
+
   static UserProfile userProfile(String uid, Map<String, dynamic>? data) {
     if (data == null) return UserProfile.unknown(uid);
     return UserProfile(
@@ -70,6 +85,8 @@ abstract final class FirestoreMappers {
       followingCount: _count(data['followingCount']),
       showAchievements: _bool(data['showAchievements'], true),
       stats: userStats(_map(data['stats'])),
+      about: _string(data['about'], ''),
+      searchName: _nonEmptyString(data['nameLower']),
     );
   }
 
@@ -92,7 +109,34 @@ abstract final class FirestoreMappers {
     commentsWritten: _count(s['commentsWritten']),
     nightCapsules: _count(s['nightCapsules']),
     morningCapsules: _count(s['morningCapsules']),
+    capsulesViewed: _count(s['capsulesViewed']),
+    countries: _count(s['countries']),
+    cities: _count(s['cities']),
   );
+
+  static final _countryCode = RegExp(r'^[A-Z]{2}$');
+
+  /// users/{uid}/world/summary (B7); a missing or odd document is empty.
+  static WorldSummary world(Map<String, Object?>? data) {
+    final countries = <CountryVisit>[
+      for (final e in _map(data?['countries']).entries)
+        if (_countryCode.hasMatch(e.key))
+          CountryVisit(
+            code: e.key,
+            capsules: _count(_map(e.value)['capsules']),
+            cities: {
+              for (final t in _map(_map(e.value)['cities']).entries)
+                if (t.key.isNotEmpty && t.value is num && (t.value as num) > 0)
+                  t.key: (t.value as num).toInt(),
+            },
+            first: _date(_map(e.value)['first']),
+            last: _date(_map(e.value)['last']),
+          ),
+    ];
+    final never = DateTime(9999);
+    countries.sort((a, b) => (a.first ?? never).compareTo(b.first ?? never));
+    return WorldSummary(countries: countries);
+  }
 
   static Capsule capsule(String id, Map<String, dynamic> data) {
     final location = data['location'];
@@ -116,6 +160,7 @@ abstract final class FirestoreMappers {
       openAt: _date(data['openAt']),
       isScheduled: data['isScheduled'] == true,
       sharedWith: _stringList(data['sharedWith']),
+      coAuthors: _stringList(data['coAuthors']),
       capturedAt: _date(data['capturedAt']),
       utcOffsetMinutes: data['utcOffsetMinutes'] is int
           ? data['utcOffsetMinutes'] as int
@@ -124,9 +169,7 @@ abstract final class FirestoreMappers {
       allowComments: _bool(data['allowComments'], true),
       allowReactions: _bool(data['allowReactions'], true),
       locationPrecision: LocationPrecision.parse(data['locationPrecision']),
-      frames: _stringList(
-        data['frames'],
-      ).where((u) => u.startsWith('https://')).toList(),
+      frames: _stringList(data['frames']).where(_isFrameUrl).toList(),
       frameDelayMs: data['frameDelayMs'] is int
           ? (data['frameDelayMs'] as int).clamp(80, 2000)
           : Capsule.defaultFrameDelayMs,
@@ -156,6 +199,23 @@ abstract final class FirestoreMappers {
     'frameDelayMs',
     'thumbUrl',
     'placeName',
+    'coAuthors',
+    'countryCode',
+  };
+
+  /// The newest of them (co-authors, thumbnails, the country: this
+  /// session's rules). Dropped first, so a backend that has the earlier
+  /// rules keeps the rest (capture day, settings, frames).
+  static const capsuleFieldsAddedLatest = {
+    'thumbUrl',
+    'coAuthors',
+    'countryCode',
+  };
+
+  /// [capsule] without [capsuleFieldsAddedLatest].
+  static Map<String, dynamic> withoutLatest(Map<String, dynamic> capsule) => {
+    for (final e in capsule.entries)
+      if (!capsuleFieldsAddedLatest.contains(e.key)) e.key: e.value,
   };
 
   /// [capsule] without the added fields, for a backend whose rules predate
@@ -190,6 +250,8 @@ abstract final class FirestoreMappers {
       'utcOffsetMinutes': draft.utcOffsetMinutes!.clamp(-840, 840),
     // Defaults are left out (absent means true / exact).
     if (!draft.showAuthor) 'showAuthor': false,
+    if (draft.coAuthors.isNotEmpty)
+      'coAuthors': draft.coAuthors.take(Capsule.maxCoAuthors).toList(),
     if (!draft.allowComments) 'allowComments': false,
     if (!draft.allowReactions) 'allowReactions': false,
     if (draft.locationPrecision != LocationPrecision.exact)
@@ -201,6 +263,9 @@ abstract final class FirestoreMappers {
     if (thumbUrl != null) 'thumbUrl': thumbUrl,
     if (draft.placeName case final String place when place.trim().isNotEmpty)
       'placeName': place.length > 200 ? place.substring(0, 200) : place,
+    if (draft.countryCode case final String code
+        when _countryCode.hasMatch(code))
+      'countryCode': code,
   };
 
   static Chat chat(String id, Map<String, dynamic> data) => Chat(
@@ -217,6 +282,8 @@ abstract final class FirestoreMappers {
       for (final e in _map(data['lastReadAt']).entries)
         if (_date(e.value) case final DateTime at) e.key: at,
     },
+    members: _stringList(data['members']),
+    name: _string(data['name'], ''),
   );
 
   static ChatMessage chatMessage(String id, Map<String, dynamic> data) =>
@@ -229,9 +296,34 @@ abstract final class FirestoreMappers {
         type: ChatMessageType.parse(data['type']),
         capsuleId: _nonEmptyString(data['capsuleId']),
         imageUrl: _nonEmptyString(data['imageUrl']),
+        imagePath: _nonEmptyString(data['imagePath']),
+        width: _positiveInt(data['width']),
+        height: _positiveInt(data['height']),
+        audioUrl: _nonEmptyString(data['audioUrl']),
+        audioPath: _nonEmptyString(data['audioPath']),
+        durationMs: _positiveInt(data['durationMs']),
+        waveform: _waveform(data['waveform']),
+        forwarded: data['forwarded'] == true,
+        capsuleRef: switch (data['capsuleRef']) {
+          {'id': final String id, 'title': final String title}
+              when id.isNotEmpty =>
+            MessageCapsuleRef(id: id, title: title),
+          _ => null,
+        },
         replyTo: messageReply(data['replyTo']),
         reactions: messageReactions(data['reactions']),
       );
+
+  static int? _positiveInt(Object? value) =>
+      value is num && value > 0 ? value.toInt() : null;
+
+  /// Loudness bars 0-100; anything else is dropped.
+  static List<int> _waveform(Object? value) => value is List
+      ? [
+          for (final v in value)
+            if (v is num) v.toInt().clamp(0, 100),
+        ]
+      : const [];
 
   /// {uid: type}; unknown types are skipped.
   static Map<String, ReactionType> messageReactions(Object? value) {
@@ -287,6 +379,7 @@ abstract final class FirestoreMappers {
         news: _bool(n['news'], d.news),
         streakReminder: _bool(n['streakReminder'], d.streakReminder),
         sound: _bool(n['sound'], d.sound),
+        vibrate: _bool(n['vibrate'], d.vibrate),
         quietHours: QuietHours(
           enabled: _bool(q['enabled'], d.quietHours.enabled),
           start: _minutes(q['start'], d.quietHours.start),
@@ -307,8 +400,12 @@ abstract final class FirestoreMappers {
           p['contactSuggestions'],
           pd.contactSuggestions,
         ),
+        findByName: _bool(p['findByName'], pd.findByName),
+        findByContacts: _bool(p['findByContacts'], pd.findByContacts),
       ),
       mutedChats: _stringList(data['mutedChats']).toSet(),
+      pinnedChats: _stringList(data['pinnedChats']),
+      pinnedFriends: _stringList(data['pinnedFriends']),
       language: _nonEmptyString(data['language']),
     );
   }
@@ -326,6 +423,7 @@ abstract final class FirestoreMappers {
     'streakReminder': n.streakReminder,
     'preview': n.preview,
     'sound': n.sound,
+    'vibrate': n.vibrate,
     'quietHours': {
       'enabled': n.quietHours.enabled,
       'start': n.quietHours.start,
@@ -349,6 +447,8 @@ abstract final class FirestoreMappers {
     'readReceipts': p.readReceipts,
     'locationPrecision': p.locationPrecision.name,
     'contactSuggestions': p.contactSuggestions,
+    'findByName': p.findByName,
+    'findByContacts': p.findByContacts,
   };
 
   static CapsuleReaction? reaction(String uid, Map<String, dynamic> data) {

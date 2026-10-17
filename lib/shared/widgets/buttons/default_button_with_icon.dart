@@ -14,6 +14,9 @@ class DefaultButtonWithIcon extends StatelessWidget {
   final FontWeight? textFontWeight;
   final Decoration? decoration;
 
+  /// Size of the picture on the left.
+  final double iconSize;
+
   const DefaultButtonWithIcon({
     super.key,
     required this.onTap,
@@ -24,6 +27,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
     this.textFontSize,
     this.decoration,
     this.textFontWeight,
+    this.iconSize = 32,
   });
 
   @override
@@ -46,7 +50,7 @@ class DefaultButtonWithIcon extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                Image.asset(assetPath, width: 32, height: 32),
+                Image.asset(assetPath, width: iconSize, height: iconSize),
                 Expanded(
                   child: FittedBox(
                     fit: BoxFit.scaleDown,

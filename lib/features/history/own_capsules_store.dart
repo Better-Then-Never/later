@@ -34,12 +34,28 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
   void _merge() {
     final server = _capsules;
     final serverIds = {for (final c in server) c.id};
-    _merged = [
+    final own = [
       for (final p in _outbox?.pending ?? const <PendingCapsule>[])
         if (!serverIds.contains(p.id)) p.toCapsule(),
       ...server,
     ];
+    // Capsules made with friends join the user's own, newest first.
+    _merged = _coAuthored.isEmpty
+        ? own
+        : ([...own, ..._coAuthored.where((c) => !serverIds.contains(c.id))]
+            ..sort(
+              (a, b) => (b.createdAt ?? DateTime.now()).compareTo(
+                a.createdAt ?? DateTime.now(),
+              ),
+            ));
   }
+
+  StreamSubscription<List<Capsule>>? _coSub;
+  List<Capsule> _coAuthored = const [];
+  String? _uid;
+
+  /// [id] is someone else's capsule the user co-authored.
+  bool isCoAuthored(String id) => _coAuthored.any((c) => c.id == id);
 
   StreamSubscription<List<Capsule>>? _sub;
   List<Capsule> _capsules = const [];
@@ -47,11 +63,27 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
   AppFailure? _error;
 
   List<Capsule> get capsules => _merged;
+
+  /// Waiting capsules wait for Wi-Fi (Settings: upload on Wi-Fi only).
+  bool get waitingForWifi => _outbox?.waitingForWifi ?? false;
   bool get isLoaded => _loaded;
   AppFailure? get error => _error;
 
   @override
   void attach(String uid) {
+    _uid = uid;
+    _coSub = _repo.watchCoAuthored(uid).listen(
+      (list) {
+        _coAuthored = list;
+        _merge();
+        notifyListeners();
+      },
+      onError: (Object e, StackTrace st) => AppLogger.warning(
+        'Co-authored capsules stream failed',
+        error: e,
+        stackTrace: st,
+      ),
+    );
     _sub = _repo
         .watchOwn(uid)
         .listen(
@@ -79,6 +111,10 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
   void detach() {
     unawaited(_sub?.cancel());
     _sub = null;
+    unawaited(_coSub?.cancel());
+    _coSub = null;
+    _coAuthored = const [];
+    _uid = null;
     _capsules = const [];
     _merged = const [];
     _loaded = false;
@@ -95,6 +131,20 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
   @override
   Future<void> beforeSignOut(String uid) async {}
 
+  /// Takes the user off capsule [id] as a co-author. Returns null on
+  /// success; the live list drops it once Firestore confirms.
+  Future<AppFailure?> leave(String id) async {
+    final uid = _uid;
+    if (uid == null) return null;
+    try {
+      await _repo.leaveCoAuthors(id, uid);
+      return null;
+    } catch (e, st) {
+      AppLogger.error('Leaving a capsule failed', error: e, stackTrace: st);
+      return AppFailure.from(e);
+    }
+  }
+
   /// Deletes the capsules with [ids] (documents and images). Returns null on
   /// success; the live list drops them once Firestore confirms.
   Future<AppFailure?> delete(Iterable<String> ids) async {
@@ -104,9 +154,17 @@ class OwnCapsulesStore extends ChangeNotifier implements SessionScoped {
       if (wanted.remove(p.id)) await _outbox!.discard(p.id);
     }
     final targets = _capsules.where((c) => wanted.contains(c.id)).toList();
-    if (targets.isEmpty) return null;
+    // Someone else's capsule: deleting it from the list means leaving it.
+    final left = [
+      for (final c in _coAuthored)
+        if (wanted.contains(c.id)) c.id,
+    ];
+    if (targets.isEmpty && left.isEmpty) return null;
     try {
-      await _repo.delete(targets);
+      if (targets.isNotEmpty) await _repo.delete(targets);
+      if (_uid case final uid? when left.isNotEmpty) {
+        await Future.wait(left.map((id) => _repo.leaveCoAuthors(id, uid)));
+      }
       return null;
     } catch (e, st) {
       AppLogger.error('Deleting capsules failed', error: e, stackTrace: st);

@@ -31,5 +31,15 @@
   "achievementNightOwl": "Сова",
   "achievementNightOwlGoal": "{count, plural, one{Создайте {count} капсулу с полуночи до 5 утра} few{Создайте {count} капсулы с полуночи до 5 утра} many{Создайте {count} капсул с полуночи до 5 утра} other{Создайте {count} капсулы с полуночи до 5 утра}}",
   "achievementEarlyBird": "Жаворонок",
-  "achievementEarlyBirdGoal": "{count, plural, one{Создайте {count} капсулу с 5 до 8 утра} few{Создайте {count} капсулы с 5 до 8 утра} many{Создайте {count} капсул с 5 до 8 утра} other{Создайте {count} капсулы с 5 до 8 утра}}"
+  "achievementEarlyBirdGoal": "{count, plural, one{Создайте {count} капсулу с 5 до 8 утра} few{Создайте {count} капсулы с 5 до 8 утра} many{Создайте {count} капсул с 5 до 8 утра} other{Создайте {count} капсулы с 5 до 8 утра}}",
+  "streakAtRisk": "Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.",
+  "streakSafe": "Сегодня засчитано. До завтра!",
+  "streakLongest": "Рекорд: {count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}",
+  "streakMakeCapsule": "Создать капсулу",
+  "momentsAchievementLabel": "Новое достижение",
+  "momentsAchievementMore": "{count, plural, one{и ещё {count}} few{и ещё {count}} many{и ещё {count}} other{и ещё {count}}}",
+  "momentsStreakLabel": "Серия растёт",
+  "momentsStreakBody": "Капсула каждый день. До завтра!",
+  "achievementCurious": "Любопытный",
+  "achievementCuriousGoal": "{count, plural, one{Откройте {count} чужую капсулу} few{Откройте {count} чужие капсулы} many{Откройте {count} чужих капсул} other{Откройте {count} чужой капсулы}}"
 }

@@ -13,5 +13,20 @@
   "mapCapsuleNoDescription": "Esta cápsula no tiene descripción.",
   "mapMyLocation": "Mi ubicación",
   "mapFirstCapsuleTitle": "Deja tu primera cápsula",
-  "mapFirstCapsuleBody": "Haz una foto aquí y elige cuándo se abre."
+  "mapFirstCapsuleBody": "Haz una foto aquí y elige cuándo se abre.",
+  "mapZoomIn": "Acercar",
+  "mapZoomOut": "Alejar",
+  "mapCompass": "Orientar el mapa al norte",
+  "mapFilter": "Filtrar el mapa",
+  "mapFilterActive": "{count, plural, =1{Filtrar el mapa, 1 opción activa} other{Filtrar el mapa, {count} opciones activas}}",
+  "mapFilterTitle": "En el mapa",
+  "mapFilterWhose": "De quién",
+  "mapFilterMine": "Mías",
+  "mapFilterFriends": "De amigos",
+  "mapFilterOthers": "De otros",
+  "mapFilterState": "Abiertas o no",
+  "mapFilterOpen": "Abiertas",
+  "mapFilterLocked": "Se abren más tarde",
+  "mapFilterColors": "Color del pin",
+  "mapFilterReset": "Mostrar todo"
 }

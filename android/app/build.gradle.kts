@@ -99,6 +99,9 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
+
+    // Uploads of waiting capsules while the app is closed (UploadWorker.kt).
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 }
 
 flutter {

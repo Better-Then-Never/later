@@ -250,8 +250,19 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
             OptionsSwitchRow(
               title: l10n.settingsNotificationsSound,
               value: n.sound,
-              withDivider: false,
               onChanged: on ? (v) => _save(n.copyWith(sound: v)) : null,
+            ),
+            // With the sound only: a silent push never vibrates.
+            OptionsSwitchRow(
+              title: l10n.settingsNotificationsVibrate,
+              subtitle: n.sound
+                  ? null
+                  : l10n.settingsNotificationsVibrateNeedsSound,
+              value: n.sound && n.vibrate,
+              withDivider: false,
+              onChanged: on && n.sound
+                  ? (v) => _save(n.copyWith(vibrate: v))
+                  : null,
             ),
           ],
         ),
