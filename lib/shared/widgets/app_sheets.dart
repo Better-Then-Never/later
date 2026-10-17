@@ -8,7 +8,7 @@ import '../../core/theme/app_palette.dart';
 ///
 /// * [showCenteredSheet]: a card in the middle of the screen for menus,
 ///   confirmations, short forms and the capsule dialog ([AppCardRoute]): it
-///   rises a little as it grows in; a tap outside or a drag down closes it;
+///   rises from below and settles; a tap outside or a drag down closes it;
 ///   the keyboard pushes it up.
 /// * [showEdgeSheet]: a panel from the bottom edge for lists and threads,
 ///   built with [EdgeSheet] (rounded top, grab handle); dragging it down
@@ -51,10 +51,11 @@ Future<T?> showEdgeSheet<T>(BuildContext context, WidgetBuilder builder) =>
 
 /// A card over the page, centred, on a scrim: the route of
 /// [showCenteredSheet] and of dialogs. A page route (not a popup), so a
-/// [Hero] can fly into it. Enter: the card rises 24 dp and grows from 92 %
-/// while it fades in (only the card fades: a small layer, never the
-/// screen). Out: a tap outside, back, or a drag down past a third of the
-/// card or with a flick. Reduced motion: no animation.
+/// [Hero] can fly into it. Enter: the card rises from below the screen and
+/// settles from 96 % while the scrim darkens; no fade (an opacity layer the
+/// size of the card every frame made the capsule dialog janky). Out: a tap
+/// outside, back, or a drag down past a third of the card or with a flick.
+/// Reduced motion: no animation.
 class AppCardRoute<T> extends PageRoute<T> {
   AppCardRoute({
     required this.builder,
@@ -113,15 +114,15 @@ class AppCardRoute<T> extends PageRoute<T> {
       curve: AppMotion.emphasizedCurve,
       reverseCurve: AppMotion.exit,
     );
+    // Transforms only: fading the card was an offscreen layer of the
+    // whole card every frame (the capsule dialog went 20 % janky).
+    final travel = MediaQuery.sizeOf(context).height * 0.6;
     return AnimatedBuilder(
       animation: curve,
       child: child,
       builder: (context, child) => Transform.translate(
-        offset: Offset(0, 24 * (1 - curve.value)),
-        child: Transform.scale(
-          scale: 0.92 + 0.08 * curve.value,
-          child: Opacity(opacity: curve.value.clamp(0, 1), child: child),
-        ),
+        offset: Offset(0, travel * (1 - curve.value)),
+        child: Transform.scale(scale: 0.96 + 0.04 * curve.value, child: child),
       ),
     );
   }
