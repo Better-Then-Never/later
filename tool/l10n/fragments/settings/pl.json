@@ -234,5 +234,7 @@
   "settingsPrivacyFindByContacts": "Znajdują mnie po moim e-mailu",
   "settingsPrivacyFindByContactsHint": "Osoby z twoim e-mailem w kontaktach mogą zobaczyć cię w podpowiedziach. Zapisywany jest tylko odcisk potwierdzonego adresu.",
   "settingsUploadsWifiOnly": "Wysyłaj tylko przez Wi-Fi",
-  "settingsUploadsWifiOnlyHint": "Kapsuły zrobione bez Wi-Fi czekają na telefonie na Wi-Fi."
+  "settingsUploadsWifiOnlyHint": "Kapsuły zrobione bez Wi-Fi czekają na telefonie na Wi-Fi.",
+  "settingsNotificationsVibrate": "Wibracje",
+  "settingsNotificationsVibrateNeedsSound": "Działa razem z dźwiękiem"
 }

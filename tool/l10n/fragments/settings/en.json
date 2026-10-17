@@ -496,5 +496,13 @@
   "settingsUploadsWifiOnlyHint": "Capsules made on mobile data wait on the phone for Wi-Fi.",
   "@settingsUploadsWifiOnlyHint": {
     "description": "Explains the Wi-Fi only switch."
+  },
+  "settingsNotificationsVibrate": "Vibration",
+  "@settingsNotificationsVibrate": {
+    "description": "Notification settings switch: pushes vibrate."
+  },
+  "settingsNotificationsVibrateNeedsSound": "Comes with the sound",
+  "@settingsNotificationsVibrateNeedsSound": {
+    "description": "Under the vibration switch while sound is off (it is greyed out then)."
   }
 }

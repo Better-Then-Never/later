@@ -12,6 +12,10 @@ import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
 import 'package:later/features/users/user_directory.dart';
+import 'package:later/data/models/friend_request.dart';
+import 'package:later/features/friends/friend_actions.dart';
+import 'package:later/features/friends/friends_store.dart';
+import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 
 class NotificationItem extends StatelessWidget {
   final AppNotification notification;
@@ -80,6 +84,11 @@ class NotificationItem extends StatelessWidget {
                     // Null only while the server timestamp is pending.
                     timestamp: notification.timestamp ?? DateTime.now(),
                   ),
+                  // A friend request: answered right here (B6).
+                  if (!selectionMode &&
+                      notification.type == NotificationType.friendRequest &&
+                      notification.fromUserId != null)
+                    _RequestAnswer(from: notification.fromUserId!),
                 ],
               ),
             ),
@@ -136,6 +145,81 @@ class NotificationItem extends StatelessWidget {
         if (!selectionMode)
           NotificationUnreadIndicator(isRead: notification.isRead),
       ],
+    );
+  }
+}
+
+/// Accept or reject a friend request from its notification; afterwards
+/// what came of it.
+class _RequestAnswer extends StatelessWidget {
+  const _RequestAnswer({required this.from});
+
+  final String from;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final relation = context.select<FriendsStore, FriendRelation>(
+      (s) => s.relationTo(from),
+    );
+    final busy = context.select<FriendsStore, bool>((s) => s.isBusy(from));
+    if (relation == FriendRelation.friends) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Text(
+          l10n.notificationsNowFriends,
+          style: const TextStyle(
+            fontFamily: kAppFontFamily,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: AppColors.brandGreen,
+          ),
+        ),
+      );
+    }
+    if (relation != FriendRelation.requestReceived) return const SizedBox();
+    final actions = FriendActions(
+      context,
+      position: NotificationPosition.bottom,
+    );
+    Widget button(String text, bool primary, VoidCallback onTap) => Expanded(
+      child: Semantics(
+        button: true,
+        child: GestureDetector(
+          onTap: busy ? null : onTap,
+          child: Container(
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: primary
+                  ? AppColors.brandGreen
+                  : context.palette.surfaceMuted,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              text,
+              style: TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: primary
+                    ? AppColors.onAccent
+                    : context.palette.textPrimary,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        children: [
+          button(l10n.friendsAccept, true, () => actions.acceptRequest(from)),
+          const SizedBox(width: 8),
+          button(l10n.friendsReject, false, () => actions.rejectRequest(from)),
+        ],
+      ),
     );
   }
 }

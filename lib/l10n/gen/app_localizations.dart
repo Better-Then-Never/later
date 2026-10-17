@@ -2354,6 +2354,78 @@ abstract class AppLocalizations {
   /// **'{count}s'**
   String mapDurationSeconds(int count);
 
+  /// Map button (screen reader): open the map filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter the map'**
+  String get mapFilter;
+
+  /// Map filter button while some choices narrow the map.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Filter the map, 1 choice on} other{Filter the map, {count} choices on}}'**
+  String mapFilterActive(int count);
+
+  /// Map filter section: pin colours (none chosen = all).
+  ///
+  /// In en, this message translates to:
+  /// **'Pin colour'**
+  String get mapFilterColors;
+
+  /// Map filter: friends' capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends\''**
+  String get mapFilterFriends;
+
+  /// Map filter: capsules that open later.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening later'**
+  String get mapFilterLocked;
+
+  /// Map filter: the user's own capsules (and co-authored).
+  ///
+  /// In en, this message translates to:
+  /// **'Mine'**
+  String get mapFilterMine;
+
+  /// Map filter: capsules already open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get mapFilterOpen;
+
+  /// Map filter: public capsules of people who are not friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone else\'s'**
+  String get mapFilterOthers;
+
+  /// Map filter: back to showing everything.
+  ///
+  /// In en, this message translates to:
+  /// **'Show everything'**
+  String get mapFilterReset;
+
+  /// Map filter section: open capsules or ones that open later.
+  ///
+  /// In en, this message translates to:
+  /// **'Open or not'**
+  String get mapFilterState;
+
+  /// Title of the map filter sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'On the map'**
+  String get mapFilterTitle;
+
+  /// Map filter section: whose capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'Whose'**
+  String get mapFilterWhose;
+
   /// No description provided for @mapFirstCapsuleBody.
   ///
   /// In en, this message translates to:
@@ -3176,6 +3248,12 @@ abstract class AppLocalizations {
   /// **'Followers, friend requests, reactions, comments and new capsules'**
   String get notificationsChannelActivityDescription;
 
+  /// Android notification channel name: activity with sound, without vibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity (no vibration)'**
+  String get notificationsChannelActivityNoVibration;
+
   /// No description provided for @notificationsChannelActivitySilent.
   ///
   /// In en, this message translates to:
@@ -3199,6 +3277,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New messages from your friends'**
   String get notificationsChannelMessagesDescription;
+
+  /// Android notification channel name: messages with sound, without vibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages (no vibration)'**
+  String get notificationsChannelMessagesNoVibration;
 
   /// No description provided for @notificationsChannelMessagesSilent.
   ///
@@ -3296,6 +3380,12 @@ abstract class AppLocalizations {
   /// **'{name} wants to be your friend'**
   String notificationsFriendRequestBody(String name);
 
+  /// Label of an announcement in the notifications list.
+  ///
+  /// In en, this message translates to:
+  /// **'From the Later team'**
+  String get notificationsFromLater;
+
   /// Time of a notification less than a day old.
   ///
   /// In en, this message translates to:
@@ -3332,6 +3422,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count}m ago} other{{count}m ago}}'**
   String notificationsMinutesAgo(int count);
 
+  /// Under a friend request notification once accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'You are friends now'**
+  String get notificationsNowFriends;
+
   /// No description provided for @notificationsReactionBody.
   ///
   /// In en, this message translates to:
@@ -3355,6 +3451,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, one{{count} selected} other{{count} selected}}'**
   String notificationsSelectedCount(int count);
+
+  /// Shown behind a notification swiped left: it is deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get notificationsSwipeDelete;
+
+  /// Shown behind a notification swiped right: it becomes read.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get notificationsSwipeRead;
 
   /// Filter tab: every notification. Tabs sit side by side: keep them short.
   ///
@@ -4555,6 +4663,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In the evening, when your streak would end tonight'**
   String get settingsNotificationsStreakHint;
+
+  /// Notification settings switch: pushes vibrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration'**
+  String get settingsNotificationsVibrate;
+
+  /// Under the vibration switch while sound is off (it is greyed out then).
+  ///
+  /// In en, this message translates to:
+  /// **'Comes with the sound'**
+  String get settingsNotificationsVibrateNeedsSound;
 
   /// No description provided for @settingsPassword.
   ///

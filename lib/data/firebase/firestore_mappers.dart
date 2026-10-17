@@ -327,6 +327,7 @@ abstract final class FirestoreMappers {
         news: _bool(n['news'], d.news),
         streakReminder: _bool(n['streakReminder'], d.streakReminder),
         sound: _bool(n['sound'], d.sound),
+        vibrate: _bool(n['vibrate'], d.vibrate),
         quietHours: QuietHours(
           enabled: _bool(q['enabled'], d.quietHours.enabled),
           start: _minutes(q['start'], d.quietHours.start),
@@ -370,6 +371,7 @@ abstract final class FirestoreMappers {
     'streakReminder': n.streakReminder,
     'preview': n.preview,
     'sound': n.sound,
+    'vibrate': n.vibrate,
     'quietHours': {
       'enabled': n.quietHours.enabled,
       'start': n.quietHours.start,

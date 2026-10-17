@@ -251,5 +251,29 @@
         "example": "Anna"
       }
     }
+  },
+  "notificationsChannelMessagesNoVibration": "Messages (no vibration)",
+  "@notificationsChannelMessagesNoVibration": {
+    "description": "Android notification channel name: messages with sound, without vibration."
+  },
+  "notificationsChannelActivityNoVibration": "Activity (no vibration)",
+  "@notificationsChannelActivityNoVibration": {
+    "description": "Android notification channel name: activity with sound, without vibration."
+  },
+  "notificationsFromLater": "From the Later team",
+  "@notificationsFromLater": {
+    "description": "Label of an announcement in the notifications list."
+  },
+  "notificationsSwipeRead": "Read",
+  "@notificationsSwipeRead": {
+    "description": "Shown behind a notification swiped right: it becomes read."
+  },
+  "notificationsSwipeDelete": "Delete",
+  "@notificationsSwipeDelete": {
+    "description": "Shown behind a notification swiped left: it is deleted."
+  },
+  "notificationsNowFriends": "You are friends now",
+  "@notificationsNowFriends": {
+    "description": "Under a friend request notification once accepted."
   }
 }

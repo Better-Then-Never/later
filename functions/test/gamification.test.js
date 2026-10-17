@@ -126,6 +126,24 @@ describe('achievements', () => {
     assert.equal((await users().doc('ana').collection('achievements').doc('collector').get()).get('tier'), 1);
   });
 
+  test('checked where a stat changes: from the profile and what is stored', async () => {
+    const messaging = fakeMessaging();
+    const s = services(at('2026-10-16T12:00:00Z'), messaging);
+    await addUser('ben', { stats: { capsules: 6, reactionsReceived: 10 }, friends: ['a'] });
+    // First capsule was unlocked before; Collector and Crowd pleaser are new.
+    await users().doc('ben').collection('achievements').doc('first_capsule').set({ id: 'first_capsule', tier: 0 });
+    const result = await g.checkAchievements(s, 'ben');
+    assert.deepEqual(result.unlocked.sort(), ['collector:0', 'crowd_pleaser:0', 'friendly:0']);
+    // Nothing new: no writes, no pushes.
+    assert.equal(await g.checkAchievements(s, 'ben'), null);
+    // Three reached at once: stored, but told once (no burst of pushes).
+    const stored = await users().doc('ben').collection('achievements').get();
+    assert.equal(stored.size, 4);
+    const notes = await users().doc('ben').collection('notifications').get();
+    assert.equal(notes.size, 1, 'a catch-up tells once');
+    assert.equal(await g.checkAchievements(s, 'nobody'), null);
+  });
+
   test('every achievement has a title in all five languages and ascending tiers', () => {
     for (const a of g.ACHIEVEMENTS) {
       for (const lang of ['en', 'ru', 'pl', 'de', 'es']) assert.ok(a.title[lang], `${a.id} ${lang}`);

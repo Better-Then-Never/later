@@ -1279,6 +1279,59 @@
       }
     }
   },
+  "mapFilter": "Filter the map",
+  "@mapFilter": {
+    "description": "Map button (screen reader): open the map filter."
+  },
+  "mapFilterActive": "{count, plural, =1{Filter the map, 1 choice on} other{Filter the map, {count} choices on}}",
+  "@mapFilterActive": {
+    "description": "Map filter button while some choices narrow the map.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapFilterColors": "Pin colour",
+  "@mapFilterColors": {
+    "description": "Map filter section: pin colours (none chosen = all)."
+  },
+  "mapFilterFriends": "Friends'",
+  "@mapFilterFriends": {
+    "description": "Map filter: friends' capsules."
+  },
+  "mapFilterLocked": "Opening later",
+  "@mapFilterLocked": {
+    "description": "Map filter: capsules that open later."
+  },
+  "mapFilterMine": "Mine",
+  "@mapFilterMine": {
+    "description": "Map filter: the user's own capsules (and co-authored)."
+  },
+  "mapFilterOpen": "Open",
+  "@mapFilterOpen": {
+    "description": "Map filter: capsules already open."
+  },
+  "mapFilterOthers": "Everyone else's",
+  "@mapFilterOthers": {
+    "description": "Map filter: public capsules of people who are not friends."
+  },
+  "mapFilterReset": "Show everything",
+  "@mapFilterReset": {
+    "description": "Map filter: back to showing everything."
+  },
+  "mapFilterState": "Open or not",
+  "@mapFilterState": {
+    "description": "Map filter section: open capsules or ones that open later."
+  },
+  "mapFilterTitle": "On the map",
+  "@mapFilterTitle": {
+    "description": "Title of the map filter sheet."
+  },
+  "mapFilterWhose": "Whose",
+  "@mapFilterWhose": {
+    "description": "Map filter section: whose capsules."
+  },
   "mapFirstCapsuleBody": "Take a photo here and choose when it opens.",
   "mapFirstCapsuleTitle": "Leave your first capsule",
   "mapLocationDenied": "Allow location access to see capsules near you",
@@ -1772,6 +1825,10 @@
   },
   "notificationsChannelActivity": "Activity",
   "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
+  "notificationsChannelActivityNoVibration": "Activity (no vibration)",
+  "@notificationsChannelActivityNoVibration": {
+    "description": "Android notification channel name: activity with sound, without vibration."
+  },
   "notificationsChannelActivitySilent": "Activity (silent)",
   "notificationsChannelActivitySilentDescription": "Activity, without sound or vibration",
   "notificationsChannelMessages": "Messages",
@@ -1779,6 +1836,10 @@
     "description": "Android notification channel name (phone settings)."
   },
   "notificationsChannelMessagesDescription": "New messages from your friends",
+  "notificationsChannelMessagesNoVibration": "Messages (no vibration)",
+  "@notificationsChannelMessagesNoVibration": {
+    "description": "Android notification channel name: messages with sound, without vibration."
+  },
   "notificationsChannelMessagesSilent": "Messages (silent)",
   "notificationsChannelMessagesSilentDescription": "New messages, without sound or vibration",
   "notificationsChannelOther": "Other notifications",
@@ -1873,6 +1934,10 @@
       }
     }
   },
+  "notificationsFromLater": "From the Later team",
+  "@notificationsFromLater": {
+    "description": "Label of an announcement in the notifications list."
+  },
   "notificationsHoursAgo": "{count, plural, one{{count}h ago} other{{count}h ago}}",
   "@notificationsHoursAgo": {
     "description": "Time of a notification less than a day old.",
@@ -1918,6 +1983,10 @@
       }
     }
   },
+  "notificationsNowFriends": "You are friends now",
+  "@notificationsNowFriends": {
+    "description": "Under a friend request notification once accepted."
+  },
   "notificationsReactionBody": "{name} reacted {emoji} to your capsule",
   "@notificationsReactionBody": {
     "placeholders": {
@@ -1961,6 +2030,14 @@
         "type": "int"
       }
     }
+  },
+  "notificationsSwipeDelete": "Delete",
+  "@notificationsSwipeDelete": {
+    "description": "Shown behind a notification swiped left: it is deleted."
+  },
+  "notificationsSwipeRead": "Read",
+  "@notificationsSwipeRead": {
+    "description": "Shown behind a notification swiped right: it becomes read."
   },
   "notificationsTabAll": "All",
   "@notificationsTabAll": {
@@ -2516,6 +2593,14 @@
   "settingsNotificationsSound": "Sound and vibration",
   "settingsNotificationsStreak": "Streak reminder",
   "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
+  "settingsNotificationsVibrate": "Vibration",
+  "@settingsNotificationsVibrate": {
+    "description": "Notification settings switch: pushes vibrate."
+  },
+  "settingsNotificationsVibrateNeedsSound": "Comes with the sound",
+  "@settingsNotificationsVibrateNeedsSound": {
+    "description": "Under the vibration switch while sound is off (it is greyed out then)."
+  },
   "settingsPassword": "Password",
   "settingsPasswordChanged": "Password changed",
   "settingsPasswordConfirmsNote": "Your password confirms it is you.",

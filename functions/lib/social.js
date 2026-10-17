@@ -51,7 +51,7 @@ async function deliver(services, uid, id, category, inApp, text) {
   if (blocked) return { skipped: blocked };
   const lang = i18n.languageOf(settings);
   const { title, body, data } = await text(lang);
-  const sound = settings.notifications.sound;
+  const sound = prefs.alertOf(settings);
   return notify.sendToUser(services, uid, (token) => ({
     token,
     notification: { title, body },
@@ -119,7 +119,7 @@ async function onReactionWritten(services, capsuleId, uid, before, after) {
       data: { type: 'reaction', userId: uid, capsuleId },
     }),
   );
-  return { counted: true, notified: result };
+  return { counted: true, ownerId, notified: result };
 }
 
 // ---- comments ---------------------------------------------------------------

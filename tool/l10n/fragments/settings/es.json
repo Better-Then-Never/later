@@ -234,5 +234,7 @@
   "settingsPrivacyFindByContacts": "Me encuentran por mi correo",
   "settingsPrivacyFindByContactsHint": "Quien tenga tu correo en sus contactos puede verte como sugerencia. Solo se guarda una huella de una dirección confirmada.",
   "settingsUploadsWifiOnly": "Subir solo con Wi-Fi",
-  "settingsUploadsWifiOnlyHint": "Las cápsulas hechas sin Wi-Fi esperan en el teléfono hasta tener Wi-Fi."
+  "settingsUploadsWifiOnlyHint": "Las cápsulas hechas sin Wi-Fi esperan en el teléfono hasta tener Wi-Fi.",
+  "settingsNotificationsVibrate": "Vibración",
+  "settingsNotificationsVibrateNeedsSound": "Va junto con el sonido"
 }

@@ -47,6 +47,7 @@ class NotificationSettings {
     this.streakReminder = false,
     this.preview = true,
     this.sound = true,
+    this.vibrate = true,
     this.quietHours = const QuietHours(),
     this.utcOffsetMinutes = 0,
   });
@@ -72,6 +73,9 @@ class NotificationSettings {
 
   /// Sound and vibration (a silent channel otherwise).
   final bool sound;
+
+  /// Vibration with the sound (pushes without sound never vibrate).
+  final bool vibrate;
   final QuietHours quietHours;
 
   /// The device's offset from UTC when saved (quiet hours are local time).
@@ -90,6 +94,7 @@ class NotificationSettings {
     bool? streakReminder,
     bool? preview,
     bool? sound,
+    bool? vibrate,
     QuietHours? quietHours,
     int? utcOffsetMinutes,
   }) => NotificationSettings(
@@ -105,6 +110,7 @@ class NotificationSettings {
     streakReminder: streakReminder ?? this.streakReminder,
     preview: preview ?? this.preview,
     sound: sound ?? this.sound,
+    vibrate: vibrate ?? this.vibrate,
     quietHours: quietHours ?? this.quietHours,
     utcOffsetMinutes: utcOffsetMinutes ?? this.utcOffsetMinutes,
   );
@@ -124,6 +130,7 @@ class NotificationSettings {
       other.streakReminder == streakReminder &&
       other.preview == preview &&
       other.sound == sound &&
+      other.vibrate == vibrate &&
       other.quietHours == quietHours &&
       other.utcOffsetMinutes == utcOffsetMinutes;
 
@@ -141,6 +148,7 @@ class NotificationSettings {
     streakReminder,
     preview,
     sound,
+    vibrate,
     quietHours,
     utcOffsetMinutes,
   );

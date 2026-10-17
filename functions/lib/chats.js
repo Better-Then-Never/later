@@ -101,7 +101,7 @@ async function onMessageReacted(services, chatId, messageId, before, after) {
     notify.chatMessage(
       { senderName: name, senderId: reactorId, chatId, messageId, body },
       token,
-      settings.notifications.sound,
+      prefs.alertOf(settings),
     ),
   );
 }

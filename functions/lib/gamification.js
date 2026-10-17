@@ -202,14 +202,48 @@ function tierFor(tiers, value) {
  * threshold, once (the achievement document keeps the highest tier).
  */
 async function onUserUpdated(services, uid, before, after) {
-  const { db } = services;
   const was = metricsOf(before);
   const is = metricsOf(after);
   const candidates = ACHIEVEMENTS.filter(
     (a) => tierFor(a.tiers, is[a.metric]) > tierFor(a.tiers, was[a.metric]),
   );
   if (candidates.length === 0) return null;
+  return unlock(services, uid, is, candidates);
+}
+
+/**
+ * After a counted stat of [uid] changed (B6): the stat writers call this
+ * instead of a trigger on every users/{uid} write (profile edits, pins,
+ * favourites...). Two reads: the profile and the stored achievements;
+ * unlocks every tier reached and not stored yet.
+ */
+async function checkAchievements(services, uid) {
+  const { db } = services;
+  if (typeof uid !== 'string' || !uid) return null;
+  const userRef = db.collection('users').doc(uid);
+  const [user, stored] = await Promise.all([
+    userRef.get(),
+    userRef.collection('achievements').get(),
+  ]);
+  if (!user.exists) return null;
+  const is = metricsOf(user.data());
+  const storedTier = new Map(
+    stored.docs.map((d) => [d.id, Number.isInteger(d.get('tier')) ? d.get('tier') : -1]),
+  );
+  const candidates = ACHIEVEMENTS.filter(
+    (a) => tierFor(a.tiers, is[a.metric]) > (storedTier.has(a.id) ? storedTier.get(a.id) : -1),
+  );
+  if (candidates.length === 0) return null;
+  // A catch-up (several tiers reached since the last check, or levels added
+  // later) tells the user once; the rest are stored quietly and show on the
+  // profile.
+  return unlock(services, uid, is, candidates, { notifyAtMost: 1 });
+}
+
+async function unlock(services, uid, is, candidates, { notifyAtMost = Infinity } = {}) {
+  const { db } = services;
   const unlocked = [];
+  let told = 0;
   for (const a of candidates) {
     const tier = tierFor(a.tiers, is[a.metric]);
     const ref = db.collection('users').doc(uid).collection('achievements').doc(a.id);
@@ -228,6 +262,8 @@ async function onUserUpdated(services, uid, before, after) {
     });
     if (!isNew) continue;
     unlocked.push(`${a.id}:${tier}`);
+    if (told >= notifyAtMost) continue;
+    told++;
     await social.deliver(
       services,
       uid,
@@ -283,7 +319,7 @@ async function sendStreakReminders(services, reminderHour = 19) {
         body: i18n.t(lang, 'streakBody', { days: stats.streakCurrent }),
       },
       data: { type: 'streak', clickAction: 'FLUTTER_NOTIFICATION_CLICK' },
-      ...notify.delivery('activity', settings.notifications.sound),
+      ...notify.delivery('activity', prefs.alertOf(settings)),
     }));
     sent += result.sent;
   }
@@ -302,5 +338,6 @@ module.exports = {
   tierFor,
   onCapsuleCreated,
   onUserUpdated,
+  checkAchievements,
   sendStreakReminders,
 };

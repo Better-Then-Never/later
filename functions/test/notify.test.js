@@ -184,6 +184,14 @@ describe('capsule notifications (BUG-026, BUG-027)', () => {
     assert.deepEqual(got.map((x) => x.type), ['coAuthor']);
   });
 
+  test('the follower fan-out is bounded', async () => {
+    const few = await notify.capsuleRecipients(db, 'owner', 'public', [], 2);
+    assert.ok(few.length <= 2);
+    const all = await notify.capsuleRecipients(db, 'owner', 'public', []);
+    assert.equal(all.length, 3, 'followers with notifications on');
+    assert.equal(notify.MAX_FOLLOWER_FANOUT, 500);
+  });
+
   test('private capsule: nobody', async () => {
     const messaging = fakeMessaging();
     const result = await notify.onCapsuleCreated({ db, messaging }, 'c3', {
@@ -277,6 +285,15 @@ describe('notification preferences', () => {
     assert.equal(prefs.channelFor('messages', false), 'messages_silent');
     assert.equal(prefs.channelFor('follows', true), 'activity');
     assert.equal(prefs.channelFor('capsules', false), 'activity_silent');
+  });
+
+  test('vibration off: sound only, its own channel; silent stays silent', () => {
+    const settings = (n) => prefs.normalize({ notifications: n });
+    assert.equal(prefs.alertOf(settings({})), true);
+    assert.equal(prefs.alertOf(settings({ vibrate: false })), 'novibrate');
+    assert.equal(prefs.alertOf(settings({ sound: false, vibrate: false })), false);
+    assert.equal(prefs.channelFor('messages', 'novibrate'), 'messages_novibrate');
+    assert.equal(prefs.channelFor('reactions', 'novibrate'), 'activity_novibrate');
   });
 });
 

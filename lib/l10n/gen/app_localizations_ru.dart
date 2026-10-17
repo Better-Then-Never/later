@@ -1415,6 +1415,52 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get mapFilter => 'Фильтр карты';
+
+  @override
+  String mapFilterActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Фильтр карты, включено $count',
+      many: 'Фильтр карты, включено $count',
+      few: 'Фильтр карты, включено $count',
+      one: 'Фильтр карты, включён $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapFilterColors => 'Цвет метки';
+
+  @override
+  String get mapFilterFriends => 'Друзей';
+
+  @override
+  String get mapFilterLocked => 'Откроются позже';
+
+  @override
+  String get mapFilterMine => 'Мои';
+
+  @override
+  String get mapFilterOpen => 'Открытые';
+
+  @override
+  String get mapFilterOthers => 'Остальных';
+
+  @override
+  String get mapFilterReset => 'Показать всё';
+
+  @override
+  String get mapFilterState => 'Открыты ли';
+
+  @override
+  String get mapFilterTitle => 'На карте';
+
+  @override
+  String get mapFilterWhose => 'Чьи';
+
+  @override
   String get mapFirstCapsuleBody =>
       'Сделайте фото здесь и выберите, когда оно откроется.';
 
@@ -1894,6 +1940,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Подписчики, заявки в друзья, реакции, комментарии и новые капсулы';
 
   @override
+  String get notificationsChannelActivityNoVibration =>
+      'Активность (без вибрации)';
+
+  @override
   String get notificationsChannelActivitySilent => 'Активность (без звука)';
 
   @override
@@ -1906,6 +1956,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get notificationsChannelMessagesDescription =>
       'Новые сообщения от друзей';
+
+  @override
+  String get notificationsChannelMessagesNoVibration =>
+      'Сообщения (без вибрации)';
 
   @override
   String get notificationsChannelMessagesSilent => 'Сообщения (без звука)';
@@ -2003,6 +2057,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationsFromLater => 'От команды Later';
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2053,6 +2110,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notificationsNowFriends => 'Теперь вы друзья';
+
+  @override
   String notificationsReactionBody(String name, String emoji) {
     return '$name реагирует $emoji на вашу капсулу';
   }
@@ -2079,6 +2139,12 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationsSwipeDelete => 'Удалить';
+
+  @override
+  String get notificationsSwipeRead => 'Прочитано';
 
   @override
   String get notificationsTabAll => 'Все';
@@ -2813,6 +2879,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsNotificationsStreakHint =>
       'Вечером, если серия сегодня прервётся';
+
+  @override
+  String get settingsNotificationsVibrate => 'Вибрация';
+
+  @override
+  String get settingsNotificationsVibrateNeedsSound =>
+      'Работает вместе со звуком';
 
   @override
   String get settingsPassword => 'Пароль';

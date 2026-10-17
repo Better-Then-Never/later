@@ -88,6 +88,14 @@ class PushMessagingService implements TopicSubscriber {
         playSound: false,
         enableVibration: false,
       ),
+      // Sound without vibration (Settings > Notifications > Vibration off).
+      AndroidNotificationChannel(
+        'messages_novibrate',
+        l10n.notificationsChannelMessagesNoVibration,
+        description: l10n.notificationsChannelMessagesDescription,
+        importance: Importance.high,
+        enableVibration: false,
+      ),
       AndroidNotificationChannel(
         'activity',
         l10n.notificationsChannelActivity,
@@ -100,6 +108,13 @@ class PushMessagingService implements TopicSubscriber {
         description: l10n.notificationsChannelActivitySilentDescription,
         importance: Importance.low,
         playSound: false,
+        enableVibration: false,
+      ),
+      AndroidNotificationChannel(
+        'activity_novibrate',
+        l10n.notificationsChannelActivityNoVibration,
+        description: l10n.notificationsChannelActivityDescription,
+        importance: Importance.high,
         enableVibration: false,
       ),
       // Pushes from Cloud Functions deployed before the channels above

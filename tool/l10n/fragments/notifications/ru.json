@@ -48,5 +48,11 @@
   "notificationsChannelOther": "Другие уведомления",
   "notificationsChannelOtherDescription": "Другие уведомления от Later",
   "notificationsTypeCoAuthor": "Вместе",
-  "notificationsCoAuthorBody": "Совместная капсула от {name}"
+  "notificationsCoAuthorBody": "Совместная капсула от {name}",
+  "notificationsChannelMessagesNoVibration": "Сообщения (без вибрации)",
+  "notificationsChannelActivityNoVibration": "Активность (без вибрации)",
+  "notificationsFromLater": "От команды Later",
+  "notificationsSwipeRead": "Прочитано",
+  "notificationsSwipeDelete": "Удалить",
+  "notificationsNowFriends": "Теперь вы друзья"
 }

@@ -153,7 +153,7 @@ service cloud.firestore {
           return n is map
             && n.keys().hasOnly(['enabled', 'messages', 'follows', 'capsules',
               'friendRequests', 'reactions', 'comments', 'achievements', 'news',
-              'streakReminder', 'preview', 'sound', 'quietHours',
+              'streakReminder', 'preview', 'sound', 'vibrate', 'quietHours',
               'utcOffsetMinutes'])
             && isBool(n, 'enabled') && isBool(n, 'messages')
             && isBool(n, 'follows') && isBool(n, 'capsules')
@@ -161,6 +161,7 @@ service cloud.firestore {
             && isBool(n, 'comments') && isBool(n, 'achievements')
             && isBool(n, 'news') && isBool(n, 'streakReminder')
             && isBool(n, 'preview') && isBool(n, 'sound')
+            && isBool(n, 'vibrate')
             && q is map && q.keys().hasOnly(['enabled', 'start', 'end'])
             && isBool(q, 'enabled') && isMinute(q, 'start') && isMinute(q, 'end')
             && n.get('utcOffsetMinutes', 0) is int

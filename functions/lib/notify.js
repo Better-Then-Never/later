@@ -150,6 +150,9 @@ function coAuthorMessage({ creatorName, ownerId, capsuleId }, token, sound = tru
   };
 }
 
+/** Most followers told about one new capsule. */
+const MAX_FOLLOWER_FANOUT = 500;
+
 /** Most co-authors a capsule may have (firestore.rules). */
 const MAX_CO_AUTHORS = 5;
 
@@ -211,7 +214,7 @@ async function onNotificationCreated(services, uid, notification) {
   const settings = await prefs.loadSettings(services.db, uid);
   const blocked = prefs.blockedReason(settings, 'follows', now(services));
   if (blocked) return { skipped: blocked };
-  const sound = settings.notifications.sound;
+  const sound = prefs.alertOf(settings);
   const lang = i18n.languageOf(settings);
   return sendToUser(services, uid, (token) => followMessage(notification, token, sound, lang));
 }
@@ -242,7 +245,7 @@ async function onMessageCreated(services, chatId, messageId, message) {
     (sender.exists && (sender.get('name') || sender.get('username'))) ||
     i18n.t(lang, 'messageNoPreview');
   const body = messageBody(message, settings.notifications.preview, lang);
-  const sound = settings.notifications.sound;
+  const sound = prefs.alertOf(settings);
   return sendToUser(services, to, (token) =>
     chatMessage({ senderName, senderId, chatId, messageId, body }, token, sound),
   );
@@ -281,7 +284,7 @@ async function onGroupMessageCreated(services, chatId, messageId, message) {
       (sender.exists && (sender.get('name') || sender.get('username'))) || i18n.t(lang, 'someone');
     const text = messageBody(message, settings.notifications.preview, lang);
     const body = settings.notifications.preview ? `${senderName}: ${text}` : text;
-    const sound = settings.notifications.sound;
+    const sound = prefs.alertOf(settings);
     report[to] = await sendToUser(services, to, (token) =>
       chatMessage({ senderName, senderId, chatId, messageId, body, title: groupName || senderName }, token, sound),
     );
@@ -295,12 +298,16 @@ async function onGroupMessageCreated(services, chatId, messageId, message) {
  * also friends for friends-only capsules, and only followers who kept
  * notifications on.
  */
-async function capsuleRecipients(db, ownerId, privacy, ownerFriends) {
+async function capsuleRecipients(db, ownerId, privacy, ownerFriends, max = MAX_FOLLOWER_FANOUT) {
   if (privacy === 'private') return [];
+  // Bounded (B6): at most [max] followers; one capsule never fans out to
+  // an unbounded audience. (No ordering: follows written by older app
+  // versions may lack followedAt and an orderBy would leave them out.)
   const followers = await db
     .collection('users')
     .doc(ownerId)
     .collection('followers')
+    .limit(max)
     .get();
   let ids = followers.docs.map((d) => d.id).filter((id) => id !== ownerId);
   if (privacy !== 'public') {
@@ -367,7 +374,7 @@ async function onCapsuleCreated(services, capsuleId, capsule) {
     everyone.map(async ({ uid, type }) => {
       const settings = await prefs.loadSettings(db, uid);
       if (prefs.blockedReason(settings, 'capsules', at)) return { sent: 0, pruned: 0 };
-      const sound = settings.notifications.sound;
+      const sound = prefs.alertOf(settings);
       const lang = i18n.languageOf(settings);
       const build = type === 'coAuthor' ? coAuthorMessage : capsuleMessage;
       return sendToUser(services, uid, (token) =>
@@ -431,6 +438,7 @@ module.exports = {
   onMessageCreated,
   onGroupMessageCreated,
   capsuleRecipients,
+  MAX_FOLLOWER_FANOUT,
   onCapsuleCreated,
   profileSummary,
 };

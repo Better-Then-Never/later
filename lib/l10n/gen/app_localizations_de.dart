@@ -1406,6 +1406,50 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get mapFilter => 'Karte filtern';
+
+  @override
+  String mapFilterActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Karte filtern, $count Auswahlen aktiv',
+      one: 'Karte filtern, 1 Auswahl aktiv',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapFilterColors => 'Pin-Farbe';
+
+  @override
+  String get mapFilterFriends => 'Von Freunden';
+
+  @override
+  String get mapFilterLocked => 'Öffnen später';
+
+  @override
+  String get mapFilterMine => 'Meine';
+
+  @override
+  String get mapFilterOpen => 'Offen';
+
+  @override
+  String get mapFilterOthers => 'Von anderen';
+
+  @override
+  String get mapFilterReset => 'Alles zeigen';
+
+  @override
+  String get mapFilterState => 'Offen oder nicht';
+
+  @override
+  String get mapFilterTitle => 'Auf der Karte';
+
+  @override
+  String get mapFilterWhose => 'Von wem';
+
+  @override
   String get mapFirstCapsuleBody =>
       'Mach hier ein Foto und wähle, wann es sich öffnet.';
 
@@ -1883,6 +1927,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Follower, Freundschaftsanfragen, Reaktionen, Kommentare und neue Kapseln';
 
   @override
+  String get notificationsChannelActivityNoVibration =>
+      'Aktivität (ohne Vibration)';
+
+  @override
   String get notificationsChannelActivitySilent => 'Aktivität (lautlos)';
 
   @override
@@ -1895,6 +1943,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get notificationsChannelMessagesDescription =>
       'Neue Nachrichten von deinen Freunden';
+
+  @override
+  String get notificationsChannelMessagesNoVibration =>
+      'Nachrichten (ohne Vibration)';
 
   @override
   String get notificationsChannelMessagesSilent => 'Nachrichten (lautlos)';
@@ -1986,6 +2038,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsFromLater => 'Vom Later-Team';
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2030,6 +2085,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsNowFriends => 'Ihr seid jetzt Freunde';
+
+  @override
   String notificationsReactionBody(String name, String emoji) {
     return '$name hat mit $emoji auf deine Kapsel reagiert';
   }
@@ -2054,6 +2112,12 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationsSwipeDelete => 'Löschen';
+
+  @override
+  String get notificationsSwipeRead => 'Gelesen';
 
   @override
   String get notificationsTabAll => 'Alle';
@@ -2781,6 +2845,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsNotificationsStreakHint =>
       'Abends, wenn deine Serie heute enden würde';
+
+  @override
+  String get settingsNotificationsVibrate => 'Vibration';
+
+  @override
+  String get settingsNotificationsVibrateNeedsSound =>
+      'Nur zusammen mit dem Ton';
 
   @override
   String get settingsPassword => 'Passwort';

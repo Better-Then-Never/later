@@ -48,5 +48,11 @@
   "notificationsChannelOther": "Otras notificaciones",
   "notificationsChannelOtherDescription": "Otras notificaciones de Later",
   "notificationsTypeCoAuthor": "Juntos",
-  "notificationsCoAuthorBody": "{name} hizo una cápsula contigo"
+  "notificationsCoAuthorBody": "{name} hizo una cápsula contigo",
+  "notificationsChannelMessagesNoVibration": "Mensajes (sin vibración)",
+  "notificationsChannelActivityNoVibration": "Actividad (sin vibración)",
+  "notificationsFromLater": "Del equipo de Later",
+  "notificationsSwipeRead": "Leída",
+  "notificationsSwipeDelete": "Eliminar",
+  "notificationsNowFriends": "Ahora sois amigos"
 }

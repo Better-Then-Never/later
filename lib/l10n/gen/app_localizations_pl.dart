@@ -1424,6 +1424,52 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get mapFilter => 'Filtruj mapę';
+
+  @override
+  String mapFilterActive(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Filtruj mapę, $count wyboru',
+      many: 'Filtruj mapę, $count wyborów',
+      few: 'Filtruj mapę, $count wybory',
+      one: 'Filtruj mapę, 1 wybór',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapFilterColors => 'Kolor pinezki';
+
+  @override
+  String get mapFilterFriends => 'Znajomych';
+
+  @override
+  String get mapFilterLocked => 'Otworzą się później';
+
+  @override
+  String get mapFilterMine => 'Moje';
+
+  @override
+  String get mapFilterOpen => 'Otwarte';
+
+  @override
+  String get mapFilterOthers => 'Pozostałych';
+
+  @override
+  String get mapFilterReset => 'Pokaż wszystko';
+
+  @override
+  String get mapFilterState => 'Otwarte czy nie';
+
+  @override
+  String get mapFilterTitle => 'Na mapie';
+
+  @override
+  String get mapFilterWhose => 'Czyje';
+
+  @override
   String get mapFirstCapsuleBody =>
       'Zrób tu zdjęcie i wybierz, kiedy się otworzy.';
 
@@ -1903,6 +1949,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Obserwujący, zaproszenia, reakcje, komentarze i nowe kapsuły';
 
   @override
+  String get notificationsChannelActivityNoVibration =>
+      'Aktywność (bez wibracji)';
+
+  @override
   String get notificationsChannelActivitySilent => 'Aktywność (bez dźwięku)';
 
   @override
@@ -1915,6 +1965,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get notificationsChannelMessagesDescription =>
       'Nowe wiadomości od znajomych';
+
+  @override
+  String get notificationsChannelMessagesNoVibration =>
+      'Wiadomości (bez wibracji)';
 
   @override
   String get notificationsChannelMessagesSilent => 'Wiadomości (bez dźwięku)';
@@ -2012,6 +2066,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get notificationsFromLater => 'Od zespołu Later';
+
+  @override
   String notificationsHoursAgo(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2062,6 +2119,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get notificationsNowFriends => 'Jesteście teraz znajomymi';
+
+  @override
   String notificationsReactionBody(String name, String emoji) {
     return '$name reaguje $emoji na twoją kapsułę';
   }
@@ -2088,6 +2148,12 @@ class AppLocalizationsPl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get notificationsSwipeDelete => 'Usuń';
+
+  @override
+  String get notificationsSwipeRead => 'Przeczytane';
 
   @override
   String get notificationsTabAll => 'Wszystkie';
@@ -2819,6 +2885,13 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsNotificationsStreakHint =>
       'Wieczorem, gdy seria dziś by się skończyła';
+
+  @override
+  String get settingsNotificationsVibrate => 'Wibracje';
+
+  @override
+  String get settingsNotificationsVibrateNeedsSound =>
+      'Działa razem z dźwiękiem';
 
   @override
   String get settingsPassword => 'Hasło';

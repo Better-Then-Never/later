@@ -234,5 +234,7 @@
   "settingsPrivacyFindByContacts": "Меня находят по моей почте",
   "settingsPrivacyFindByContactsHint": "Те, у кого ваша почта есть в контактах, могут увидеть вас в подсказках. Хранится только отпечаток подтверждённого адреса.",
   "settingsUploadsWifiOnly": "Загружать только по Wi-Fi",
-  "settingsUploadsWifiOnlyHint": "Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится."
+  "settingsUploadsWifiOnlyHint": "Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится.",
+  "settingsNotificationsVibrate": "Вибрация",
+  "settingsNotificationsVibrateNeedsSound": "Работает вместе со звуком"
 }
