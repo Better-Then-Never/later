@@ -13,6 +13,7 @@ import '../../../shared/widgets/buttons/go_back_button.dart';
 import '../../users/user_directory.dart';
 import '../friend_actions.dart';
 import '../friend_suggestions_controller.dart';
+import '../friends_store.dart';
 import '../widgets/add_friends/add_friends_action_buttons_row.dart';
 import '../widgets/add_friends/suggested_friends_list.dart';
 import '../../../core/l10n/l10n.dart';
@@ -35,6 +36,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     _suggestions = FriendSuggestionsController(
       users: context.read<UserRepository>(),
       directory: context.read<UserDirectory>(),
+      friends: context.read<FriendsStore>(),
     );
     _searchController.addListener(
       () => _suggestions.search(_searchController.text),

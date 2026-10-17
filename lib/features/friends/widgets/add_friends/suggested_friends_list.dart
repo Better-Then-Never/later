@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/theme/app_palette.dart';
 import '../../../../data/models/friend_request.dart';
 import '../../../../shared/widgets/default_text.dart';
 import '../../friend_actions.dart';
@@ -56,7 +57,17 @@ class SuggestedFriendsList extends StatelessWidget {
         }).toList();
 
         if (users.isEmpty) {
-          return Center(child: DefaultText(context.l10n.friendsNoSuggestions));
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+              child: DefaultText(
+                controller.isSuggesting
+                    ? context.l10n.friendsFindByUsernameHint
+                    : context.l10n.friendsNoSuggestions,
+                color: context.palette.textSecondary,
+              ),
+            ),
+          );
         }
 
         return ListView(
@@ -67,6 +78,7 @@ class SuggestedFriendsList extends StatelessWidget {
                 userId: user.uid,
                 name: user.name,
                 username: user.username,
+                mutualFriends: controller.mutualCount(user.uid),
                 relation: store.relationTo(user.uid),
                 screenWidth: screenWidth,
                 onTapProfile: () =>

@@ -15,6 +15,9 @@ class SuggestedFriendRow extends StatelessWidget {
   final String userId;
   final String name;
   final String username;
+
+  /// Friends in common, shown after the username when there are any.
+  final int mutualFriends;
   final FriendRelation relation;
   final VoidCallback onTapProfile;
   final VoidCallback onSendRequest;
@@ -26,6 +29,7 @@ class SuggestedFriendRow extends StatelessWidget {
     required this.userId,
     required this.name,
     required this.username,
+    this.mutualFriends = 0,
     required this.relation,
     required this.onTapProfile,
     required this.onSendRequest,
@@ -43,7 +47,10 @@ class SuggestedFriendRow extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(vertical: 0),
-          leading: UserRoundAvatar(userId: userId, radius: screenWidth * 0.07),
+          leading: UserRoundAvatar(
+            userId: userId,
+            radius: UserRoundAvatar.listRadius(screenWidth),
+          ),
           title: Text(
             name,
             maxLines: 1,
@@ -56,7 +63,9 @@ class SuggestedFriendRow extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            '@$username',
+            mutualFriends > 0
+                ? '@$username · ${context.l10n.friendsMutualCount(mutualFriends)}'
+                : '@$username',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(

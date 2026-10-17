@@ -471,6 +471,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsErrorUnfollow => 'Entfolgen hat nicht geklappt';
 
   @override
+  String get friendsFindByUsernameHint =>
+      'Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen.';
+
+  @override
   String get friendsFollow => 'Folgen';
 
   @override
@@ -495,6 +499,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get friendsManageFriendship => 'Freundschaft verwalten';
+
+  @override
+  String friendsMutualCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gemeinsame Freunde',
+      one: '1 gemeinsamer Freund',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get friendsMyFriendsTitle => 'Meine Freunde';

@@ -367,6 +367,7 @@
   "friendsErrorSendRequest": "Failed to send friend request",
   "friendsErrorUnblock": "Failed to unblock user",
   "friendsErrorUnfollow": "Failed to unfollow user",
+  "friendsFindByUsernameHint": "Search by @username or scan a friend's QR code. People your friends know show up here.",
   "friendsFollow": "Follow",
   "@friendsFollow": {
     "description": "Button in Manage friendship: get notified about this friend's capsules."
@@ -387,6 +388,15 @@
     "description": "Section title above the suggested people on Add Friends."
   },
   "friendsManageFriendship": "Manage friendship",
+  "friendsMutualCount": "{count, plural, =1{1 mutual friend} other{{count} mutual friends}}",
+  "@friendsMutualCount": {
+    "description": "After the @username of a suggested person.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendsMyFriendsTitle": "My friends",
   "friendsMyProfile": "My Profile",
   "@friendsMyProfile": {

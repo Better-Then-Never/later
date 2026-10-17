@@ -25,7 +25,10 @@ class UserListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
-      leading: UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
+      leading: UserRoundAvatar(
+        userId: uid,
+        radius: UserRoundAvatar.listRadius(screenWidth),
+      ),
       title: Text(
         name,
         style: TextStyle(

@@ -460,6 +460,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo dejar de seguir a este usuario';
 
   @override
+  String get friendsFindByUsernameHint =>
+      'Busca por @usuario o escanea el código QR de un amigo. Aquí aparecerán personas que conocen tus amigos.';
+
+  @override
   String get friendsFollow => 'Seguir';
 
   @override
@@ -484,6 +488,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get friendsManageFriendship => 'Gestionar amistad';
+
+  @override
+  String friendsMutualCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count amigos en común',
+      one: '1 amigo en común',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get friendsMyFriendsTitle => 'Mis amigos';

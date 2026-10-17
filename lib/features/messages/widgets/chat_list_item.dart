@@ -52,7 +52,7 @@ class ChatListItem extends StatelessWidget {
           ),
           leading: UserRoundAvatar(
             userId: friendUid,
-            radius: screen.width * 0.07,
+            radius: UserRoundAvatar.listRadius(screen.width),
           ),
           title: Text(
             name,

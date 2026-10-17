@@ -8,6 +8,7 @@ import '../../core/logging/app_logger.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
 import '../users/user_directory.dart';
+import 'friends_store.dart';
 
 /// "Make friends" suggestions on the Add Friends page.
 ///
@@ -16,19 +17,34 @@ import '../users/user_directory.dart';
 /// per (debounced) search, on the lower-cased username (BUG-072), with an
 /// error state instead of a silently empty list. Results are primed into
 /// the [UserDirectory] so rows need no extra reads (BUG-073).
+///
+/// Without a query it suggests friends of the user's friends, most mutual
+/// friends first (F-57: it used to list the first users of the whole app).
 class FriendSuggestionsController extends ChangeNotifier {
   FriendSuggestionsController({
     required UserRepository users,
     required UserDirectory directory,
+    FriendsStore? friends,
     this.limit = 50,
+    this.suggestionLimit = 20,
     this.debounce = const Duration(milliseconds: 300),
   }) : _users = users,
-       _directory = directory {
+       _directory = directory,
+       _friends = friends {
     unawaited(_load());
   }
 
   final UserRepository _users;
   final UserDirectory _directory;
+  final FriendsStore? _friends;
+  final int suggestionLimit;
+  Map<String, int> _mutual = const {};
+
+  /// Friends in common with a suggested user (0 for search results).
+  int mutualCount(String uid) => _mutual[uid] ?? 0;
+
+  /// No query: the list shows friends of friends.
+  bool get isSuggesting => _query.isEmpty;
   final int limit;
   final Duration debounce;
 
@@ -69,10 +85,17 @@ class FriendSuggestionsController extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      final found = await _users.searchByUsername(_query, limit: limit);
-      if (_disposed || request != _request) return;
-      _directory.prime(found);
-      _results = found;
+      if (_query.isEmpty) {
+        final found = await _friendsOfFriends();
+        if (_disposed || request != _request) return;
+        _results = found;
+      } else {
+        final found = await _users.searchByUsername(_query, limit: limit);
+        if (_disposed || request != _request) return;
+        _directory.prime(found);
+        _mutual = const {};
+        _results = found;
+      }
     } catch (e, st) {
       if (_disposed || request != _request) return;
       AppLogger.warning('User search failed', error: e, stackTrace: st);
@@ -84,6 +107,38 @@ class FriendSuggestionsController extends ChangeNotifier {
     }
     _loading = false;
     notifyListeners();
+  }
+
+  /// People two steps away, ranked by friends in common; at most two reads
+  /// of up to 30 profiles each (the friends, then the candidates), most of
+  /// them already in the directory.
+  Future<List<UserProfile>> _friendsOfFriends() async {
+    final store = _friends;
+    final me = store?.uid;
+    if (store == null || me == null) return const [];
+    final mine = store.friendIds;
+    if (mine.isEmpty) return const [];
+    final friends = await _directory.resolveAll(mine.take(30));
+    final counts = <String, int>{};
+    for (final friend in friends.values) {
+      for (final other in friend.friends) {
+        if (other == me || mine.contains(other)) continue;
+        if (store.blocked.contains(other)) continue;
+        counts[other] = (counts[other] ?? 0) + 1;
+      }
+    }
+    final ranked = counts.entries.toList()
+      ..sort((a, b) {
+        final byCount = b.value.compareTo(a.value);
+        return byCount != 0 ? byCount : a.key.compareTo(b.key);
+      });
+    final top = ranked.take(suggestionLimit).map((e) => e.key).toList();
+    final profiles = await _directory.resolveAll(top);
+    _mutual = {for (final uid in top) uid: counts[uid]!};
+    return [
+      for (final uid in top)
+        if (profiles[uid] case final UserProfile p) p,
+    ];
   }
 
   @override

@@ -938,6 +938,12 @@ abstract class AppLocalizations {
   /// **'Failed to unfollow user'**
   String get friendsErrorUnfollow;
 
+  /// No description provided for @friendsFindByUsernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by @username or scan a friend\'s QR code. People your friends know show up here.'**
+  String get friendsFindByUsernameHint;
+
   /// Button in Manage friendship: get notified about this friend's capsules.
   ///
   /// In en, this message translates to:
@@ -985,6 +991,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage friendship'**
   String get friendsManageFriendship;
+
+  /// After the @username of a suggested person.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 mutual friend} other{{count} mutual friends}}'**
+  String friendsMutualCount(int count);
 
   /// No description provided for @friendsMyFriendsTitle.
   ///

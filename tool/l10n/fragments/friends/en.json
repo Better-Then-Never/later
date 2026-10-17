@@ -131,5 +131,15 @@
   "friendsViewProfile": "View Profile",
   "@friendsViewProfile": {
     "description": "Main button on the profile of someone who is already a friend: opens their friend profile."
-  }
+  },
+  "friendsMutualCount": "{count, plural, =1{1 mutual friend} other{{count} mutual friends}}",
+  "@friendsMutualCount": {
+    "description": "After the @username of a suggested person.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsFindByUsernameHint": "Search by @username or scan a friend's QR code. People your friends know show up here."
 }

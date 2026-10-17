@@ -65,5 +65,7 @@
   "friendsSuggestionRemoved": "Vorschlag aus der Liste entfernt!",
   "friendsThisIsYou": "Das ist dein Konto",
   "friendsUnfollowed": "Du folgst dieser Person nicht mehr",
-  "friendsViewProfile": "Profil ansehen"
+  "friendsViewProfile": "Profil ansehen",
+  "friendsMutualCount": "{count, plural, =1{1 gemeinsamer Freund} other{{count} gemeinsame Freunde}}",
+  "friendsFindByUsernameHint": "Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen."
 }

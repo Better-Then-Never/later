@@ -458,6 +458,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get friendsErrorUnfollow => 'Nie udało się przestać obserwować';
 
   @override
+  String get friendsFindByUsernameHint =>
+      'Szukaj po @nicku albo zeskanuj kod QR znajomego. Tutaj pojawią się osoby, które znają twoi znajomi.';
+
+  @override
   String get friendsFollow => 'Obserwuj';
 
   @override
@@ -482,6 +486,19 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get friendsManageFriendship => 'Ustawienia znajomości';
+
+  @override
+  String friendsMutualCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count wspólnego znajomego',
+      many: '$count wspólnych znajomych',
+      few: '$count wspólnych znajomych',
+      one: '1 wspólny znajomy',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get friendsMyFriendsTitle => 'Moi znajomi';

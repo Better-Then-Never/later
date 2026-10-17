@@ -455,6 +455,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsErrorUnfollow => 'Не удалось отписаться';
 
   @override
+  String get friendsFindByUsernameHint =>
+      'Найдите человека по @нику или отсканируйте QR-код друга. Здесь появятся знакомые ваших друзей.';
+
+  @override
   String get friendsFollow => 'Подписаться';
 
   @override
@@ -478,6 +482,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get friendsManageFriendship => 'Настройки дружбы';
+
+  @override
+  String friendsMutualCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count общих друга',
+      many: '$count общих друзей',
+      few: '$count общих друга',
+      one: '$count общий друг',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get friendsMyFriendsTitle => 'Мои друзья';

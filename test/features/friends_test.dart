@@ -155,7 +155,7 @@ void main() {
         debounce: Duration.zero,
       );
       await pumpEventQueue();
-      expect(c.results, hasLength(4));
+      expect(c.results, isEmpty, reason: 'no strangers without a query');
       c.search('DA');
       await Future<void>.delayed(Duration.zero);
       await pumpEventQueue();
@@ -165,11 +165,35 @@ void main() {
       c.dispose();
     });
 
+    test('without a query: friends of friends, most mutual first', () async {
+      users
+        ..put(_p('me', friends: ['bob', 'carl']))
+        ..put(_p('bob', friends: ['me', 'dave', 'erin', 'zoe']))
+        ..put(_p('carl', friends: ['me', 'erin', 'bob']))
+        ..put(_p('zoe'));
+      await friendsRepo.block(me: 'me', other: 'zoe');
+      final s = store();
+      await pumpEventQueue();
+      final c = FriendSuggestionsController(
+        users: users,
+        directory: UserDirectory(users),
+        friends: s,
+        debounce: Duration.zero,
+      );
+      await pumpEventQueue();
+      expect(c.isSuggesting, isTrue);
+      expect(c.results.map((u) => u.uid), ['erin', 'dave']);
+      expect(c.mutualCount('erin'), 2);
+      expect(c.mutualCount('dave'), 1);
+      c.dispose();
+    });
+
     test('a failing query shows an error, not an empty list', () async {
       final c = FriendSuggestionsController(
         users: _FailingSearch(),
         directory: UserDirectory(users),
-      );
+      )..search('x');
+      await Future<void>.delayed(const Duration(milliseconds: 350));
       await pumpEventQueue();
       expect(c.error, isA<AppFailure>());
       expect(c.isLoading, isFalse);

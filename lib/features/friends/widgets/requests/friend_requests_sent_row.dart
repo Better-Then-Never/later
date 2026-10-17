@@ -38,7 +38,10 @@ class FriendRequestsSentRow extends StatelessWidget {
           onTap: onTap,
           child: Row(
             children: [
-              UserRoundAvatar(userId: uid, radius: screenWidth * 0.07),
+              UserRoundAvatar(
+                userId: uid,
+                radius: UserRoundAvatar.listRadius(screenWidth),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
