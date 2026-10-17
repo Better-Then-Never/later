@@ -48,6 +48,13 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **Notifications:** new types (reaction, friendRequest, friendAccepted, achievement) with names looked up by id,
   localized sentences, tap routing; Android channel names localized.
 - **Draft PR #78** opened (base main, includes #77's commits since #77 is not merged). Keep its body updated.
-- Next: emulator checks (dark candidates D-03, all screens in dark + ru/de), then Tier 0 images (F-01..F-03),
-  consistency (F-30..F-45), motion; then Tier 1/2 features (default visibility + approximate location in
-  creation, reactions/comments UI, achievements UI, news topic subscription).
+- **Emulator session (dark, ru):** D-03 charcoal chosen (sheet in docs/ux/dark_candidates), dark map style
+  without map ID (D-07), map padding (logo above the bar), Russian labels shortened after on-device check.
+- **Images done (F-01..F-03):** cached_network_image disk cache, decode buckets, skeleton while avatar lookups
+  run, avatar URLs remembered per account, chats reopen from their last messages. Verified after cold restart.
+- **Fixes:** F-57 suggestions = friends of friends (no strangers), F-30 round list avatars, F-42 three optional
+  permission steps (mic/contacts removed incl. manifest), F-18 invalid places, F-25 description 2000, privacy
+  defaults applied in creation (+ capturedAt/utcOffset), F-13 my-location button (dark user figure), F-17 own
+  capsule card (closes on tap/swipe/back/tab/zoom-out; logo never covered; package removed).
+- Next: F-10 marker memoization, then capsule detail with reactions/comments (flip FeatureFlags), achievements
+  UI, news topic subscription, consistency items (F-31..F-41), motion, docs.
