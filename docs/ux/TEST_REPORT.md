@@ -47,15 +47,16 @@ Screenshots in `docs/ux/after`, `docs/ux/dark_candidates`.
   keyboard open.
 - Camera: first use after skipping the onboarding asks for the permission and starts (was failing).
 - Offline capsule: airplane mode → saved at once with "Waiting for connection" → network back → uploaded
-  ().
+  (`offline_capsule_waiting_dark.png`).
 - Sheets and menus: history Sort/Filter with the current choice, pinned friends sheet with a handle, permission
-  confirmation card (, , ).
+  confirmation card (`history_sort_menu_*.png`, `pinned_friends_sheet_dark.png`,
+  `permission_confirm_card_dark.png`).
 - Chat: hold menu, delete for both (chat list falls back), swipe-to-reply bar, quotes on both bubbles in light,
-  tap a quote to jump across 40 messages ().
-- Creation: privacy/colour/date menus, presets (); full-screen photo from the preview and
-  from an opened capsule, zoom and drag to close ().
-- On this day with capsules dated 1 and 2 years back (); heatmap only when zoomed out
-  ().
+  tap a quote to jump across 40 messages (`chat_*.png`).
+- Creation: privacy/colour/date menus, presets (`create_*_menu_dark.png`); full-screen photo from the preview and
+  from an opened capsule, zoom and drag to close (`photo_viewer.png`).
+- On this day with capsules dated 1 and 2 years back (`on_this_day_dark.png`); heatmap only when zoomed out
+  (`map_heatmap_green_dark.png`).
 - Light theme pass over tonight's screens (found the quote alignment bug).
 - Capsule created with comments off.
 - Verified badge and follower counts, achievements card and page (stats written by hand to the local emulator,
