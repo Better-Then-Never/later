@@ -219,6 +219,98 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWelcomeTo => 'Welcome to';
 
   @override
+  String get capsulesCameraAccessDenied =>
+      'Allow camera access in Settings to take a photo';
+
+  @override
+  String get capsulesCameraFlashOff => 'Flash off';
+
+  @override
+  String get capsulesCameraFlashOn => 'Flash on';
+
+  @override
+  String get capsulesCameraStartFailed => 'The camera could not be started';
+
+  @override
+  String get capsulesCameraSwitch => 'Switch camera';
+
+  @override
+  String get capsulesCameraTakePhoto => 'Take photo';
+
+  @override
+  String get capsulesCameraUnavailable => 'No camera available';
+
+  @override
+  String get capsulesColorBlue => 'Blue';
+
+  @override
+  String get capsulesColorGreen => 'Green';
+
+  @override
+  String get capsulesColorOrange => 'Orange';
+
+  @override
+  String get capsulesColorPurple => 'Purple';
+
+  @override
+  String get capsulesColorRed => 'Red';
+
+  @override
+  String get capsulesColorYellow => 'Yellow';
+
+  @override
+  String get capsulesCreationColor => 'Color';
+
+  @override
+  String get capsulesCreationDescriptionHint => 'Add description...';
+
+  @override
+  String get capsulesCreationOpenAt => 'Open At';
+
+  @override
+  String get capsulesCreationPreview => 'Capsule Preview';
+
+  @override
+  String get capsulesCreationPrivacy => 'Privacy';
+
+  @override
+  String get capsulesCreationSelectDate => 'Select date';
+
+  @override
+  String get capsulesCreationSettings => 'Capsule Settings';
+
+  @override
+  String get capsulesCreationSubmit => 'Create Capsule';
+
+  @override
+  String get capsulesCreationTitle => 'Create Capsule';
+
+  @override
+  String get capsulesCreationTitleHint => 'Add Title...';
+
+  @override
+  String get capsulesDefaultTitle => 'Capsule';
+
+  @override
+  String get capsulesErrorNoLocation => 'We could not detect your location';
+
+  @override
+  String get capsulesErrorSaveFailed => 'Failed to save capsule';
+
+  @override
+  String get capsulesErrorSavedNotSent =>
+      'The capsule was saved but not sent. Tap save to try again.';
+
+  @override
+  String get capsulesPrivacyFriends => 'Friends';
+
+  @override
+  String get capsulesPrivacyPrivate => 'Private';
+
+  @override
+  String get capsulesPrivacyPublic => 'Public';
+
+  @override
   String get commonBack => 'Back';
 
   @override
@@ -478,6 +570,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendsViewProfile => 'View Profile';
+
+  @override
+  String get mapCapsuleLocked => 'Locked';
+
+  @override
+  String get mapCapsuleNoDescription => 'This capsule has no description.';
+
+  @override
+  String get mapCapsuleOpen => 'Open';
+
+  @override
+  String mapCapsuleOpensIn(String time) {
+    return 'Opens in $time';
+  }
+
+  @override
+  String get mapCapsuleReady => 'Check out what\'s inside!';
+
+  @override
+  String mapDurationDays(int count) {
+    return '${count}d';
+  }
+
+  @override
+  String mapDurationHours(int count) {
+    return '${count}h';
+  }
+
+  @override
+  String mapDurationMinutes(int count) {
+    return '${count}m';
+  }
+
+  @override
+  String mapDurationSeconds(int count) {
+    return '${count}s';
+  }
+
+  @override
+  String get mapLocationDenied =>
+      'Allow location access to see capsules near you';
+
+  @override
+  String get mapLocationServiceOff =>
+      'Turn on location to see capsules near you';
+
+  @override
+  String get mapLocationUnknown => 'We could not detect your location';
 
   @override
   String get messagesBlockedByYou => 'You blocked this user';

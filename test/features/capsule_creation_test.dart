@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/errors/app_failure.dart';
+import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/data/models/geo_position.dart';
 import 'package:later/data/services/location_service.dart';
@@ -105,6 +107,22 @@ void main() {
     expect(failure, isA<ValidationFailure>());
     expect(failure!.message, 'We could not detect your location');
     expect(repo.created, isEmpty);
+    c.dispose();
+  });
+
+  test('the default title and errors follow the app language', () async {
+    AppL10n.update(const Locale('de'));
+    addTearDown(() => AppL10n.update(const Locale('en')));
+    final repo = FakeCapsuleRepository();
+    final noFix = build(repo);
+    expect(
+      (await noFix.save())!.message,
+      'Wir konnten deinen Standort nicht ermitteln',
+    );
+    noFix.dispose();
+    final c = build(repo, known: const GeoPosition(1, 2));
+    expect(await c.save(), isNull);
+    expect(repo.created.single.title, 'Kapsel');
     c.dispose();
   });
 

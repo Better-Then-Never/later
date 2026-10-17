@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_dimens.dart';
@@ -67,17 +68,19 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
     super.dispose();
   }
 
-  static String formatDuration(Duration d) {
+  /// Compact countdown ("2d 5h 30m 15s" in English) in the app's language.
+  static String formatDuration(Duration d, AppLocalizations l10n) {
     if (d.isNegative) return '';
     final days = d.inDays;
     final hours = d.inHours.remainder(24);
     final minutes = d.inMinutes.remainder(60);
     final seconds = d.inSeconds.remainder(60);
     return [
-      if (days > 0) '${days}d',
-      if (hours > 0 || days > 0) '${hours}h',
-      if (minutes > 0 || hours > 0 || days > 0) '${minutes}m',
-      '${seconds}s',
+      if (days > 0) l10n.mapDurationDays(days),
+      if (hours > 0 || days > 0) l10n.mapDurationHours(hours),
+      if (minutes > 0 || hours > 0 || days > 0)
+        l10n.mapDurationMinutes(minutes),
+      l10n.mapDurationSeconds(seconds),
     ].join(' ');
   }
 
@@ -85,6 +88,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   Widget build(BuildContext context) {
     final capsule = widget.capsule;
     final isOpen = _isOpen;
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -103,21 +107,29 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
           Text(
             DateFormat(
               'dd-MM-yyyy',
+              l10n.localeName,
             ).format(capsule.createdAt ?? DateTime.now()),
             style: const TextStyle(fontFamily: kAppFontFamily, fontSize: 16),
           ),
           const SizedBox(height: 8),
-          Text(
-            isOpen
-                ? "Check out what's inside!"
-                : 'Opens in ${formatDuration(capsule.timeUntilOpen(_now))}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: isOpen ? AppColors.brandGreen : AppColors.materialRed,
-              fontFamily: kAppFontFamily,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+          // Scales down instead of cutting off the countdown when a language
+          // needs more room.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              isOpen
+                  ? l10n.mapCapsuleReady
+                  : l10n.mapCapsuleOpensIn(
+                      formatDuration(capsule.timeUntilOpen(_now), l10n),
+                    ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: isOpen ? AppColors.brandGreen : AppColors.materialRed,
+                fontFamily: kAppFontFamily,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           SizedBox(
@@ -126,7 +138,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: isOpen
                     ? AppColors.brandGreen
-                    : AppColors.grey500,
+                    : context.palette.iconMuted,
                 shape: const RoundedRectangleBorder(
                   borderRadius: AppRadii.lCircular,
                 ),
@@ -137,13 +149,16 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                 ),
               ),
               onPressed: isOpen ? widget.onMoreInfo : null,
-              child: Text(
-                isOpen ? 'Open' : 'Locked',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: kAppFontFamily,
-                  color: AppColors.white,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  isOpen ? l10n.mapCapsuleOpen : l10n.mapCapsuleLocked,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: kAppFontFamily,
+                    color: AppColors.onAccent,
+                  ),
                 ),
               ),
             ),

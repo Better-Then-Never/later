@@ -6,10 +6,15 @@ import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../data/models/capsule.dart';
 import '../../settings/device_settings_store.dart';
 import 'package:later/core/theme/app_colors.dart';
+
+/// Why the camera cannot be shown. The message is chosen when the error view
+/// is built, so it follows the app's language.
+enum _CameraError { unavailable, accessDenied, startFailed }
 
 /// Full-screen camera used to take the photo of a new capsule.
 ///
@@ -34,7 +39,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   CameraLensDirection _lens = CameraLensDirection.back;
   bool _flashOn = false;
   bool _capturing = false;
-  String? _error;
+  _CameraError? _error;
 
   @override
   void initState() {
@@ -74,7 +79,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       AppLogger.warning('Could not list cameras', error: e);
     }
     if (_cameras.isEmpty) {
-      if (mounted) setState(() => _error = 'No camera available');
+      if (mounted) setState(() => _error = _CameraError.unavailable);
       return;
     }
     await _start();
@@ -106,8 +111,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       if (!mounted) return;
       setState(
         () => _error = e.code == 'CameraAccessDenied'
-            ? 'Allow camera access in Settings to take a photo'
-            : 'The camera could not be started',
+            ? _CameraError.accessDenied
+            : _CameraError.startFailed,
       );
     }
   }
@@ -163,12 +168,24 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: AppColors.black87, body: _buildBody());
+    return Scaffold(
+      backgroundColor: AppColors.mediaScrimStrong,
+      body: _buildBody(),
+    );
   }
 
   Widget _buildBody() {
+    final l10n = context.l10n;
     final error = _error;
-    if (error != null) return _ErrorView(message: error);
+    if (error != null) {
+      return _ErrorView(
+        message: switch (error) {
+          _CameraError.unavailable => l10n.capsulesCameraUnavailable,
+          _CameraError.accessDenied => l10n.capsulesCameraAccessDenied,
+          _CameraError.startFailed => l10n.capsulesCameraStartFailed,
+        },
+      );
+    }
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       return const Center();
@@ -193,7 +210,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   children: [
                     Semantics(
                       button: true,
-                      label: 'Back',
+                      label: l10n.commonBack,
                       child: GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Image.asset(
@@ -205,7 +222,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     ),
                     Semantics(
                       button: true,
-                      label: _flashOn ? 'Flash on' : 'Flash off',
+                      label: _flashOn
+                          ? l10n.capsulesCameraFlashOn
+                          : l10n.capsulesCameraFlashOff,
                       child: GestureDetector(
                         onTap: _toggleFlash,
                         child: Image.asset(
@@ -227,7 +246,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 child: Center(
                   child: Semantics(
                     button: true,
-                    label: 'Take photo',
+                    label: l10n.capsulesCameraTakePhoto,
                     child: GestureDetector(
                       onTap: _capture,
                       child: Image.asset(
@@ -251,7 +270,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
               children: [
                 Semantics(
                   button: true,
-                  label: 'Switch camera',
+                  label: l10n.capsulesCameraSwitch,
                   child: GestureDetector(
                     onTap: _switchCamera,
                     child: Image.asset(
@@ -293,7 +312,7 @@ class _ErrorView extends StatelessWidget {
               child: Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.white, fontSize: 18),
+                style: const TextStyle(color: AppColors.onMedia, fontSize: 18),
               ),
             ),
           ),

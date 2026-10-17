@@ -1,0 +1,14 @@
+{
+  "mapLocationServiceOff": "Включите геолокацию, чтобы видеть капсулы рядом с вами",
+  "mapLocationDenied": "Разрешите доступ к геопозиции, чтобы видеть капсулы рядом с вами",
+  "mapLocationUnknown": "Не удалось определить вашу геопозицию",
+  "mapCapsuleReady": "Посмотрите, что внутри!",
+  "mapCapsuleOpensIn": "Откроется через {time}",
+  "mapDurationDays": "{count}д",
+  "mapDurationHours": "{count}ч",
+  "mapDurationMinutes": "{count}мин",
+  "mapDurationSeconds": "{count}с",
+  "mapCapsuleOpen": "Открыть",
+  "mapCapsuleLocked": "Закрыта",
+  "mapCapsuleNoDescription": "У этой капсулы нет описания."
+}
