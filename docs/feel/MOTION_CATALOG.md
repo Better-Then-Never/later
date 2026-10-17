@@ -36,7 +36,21 @@ phone's "remove animations" setting; every motion below honours it (instant, or 
 | **Button press** | `AppPressable` | scales to 0.97 while pressed | quick | none |
 | **Map card** | `map_page.dart` | fade + slide of the card (small) | emphasized | instant |
 | **Map clusters** | `map_clusters.dart` | bubbles regroup when the camera stops (no motion while it moves) | – | – |
+| **Map zoom buttons** | `_ZoomButtons` | native camera animation, one level per tap; the pill rises with the card | emphasized | – |
+| **Reactions** | `ReactionBurst` (`lib/shared/motion/reaction_burst.dart`) | when a reaction becomes yours: the emoji grows to 135 % and settles while six painted dots fly out and fade | reveal | nothing |
+| **Empty states** | `IdleFloat` | the icon drifts 4 dp up and down for two slow breaths, then rests (a loop would draw forever) | 2 × 2.4 s | still |
+| **Pull to refresh** | notifications | Material indicator; listens again from scratch and ends with the first result (also on the empty state) | – | – |
+| **Waiting → uploaded** | `CapsuleListTile` | the orange "waiting" pill crossfades (with a slight scale) into the green date; the column resizes | standard | instant |
+| **Saving a capsule** | `_SubmitButton` (creation) | the button draws in to a green circle with a spinner, turns into a painted check, the page closes 300 ms later; a failure opens it back | emphasized; fast; slow | no morph, no wait |
+| **Camera zoom stops** | `_ZoomStops` | tap eases the zoom to the stop in six steps; the nearest stop shows the exact zoom in yellow | ~150 ms | one step |
+| **Camera brightness** | `_ExposureSlider` | appears after a tap to focus, hides 3 s after the last touch | fast fade (small) | instant |
+| **Achievements** | `achievements_view.dart` | badges come in one after another (cover in the card colour); progress bars fill from empty; the streak flame swells twice | standard + 35 ms steps; reveal; 4 × slow | still |
 
-## Not built yet (Phase 3 list, tracked in PROGRESS.md)
-Reaction bursts, marker appear/selection, heatmap crossfade, pulsing user marker, creation steps, pending →
-uploaded morph, achievement unlock and streak flame, pull to refresh that works, empty-state idle motion.
+## Not built, and why
+- **Map marker appear/selection animations, heatmap crossfade, a pulsing user marker.** Markers, the heatmap and
+  the user's figure are drawn by Google Maps natively. Animating them means sending new marker or heatmap states
+  many times a second, and Google Maps applies every update on Android's main thread, where Flutter's vsync comes
+  from: exactly what froze the app for 4–10 s before (PERFORMANCE.md). Clusters regrouping at camera stops is the
+  motion the map gets. A Flutter overlay that follows the map would need the camera's projection every frame;
+  not attempted (IDEAS_NOT_DONE.md).
+- **Unlock moments for achievements** (a celebration when one is earned): part B7 (FEATURES_B.md).
