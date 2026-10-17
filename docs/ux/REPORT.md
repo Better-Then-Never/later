@@ -56,7 +56,7 @@ D-03 charcoal dark palette; D-07 dark map without the cloud map ID; optional per
 removed from Android; friends-of-friends suggestions; feature flags for anything not finished (loop capsules).
 
 ## Not done (IDEAS_NOT_DONE.md)
-Loop capsules, flash auto/torch, own date picker and composer, chat reactions/replies/photos/voice,
+Loop capsules, torch, own date picker and composer, chat reactions/replies/photos/voice,
 map clusters, co-authors, some consistency items (history control sizes, share icon) and
 transition polish (hero, stagger).
 

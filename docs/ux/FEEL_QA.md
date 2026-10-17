@@ -13,7 +13,7 @@ Checked by hand on the emulator (dark theme, English and Russian). ✓ = good, �
 | Capsule dialog | ✓ | Reactions respond instantly (optimistic), green tint on the chosen one. The photo opens full screen (zoom, drag to close). △ the card keeps its original 45%-height layout (design reference). |
 | Comments | ✓ | Sheet with grab handle, composer above the keyboard, "Just now" times, replies indented. |
 | Creation | ✓ | Header pinned, new switches clear; asks for location when needed; offline save is instant (pending pill). Privacy, colour and date open the menu card with every option; date presets mean the calendar is rarely needed. △ "Pick a date…" still opens the stock (themed) calendar. |
-| Camera | ✓ | Starts on first use; pinch zoom with a 1.8× hint, tap-to-focus ring, haptic + blink on the shutter. △ flash has on/off only. |
+| Camera | ✓ | Starts on first use; pinch zoom with a 1.8× hint, tap-to-focus ring, haptic + blink on the shutter. Flash cycles off/auto/on. |
 | History | ✓ | Photos from disk after restart; labels fit in all languages. Reset has its own clear icon. Sort/Filter are the app's menu card and show the current choice; place pills never empty; empty and no-match states offer the next step. |
 | Messages / Chat | ✓ | Re-entering a chat shows the last messages at once; read receipts respect the privacy switch. Hold a message: menu card with Reply/Copy/Delete, a light haptic, no keyboard popping back. Swipe right to reply: the bubble follows the finger, ticks at the threshold and springs back. Tapping a quote scrolls to the message and lights it briefly. Checked in light and dark. |
 | Profile | ✓ | Scrolls now; counts and verified badge; achievements card with streak. |
