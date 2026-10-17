@@ -260,9 +260,11 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     final boundary = _previewKey.currentContext?.findRenderObject();
     if (boundary is! RenderRepaintBoundary || !boundary.hasSize) return null;
     try {
-      return boundary.toImageSync(
+      final still = boundary.toImageSync(
         pixelRatio: MediaQuery.devicePixelRatioOf(context),
       );
+      AppLogger.debug('Camera freeze: ${still.width}x${still.height}');
+      return still;
     } catch (e) {
       AppLogger.debug('Camera freeze unavailable: $e');
       return null;
