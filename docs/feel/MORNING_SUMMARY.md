@@ -1,6 +1,6 @@
 # MORNING_SUMMARY.md: Session A in one page
 
-Branch `feature/feel-pass-real-device`, PR #79 (stacked on #78, ready for review, **not merged**). Nothing was
+Branch `feature/feel-pass-real-device`, PR #81 (stacked on #80, ready for review, **not merged**; they replace #79 and #78, which were closed and archived). Nothing was
 deployed and nothing touched production: every check ran on a Galaxy S20 FE against the local Firebase emulators
 with a heavy seed (104 people, 2,002 capsules, a 600-message chat). No pushes were delivered (no dev project) and
 nothing ran on iOS.

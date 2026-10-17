@@ -1,7 +1,8 @@
 # PROGRESS.md: Session A log (feel pass on a real phone, then features)
 
-Branch `feature/feel-pass-real-device` (from the tip of `feature/ux-features-night-session`), draft PR #79 stacked
-on #78. Never merged, never deployed. Resume here.
+Branch `feature/feel-pass-real-device` (from the tip of `feature/ux-features-night-session`), PR #81 (ready for review) stacked
+on draft #80. They replace #79 and #78, closed and archived on 17 Oct (GitHub refuses to reopen
+them). Never merged, never deployed. Resume here.
 
 ## Where things are
 | Part | Status |
@@ -125,3 +126,5 @@ on #78. Never merged, never deployed. Resume here.
 - The owner skipped the last phone pass (Part B in dark, at 130 % and the tap audit of its screens): BLOCKERS.md.
 - Gates: checks.sh green (404 tests, 1 pre-existing skip), rules 82/82, functions 62/62.
 - MORNING_SUMMARY.md, the STATUS_REVIEW ratings, the Part B still sheet (`docs/feel/after/partb.png`).
+- PRs: #78 and #79 had been closed (and archived) by the owner on 17 Oct; reopening was refused, so #80 (draft,
+  night session into main) and #81 (this branch, ready for review) replace them, at the owner's request.
