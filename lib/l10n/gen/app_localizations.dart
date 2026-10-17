@@ -1052,6 +1052,24 @@ abstract class AppLocalizations {
   /// **'Saved on your phone. It will be uploaded when you are online again.'**
   String get capsulesQueued;
 
+  /// Screen reader label of the reply button on someone's capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply to the author'**
+  String get capsulesQuickReply;
+
+  /// Hint of the quick reply field (the capsule's author).
+  ///
+  /// In en, this message translates to:
+  /// **'Write to {name}…'**
+  String capsulesQuickReplyHint(String name);
+
+  /// Shown after a quick reply went to the author's chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to {name}'**
+  String capsulesQuickReplySent(String name);
+
   /// Accessibility label of a reaction button.
   ///
   /// In en, this message translates to:

@@ -20,6 +20,7 @@ import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../profile/share/sharing_service.dart';
 import 'capsule_comments_sheet.dart';
+import 'quick_reply_card.dart';
 import 'capsule_social_controller.dart';
 
 /// Under an open capsule: the six reactions and the way into its comments
@@ -85,6 +86,12 @@ class CapsuleSocialPanel extends StatelessWidget {
                     )
                   else
                     const Spacer(),
+                  if (!controller.isOwner)
+                    IconButton(
+                      tooltip: context.l10n.capsulesQuickReply,
+                      onPressed: () => QuickReplyCard.show(context, capsule),
+                      icon: Image.asset(AppIcons.reply, width: 22),
+                    ),
                   if (shareable(capsule))
                     IconButton(
                       tooltip: context.l10n.capsulesShare,

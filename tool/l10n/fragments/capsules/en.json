@@ -241,5 +241,29 @@
         "example": "https://later-da778.web.app/?capsuleId=abc"
       }
     }
+  },
+  "capsulesQuickReply": "Reply to the author",
+  "@capsulesQuickReply": {
+    "description": "Screen reader label of the reply button on someone's capsule."
+  },
+  "capsulesQuickReplyHint": "Write to {name}…",
+  "@capsulesQuickReplyHint": {
+    "description": "Hint of the quick reply field (the capsule's author).",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "capsulesQuickReplySent": "Sent to {name}",
+  "@capsulesQuickReplySent": {
+    "description": "Shown after a quick reply went to the author's chat.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
   }
 }

@@ -79,5 +79,8 @@
   "capsulesCreationShowAuthorHint": "Andere sehen, wer sie hinterlassen hat",
   "capsulesLinkNotShared": "Diese Kapsel ist nicht mit dir geteilt",
   "capsulesShare": "Teilen",
-  "capsulesShareMessage": "Eine Zeitkapsel in Later: {title}\n{link}"
+  "capsulesShareMessage": "Eine Zeitkapsel in Later: {title}\n{link}",
+  "capsulesQuickReply": "Dem Autor antworten",
+  "capsulesQuickReplyHint": "Schreib {name}…",
+  "capsulesQuickReplySent": "An {name} gesendet"
 }

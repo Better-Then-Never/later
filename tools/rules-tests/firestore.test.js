@@ -670,6 +670,14 @@ describe('chats', () => {
     await assertFails(send(as('alice'), 'alice', 'bob', noLength));
   });
 
+  test('a quick reply names the capsule it answers, briefly', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'Love it', capsuleRef: { id: 'c1', title: 'Sunset' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: { id: '', title: 'Sunset' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: { id: 'c1', title: 'x'.repeat(141) } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: { id: 'c1', title: 't', imageUrl: 'u' } }));
+    await assertFails(send(as('alice'), 'alice', 'bob', { text: 'x', capsuleRef: 'c1' }));
+  });
+
   test('a forwarded message says so, and nothing else', async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: true }));
     await assertFails(send(as('alice'), 'alice', 'bob', { text: 'fwd', forwarded: false }));

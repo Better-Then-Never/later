@@ -601,6 +601,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Saved on your phone. It will be uploaded when you are online again.';
 
   @override
+  String get capsulesQuickReply => 'Reply to the author';
+
+  @override
+  String capsulesQuickReplyHint(String name) {
+    return 'Write to $name…';
+  }
+
+  @override
+  String capsulesQuickReplySent(String name) {
+    return 'Sent to $name';
+  }
+
+  @override
   String capsulesReactWith(String emoji) {
     return 'React with $emoji';
   }

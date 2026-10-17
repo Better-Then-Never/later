@@ -731,7 +731,8 @@ service cloud.firestore {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
               'type', 'capsuleId', 'imageUrl', 'replyTo', 'imagePath', 'width',
               'height', 'audioUrl', 'audioPath', 'durationMs', 'waveform',
-              'forwarded'])
+              'forwarded', 'capsuleRef'])
+            && (!d.keys().hasAny(['capsuleRef']) || validCapsuleRef(d.capsuleRef))
             && (!d.keys().hasAny(['replyTo']) || validReply(d.replyTo))
             && d.get('forwarded', true) == true
             && d.senderId == me()
@@ -767,6 +768,14 @@ service cloud.firestore {
             && d.get('width', 1) <= 10000
             && d.get('height', 1) is int && d.get('height', 1) > 0
             && d.get('height', 1) <= 10000;
+        }
+
+        // A quick reply from a capsule names it: its id and a short title
+        // (opening it still goes through the capsule's own rules).
+        function validCapsuleRef(r) {
+          return r is map && r.keys().hasOnly(['id', 'title'])
+            && r.id is string && r.id.size() > 0 && r.id.size() <= 200
+            && r.title is string && r.title.size() <= 140;
         }
 
         // A reply quotes a message of this chat: its id, its sender and a

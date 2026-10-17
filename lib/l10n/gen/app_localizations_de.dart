@@ -617,6 +617,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Auf deinem Handy gespeichert. Wird hochgeladen, sobald du wieder online bist.';
 
   @override
+  String get capsulesQuickReply => 'Dem Autor antworten';
+
+  @override
+  String capsulesQuickReplyHint(String name) {
+    return 'Schreib $name…';
+  }
+
+  @override
+  String capsulesQuickReplySent(String name) {
+    return 'An $name gesendet';
+  }
+
+  @override
   String capsulesReactWith(String emoji) {
     return 'Mit $emoji reagieren';
   }

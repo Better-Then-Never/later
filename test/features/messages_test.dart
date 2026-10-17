@@ -917,6 +917,25 @@ void main() {
       c.dispose();
     });
 
+    test('a quick reply goes to the capsule author with the capsule', () async {
+      const capsule = Capsule(
+        id: 'c9',
+        ownerId: 'bob',
+        title: 'Sunset',
+        privacy: CapsulePrivacy.public,
+        color: CapsuleColor.red,
+      );
+      expect(await chats.replyToCapsule(capsule, '  Love it  '), isNull);
+      final sent = chatRepo.messages['bob_me']!.single;
+      expect(sent.text, 'Love it');
+      expect(
+        sent.capsuleRef,
+        const MessageCapsuleRef(id: 'c9', title: 'Sunset'),
+      );
+      expect(await chats.replyToCapsule(capsule, '   '), isNull);
+      expect(chatRepo.messages['bob_me']!.length, 1, reason: 'nothing to send');
+    });
+
     test('deleting for me hides it here and keeps it hidden', () async {
       SharedPreferences.setMockInitialValues({});
       final hidden = HiddenMessages(PreferencesStore());

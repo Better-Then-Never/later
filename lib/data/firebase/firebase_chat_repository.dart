@@ -205,6 +205,7 @@ class FirebaseChatRepository implements ChatRepository {
     required String messageId,
     MessageReply? replyTo,
     bool forwarded = false,
+    MessageCapsuleRef? capsuleRef,
   }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -218,6 +219,13 @@ class FirebaseChatRepository implements ChatRepository {
         if (quote && replyTo != null)
           'replyTo': FirestoreMappers.newMessageReply(replyTo),
         if (forwarded) 'forwarded': true,
+        if (capsuleRef != null)
+          'capsuleRef': {
+            'id': capsuleRef.id,
+            'title': capsuleRef.title.length > MessageCapsuleRef.maxTitle
+                ? capsuleRef.title.substring(0, MessageCapsuleRef.maxTitle)
+                : capsuleRef.title,
+          },
       },
     );
     try {

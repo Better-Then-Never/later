@@ -157,6 +157,25 @@ enum MessageDelivery {
   sent,
 }
 
+/// The capsule a message answers (a quick reply from the capsule): enough
+/// to show and open it.
+class MessageCapsuleRef {
+  const MessageCapsuleRef({required this.id, required this.title});
+
+  /// The title keeps this many characters.
+  static const maxTitle = 140;
+
+  final String id;
+  final String title;
+
+  @override
+  bool operator ==(Object other) =>
+      other is MessageCapsuleRef && other.id == id && other.title == title;
+
+  @override
+  int get hashCode => Object.hash(id, title);
+}
+
 /// The message a reply quotes: enough to show it without loading it.
 class MessageReply {
   const MessageReply({
@@ -219,7 +238,11 @@ class ChatMessage {
     this.durationMs,
     this.waveform = const [],
     this.forwarded = false,
+    this.capsuleRef,
   });
+
+  /// The capsule this message answers (a quick reply).
+  final MessageCapsuleRef? capsuleRef;
 
   /// Sent on from another conversation (marked "Forwarded").
   final bool forwarded;
@@ -337,6 +360,7 @@ class ChatMessage {
     durationMs: durationMs,
     waveform: waveform,
     forwarded: forwarded,
+    capsuleRef: capsuleRef,
   );
 
   bool get isCapsule => type == ChatMessageType.capsule && capsuleId != null;
@@ -373,6 +397,7 @@ class ChatMessage {
       other.audioPath == audioPath &&
       other.durationMs == durationMs &&
       other.forwarded == forwarded &&
+      other.capsuleRef == capsuleRef &&
       listEquals(other.waveform, waveform) &&
       _mapEquals(other.reactions, reactions);
 

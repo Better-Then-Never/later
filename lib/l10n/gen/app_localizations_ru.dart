@@ -628,6 +628,19 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сохранено на телефоне. Загрузится, когда появится интернет.';
 
   @override
+  String get capsulesQuickReply => 'Ответить автору';
+
+  @override
+  String capsulesQuickReplyHint(String name) {
+    return 'Напишите $name…';
+  }
+
+  @override
+  String capsulesQuickReplySent(String name) {
+    return 'Отправлено: $name';
+  }
+
+  @override
   String capsulesReactWith(String emoji) {
     return 'Реакция $emoji';
   }

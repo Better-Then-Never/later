@@ -682,6 +682,7 @@ class FakeChatRepository implements ChatRepository {
     required String messageId,
     MessageReply? replyTo,
     bool forwarded = false,
+    MessageCapsuleRef? capsuleRef,
   }) async {
     calls.add(forwarded ? 'forward:$from->$to:$text' : 'text:$from->$to:$text');
     _add(
@@ -694,6 +695,7 @@ class FakeChatRepository implements ChatRepository {
         sentAt: now,
         replyTo: replyTo,
         forwarded: forwarded,
+        capsuleRef: capsuleRef,
       ),
     );
   }

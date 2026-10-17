@@ -139,6 +139,7 @@ abstract interface class ChatRepository {
     required String messageId,
     MessageReply? replyTo,
     bool forwarded = false,
+    MessageCapsuleRef? capsuleRef,
   });
 
   /// Uploads the photo at [localPath] (resized, JPEG) for message

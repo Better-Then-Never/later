@@ -62,7 +62,10 @@ class MessageBubble extends StatelessWidget {
     // A reply's quote and a sender's name span the bubble from the left:
     // the column is laid out at its natural width and every line stretches.
     final quoted =
-        message.replyTo != null || senderName != null || message.forwarded;
+        message.replyTo != null ||
+        senderName != null ||
+        message.forwarded ||
+        message.capsuleRef != null;
     // A photo fills its bubble but for a thin frame.
     final photo = message.type == ChatMessageType.image;
     final photoWidth = photo
@@ -163,6 +166,22 @@ class MessageBubble extends StatelessWidget {
                     fontSize: 12.5,
                     fontWeight: FontWeight.bold,
                     color: AppColors.brandGreen,
+                  ),
+                ),
+              ),
+            // A quick reply from a capsule: the capsule, which opens.
+            if (message.capsuleRef case final ref?)
+              Semantics(
+                button: true,
+                label: context.l10n.messagesOpenCapsule(ref.title),
+                child: GestureDetector(
+                  onTap: onCapsuleTap,
+                  child: ExcludeSemantics(
+                    child: _Quote(
+                      name: context.l10n.messagesCapsuleLabel,
+                      text: ref.title,
+                      onGreen: isMine,
+                    ),
                   ),
                 ),
               ),

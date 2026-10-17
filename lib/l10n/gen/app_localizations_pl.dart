@@ -630,6 +630,19 @@ class AppLocalizationsPl extends AppLocalizations {
       'Zapisano w telefonie. Wyślemy, gdy wrócisz do sieci.';
 
   @override
+  String get capsulesQuickReply => 'Odpowiedz autorowi';
+
+  @override
+  String capsulesQuickReplyHint(String name) {
+    return 'Napisz do $name…';
+  }
+
+  @override
+  String capsulesQuickReplySent(String name) {
+    return 'Wysłano: $name';
+  }
+
+  @override
   String capsulesReactWith(String emoji) {
     return 'Zareaguj: $emoji';
   }

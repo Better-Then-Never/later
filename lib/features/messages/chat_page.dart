@@ -783,6 +783,8 @@ class _ChatViewState extends State<_ChatView> {
                               : () => _showQuoted(message.replyTo!.id),
                           onCapsuleTap: message.isCapsule && capsuleId != null
                               ? () => _openCapsule(capsuleId)
+                              : message.capsuleRef != null
+                              ? () => _openCapsule(message.capsuleRef!.id)
                               : null,
                           onPhotoTap: message.isPhoto && !failed
                               ? () => _openPhoto(message)

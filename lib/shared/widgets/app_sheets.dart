@@ -99,10 +99,18 @@ class AppCardRoute<T> extends PageRoute<T> {
     // Text and fields on the card take the theme's styles (without it, a
     // title fell back to Flutter's yellow-underlined error style).
     type: MaterialType.transparency,
-    child: Padding(
-      // A card with a text field stays above the keyboard.
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: Center(child: _DragToClose(child: builder(context))),
+    // The top card (with its text field) stays above the keyboard; a card
+    // under another one keeps its place (it overflowed when squeezed). The
+    // page is built once; the builder follows the route becoming covered.
+    child: Builder(
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: ModalRoute.isCurrentOf(context) ?? true
+              ? MediaQuery.viewInsetsOf(context).bottom
+              : 0,
+        ),
+        child: Center(child: _DragToClose(child: builder(context))),
+      ),
     ),
   );
 

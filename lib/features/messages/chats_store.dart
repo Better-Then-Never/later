@@ -293,6 +293,7 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     required String messageId,
     MessageReply? replyTo,
     bool forwarded = false,
+    MessageCapsuleRef? capsuleRef,
   }) => _run(
     'Failed to send message',
     AppL10n.current.messagesSendFailed,
@@ -303,8 +304,28 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
       messageId: messageId,
       replyTo: replyTo,
       forwarded: forwarded,
+      capsuleRef: capsuleRef,
     ),
   );
+
+  /// A quick reply to [capsule]: [text] goes to its author, with the
+  /// capsule attached (shown and opened from the chat).
+  Future<AppFailure?> replyToCapsule(Capsule capsule, String text) async {
+    final trimmed = text.trim();
+    if (trimmed.isEmpty) return null;
+    if (trimmed.length > Chat.maxMessageLength) {
+      return ValidationFailure(AppL10n.current.messagesTooLong);
+    }
+    final chatId = chatIdWith(capsule.ownerId);
+    final id = chatId == null ? null : newMessageIdIn(chatId);
+    if (id == null) return AuthFailure(AppL10n.current.messagesSignedOut);
+    return sendText(
+      capsule.ownerId,
+      trimmed,
+      messageId: id,
+      capsuleRef: MessageCapsuleRef(id: capsule.id, title: capsule.title),
+    );
+  }
 
   /// Sends [text] on, marked "Forwarded", to a friend or a group.
   Future<AppFailure?> forward(

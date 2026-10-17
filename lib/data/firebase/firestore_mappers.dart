@@ -239,6 +239,12 @@ abstract final class FirestoreMappers {
         durationMs: _positiveInt(data['durationMs']),
         waveform: _waveform(data['waveform']),
         forwarded: data['forwarded'] == true,
+        capsuleRef: switch (data['capsuleRef']) {
+          {'id': final String id, 'title': final String title}
+              when id.isNotEmpty =>
+            MessageCapsuleRef(id: id, title: title),
+          _ => null,
+        },
         replyTo: messageReply(data['replyTo']),
         reactions: messageReactions(data['reactions']),
       );
