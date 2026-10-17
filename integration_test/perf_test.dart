@@ -33,6 +33,7 @@ import 'package:later/app/bootstrap.dart';
 import 'package:later/app/shell/navbar_widget.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/core/l10n/l10n.dart';
+import 'package:later/features/achievements/streak_pill.dart';
 import 'package:later/features/capsules/creation/capsule_creation_page.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/map/map_focus.dart';
@@ -40,6 +41,7 @@ import 'package:later/features/map/widgets/capsule_preview_card.dart';
 import 'package:later/features/map/widgets/map_compass.dart';
 import 'package:later/features/messages/widgets/chat_list_item.dart';
 import 'package:later/features/messages/widgets/message_bubble.dart';
+import 'package:later/features/notifications/widgets/notifications_list.dart';
 import 'package:provider/provider.dart';
 
 const _email = String.fromEnvironment(
@@ -391,6 +393,81 @@ void main() {
       () async {
         for (var i = 0; i < 2; i++) {
           await tapAndWait(tester, labelled(l10n().messagesChatOptions));
+          await back(tester);
+        }
+      },
+    );
+
+    // Part B screens (FEATURES_B.md): the profile (B3), the notifications
+    // with days and the team's news (B6), the passport (B7).
+    await flow(
+      'profile_scroll',
+      setup: () => tab(tester, AppIcons.navbarProfile),
+      () async {
+        final page = find.byType(Scrollable).first;
+        for (final dy in [-900.0, -900.0, 900.0, 900.0]) {
+          await tester.fling(page, Offset(0, dy), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+      },
+    );
+
+    await flow(
+      'notifications_scroll',
+      setup: () async {
+        await tab(tester, AppIcons.navbarProfile);
+        await tapAndWait(tester, icon(AppIcons.notifications));
+      },
+      () async {
+        final list = find
+            .descendant(
+              of: find.byType(NotificationsList).first,
+              matching: find.byType(Scrollable),
+            )
+            .first;
+        for (var i = 0; i < 4; i++) {
+          await tester.fling(list, const Offset(0, -900), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+        for (var i = 0; i < 4; i++) {
+          await tester.fling(list, const Offset(0, 900), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+      },
+    );
+
+    await flow(
+      'passport_open_scroll',
+      setup: () => tab(tester, AppIcons.navbarProfile),
+      () async {
+        await tapAndWait(tester, find.text(l10n().worldTitle));
+        final grid = find.byType(CustomScrollView).last;
+        for (final dy in [-900.0, -900.0, 900.0, 900.0]) {
+          await tester.fling(grid, Offset(0, dy), 3000);
+          await wait(tester, const Duration(milliseconds: 700));
+        }
+        await back(tester);
+      },
+    );
+
+    // The map's own sheets (B5, B7): the filter and the streak card.
+    await flow(
+      'map_filter_sheet',
+      setup: () => tab(tester, AppIcons.navbarMap),
+      () async {
+        for (var i = 0; i < 2; i++) {
+          await tapAndWait(tester, icon(AppIcons.historyFilter));
+          await back(tester);
+        }
+      },
+    );
+
+    await flow(
+      'streak_card',
+      setup: () => tab(tester, AppIcons.navbarMap),
+      () async {
+        for (var i = 0; i < 2; i++) {
+          await tapAndWait(tester, find.byType(StreakPill));
           await back(tester);
         }
       },
