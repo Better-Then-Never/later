@@ -83,6 +83,10 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   static const _maxFrames = 10;
   bool _looping = false;
   final List<String> _frames = [];
+
+  /// Loop mode: a tap starts the loop and a second tap ends it (in photo
+  /// mode a long press still records one).
+  bool _loopMode = false;
   _CameraError? _error;
 
   /// 720p, or 1080p for high-quality photos (they go up at up to 2560 px).
@@ -664,6 +668,22 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     ),
                   ),
                 ),
+              // Photo or loop, until something is being taken.
+              if (FeatureFlags.loopCapsules && !_capturing)
+                Positioned(
+                  bottom: 196,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: _ModeSwitch(
+                      loop: _loopMode,
+                      onChanged: (loop) {
+                        unawaited(HapticFeedback.selectionClick());
+                        setState(() => _loopMode = loop);
+                      },
+                    ),
+                  ),
+                ),
               // How to record a loop, until one is being recorded.
               if (FeatureFlags.loopCapsules && !_capturing)
                 Positioned(
@@ -672,7 +692,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   right: 0,
                   child: ExcludeSemantics(
                     child: Text(
-                      l10n.capsulesCameraHoldForLoop,
+                      _loopMode
+                          ? l10n.capsulesCameraTapForLoop
+                          : l10n.capsulesCameraHoldForLoop,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontFamily: kAppFontFamily,
@@ -693,15 +715,22 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 child: Center(
                   child: Semantics(
                     button: true,
-                    label: FeatureFlags.loopCapsules
+                    label: !FeatureFlags.loopCapsules
+                        ? l10n.capsulesCameraTakePhoto
+                        : !_loopMode
                         ? l10n.capsulesCameraTakePhotoOrLoop
-                        : l10n.capsulesCameraTakePhoto,
+                        : _looping
+                        ? l10n.capsulesCameraStopLoop
+                        : l10n.capsulesCameraStartLoop,
                     child: GestureDetector(
-                      onTap: _capture,
-                      onLongPressStart: FeatureFlags.loopCapsules
+                      onTap: _loopMode
+                          ? () =>
+                                _looping ? _stopLoop() : unawaited(_startLoop())
+                          : _capture,
+                      onLongPressStart: FeatureFlags.loopCapsules && !_loopMode
                           ? (_) => unawaited(_startLoop())
                           : null,
-                      onLongPressEnd: FeatureFlags.loopCapsules
+                      onLongPressEnd: FeatureFlags.loopCapsules && !_loopMode
                           ? (_) => _stopLoop()
                           : null,
                       child: Stack(
@@ -985,4 +1014,59 @@ class _ExposurePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ExposurePainter old) => old.position != position;
+}
+
+/// "Photo | Loop" above the shutter: a dark pill, the chosen side white.
+class _ModeSwitch extends StatelessWidget {
+  const _ModeSwitch({required this.loop, required this.onChanged});
+
+  final bool loop;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    Widget side(String text, bool selected, bool value) => Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onChanged(value),
+        child: AnimatedContainer(
+          duration: AppMotion.of(context, AppMotion.fast),
+          curve: AppMotion.standardCurve,
+          constraints: const BoxConstraints(minHeight: 44, minWidth: 76),
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.onMedia : Colors.transparent,
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontFamily: kAppFontFamily,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: selected ? AppColors.mediaBlack : AppColors.onMedia,
+            ),
+          ),
+        ),
+      ),
+    );
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: AppColors.mediaScrim,
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          side(l10n.capsulesCameraModePhoto, !loop, false),
+          side(l10n.capsulesCameraModeLoop, loop, true),
+        ],
+      ),
+    );
+  }
 }

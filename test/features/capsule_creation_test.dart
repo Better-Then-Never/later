@@ -151,6 +151,40 @@ void main() {
     },
   );
 
+  test(
+    'a loop: frames removed and moved, its speed, two frames at least',
+    () async {
+      final repo = FakeCapsuleRepository();
+      final c = CapsuleCreationController(
+        ownerId: 'me',
+        imagePath: 'f0.jpg',
+        framePaths: const ['f0.jpg', 'f1.jpg', 'f2.jpg', 'f3.jpg'],
+        capsules: repo,
+        location: _FakeLocation(null),
+        currentLocation: CurrentLocation()..update(const GeoPosition(1, 2)),
+      );
+      c.moveFrame(3, 0); // f3 first
+      expect(c.framePaths, ['f3.jpg', 'f0.jpg', 'f1.jpg', 'f2.jpg']);
+      expect(c.imagePath, 'f3.jpg', reason: 'the first frame is the picture');
+      c.moveFrame(0, 2);
+      expect(c.framePaths, ['f0.jpg', 'f3.jpg', 'f1.jpg', 'f2.jpg']);
+      c
+        ..removeFrame(1)
+        ..removeFrame(1);
+      expect(c.framePaths, ['f0.jpg', 'f2.jpg']);
+      expect(c.canRemoveFrame, isFalse);
+      c.removeFrame(0);
+      expect(c.framePaths, hasLength(2), reason: 'still a loop');
+      c.frameDelayMs = 150;
+      expect(await c.save(), isNull);
+      final draft = repo.created.single;
+      expect(draft.framePaths, ['f0.jpg', 'f2.jpg']);
+      expect(draft.imagePath, 'f0.jpg');
+      expect(draft.frameDelayMs, 150);
+      c.dispose();
+    },
+  );
+
   test('co-authors reach the draft, five at most', () async {
     final repo = FakeCapsuleRepository();
     final c = build(repo, known: const GeoPosition(52.2297, 21.0122))

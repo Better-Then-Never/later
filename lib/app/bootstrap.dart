@@ -15,6 +15,7 @@ import '../firebase_options.dart';
 import 'app_scope.dart';
 import 'appearance/appearance_controller.dart';
 import 'later_app.dart';
+import '../data/firebase/firestore_mappers.dart';
 
 /// Opt-in local Firebase Emulator Suite, for development and testing only:
 /// `flutter run --dart-define=USE_FIREBASE_EMULATOR=true`.
@@ -76,6 +77,9 @@ Future<void> bootstrap() async {
       9199,
       automaticHostMapping: false,
     );
+    // Its download links are plain http: loop frames from it are accepted.
+    FirestoreMappers.storageEmulatorOrigin =
+        'http://$_firebaseEmulatorHost:9199/';
   }
 
   // No FirebaseMessaging.onBackgroundMessage handler on purpose: every push

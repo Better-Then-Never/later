@@ -54,6 +54,15 @@ abstract final class FirestoreMappers {
   static List<String> _stringList(Object? value) =>
       value is Iterable ? value.whereType<String>().toList() : const [];
 
+  /// The Storage emulator's address in emulator builds (bootstrap), whose
+  /// download links are plain http; null in real builds.
+  static String? storageEmulatorOrigin;
+
+  /// Loop frames are download links: https, or the local emulator's.
+  static bool _isFrameUrl(String url) =>
+      url.startsWith('https://') ||
+      (storageEmulatorOrigin != null && url.startsWith(storageEmulatorOrigin!));
+
   static UserProfile userProfile(String uid, Map<String, dynamic>? data) {
     if (data == null) return UserProfile.unknown(uid);
     return UserProfile(
@@ -127,9 +136,7 @@ abstract final class FirestoreMappers {
       allowComments: _bool(data['allowComments'], true),
       allowReactions: _bool(data['allowReactions'], true),
       locationPrecision: LocationPrecision.parse(data['locationPrecision']),
-      frames: _stringList(
-        data['frames'],
-      ).where((u) => u.startsWith('https://')).toList(),
+      frames: _stringList(data['frames']).where(_isFrameUrl).toList(),
       frameDelayMs: data['frameDelayMs'] is int
           ? (data['frameDelayMs'] as int).clamp(80, 2000)
           : Capsule.defaultFrameDelayMs,

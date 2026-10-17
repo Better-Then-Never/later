@@ -35,6 +35,7 @@ import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/capsule_image_preview.dart';
+import 'widgets/loop_frame_strip.dart';
 import 'widgets/capsule_submit_button.dart';
 import '../../../core/l10n/app_dates.dart';
 
@@ -114,6 +115,28 @@ class _CapsuleCreationView extends StatelessWidget {
       ],
     );
     if (chosen != null) controller.privacy = chosen;
+  }
+
+  static String _speedLabel(AppLocalizations l10n, int delayMs) =>
+      switch (delayMs) {
+        > Capsule.defaultFrameDelayMs => l10n.capsulesSpeedSlow,
+        < Capsule.defaultFrameDelayMs => l10n.capsulesSpeedFast,
+        _ => l10n.capsulesSpeedNormal,
+      };
+
+  Future<void> _chooseSpeed(BuildContext context) async {
+    final l10n = context.l10n;
+    final controller = context.read<CapsuleCreationController>();
+    final chosen = await showChoiceMenu<int>(
+      context,
+      title: l10n.capsulesCreationSpeed,
+      selected: controller.frameDelayMs,
+      choices: [
+        for (final delay in CapsuleCreationController.frameDelays)
+          MenuChoice(delay, _speedLabel(l10n, delay)),
+      ],
+    );
+    if (chosen != null) controller.frameDelayMs = chosen;
   }
 
   Future<void> _chooseColor(BuildContext context) async {
@@ -296,9 +319,9 @@ class _CapsuleCreationView extends StatelessWidget {
                                           ),
                                           child: LoopPicture(
                                             sources: controller.framePaths,
-                                            frameDelay: const Duration(
+                                            frameDelay: Duration(
                                               milliseconds:
-                                                  Capsule.defaultFrameDelayMs,
+                                                  controller.frameDelayMs,
                                             ),
                                           ),
                                         )
@@ -341,6 +364,11 @@ class _CapsuleCreationView extends StatelessWidget {
                             ],
                           ),
                         ),
+                        // A loop: its frames, to reorder or thin out.
+                        if (controller.isLoop) ...[
+                          const SizedBox(height: 10),
+                          LoopFrameStrip(controller: controller),
+                        ],
                         const SizedBox(height: 8),
                         DefaultText(
                           l10n.capsulesCreationSettings,
@@ -373,6 +401,19 @@ class _CapsuleCreationView extends StatelessWidget {
                                 leadingIconPath: AppIcons.capsuleTimer,
                                 onTap: () => _chooseOpenDate(context),
                               ),
+                              if (controller.isLoop)
+                                OptionsSettingsRow(
+                                  minVerticalPadding: 10,
+                                  title: l10n.capsulesCreationSpeed,
+                                  trailing: CapsuleCreationCycledInfo(
+                                    infoText: _speedLabel(
+                                      l10n,
+                                      controller.frameDelayMs,
+                                    ),
+                                  ),
+                                  leadingIconPath: AppIcons.capsuleTimer,
+                                  onTap: () => _chooseSpeed(context),
+                                ),
                               OptionsSettingsRow(
                                 minVerticalPadding: 10,
                                 title: l10n.capsulesCreationCoAuthors,

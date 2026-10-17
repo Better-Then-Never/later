@@ -429,7 +429,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesCameraHoldForLoop => 'Hold for a loop';
 
   @override
+  String get capsulesCameraModeLoop => 'Loop';
+
+  @override
+  String get capsulesCameraModePhoto => 'Photo';
+
+  @override
   String get capsulesCameraStartFailed => 'The camera could not be started';
+
+  @override
+  String get capsulesCameraStartLoop => 'Start the loop';
+
+  @override
+  String get capsulesCameraStopLoop => 'Stop the loop';
 
   @override
   String get capsulesCameraSwitch => 'Switch camera';
@@ -440,6 +452,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get capsulesCameraTakePhotoOrLoop =>
       'Take photo. Hold to record a loop';
+
+  @override
+  String get capsulesCameraTapForLoop => 'Tap to start, tap again to stop';
 
   @override
   String get capsulesCameraUnavailable => 'No camera available';
@@ -578,6 +593,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesCreationShowAuthorHint => 'Others see who left it';
 
   @override
+  String get capsulesCreationSpeed => 'Speed';
+
+  @override
   String get capsulesCreationSubmit => 'Create Capsule';
 
   @override
@@ -600,6 +618,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'The capsule was saved but not sent. Tap save to try again.';
 
   @override
+  String capsulesFrameRemove(int number) {
+    return 'Remove frame $number';
+  }
+
+  @override
+  String get capsulesFramesHint => 'hold and drag to move';
+
+  @override
+  String get capsulesFramesTitle => 'Frames';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Remove me as co-author';
 
   @override
@@ -607,6 +636,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesLinkNotShared => 'This capsule is not shared with you';
+
+  @override
+  String get capsulesLoopMark => 'Loop';
 
   @override
   String get capsulesOpenInMonth => 'In a month';
@@ -706,6 +738,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String capsulesShareMessage(String title, String link) {
     return 'A time capsule on Later: $title\n$link';
   }
+
+  @override
+  String get capsulesSpeedFast => 'Fast';
+
+  @override
+  String get capsulesSpeedNormal => 'Normal';
+
+  @override
+  String get capsulesSpeedSlow => 'Slow';
 
   @override
   String capsulesWith(String names) {

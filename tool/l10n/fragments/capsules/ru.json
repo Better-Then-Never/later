@@ -92,5 +92,18 @@
   "capsulesCoAuthorsDone": "Готово",
   "capsulesCoAuthorsTooMany": "Не больше {count} соавторов",
   "capsulesLeaveCoAuthors": "Убрать меня из соавторов",
-  "capsulesLeftCoAuthors": "Вы больше не соавтор"
+  "capsulesLeftCoAuthors": "Вы больше не соавтор",
+  "capsulesLoopMark": "Луп",
+  "capsulesCreationSpeed": "Скорость",
+  "capsulesSpeedSlow": "Медленно",
+  "capsulesSpeedNormal": "Обычно",
+  "capsulesSpeedFast": "Быстро",
+  "capsulesFramesTitle": "Кадры",
+  "capsulesFramesHint": "удерживайте и тяните",
+  "capsulesFrameRemove": "Убрать кадр {number}",
+  "capsulesCameraModePhoto": "Фото",
+  "capsulesCameraModeLoop": "Луп",
+  "capsulesCameraTapForLoop": "Нажмите, чтобы начать, и ещё раз — чтобы остановить",
+  "capsulesCameraStartLoop": "Начать луп",
+  "capsulesCameraStopLoop": "Остановить луп"
 }

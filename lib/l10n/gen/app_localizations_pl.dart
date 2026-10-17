@@ -454,7 +454,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesCameraHoldForLoop => 'Przytrzymaj, by nagrać pętlę';
 
   @override
+  String get capsulesCameraModeLoop => 'Pętla';
+
+  @override
+  String get capsulesCameraModePhoto => 'Zdjęcie';
+
+  @override
   String get capsulesCameraStartFailed => 'Nie udało się uruchomić aparatu';
+
+  @override
+  String get capsulesCameraStartLoop => 'Zacznij pętlę';
+
+  @override
+  String get capsulesCameraStopLoop => 'Zatrzymaj pętlę';
 
   @override
   String get capsulesCameraSwitch => 'Przełącz aparat';
@@ -465,6 +477,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get capsulesCameraTakePhotoOrLoop =>
       'Zrób zdjęcie. Przytrzymaj, by nagrać pętlę';
+
+  @override
+  String get capsulesCameraTapForLoop =>
+      'Dotknij, by zacząć, i jeszcze raz, by skończyć';
 
   @override
   String get capsulesCameraUnavailable => 'Brak dostępnego aparatu';
@@ -608,6 +624,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesCreationShowAuthorHint => 'Inni zobaczą, kto ją zostawił';
 
   @override
+  String get capsulesCreationSpeed => 'Tempo';
+
+  @override
   String get capsulesCreationSubmit => 'Utwórz kapsułę';
 
   @override
@@ -631,6 +650,17 @@ class AppLocalizationsPl extends AppLocalizations {
       'Kapsuła została zapisana, ale nie wysłana. Dotknij przycisku jeszcze raz, żeby spróbować ponownie.';
 
   @override
+  String capsulesFrameRemove(int number) {
+    return 'Usuń klatkę $number';
+  }
+
+  @override
+  String get capsulesFramesHint => 'przytrzymaj i przeciągnij';
+
+  @override
+  String get capsulesFramesTitle => 'Klatki';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Usuń mnie ze współautorów';
 
   @override
@@ -638,6 +668,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesLinkNotShared => 'Ta kapsuła nie jest ci udostępniona';
+
+  @override
+  String get capsulesLoopMark => 'Pętla';
 
   @override
   String get capsulesOpenInMonth => 'Za miesiąc';
@@ -737,6 +770,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String capsulesShareMessage(String title, String link) {
     return 'Kapsuła czasu w Later: $title\n$link';
   }
+
+  @override
+  String get capsulesSpeedFast => 'Szybko';
+
+  @override
+  String get capsulesSpeedNormal => 'Normalnie';
+
+  @override
+  String get capsulesSpeedSlow => 'Wolno';
 
   @override
   String capsulesWith(String names) {

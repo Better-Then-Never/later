@@ -351,7 +351,23 @@
   "@capsulesCameraHoldForLoop": {
     "description": "Under the shutter: hold it to record several frames played as a loop"
   },
+  "capsulesCameraModeLoop": "Loop",
+  "@capsulesCameraModeLoop": {
+    "description": "Camera mode switch: a loop of frames."
+  },
+  "capsulesCameraModePhoto": "Photo",
+  "@capsulesCameraModePhoto": {
+    "description": "Camera mode switch: a photo."
+  },
   "capsulesCameraStartFailed": "The camera could not be started",
+  "capsulesCameraStartLoop": "Start the loop",
+  "@capsulesCameraStartLoop": {
+    "description": "Screen reader label of the shutter in loop mode."
+  },
+  "capsulesCameraStopLoop": "Stop the loop",
+  "@capsulesCameraStopLoop": {
+    "description": "Screen reader label of the shutter while a loop records."
+  },
   "capsulesCameraSwitch": "Switch camera",
   "@capsulesCameraSwitch": {
     "description": "Accessibility label of the button that switches between the front and back camera."
@@ -363,6 +379,10 @@
   "capsulesCameraTakePhotoOrLoop": "Take photo. Hold to record a loop",
   "@capsulesCameraTakePhotoOrLoop": {
     "description": "Screen reader label of the shutter when loops are on"
+  },
+  "capsulesCameraTapForLoop": "Tap to start, tap again to stop",
+  "@capsulesCameraTapForLoop": {
+    "description": "Hint above the shutter in loop mode."
   },
   "capsulesCameraUnavailable": "No camera available",
   "@capsulesCameraUnavailable": {
@@ -483,6 +503,10 @@
   "@capsulesCreationShowAuthorHint": {
     "description": "Under the setting."
   },
+  "capsulesCreationSpeed": "Speed",
+  "@capsulesCreationSpeed": {
+    "description": "Creation row of a loop capsule: how fast its frames play."
+  },
   "capsulesCreationSubmit": "Create Capsule",
   "@capsulesCreationSubmit": {
     "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
@@ -505,6 +529,23 @@
   "@capsulesErrorSavedNotSent": {
     "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
   },
+  "capsulesFrameRemove": "Remove frame {number}",
+  "@capsulesFrameRemove": {
+    "description": "Screen reader label of the cross on a frame.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesFramesHint": "hold and drag to move",
+  "@capsulesFramesHint": {
+    "description": "After the frame count: how to reorder frames (lower case, it follows a dot)."
+  },
+  "capsulesFramesTitle": "Frames",
+  "@capsulesFramesTitle": {
+    "description": "Title of the frame strip of a loop being created."
+  },
   "capsulesLeaveCoAuthors": "Remove me as co-author",
   "@capsulesLeaveCoAuthors": {
     "description": "Capsule menu item for a co-author: take themselves off the capsule."
@@ -516,6 +557,10 @@
   "capsulesLinkNotShared": "This capsule is not shared with you",
   "@capsulesLinkNotShared": {
     "description": "Shown when a capsule link opens a capsule the user may not see (or that is gone)."
+  },
+  "capsulesLoopMark": "Loop",
+  "@capsulesLoopMark": {
+    "description": "Screen reader label of the mark on a loop capsule's picture."
   },
   "capsulesOpenInMonth": "In a month",
   "capsulesOpenInWeek": "In a week",
@@ -612,6 +657,18 @@
         "example": "https://later-da778.web.app/?capsuleId=abc"
       }
     }
+  },
+  "capsulesSpeedFast": "Fast",
+  "@capsulesSpeedFast": {
+    "description": "Loop speed: 150 ms per frame."
+  },
+  "capsulesSpeedNormal": "Normal",
+  "@capsulesSpeedNormal": {
+    "description": "Loop speed: 300 ms per frame (default)."
+  },
+  "capsulesSpeedSlow": "Slow",
+  "@capsulesSpeedSlow": {
+    "description": "Loop speed: 500 ms per frame."
   },
   "capsulesWith": "With {names}",
   "@capsulesWith": {

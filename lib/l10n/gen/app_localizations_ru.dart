@@ -453,7 +453,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCameraHoldForLoop => 'Удерживайте для лупа';
 
   @override
+  String get capsulesCameraModeLoop => 'Луп';
+
+  @override
+  String get capsulesCameraModePhoto => 'Фото';
+
+  @override
   String get capsulesCameraStartFailed => 'Не удалось запустить камеру';
+
+  @override
+  String get capsulesCameraStartLoop => 'Начать луп';
+
+  @override
+  String get capsulesCameraStopLoop => 'Остановить луп';
 
   @override
   String get capsulesCameraSwitch => 'Сменить камеру';
@@ -464,6 +476,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get capsulesCameraTakePhotoOrLoop =>
       'Сделать фото. Удерживайте, чтобы снять луп';
+
+  @override
+  String get capsulesCameraTapForLoop =>
+      'Нажмите, чтобы начать, и ещё раз — чтобы остановить';
 
   @override
   String get capsulesCameraUnavailable => 'Камера недоступна';
@@ -607,6 +623,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCreationShowAuthorHint => 'Другие увидят, кто её оставил';
 
   @override
+  String get capsulesCreationSpeed => 'Скорость';
+
+  @override
   String get capsulesCreationSubmit => 'Создать капсулу';
 
   @override
@@ -629,6 +648,17 @@ class AppLocalizationsRu extends AppLocalizations {
       'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
 
   @override
+  String capsulesFrameRemove(int number) {
+    return 'Убрать кадр $number';
+  }
+
+  @override
+  String get capsulesFramesHint => 'удерживайте и тяните';
+
+  @override
+  String get capsulesFramesTitle => 'Кадры';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Убрать меня из соавторов';
 
   @override
@@ -636,6 +666,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesLinkNotShared => 'Эта капсула вам не открыта';
+
+  @override
+  String get capsulesLoopMark => 'Луп';
 
   @override
   String get capsulesOpenInMonth => 'Через месяц';
@@ -735,6 +768,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String capsulesShareMessage(String title, String link) {
     return 'Капсула времени в Later: $title\n$link';
   }
+
+  @override
+  String get capsulesSpeedFast => 'Быстро';
+
+  @override
+  String get capsulesSpeedNormal => 'Обычно';
+
+  @override
+  String get capsulesSpeedSlow => 'Медленно';
 
   @override
   String capsulesWith(String names) {

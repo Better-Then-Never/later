@@ -331,5 +331,62 @@
   "capsulesLeftCoAuthors": "You are no longer a co-author",
   "@capsulesLeftCoAuthors": {
     "description": "Shown after the user took themselves off a capsule."
+  },
+  "capsulesLoopMark": "Loop",
+  "@capsulesLoopMark": {
+    "description": "Screen reader label of the mark on a loop capsule's picture."
+  },
+  "capsulesCreationSpeed": "Speed",
+  "@capsulesCreationSpeed": {
+    "description": "Creation row of a loop capsule: how fast its frames play."
+  },
+  "capsulesSpeedSlow": "Slow",
+  "@capsulesSpeedSlow": {
+    "description": "Loop speed: 500 ms per frame."
+  },
+  "capsulesSpeedNormal": "Normal",
+  "@capsulesSpeedNormal": {
+    "description": "Loop speed: 300 ms per frame (default)."
+  },
+  "capsulesSpeedFast": "Fast",
+  "@capsulesSpeedFast": {
+    "description": "Loop speed: 150 ms per frame."
+  },
+  "capsulesFramesTitle": "Frames",
+  "@capsulesFramesTitle": {
+    "description": "Title of the frame strip of a loop being created."
+  },
+  "capsulesFramesHint": "hold and drag to move",
+  "@capsulesFramesHint": {
+    "description": "After the frame count: how to reorder frames (lower case, it follows a dot)."
+  },
+  "capsulesFrameRemove": "Remove frame {number}",
+  "@capsulesFrameRemove": {
+    "description": "Screen reader label of the cross on a frame.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesCameraModePhoto": "Photo",
+  "@capsulesCameraModePhoto": {
+    "description": "Camera mode switch: a photo."
+  },
+  "capsulesCameraModeLoop": "Loop",
+  "@capsulesCameraModeLoop": {
+    "description": "Camera mode switch: a loop of frames."
+  },
+  "capsulesCameraTapForLoop": "Tap to start, tap again to stop",
+  "@capsulesCameraTapForLoop": {
+    "description": "Hint above the shutter in loop mode."
+  },
+  "capsulesCameraStartLoop": "Start the loop",
+  "@capsulesCameraStartLoop": {
+    "description": "Screen reader label of the shutter in loop mode."
+  },
+  "capsulesCameraStopLoop": "Stop the loop",
+  "@capsulesCameraStopLoop": {
+    "description": "Screen reader label of the shutter while a loop records."
   }
 }

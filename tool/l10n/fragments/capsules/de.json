@@ -92,5 +92,18 @@
   "capsulesCoAuthorsDone": "Fertig",
   "capsulesCoAuthorsTooMany": "Höchstens {count} Mitautoren",
   "capsulesLeaveCoAuthors": "Mich als Mitautor entfernen",
-  "capsulesLeftCoAuthors": "Du bist kein Mitautor mehr"
+  "capsulesLeftCoAuthors": "Du bist kein Mitautor mehr",
+  "capsulesLoopMark": "Loop",
+  "capsulesCreationSpeed": "Tempo",
+  "capsulesSpeedSlow": "Langsam",
+  "capsulesSpeedNormal": "Normal",
+  "capsulesSpeedFast": "Schnell",
+  "capsulesFramesTitle": "Bilder",
+  "capsulesFramesHint": "halten und ziehen",
+  "capsulesFrameRemove": "Bild {number} entfernen",
+  "capsulesCameraModePhoto": "Foto",
+  "capsulesCameraModeLoop": "Loop",
+  "capsulesCameraTapForLoop": "Tippen zum Starten, nochmal zum Stoppen",
+  "capsulesCameraStartLoop": "Loop starten",
+  "capsulesCameraStopLoop": "Loop stoppen"
 }

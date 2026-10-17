@@ -126,6 +126,13 @@ describe('capsule images', () => {
     await assertFails(uploadBytes(frame(2), new Uint8Array(3 * 1024 * 1024 + 1), jpeg));
   });
 
+  test('a small thumbnail next to the photo', async () => {
+    const thumb = (who = 'alice') => ref(storage(who), 'userdata/alice/capsules/c4/thumb.jpg');
+    await assertSucceeds(uploadBytes(thumb(), bytes(), jpeg));
+    await assertFails(uploadBytes(thumb('bob'), bytes(), jpeg));
+    await assertFails(uploadBytes(thumb(), new Uint8Array(512 * 1024 + 1), jpeg));
+  });
+
   test('everything else is closed', async () => {
     await assertFails(uploadBytes(ref(storage('alice'), 'chats/x.jpg'), bytes(), jpeg));
     await assertFails(uploadBytes(ref(storage('alice'), 'public/x.jpg'), bytes(), jpeg));

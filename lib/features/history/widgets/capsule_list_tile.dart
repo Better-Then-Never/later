@@ -23,6 +23,7 @@ import '../capsule_labels.dart';
 import '../history_controller.dart';
 import '../../../core/l10n/app_dates.dart';
 import '../../settings/device_settings_store.dart';
+import '../../../shared/widgets/loop_mark.dart';
 
 /// One capsule in the History list.
 ///
@@ -76,10 +77,20 @@ class CapsuleListTile extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(17),
-                    child: _Thumbnail(
-                      url: capsule.imageUrl,
-                      width: screen.width * 0.2,
-                      height: screen.height * 0.15,
+                    child: Stack(
+                      children: [
+                        _Thumbnail(
+                          url: capsule.thumbUrl ?? capsule.imageUrl,
+                          width: screen.width * 0.2,
+                          height: screen.height * 0.15,
+                        ),
+                        if (capsule.isLoop)
+                          const Positioned(
+                            left: 6,
+                            bottom: 6,
+                            child: LoopMark(),
+                          ),
+                      ],
                     ),
                   ),
                   SizedBox(width: screen.width * 0.04),

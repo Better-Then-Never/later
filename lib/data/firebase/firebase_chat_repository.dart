@@ -387,7 +387,9 @@ class FirebaseChatRepository implements ChatRepository {
       'text': capsule.title,
       'type': ChatMessageType.capsule.name,
       'capsuleId': capsule.id,
-      if (capsule.imageUrl != null) 'imageUrl': capsule.imageUrl,
+      // The small copy: the bubble is small; the capsule opens in full.
+      if ((capsule.thumbUrl ?? capsule.imageUrl) case final url?)
+        'imageUrl': url,
     },
   );
 

@@ -25,8 +25,8 @@ import '../outbox/capsule_outbox.dart';
 class CapsuleCreationController extends ChangeNotifier {
   CapsuleCreationController({
     required this.ownerId,
-    required this.imagePath,
-    this.framePaths = const [],
+    required String imagePath,
+    List<String> framePaths = const [],
     required CapsuleRepository capsules,
     required LocationService location,
     required CurrentLocation currentLocation,
@@ -41,6 +41,9 @@ class CapsuleCreationController extends ChangeNotifier {
     this.saveToGallery = false,
     GalleryService? gallery,
   }) : assert(recipientId == null || chats != null),
+       _photoPath = imagePath,
+       _frames = List.of(framePaths),
+       _taken = {imagePath, ...framePaths},
        _outbox = outbox,
        _gallery = gallery,
        _precision = locationPrecision,
@@ -60,12 +63,47 @@ class CapsuleCreationController extends ChangeNotifier {
   }
 
   final String ownerId;
-  final String imagePath;
+  final String _photoPath;
+  final List<String> _frames;
+
+  /// Every file the camera made for this capsule, removed frames too, so
+  /// they are all deleted at the end.
+  final Set<String> _taken;
+
+  /// The photo, or the first frame of a loop (its picture in lists).
+  String get imagePath => isLoop ? _frames.first : _photoPath;
 
   /// The frames of a loop capsule (the first is [imagePath]); empty for a
   /// photo.
-  final List<String> framePaths;
-  bool get isLoop => framePaths.length > 1;
+  List<String> get framePaths => List.unmodifiable(_frames);
+  bool get isLoop => _frames.length > 1;
+
+  /// A loop keeps at least two frames.
+  bool get canRemoveFrame => _frames.length > 2;
+
+  void removeFrame(int index) {
+    if (!canRemoveFrame || index < 0 || index >= _frames.length) return;
+    _frames.removeAt(index);
+    notifyListeners();
+  }
+
+  /// Moves frame [from] to [to] (indexes as ReorderableListView gives them).
+  void moveFrame(int from, int to) {
+    if (from < 0 || from >= _frames.length) return;
+    final frame = _frames.removeAt(from);
+    _frames.insert(to > from ? to - 1 : to, frame);
+    notifyListeners();
+  }
+
+  /// Pause between frames: slow, normal (the default) or fast.
+  static const frameDelays = [500, Capsule.defaultFrameDelayMs, 150];
+  int _frameDelayMs = Capsule.defaultFrameDelayMs;
+  int get frameDelayMs => _frameDelayMs;
+
+  set frameDelayMs(int value) {
+    _frameDelayMs = value.clamp(80, 2000);
+    notifyListeners();
+  }
 
   /// Keeps the capsule on the phone when there is no connection (F-26).
   final CapsuleOutbox? _outbox;
@@ -250,6 +288,7 @@ class CapsuleCreationController extends ChangeNotifier {
         highQuality: highQuality,
         imagePath: imagePath,
         framePaths: framePaths,
+        frameDelayMs: _frameDelayMs,
         openAt: _openAt,
         recipientId: recipientId,
         capturedAt: capturedAt,
@@ -314,7 +353,7 @@ class CapsuleCreationController extends ChangeNotifier {
   }
 
   Future<void> _deleteTempPhoto() async {
-    for (final path in {imagePath, ...framePaths}) {
+    for (final path in _taken) {
       try {
         final file = File(path);
         if (await file.exists()) await file.delete();

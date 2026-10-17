@@ -438,8 +438,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesCameraHoldForLoop => 'Halten für einen Loop';
 
   @override
+  String get capsulesCameraModeLoop => 'Loop';
+
+  @override
+  String get capsulesCameraModePhoto => 'Foto';
+
+  @override
   String get capsulesCameraStartFailed =>
       'Die Kamera konnte nicht gestartet werden';
+
+  @override
+  String get capsulesCameraStartLoop => 'Loop starten';
+
+  @override
+  String get capsulesCameraStopLoop => 'Loop stoppen';
 
   @override
   String get capsulesCameraSwitch => 'Kamera wechseln';
@@ -450,6 +462,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get capsulesCameraTakePhotoOrLoop =>
       'Foto aufnehmen. Halten für einen Loop';
+
+  @override
+  String get capsulesCameraTapForLoop =>
+      'Tippen zum Starten, nochmal zum Stoppen';
 
   @override
   String get capsulesCameraUnavailable => 'Keine Kamera verfügbar';
@@ -592,6 +608,9 @@ class AppLocalizationsDe extends AppLocalizations {
       'Andere sehen, wer sie hinterlassen hat';
 
   @override
+  String get capsulesCreationSpeed => 'Tempo';
+
+  @override
   String get capsulesCreationSubmit => 'Kapsel erstellen';
 
   @override
@@ -616,6 +635,17 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Kapsel wurde gespeichert, aber nicht gesendet. Tippe noch einmal auf den Button, um es erneut zu versuchen.';
 
   @override
+  String capsulesFrameRemove(int number) {
+    return 'Bild $number entfernen';
+  }
+
+  @override
+  String get capsulesFramesHint => 'halten und ziehen';
+
+  @override
+  String get capsulesFramesTitle => 'Bilder';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Mich als Mitautor entfernen';
 
   @override
@@ -623,6 +653,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get capsulesLinkNotShared => 'Diese Kapsel ist nicht mit dir geteilt';
+
+  @override
+  String get capsulesLoopMark => 'Loop';
 
   @override
   String get capsulesOpenInMonth => 'In einem Monat';
@@ -723,6 +756,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String capsulesShareMessage(String title, String link) {
     return 'Eine Zeitkapsel in Later: $title\n$link';
   }
+
+  @override
+  String get capsulesSpeedFast => 'Schnell';
+
+  @override
+  String get capsulesSpeedNormal => 'Normal';
+
+  @override
+  String get capsulesSpeedSlow => 'Langsam';
 
   @override
   String capsulesWith(String names) {

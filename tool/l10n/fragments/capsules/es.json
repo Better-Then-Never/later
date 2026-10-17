@@ -92,5 +92,18 @@
   "capsulesCoAuthorsDone": "Listo",
   "capsulesCoAuthorsTooMany": "Hasta {count} coautores",
   "capsulesLeaveCoAuthors": "Quitarme como coautor",
-  "capsulesLeftCoAuthors": "Ya no eres coautor"
+  "capsulesLeftCoAuthors": "Ya no eres coautor",
+  "capsulesLoopMark": "Bucle",
+  "capsulesCreationSpeed": "Velocidad",
+  "capsulesSpeedSlow": "Lenta",
+  "capsulesSpeedNormal": "Normal",
+  "capsulesSpeedFast": "Rápida",
+  "capsulesFramesTitle": "Fotogramas",
+  "capsulesFramesHint": "mantén y arrastra",
+  "capsulesFrameRemove": "Quitar fotograma {number}",
+  "capsulesCameraModePhoto": "Foto",
+  "capsulesCameraModeLoop": "Bucle",
+  "capsulesCameraTapForLoop": "Toca para empezar y otra vez para parar",
+  "capsulesCameraStartLoop": "Empezar el bucle",
+  "capsulesCameraStopLoop": "Parar el bucle"
 }

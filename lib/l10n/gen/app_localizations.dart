@@ -734,11 +734,35 @@ abstract class AppLocalizations {
   /// **'Hold for a loop'**
   String get capsulesCameraHoldForLoop;
 
+  /// Camera mode switch: a loop of frames.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop'**
+  String get capsulesCameraModeLoop;
+
+  /// Camera mode switch: a photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get capsulesCameraModePhoto;
+
   /// No description provided for @capsulesCameraStartFailed.
   ///
   /// In en, this message translates to:
   /// **'The camera could not be started'**
   String get capsulesCameraStartFailed;
+
+  /// Screen reader label of the shutter in loop mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the loop'**
+  String get capsulesCameraStartLoop;
+
+  /// Screen reader label of the shutter while a loop records.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop the loop'**
+  String get capsulesCameraStopLoop;
 
   /// Accessibility label of the button that switches between the front and back camera.
   ///
@@ -757,6 +781,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Take photo. Hold to record a loop'**
   String get capsulesCameraTakePhotoOrLoop;
+
+  /// Hint above the shutter in loop mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to start, tap again to stop'**
+  String get capsulesCameraTapForLoop;
 
   /// Shown on the camera screen when the phone has no camera.
   ///
@@ -986,6 +1016,12 @@ abstract class AppLocalizations {
   /// **'Others see who left it'**
   String get capsulesCreationShowAuthorHint;
 
+  /// Creation row of a loop capsule: how fast its frames play.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get capsulesCreationSpeed;
+
   /// Button at the bottom of the creation screen that saves the new capsule. Keep it short.
   ///
   /// In en, this message translates to:
@@ -1028,6 +1064,24 @@ abstract class AppLocalizations {
   /// **'The capsule was saved but not sent. Tap save to try again.'**
   String get capsulesErrorSavedNotSent;
 
+  /// Screen reader label of the cross on a frame.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove frame {number}'**
+  String capsulesFrameRemove(int number);
+
+  /// After the frame count: how to reorder frames (lower case, it follows a dot).
+  ///
+  /// In en, this message translates to:
+  /// **'hold and drag to move'**
+  String get capsulesFramesHint;
+
+  /// Title of the frame strip of a loop being created.
+  ///
+  /// In en, this message translates to:
+  /// **'Frames'**
+  String get capsulesFramesTitle;
+
   /// Capsule menu item for a co-author: take themselves off the capsule.
   ///
   /// In en, this message translates to:
@@ -1045,6 +1099,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This capsule is not shared with you'**
   String get capsulesLinkNotShared;
+
+  /// Screen reader label of the mark on a loop capsule's picture.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop'**
+  String get capsulesLoopMark;
 
   /// No description provided for @capsulesOpenInMonth.
   ///
@@ -1219,6 +1279,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A time capsule on Later: {title}\n{link}'**
   String capsulesShareMessage(String title, String link);
+
+  /// Loop speed: 150 ms per frame.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get capsulesSpeedFast;
+
+  /// Loop speed: 300 ms per frame (default).
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get capsulesSpeedNormal;
+
+  /// Loop speed: 500 ms per frame.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow'**
+  String get capsulesSpeedSlow;
 
   /// Line on the user's own capsule (or one they co-authored) naming the others who made it.
   ///

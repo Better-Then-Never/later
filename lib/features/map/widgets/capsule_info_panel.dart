@@ -12,6 +12,7 @@ import '../../../core/l10n/app_dates.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import 'capsule_preview_card.dart';
+import '../../../shared/widgets/loop_mark.dart';
 
 /// Small window above a marker: the capsule's photo (once it is open; its
 /// pin while locked, so nothing is given away), title, creation date,
@@ -228,7 +229,7 @@ class _Thumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final url = capsule.imageUrl;
+    final url = capsule.thumbUrl ?? capsule.imageUrl;
     if (isOpen && url != null) {
       return Hero(
         tag: CapsulePreviewCard.photoHeroTag(capsule),
@@ -236,7 +237,14 @@ class _Thumbnail extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadii.m),
           child: SizedBox.square(
             dimension: size,
-            child: AppNetworkImage(url: url),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                AppNetworkImage(url: url),
+                if (capsule.isLoop)
+                  const Positioned(left: 6, bottom: 6, child: LoopMark()),
+              ],
+            ),
           ),
         ),
       );
