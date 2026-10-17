@@ -13,6 +13,7 @@ written for the owner.
 | 4 | Group chats: `chats/g_{id}` rules, invites, `acceptGroupInvite`, group pushes, account cleanup | rules, functions | unaffected (never see groups) | rules + functions | rules, one new function (gcloud), functions |
 | 5 | Voice messages (rules, `.m4a` storage, cleanup), forwarded mark, unread drop on delete, `pinnedChats`, `sendMessageReactionNotification` | rules, storage rules, functions | unaffected | rules + functions | rules, one new function (gcloud), functions |
 | 6 | Capsules: quick reply (`capsuleRef` on messages), co-authors (rules, index, notifications), share links on the web page; the groups index | rules, indexes, functions, hosting | unaffected (see section 6) | rules 75/75, functions 52/52 | rules, indexes, functions, hosting |
+| 7 | Profiles: about, name search (nameLower), pinned friends, privacy switches; contacts index and requests (flagged) | rules, functions, data | unaffected | rules, functions 55/55 | rules; two new functions (gcloud) only with the contacts flag; optional backfill |
 
 ## 1. Pushes are logged, not sent, in the Functions emulator
 `functions/index.js`: when `FUNCTIONS_EMULATOR === 'true'` (set only by the Firebase emulator), `services()`
@@ -190,3 +191,44 @@ functions 52/52 (co-author notifications).
 4. `firebase deploy --only hosting --project later-da778` (the share links; without it a shared link opens the
    profile page's "Join Later" without opening the capsule).
 5. Release the app.
+
+## 7. Profiles (Part B3)
+**Firestore rules**:
+- `users/{uid}`, owner update: `about` (a string of at most 100 characters) and `nameLower` (only equal to
+  `name.lower()` when written; may be removed; a rename without it is still accepted, so older apps keep working).
+- settings: `pinnedFriends` (a list of at most 10); `privacy.findByName` and `privacy.findByContacts` (booleans).
+- `contactIndex/{hash}`: closed to apps (functions only).
+- `contactMatches/{uid}`: the owner writes `{hashes (≤ 1000), at (server time), status: 'pending'}` at most once an
+  hour, reads it and may delete it.
+
+**Functions** (`functions/lib/contacts.js`, new):
+- `syncContactIndex` (new; `users/{uid}/settings/app` written): when `privacy.findByContacts` changes, adds or
+  removes the user's entry: the hash of their **verified** Auth email. Runs on every settings write but reads
+  nothing unless that switch changed.
+- `matchContacts` (new; `contactMatches/{uid}` written): answers a pending request in place and drops the hashes.
+  Reads at most 10 batched `getAll` of 100 index entries, then three small reads per person found.
+- `cleanupDeletedAccount` (changed): also removes the user's index entry and last request.
+
+**Data**: the seed writes `nameLower`; `tools/admin/backfill-name-search.js` (optional) writes it for accounts that
+have not opened the new version yet, skipping anyone who switched "Find me by name" off (tried on the emulator:
+written 1, up to date 103).
+
+**Old apps**: unaffected; they never write the new fields (a rename by an old app leaves `nameLower` behind, which
+the new app corrects on its next start).
+
+**Cost**: the name search is a bounded prefix query (20); the contacts look-up is capped by the rules (one an hour).
+
+**Tests**: rules (about and name search, pinned friends, privacy switches, contacts index and requests; the final
+count is in FEEL_QA.md), functions 55/55.
+
+**Deploy (owner)**:
+1. `firebase deploy --only firestore:rules --project later-da778`
+2. Only when the contacts flag is to be switched on: create `syncContactIndex`
+   (`--trigger-event-filters=type=google.cloud.firestore.document.v1.written`,
+   `--trigger-event-filters-path-pattern=document='users/{uid}/settings/app'`) and `matchContacts`
+   (`document='contactMatches/{uid}'`) once with gcloud like the other Firestore triggers (DEPLOY.md section 2),
+   then `firebase deploy --only functions --project later-da778`. The service account needs Firebase Auth read
+   (it already reads users for account cleanup).
+3. Optional: `cd tools/admin && node backfill-name-search.js --dry-run --project later-da778 --production`, then
+   without `--dry-run`.
+4. Release the app.

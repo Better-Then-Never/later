@@ -32,6 +32,14 @@ Anything listed here was **not** checked on the device, or could not be done in 
   `deleteChatFile` and **the existing account deletion's file cleanup** fail in production until the grant in
   BACKEND_CHANGES.md §2 is made.
 
+- **Contacts suggestions (flagged off)**: the look-up was never run on a phone: the reference phone's address book
+  is the owner's own, and the manifest has no `READ_CONTACTS` yet (a declared-but-unused contacts permission is a
+  store-review and privacy question). Before the flag goes on: add the permission, run it on a test phone, deploy
+  the two functions (BACKEND_CHANGES.md §7). iOS has no native reader yet. Matching is by verified email; matching
+  by phone number would need phone verification (an owner decision).
+- **Name search** finds prefixes of the whole name only ("anna f", not "fischer"); existing accounts are found by name
+  after they open the new version or after the optional backfill (BACKEND_CHANGES.md §7).
+
 ## Owner decisions
 - **Illustrated sticker packs** need artwork (a designer or licensed packs). Big emoji work as stickers for now.
 - **Russian text uses the phone's font.** Inria Sans (the app font) has no Cyrillic, so every Russian string falls

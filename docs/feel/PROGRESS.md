@@ -12,7 +12,7 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
 | Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
-| Part B (B1..B7) | B1 and B2 done (FEATURES_B.md); B3 next |
+| Part B (B1..B7) | B1, B2, B3 done (FEATURES_B.md; contacts flagged); B4 next |
 
 ## Log
 ### 2026-10-17
@@ -82,3 +82,11 @@ on #78. Never merged, never deployed. Resume here.
 - Incident, again: the rules tests next to the dev emulators took them down (their port cleanup stopped a process
   the dev emulators used). The emulators keep no data, so a re-seed followed. RIG.md says to stop them first;
   the helper now refuses to run while 8080 is busy.
+- B3 done: profile tab redesign (about me, capsules in numbers, pinned and recent friends with quick actions, pins
+  synced), people search by name (and from the chat search), settings gaps (units, photo quality with the 1080p
+  camera, save to gallery, sign-in methods, download my data), contacts suggestions behind a flag. Functions 55/55,
+  Flutter 366.
+- Someone else used the phone during B3 (a group "Debils" created at 20:15 and pins changed at 20:27 while no adb
+  command ran). Nothing of it was undone; the checks above were repeated where they overlapped.
+- Mistake caught: a test file of the same name already existed (profile_test.dart) and was overwritten; restored from
+  git, the new tests live in profile_tab_test.dart.

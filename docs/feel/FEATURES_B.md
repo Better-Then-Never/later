@@ -207,3 +207,82 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
 | Creation page blank, button in the middle | Part A's save-morph button wrapped itself in a `Center`, which filled the bottom bar | `heightFactor: 1`; the button is its own widget with a test that fails without the fix |
 | No toast after a card closed itself ("Sent to Anna", "not shared", leaving) | the toast looked for an Overlay above the root navigator | the service uses the navigator's overlay; test |
 | Comment notification: error screen instead of the thread | the dialog started the sheet's wait in `initState`, reading MediaQuery | started once in `didChangeDependencies`; test that fails without the fix |
+
+## B3. Profiles
+
+### Profile tab redesign: ON
+- **What**: under the header, the user's "about me" line (or "Add a few words about you", which opens its editor);
+  a capsules card with three numbers (capsules, places about 5 km apart, made with friends; a tap opens My
+  capsules) and two green buttons "+ For friends" / "+ For everyone" that open the camera with that visibility;
+  Add friends; the friends card; achievements. The two odd rows "To the map | For friends / For everyone" are gone.
+- **Tests**: `profile_tab_test.dart` (the counts, about me).
+- **Phone** (Russian, light): the tab, the numbers with Russian plurals ("102 капсулы", "69 мест"), the buttons.
+
+### Pinned and recent friends with quick actions: ON (F-56)
+- **What**: the friends card shows "Friends · 60", a pin button (choose pinned) and "All". Five friends with first
+  names: the pinned ones (green pin mark) first, then the people the user chatted with lately, then the rest in a
+  stable order (the random fill is gone). A tap opens quick actions: Message, Send a capsule, Profile, Pin/Unpin;
+  a long press pins or unpins with a toast. At most three pins.
+- **How**: pins moved from one phone (SharedPreferences) to the settings document (`pinnedFriends`), so they follow
+  the account; pins kept on a phone move over once. Recent friends come from the two-person chats already loaded.
+- **Tests**: `friends_test.dart` (order, former friends dropped, the limit, the one-time move).
+- **Phone**: quick actions for Bob, "Закрепить", a long press pinned Hugo ("Hugo Garcia: закреплено"), pin marks.
+
+### About me: ON (F-59, F-85)
+- **What**: Settings > Customize profile > About me (100 characters, a counter), also reached from the profile;
+  shown under the header on the user's own profile and on friends' and strangers' profiles.
+- **How**: `users/{uid}.about` (rules: a string of at most 100 characters; empty deletes it).
+- **Tests**: `profile_tab_test.dart`, rules ("a few words about yourself").
+- **Phone**: written on the phone ("Collecting sunsets in Warsaw"), shown on the profile. The Save button first
+  sat under the keyboard (a bottom bar); it now follows the field. The name page has the same bottom bar
+  (IDEAS_NOT_DONE.md).
+
+### People search by name, from the chat search too: ON (F-57)
+- **What**: Add friends searches names as well as @usernames ("Name or @username"); usernames first, never the
+  user or someone they blocked. The Messages search adds "Find people: «anna»" under the chats it found (or instead
+  of "nothing found"), which opens Add friends with that text.
+- **How**: a lower-case copy of the name (`users/{uid}.nameLower`), kept by the app (`SearchNameSync`): written
+  when missing or stale, removed when Settings > Privacy > "Find me by name" is off (on by default; the username
+  always finds the user). The rules accept it only equal to the name in lower case; older apps rename without it
+  (the search then lags until the new app runs). Prefix search on the whole name ("anna f…", not "fischer").
+- **Tests**: `friends_test.dart` (by name and username, never yourself), `profile_tab_test.dart` (the sync writes
+  once, follows the switch, never indexes the loading placeholder), rules.
+- **Phone**: the sync wrote "alice walker" for the signed-in account; Messages search "anna" → "Найти людей:
+  «anna»" → Add friends found "Anna Rossi" by name. The seed now writes `nameLower` (the rig's people were
+  written by the seed, not by the app).
+- **Not done**: search by the last name alone (needs a word index); existing accounts are found by name only after
+  they open the new version (or after the owner backfills, BACKEND_CHANGES.md §7).
+
+### Report and block strangers: ON
+- See B2 "Report everywhere": a stranger's profile now has Report and Block.
+
+### Settings gaps
+| Gap | State | How | Checked |
+|---|---|---|---|
+| Sign-in methods | ON | Account shows "Email and password · Google" from Auth | phone ("Email and password") |
+| Distance unit | ON | Map and camera > Distances: kilometres or miles; My capsules says "3.4 mi from you" | test; phone ("6.8 mi from you") |
+| Photo quality | ON | Map and camera > Photos: Standard (1600 px, JPEG 85) or High (2560 px, JPEG 90, within the 10 MB rule); kept for waiting capsules. The camera opens at 1080p for High (720p before, so High alone changed nothing) | test; phone (upload 720×1280 at Standard, 1080×1920 at High) |
+| Save to gallery | ON (Android 10+) | Map and camera > Photos: capsule photos also go to Pictures/Later once the capsule is made or kept for later, through the app's own channel (no permission on Android 10+; older phones answer no); hidden on iOS | test (mocked channel); phone (Pictures/Later/Later_<id>.jpg after two capsules) |
+| Download my data | ON | Data and storage: profile, settings, capsules (photos as links), friends, blocks and chats (last message) as one JSON file in the share sheet | test; phone (share sheet with later-data-2026-10-17.json: 104 capsules, 60 friends, 23 chats) |
+| Find me by name | ON | Privacy (see the search above) | test, rules |
+| Mobile data for uploads | moved to B4 | belongs with the background uploads | |
+| Who can message me | not needed | chats are between friends only | |
+| Last seen | not built | the app keeps no presence | |
+
+### Friend suggestions from contacts: FLAGGED (`FeatureFlags.contactSuggestions = false`)
+- **What**: Add friends > "From your contacts" explains what is sent and kept, then shows the people found (with the
+  usual add and hide buttons). Privacy > "Found by people with my email" lets others find the user this way.
+- **How**: matching by email, not phone number (accounts have no numbers and nothing could verify one). The phone
+  reads only its contacts' email addresses and hashes them in native code (`ContactsChannel.kt`: SHA-256 of a
+  versioned salt and the lower-case address), so no contact reaches Dart or the server. One request an hour
+  (`contactMatches/{uid}`, rules), at most 1000 hashes; the function answers with people who still allow it, never
+  the user, no blocks either way, and drops the hashes. The index (`contactIndex/{hash}`) holds only the verified
+  email of each user who opted in, written by a function from Auth.
+- **Tests**: functions (`contacts.test.js`: hash, index on/off, unverified emails refused, matching with blocks and
+  former opt-ins), rules (index closed, one request an hour, own only), `contact_suggestions_test.dart`.
+- **Phone** (flag switched on locally, not committed): the button and the explanation sheet; "Look for friends"
+  answered "Later needs access to your contacts for this" (the manifest has no `READ_CONTACTS`). The look-up itself
+  was not run: this phone's address book is the owner's own (BLOCKERS.md).
+- **To switch on**: add `READ_CONTACTS` to the Android manifest (and the Play data safety form), run the look-up
+  on a test phone, deploy the rules and the two functions (BACKEND_CHANGES.md §7), then set the flag. iOS needs a
+  native reader (only the Android one exists).
