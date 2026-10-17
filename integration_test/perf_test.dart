@@ -470,6 +470,59 @@ void main() {
       },
     );
 
+    // A real two-finger pinch on the preview, then the zoom the stops show;
+    // and the flash cycle, step by step (by its screen-reader labels).
+    await flow(
+      'camera_pinch',
+      setup: () async {
+        await tab(tester, AppIcons.navbarMap);
+        await tapAndWait(
+          tester,
+          icon(AppIcons.navbarAdd),
+          const Duration(seconds: 3),
+        );
+      },
+      () async {
+        double shownZoom() {
+          final label = find
+              .byWidgetPredicate(
+                (w) => w is Text && (w.data?.endsWith('×') ?? false),
+              )
+              .evaluate()
+              .map((e) => (e.widget as Text).data!)
+              .firstOrNull;
+          return double.tryParse(label?.replaceAll('×', '') ?? '') ?? 0;
+        }
+
+        final center = tester.getCenter(find.byType(Scaffold).first);
+        await pinch(tester, center - const Offset(0, 120), 150, 600);
+        await wait(tester, const Duration(milliseconds: 600));
+        record('camera_pinch_zoom_x100', (shownZoom() * 100).round());
+
+        final flashLabels = {
+          l10n().capsulesCameraFlashOff: 0,
+          l10n().capsulesCameraFlashAuto: 1,
+          l10n().capsulesCameraFlashOn: 2,
+          l10n().capsulesCameraFlashTorch: 3,
+        };
+        Finder flash() => find.byWidgetPredicate(
+          (w) => w is Semantics && flashLabels.containsKey(w.properties.label),
+        );
+        int state() =>
+            flashLabels[(tester.widget<Semantics>(
+              flash().first,
+            )).properties.label]!;
+        // 0 off, 1 auto, 2 on, 3 torch: recorded as one number per step.
+        for (var i = 0; i < 5; i++) {
+          record('camera_flash_step_$i', state());
+          await tester.tap(flash().first, warnIfMissed: false);
+          await wait(tester, const Duration(milliseconds: 600));
+        }
+        record('camera_flash_step_5', state());
+      },
+    );
+    await home(tester);
+
     await flow(
       'camera_capture',
       setup: () async {
