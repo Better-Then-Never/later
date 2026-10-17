@@ -109,3 +109,5 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   run showed the photo shrunk to the Back button's size (loose Stack); fixed, and the widget test now measures
   the photo area inside the app's real wrapping. The emulator restarted itself once more (2 GB guest RAM);
   re-run after it booted. CI green on 57c289c (incl. iOS). Flutter 246.
+- **List stagger, done:** on pushed pages only (IndexedStack tabs build unseen). The Android emulator's system
+  server died a third time (ANR dialog, then boot animation); cold-restarted, the page works. Flutter 247.

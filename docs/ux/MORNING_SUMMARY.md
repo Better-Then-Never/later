@@ -23,5 +23,5 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 4. Look at the screenshots in `docs/ux/after` and the dark palette sheet in `docs/ux/dark_candidates/sheet.png`.
 
 ## Health
-`flutter analyze` clean · `flutter test` 246 passing · functions 43/43 · rules 55/55 · nothing deployed, no tags,
+`flutter analyze` clean · `flutter test` 247 passing · functions 43/43 · rules 55/55 · nothing deployed, no tags,
 no version bump, no secrets committed.

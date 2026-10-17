@@ -22,7 +22,8 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
 ## Consistency and motion still open
 - F-31 history control sizes (the Reset icon is fixed), F-43 share icon (no artwork besides the paper plane),
   hero transitions for avatars and capsule photos (tags must stay unique per route; the capsule dialog is not a
-  page route, so it needs its own transition), list entrance stagger.
+  page route, so it needs its own transition); the stagger for the tab lists (they are built in the background at
+  start; it would need to run when the tab is first shown).
 
 ## Tier 3 (not started)
 Onboarding tour, a friends feed; "On this day" as a morning push (the in-app strip is done; a push needs a

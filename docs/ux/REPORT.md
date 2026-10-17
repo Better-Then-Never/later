@@ -41,7 +41,7 @@ removes the user's reactions and comments; deleting a chat message puts the prev
 (`isUndo`); messages may quote the one they answer (`replyTo`). Functions 43/43, rules 55/55.
 
 ## Numbers
-Flutter tests 246 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
+Flutter tests 247 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
 PERFORMANCE.md (build p90 within a frame except first builds of tabs/pages at 17-18 ms).
 
 ## Decisions (DECISIONS.md)
