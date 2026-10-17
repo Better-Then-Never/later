@@ -38,7 +38,8 @@ costs invocations, not reads. If invocation counts matter, a later optimisation 
 writers directly (they already know the new values) and drop the trigger.
 
 ## Storage
-No new files yet (loop frames and thumbnails are not built). The disk cache lowers egress.
+Loop capsules (when switched on) store up to 10 frames of about 100-200 KB next to the photo (≈1-2 MB per loop
+capsule) and download them when opened; they are deleted with the capsule. The disk cache lowers egress.
 
 ## Push (FCM)
 Free. The new categories add pushes only for users who keep them on; quiet hours and the master switch apply.

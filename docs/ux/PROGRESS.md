@@ -125,3 +125,8 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   Flutter 259.
 - **Russian + dark pass:** new menus, empty states and creation menus fit; every page's back arrow now has a
   screen-reader label (GoBackButton, 13 pages).
+- **Loop capsules, built (flag off):** hold-to-record (≤10 frames, progress ring, hint), creation preview,
+  parallel frame upload with cleanup, outbox frames, LoopPicture playback in the capsule and full screen, storage
+  rule for frame_0..9 (57/57). On the emulator: 10 frames recorded and uploaded through the new rules, the
+  capsule opens with them; motion not judgeable (still virtual scene), so the flag stays off (MORNING_SUMMARY #4).
+  Flutter 264.

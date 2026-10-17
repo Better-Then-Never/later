@@ -5,11 +5,11 @@
 |---|---|---|
 | Static analysis | `flutter analyze` | No issues found |
 | Format | `dart format --output=none --set-exit-if-changed lib test tool` | clean |
-| Unit + widget + golden | `flutter test` | **261 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
+| Unit + widget + golden | `flutter test` | **264 passed**, 1 skipped (pre-existing: a fake_cloud_firestore GeoPoint case) |
 | Translations | `test/l10n` (part of the above) | every message in 5 languages with the same placeholders; ARBs built from the fragments |
 | Design tokens | `dart run tool/check_design_tokens.dart` | no violations |
 | Cloud Functions | `cd functions && npm run test:emulate` | **43/43** |
-| Security rules | `cd tools/rules-tests && npm run emulate` | **56/56** |
+| Security rules | `cd tools/rules-tests && npm run emulate` | **57/57** (Firestore and Storage) |
 | Admin scripts | `tools/admin/selftest.js` against emulators | all checks passed (admin claim, verified, backfill) |
 | Performance (profile mode) | `integration_test/perf_test.dart` | all flows ran; numbers in PERFORMANCE.md (mid-mission run) |
 

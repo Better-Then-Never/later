@@ -45,10 +45,10 @@ verified badge, announcements, count backfill).
 **Backend (not deployed).** 13 new functions (counters, reactions, comments, friend requests, stats, achievements,
 streak reminders, announcements), localized pushes, rules for every new document, indexes; account deletion also
 removes the user's reactions and comments; deleting a chat message puts the previous one back in the chat summary
-(`isUndo`); messages may quote the one they answer (`replyTo`) and carry reactions. Functions 43/43, rules 56/56.
+(`isUndo`); messages may quote the one they answer (`replyTo`) and carry reactions. Storage rules allow the frames of loop capsules. Functions 43/43, rules 57/57.
 
 ## Numbers
-Flutter tests 261 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
+Flutter tests 264 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
 PERFORMANCE.md (build p90 within a frame except first builds of tabs/pages at 17-18 ms).
 
 ## Decisions (DECISIONS.md)
@@ -56,7 +56,7 @@ D-03 charcoal dark palette; D-07 dark map without the cloud map ID; optional per
 removed from Android; friends-of-friends suggestions; feature flags for anything not finished (loop capsules).
 
 ## Not done (IDEAS_NOT_DONE.md)
-Loop capsules, torch, own date picker and composer, chat reactions/replies/photos/voice,
+Switching loop capsules on (built, needs a real-phone look), torch, own date picker and composer, chat reactions/replies/photos/voice,
 map clusters, co-authors, some consistency items (history control sizes, share icon) and
 transition polish (hero, stagger).
 

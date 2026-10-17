@@ -28,6 +28,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Marker/heatmap memoization (F-10) | on | `map_controller.dart`, `map_page.dart` | profile run (`perf/mid`) |
 | One short date format everywhere (`AppDates.short`, dd.MM.yyyy) | on | `core/l10n/app_dates.dart` | tests |
 | Map capsule card grows with the system text size (was cut off at 130 %) | on | `CapsuleInfoPanel.heightFor` | tests incl. Android-like nonlinear scaling, emulator |
+| Loop capsules (F-93): hold the shutter, up to 10 frames, preview, parallel upload, offline outbox, playback in the capsule and full screen | **off** (`FeatureFlags.loopCapsules`): needs one look on a real phone | `camera_page.dart`, `loop_picture.dart`, repository, storage.rules | tests, rules tests, emulator (10 frames uploaded; the virtual camera films a still scene) |
 | Heatmap in one brand green, only when zoomed out (F-16, D-19) | on | `map_page.dart`, `AppColors.heatmap*` | emulator |
 | Invalid places (0,0) ignored (F-18) | on | `geo_position.dart`, mapper, rules | tests |
 | Privacy defaults in creation; per-capsule comments/reactions/approximate location (F-29) | on | `capsule_creation_*` | tests, emulator |

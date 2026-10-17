@@ -22,9 +22,11 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 1. Deploy rules, indexes, functions, then run the count backfill (DEPLOY.md).
 2. Confirm the username "amo b3" for the verified badge (BLOCKERS.md).
 3. Add the new data uses to the privacy policy (PRIVACY.md).
-4. Look at the screenshots in `docs/ux/after` (tonight's features included) and the dark palette sheet in
+4. Loop capsules are built but off: try them once on a real phone (`FeatureFlags.loopCapsules = true`, hold
+   the shutter) and leave the flag on if the loop looks right. Deploy storage.rules first (DEPLOY.md).
+5. Look at the screenshots in `docs/ux/after` (tonight's features included) and the dark palette sheet in
    `docs/ux/dark_candidates/sheet.png`.
 
 ## Health
-`flutter analyze` clean · `flutter test` 261 passing · functions 43/43 · rules 56/56 · nothing deployed, no tags,
+`flutter analyze` clean · `flutter test` 264 passing · functions 43/43 · rules 57/57 · nothing deployed, no tags,
 no version bump, no secrets committed.

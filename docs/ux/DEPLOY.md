@@ -14,11 +14,15 @@ to the older document shape once, see "Compatibility"), but the new features onl
 firebase deploy --only firestore:rules,firestore:indexes --project later-da778
 ```
 - Rules: additive (new optional fields and subcollections; old app versions keep working). Tested by
-  `tools/rules-tests` (56/56).
+  `tools/rules-tests` (57/57).
 - Indexes: field overrides for `reactions.uid`, `comments.authorId` (collection-group queries used by account
   deletion) and `settings.notifications.streakReminder` (collection group, streak reminders). Wait until the
   console shows them as "Enabled" before step 2's scheduled function runs (a few minutes).
-- Storage rules: unchanged.
+- Storage rules: additive, the frames of loop capsules (`frame_0.jpg` ... `frame_9.jpg`, up to 3 MB) next to
+  `image.jpg`:
+  ```
+  firebase deploy --only storage --project later-da778
+  ```
 
 ## 2. Cloud Functions
 The project's default compute service account was deleted, so **every new function must be created once with

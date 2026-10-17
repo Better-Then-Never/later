@@ -3,9 +3,9 @@
 Ordered by value. Each has the data model or backend groundwork noted where it exists.
 
 ## Next
-- **Loop capsules (F-93)**: several frames played as a loop. Data model, rules (`frames`, `frameDelayMs`), stats and
-  the Animator achievement exist; needs the camera burst, upload of frames (Storage rules allow only `image.jpg`
-  today: add `frame_<n>.jpg`), and a looping viewer. Hidden by `FeatureFlags.loopCapsules`.
+- **Loop capsules (F-93)**: built (recording, upload, offline, playback, rules); switch
+  `FeatureFlags.loopCapsules` on after one check on a real phone. Later: a speed choice (`frameDelayMs` is
+  stored), loops in the list thumbnail.
 - **Offline capsules, next steps**: a capsule for a friend still needs the connection (its chat post is made at
   once); a "not sent" state with a manual retry for capsules the server refused three times.
 - **Camera (F-23)**: torch while framing (flash auto is done; zoom, focus and shutter feedback too).
