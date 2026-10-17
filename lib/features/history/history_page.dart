@@ -117,6 +117,11 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  /// Sort, Filter and Reset on the shared scale (F-31: they were 5 % of the
+  /// screen tall with 32 dp pictures): tap-target height, list-size icons.
+  static const _controlHeight = 44.0;
+  static const _controlIcon = 24.0;
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.sizeOf(context).height;
@@ -146,7 +151,8 @@ class _HistoryPageState extends State<HistoryPage> {
                     children: [
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           onTap: () => _openSortMenu(context),
                           assetPath: AppIcons.historySort,
                           text: _controller.activeSortLabel(l10n),
@@ -155,7 +161,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       SizedBox(width: buttonGap),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           assetPath: AppIcons.historyFilter,
                           text: _controller.activeFilterLabel(l10n),
                           onTap: () => _openFilterMenu(context),
@@ -164,7 +171,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       SizedBox(width: buttonGap),
                       Expanded(
                         child: DefaultButtonWithIcon(
-                          height: screenHeight * 0.05,
+                          height: _controlHeight,
+                          iconSize: _controlIcon,
                           onTap: _controller.resetAll,
                           // Clear, not sort (F-31: it reused the sort icon).
                           assetPath: AppIcons.friendsDeleteReset,

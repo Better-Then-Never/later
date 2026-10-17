@@ -32,6 +32,8 @@ class DefaultSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
+        // A full tap target (D-24).
+        constraints: const BoxConstraints(minHeight: 44),
         padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: color ?? context.palette.surfaceMuted,
@@ -43,8 +45,8 @@ class DefaultSearchBar extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12.0),
               child: Image.asset(
                 AppIcons.friendsLookFor,
-                width: screenWidth * 0.07,
-                height: screenWidth * 0.07,
+                width: 24,
+                height: 24,
               ),
             ),
             Expanded(
@@ -56,9 +58,11 @@ class DefaultSearchBar extends StatelessWidget {
                   border: InputBorder.none,
                   isDense: true,
                 ),
+                // Body size (F-31: it was 22 sp, bigger than the titles of
+                // the rows it searches).
                 style: const TextStyle(
                   fontFamily: kAppFontFamily,
-                  fontSize: 22,
+                  fontSize: 17,
                 ),
                 onChanged: (value) {
                   if (onChanged != null) {
