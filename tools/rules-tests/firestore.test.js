@@ -24,6 +24,7 @@ const {
   writeBatch,
   runTransaction,
   serverTimestamp,
+  increment,
   arrayUnion,
   arrayRemove,
   deleteField,
@@ -505,6 +506,32 @@ describe('chats', () => {
         lastUpdated: serverTimestamp(), lastSenderId: 'carol', unreadCounts: { bob: 3 },
       }),
     );
+  });
+
+  test('in a chat that exists, a message and +1 unread go as one batched write (works offline)', async () => {
+    await assertSucceeds(send(as('alice'), 'alice', 'bob'));
+    const batched = (db, from, to, unread = increment(1), id = 'q1') => {
+      const batch = writeBatch(db);
+      batch.update(chatRef(db), {
+        lastMessage: 'queued',
+        lastUpdated: serverTimestamp(),
+        lastSenderId: from,
+        [`unreadCounts.${to}`]: unread,
+      });
+      batch.set(doc(db, `chats/alice_bob/messages/${id}`), {
+        senderId: from, text: 'queued', timestamp: serverTimestamp(), status: 'sent',
+      });
+      return batch.commit();
+    };
+    await assertSucceeds(batched(as('alice'), 'alice', 'bob'));
+    assert.equal(await unreadOf('bob'), 2);
+    await assertSucceeds(batched(as('bob'), 'bob', 'alice', increment(1), 'q2'));
+    assert.equal(await unreadOf('alice'), 1);
+    // Still exactly one more, never two; never your own count.
+    await assertFails(batched(as('alice'), 'alice', 'bob', increment(2), 'q3'));
+    await assertFails(batched(as('alice'), 'alice', 'alice', increment(1), 'q4'));
+    // A message id that exists cannot be written again.
+    await assertFails(batched(as('alice'), 'alice', 'bob', increment(1), 'q1'));
   });
 
   test('deleting the newest message puts the one before it back in the summary', async () => {

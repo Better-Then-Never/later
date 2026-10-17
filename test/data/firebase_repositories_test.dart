@@ -3,11 +3,15 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/firebase/firebase_capsule_repository.dart';
+import 'package:later/data/firebase/firebase_chat_repository.dart';
+import 'package:later/data/firebase/firebase_chat_repository.dart';
 import 'package:later/data/firebase/firebase_friends_repository.dart';
 import 'package:later/data/firebase/firebase_notification_repository.dart';
 import 'package:later/data/firebase/firebase_push_token_repository.dart';
 import 'package:later/data/firebase/firebase_user_repository.dart';
 import 'package:later/data/models/capsule.dart';
+import 'package:later/data/models/chat.dart';
+import 'package:later/data/models/chat.dart';
 
 void main() {
   late FakeFirebaseFirestore db;
@@ -248,6 +252,31 @@ void main() {
       },
       skip:
           'fake_cloud_firestore cannot order GeoPoints; covered against the real emulator in tools/rules-tests',
+    );
+  });
+
+  group('FirebaseChatRepository', () {
+    test(
+      'the first message creates the chat; later ones add one unread each',
+      () async {
+        final repo = FirebaseChatRepository(firestore: db);
+        await repo.sendText(from: 'a', to: 'b', text: 'hi', messageId: 'm1');
+        var chat = (await db.doc('chats/a_b').get()).data()!;
+        expect(chat['participants'], ['a', 'b']);
+        expect(chat['unreadCounts'], {'b': 1});
+
+        // The chat is known here now: the queued (batched) path.
+        await repo.sendText(from: 'a', to: 'b', text: 'again', messageId: 'm2');
+        await repo.sendText(from: 'b', to: 'a', text: 'yes', messageId: 'm3');
+        chat = (await db.doc('chats/a_b').get()).data()!;
+        expect(chat['unreadCounts'], {'b': 2, 'a': 1});
+        expect(chat['lastMessage'], 'yes');
+        expect(chat['lastSenderId'], 'b');
+
+        final messages = await repo.watchMessages('a_b').first;
+        expect(messages.map((m) => m.text), ['hi', 'again', 'yes']);
+        expect(messages.map((m) => m.delivery).toSet(), {MessageDelivery.sent});
+      },
     );
   });
 }

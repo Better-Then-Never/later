@@ -350,11 +350,10 @@ class ChatController extends ChangeNotifier {
           );
     if (_disposed) return failure;
     if (failure == null) return null;
-    final still = _outbox[id];
-    if (still != null) {
-      _outbox[id] = still.withDelivery(MessageDelivery.failed);
-      _notify();
-    }
+    // Back from the server's list too when the write was queued (shown from
+    // the phone's copy) and then refused.
+    _outbox[id] = (_outbox[id] ?? pending).withDelivery(MessageDelivery.failed);
+    _notify();
     if (failure is PermissionFailure) {
       // Most likely blocked since the chat was opened.
       unawaited(_checkBlockedByFriend());

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/logging/app_logger.dart';
 import '../models/capsule.dart';
@@ -59,12 +60,18 @@ class FirebaseChatRepository implements ChatRepository {
       _messages(chatId)
           .orderBy('timestamp')
           .limitToLast(limit)
-          .snapshots()
+          // With metadata: a message written without a connection is
+          // "sending" until the server has it (also after a restart).
+          .snapshots(includeMetadataChanges: true)
           .map(
-            (snap) => snap.docs
-                .map((d) => FirestoreMappers.chatMessage(d.id, d.data()))
-                .toList(),
-          );
+            (snap) => snap.docs.map((d) {
+              final message = FirestoreMappers.chatMessage(d.id, d.data());
+              return d.metadata.hasPendingWrites
+                  ? message.withDelivery(MessageDelivery.sending)
+                  : message;
+            }).toList(),
+          )
+          .distinct(listEquals);
 
   @override
   String newMessageId(String chatId) => _messages(chatId).doc().id;
@@ -192,20 +199,43 @@ class FirebaseChatRepository implements ChatRepository {
     },
   );
 
-  /// Writes the message and the chat summary in one transaction: creates the
-  /// chat on first use and counts the message as unread for [to]. A message
-  /// id that already exists means an earlier attempt arrived: nothing to do.
+  /// Writes the message and the chat summary together and counts the
+  /// message as unread for [to].
+  ///
+  /// In a chat this phone already has, one batched write: Firestore keeps it
+  /// (also across restarts) and sends it when there is a connection, so
+  /// messages written offline go out by themselves. The first message of a
+  /// chat needs a transaction (it creates the chat) and so a connection; a
+  /// message id that already exists then means an earlier attempt arrived.
   Future<void> _send({
     required String from,
     required String to,
     required String preview,
     required String messageId,
     required Map<String, dynamic> message,
-  }) {
+  }) async {
     final chatRef = _chats.doc(Chat.idBetween(from, to));
     final messageRef = chatRef
         .collection(FirestorePaths.messages)
         .doc(messageId);
+    final document = {
+      'senderId': from,
+      'timestamp': FieldValue.serverTimestamp(),
+      'status': 'sent',
+      ...message,
+    };
+    if (await _knownHere(chatRef)) {
+      final batch = _db.batch()
+        ..update(chatRef, {
+          'lastMessage': preview,
+          'lastUpdated': FieldValue.serverTimestamp(),
+          'lastSenderId': from,
+          // The rules check it is exactly one more than before.
+          'unreadCounts.$to': FieldValue.increment(1),
+        })
+        ..set(messageRef, document);
+      return batch.commit();
+    }
     return _db.runTransaction((tx) async {
       final chat = await tx.get(chatRef);
       if ((await tx.get(messageRef)).exists) return;
@@ -228,13 +258,18 @@ class FirebaseChatRepository implements ChatRepository {
           ...summary,
         });
       }
-      tx.set(messageRef, {
-        'senderId': from,
-        'timestamp': FieldValue.serverTimestamp(),
-        'status': 'sent',
-        ...message,
-      });
+      tx.set(messageRef, document);
     });
+  }
+
+  /// Whether this phone's copy of Firestore has the chat (it was loaded or
+  /// written here before), without asking the server.
+  Future<bool> _knownHere(DocumentReference<Map<String, dynamic>> ref) async {
+    try {
+      return (await ref.get(const GetOptions(source: Source.cache))).exists;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override
