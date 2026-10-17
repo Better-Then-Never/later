@@ -4,13 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/firebase/firebase_capsule_repository.dart';
 import 'package:later/data/firebase/firebase_chat_repository.dart';
-import 'package:later/data/firebase/firebase_chat_repository.dart';
 import 'package:later/data/firebase/firebase_friends_repository.dart';
 import 'package:later/data/firebase/firebase_notification_repository.dart';
 import 'package:later/data/firebase/firebase_push_token_repository.dart';
 import 'package:later/data/firebase/firebase_user_repository.dart';
 import 'package:later/data/models/capsule.dart';
-import 'package:later/data/models/chat.dart';
 import 'package:later/data/models/chat.dart';
 
 void main() {

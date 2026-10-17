@@ -391,6 +391,7 @@
   "messagesTitle": "Mis Laters",
   "messagesToday": "Hoy",
   "messagesTooLong": "Este mensaje es demasiado largo",
+  "messagesTyping": "escribiendo",
   "messagesUnmutedToast": "Sonido del chat activado",
   "messagesYesterday": "Ayer",
   "messagesYouPrefix": "Tú: {message}",

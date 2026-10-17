@@ -1420,6 +1420,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get messagesTooLong => 'Este mensaje es demasiado largo';
 
   @override
+  String get messagesTyping => 'escribiendo';
+
+  @override
   String get messagesUnmutedToast => 'Sonido del chat activado';
 
   @override

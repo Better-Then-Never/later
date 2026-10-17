@@ -391,6 +391,7 @@
   "messagesTitle": "Мои Laters",
   "messagesToday": "Сегодня",
   "messagesTooLong": "Сообщение слишком длинное",
+  "messagesTyping": "печатает",
   "messagesUnmutedToast": "Уведомления чата включены",
   "messagesYesterday": "Вчера",
   "messagesYouPrefix": "Вы: {message}",

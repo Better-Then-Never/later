@@ -45,6 +45,7 @@ import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
 import 'widgets/photo_message.dart';
 import 'widgets/photo_send_card.dart';
+import 'widgets/typing_label.dart';
 import 'widgets/reply_bar.dart';
 
 /// A conversation with one friend.
@@ -414,6 +415,7 @@ class _ChatViewState extends State<_ChatView> {
             MessageInput(
               onSend: _send,
               onPhotoTap: _sendPhoto,
+              onChanged: controller.onInputChanged,
               focusNode: _inputFocus,
               onCapsuleTap: () => AppRoutes.toCamera(
                 context,
@@ -637,14 +639,26 @@ class _ChatHeader extends StatelessWidget {
                     context,
                   ).copyWith(fontSize: screen.height * 0.028),
                 ),
-                // Muted chats send no pushes; say so where it matters.
-                if (context.select<ChatController, bool>((c) => c.isMuted))
-                  Text(
-                    context.l10n.messagesNotificationsMuted,
-                    style: AppTextStyles.body.copyWith(
-                      color: context.palette.textSecondary,
+                // The friend typing; otherwise, for a muted chat, that it
+                // sends no pushes.
+                AnimatedSize(
+                  duration: AppMotion.of(context, AppMotion.standard),
+                  curve: AppMotion.standardCurve,
+                  alignment: Alignment.topLeft,
+                  child: switch ((
+                    context.select<ChatController, bool>((c) => c.friendTyping),
+                    context.select<ChatController, bool>((c) => c.isMuted),
+                  )) {
+                    (true, _) => TypingLabel(text: context.l10n.messagesTyping),
+                    (false, true) => Text(
+                      context.l10n.messagesNotificationsMuted,
+                      style: AppTextStyles.body.copyWith(
+                        color: context.palette.textSecondary,
+                      ),
                     ),
-                  ),
+                    _ => const SizedBox(width: double.infinity),
+                  },
+                ),
               ],
             ),
           ),

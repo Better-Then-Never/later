@@ -23,6 +23,8 @@ class ChatController extends ChangeNotifier {
     required FriendsStore friends,
     this.pageSize = 50,
     bool Function()? readReceipts,
+    this.typingRefresh = const Duration(seconds: 4),
+    this.typingShown = const Duration(seconds: 6),
   }) : _chats = chats,
        _friends = friends,
        _readReceipts = readReceipts ?? (() => true) {
@@ -34,7 +36,66 @@ class ChatController extends ChangeNotifier {
       _loaded = true;
     }
     _subscribe();
+    _typingSub = _chats.typingOf(friendUid).listen(_onFriendTyping);
     unawaited(_checkBlockedByFriend());
+  }
+
+  /// While the user types, the friend is told at most this often.
+  final Duration typingRefresh;
+
+  /// The friend counts as typing for this long after each hint (a hint
+  /// that stops coming means they stopped, also when their app died).
+  final Duration typingShown;
+
+  StreamSubscription<DateTime?>? _typingSub;
+  Timer? _typingTimer;
+  DateTime? _friendTypingUntil;
+  bool _firstTypingHint = true;
+  DateTime? _typingSentAt;
+
+  /// The friend is typing to the user right now.
+  bool get friendTyping {
+    final until = _friendTypingUntil;
+    return until != null && DateTime.now().isBefore(until);
+  }
+
+  void _onFriendTyping(DateTime? at) {
+    _typingTimer?.cancel();
+    final first = _firstTypingHint;
+    _firstTypingHint = false;
+    // A hint left behind long ago (their app stopped mid-sentence) when the
+    // chat opens: not typing. Later hints are live, whatever the clocks say.
+    if (at == null ||
+        (first && DateTime.now().difference(at).abs() > typingShown * 3)) {
+      if (_friendTypingUntil == null) return;
+      _friendTypingUntil = null;
+      _notify();
+      return;
+    }
+    _friendTypingUntil = DateTime.now().add(typingShown);
+    _typingTimer = Timer(typingShown, _notify);
+    _notify();
+  }
+
+  /// The text in the message field changed: the friend learns the user is
+  /// typing (at most every [typingRefresh]), or that they stopped.
+  void onInputChanged(String text) {
+    if (_disposed || !canSend) return;
+    if (text.trim().isEmpty) {
+      _stopTyping();
+      return;
+    }
+    final now = DateTime.now();
+    final last = _typingSentAt;
+    if (last != null && now.difference(last) < typingRefresh) return;
+    _typingSentAt = now;
+    unawaited(_chats.setTyping(friendUid, typing: true));
+  }
+
+  void _stopTyping() {
+    if (_typingSentAt == null) return;
+    _typingSentAt = null;
+    unawaited(_chats.setTyping(friendUid, typing: false));
   }
 
   final String friendUid;
@@ -171,6 +232,13 @@ class ChatController extends ChangeNotifier {
   }
 
   void _onMessages(List<ChatMessage> messages) {
+    // A new message from the friend: they are done typing it.
+    final newest = messages.lastOrNull;
+    if (newest != null &&
+        newest.senderId == friendUid &&
+        newest.id != _server.lastOrNull?.id) {
+      _friendTypingUntil = null;
+    }
     _server = messages;
     _chats.rememberMessages(friendUid, messages);
     _loaded = true;
@@ -262,6 +330,7 @@ class ChatController extends ChangeNotifier {
     if (me == null || id == null) {
       return AuthFailure(AppL10n.current.messagesSignedOut);
     }
+    _stopTyping();
     _outbox[id] = ChatMessage(
       id: id,
       senderId: me,
@@ -286,6 +355,7 @@ class ChatController extends ChangeNotifier {
     if (me == null || id == null) {
       return AuthFailure(AppL10n.current.messagesSignedOut);
     }
+    _stopTyping();
     _localPhotos[id] = localPath;
     _outbox[id] = ChatMessage(
       id: id,
@@ -445,7 +515,10 @@ class ChatController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _stopTyping();
     _disposed = true;
+    _typingTimer?.cancel();
+    unawaited(_typingSub?.cancel());
     _chats.removeListener(_onChatsChanged);
     unawaited(_sub?.cancel());
     super.dispose();

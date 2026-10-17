@@ -177,5 +177,9 @@
   "messagesOpenPhoto": "Open photo",
   "@messagesOpenPhoto": {
     "description": "Screen reader label of a photo in a chat bubble."
+  },
+  "messagesTyping": "typing",
+  "@messagesTyping": {
+    "description": "Under the friend's name in the chat header while they type (animated dots follow)."
   }
 }

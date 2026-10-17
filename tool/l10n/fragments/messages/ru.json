@@ -63,5 +63,6 @@
   "messagesTakePhoto": "Сделать фото",
   "messagesPhotoCaption": "Добавьте подпись…",
   "messagesPhotoUnreadable": "Эту картинку нельзя отправить",
-  "messagesOpenPhoto": "Открыть фото"
+  "messagesOpenPhoto": "Открыть фото",
+  "messagesTyping": "печатает"
 }

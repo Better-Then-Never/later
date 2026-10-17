@@ -1185,6 +1185,10 @@
     "description": "Day separator in a chat."
   },
   "messagesTooLong": "This message is too long",
+  "messagesTyping": "typing",
+  "@messagesTyping": {
+    "description": "Under the friend's name in the chat header while they type (animated dots follow)."
+  },
   "messagesUnmutedToast": "Chat unmuted",
   "messagesYesterday": "Yesterday",
   "@messagesYesterday": {

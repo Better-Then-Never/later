@@ -1444,6 +1444,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get messagesTooLong => 'Diese Nachricht ist zu lang';
 
   @override
+  String get messagesTyping => 'schreibt';
+
+  @override
   String get messagesUnmutedToast => 'Stummschaltung aufgehoben';
 
   @override

@@ -24,8 +24,12 @@ class MessageInput extends StatefulWidget {
     required this.onSend,
     this.onCapsuleTap,
     this.onPhotoTap,
+    this.onChanged,
     this.focusNode,
   });
+
+  /// Every change of the text (the typing hint).
+  final ValueChanged<String>? onChanged;
 
   final void Function(String text) onSend;
   final VoidCallback? onCapsuleTap;
@@ -105,6 +109,7 @@ class _MessageInputState extends State<MessageInput> {
                 child: TextField(
                   controller: _controller,
                   focusNode: widget.focusNode,
+                  onChanged: widget.onChanged,
                   textCapitalization: TextCapitalization.sentences,
                   keyboardType: TextInputType.multiline,
                   minLines: 1,

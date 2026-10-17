@@ -63,5 +63,6 @@
   "messagesTakePhoto": "Zrób zdjęcie",
   "messagesPhotoCaption": "Dodaj podpis…",
   "messagesPhotoUnreadable": "Nie można wysłać tego obrazu",
-  "messagesOpenPhoto": "Otwórz zdjęcie"
+  "messagesOpenPhoto": "Otwórz zdjęcie",
+  "messagesTyping": "pisze"
 }

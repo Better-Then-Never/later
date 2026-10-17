@@ -76,6 +76,23 @@ class FirebaseChatRepository implements ChatRepository {
   @override
   String newMessageId(String chatId) => _messages(chatId).doc().id;
 
+  DocumentReference<Map<String, dynamic>> _typing(String chatId, String uid) =>
+      _chats.doc(chatId).collection('typing').doc(uid);
+
+  @override
+  Future<void> setTyping(String chatId, String uid, {required bool typing}) =>
+      typing
+      ? _typing(chatId, uid).set({'at': FieldValue.serverTimestamp()})
+      : _typing(chatId, uid).delete();
+
+  @override
+  Stream<DateTime?> watchTyping(String chatId, String uid) =>
+      _typing(chatId, uid).snapshots().map((doc) {
+        if (!doc.exists) return null;
+        final at = doc.data()?['at'];
+        return at is Timestamp ? at.toDate() : DateTime.now();
+      });
+
   @override
   Future<void> sendText({
     required String from,

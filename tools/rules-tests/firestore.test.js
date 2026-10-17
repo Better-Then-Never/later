@@ -534,6 +534,21 @@ describe('chats', () => {
     await assertFails(batched(as('alice'), 'alice', 'bob', increment(1), 'q1'));
   });
 
+  test('typing hints: your own, server time only, read by the other participant', async () => {
+    const hint = (db, uid, chatId = 'alice_bob') => doc(db, `chats/${chatId}/typing/${uid}`);
+    await assertSucceeds(setDoc(hint(as('alice'), 'alice'), { at: serverTimestamp() }));
+    await assertSucceeds(setDoc(hint(as('alice'), 'alice'), { at: serverTimestamp() }));
+    await assertSucceeds(getDoc(hint(as('bob'), 'alice')));
+    await assertFails(getDoc(hint(as('carol'), 'alice')));
+    // Not for someone else, not a made-up time, nothing else in it.
+    await assertFails(setDoc(hint(as('bob'), 'alice'), { at: serverTimestamp() }));
+    await assertFails(setDoc(hint(as('alice'), 'alice'), { at: Timestamp.now() }));
+    await assertFails(setDoc(hint(as('alice'), 'alice'), { at: serverTimestamp(), text: 'hi' }));
+    await assertFails(setDoc(hint(as('carol'), 'carol', 'alice_bob'), { at: serverTimestamp() }));
+    await assertFails(deleteDoc(hint(as('bob'), 'alice')));
+    await assertSucceeds(deleteDoc(hint(as('alice'), 'alice')));
+  });
+
   test('deleting the newest message puts the one before it back in the summary', async () => {
     await assertSucceeds(send(as('bob'), 'bob', 'alice', { text: 'from bob' }));
     await assertSucceeds(send(as('alice'), 'alice', 'bob', { text: 'oops' }));

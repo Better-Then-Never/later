@@ -558,6 +558,17 @@ service cloud.firestore {
         && (isSend() || isRead() || isClear() || isUndo());
       allow delete: if false;
 
+      // typing/{uid} {at: server time}: "uid is typing", written at most
+      // every few seconds while they type, deleted when they stop. Only the
+      // participants read it; each writes only their own.
+      match /typing/{uid} {
+        allow read: if isMember();
+        allow create, update: if isMember() && uid == me() && mayWrite()
+          && request.resource.data.keys().hasOnly(['at'])
+          && request.resource.data.at == request.time;
+        allow delete: if isMember() && uid == me();
+      }
+
       match /messages/{messageId} {
         allow read: if isMember();
 

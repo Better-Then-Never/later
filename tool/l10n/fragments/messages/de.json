@@ -63,5 +63,6 @@
   "messagesTakePhoto": "Foto aufnehmen",
   "messagesPhotoCaption": "Bildunterschrift hinzufügen…",
   "messagesPhotoUnreadable": "Dieses Bild kann nicht gesendet werden",
-  "messagesOpenPhoto": "Foto öffnen"
+  "messagesOpenPhoto": "Foto öffnen",
+  "messagesTyping": "schreibt"
 }

@@ -391,6 +391,7 @@
   "messagesTitle": "Meine Laters",
   "messagesToday": "Heute",
   "messagesTooLong": "Diese Nachricht ist zu lang",
+  "messagesTyping": "schreibt",
   "messagesUnmutedToast": "Stummschaltung aufgehoben",
   "messagesYesterday": "Gestern",
   "messagesYouPrefix": "Du: {message}",

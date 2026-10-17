@@ -1445,6 +1445,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get messagesTooLong => 'Сообщение слишком длинное';
 
   @override
+  String get messagesTyping => 'печатает';
+
+  @override
   String get messagesUnmutedToast => 'Уведомления чата включены';
 
   @override

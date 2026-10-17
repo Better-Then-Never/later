@@ -617,6 +617,93 @@ void main() {
     );
   });
 
+  group('Typing', () {
+    ChatController open() => ChatController(
+      friendUid: 'bob',
+      chats: chats,
+      friends: friends,
+      typingRefresh: const Duration(milliseconds: 200),
+      typingShown: const Duration(milliseconds: 150),
+    );
+    List<String> hints() =>
+        chatRepo.calls.where((c) => c.startsWith('typing:')).toList();
+
+    test(
+      'the friend hears it at most every few seconds; sending stops it',
+      () async {
+        final c = open();
+        await pumpEventQueue();
+        c
+          ..onInputChanged('h')
+          ..onInputChanged('he')
+          ..onInputChanged('hel');
+        await pumpEventQueue();
+        expect(hints(), ['typing:bob_me:me:true']);
+
+        await Future<void>.delayed(const Duration(milliseconds: 220));
+        c.onInputChanged('hell');
+        await pumpEventQueue();
+        expect(hints().length, 2);
+
+        await c.send('hello');
+        await pumpEventQueue();
+        expect(hints().last, 'typing:bob_me:me:false');
+
+        // Clearing the field stops it too; nothing to stop twice.
+        c.onInputChanged('x');
+        c.onInputChanged('');
+        c.onInputChanged('');
+        await pumpEventQueue();
+        expect(hints().sublist(3), [
+          'typing:bob_me:me:true',
+          'typing:bob_me:me:false',
+        ]);
+        c.dispose();
+      },
+    );
+
+    test(
+      "the friend's hint shows, then fades without news; their message ends it",
+      () async {
+        final c = open();
+        await pumpEventQueue();
+        expect(c.friendTyping, isFalse);
+
+        chatRepo.hint('bob_me', 'bob', DateTime.now());
+        await pumpEventQueue();
+        expect(c.friendTyping, isTrue);
+        await Future<void>.delayed(const Duration(milliseconds: 170));
+        expect(c.friendTyping, isFalse, reason: 'no hint for a while');
+
+        chatRepo.hint('bob_me', 'bob', DateTime.now());
+        await pumpEventQueue();
+        expect(c.friendTyping, isTrue);
+        await say('bob', 'me', 'there');
+        await pumpEventQueue();
+        expect(c.friendTyping, isFalse, reason: 'the message arrived');
+
+        chatRepo.hint('bob_me', 'bob', DateTime.now());
+        await pumpEventQueue();
+        chatRepo.hint('bob_me', 'bob', null);
+        await pumpEventQueue();
+        expect(c.friendTyping, isFalse, reason: 'they stopped');
+        c.dispose();
+      },
+    );
+
+    test('a hint left over from long ago does not count', () async {
+      chatRepo.hint(
+        'bob_me',
+        'bob',
+        DateTime.now().subtract(const Duration(hours: 2)),
+      );
+      final c = open();
+      await pumpEventQueue();
+      expect(c.friendTyping, isFalse);
+      c.dispose();
+    });
+  });
+
   group('Send a capsule to a friend', () {
     CapsuleCreationController build(FakeCapsuleRepository capsules) =>
         CapsuleCreationController(

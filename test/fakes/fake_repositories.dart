@@ -458,6 +458,30 @@ class FakeChatRepository implements ChatRepository {
   /// Photo uploads fail (no connection).
   bool failUploads = false;
 
+  /// Typing hints by "chatId/uid": when, or null once stopped.
+  final Map<String, DateTime?> typing = {};
+  final _typingChanges = StreamController<void>.broadcast();
+
+  /// [uid]'s typing hint in [chatId] as their app would write it.
+  void hint(String chatId, String uid, DateTime? at) {
+    typing['$chatId/$uid'] = at;
+    _typingChanges.add(null);
+  }
+
+  @override
+  Future<void> setTyping(
+    String chatId,
+    String uid, {
+    required bool typing,
+  }) async {
+    calls.add('typing:$chatId:$uid:$typing');
+    hint(chatId, uid, typing ? now : null);
+  }
+
+  @override
+  Stream<DateTime?> watchTyping(String chatId, String uid) =>
+      seeded(() => typing['$chatId/$uid'], _typingChanges.stream);
+
   /// Clock used for message times and read receipts.
   DateTime now = DateTime(2026, 10, 16, 12);
   int _ids = 0;

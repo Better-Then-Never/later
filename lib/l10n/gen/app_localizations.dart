@@ -2450,6 +2450,12 @@ abstract class AppLocalizations {
   /// **'This message is too long'**
   String get messagesTooLong;
 
+  /// Under the friend's name in the chat header while they type (animated dots follow).
+  ///
+  /// In en, this message translates to:
+  /// **'typing'**
+  String get messagesTyping;
+
   /// No description provided for @messagesUnmutedToast.
   ///
   /// In en, this message translates to:

@@ -136,6 +136,26 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     return _chats.watchMessages(Chat.idBetween(me, friendUid), limit: limit);
   }
 
+  /// Tells [friendUid] the user is typing to them, or stopped; failures
+  /// are only logged (it is a hint).
+  Future<void> setTyping(String friendUid, {required bool typing}) async {
+    final me = _uid;
+    if (me == null || me == friendUid) return;
+    try {
+      await _chats.setTyping(Chat.idBetween(me, friendUid), me, typing: typing);
+    } catch (e) {
+      AppLogger.debug('Typing hint not sent: $e');
+    }
+  }
+
+  /// When [friendUid] last said they were typing to the user; null once
+  /// they stopped.
+  Stream<DateTime?> typingOf(String friendUid) {
+    final me = _uid;
+    if (me == null || me == friendUid) return const Stream.empty();
+    return _chats.watchTyping(Chat.idBetween(me, friendUid), friendUid);
+  }
+
   /// An id for a new message to [friendUid] (made on the device).
   String? newMessageId(String friendUid) {
     final me = _uid;

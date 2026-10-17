@@ -1452,6 +1452,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get messagesTooLong => 'Ta wiadomość jest za długa';
 
   @override
+  String get messagesTyping => 'pisze';
+
+  @override
   String get messagesUnmutedToast => 'Wyciszenie czatu wyłączone';
 
   @override

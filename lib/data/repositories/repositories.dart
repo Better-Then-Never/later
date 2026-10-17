@@ -160,6 +160,13 @@ abstract interface class ChatRepository {
     MessageReply? replyTo,
   });
 
+  /// [uid] is typing in [chatId] now ([typing]), or stopped.
+  Future<void> setTyping(String chatId, String uid, {required bool typing});
+
+  /// When [uid] last said they were typing in [chatId] (server time); null
+  /// once they stopped.
+  Stream<DateTime?> watchTyping(String chatId, String uid);
+
   /// Posts [capsule] (already shared with [to]) into the chat.
   Future<void> sendCapsule({
     required String from,
