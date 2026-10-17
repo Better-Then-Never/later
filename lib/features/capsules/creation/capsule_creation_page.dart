@@ -18,6 +18,7 @@ import '../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/page_header.dart';
+import '../../../shared/widgets/photo_viewer.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/options_menu.dart';
@@ -246,8 +247,15 @@ class _CapsuleCreationView extends StatelessWidget {
                               SizedBox(
                                 width: screen.width * 0.45,
                                 height: double.infinity,
-                                child: CapsuleImagePreview(
-                                  imagePath: controller.imagePath,
+                                // A look at the whole photo before saving.
+                                child: GestureDetector(
+                                  onTap: () => PhotoViewer.show(
+                                    context,
+                                    Uri.file(controller.imagePath).toString(),
+                                  ),
+                                  child: CapsuleImagePreview(
+                                    imagePath: controller.imagePath,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 12),
