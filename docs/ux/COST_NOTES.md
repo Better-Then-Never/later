@@ -15,6 +15,7 @@ Firestore document operations; "invocation" is a Cloud Functions call.
 | Friends of friends (F-57) | ≤2 batched `whereIn` lookups (≤30 + ≤20 profiles), mostly already in the directory | 0 | replaces a 50-document query of strangers |
 | News topics | 0 | 0 | FCM topic subscribe/unsubscribe calls only |
 | Offline capsules (F-26) | 1 `get` per attempt (the idempotency check) | the normal capsule write once | retries only while something waits (sign-in, resume, every minute); a refused capsule uploads its photo again on each attempt, so it stops after 3 per sign-in |
+| Reacting to a chat message | 0 | 1 per tap (the message document) | arrives live through the chat's message stream, no extra reads |
 | Deleting a chat message | 1 query (2 newest messages) | 1 batch: the delete, plus the summary when it was the newest | |
 | "On this day" | 0 | 0 | computed from the user's capsule list already loaded |
 | Dark map | – | – | the dark style is local; mobile Maps SDK loads are not billed per load |

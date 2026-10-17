@@ -14,7 +14,7 @@ to the older document shape once, see "Compatibility"), but the new features onl
 firebase deploy --only firestore:rules,firestore:indexes --project later-da778
 ```
 - Rules: additive (new optional fields and subcollections; old app versions keep working). Tested by
-  `tools/rules-tests` (55/55).
+  `tools/rules-tests` (56/56).
 - Indexes: field overrides for `reactions.uid`, `comments.authorId` (collection-group queries used by account
   deletion) and `settings.notifications.streakReminder` (collection group, streak reminders). Wait until the
   console shows them as "Enabled" before step 2's scheduled function runs (a few minutes).

@@ -111,3 +111,7 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
   re-run after it booted. CI green on 57c289c (incl. iOS). Flutter 246.
 - **List stagger, done:** on pushed pages only (IndexedStack tabs build unseen). The Android emulator's system
   server died a third time (ANR dialog, then boot animation); cold-restarted, the page works. Flutter 247.
+- **Chat reactions, done:** `reactions {uid: type}` on messages (rules: own key, known type; 56/56), menu row,
+  pill under the bubble, optimistic with rollback. Verified on the emulator with Bob reacting through an admin
+  write (live "😂 2"). A format slip (pipe hid the exit code) was caught before pushing; checks now run from a
+  script that stops on the first failure. Flutter 249.

@@ -38,10 +38,10 @@ verified badge, announcements, count backfill).
 **Backend (not deployed).** 13 new functions (counters, reactions, comments, friend requests, stats, achievements,
 streak reminders, announcements), localized pushes, rules for every new document, indexes; account deletion also
 removes the user's reactions and comments; deleting a chat message puts the previous one back in the chat summary
-(`isUndo`); messages may quote the one they answer (`replyTo`). Functions 43/43, rules 55/55.
+(`isUndo`); messages may quote the one they answer (`replyTo`). messages may carry reactions. Functions 43/43, rules 56/56.
 
 ## Numbers
-Flutter tests 247 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
+Flutter tests 249 passing (1 pre-existing skip); analyze clean; design tokens clean; profile-mode flows in
 PERFORMANCE.md (build p90 within a frame except first builds of tabs/pages at 17-18 ms).
 
 ## Decisions (DECISIONS.md)

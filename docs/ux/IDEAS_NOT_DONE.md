@@ -11,7 +11,7 @@ Ordered by value. Each has the data model or backend groundwork noted where it e
 - **Camera (F-23)**: flash auto/torch (needs artwork for the extra states; zoom, focus and shutter feedback are
   done).
 - **Own calendar for "Pick a date…" (F-27; the presets cover the common cases)** and a step-by-step composer (F-25, F-28).
-- **Chat (F-70..F-76)**: reactions on messages, photos, voice notes (would need the microphone
+- **Chat (F-70..F-76)**: photos, voice notes (would need the microphone
   permission back); "deleted" placeholders instead of removing (needs a sender-only update rule); lowering the
   friend's unread count when an unread message is deleted (rules allow only +1 from the sender today).
 - **Map clusters instead of the heatmap** (the heatmap is restyled, D-19; brand-coloured cluster icons need plugin support); viewport-bounded public queries (F-10 part 2).
