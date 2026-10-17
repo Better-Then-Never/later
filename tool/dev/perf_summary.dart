@@ -7,8 +7,9 @@
 // (the UI and raster threads are pipelined, so each has one vsync). Per flow
 // it prints the median over runs of: frames, janky %, worst frame, and the
 // p90 of max(build, raster). Below that, the timestamps the test measured
-// (perf_numbers.json) and Android's own jank count for the app's layers
-// (SurfaceFlinger TimeStats) per run.
+// (perf_numbers.json, including each flow's wall time) and the stalls of
+// Android's main thread per run: Flutter's vsync comes from that thread, so
+// while it is stalled the app draws nothing (a freeze no frame time shows).
 import 'dart:convert';
 import 'dart:io';
 
@@ -51,10 +52,10 @@ void main(List<String> args) {
             numbers.putIfAbsent(k, () => []).addAll(v.whereType<num>());
           }
         });
-      } else if (name == 'timestats.txt') {
+      } else if (name == 'drive.log') {
         android.add(
           '${run.uri.pathSegments.reversed.skip(1).first}: '
-          '${_timestats(f.readAsStringSync())}',
+          '${_stalls(f.readAsStringSync())}',
         );
       }
     }
@@ -91,7 +92,10 @@ void main(List<String> args) {
     }
   }
   if (android.isNotEmpty) {
-    stdout.writeln('\nAndroid (TimeStats, app layers, whole run):');
+    stdout.writeln(
+      '\nAndroid main-thread stalls (Choreographer "Skipped N frames", whole '
+      'run; Flutter gets no vsync meanwhile, so nothing moves):',
+    );
     android.forEach(stdout.writeln);
   }
 }
@@ -132,25 +136,17 @@ double _median(Iterable<num> values) {
   return s.length.isOdd ? s[m] : (s[m - 1] + s[m]) / 2;
 }
 
-/// Total and janky frames of the app's layers in a TimeStats dump.
-String _timestats(String dump) {
-  var total = 0;
-  var janky = 0;
-  var appJanky = 0;
-  final layers = dump.split(RegExp(r'\n(?=layerName = )'));
-  for (final layer in layers.skip(1)) {
-    if (!layer.contains('com.btn.later')) continue;
-    int read(String key) =>
-        int.tryParse(
-          RegExp('$key = (\\d+)').firstMatch(layer)?.group(1) ?? '',
-        ) ??
-        0;
-    total += read('totalTimelineFrames');
-    janky += read('jankyFrames');
-    appJanky +=
-        read('appUnattributedJankyFrames') + read('appDeadlineMissedFrames');
-  }
-  if (total == 0) return 'no app layer found';
-  return '$janky of $total frames janky '
-      '(${(100 * janky / total).toStringAsFixed(1)} %), app-attributed $appJanky';
+/// Main-thread stalls in a run's log: Android reports each time its main
+/// thread missed 30 or more frames.
+String _stalls(String log) {
+  final skipped = [
+    for (final m in RegExp(r'Skipped (\d+) frames').allMatches(log))
+      int.parse(m.group(1)!),
+  ];
+  if (skipped.isEmpty) return 'none';
+  final total = skipped.fold<int>(0, (a, b) => a + b);
+  final longest = skipped.reduce((a, b) => a > b ? a : b);
+  return '${skipped.length} stalls, $total frames in all, longest $longest '
+      '(~${(longest / 120).toStringAsFixed(1)} s at 120 Hz): '
+      '${skipped.join(', ')}';
 }
