@@ -159,6 +159,18 @@ void main() {
           .first,
     );
     expect(friends.style.color, AppColors.brandGreen);
+    // The title has the theme's text style, not Flutter's fallback (yellow
+    // double underline when a card has no Material above it).
+    expect(
+      DefaultTextStyle.of(
+        tester.element(find.text('Privacy')),
+      ).style.decoration,
+      isNot(TextDecoration.underline),
+    );
+    expect(
+      find.ancestor(of: find.text('Privacy'), matching: find.byType(Material)),
+      findsWidgets,
+    );
     await tester.tap(find.text('Private'));
     await tester.pumpAndSettle();
     expect(picked, 'private');

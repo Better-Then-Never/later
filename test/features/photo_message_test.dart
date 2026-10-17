@@ -33,7 +33,7 @@ void main() {
     // 3:4 portrait, 62 % of the width wide.
     expect(
       PhotoMessage.displaySize(_photo(), screen),
-      Size(360 * 0.62, 360 * 0.62 * 4 / 3),
+      const Size(360 * 0.62, 360 * 0.62 * 4 / 3),
     );
     // Very tall: capped at 42 % of the height, at most 1:2.
     final tall = PhotoMessage.displaySize(
@@ -45,7 +45,7 @@ void main() {
     // No size known yet: 3:4.
     expect(
       PhotoMessage.displaySize(_photo(width: null, height: null), screen),
-      Size(360 * 0.62, 360 * 0.62 * 4 / 3),
+      const Size(360 * 0.62, 360 * 0.62 * 4 / 3),
     );
   });
 

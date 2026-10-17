@@ -95,10 +95,15 @@ class AppCardRoute<T> extends PageRoute<T> {
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
-  ) => Padding(
-    // A card with a text field stays above the keyboard.
-    padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-    child: Center(child: _DragToClose(child: builder(context))),
+  ) => Material(
+    // Text and fields on the card take the theme's styles (without it, a
+    // title fell back to Flutter's yellow-underlined error style).
+    type: MaterialType.transparency,
+    child: Padding(
+      // A card with a text field stays above the keyboard.
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: Center(child: _DragToClose(child: builder(context))),
+    ),
   );
 
   @override
