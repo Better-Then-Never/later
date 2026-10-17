@@ -40,10 +40,7 @@ class CapsulePreviewCard extends StatelessWidget {
               height: double.infinity,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadii.m),
-                child: AppNetworkImage(
-                  url: imageUrl,
-                  cacheWidth: (screen.width * 0.45 * 3).round(),
-                ),
+                child: AppNetworkImage(url: imageUrl),
               ),
             ),
           const SizedBox(width: 12),

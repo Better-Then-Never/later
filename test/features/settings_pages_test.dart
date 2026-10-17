@@ -59,11 +59,16 @@ void main() {
       await Directory('${dir.path}/sub').create();
       await File('${dir.path}/sub/b.jpg').writeAsBytes(List.filled(24, 1));
 
-      final cache = CacheService(directory: () async => dir);
+      var downloadsCleared = false;
+      final cache = CacheService(
+        directory: () async => dir,
+        clearDownloads: () async => downloadsCleared = true,
+      );
       expect(await cache.size(), greaterThanOrEqualTo(1024));
       await cache.clear();
       expect(dir.listSync(), isEmpty);
       expect(dir.existsSync(), isTrue);
+      expect(downloadsCleared, isTrue);
     });
 
     test('formats sizes', () {

@@ -11,6 +11,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
+import '../../../data/services/app_image_cache.dart';
 import '../../../data/services/geocoding_service.dart';
 import '../../map/current_location.dart';
 import '../../../shared/styles/box_decorations.dart';
@@ -259,12 +260,20 @@ class _Thumbnail extends StatelessWidget {
     );
     final url = this.url;
     if (url == null || url.isEmpty) return placeholder;
-    return Image.network(
-      url,
+    return Image(
+      image: AppImageCache.provider(
+        url,
+        width: AppImageCache.decodeWidth(
+          width,
+          MediaQuery.devicePixelRatioOf(context),
+        ),
+      ),
       width: width,
       height: height,
       fit: BoxFit.cover,
-      cacheWidth: (width * MediaQuery.devicePixelRatioOf(context)).round(),
+      gaplessPlayback: true,
+      frameBuilder: (context, child, frame, sync) =>
+          sync || frame != null ? child : placeholder,
       errorBuilder: (_, _, _) => placeholder,
     );
   }

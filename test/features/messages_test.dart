@@ -230,6 +230,22 @@ void main() {
       c.dispose();
     });
 
+    test('reopening a chat shows its messages at once (F-03)', () async {
+      await say('bob', 'me', 'Hello');
+      final first = open();
+      await pumpEventQueue();
+      expect(first.visibleMessages.single.text, 'Hello');
+      first.dispose();
+
+      final again = open();
+      expect(again.isLoaded, isTrue, reason: 'no spinner on re-entry');
+      expect(again.visibleMessages.single.text, 'Hello');
+      again.dispose();
+
+      chats.detach();
+      expect(chats.recentWith('bob'), isNull, reason: 'forgotten on sign-out');
+    });
+
     test('with read receipts off nothing is told and nothing shown', () async {
       await say('bob', 'me', 'Hello');
       final c = ChatController(

@@ -26,6 +26,12 @@ class ChatController extends ChangeNotifier {
        _friends = friends,
        _readReceipts = readReceipts ?? (() => true) {
     _chats.addListener(_onChatsChanged);
+    // Opened before: start from what it showed; the stream refreshes it.
+    final recent = _chats.recentWith(friendUid);
+    if (recent != null) {
+      _server = recent;
+      _loaded = true;
+    }
     _subscribe();
     unawaited(_checkBlockedByFriend());
   }
@@ -137,6 +143,7 @@ class ChatController extends ChangeNotifier {
 
   void _onMessages(List<ChatMessage> messages) {
     _server = messages;
+    _chats.rememberMessages(friendUid, messages);
     _loaded = true;
     _failed = false;
     _loadingOlder = false;

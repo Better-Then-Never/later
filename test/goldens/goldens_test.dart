@@ -55,6 +55,9 @@ Future<void> _loadFonts() async {
 
 /// Decodes every asset image on screen so it appears in the golden.
 Future<void> _precacheImages(WidgetTester tester) async {
+  // Picture lookups (fake, immediate) finish first: avatars then show their
+  // final image, not the skeleton of a pending lookup.
+  await tester.pump();
   await tester.runAsync(() async {
     for (final element in find.byType(Image).evaluate()) {
       final image = element.widget as Image;

@@ -6,15 +6,23 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
+import 'app_image_cache.dart';
 
 /// Files the app can always make again: photos taken or picked for a
 /// capsule or a profile picture, shared QR images (all in the temporary
 /// directory), and pictures held in memory.
 class CacheService {
-  CacheService({Future<Directory> Function()? directory})
-    : _directory = directory ?? getTemporaryDirectory;
+  CacheService({
+    Future<Directory> Function()? directory,
+    Future<void> Function()? clearDownloads,
+  }) : _directory = directory ?? getTemporaryDirectory,
+       _clearDownloads = clearDownloads ?? AppImageCache.clear;
 
   final Future<Directory> Function() _directory;
+
+  /// Empties the downloaded photos' index (their files are in the
+  /// temporary directory too).
+  final Future<void> Function() _clearDownloads;
 
   /// Bytes on disk plus decoded pictures in memory.
   Future<int> size() async {
@@ -45,6 +53,7 @@ class CacheService {
     PaintingBinding.instance.imageCache
       ..clear()
       ..clearLiveImages();
+    await _clearDownloads();
     try {
       final dir = await _directory();
       if (!dir.existsSync()) return;

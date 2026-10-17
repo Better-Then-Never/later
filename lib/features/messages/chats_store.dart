@@ -26,6 +26,11 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
   bool _failed = false;
   Set<String> _muted = const {};
 
+  /// The last messages seen in each recently opened chat (by friend), so
+  /// opening it again shows them at once instead of a spinner (F-03).
+  final Map<String, List<ChatMessage>> _recent = {};
+  static const _recentChats = 12;
+
   String? get uid => _uid;
   List<Chat> get chats => _list;
   bool get isLoaded => _loaded;
@@ -106,7 +111,18 @@ class ChatsStore extends ChangeNotifier implements SessionScoped {
     _loaded = false;
     _failed = false;
     _muted = const {};
+    _recent.clear();
     notifyListeners();
+  }
+
+  /// What the chat with [friendUid] showed when it was last open.
+  List<ChatMessage>? recentWith(String friendUid) => _recent[friendUid];
+
+  void rememberMessages(String friendUid, List<ChatMessage> messages) {
+    // Most recently used last; the oldest chat is forgotten first.
+    _recent.remove(friendUid);
+    _recent[friendUid] = messages;
+    if (_recent.length > _recentChats) _recent.remove(_recent.keys.first);
   }
 
   @override

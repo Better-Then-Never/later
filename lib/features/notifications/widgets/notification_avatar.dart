@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../data/repositories/repositories.dart';
+import '../../../data/services/app_image_cache.dart';
 import '../../../data/services/profile_image_cache.dart';
 
 /// Sender avatar: the URL stored on the notification, else the sender's
@@ -32,7 +33,13 @@ class NotificationAvatar extends StatelessWidget {
       radius: radius,
       backgroundColor: context.palette.skeleton,
       backgroundImage: url != null
-          ? NetworkImage(url)
+          ? AppImageCache.provider(
+              url,
+              width: AppImageCache.decodeWidth(
+                radius * 2,
+                MediaQuery.devicePixelRatioOf(context),
+              ),
+            )
           : const AssetImage(AppIcons.profileNoPhoto) as ImageProvider,
       onBackgroundImageError: url != null ? (_, _) {} : null,
     );

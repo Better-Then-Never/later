@@ -142,7 +142,7 @@ class _CapsulePhoto extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            AppNetworkImage(url: imageUrl, cacheWidth: (width * 3).round()),
+            AppNetworkImage(url: imageUrl),
             Positioned(
               top: 8,
               left: 8,

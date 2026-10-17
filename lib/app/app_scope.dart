@@ -73,7 +73,7 @@ class _AppScopeState extends State<AppScope> {
   final _push = PushMessagingService();
   final _mapFocus = MapFocus();
   final _currentLocation = CurrentLocation();
-  late final _imageCache = ProfileImageCache(_images);
+  late final _imageCache = ProfileImageCache(_images, prefs: _prefs);
   late final _notificationsStore = NotificationsStore(_notifications);
   late final _ownCapsules = OwnCapsulesStore(_capsules);
   late final _favorites = FavoritesStore(_users);
