@@ -655,7 +655,8 @@ void main() {
       },
       () async {
         final watch = Stopwatch()..start();
-        await tap(tester, labelled(l10n().capsulesCameraTakePhoto));
+        // With loops on, the shutter says it also records a loop (B4).
+        await tap(tester, labelled(l10n().capsulesCameraTakePhotoOrLoop));
         await waitFor(tester, find.byType(CapsuleCreationPage));
         record('camera_tap_to_creation_test_ms', watch.elapsedMilliseconds);
         await wait(tester, const Duration(seconds: 2));
