@@ -124,3 +124,86 @@ Server changes are in BACKEND_CHANGES.md; none is deployed.
 | Reaction pushes | ON (server) | `sendMessageReactionNotification` tells a message's author about a new reaction | functions test; emulator log on the rig (push built in Russian, not sent) |
 - **Not done**: forwarding photos, recordings and capsules (their files belong to the first chat's folder); an
   "unread" jump button; reporting a whole chat.
+
+## B2. Capsule interactions
+
+### Share a capsule as a link: ON (public and friends-only capsules)
+- **What**: a share button on the capsule card (not on private ones). The link is the existing web page with
+  `?capsuleId=…`; on a phone it hands the id to the app as `later://capsule/<id>`, which opens the capsule over
+  the map for someone allowed to see it, and says "This capsule isn't shared with you" otherwise.
+- **How**: no Firebase Dynamic Links (shut down). The page shows nothing of the capsule (it may be for friends
+  only) and accepts only an id of letters, digits, `_` and `-`. Android intent filter `later://capsule`.
+- **Tests**: `capsule_social_test.dart` (who gets the button), `session_and_auth_test.dart` (link parsing, ids
+  refused).
+- **Phone** (Russian): the share sheet with "Капсула времени в Later: Festival" and the link;
+  `adb shell am start -d later://capsule/<id>` opened the capsule over the map; an id the account cannot see
+  showed "Эта капсула вам не открыта" (only after the toast fix below).
+- **Not done**: the web page needs a hosting deploy (BACKEND_CHANGES.md §6); no preview image on the page by
+  design; iOS universal links (none existed for profiles either).
+
+### Quick reply to the author: ON
+- **What**: on someone else's capsule a reply button opens a small card with a field; the text goes to the
+  author's chat with the capsule attached, shown as a "Capsule" quote that opens it. A toast says "Sent to Anna".
+- **How**: an ordinary text message with `capsuleRef {id, title}` (rules: `validCapsuleRef`); opening it still
+  goes through the capsule's own rules. A centred card covered by another no longer makes room for the keyboard
+  (the dialog under the reply card overflowed by 48 px on the phone).
+- **Tests**: `messages_test.dart` (quick reply), rules (capsuleRef shape).
+- **Phone**: the card over the capsule with the keyboard (the 48 px overflow was found here), sent, "Отправлено:
+  Leo Ivanova" (only after the toast fix), the quote in Leo's chat opened the capsule.
+
+### Who left it (`showAuthor`): ON
+- **What**: under the title of someone else's capsule, their picture and name, which open their profile.
+  Creation has a "Show my name" switch; when it is off, others see no name.
+- **How**: the `showAuthor` field existed (F-60) but nothing set or read it; now creation writes `false` only
+  when switched off (old documents read as shown).
+- **Tests**: `capsule_social_test.dart`, `capsule_creation_test.dart`.
+- **Phone**: Bob's and Leo's capsules showed their names, which opened the profile. The creation switch: tests
+  only.
+
+### Co-authors: ON
+- **What**: a "Co-authors" row in creation picks up to five friends (the group picker). Others see "Anna with
+  Ben, Carl" (unless the author hides their name); the owner sees "With Ben, Carl"; a co-author sees the owner
+  and the other co-authors, never themselves. Co-authored capsules join My capsules and the map; deleting one
+  there, or "Remove me as co-author" in the capsule's menu, only takes the user off it. Co-authors get a
+  notification "Anna made a capsule with you" (in-app and push), whatever the capsule's privacy.
+- **How**: `coAuthors: [uid]` on the capsule, checked by the rules on create (friends of the owner, unique, at
+  most five, never the owner); co-authors can read it; a co-author may only remove themselves. The app follows
+  `coAuthors array-contains me` (newest 100). The outbox keeps co-authors for capsules waiting for a connection.
+- **Tests**: `history_test.dart` (merge, order, delete = leave), `map_test.dart` (visibility),
+  `capsule_creation_test.dart` (five at most), `capsule_outbox_test.dart` (kept across a restart),
+  `capsule_social_test.dart` (who sees whom), `notifications_test.dart` (the sentence), rules (co-authors),
+  functions (`notify.test.js`: private capsule, strangers and duplicates dropped, a follower who is a co-author
+  hears once).
+- **Phone**: picker (two friends, "2 friends"), the capsule saved through the emulator's rules, both co-authors
+  got the `coAuthor` notification from the function, the owner's card "With Anna Fischer, Ben Ivanova" (two
+  lines); as a co-author: Bob's capsule in My capsules and on the map, the menu's "Remove me as co-author", the
+  card closed, "You are no longer a co-author", the list dropped it.
+- **Not done**: co-authors cannot be changed after creation (capsules are not editable); co-authors are not
+  shown on the small map card (only in the opened capsule); the push itself could not be delivered (no dev
+  project).
+
+### Report everywhere: ON
+- **What**: the friend menu's Report (a dead item until now) asks why and files a report on the profile. A
+  stranger's profile (reached from a public capsule) had no menu at all; it now has one with Report and Block.
+  The capsule card's menu button was invisible (the profile's white icon on a white card); it now shows, with
+  Report (and "Remove me as co-author" for co-authors).
+- **Tests**: `report_user_test.dart` (the flow; the stranger's menu, none on your own profile),
+  `capsule_social_test.dart`.
+- **Phone**: a capsule report and a stranger's profile report (reason, thank-you toast, the report in Firestore).
+  The friend menu's Report: test only.
+
+### Comments: pages and taps from notifications: ON
+- **What**: comments load 200 at a time, newest first, with "Show earlier comments" at the top. A tap on a
+  reaction, comment, reply or co-author notification opens the capsule over the map, and for comments and
+  replies its thread (also for capsules without a place, which used to open nothing).
+- **Tests**: `capsule_social_test.dart` (paging; the dialog opened for comments shows the thread).
+- **Phone**: the first tap on a comment notification showed an error screen instead of the thread (the wait read
+  MediaQuery in `initState`); fixed, then it opened the capsule and its thread. Paging: tests only (the seed has
+  few comments per capsule).
+
+### Fixed on the phone while building B2
+| Bug | Cause | Fix |
+|---|---|---|
+| Creation page blank, button in the middle | Part A's save-morph button wrapped itself in a `Center`, which filled the bottom bar | `heightFactor: 1`; the button is its own widget with a test that fails without the fix |
+| No toast after a card closed itself ("Sent to Anna", "not shared", leaving) | the toast looked for an Overlay above the root navigator | the service uses the navigator's overlay; test |
+| Comment notification: error screen instead of the thread | the dialog started the sheet's wait in `initState`, reading MediaQuery | started once in `didChangeDependencies`; test that fails without the fix |

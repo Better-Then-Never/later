@@ -12,7 +12,7 @@ on #78. Never merged, never deployed. Resume here.
 | Phase 3: motion system | done (MOTION_CATALOG.md); native map marker motion deliberately not built |
 | Phase 4: layout | done (F-15, F-30, F-31, F-33, F-34, F-39, F-40, F-43, map controls, card, camera, tap targets, sweep) |
 | Phase 5: verification, CHECKPOINT_A | done (CHECKPOINT_A.md, PERFORMANCE.md "After", STATUS_REVIEW §13) |
-| Part B (B1..B7) | in progress: B1 photo messages built (FEATURES_B.md) |
+| Part B (B1..B7) | B1 and B2 done (FEATURES_B.md); B3 next |
 
 ## Log
 ### 2026-10-17
@@ -71,3 +71,14 @@ on #78. Never merged, never deployed. Resume here.
   divider, delete for me, forward, report a message, unread drop on delete, deep quote jump, swipe actions,
   pinned chats, reaction pushes. Each checked on the phone where it has a screen (FEATURES_B.md). Rules 73/73,
   functions 51/51.
+- B2 done: report profiles, reaction/comment/reply notifications open the capsule (and its thread), comments in
+  pages of 200, `showAuthor` (F-60) shown and set, share links through the web page (`later://capsule`), quick
+  reply to the author (`capsuleRef`), co-authors (rules, index, notifications, My capsules and map, leave).
+  Rules 75/75, functions 52/52, Flutter 352.
+- Found on the phone during B2: the creation page was blank since Part A's save-morph button (its Center filled
+  the bottom bar); toasts after a card closed itself never showed (no Overlay above the root navigator); a comment
+  notification showed an error screen instead of the thread (MediaQuery read in initState). All fixed with tests
+  that fail without the fix. Strangers' profiles got Report and Block.
+- Incident, again: the rules tests next to the dev emulators took them down (their port cleanup stopped a process
+  the dev emulators used). The emulators keep no data, so a re-seed followed. RIG.md says to stop them first;
+  the helper now refuses to run while 8080 is busy.

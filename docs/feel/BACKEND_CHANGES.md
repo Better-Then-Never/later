@@ -12,6 +12,7 @@ written for the owner.
 | 3 | Typing hints (`chats/{id}/typing/{uid}`); offline batched send (rules unchanged, test added) | rules | unaffected | rules | rules |
 | 4 | Group chats: `chats/g_{id}` rules, invites, `acceptGroupInvite`, group pushes, account cleanup | rules, functions | unaffected (never see groups) | rules + functions | rules, one new function (gcloud), functions |
 | 5 | Voice messages (rules, `.m4a` storage, cleanup), forwarded mark, unread drop on delete, `pinnedChats`, `sendMessageReactionNotification` | rules, storage rules, functions | unaffected | rules + functions | rules, one new function (gcloud), functions |
+| 6 | Capsules: quick reply (`capsuleRef` on messages), co-authors (rules, index, notifications), share links on the web page; the groups index | rules, indexes, functions, hosting | unaffected (see section 6) | rules 75/75, functions 52/52 | rules, indexes, functions, hosting |
 
 ## 1. Pushes are logged, not sent, in the Functions emulator
 `functions/index.js`: when `FUNCTIONS_EMULATOR === 'true'` (set only by the Firebase emulator), `services()`
@@ -147,3 +148,45 @@ count in FEEL_QA.md); functions 51/51.
 gcloud (`--trigger-event-filters=type=google.cloud.firestore.document.v1.updated`,
 `--trigger-event-filters-path-pattern=document='chats/{chatId}/messages/{messageId}'`); `deleteChatFile` replaces
 `deleteChatPhoto` in step 3 of section 2 (it was never deployed under either name).
+
+## 6. Capsule interactions (Part B2)
+**Firestore rules**:
+- messages: an optional `capsuleRef {id, title}` (id 1–200 characters, title ≤ 140) for a quick reply to a
+  capsule's author. Opening the capsule still goes through the capsule's rules.
+- capsules, create: an optional `coAuthors` list: at most five, unique, never the owner, each a friend of the
+  owner (one check per place: the rules have no loops).
+- capsules, read: also for the capsule's co-authors (`canSee` and `canSeeCapsule`, so reactions and comments
+  follow).
+- capsules, update (was `if false`): only a co-author taking themselves off `coAuthors`; nothing else changes.
+
+**Indexes** (`firestore.indexes.json`):
+- `capsules`: `coAuthors` CONTAINS + `createdAt` DESC (the co-author's list).
+- `chats`: `members` CONTAINS + `lastUpdated` DESC. The groups list from B1 needs it; it was missing (the
+  emulator does not ask for indexes).
+
+**Functions** (`sendCapsuleNotification`, changed): co-authors get an in-app notification
+(`type: 'coAuthor'`, `message: 'made a capsule with you'`) and a push in their language, whatever the capsule's
+privacy; followers who are also co-authors get only that one. At most five co-authors are read from the capsule
+and each must be a friend of the owner.
+
+**Hosting** (`public/index.html`): `?capsuleId=…` shows a neutral "A capsule for you" card (nothing of the capsule)
+and opens `later://capsule/<id>` on phones. Only ids of letters, digits, `_` and `-` (≤ 64) are used.
+
+**Old apps**: they ignore `capsuleRef` (the message text shows), never write `coAuthors`, and show the
+`coAuthor` notification with its stored message (unknown types fall back to it). A co-authored capsule is not in
+an old app's lists, but its push still arrives. The profile links on the web page work as before.
+
+**Cost**: one more query per signed-in app (co-authored capsules, ≤ 100). Capsule creation: at most five more
+notification writes and pushes.
+
+**Tests**: rules 75/75 (co-authors: friends only, five, unique, not the owner, read, leave only; capsuleRef shape),
+functions 52/52 (co-author notifications).
+
+**Deploy (owner)**:
+1. `firebase deploy --only firestore:indexes --project later-da778` first, and wait until both new indexes show
+   "Enabled" in the console (the co-author query fails until then; the app logs it and goes on).
+2. `firebase deploy --only firestore:rules --project later-da778`
+3. `firebase deploy --only functions:sendCapsuleNotification --project later-da778`
+4. `firebase deploy --only hosting --project later-da778` (the share links; without it a shared link opens the
+   profile page's "Join Later" without opening the capsule).
+5. Release the app.
