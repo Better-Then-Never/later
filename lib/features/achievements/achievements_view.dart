@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -6,11 +8,13 @@ import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/social.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
+import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/styles/box_decorations.dart';
 import '../../shared/widgets/buttons/go_back_button.dart';
 import '../../shared/widgets/page_header.dart';
@@ -144,13 +148,19 @@ class AchievementsPanel extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       itemCount: unlocked.length,
                       separatorBuilder: (_, _) => const SizedBox(width: 8),
-                      itemBuilder: (context, i) => Tooltip(
-                        message: unlocked[i].def.title(l10n),
-                        child: AchievementIcon(
-                          icon: unlocked[i].def.icon,
-                          tier: unlocked[i].tier,
-                          tiers: unlocked[i].def.tiers.length,
-                          size: 52,
+                      // One after another the first time (on the card's
+                      // colour: a painted cover, no layer).
+                      itemBuilder: (context, i) => AppEnter(
+                        delay: AppStaggerItem.step * i.clamp(0, 6),
+                        background: palette.surface,
+                        child: Tooltip(
+                          message: unlocked[i].def.title(l10n),
+                          child: AchievementIcon(
+                            icon: unlocked[i].def.icon,
+                            tier: unlocked[i].tier,
+                            tiers: unlocked[i].def.tiers.length,
+                            size: 52,
+                          ),
                         ),
                       ),
                     ),
@@ -185,8 +195,12 @@ class StreakChip extends StatelessWidget {
       child: Text.rich(
         TextSpan(
           children: [
+            const WidgetSpan(
+              alignment: PlaceholderAlignment.middle,
+              child: _Flicker(child: Text('🔥')),
+            ),
             TextSpan(
-              text: '🔥 ${l10n.achievementsStreakDays(streak)}',
+              text: ' ${l10n.achievementsStreakDays(streak)}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             TextSpan(
@@ -312,11 +326,17 @@ class _AchievementRow extends StatelessWidget {
                   const SizedBox(height: 6),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progress.toDouble(),
-                      minHeight: 6,
-                      backgroundColor: palette.surfaceMuted,
-                      color: AppColors.brandGreen,
+                    // Fills from empty when the page opens.
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0, end: progress.toDouble()),
+                      duration: AppMotion.of(context, AppMotion.reveal),
+                      curve: AppMotion.enter,
+                      builder: (context, value, _) => LinearProgressIndicator(
+                        value: value,
+                        minHeight: 6,
+                        backgroundColor: palette.surfaceMuted,
+                        color: AppColors.brandGreen,
+                      ),
                     ),
                   ),
                 ],
@@ -327,4 +347,61 @@ class _AchievementRow extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The streak's flame flickers twice when it appears, then rests (a scale
+/// transform; still with reduced motion).
+class _Flicker extends StatefulWidget {
+  const _Flicker({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_Flicker> createState() => _FlickerState();
+}
+
+class _FlickerState extends State<_Flicker>
+    with SingleTickerProviderStateMixin {
+  // Created up front: a first use in dispose() would look up TickerMode on
+  // a deactivated element (with reduced motion it never runs).
+  late final AnimationController _flicker;
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Two swells of two slow beats each.
+    _flicker = AnimationController(vsync: this, duration: AppMotion.slow * 4);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_started && !AppMotion.reduced(context)) {
+      _started = true;
+      _flicker.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _flicker.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _flicker,
+    child: widget.child,
+    builder: (context, child) {
+      // Two quick swells, back to rest at the end.
+      final t = _flicker.value;
+      final swell = math.pow(math.sin(t * 2 * math.pi), 2).toDouble();
+      return Transform.scale(
+        scale: 1 + 0.18 * swell,
+        alignment: Alignment.bottomCenter,
+        child: child,
+      );
+    },
+  );
 }
