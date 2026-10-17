@@ -633,6 +633,28 @@ describe('chats', () => {
     await assertFails(send(as('alice'), 'alice', 'bob', photo('alice', { text: '' })));
   });
 
+  test('a voice message points at a recording of this chat by its sender', async () => {
+    const voice = (who, extra = {}) => ({
+      type: 'voice',
+      text: '🎤',
+      audioUrl: 'https://firebasestorage.googleapis.com/v0/b/x/o/v?alt=media&token=t',
+      audioPath: `chats/alice_bob/${who}/v1.m4a`,
+      durationMs: 4200,
+      waveform: Array.from({ length: 40 }, (_, i) => i * 2),
+      ...extra,
+    });
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', voice('alice')));
+    const { waveform, ...noBars } = voice('alice');
+    await assertSucceeds(send(as('alice'), 'alice', 'bob', noBars));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('bob')));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { audioPath: 'chats/alice_bob/alice/v1.mp3' })));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { durationMs: 0 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { durationMs: 300001 })));
+    await assertFails(send(as('alice'), 'alice', 'bob', voice('alice', { waveform: Array(65).fill(1) })));
+    const { durationMs, ...noLength } = voice('alice');
+    await assertFails(send(as('alice'), 'alice', 'bob', noLength));
+  });
+
   test("sending like main's app (no unread counts) is still allowed", async () => {
     await assertSucceeds(send(as('alice'), 'alice', 'bob', {}, undefined, { legacy: true }));
     await assertSucceeds(send(as('bob'), 'bob', 'alice', {}, undefined, { legacy: true }));

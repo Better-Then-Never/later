@@ -8,7 +8,7 @@ written for the owner.
 | # | Change | Kind | Old apps | Tests | Deploy |
 |---|---|---|---|---|---|
 | 1 | Functions emulator logs pushes instead of sending them | functions (emulator only) | unaffected | functions 43/43 | with the next functions deploy; no effect in production |
-| 2 | Photo messages: rules for type "image", Storage folder per chat, `deleteChatPhoto`, photo pushes, account cleanup | rules, storage rules, functions | unaffected (read photos as text) | rules + functions (see section 2) | IAM grant, rules, one new function (gcloud), functions |
+| 2 | Photo messages: rules for type "image", Storage folder per chat, `deleteChatFile`, photo pushes, account cleanup | rules, storage rules, functions | unaffected (read photos as text) | rules + functions (see section 2) | IAM grant, rules, one new function (gcloud), functions |
 | 3 | Typing hints (`chats/{id}/typing/{uid}`); offline batched send (rules unchanged, test added) | rules | unaffected | rules | rules |
 | 4 | Group chats: `chats/g_{id}` rules, invites, `acceptGroupInvite`, group pushes, account cleanup | rules, functions | unaffected (never see groups) | rules + functions | rules, one new function (gcloud), functions |
 
@@ -35,7 +35,7 @@ or any `image/*`, ≤ 5 MB, name of 1–40 letters and digits), nobody replaces,
 participants read. The app shows photos through download URLs, like capsule photos.
 
 **Functions**:
-- `deleteChatPhoto` (new; `chats/{chatId}/messages/{messageId}` deleted): deletes the message's photo file, so a
+- `deleteChatFile` (new; `chats/{chatId}/messages/{messageId}` deleted): deletes the message's photo file, so a
   deleted photo, a cleared history or a deleted account leaves no file behind. Only paths inside that chat's
   folder are touched. One invocation per deleted message (cheap; "Clear history" of a long chat runs it once per
   message, and only photo messages do Storage work).
@@ -53,7 +53,7 @@ message. Reads unchanged (the photo's size travels in the message).
 
 **Deploy (owner, in this order)**:
 1. Grant the functions' service account delete rights on the bucket. It has only *Storage Object Viewer*
-   (MIGRATIONS_NEEDED.md), so `deleteChatPhoto` **and the existing account cleanup's file deletion** fail today:
+   (MIGRATIONS_NEEDED.md), so `deleteChatFile` **and the existing account cleanup's file deletion** fail today:
    ```
    gcloud storage buckets add-iam-policy-binding gs://later-da778.appspot.com \
      --member=serviceAccount:later-functions@later-da778.iam.gserviceaccount.com \
@@ -61,7 +61,7 @@ message. Reads unchanged (the photo's size travels in the message).
    ```
    (check the bucket name with `gcloud storage buckets list`).
 2. `firebase deploy --only firestore:rules,storage --project later-da778`
-3. Create `deleteChatPhoto` once with gcloud like the other new Firestore triggers (DEPLOY.md, section 2), with
+3. Create `deleteChatFile` once with gcloud like the other new Firestore triggers (DEPLOY.md, section 2), with
    `--trigger-event-filters=type=google.cloud.firestore.document.v1.deleted` and
    `--trigger-event-filters-path-pattern=document='chats/{chatId}/messages/{messageId}'`, then
    `firebase deploy --only functions --project later-da778` updates it and the two changed functions.

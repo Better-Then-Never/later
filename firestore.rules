@@ -714,7 +714,7 @@ service cloud.firestore {
         function validMessage(d) {
           return d.keys().hasOnly(['senderId', 'text', 'timestamp', 'status',
               'type', 'capsuleId', 'imageUrl', 'replyTo', 'imagePath', 'width',
-              'height'])
+              'height', 'audioUrl', 'audioPath', 'durationMs', 'waveform'])
             && (!d.keys().hasAny(['replyTo']) || validReply(d.replyTo))
             && d.senderId == me()
             && d.text is string && d.text.size() > 0 && d.text.size() <= 2000
@@ -722,7 +722,19 @@ service cloud.firestore {
             && d.status == 'sent'
             && (!d.keys().hasAny(['type']) || d.type == 'text'
               || (d.type == 'capsule' && validCapsuleMessage(d))
-              || (d.type == 'image' && validImageMessage(d)));
+              || (d.type == 'image' && validImageMessage(d))
+              || (d.type == 'voice' && validVoiceMessage(d)));
+        }
+
+        // A voice message: a recording the sender uploaded to this chat's
+        // folder (.m4a), its length (up to 5 minutes) and up to 64 loudness
+        // bars. The text is a microphone sign for older app versions.
+        function validVoiceMessage(d) {
+          return d.audioUrl is string && d.audioUrl.size() <= 2048
+            && d.audioPath is string
+            && d.audioPath.matches('chats/' + chatId + '/' + me() + '/[A-Za-z0-9]{1,40}[.]m4a')
+            && d.durationMs is int && d.durationMs > 0 && d.durationMs <= 300000
+            && d.get('waveform', []) is list && d.get('waveform', []).size() <= 64;
         }
 
         // A photo: a file the sender uploaded to this chat's folder in

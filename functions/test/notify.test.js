@@ -307,6 +307,9 @@ describe('message notifications', () => {
     assert.equal(notify.messageBody({ type: 'image', text: '📷' }, true), 'Sent you a photo');
     assert.equal(notify.messageBody({ type: 'image', text: 'Look!' }, true), '📷 Look!');
     assert.equal(notify.messageBody({ type: 'image', text: 'Look!' }, false, 'ru'), 'Фото для вас');
+    // Voice: says what it is, with or without previews.
+    assert.equal(notify.messageBody({ type: 'voice', text: '🎤' }, true), '🎤 Voice message');
+    assert.equal(notify.messageBody({ type: 'voice', text: '🎤' }, false, 'de'), '🎤 Sprachnachricht');
   });
 
   test('no preview, no sound: neutral text on the silent channel', async () => {

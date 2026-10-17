@@ -135,6 +135,7 @@ const PHOTO_SIGN = '📷';
 function messageBody(message, preview, lang = 'en') {
   const capsule = message.type === 'capsule';
   const photo = message.type === 'image';
+  if (message.type === 'voice') return `🎤 ${i18n.t(lang, 'messageVoice')}`;
   if (!preview) {
     return i18n.t(lang, capsule ? 'messageCapsule' : photo ? 'messagePhoto' : 'messageNoPreview');
   }

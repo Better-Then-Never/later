@@ -167,10 +167,11 @@ exports.acceptGroupInvite = onDocumentCreated(
   ),
 );
 
-// A chat photo's file is deleted with its message (functions/lib/chats.js).
-exports.deleteChatPhoto = onDocumentDeleted(
+// A chat photo's or recording's file is deleted with its message
+// (functions/lib/chats.js).
+exports.deleteChatFile = onDocumentDeleted(
   'chats/{chatId}/messages/{messageId}',
-  logged('Chat photo', (e) => chats.onMessageDeleted(services(), e.params.chatId, data(e.data))),
+  logged('Chat file', (e) => chats.onMessageDeleted(services(), e.params.chatId, data(e.data))),
 );
 
 exports.countFollowerAdded = onDocumentCreated(

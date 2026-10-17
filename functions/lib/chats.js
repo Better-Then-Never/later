@@ -6,12 +6,17 @@ const { FieldValue } = require('firebase-admin/firestore');
 
 /**
  * chats/{chatId}/messages/{id} was deleted (by its sender, "Clear history"
- * or account deletion): the photo it carried is deleted from Storage too, so
- * a deleted photo does not stay behind. Only files in that chat's folder are
- * touched (storage.rules: chats/{chatId}/{sender}/{id}.jpg).
+ * or account deletion): the photo or recording it carried is deleted from
+ * Storage too, so it does not stay behind. Only files in that chat's folder
+ * are touched (storage.rules: chats/{chatId}/{sender}/{id}.jpg or .m4a).
  */
 async function onMessageDeleted({ bucket }, chatId, message) {
-  const path = message && message.type === 'image' ? message.imagePath : null;
+  const path =
+    message && message.type === 'image'
+      ? message.imagePath
+      : message && message.type === 'voice'
+        ? message.audioPath
+        : null;
   if (
     typeof path !== 'string' ||
     !path.startsWith(`chats/${chatId}/`) ||

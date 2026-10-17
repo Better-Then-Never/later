@@ -70,6 +70,16 @@ describe('chat photos', () => {
     });
   });
 
+  test('a deleted voice message takes its recording along', async () => {
+    const { bucket } = ctx;
+    await bucket.file('chats/alice_bob/bob/v1.m4a').save('aac');
+    assert.deepEqual(
+      await chats.onMessageDeleted({ bucket }, 'alice_bob', { type: 'voice', audioPath: 'chats/alice_bob/bob/v1.m4a' }),
+      { deleted: 'chats/alice_bob/bob/v1.m4a' },
+    );
+    assert.equal(await exists('chats/alice_bob/bob/v1.m4a'), false);
+  });
+
   test('text messages and paths outside the chat are ignored', async () => {
     const { bucket } = ctx;
     await bucket.file('chats/alice_carol/alice/p3.jpg').save('jpg');

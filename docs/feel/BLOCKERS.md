@@ -26,7 +26,7 @@ Anything listed here was **not** checked on the device, or could not be done in 
 - **Photos offline**: a photo waits only while the app runs ("Not sent · Tap to retry" after 45 s offline); text
   messages queue across restarts.
 - **Production IAM**: the functions' service account has *Storage Object Viewer* only, so it cannot delete files:
-  `deleteChatPhoto` and **the existing account deletion's file cleanup** fail in production until the grant in
+  `deleteChatFile` and **the existing account deletion's file cleanup** fail in production until the grant in
   BACKEND_CHANGES.md §2 is made.
 
 ## Owner decisions

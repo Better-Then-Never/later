@@ -89,6 +89,16 @@ describe('chat photos', () => {
     await assertFails(uploadBytes(photo('alice'), new Uint8Array(5 * 1024 * 1024 + 1), jpeg));
   });
 
+  test('voice messages: .m4a audio in the same folder', async () => {
+    const m4a = { contentType: 'audio/mp4' };
+    await assertSucceeds(uploadBytes(photo('alice', 'chats/alice_bob/alice/v1.m4a'), bytes(), m4a));
+    await assertSucceeds(getBytes(photo('bob', 'chats/alice_bob/alice/v1.m4a')));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v2.m4a'), bytes(), jpeg));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v3.jpg'), bytes(), m4a));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v4.mp3'), bytes(), m4a));
+    await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/v5.m4a'), new Uint8Array(5 * 1024 * 1024 + 1), m4a));
+  });
+
   test('only the sender deletes; nobody replaces a sent photo', async () => {
     await assertSucceeds(uploadBytes(photo('alice', 'chats/alice_bob/alice/m2.jpg'), bytes(), jpeg));
     await assertFails(uploadBytes(photo('alice', 'chats/alice_bob/alice/m2.jpg'), bytes(), jpeg));
