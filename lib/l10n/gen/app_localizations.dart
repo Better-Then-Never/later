@@ -1706,17 +1706,17 @@ abstract class AppLocalizations {
   /// **'Friend Requests'**
   String get friendsRequestsTitle;
 
-  /// Search hint on Add Friends; the search looks people up by @username. Keep it short.
-  ///
-  /// In en, this message translates to:
-  /// **'Search by tag'**
-  String get friendsSearchByTagHint;
-
   /// Search hint on My friends (searches only among the user's friends). Keep it short.
   ///
   /// In en, this message translates to:
   /// **'Find my friends'**
   String get friendsSearchHint;
+
+  /// Hint of the people search on Add friends (by name or username).
+  ///
+  /// In en, this message translates to:
+  /// **'Name or @username'**
+  String get friendsSearchPeopleHint;
 
   /// No description provided for @friendsSendCapsule.
   ///
@@ -2323,6 +2323,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Find chats'**
   String get messagesFindChatsHint;
+
+  /// Row under the chat search: search everyone for the typed text.
+  ///
+  /// In en, this message translates to:
+  /// **'Find people: “{query}”'**
+  String messagesFindPeople(String query);
 
   /// Message menu item.
   ///
@@ -3254,23 +3260,17 @@ abstract class AppLocalizations {
   /// **'Unknown location'**
   String get placeUnknown;
 
+  /// On the own profile when there is no "about me" line yet; opens its editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a few words about you'**
+  String get profileAboutPrompt;
+
   /// Card on the own profile page that opens Add Friends.
   ///
   /// In en, this message translates to:
   /// **'Add friends'**
   String get profileAddFriends;
-
-  /// Row in My capsules on the profile page: opens the camera for a public capsule.
-  ///
-  /// In en, this message translates to:
-  /// **'Add to map | Everyone'**
-  String get profileAddToMapEveryone;
-
-  /// Row in My capsules on the profile page: opens the camera for a friends-only capsule.
-  ///
-  /// In en, this message translates to:
-  /// **'Add to map | Only for friends'**
-  String get profileAddToMapFriends;
 
   /// Red option in the background picture menu.
   ///
@@ -3350,6 +3350,12 @@ abstract class AppLocalizations {
   /// **'{count} following'**
   String profileFollowing(int count);
 
+  /// Link on the profile's friends card to the whole friends list.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get profileFriendsAll;
+
   /// Small title at the top of the friends card on the profile.
   ///
   /// In en, this message translates to:
@@ -3386,6 +3392,24 @@ abstract class AppLocalizations {
   /// **'My friends'**
   String get profileMyFriends;
 
+  /// Screen reader start of the new-capsule buttons on the profile ("New capsule: For friends").
+  ///
+  /// In en, this message translates to:
+  /// **'New capsule'**
+  String get profileNewCapsule;
+
+  /// Profile button: a new capsule for everyone.
+  ///
+  /// In en, this message translates to:
+  /// **'For everyone'**
+  String get profileNewForEveryone;
+
+  /// Profile button: a new capsule for friends.
+  ///
+  /// In en, this message translates to:
+  /// **'For friends'**
+  String get profileNewForFriends;
+
   /// Shown instead of the pinned friends on the profile page when the user has no friends.
   ///
   /// In en, this message translates to:
@@ -3416,6 +3440,24 @@ abstract class AppLocalizations {
   /// **'Profile picture updated successfully!'**
   String get profilePictureUpdated;
 
+  /// Quick action: pin the friend at the start of the profile's friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin'**
+  String get profilePin;
+
+  /// Shown when more friends are pinned than allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {count} pinned friends'**
+  String profilePinLimit(int count);
+
+  /// Toast after pinning a friend.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} pinned'**
+  String profilePinned(String name);
+
   /// Explanation under the title of the pinned friends chooser.
   ///
   /// In en, this message translates to:
@@ -3445,6 +3487,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong...'**
   String get profileQrError;
+
+  /// Quick action on a friend in the profile: send them a capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a capsule'**
+  String get profileQuickCapsule;
+
+  /// Quick action on a friend in the profile: open the chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get profileQuickMessage;
 
   /// Button on Share Profile that opens the system share sheet (half-width button with an icon: keep it short).
   ///
@@ -3488,6 +3542,36 @@ abstract class AppLocalizations {
   /// **'Share Profile'**
   String get profileShareTitle;
 
+  /// Label under the number of the user's capsules on the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{capsule} other{capsules}}'**
+  String profileStatCapsules(int count);
+
+  /// Label under the number of places (about 5 km apart) with the user's capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{place} other{places}}'**
+  String profileStatPlaces(int count);
+
+  /// Label under the number of capsules made with friends (co-authors).
+  ///
+  /// In en, this message translates to:
+  /// **'with friends'**
+  String get profileStatTogether;
+
+  /// Quick action: unpin the friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin'**
+  String get profileUnpin;
+
+  /// Toast after unpinning a friend.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} unpinned'**
+  String profileUnpinned(String name);
+
   /// Shown on the profile or background picture while it uploads or is deleted.
   ///
   /// In en, this message translates to:
@@ -3506,11 +3590,23 @@ abstract class AppLocalizations {
   /// **'View profile page'**
   String get profileViewProfile;
 
-  /// Settings row and page with the app version and legal documents.
+  /// Settings row and page title: the "about me" line on the profile.
   ///
   /// In en, this message translates to:
-  /// **'About'**
+  /// **'About me'**
   String get settingsAbout;
+
+  /// Explanation on the "About me" page.
+  ///
+  /// In en, this message translates to:
+  /// **'A few words under your name, for everyone who opens your profile.'**
+  String get settingsAboutDescription;
+
+  /// Example text in the empty "about me" field.
+  ///
+  /// In en, this message translates to:
+  /// **'Collecting sunsets since 2019'**
+  String get settingsAboutHint;
 
   /// No description provided for @settingsAboutLicenses.
   ///
@@ -3535,6 +3631,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Terms of use'**
   String get settingsAboutTerms;
+
+  /// Error when the "about me" line is too long.
+  ///
+  /// In en, this message translates to:
+  /// **'At most {count} characters'**
+  String settingsAboutTooLong(int count);
+
+  /// Toast after saving the "about me" line.
+  ///
+  /// In en, this message translates to:
+  /// **'About me updated'**
+  String get settingsAboutUpdated;
 
   /// No description provided for @settingsAboutVersion.
   ///
@@ -4435,6 +4543,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What others see and what new capsules start with'**
   String get settingsPrivacyDescription;
+
+  /// Privacy switch: others may find the user by searching their name.
+  ///
+  /// In en, this message translates to:
+  /// **'Find me by name'**
+  String get settingsPrivacyFindByName;
+
+  /// Explains the "find me by name" switch.
+  ///
+  /// In en, this message translates to:
+  /// **'People can search for your name. By username they always can.'**
+  String get settingsPrivacyFindByNameHint;
 
   /// No description provided for @settingsPrivacyNewCapsulesFooter.
   ///

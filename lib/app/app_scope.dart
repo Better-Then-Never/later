@@ -22,6 +22,7 @@ import '../features/history/favorites_store.dart';
 import '../features/capsules/outbox/capsule_outbox.dart';
 import '../features/history/own_capsules_store.dart';
 import '../features/friends/friends_store.dart';
+import '../features/users/search_name_sync.dart';
 import '../features/users/user_directory.dart';
 import '../features/map/current_location.dart';
 import '../features/map/map_focus.dart';
@@ -95,6 +96,7 @@ class _AppScopeState extends State<AppScope> {
     notifications: _notifications,
   );
   late final NotificationRouter _notificationRouter;
+  late final SearchNameSync _searchName;
   late final _newsTopics = NewsTopics(
     push: _push,
     settings: _settingsStore,
@@ -127,6 +129,11 @@ class _AppScopeState extends State<AppScope> {
     // Muted chats leave the unread badge; pinned ones lead the list.
     _settingsStore.addListener(_syncMutedChats);
     _newsTopics.start();
+    _searchName = SearchNameSync(
+      session: _session,
+      settings: _settingsStore,
+      users: _users,
+    )..start();
     _notificationRouter = NotificationRouter(
       push: _push,
       session: _session,
@@ -146,6 +153,7 @@ class _AppScopeState extends State<AppScope> {
   void dispose() {
     _settingsStore.removeListener(_syncMutedChats);
     _newsTopics.dispose();
+    _searchName.dispose();
     _session.dispose();
     _notificationRouter.dispose();
     _push.dispose();

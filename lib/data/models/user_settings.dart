@@ -153,6 +153,7 @@ class PrivacySettings {
     this.readReceipts = true,
     this.locationPrecision = LocationPrecision.exact,
     this.contactSuggestions = false,
+    this.findByName = true,
   });
 
   /// What the creation screen starts with.
@@ -165,16 +166,21 @@ class PrivacySettings {
   /// Whether the app may suggest people from the phone's contacts.
   final bool contactSuggestions;
 
+  /// Whether others find the user by their name (by username always).
+  final bool findByName;
+
   PrivacySettings copyWith({
     CapsulePrivacy? defaultVisibility,
     bool? readReceipts,
     LocationPrecision? locationPrecision,
     bool? contactSuggestions,
+    bool? findByName,
   }) => PrivacySettings(
     defaultVisibility: defaultVisibility ?? this.defaultVisibility,
     readReceipts: readReceipts ?? this.readReceipts,
     locationPrecision: locationPrecision ?? this.locationPrecision,
     contactSuggestions: contactSuggestions ?? this.contactSuggestions,
+    findByName: findByName ?? this.findByName,
   );
 
   @override
@@ -183,7 +189,8 @@ class PrivacySettings {
       other.defaultVisibility == defaultVisibility &&
       other.readReceipts == readReceipts &&
       other.locationPrecision == locationPrecision &&
-      other.contactSuggestions == contactSuggestions;
+      other.contactSuggestions == contactSuggestions &&
+      other.findByName == findByName;
 
   @override
   int get hashCode => Object.hash(
@@ -191,6 +198,7 @@ class PrivacySettings {
     readReceipts,
     locationPrecision,
     contactSuggestions,
+    findByName,
   );
 }
 
@@ -202,8 +210,15 @@ class UserSettings {
     this.privacy = const PrivacySettings(),
     this.mutedChats = const {},
     this.pinnedChats = const [],
+    this.pinnedFriends = const [],
     this.language,
   });
+
+  /// Most friends pinned at the start of the profile's friends.
+  static const maxPinnedFriends = 3;
+
+  /// Friends first on the profile, first pinned first (on every phone).
+  final List<String> pinnedFriends;
 
   /// Most chats kept at the top of the list.
   static const maxPinned = 3;
@@ -225,12 +240,14 @@ class UserSettings {
     PrivacySettings? privacy,
     Set<String>? mutedChats,
     List<String>? pinnedChats,
+    List<String>? pinnedFriends,
     String? language,
   }) => UserSettings(
     notifications: notifications ?? this.notifications,
     privacy: privacy ?? this.privacy,
     mutedChats: mutedChats ?? this.mutedChats,
     pinnedChats: pinnedChats ?? this.pinnedChats,
+    pinnedFriends: pinnedFriends ?? this.pinnedFriends,
     language: language ?? this.language,
   );
 
@@ -242,7 +259,8 @@ class UserSettings {
       other.language == language &&
       other.mutedChats.length == mutedChats.length &&
       other.mutedChats.containsAll(mutedChats) &&
-      listEquals(other.pinnedChats, pinnedChats);
+      listEquals(other.pinnedChats, pinnedChats) &&
+      listEquals(other.pinnedFriends, pinnedFriends);
 
   @override
   int get hashCode =>

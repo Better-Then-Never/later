@@ -1013,10 +1013,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsRequestsTitle => 'Freundschaftsanfragen';
 
   @override
-  String get friendsSearchByTagHint => 'Nutzername suchen';
+  String get friendsSearchHint => 'Freunde durchsuchen';
 
   @override
-  String get friendsSearchHint => 'Freunde durchsuchen';
+  String get friendsSearchPeopleHint => 'Name oder @Nutzername';
 
   @override
   String get friendsSendCapsule => 'Kapsel senden';
@@ -1391,6 +1391,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Chats suchen';
+
+  @override
+  String messagesFindPeople(String query) {
+    return 'Personen finden: „$query“';
+  }
 
   @override
   String get messagesForward => 'Weiterleiten';
@@ -2000,13 +2005,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get placeUnknown => 'Unbekannter Ort';
 
   @override
+  String get profileAboutPrompt => 'Schreib ein paar Worte über dich';
+
+  @override
   String get profileAddFriends => 'Freunde hinzufügen';
-
-  @override
-  String get profileAddToMapEveryone => 'Auf die Karte | Für alle';
-
-  @override
-  String get profileAddToMapFriends => 'Auf die Karte | Nur für Freunde';
 
   @override
   String get profileBackgroundDelete => 'Hintergrundbild löschen';
@@ -2062,6 +2064,9 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get profileFriendsAll => 'Alle';
+
+  @override
   String get profileFriendsSection => 'Freunde';
 
   @override
@@ -2080,6 +2085,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileMyFriends => 'Meine Freunde';
 
   @override
+  String get profileNewCapsule => 'Neue Kapsel';
+
+  @override
+  String get profileNewForEveryone => 'Für alle';
+
+  @override
+  String get profileNewForFriends => 'Für Freunde';
+
+  @override
   String get profileNoFriends => 'Du hast noch keine Freunde';
 
   @override
@@ -2093,6 +2107,19 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profilePictureUpdated => 'Profilbild aktualisiert!';
+
+  @override
+  String get profilePin => 'Anheften';
+
+  @override
+  String profilePinLimit(int count) {
+    return 'Höchstens $count angeheftete Freunde';
+  }
+
+  @override
+  String profilePinned(String name) {
+    return '$name angeheftet';
+  }
 
   @override
   String get profilePinnedHint =>
@@ -2109,6 +2136,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileQrError => 'Etwas ist schiefgelaufen...';
+
+  @override
+  String get profileQuickCapsule => 'Kapsel senden';
+
+  @override
+  String get profileQuickMessage => 'Nachricht';
 
   @override
   String get profileShare => 'Teilen';
@@ -2138,6 +2171,39 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileShareTitle => 'Profil teilen';
 
   @override
+  String profileStatCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Kapseln',
+      one: 'Kapsel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileStatPlaces(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Orte',
+      one: 'Ort',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileStatTogether => 'mit Freunden';
+
+  @override
+  String get profileUnpin => 'Lösen';
+
+  @override
+  String profileUnpinned(String name) {
+    return '$name gelöst';
+  }
+
+  @override
   String get profileUpdating => 'Aktualisiere...';
 
   @override
@@ -2147,7 +2213,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileViewProfile => 'Profil ansehen';
 
   @override
-  String get settingsAbout => 'Über die App';
+  String get settingsAbout => 'Über mich';
+
+  @override
+  String get settingsAboutDescription =>
+      'Ein paar Worte unter deinem Namen für alle, die dein Profil öffnen.';
+
+  @override
+  String get settingsAboutHint => 'Sammle Sonnenuntergänge seit 2019';
 
   @override
   String get settingsAboutLicenses => 'Open-Source-Lizenzen';
@@ -2160,6 +2233,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsAboutTerms => 'Nutzungsbedingungen';
+
+  @override
+  String settingsAboutTooLong(int count) {
+    return 'Höchstens $count Zeichen';
+  }
+
+  @override
+  String get settingsAboutUpdated => '„Über mich“ aktualisiert';
 
   @override
   String get settingsAboutVersion => 'Version';
@@ -2705,6 +2786,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Was andere sehen und wie neue Kapseln starten';
+
+  @override
+  String get settingsPrivacyFindByName => 'Per Name auffindbar';
+
+  @override
+  String get settingsPrivacyFindByNameHint =>
+      'Man kann nach deinem Namen suchen. Nach dem Benutzernamen immer.';
 
   @override
   String get settingsPrivacyNewCapsulesFooter =>

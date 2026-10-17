@@ -190,6 +190,14 @@ class FakeSettingsRepository implements SettingsRepository {
   }
 
   @override
+  Future<void> setPinnedFriends(String uid, List<String> friends) async {
+    _check();
+    final current = docs[uid] ?? const UserSettings();
+    docs[uid] = current.copyWith(pinnedFriends: friends);
+    _changes.add(uid);
+  }
+
+  @override
   Future<void> setChatPinned(
     String uid,
     String chatId, {
@@ -281,6 +289,42 @@ class FakeUserRepository implements UserRepository {
   @override
   Future<void> setShowAchievements(String uid, bool show) async =>
       put(profiles[uid]!.copyWith(showAchievements: show));
+
+  @override
+  Future<void> setAbout(String uid, String about) async =>
+      put(profiles[uid]!.copyWith(about: about));
+
+  /// Lower-case names people are found by (`nameLower`).
+  final Map<String, String> searchNames = {};
+
+  @override
+  Future<void> setSearchName(String uid, String? lowerCaseName) async {
+    lowerCaseName == null
+        ? searchNames.remove(uid)
+        : searchNames[uid] = lowerCaseName;
+    final p = profiles[uid]!;
+    put(
+      UserProfile(
+        uid: uid,
+        name: p.name,
+        username: p.username,
+        friends: p.friends,
+        favorites: p.favorites,
+        showAchievements: p.showAchievements,
+        about: p.about,
+        searchName: lowerCaseName,
+      ),
+    );
+  }
+
+  @override
+  Future<List<UserProfile>> searchByName(
+    String prefix, {
+    int limit = 20,
+  }) async => [
+    for (final e in searchNames.entries)
+      if (prefix.isNotEmpty && e.value.startsWith(prefix)) profiles[e.key]!,
+  ].take(limit).toList();
 
   @override
   Future<void> setFavorite(String uid, String capsuleId, bool favorite) async {

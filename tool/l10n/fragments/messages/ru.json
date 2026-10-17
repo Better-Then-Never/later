@@ -117,5 +117,6 @@
   "messagesPin": "Закрепить",
   "messagesUnpin": "Открепить",
   "messagesPinned": "Закреплён",
-  "messagesPinLimit": "{count, plural, one{Можно закрепить {count} чат} few{Можно закрепить до {count} чатов} many{Можно закрепить до {count} чатов} other{Можно закрепить до {count} чата}}"
+  "messagesPinLimit": "{count, plural, one{Можно закрепить {count} чат} few{Можно закрепить до {count} чатов} many{Можно закрепить до {count} чатов} other{Можно закрепить до {count} чата}}",
+  "messagesFindPeople": "Найти людей: «{query}»"
 }

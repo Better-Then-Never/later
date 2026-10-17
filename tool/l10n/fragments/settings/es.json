@@ -20,7 +20,7 @@
   "settingsDataAndStorage": "Datos y almacenamiento",
   "settingsSectionSupport": "SOPORTE",
   "settingsHelp": "Ayuda",
-  "settingsAbout": "Acerca de",
+  "settingsAbout": "Sobre mí",
   "settingsLogOut": "Cerrar sesión",
   "settingsLogOutConfirm": "¿Seguro que quieres cerrar sesión?",
   "settingsDeleteAccount": "Eliminar cuenta",
@@ -211,5 +211,11 @@
   "settingsNotificationsStreak": "Recordatorio de racha",
   "settingsNotificationsStreakHint": "Por la tarde, si tu racha terminaría hoy",
   "settingsNotificationsNews": "Novedades de Later",
-  "settingsNotificationsNewsHint": "Anuncios ocasionales del equipo"
+  "settingsNotificationsNewsHint": "Anuncios ocasionales del equipo",
+  "settingsAboutDescription": "Unas palabras bajo tu nombre para quien abra tu perfil.",
+  "settingsAboutHint": "Coleccionando atardeceres desde 2019",
+  "settingsAboutUpdated": "Se actualizó «Sobre mí»",
+  "settingsAboutTooLong": "Como máximo {count} caracteres",
+  "settingsPrivacyFindByName": "Encontrarme por nombre",
+  "settingsPrivacyFindByNameHint": "Pueden buscar tu nombre. Por nombre de usuario, siempre."
 }

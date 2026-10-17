@@ -52,7 +52,6 @@
   "friendsRequestsReceivedTab": "Входящие",
   "friendsRequestsSentTab": "Отправленные",
   "friendsRequestsTitle": "Заявки в друзья",
-  "friendsSearchByTagHint": "Поиск по нику",
   "friendsSearchHint": "Поиск среди друзей",
   "friendsSendCapsule": "Отправить капсулу",
   "friendsSendRequestLabel": "Отправить заявку в друзья",
@@ -65,5 +64,6 @@
   "friendsUnfollowed": "Вы отписались",
   "friendsViewProfile": "Открыть профиль",
   "friendsMutualCount": "{count, plural, one{{count} общий друг} few{{count} общих друга} many{{count} общих друзей} other{{count} общих друга}}",
-  "friendsFindByUsernameHint": "Найдите человека по @нику или отсканируйте QR-код друга. Здесь появятся знакомые ваших друзей."
+  "friendsFindByUsernameHint": "Найдите человека по @нику или отсканируйте QR-код друга. Здесь появятся знакомые ваших друзей.",
+  "friendsSearchPeopleHint": "Имя или @ник"
 }

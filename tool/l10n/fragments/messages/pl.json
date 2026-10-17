@@ -117,5 +117,6 @@
   "messagesPin": "Przypnij",
   "messagesUnpin": "Odepnij",
   "messagesPinned": "Przypięty",
-  "messagesPinLimit": "{count, plural, one{Możesz przypiąć {count} czat} few{Możesz przypiąć do {count} czatów} many{Możesz przypiąć do {count} czatów} other{Możesz przypiąć do {count} czatu}}"
+  "messagesPinLimit": "{count, plural, one{Możesz przypiąć {count} czat} few{Możesz przypiąć do {count} czatów} many{Możesz przypiąć do {count} czatów} other{Możesz przypiąć do {count} czatu}}",
+  "messagesFindPeople": "Znajdź osoby: „{query}”"
 }

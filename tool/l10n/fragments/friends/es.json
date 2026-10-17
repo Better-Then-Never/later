@@ -52,7 +52,6 @@
   "friendsRequestsReceivedTab": "Recibidas",
   "friendsRequestsSentTab": "Enviadas",
   "friendsRequestsTitle": "Solicitudes de amistad",
-  "friendsSearchByTagHint": "Buscar por usuario",
   "friendsSearchHint": "Buscar entre tus amigos",
   "friendsSendCapsule": "Enviar cápsula",
   "friendsSendRequestLabel": "Enviar solicitud de amistad",
@@ -65,5 +64,6 @@
   "friendsUnfollowed": "Ya no sigues a este usuario",
   "friendsViewProfile": "Ver perfil",
   "friendsMutualCount": "{count, plural, =1{1 amigo en común} other{{count} amigos en común}}",
-  "friendsFindByUsernameHint": "Busca por @usuario o escanea el código QR de un amigo. Aquí aparecerán personas que conocen tus amigos."
+  "friendsFindByUsernameHint": "Busca por @usuario o escanea el código QR de un amigo. Aquí aparecerán personas que conocen tus amigos.",
+  "friendsSearchPeopleHint": "Nombre o @usuario"
 }

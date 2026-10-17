@@ -135,6 +135,23 @@ describe('users', () => {
     await assertFails(updateDoc(doc(as('alice'), 'users/alice'), { name: '' }));
   });
 
+  test('a few words about yourself, and the lower-case name for search', async () => {
+    const alice = doc(as('alice'), 'users/alice');
+    await assertSucceeds(updateDoc(alice, { about: 'Collecting sunsets' }));
+    await assertFails(updateDoc(alice, { about: 'x'.repeat(101) }));
+    await assertFails(updateDoc(alice, { about: 42 }));
+    await assertFails(updateDoc(doc(as('carol'), 'users/alice'), { about: 'hi' }));
+    await assertSucceeds(updateDoc(alice, { name: 'Alice Walker', nameLower: 'alice walker' }));
+    await assertFails(updateDoc(alice, { nameLower: 'someone else' }));
+    // An old app renames without it; the index lags but the rename works.
+    await assertSucceeds(updateDoc(alice, { name: 'Ally' }));
+    await assertSucceeds(updateDoc(alice, { nameLower: deleteField() }));
+    const found = await assertSucceeds(
+      getDocs(query(collection(as('bob'), 'users'), where('nameLower', '>=', 'al'), where('nameLower', '<', 'al\uf8ff'), limit(20))),
+    );
+    assert.equal(found.size, 0, 'removed from the name index');
+  });
+
   test('legacy private fields may only be removed', async () => {
     await seed((db) => updateDoc(doc(db, 'users/alice'), { fcmToken: 't', email: 'a@x.y' }));
     await assertFails(updateDoc(doc(as('alice'), 'users/alice'), { fcmToken: 'new' }));
@@ -867,6 +884,12 @@ describe('settings', () => {
     await assertSucceeds(setDoc(settingsRef(alice), { pinnedChats: arrayUnion('alice_bob') }, { merge: true }));
     await assertFails(setDoc(settingsRef(alice), { pinnedChats: Array.from({ length: 11 }, (_, i) => `c${i}`) }, { merge: true }));
     await assertFails(setDoc(settingsRef(alice), { pinnedChats: 'alice_bob' }, { merge: true }));
+    // Pinned friends on the profile: a short list, on every phone.
+    await assertSucceeds(setDoc(settingsRef(alice), { pinnedFriends: ['bob', 'carol'] }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { pinnedFriends: Array.from({ length: 11 }, (_, i) => `u${i}`) }, { merge: true }));
+    // Found by name, or not.
+    await assertSucceeds(setDoc(settingsRef(alice), { privacy: { findByName: false } }, { merge: true }));
+    await assertFails(setDoc(settingsRef(alice), { privacy: { findByName: 'no' } }, { merge: true }));
     await assertSucceeds(getDoc(settingsRef(alice)));
     await assertFails(getDoc(settingsRef(as('bob'), 'alice')));
     await assertFails(setDoc(settingsRef(as('bob'), 'alice'), valid));

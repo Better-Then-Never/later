@@ -1016,10 +1016,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsRequestsTitle => 'Заявки в друзья';
 
   @override
-  String get friendsSearchByTagHint => 'Поиск по нику';
+  String get friendsSearchHint => 'Поиск среди друзей';
 
   @override
-  String get friendsSearchHint => 'Поиск среди друзей';
+  String get friendsSearchPeopleHint => 'Имя или @ник';
 
   @override
   String get friendsSendCapsule => 'Отправить капсулу';
@@ -1395,6 +1395,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get messagesFindChatsHint => 'Поиск чатов';
+
+  @override
+  String messagesFindPeople(String query) {
+    return 'Найти людей: «$query»';
+  }
 
   @override
   String get messagesForward => 'Переслать';
@@ -2028,13 +2033,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get placeUnknown => 'Неизвестное место';
 
   @override
+  String get profileAboutPrompt => 'Расскажите немного о себе';
+
+  @override
   String get profileAddFriends => 'Добавить друзей';
-
-  @override
-  String get profileAddToMapEveryone => 'На карту | Для всех';
-
-  @override
-  String get profileAddToMapFriends => 'На карту | Для друзей';
 
   @override
   String get profileBackgroundDelete => 'Удалить фон';
@@ -2096,6 +2098,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get profileFriendsAll => 'Все';
+
+  @override
   String get profileFriendsSection => 'Друзья';
 
   @override
@@ -2114,6 +2119,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileMyFriends => 'Мои друзья';
 
   @override
+  String get profileNewCapsule => 'Новая капсула';
+
+  @override
+  String get profileNewForEveryone => 'Для всех';
+
+  @override
+  String get profileNewForFriends => 'Для друзей';
+
+  @override
   String get profileNoFriends => 'У вас пока нет друзей';
 
   @override
@@ -2127,6 +2141,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profilePictureUpdated => 'Фото профиля обновлено!';
+
+  @override
+  String get profilePin => 'Закрепить';
+
+  @override
+  String profilePinLimit(int count) {
+    return 'Не больше $count закреплённых друзей';
+  }
+
+  @override
+  String profilePinned(String name) {
+    return '$name: закреплено';
+  }
 
   @override
   String get profilePinnedHint =>
@@ -2143,6 +2170,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileQrError => 'Что-то пошло не так...';
+
+  @override
+  String get profileQuickCapsule => 'Отправить капсулу';
+
+  @override
+  String get profileQuickMessage => 'Написать';
 
   @override
   String get profileShare => 'Поделиться';
@@ -2172,6 +2205,43 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileShareTitle => 'Поделиться профилем';
 
   @override
+  String profileStatCapsules(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'капсулы',
+      many: 'капсул',
+      few: 'капсулы',
+      one: 'капсула',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileStatPlaces(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'места',
+      many: 'мест',
+      few: 'места',
+      one: 'место',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileStatTogether => 'с друзьями';
+
+  @override
+  String get profileUnpin => 'Открепить';
+
+  @override
+  String profileUnpinned(String name) {
+    return '$name: откреплено';
+  }
+
+  @override
   String get profileUpdating => 'Секунду...';
 
   @override
@@ -2181,7 +2251,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileViewProfile => 'Открыть профиль';
 
   @override
-  String get settingsAbout => 'О приложении';
+  String get settingsAbout => 'О себе';
+
+  @override
+  String get settingsAboutDescription =>
+      'Пара слов под вашим именем для всех, кто откроет профиль.';
+
+  @override
+  String get settingsAboutHint => 'Собираю закаты с 2019 года';
 
   @override
   String get settingsAboutLicenses => 'Лицензии открытого ПО';
@@ -2194,6 +2271,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsAboutTerms => 'Условия использования';
+
+  @override
+  String settingsAboutTooLong(int count) {
+    return 'Не больше $count символов';
+  }
+
+  @override
+  String get settingsAboutUpdated => 'Раздел «О себе» обновлён';
 
   @override
   String get settingsAboutVersion => 'Версия';
@@ -2735,6 +2820,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsPrivacyDescription =>
       'Что видят другие и какими будут новые капсулы';
+
+  @override
+  String get settingsPrivacyFindByName => 'Искать меня по имени';
+
+  @override
+  String get settingsPrivacyFindByNameHint =>
+      'Вас можно найти поиском по имени. По имени пользователя — всегда.';
 
   @override
   String get settingsPrivacyNewCapsulesFooter =>

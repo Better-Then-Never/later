@@ -89,6 +89,16 @@ abstract interface class UserRepository {
 
   /// Whether friends may see [uid]'s achievements.
   Future<void> setShowAchievements(String uid, bool show);
+
+  /// The "about me" line (empty removes it).
+  Future<void> setAbout(String uid, String about);
+
+  /// What others find [uid] by when searching names; null takes them out of
+  /// the name search.
+  Future<void> setSearchName(String uid, String? lowerCaseName);
+
+  /// Prefix search on lower-case names of people who allow it.
+  Future<List<UserProfile>> searchByName(String prefix, {int limit});
 }
 
 abstract interface class FriendsRepository {
@@ -366,6 +376,9 @@ abstract interface class SettingsRepository {
   Future<void> setChatMuted(String uid, String chatId, {required bool muted});
 
   Future<void> setChatPinned(String uid, String chatId, {required bool pinned});
+
+  /// The friends first on the profile (the whole list, in order).
+  Future<void> setPinnedFriends(String uid, List<String> friends);
 }
 
 abstract interface class PushTokenRepository {

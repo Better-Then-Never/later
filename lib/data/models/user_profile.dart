@@ -99,7 +99,12 @@ class UserProfile {
     this.followingCount = 0,
     this.showAchievements = true,
     this.stats = const UserStats(),
+    this.about = '',
+    this.searchName,
   });
+
+  /// Longest "about me" line (firestore.rules).
+  static const maxAbout = 100;
 
   /// Placeholder used while a profile is loading or when it does not exist,
   /// named in the app's language.
@@ -112,7 +117,9 @@ class UserProfile {
       followerCount = 0,
       followingCount = 0,
       showAchievements = true,
-      stats = const UserStats();
+      stats = const UserStats(),
+      about = '',
+      searchName = null;
 
   final String uid;
   final String name;
@@ -131,12 +138,20 @@ class UserProfile {
   final bool showAchievements;
   final UserStats stats;
 
+  /// A few words under the name; empty when none.
+  final String about;
+
+  /// The lower-case name others search by (`nameLower`); null when the user
+  /// is not found by name (or an older app never wrote it).
+  final String? searchName;
+
   UserProfile copyWith({
     String? name,
     String? username,
     List<String>? friends,
     Set<String>? favorites,
     bool? showAchievements,
+    String? about,
   }) => UserProfile(
     uid: uid,
     name: name ?? this.name,
@@ -148,6 +163,8 @@ class UserProfile {
     followingCount: followingCount,
     showAchievements: showAchievements ?? this.showAchievements,
     stats: stats,
+    about: about ?? this.about,
+    searchName: searchName,
   );
 
   /// First letter used to group friend lists; never throws on empty names.

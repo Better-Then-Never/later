@@ -7,6 +7,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/styles/box_decorations.dart';
 import '../../../shared/widgets/count_badge.dart';
+import '../../../shared/widgets/pin_mark.dart';
 import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../chat_time.dart';
 
@@ -113,10 +114,7 @@ class ChatListItem extends StatelessWidget {
                   if (pinned)
                     Semantics(
                       label: context.l10n.messagesPinned,
-                      child: CustomPaint(
-                        size: const Size(14, 16),
-                        painter: _PinPainter(color: palette.iconMuted),
-                      ),
+                      child: PinMark(color: palette.iconMuted, size: 16),
                     ),
                   if (pinned && unread > 0) const SizedBox(width: 6),
                   CountBadge(
@@ -131,26 +129,4 @@ class ChatListItem extends StatelessWidget {
       ),
     );
   }
-}
-
-/// A small push pin: a round head on a short needle.
-class _PinPainter extends CustomPainter {
-  const _PinPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-    final head = Offset(size.width / 2, size.height * 0.33);
-    canvas
-      ..drawCircle(head, size.width * 0.34, paint)
-      ..drawLine(head, Offset(size.width / 2, size.height - 1), paint);
-  }
-
-  @override
-  bool shouldRepaint(_PinPainter old) => old.color != color;
 }

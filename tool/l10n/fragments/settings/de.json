@@ -20,7 +20,7 @@
   "settingsDataAndStorage": "Daten und Speicher",
   "settingsSectionSupport": "SUPPORT",
   "settingsHelp": "Hilfe",
-  "settingsAbout": "Über die App",
+  "settingsAbout": "Über mich",
   "settingsLogOut": "Abmelden",
   "settingsLogOutConfirm": "Willst du dich wirklich abmelden?",
   "settingsDeleteAccount": "Konto löschen",
@@ -211,5 +211,11 @@
   "settingsNotificationsStreak": "Serien-Erinnerung",
   "settingsNotificationsStreakHint": "Abends, wenn deine Serie heute enden würde",
   "settingsNotificationsNews": "Neuigkeiten von Later",
-  "settingsNotificationsNewsHint": "Seltene Ankündigungen vom Team"
+  "settingsNotificationsNewsHint": "Seltene Ankündigungen vom Team",
+  "settingsAboutDescription": "Ein paar Worte unter deinem Namen für alle, die dein Profil öffnen.",
+  "settingsAboutHint": "Sammle Sonnenuntergänge seit 2019",
+  "settingsAboutUpdated": "„Über mich“ aktualisiert",
+  "settingsAboutTooLong": "Höchstens {count} Zeichen",
+  "settingsPrivacyFindByName": "Per Name auffindbar",
+  "settingsPrivacyFindByNameHint": "Man kann nach deinem Namen suchen. Nach dem Benutzernamen immer."
 }

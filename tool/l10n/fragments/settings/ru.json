@@ -20,7 +20,7 @@
   "settingsDataAndStorage": "Данные и память",
   "settingsSectionSupport": "ПОДДЕРЖКА",
   "settingsHelp": "Помощь",
-  "settingsAbout": "О приложении",
+  "settingsAbout": "О себе",
   "settingsLogOut": "Выйти",
   "settingsLogOutConfirm": "Точно хотите выйти?",
   "settingsDeleteAccount": "Удалить аккаунт",
@@ -211,5 +211,11 @@
   "settingsNotificationsStreak": "Напоминание о серии",
   "settingsNotificationsStreakHint": "Вечером, если серия сегодня прервётся",
   "settingsNotificationsNews": "Новости Later",
-  "settingsNotificationsNewsHint": "Редкие объявления от команды"
+  "settingsNotificationsNewsHint": "Редкие объявления от команды",
+  "settingsAboutDescription": "Пара слов под вашим именем для всех, кто откроет профиль.",
+  "settingsAboutHint": "Собираю закаты с 2019 года",
+  "settingsAboutUpdated": "Раздел «О себе» обновлён",
+  "settingsAboutTooLong": "Не больше {count} символов",
+  "settingsPrivacyFindByName": "Искать меня по имени",
+  "settingsPrivacyFindByNameHint": "Вас можно найти поиском по имени. По имени пользователя — всегда."
 }

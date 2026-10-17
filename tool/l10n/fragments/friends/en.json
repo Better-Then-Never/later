@@ -106,10 +106,6 @@
     "description": "Toggle on Friend Requests: requests the user sent."
   },
   "friendsRequestsTitle": "Friend Requests",
-  "friendsSearchByTagHint": "Search by tag",
-  "@friendsSearchByTagHint": {
-    "description": "Search hint on Add Friends; the search looks people up by @username. Keep it short."
-  },
   "friendsSearchHint": "Find my friends",
   "@friendsSearchHint": {
     "description": "Search hint on My friends (searches only among the user's friends). Keep it short."
@@ -139,5 +135,9 @@
       }
     }
   },
-  "friendsFindByUsernameHint": "Search by @username or scan a friend's QR code. People your friends know show up here."
+  "friendsFindByUsernameHint": "Search by @username or scan a friend's QR code. People your friends know show up here.",
+  "friendsSearchPeopleHint": "Name or @username",
+  "@friendsSearchPeopleHint": {
+    "description": "Hint of the people search on Add friends (by name or username)."
+  }
 }

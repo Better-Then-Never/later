@@ -117,5 +117,6 @@
   "messagesPin": "Fijar arriba",
   "messagesUnpin": "Desfijar",
   "messagesPinned": "Fijado",
-  "messagesPinLimit": "{count, plural, =1{Puedes fijar 1 chat} other{Puedes fijar hasta {count} chats}}"
+  "messagesPinLimit": "{count, plural, =1{Puedes fijar 1 chat} other{Puedes fijar hasta {count} chats}}",
+  "messagesFindPeople": "Buscar personas: «{query}»"
 }

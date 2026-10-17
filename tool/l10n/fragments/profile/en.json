@@ -3,14 +3,6 @@
   "@profileAddFriends": {
     "description": "Card on the own profile page that opens Add Friends."
   },
-  "profileAddToMapEveryone": "Add to map | Everyone",
-  "@profileAddToMapEveryone": {
-    "description": "Row in My capsules on the profile page: opens the camera for a public capsule."
-  },
-  "profileAddToMapFriends": "Add to map | Only for friends",
-  "@profileAddToMapFriends": {
-    "description": "Row in My capsules on the profile page: opens the camera for a friends-only capsule."
-  },
   "profileBackgroundDelete": "Delete background picture",
   "@profileBackgroundDelete": {
     "description": "Red option in the background picture menu."
@@ -157,5 +149,92 @@
   },
   "@profileNoFriendsAction": {
     "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
+  },
+  "profileAboutPrompt": "Add a few words about you",
+  "@profileAboutPrompt": {
+    "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
+  },
+  "profilePinLimit": "Up to {count} pinned friends",
+  "@profilePinLimit": {
+    "description": "Shown when more friends are pinned than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFriendsAll": "All",
+  "@profileFriendsAll": {
+    "description": "Link on the profile's friends card to the whole friends list."
+  },
+  "profileQuickMessage": "Message",
+  "@profileQuickMessage": {
+    "description": "Quick action on a friend in the profile: open the chat."
+  },
+  "profileQuickCapsule": "Send a capsule",
+  "@profileQuickCapsule": {
+    "description": "Quick action on a friend in the profile: send them a capsule."
+  },
+  "profilePin": "Pin",
+  "@profilePin": {
+    "description": "Quick action: pin the friend at the start of the profile's friends."
+  },
+  "profileUnpin": "Unpin",
+  "@profileUnpin": {
+    "description": "Quick action: unpin the friend."
+  },
+  "profilePinned": "{name} pinned",
+  "@profilePinned": {
+    "description": "Toast after pinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "profileUnpinned": "{name} unpinned",
+  "@profileUnpinned": {
+    "description": "Toast after unpinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
+  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
+  "@profileStatCapsules": {
+    "description": "Label under the number of the user's capsules on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
+  "@profileStatPlaces": {
+    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatTogether": "with friends",
+  "@profileStatTogether": {
+    "description": "Label under the number of capsules made with friends (co-authors)."
+  },
+  "profileNewCapsule": "New capsule",
+  "@profileNewCapsule": {
+    "description": "Screen reader start of the new-capsule buttons on the profile (\"New capsule: For friends\")."
+  },
+  "profileNewForFriends": "For friends",
+  "@profileNewForFriends": {
+    "description": "Profile button: a new capsule for friends."
+  },
+  "profileNewForEveryone": "For everyone",
+  "@profileNewForEveryone": {
+    "description": "Profile button: a new capsule for everyone."
   }
 }

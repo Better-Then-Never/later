@@ -1,7 +1,5 @@
 {
   "profileAddFriends": "Dodaj znajomych",
-  "profileAddToMapEveryone": "Na mapę | Dla wszystkich",
-  "profileAddToMapFriends": "Na mapę | Tylko dla znajomych",
   "profileBackgroundDelete": "Usuń zdjęcie w tle",
   "profileBackgroundTitle": "Zdjęcie w tle",
   "profileBackgroundUpdated": "Zdjęcie w tle zaktualizowane!",
@@ -40,5 +38,20 @@
   "profileFollowing": "{count} obserwowanych",
   "profileVerified": "Zweryfikowane konto",
   "profileFriendsSection": "Znajomi",
-  "profileNoFriendsAction": "Znajdź osoby, które znasz"
+  "profileNoFriendsAction": "Znajdź osoby, które znasz",
+  "profileAboutPrompt": "Dodaj kilka słów o sobie",
+  "profilePinLimit": "Najwyżej {count} przypiętych znajomych",
+  "profileFriendsAll": "Wszyscy",
+  "profileQuickMessage": "Napisz",
+  "profileQuickCapsule": "Wyślij kapsułę",
+  "profilePin": "Przypnij",
+  "profileUnpin": "Odepnij",
+  "profilePinned": "Przypięto: {name}",
+  "profileUnpinned": "Odpięto: {name}",
+  "profileStatCapsules": "{count, plural, =1{kapsuła} few{kapsuły} many{kapsuł} other{kapsuły}}",
+  "profileStatPlaces": "{count, plural, =1{miejsce} few{miejsca} many{miejsc} other{miejsca}}",
+  "profileStatTogether": "z przyjaciółmi",
+  "profileNewCapsule": "Nowa kapsuła",
+  "profileNewForFriends": "Dla znajomych",
+  "profileNewForEveryone": "Dla wszystkich"
 }

@@ -126,6 +126,14 @@ class PrivacySettingsPage extends StatelessWidget {
           title: l10n.settingsSectionVisibility,
           children: [
             OptionsSwitchRow(
+              title: l10n.settingsPrivacyFindByName,
+              subtitle: l10n.settingsPrivacyFindByNameHint,
+              value: privacy.findByName,
+              onChanged: loaded
+                  ? (v) => _save(context, privacy.copyWith(findByName: v))
+                  : null,
+            ),
+            OptionsSwitchRow(
               title: l10n.settingsPrivacyReadReceipts,
               subtitle: l10n.settingsPrivacyReadReceiptsHint,
               value: privacy.readReceipts,

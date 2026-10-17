@@ -70,6 +70,8 @@ abstract final class FirestoreMappers {
       followingCount: _count(data['followingCount']),
       showAchievements: _bool(data['showAchievements'], true),
       stats: userStats(_map(data['stats'])),
+      about: _string(data['about'], ''),
+      searchName: _nonEmptyString(data['nameLower']),
     );
   }
 
@@ -338,9 +340,11 @@ abstract final class FirestoreMappers {
           p['contactSuggestions'],
           pd.contactSuggestions,
         ),
+        findByName: _bool(p['findByName'], pd.findByName),
       ),
       mutedChats: _stringList(data['mutedChats']).toSet(),
       pinnedChats: _stringList(data['pinnedChats']),
+      pinnedFriends: _stringList(data['pinnedFriends']),
       language: _nonEmptyString(data['language']),
     );
   }
@@ -381,6 +385,7 @@ abstract final class FirestoreMappers {
     'readReceipts': p.readReceipts,
     'locationPrecision': p.locationPrecision.name,
     'contactSuggestions': p.contactSuggestions,
+    'findByName': p.findByName,
   };
 
   static CapsuleReaction? reaction(String uid, Map<String, dynamic> data) {

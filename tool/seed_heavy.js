@@ -279,6 +279,8 @@ async function main() {
       uid: uid[p.key],
       email: p.email,
       name: p.name,
+      // Found by name (written by the app since B3; older accounts lack it).
+      nameLower: p.name.toLowerCase(),
       username: p.username,
       createdAt: ts(now - 400 * DAY),
       friends: [...friendsOf[p.key]],

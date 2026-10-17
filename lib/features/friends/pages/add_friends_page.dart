@@ -20,14 +20,17 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 
 class AddFriendsPage extends StatefulWidget {
-  const AddFriendsPage({super.key});
+  const AddFriendsPage({super.key, this.query = ''});
+
+  /// Searched right away (from the chats' "Find people").
+  final String query;
 
   @override
   State<AddFriendsPage> createState() => _AddFriendsPageState();
 }
 
 class _AddFriendsPageState extends State<AddFriendsPage> {
-  final _searchController = TextEditingController();
+  late final _searchController = TextEditingController(text: widget.query);
   late final FriendSuggestionsController _suggestions;
 
   @override
@@ -41,6 +44,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
     _searchController.addListener(
       () => _suggestions.search(_searchController.text),
     );
+    if (widget.query.isNotEmpty) _suggestions.search(widget.query);
   }
 
   @override
@@ -68,7 +72,7 @@ class _AddFriendsPageState extends State<AddFriendsPage> {
             leadingButton: GoBackButton(context: context),
             searchBar: DefaultSearchBar(
               controller: _searchController,
-              hintText: context.l10n.friendsSearchByTagHint,
+              hintText: context.l10n.friendsSearchPeopleHint,
               trailingButton: DefaultIconButton(
                 onTap: () => AppRoutes.scanProfileQr(context),
                 assetPath: AppIcons.friendsQrScan,

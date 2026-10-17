@@ -52,7 +52,6 @@
   "friendsRequestsReceivedTab": "Erhalten",
   "friendsRequestsSentTab": "Gesendet",
   "friendsRequestsTitle": "Freundschaftsanfragen",
-  "friendsSearchByTagHint": "Nutzername suchen",
   "friendsSearchHint": "Freunde durchsuchen",
   "friendsSendCapsule": "Kapsel senden",
   "friendsSendRequestLabel": "Freundschaftsanfrage senden",
@@ -65,5 +64,6 @@
   "friendsUnfollowed": "Du folgst dieser Person nicht mehr",
   "friendsViewProfile": "Profil ansehen",
   "friendsMutualCount": "{count, plural, =1{1 gemeinsamer Freund} other{{count} gemeinsame Freunde}}",
-  "friendsFindByUsernameHint": "Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen."
+  "friendsFindByUsernameHint": "Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen.",
+  "friendsSearchPeopleHint": "Name oder @Nutzername"
 }

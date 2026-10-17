@@ -1,7 +1,5 @@
 {
   "profileAddFriends": "Добавить друзей",
-  "profileAddToMapEveryone": "На карту | Для всех",
-  "profileAddToMapFriends": "На карту | Для друзей",
   "profileBackgroundDelete": "Удалить фон",
   "profileBackgroundTitle": "Фон профиля",
   "profileBackgroundUpdated": "Фон профиля обновлён!",
@@ -40,5 +38,20 @@
   "profileFollowing": "{count, plural, one{{count} подписка} few{{count} подписки} many{{count} подписок} other{{count} подписки}}",
   "profileVerified": "Подтверждённый аккаунт",
   "profileFriendsSection": "Друзья",
-  "profileNoFriendsAction": "Найдите знакомых"
+  "profileNoFriendsAction": "Найдите знакомых",
+  "profileAboutPrompt": "Расскажите немного о себе",
+  "profilePinLimit": "Не больше {count} закреплённых друзей",
+  "profileFriendsAll": "Все",
+  "profileQuickMessage": "Написать",
+  "profileQuickCapsule": "Отправить капсулу",
+  "profilePin": "Закрепить",
+  "profileUnpin": "Открепить",
+  "profilePinned": "{name}: закреплено",
+  "profileUnpinned": "{name}: откреплено",
+  "profileStatCapsules": "{count, plural, one{капсула} few{капсулы} many{капсул} other{капсулы}}",
+  "profileStatPlaces": "{count, plural, one{место} few{места} many{мест} other{места}}",
+  "profileStatTogether": "с друзьями",
+  "profileNewCapsule": "Новая капсула",
+  "profileNewForFriends": "Для друзей",
+  "profileNewForEveryone": "Для всех"
 }

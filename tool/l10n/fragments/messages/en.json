@@ -432,5 +432,15 @@
         "type": "int"
       }
     }
+  },
+  "messagesFindPeople": "Find people: “{query}”",
+  "@messagesFindPeople": {
+    "description": "Row under the chat search: search everyone for the typed text.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
   }
 }

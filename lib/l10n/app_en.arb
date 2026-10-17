@@ -811,13 +811,13 @@
     "description": "Toggle on Friend Requests: requests the user sent."
   },
   "friendsRequestsTitle": "Friend Requests",
-  "friendsSearchByTagHint": "Search by tag",
-  "@friendsSearchByTagHint": {
-    "description": "Search hint on Add Friends; the search looks people up by @username. Keep it short."
-  },
   "friendsSearchHint": "Find my friends",
   "@friendsSearchHint": {
     "description": "Search hint on My friends (searches only among the user's friends). Keep it short."
+  },
+  "friendsSearchPeopleHint": "Name or @username",
+  "@friendsSearchPeopleHint": {
+    "description": "Hint of the people search on Add friends (by name or username)."
   },
   "friendsSendCapsule": "Send Capsule",
   "friendsSendRequestLabel": "Send friend request",
@@ -1212,6 +1212,16 @@
   },
   "messagesEmptyTitle": "No messages yet",
   "messagesFindChatsHint": "Find chats",
+  "messagesFindPeople": "Find people: “{query}”",
+  "@messagesFindPeople": {
+    "description": "Row under the chat search: search everyone for the typed text.",
+    "placeholders": {
+      "query": {
+        "type": "String",
+        "example": "anna"
+      }
+    }
+  },
   "messagesForward": "Forward",
   "@messagesForward": {
     "description": "Message menu item."
@@ -1852,17 +1862,13 @@
     "description": "Place pill on a capsule when the phone has no location yet."
   },
   "placeUnknown": "Unknown location",
+  "profileAboutPrompt": "Add a few words about you",
+  "@profileAboutPrompt": {
+    "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
+  },
   "profileAddFriends": "Add friends",
   "@profileAddFriends": {
     "description": "Card on the own profile page that opens Add Friends."
-  },
-  "profileAddToMapEveryone": "Add to map | Everyone",
-  "@profileAddToMapEveryone": {
-    "description": "Row in My capsules on the profile page: opens the camera for a public capsule."
-  },
-  "profileAddToMapFriends": "Add to map | Only for friends",
-  "@profileAddToMapFriends": {
-    "description": "Row in My capsules on the profile page: opens the camera for a friends-only capsule."
   },
   "profileBackgroundDelete": "Delete background picture",
   "@profileBackgroundDelete": {
@@ -1903,6 +1909,10 @@
       }
     }
   },
+  "profileFriendsAll": "All",
+  "@profileFriendsAll": {
+    "description": "Link on the profile's friends card to the whole friends list."
+  },
   "profileFriendsSection": "Friends",
   "@profileFriendsSection": {
     "description": "Small title at the top of the friends card on the profile."
@@ -1924,6 +1934,18 @@
   "@profileMyFriends": {
     "description": "Row under the pinned friends on the profile page: opens the friends list."
   },
+  "profileNewCapsule": "New capsule",
+  "@profileNewCapsule": {
+    "description": "Screen reader start of the new-capsule buttons on the profile (\"New capsule: For friends\")."
+  },
+  "profileNewForEveryone": "For everyone",
+  "@profileNewForEveryone": {
+    "description": "Profile button: a new capsule for everyone."
+  },
+  "profileNewForFriends": "For friends",
+  "@profileNewForFriends": {
+    "description": "Profile button: a new capsule for friends."
+  },
   "profileNoFriends": "You have no friends yet",
   "@profileNoFriends": {
     "description": "Shown instead of the pinned friends on the profile page when the user has no friends."
@@ -1941,6 +1963,29 @@
     "description": "Title of the menu shown when the user taps their profile picture (narrow, large bold text)."
   },
   "profilePictureUpdated": "Profile picture updated successfully!",
+  "profilePin": "Pin",
+  "@profilePin": {
+    "description": "Quick action: pin the friend at the start of the profile's friends."
+  },
+  "profilePinLimit": "Up to {count} pinned friends",
+  "@profilePinLimit": {
+    "description": "Shown when more friends are pinned than allowed.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilePinned": "{name} pinned",
+  "@profilePinned": {
+    "description": "Toast after pinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
   "profilePinnedHint": "If you choose fewer than 3, random friends from your list will be shown",
   "@profilePinnedHint": {
     "description": "Explanation under the title of the pinned friends chooser."
@@ -1957,6 +2002,14 @@
   "profileQrError": "Something went wrong...",
   "@profileQrError": {
     "description": "Shown in place of the QR code on Share Profile if it cannot be drawn."
+  },
+  "profileQuickCapsule": "Send a capsule",
+  "@profileQuickCapsule": {
+    "description": "Quick action on a friend in the profile: send them a capsule."
+  },
+  "profileQuickMessage": "Message",
+  "@profileQuickMessage": {
+    "description": "Quick action on a friend in the profile: open the chat."
   },
   "profileShare": "Share",
   "@profileShare": {
@@ -2002,6 +2055,42 @@
   "@profileShareTitle": {
     "description": "Page title of Share Profile."
   },
+  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
+  "@profileStatCapsules": {
+    "description": "Label under the number of the user's capsules on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
+  "@profileStatPlaces": {
+    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStatTogether": "with friends",
+  "@profileStatTogether": {
+    "description": "Label under the number of capsules made with friends (co-authors)."
+  },
+  "profileUnpin": "Unpin",
+  "@profileUnpin": {
+    "description": "Quick action: unpin the friend."
+  },
+  "profileUnpinned": "{name} unpinned",
+  "@profileUnpinned": {
+    "description": "Toast after unpinning a friend.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Anna"
+      }
+    }
+  },
   "profileUpdating": "Updating...",
   "@profileUpdating": {
     "description": "Shown on the profile or background picture while it uploads or is deleted."
@@ -2011,14 +2100,35 @@
   "@profileViewProfile": {
     "description": "Option in the menu of a pinned friend: opens that friend's profile."
   },
-  "settingsAbout": "About",
+  "settingsAbout": "About me",
   "@settingsAbout": {
-    "description": "Settings row and page with the app version and legal documents."
+    "description": "Settings row and page title: the \"about me\" line on the profile."
+  },
+  "settingsAboutDescription": "A few words under your name, for everyone who opens your profile.",
+  "@settingsAboutDescription": {
+    "description": "Explanation on the \"About me\" page."
+  },
+  "settingsAboutHint": "Collecting sunsets since 2019",
+  "@settingsAboutHint": {
+    "description": "Example text in the empty \"about me\" field."
   },
   "settingsAboutLicenses": "Open-source licenses",
   "settingsAboutOpenFailed": "Could not open the page.",
   "settingsAboutPrivacy": "Privacy policy",
   "settingsAboutTerms": "Terms of use",
+  "settingsAboutTooLong": "At most {count} characters",
+  "@settingsAboutTooLong": {
+    "description": "Error when the \"about me\" line is too long.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsAboutUpdated": "About me updated",
+  "@settingsAboutUpdated": {
+    "description": "Toast after saving the \"about me\" line."
+  },
   "settingsAboutVersion": "Version",
   "settingsAboutVersionUnknown": "unknown",
   "@settingsAboutVersionUnknown": {
@@ -2303,6 +2413,14 @@
   "settingsPrivacyApproximate": "Approximate location",
   "settingsPrivacyApproximateHint": "Places new capsules within about a kilometre, not at the exact spot",
   "settingsPrivacyDescription": "What others see and what new capsules start with",
+  "settingsPrivacyFindByName": "Find me by name",
+  "@settingsPrivacyFindByName": {
+    "description": "Privacy switch: others may find the user by searching their name."
+  },
+  "settingsPrivacyFindByNameHint": "People can search for your name. By username they always can.",
+  "@settingsPrivacyFindByNameHint": {
+    "description": "Explains the \"find me by name\" switch."
+  },
   "settingsPrivacyNewCapsulesFooter": "You can change both for each capsule when you create it.",
   "settingsPrivacyReadReceipts": "Read receipts",
   "settingsPrivacyReadReceiptsHint": "Turned off, friends do not see when you have read their messages, and you do not see theirs",

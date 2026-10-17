@@ -6,6 +6,7 @@ import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../profile/widgets/profile_background_picture.dart';
 import '../../profile/widgets/profile_picture.dart';
 import '../widgets/settings_scaffold.dart';
+import 'about_settings_page.dart';
 import 'name_settings_page.dart';
 import 'username_settings_page.dart';
 
@@ -57,8 +58,12 @@ class ProfileCustomizationSettingsPage extends StatelessWidget {
             ),
             OptionsSettingsRow(
               title: l10n.settingsUsername,
-              withDivider: false,
               navigateTo: const UsernameSettingsPage(),
+            ),
+            OptionsSettingsRow(
+              title: l10n.settingsAbout,
+              withDivider: false,
+              navigateTo: const AboutSettingsPage(),
             ),
           ],
         ),

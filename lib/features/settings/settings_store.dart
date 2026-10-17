@@ -41,6 +41,40 @@ class SettingsStore extends ChangeNotifier implements SessionScoped {
 
   bool isPinned(String chatId) => _settings.pinnedChats.contains(chatId);
 
+  List<String> get pinnedFriends => _settings.pinnedFriends;
+
+  /// The friends first on the profile, in this order; at most
+  /// [UserSettings.maxPinnedFriends].
+  Future<AppFailure?> setPinnedFriends(List<String> friends) async {
+    final uid = _uid;
+    if (uid == null) {
+      return PermissionFailure(AppL10n.current.settingsErrorSignInAgain);
+    }
+    if (friends.length > UserSettings.maxPinnedFriends) {
+      return ValidationFailure(
+        AppL10n.current.profilePinLimit(UserSettings.maxPinnedFriends),
+      );
+    }
+    if (listEquals(friends, _settings.pinnedFriends)) return null;
+    final previous = _settings;
+    _settings = _settings.copyWith(pinnedFriends: friends);
+    notifyListeners();
+    try {
+      await _repo.setPinnedFriends(uid, friends);
+      return null;
+    } catch (e, st) {
+      AppLogger.warning('Pinning friends failed', error: e, stackTrace: st);
+      if (_uid == uid) {
+        _settings = previous;
+        notifyListeners();
+      }
+      return AppFailure.from(
+        e,
+        fallbackMessage: AppL10n.current.settingsErrorSaveFailed,
+      );
+    }
+  }
+
   /// Keeps chat [chatId] at the top of the list, or not; at most
   /// [UserSettings.maxPinned].
   Future<AppFailure?> setChatPinned(

@@ -64,6 +64,10 @@ class FirebaseSettingsRepository implements SettingsRepository {
   }, SetOptions(merge: true));
 
   @override
+  Future<void> setPinnedFriends(String uid, List<String> friends) =>
+      _doc(uid).set({'pinnedFriends': friends}, SetOptions(merge: true));
+
+  @override
   Future<void> setChatMuted(String uid, String chatId, {required bool muted}) =>
       _doc(uid).set({
         'mutedChats': muted

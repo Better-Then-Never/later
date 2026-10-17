@@ -117,5 +117,6 @@
   "messagesPin": "Anheften",
   "messagesUnpin": "Lösen",
   "messagesPinned": "Angeheftet",
-  "messagesPinLimit": "{count, plural, =1{Du kannst 1 Chat anheften} other{Du kannst bis zu {count} Chats anheften}}"
+  "messagesPinLimit": "{count, plural, =1{Du kannst 1 Chat anheften} other{Du kannst bis zu {count} Chats anheften}}",
+  "messagesFindPeople": "Personen finden: „{query}“"
 }

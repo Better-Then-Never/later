@@ -20,6 +20,8 @@ import 'friends_store.dart';
 ///
 /// Without a query it suggests friends of the user's friends, most mutual
 /// friends first (F-57: it used to list the first users of the whole app).
+/// A query finds people by username and by name (those who allow it), the
+/// username matches first; never the user themselves or someone blocked.
 class FriendSuggestionsController extends ChangeNotifier {
   FriendSuggestionsController({
     required UserRepository users,
@@ -62,7 +64,7 @@ class FriendSuggestionsController extends ChangeNotifier {
   AppFailure? get error => _error;
   String get query => _query;
 
-  /// "@Dave " -> "dave".
+  /// "@Dave " -> "dave" (names are searched in lower case too).
   static String normalize(String input) {
     var q = input.trim().toLowerCase();
     if (q.startsWith('@')) q = q.substring(1);
@@ -90,8 +92,18 @@ class FriendSuggestionsController extends ChangeNotifier {
         if (_disposed || request != _request) return;
         _results = found;
       } else {
-        final found = await _users.searchByUsername(_query, limit: limit);
+        final (byUsername, byName) = await (
+          _users.searchByUsername(_query, limit: limit),
+          _users.searchByName(_query, limit: limit),
+        ).wait;
         if (_disposed || request != _request) return;
+        final me = _friends?.uid;
+        final blocked = _friends?.blocked ?? const <String>{};
+        final seen = <String>{};
+        final found = [
+          for (final p in [...byUsername, ...byName])
+            if (p.uid != me && !blocked.contains(p.uid) && seen.add(p.uid)) p,
+        ].take(limit).toList();
         _directory.prime(found);
         _mutual = const {};
         _results = found;

@@ -79,7 +79,7 @@ service cloud.firestore {
         let keys = changed();
         return isMe(uid)
           && keys.hasOnly(['name', 'username', 'friends', 'favorites',
-            'showAchievements',
+            'showAchievements', 'about', 'nameLower',
             // Legacy fields of older app versions may only be removed.
             'email', 'fcmToken', 'fcmTokenUpdatedAt', 'blockedUsers'])
           && (!keys.hasAny(['name']) || validName(d.name))
@@ -89,6 +89,14 @@ service cloud.firestore {
             || (d.favorites is list && d.favorites.size() <= 1000))
           && (!keys.hasAny(['friends']) || ownFriendsChange(uid))
           && (!keys.hasAny(['showAchievements']) || d.showAchievements is bool)
+          // A few words under the name.
+          && (!keys.hasAny(['about'])
+            || (d.get('about', '') is string && d.get('about', '').size() <= 100))
+          // The name in lower case, for search by name; removed when the
+          // user does not want to be found by name. Old apps change the name
+          // without it (the index then lags until the new app fixes it).
+          && (!keys.hasAny(['nameLower']) || !d.keys().hasAny(['nameLower'])
+            || d.nameLower == d.name.lower())
           && !(keys.hasAny(['email']) && d.keys().hasAny(['email']))
           && !(keys.hasAny(['fcmToken']) && d.keys().hasAny(['fcmToken']))
           && !(keys.hasAny(['fcmTokenUpdatedAt'])
@@ -163,7 +171,8 @@ service cloud.firestore {
         function validPrivacy(p) {
           return p is map
             && p.keys().hasOnly(['defaultVisibility', 'readReceipts',
-              'locationPrecision', 'contactSuggestions'])
+              'locationPrecision', 'contactSuggestions', 'findByName'])
+            && isBool(p, 'findByName')
             && p.get('defaultVisibility', 'public') in ['public', 'friends', 'private']
             && isBool(p, 'readReceipts') && isBool(p, 'contactSuggestions')
             && p.get('locationPrecision', 'exact') in ['exact', 'approximate'];
@@ -171,7 +180,9 @@ service cloud.firestore {
 
         function validSettings(d) {
           return d.keys().hasOnly(['notifications', 'mutedChats', 'language',
-              'privacy', 'pinnedChats'])
+              'privacy', 'pinnedChats', 'pinnedFriends'])
+            && d.get('pinnedFriends', []) is list
+            && d.get('pinnedFriends', []).size() <= 10
             && validNotifications(d.get('notifications', {}))
             && d.get('language', 'en') in ['en', 'ru', 'pl', 'de', 'es']
             && validPrivacy(d.get('privacy', {}))

@@ -46,9 +46,9 @@
   "settingsDataAndStorage": "Data and storage",
   "settingsSectionSupport": "SUPPORT",
   "settingsHelp": "Help",
-  "settingsAbout": "About",
+  "settingsAbout": "About me",
   "@settingsAbout": {
-    "description": "Settings row and page with the app version and legal documents."
+    "description": "Settings row and page title: the \"about me\" line on the profile."
   },
   "settingsLogOut": "Log Out",
   "settingsLogOutConfirm": "Are you sure you want to log out?",
@@ -399,5 +399,34 @@
   "settingsNotificationsStreak": "Streak reminder",
   "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
   "settingsNotificationsNews": "News from Later",
-  "settingsNotificationsNewsHint": "Rare announcements from the team"
+  "settingsNotificationsNewsHint": "Rare announcements from the team",
+  "settingsAboutDescription": "A few words under your name, for everyone who opens your profile.",
+  "@settingsAboutDescription": {
+    "description": "Explanation on the \"About me\" page."
+  },
+  "settingsAboutHint": "Collecting sunsets since 2019",
+  "@settingsAboutHint": {
+    "description": "Example text in the empty \"about me\" field."
+  },
+  "settingsAboutUpdated": "About me updated",
+  "@settingsAboutUpdated": {
+    "description": "Toast after saving the \"about me\" line."
+  },
+  "settingsAboutTooLong": "At most {count} characters",
+  "@settingsAboutTooLong": {
+    "description": "Error when the \"about me\" line is too long.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsPrivacyFindByName": "Find me by name",
+  "@settingsPrivacyFindByName": {
+    "description": "Privacy switch: others may find the user by searching their name."
+  },
+  "settingsPrivacyFindByNameHint": "People can search for your name. By username they always can.",
+  "@settingsPrivacyFindByNameHint": {
+    "description": "Explains the \"find me by name\" switch."
+  }
 }

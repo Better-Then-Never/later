@@ -52,7 +52,6 @@
   "friendsRequestsReceivedTab": "Otrzymane",
   "friendsRequestsSentTab": "Wysłane",
   "friendsRequestsTitle": "Zaproszenia do znajomych",
-  "friendsSearchByTagHint": "Szukaj po nicku",
   "friendsSearchHint": "Szukaj wśród znajomych",
   "friendsSendCapsule": "Wyślij kapsułę",
   "friendsSendRequestLabel": "Wyślij zaproszenie do znajomych",
@@ -65,5 +64,6 @@
   "friendsUnfollowed": "Już nie obserwujesz tej osoby",
   "friendsViewProfile": "Zobacz profil",
   "friendsMutualCount": "{count, plural, one{1 wspólny znajomy} few{{count} wspólnych znajomych} many{{count} wspólnych znajomych} other{{count} wspólnego znajomego}}",
-  "friendsFindByUsernameHint": "Szukaj po @nicku albo zeskanuj kod QR znajomego. Tutaj pojawią się osoby, które znają twoi znajomi."
+  "friendsFindByUsernameHint": "Szukaj po @nicku albo zeskanuj kod QR znajomego. Tutaj pojawią się osoby, które znają twoi znajomi.",
+  "friendsSearchPeopleHint": "Imię lub @nick"
 }

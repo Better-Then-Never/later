@@ -1,7 +1,5 @@
 {
   "profileAddFriends": "Añadir amigos",
-  "profileAddToMapEveryone": "Al mapa | Para todos",
-  "profileAddToMapFriends": "Al mapa | Solo para amigos",
   "profileBackgroundDelete": "Eliminar imagen de fondo",
   "profileBackgroundTitle": "Imagen de fondo",
   "profileBackgroundUpdated": "¡Imagen de fondo actualizada!",
@@ -40,5 +38,20 @@
   "profileFollowing": "{count} seguidos",
   "profileVerified": "Cuenta verificada",
   "profileFriendsSection": "Amigos",
-  "profileNoFriendsAction": "Encuentra a gente que conoces"
+  "profileNoFriendsAction": "Encuentra a gente que conoces",
+  "profileAboutPrompt": "Añade unas palabras sobre ti",
+  "profilePinLimit": "Hasta {count} amigos fijados",
+  "profileFriendsAll": "Todos",
+  "profileQuickMessage": "Mensaje",
+  "profileQuickCapsule": "Enviar una cápsula",
+  "profilePin": "Fijar",
+  "profileUnpin": "Desfijar",
+  "profilePinned": "Fijado: {name}",
+  "profileUnpinned": "Desfijado: {name}",
+  "profileStatCapsules": "{count, plural, =1{cápsula} other{cápsulas}}",
+  "profileStatPlaces": "{count, plural, =1{lugar} other{lugares}}",
+  "profileStatTogether": "con amigos",
+  "profileNewCapsule": "Nueva cápsula",
+  "profileNewForFriends": "Para amigos",
+  "profileNewForEveryone": "Para todos"
 }
