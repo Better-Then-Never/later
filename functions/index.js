@@ -234,22 +234,38 @@ exports.countFollowingRemoved = onDocumentDeleted(
 
 exports.onReactionWritten = onDocumentWritten(
   'capsules/{capsuleId}/reactions/{uid}',
-  logged('Reaction', (e) =>
-    social.onReactionWritten(
+  logged('Reaction', async (e) => {
+    const result = await social.onReactionWritten(
       services(),
       e.params.capsuleId,
       e.params.uid,
       data(e.data && e.data.before),
       data(e.data && e.data.after),
-    ),
-  ),
+    );
+    // The owner received one more reaction (Crowd pleaser).
+    if (result && result.ownerId) {
+      await gamification.checkAchievements(services(), result.ownerId);
+    }
+    return result;
+  }),
 );
 
 exports.onCommentCreated = onDocumentCreated(
   'capsules/{capsuleId}/comments/{commentId}',
-  logged('Comment', (e) =>
-    social.onCommentCreated(services(), e.params.capsuleId, e.params.commentId, data(e.data)),
-  ),
+  logged('Comment', async (e) => {
+    const comment = data(e.data);
+    const result = await social.onCommentCreated(
+      services(),
+      e.params.capsuleId,
+      e.params.commentId,
+      comment,
+    );
+    // The author wrote one more comment (Chatterbox).
+    if (comment && comment.authorId) {
+      await gamification.checkAchievements(services(), comment.authorId);
+    }
+    return result;
+  }),
 );
 exports.onCommentDeleted = onDocumentDeleted(
   'capsules/{capsuleId}/comments/{commentId}',
@@ -264,35 +280,40 @@ exports.onFriendRequestCreated = onDocumentCreated(
 );
 exports.onFriendRequestUpdated = onDocumentUpdated(
   'friend_requests/{requestId}',
-  logged('Friend request accepted', (e) =>
-    social.onFriendRequestUpdated(
+  logged('Friend request accepted', async (e) => {
+    const before = data(e.data && e.data.before);
+    const after = data(e.data && e.data.after);
+    const result = await social.onFriendRequestUpdated(
       services(),
       e.params.requestId,
-      data(e.data && e.data.before),
-      data(e.data && e.data.after),
-    ),
-  ),
+      before,
+      after,
+    );
+    // Both have one more friend (Friendly).
+    if (result !== null && after) {
+      await gamification.checkAchievements(services(), after.fromUserId);
+      await gamification.checkAchievements(services(), after.toUserId);
+    }
+    return result;
+  }),
 );
 
 // ---- gamification: stats, streaks, achievements (functions/lib/gamification.js)
 
+// Counts a new capsule, then unlocks what its stats reached. The former
+// unlockAchievements trigger ran on every users/{uid} write (profile
+// edits, pins, favourites); achievements are now checked only where a
+// counted stat changes: here, reactions, comments, accepted friends (B6).
 exports.updateCapsuleStats = onDocumentCreated(
   'capsules/{capsuleId}',
-  logged('Capsule stats', (e) =>
-    gamification.onCapsuleCreated(services(), e.params.capsuleId, data(e.data)),
-  ),
-);
-
-exports.unlockAchievements = onDocumentUpdated(
-  'users/{uid}',
-  logged('Achievements', (e) =>
-    gamification.onUserUpdated(
-      services(),
-      e.params.uid,
-      data(e.data && e.data.before),
-      data(e.data && e.data.after),
-    ),
-  ),
+  logged('Capsule stats', async (e) => {
+    const capsule = data(e.data);
+    const result = await gamification.onCapsuleCreated(services(), e.params.capsuleId, capsule);
+    if (capsule && capsule.ownerId) {
+      await gamification.checkAchievements(services(), capsule.ownerId);
+    }
+    return result;
+  }),
 );
 
 exports.sendStreakReminders = onSchedule(
