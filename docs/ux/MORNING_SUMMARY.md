@@ -19,11 +19,11 @@ need the backend deployed first (DEPLOY.md, about 30 minutes incl. creating 13 f
 - Settings: Appearance, Language, Privacy (default visibility, approximate location, read receipts).
 
 ## Needs you
-1. Deploy rules, indexes, functions, then run the count backfill (DEPLOY.md).
+1. Deploy Firestore and Storage rules, indexes, functions, then run the count backfill (DEPLOY.md).
 2. Confirm the username "amo b3" for the verified badge (BLOCKERS.md).
 3. Add the new data uses to the privacy policy (PRIVACY.md).
 4. Loop capsules are built but off: try them once on a real phone (`FeatureFlags.loopCapsules = true`, hold
-   the shutter) and leave the flag on if the loop looks right. Deploy storage.rules first (DEPLOY.md).
+   the shutter) and leave the flag on if the loop looks right.
 5. Look at the screenshots in `docs/ux/after` (tonight's features included) and the dark palette sheet in
    `docs/ux/dark_candidates/sheet.png`.
 
