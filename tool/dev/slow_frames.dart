@@ -115,8 +115,9 @@ void main(List<String> args) {
         if (inside.any((s) => s.name == name))
           '$name ${(inside.where((s) => s.name == name).fold<int>(0, (t, s) => t + s.dur) / 1000).toStringAsFixed(1)}',
     ];
-    if (phases.isNotEmpty)
+    if (phases.isNotEmpty) {
       stdout.writeln('    phases: ${phases.join(', ')} ms');
+    }
     final top = byName.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     for (final e in top.take(12)) {
