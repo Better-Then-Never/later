@@ -541,6 +541,27 @@ void main() {
         await wait(tester, const Duration(seconds: 2));
       },
     );
+
+    // Saving the capsule just taken (to the local emulators): the button
+    // draws in, turns into a check, and the page closes.
+    if (find.byType(CapsuleCreationPage).evaluate().isNotEmpty) {
+      await flow('creation_save', () async {
+        final watch = Stopwatch()..start();
+        await tap(tester, labelled(l10n().capsulesCreationSubmit));
+        await waitFor(
+          tester,
+          find.byType(CapsuleCreationPage).hitTestable(),
+          const Duration(milliseconds: 1),
+        );
+        final end = DateTime.now().add(const Duration(seconds: 15));
+        while (find.byType(CapsuleCreationPage).evaluate().isNotEmpty &&
+            DateTime.now().isBefore(end)) {
+          await tester.pump(const Duration(milliseconds: 16));
+        }
+        record('creation_save_to_closed_ms', watch.elapsedMilliseconds);
+        await wait(tester, const Duration(seconds: 1));
+      });
+    }
     await home(tester);
 
     measured.forEach((key, values) => binding.reportData![key] = values);
