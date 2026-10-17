@@ -457,6 +457,10 @@
   "@capsulesErrorSavedNotSent": {
     "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
   },
+  "capsulesLinkNotShared": "This capsule is not shared with you",
+  "@capsulesLinkNotShared": {
+    "description": "Shown when a capsule link opens a capsule the user may not see (or that is gone)."
+  },
   "capsulesOpenInMonth": "In a month",
   "capsulesOpenInWeek": "In a week",
   "capsulesOpenInYear": "In a year",
@@ -511,6 +515,24 @@
   "capsulesReportSpam": "Spam",
   "capsulesReportTitle": "What is wrong with it?",
   "capsulesReportViolence": "Violence",
+  "capsulesShare": "Share",
+  "@capsulesShare": {
+    "description": "Screen reader label of the share button in a capsule."
+  },
+  "capsulesShareMessage": "A time capsule on Later: {title}\n{link}",
+  "@capsulesShareMessage": {
+    "description": "Text shared with a capsule link.",
+    "placeholders": {
+      "title": {
+        "type": "String",
+        "example": "Beach"
+      },
+      "link": {
+        "type": "String",
+        "example": "https://later-da778.web.app/?capsuleId=abc"
+      }
+    }
+  },
   "capsulesYou": "You",
   "commonBack": "Back",
   "@commonBack": {

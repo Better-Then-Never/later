@@ -594,6 +594,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
 
   @override
+  String get capsulesLinkNotShared => 'Эта капсула вам не открыта';
+
+  @override
   String get capsulesOpenInMonth => 'Через месяц';
 
   @override
@@ -670,6 +673,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesReportViolence => 'Насилие';
+
+  @override
+  String get capsulesShare => 'Поделиться';
+
+  @override
+  String capsulesShareMessage(String title, String link) {
+    return 'Капсула времени в Later: $title\n$link';
+  }
 
   @override
   String get capsulesYou => 'Вы';

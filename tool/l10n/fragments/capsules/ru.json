@@ -76,5 +76,8 @@
   "capsulesCommentsEarlier": "Показать более ранние",
   "capsulesBy": "Автор: {name}",
   "capsulesCreationShowAuthor": "Показывать моё имя",
-  "capsulesCreationShowAuthorHint": "Другие увидят, кто её оставил"
+  "capsulesCreationShowAuthorHint": "Другие увидят, кто её оставил",
+  "capsulesLinkNotShared": "Эта капсула вам не открыта",
+  "capsulesShare": "Поделиться",
+  "capsulesShareMessage": "Капсула времени в Later: {title}\n{link}"
 }

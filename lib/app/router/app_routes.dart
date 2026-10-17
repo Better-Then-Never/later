@@ -15,6 +15,14 @@ import '../../features/friends/pages/your_friend_profile_page.dart';
 import '../../features/capsules/camera/camera_page.dart';
 import '../../features/capsules/creation/capsule_creation_page.dart';
 import '../../features/messages/chat_page.dart';
+import '../../features/capsules/social/capsule_detail_dialog.dart';
+import '../../features/map/map_focus.dart';
+import '../../core/l10n/l10n.dart';
+import '../../core/logging/app_logger.dart';
+import '../../data/repositories/repositories.dart';
+import '../../shared/widgets/popup/popup_notification_service.dart';
+import '../shell/selected_page.dart';
+import 'package:provider/provider.dart';
 import 'app_link_handler.dart';
 import 'app_page_route.dart';
 
@@ -126,6 +134,36 @@ abstract final class AppRoutes {
     final userId = AppLinkHandler.profileUserId(result);
     if (userId != null && context.mounted) {
       await toAddFriendProfile(context, userId);
+    }
+  }
+
+  /// Capsule link from outside: the capsule over the map (its place in
+  /// view when it has one), or a note when the user may not see it.
+  static Future<void> openCapsuleFromLink(String capsuleId) async {
+    final context = navigatorKey.currentContext;
+    if (context == null) return;
+    final l10n = context.l10n;
+    Capsule? capsule;
+    try {
+      capsule = await context.read<CapsuleRepository>().getById(capsuleId);
+    } catch (e) {
+      AppLogger.warning('Could not open the linked capsule', error: e);
+    }
+    final root = navigatorKey.currentContext;
+    if (root == null || !root.mounted) return;
+    if (capsule == null) {
+      PopupNotificationService.showError(
+        context: root,
+        message: l10n.capsulesLinkNotShared,
+        position: NotificationPosition.top,
+      );
+      return;
+    }
+    backToRoot();
+    selectedPageNotifier.value = AppTabs.map;
+    if (capsule.location != null) root.read<MapFocus>().focus(capsule);
+    if (capsule.isOpen(DateTime.now())) {
+      await CapsuleDetailDialog.show(root, capsule);
     }
   }
 

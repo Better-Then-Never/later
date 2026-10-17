@@ -76,5 +76,8 @@
   "capsulesCommentsEarlier": "Ver comentarios anteriores",
   "capsulesBy": "De {name}",
   "capsulesCreationShowAuthor": "Mostrar mi nombre",
-  "capsulesCreationShowAuthorHint": "Los demás ven quién la dejó"
+  "capsulesCreationShowAuthorHint": "Los demás ven quién la dejó",
+  "capsulesLinkNotShared": "Esta cápsula no está compartida contigo",
+  "capsulesShare": "Compartir",
+  "capsulesShareMessage": "Una cápsula del tiempo en Later: {title}\n{link}"
 }

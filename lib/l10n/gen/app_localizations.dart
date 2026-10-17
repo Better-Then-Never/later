@@ -986,6 +986,12 @@ abstract class AppLocalizations {
   /// **'The capsule was saved but not sent. Tap save to try again.'**
   String get capsulesErrorSavedNotSent;
 
+  /// Shown when a capsule link opens a capsule the user may not see (or that is gone).
+  ///
+  /// In en, this message translates to:
+  /// **'This capsule is not shared with you'**
+  String get capsulesLinkNotShared;
+
   /// No description provided for @capsulesOpenInMonth.
   ///
   /// In en, this message translates to:
@@ -1129,6 +1135,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Violence'**
   String get capsulesReportViolence;
+
+  /// Screen reader label of the share button in a capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get capsulesShare;
+
+  /// Text shared with a capsule link.
+  ///
+  /// In en, this message translates to:
+  /// **'A time capsule on Later: {title}\n{link}'**
+  String capsulesShareMessage(String title, String link);
 
   /// No description provided for @capsulesYou.
   ///

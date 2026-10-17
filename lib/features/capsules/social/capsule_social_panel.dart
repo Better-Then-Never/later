@@ -18,6 +18,7 @@ import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/motion/reaction_burst.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../profile/share/sharing_service.dart';
 import 'capsule_comments_sheet.dart';
 import 'capsule_social_controller.dart';
 
@@ -31,7 +32,13 @@ class CapsuleSocialPanel extends StatelessWidget {
 
   static bool showsAnything(Capsule capsule) =>
       (FeatureFlags.reactions && capsule.allowReactions) ||
-      (FeatureFlags.comments && capsule.allowComments);
+      (FeatureFlags.comments && capsule.allowComments) ||
+      shareable(capsule);
+
+  /// Capsules that can travel as a link: public and friends-only ones
+  /// (whoever opens it still needs to be allowed to see it).
+  static bool shareable(Capsule capsule) =>
+      capsule.privacy != CapsulePrivacy.private;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +59,7 @@ class CapsuleSocialPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (reactions) CapsuleReactionsBar(controller: controller),
-            if (comments || !controller.isOwner)
+            if (comments || !controller.isOwner || shareable(capsule))
               Row(
                 children: [
                   if (comments)
@@ -78,11 +85,27 @@ class CapsuleSocialPanel extends StatelessWidget {
                     )
                   else
                     const Spacer(),
+                  if (shareable(capsule))
+                    IconButton(
+                      tooltip: context.l10n.capsulesShare,
+                      onPressed: () => SharingService.shareCapsule(
+                        context: context,
+                        capsule: capsule,
+                      ),
+                      // Painted in the theme's icon colour (the profile's
+                      // share picture is white, for photo headers).
+                      icon: CustomPaint(
+                        size: const Size.square(24),
+                        painter: _ShareSignPainter(color: palette.icon),
+                      ),
+                    ),
                   if (!controller.isOwner)
                     IconButton(
                       tooltip: context.l10n.capsulesReportCapsule,
                       onPressed: () => _capsuleMenu(context),
-                      icon: Image.asset(AppIcons.openMenu, width: 24),
+                      // The chat menu's lines (the profile's menu picture is
+                      // white and did not show on this card).
+                      icon: Image.asset(AppIcons.messagesChatMenu, width: 24),
                     ),
                 ],
               ),
@@ -286,4 +309,34 @@ class CapsuleReactionsBar extends StatelessWidget {
       ],
     );
   }
+}
+
+/// The usual share sign: three nodes, two links, in the icons' round stroke.
+class _ShareSignPainter extends CustomPainter {
+  const _ShareSignPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final a = Offset(w * 0.74, h * 0.2);
+    final b = Offset(w * 0.24, h * 0.5);
+    final c = Offset(w * 0.74, h * 0.8);
+    final line = Paint()
+      ..color = color
+      ..strokeWidth = 2.2
+      ..strokeCap = StrokeCap.round;
+    canvas
+      ..drawLine(a, b, line)
+      ..drawLine(b, c, line);
+    final dot = Paint()..color = color;
+    for (final o in [a, b, c]) {
+      canvas.drawCircle(o, w * 0.13, dot);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ShareSignPainter old) => old.color != color;
 }

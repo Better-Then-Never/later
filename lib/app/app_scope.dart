@@ -73,7 +73,10 @@ class _AppScopeState extends State<AppScope> {
   final _geocoding = GeocodingService();
   final _voice = VoiceService();
   late final _prefs = widget.preferences;
-  final _links = AppLinkHandler(onOpenProfile: AppRoutes.openProfileFromLink);
+  final _links = AppLinkHandler(
+    onOpenProfile: AppRoutes.openProfileFromLink,
+    onOpenCapsule: AppRoutes.openCapsuleFromLink,
+  );
   final _push = PushMessagingService();
   final _mapFocus = MapFocus();
   final _currentLocation = CurrentLocation();

@@ -231,12 +231,24 @@ void main() {
         id: 'cap',
         ownerId: 'owner',
         title: 'Quiet',
-        privacy: CapsulePrivacy.public,
+        privacy: CapsulePrivacy.private,
         color: CapsuleColor.red,
         allowComments: false,
         allowReactions: false,
       );
       expect(CapsuleSocialPanel.showsAnything(closed), isFalse);
+      // A public one can still be shared as a link.
+      const public = Capsule(
+        id: 'cap',
+        ownerId: 'owner',
+        title: 'Quiet',
+        privacy: CapsulePrivacy.public,
+        color: CapsuleColor.red,
+        allowComments: false,
+        allowReactions: false,
+      );
+      expect(CapsuleSocialPanel.showsAnything(public), isTrue);
+      expect(CapsuleSocialPanel.shareable(public), isTrue);
     });
   });
 }

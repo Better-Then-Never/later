@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:later/app/router/app_link_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:later/core/l10n/l10n.dart';
+import 'package:later/data/models/capsule.dart';
 import 'package:later/features/users/user_directory.dart';
 import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,34 @@ class SharingService {
         PopupNotificationService.showError(
           context: context,
           message: context.l10n.profileErrorShare,
+          position: NotificationPosition.bottom,
+        );
+      }
+    }
+  }
+
+  /// Shares a link to [capsule]: a page that opens it in the app for those
+  /// who may see it (nothing of the capsule is shown on the web).
+  static Future<void> shareCapsule({
+    required BuildContext context,
+    required Capsule capsule,
+  }) async {
+    final l10n = context.l10n;
+    try {
+      await SharePlus.instance.share(
+        ShareParams(
+          text: l10n.capsulesShareMessage(
+            capsule.title,
+            AppLinkHandler.capsuleWebLink(capsule.id),
+          ),
+          subject: capsule.title,
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        PopupNotificationService.showError(
+          context: context,
+          message: l10n.profileErrorShare,
           position: NotificationPosition.bottom,
         );
       }

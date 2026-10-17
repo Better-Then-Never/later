@@ -301,6 +301,34 @@ void main() {
       );
     });
 
+    test('parses capsule links; capsule links go to their own handler', () {
+      expect(AppLinkHandler.capsuleId('later://capsule/c1'), 'c1');
+      expect(
+        AppLinkHandler.capsuleId('https://later-da778.web.app/?capsuleId=c2'),
+        'c2',
+      );
+      expect(
+        AppLinkHandler.capsuleId('https://evil.example/?capsuleId=c'),
+        isNull,
+      );
+      expect(AppLinkHandler.capsuleId('later://capsule/a%2Fb'), isNull);
+      expect(AppLinkHandler.capsuleId('later://profile/abc'), isNull);
+      expect(
+        AppLinkHandler.capsuleWebLink('c3'),
+        'https://later-da778.web.app/?capsuleId=c3',
+      );
+      final profiles = <String>[];
+      final capsules = <String>[];
+      final handler = AppLinkHandler(
+        onOpenProfile: profiles.add,
+        onOpenCapsule: capsules.add,
+      )..onHomeReady();
+      handler.handleLink('later://capsule/c1');
+      handler.handleLink('later://profile/u1');
+      expect(capsules, ['c1']);
+      expect(profiles, ['u1']);
+    });
+
     test('queues a link until the home screen is ready', () {
       final opened = <String>[];
       final handler = AppLinkHandler(onOpenProfile: opened.add);

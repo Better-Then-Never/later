@@ -574,6 +574,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'La cápsula se ha guardado, pero no se ha enviado. Vuelve a tocar el botón para intentarlo de nuevo.';
 
   @override
+  String get capsulesLinkNotShared => 'Esta cápsula no está compartida contigo';
+
+  @override
   String get capsulesOpenInMonth => 'En un mes';
 
   @override
@@ -650,6 +653,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get capsulesReportViolence => 'Violencia';
+
+  @override
+  String get capsulesShare => 'Compartir';
+
+  @override
+  String capsulesShareMessage(String title, String link) {
+    return 'Una cápsula del tiempo en Later: $title\n$link';
+  }
 
   @override
   String get capsulesYou => 'Tú';

@@ -75,6 +75,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="later" android:host="profile" />
+                <data android:scheme="later" android:host="capsule" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
