@@ -221,8 +221,16 @@ class AppPalette extends ThemeExtension<AppPalette> {
     shadowHeader: Color(0xA0000000),
   );
 
-  /// The dark palette in use (chosen in DECISIONS.md D-03).
-  static const dark = darkCharcoal;
+  /// The dark palette in use (chosen in DECISIONS.md D-03). Builds with
+  /// `--dart-define=DARK_PALETTE=forest` (or `slate`) show another candidate,
+  /// so the comparison can be repeated on a device.
+  static const dark = _darkCandidate == 'forest'
+      ? darkForest
+      : _darkCandidate == 'slate'
+      ? darkSlate
+      : darkCharcoal;
+
+  static const _darkCandidate = String.fromEnvironment('DARK_PALETTE');
 
   @override
   AppPalette copyWith() => this;
