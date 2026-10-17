@@ -10,7 +10,7 @@ Checked by hand on the emulator (dark theme, English and Russian). ✓ = good, �
 | Permission steps | ✓ | Three, each skippable; no longer a wall before the app. |
 | Map | ✓ | Dark style calm and on-brand; markers memoized (no re-send on position updates); logo always visible; my-location button flies smoothly. Zoomed out, a calm brand-green density glow; zoomed in, markers only (D-19). |
 | Capsule card | ✓ | Slides up, closes the way people expect (tap, swipe, back, tab, zoom-out). |
-| Capsule dialog | ✓ | Reactions respond instantly (optimistic), green tint on the chosen one. △ the card itself is the old 45%-height layout. |
+| Capsule dialog | ✓ | Reactions respond instantly (optimistic), green tint on the chosen one. The photo opens full screen (zoom, drag to close). △ the card keeps its original 45%-height layout (design reference). |
 | Comments | ✓ | Sheet with grab handle, composer above the keyboard, "Just now" times, replies indented. |
 | Creation | ✓ | Header pinned, new switches clear; asks for location when needed; offline save is instant (pending pill). Privacy, colour and date open the menu card with every option; date presets mean the calendar is rarely needed. △ "Pick a date…" still opens the stock (themed) calendar. |
 | Camera | ✓ | Starts on first use; pinch zoom with a 1.8× hint, tap-to-focus ring, haptic + blink on the shutter. △ flash has on/off only. |

@@ -42,6 +42,7 @@ Status: **on** = in the app and verified; **flag off** = built, hidden behind `l
 | Feature | Status | Where | Verified |
 |---|---|---|---|
 | Reactions on open capsules (6 emoji) | on | `capsules/social` | tests, emulator against the new rules |
+| Full-screen photo: tap a capsule's photo (opened capsule, creation preview); pinch/double-tap zoom, drag down to close | on | `shared/widgets/photo_viewer.dart` | tests, emulator |
 | Comments with one level of replies, delete, report | on | `capsules/social` | tests, emulator |
 | Reports (capsules, comments) | on | `capsule_social_panel.dart` | tests |
 | Friends-of-friends suggestions with mutual counts (F-57) | on | `friend_suggestions_controller.dart` | tests |

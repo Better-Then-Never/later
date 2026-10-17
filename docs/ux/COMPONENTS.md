@@ -24,6 +24,7 @@
 - `OptionsMenuTitle`; `OptionsMenuItem.trailing`; `ConfirmDialog.message`; `MenuItemNode.selected`;
   `NestedMenu` rebuilt on the menu card (animated size between levels).
 - `DefaultIconButton.semanticLabel`.
+- `PhotoViewer.show(context, url)`: full-screen photo (network or `file:`), zoom and drag-to-close.
 - `showChoiceMenu<T>` + `MenuChoice`: a titled menu card of choices, the current one in green.
 - Chat: `ReplyBar`, `MessageReply`, the bubble quote, `_SwipeToReply`.
 

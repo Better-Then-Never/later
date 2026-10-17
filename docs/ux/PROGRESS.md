@@ -105,3 +105,7 @@ merged into `main` when this branch was created; its CI fix is merged in). Missi
 - **Light-theme pass on tonight's UI:** menus, On this day, chat quotes. Found and fixed: the quote sat at the
   right edge of the friend's bubble. **Quote jump, done:** tap a quote → the list scrolls to the message (also
   far up and not yet built) and highlights it; verified with 40 messages in between.
+- **Full-screen photo, done:** `PhotoViewer` from the opened capsule and the creation preview. The first device
+  run showed the photo shrunk to the Back button's size (loose Stack); fixed, and the widget test now measures
+  the photo area inside the app's real wrapping. The emulator restarted itself once more (2 GB guest RAM);
+  re-run after it booted. CI green on 57c289c (incl. iOS). Flutter 246.
