@@ -379,6 +379,8 @@ class _MapViewState extends State<_MapView> {
 
   /// A pin is down on its spot: its native marker shows again, and the
   /// overlay (which looks the same) stays over it until the map has drawn it.
+  /// That marker changes, so it shows only once its bitmap has loaded again:
+  /// the overlay waits a while (the map is still meanwhile).
   void _landed(String id) {
     final pin = _floating[id];
     if (!mounted || pin == null || pin.phase != _Float.landing) return;
@@ -388,7 +390,7 @@ class _MapViewState extends State<_MapView> {
         if (_floating[id]?.phase == _Float.landed) {
           setState(() => _floating.remove(id));
         }
-      }),
+      }, settle: const Duration(milliseconds: 250)),
     );
   }
 
@@ -448,10 +450,11 @@ class _MapViewState extends State<_MapView> {
     });
     for (final pin in handed) {
       final turn = pin.turn;
+      // The map's posed pin is added: it shows once its bitmap has loaded.
       unawaited(
         _afterNativeMap(() {
           if (pin.turn == turn) setState(() => pin.drawn = false);
-        }),
+        }, settle: const Duration(milliseconds: 100)),
       );
     }
   }
@@ -509,12 +512,17 @@ class _MapViewState extends State<_MapView> {
   }
 
   /// Runs [then] once the native map has handled and drawn all that this
-  /// frame sent it.
-  Future<void> _afterNativeMap(VoidCallback then) async {
+  /// frame sent it: an added marker within a few frames; a changed one gets
+  /// its bitmap again and needs longer ([settle]).
+  Future<void> _afterNativeMap(
+    VoidCallback then, {
+    Duration settle = Duration.zero,
+  }) async {
     if (!await _nativeMapCaughtUp()) return;
     for (var i = 0; i < 3; i++) {
       await WidgetsBinding.instance.endOfFrame;
     }
+    if (settle > Duration.zero) await Future<void>.delayed(settle);
     if (mounted) then();
   }
 
@@ -736,20 +744,28 @@ class _MapViewState extends State<_MapView> {
     );
     final hidden = <String>[];
     final posed = <String, (SelectedPinPose, BitmapDescriptor)>{};
+    final shadowed = <String>[];
     for (final MapEntry(key: id, value: pin) in _floating.entries) {
+      // The shadow from the selection until the pin starts landing: it
+      // never changes, so it never blinks.
+      if (pin.phase == _Float.up) shadowed.add(id);
       if (pin.phase == _Float.landed) continue;
       if (!pin.native) {
         hidden.add(id);
-      } else if (pin.motion.ms > 0) {
-        // Not yet off the ground, it looks like the plain pin anyway.
-        final bitmap = icons.selectedPin(pin.capsule.color);
-        if (bitmap != null) posed[id] = (pin.motion.pose, bitmap);
+        continue;
+      }
+      // Not yet off the ground it looks like the plain pin, which stays.
+      final bitmap = icons.selectedPin(pin.capsule.color);
+      if (pin.motion.ms > 0 && bitmap != null) {
+        hidden.add(id);
+        posed[id] = (pin.motion.pose, bitmap);
       }
     }
     final pins = SelectedPin.apply(
       _capsuleMarkers,
       hidden: hidden,
       posed: posed,
+      shadowed: shadowed,
       shadow: icons.selectedShadow,
     );
     return user == null ? pins : {user, ...pins};
@@ -919,18 +935,23 @@ class _MapViewState extends State<_MapView> {
               },
             ),
           ),
+          // Kept while the map draws the pin, only not painted: built again
+          // when a finger lifts, its picture came a frame late.
           for (final MapEntry(key: id, value: pin) in _floating.entries)
-            if (spots[id] case final spot? when pin.drawn)
+            if (spots[id] case final spot?)
               Positioned.fill(
                 key: ValueKey(id),
                 child: IgnorePointer(
-                  child: SelectedPinOverlay(
-                    color: pin.capsule.color,
-                    spot: spot,
-                    view: _viewport,
-                    motion: pin.motion,
-                    running: pin.running,
-                    onLanded: () => _landed(id),
+                  child: Opacity(
+                    opacity: pin.drawn ? 1 : 0,
+                    child: SelectedPinOverlay(
+                      color: pin.capsule.color,
+                      spot: spot,
+                      view: _viewport,
+                      motion: pin.motion,
+                      running: pin.running,
+                      onLanded: () => _landed(id),
+                    ),
                   ),
                 ),
               ),

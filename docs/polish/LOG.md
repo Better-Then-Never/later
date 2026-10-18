@@ -65,7 +65,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   as the native pin, follows the map, the hover steps, reduced motion), `map_projection_test.dart`,
   `map_viewport_test.dart`. Gates green except the known flaky `capsule_creation_test.dart:151` (passes alone).
 
-## 2026-10-18, M-02 follow-up 3: the selected pin stays on its spot while the map moves
+## 2026-10-18, M-02 follow-up 3: the selected pin stays on its spot while the map moves (`d7a849c`)
 - **Owner**: with a capsule selected, moving the map made the pin wander around instead of staying in place.
 - **Cause**: the map reports its camera only after it has drawn the frame, and in bursts (5 to 40 ms apart on a
   120 Hz screen), so a pin drawn by Flutter always trails a moving map and wobbles. Only a pin the map draws
@@ -85,3 +85,29 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   (first frames and one 14 ms build; the pre-M-02 baseline was 1.8 %, 11.1 ms); capsule_dialog only its first
   frames. Tests: `selected_pin_test.dart` (motion held and resumed in the same pose, landing, the map's posed
   pin and shadow, the bitmaps drawn), gates green.
+
+## 2026-10-18, M-02 follow-up 4: no blink when a finger touches or lifts, one shadow
+- **Owner**: touching the map (press, hold, move, lift) made the selected pin blink; then the shadow still
+  flashed on clicks. Also: the hover pauses while a finger rests on the map (kept: the owner's choice, see below).
+- **How it was found**: `tool/dev/frames.dart` (new) reads `screenrecord --output-format=frames` (raw frames,
+  every composition) and lays out the frames that changed, or prints where the pin's outline is in each; the
+  owner's own video was read with ffmpeg (imageio-ffmpeg in a venv under `build/`, nothing installed system-wide).
+  One frame with only the shadow and no pin, on a touch and on a lift.
+- **Causes and fixes**:
+  - On a touch the capsule's own marker was changed to the posed pin; a changed marker gets its bitmap again
+    and is missing until it has loaded. Now the capsule's marker stays as it is (hidden) and the posed pin is a
+    marker of its own, added and removed; the frozen overlay stays 100 ms longer while it loads.
+  - On a lift the overlay was built again and its picture came a frame after its shadow. Now it stays built
+    and is only not painted while the map draws the pin.
+  - The overlay's shadow and the map's shadow overlapped during each hand-over; two see-through shadows
+    flashed darker. Now there is one shadow, a marker of the map's, from the selection until the pin starts
+    landing; it never changes. It no longer grows and shrinks with the jump.
+  - After landing the capsule's marker changes back (a reload): the overlay waits 250 ms over it (the map is
+    still).
+- **Kept**: the hover pauses while a finger is on the map. The map draws the pin then and cannot animate it;
+  handing over on the touch, while the map is still, is what keeps the pin from trailing or doubling when a
+  drag starts (the owner chose this over a short lag at every drag start, or no continuous hover).
+- **Verified**: owner on the phone (press, hold, move, lift: no blink); frame recordings of presses and drags
+  before the fix showed the one-frame gap, none in the owner's check after. Tests: `selected_pin_test.dart`
+  (the capsule's marker unchanged while posed, the posed pin a marker of its own, the same shadow in both
+  modes). Gates green except the known flaky `capsule_creation_test.dart:151` (passes alone).

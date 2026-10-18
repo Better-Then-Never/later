@@ -7,7 +7,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../data/models/capsule.dart';
 import '../map_projection.dart';
@@ -15,8 +14,8 @@ import '../map_viewport.dart';
 import '../selected_pin.dart';
 
 /// A capsule's pin drawn by Flutter over the map at its [spot] (M-02), in
-/// the pose of its [motion]: it grows and jumps, sways, then hovers above a
-/// soft shadow; once landing, it lands back and says so ([onLanded]). The
+/// the pose of its [motion]: it grows and jumps, sways, then hovers (the map
+/// draws its shadow); once landing, it lands back and says so ([onLanded]). The
 /// motion advances only while [running] (the map is still and its own pin
 /// hidden); held, the pin keeps its pose. It follows the map ([view],
 /// [MapProjection]) and takes no touches (the map below does). Reduced
@@ -167,14 +166,6 @@ class _SelectedPinOverlayState extends State<SelectedPinOverlay>
           return Stack(
             clipBehavior: Clip.none,
             children: [
-              Positioned.fromRect(
-                rect: Rect.fromCenter(
-                  center: spot.translate(0, -SelectedPin.tipAbove * pose.scale),
-                  width: SelectedPin.shadowWidth,
-                  height: SelectedPin.shadowHeight,
-                ),
-                child: CustomPaint(painter: _ShadowPainter(lift)),
-              ),
               // Stands on its spot like the native pin, [lift] above it.
               Positioned(
                 left: spot.dx - side / 2,
@@ -197,33 +188,4 @@ class _SelectedPinOverlayState extends State<SelectedPinOverlay>
       ),
     );
   }
-}
-
-/// A soft oval on the ground under the floating pin: none while it stands on
-/// its spot (the native pins have none), smaller and lighter the higher it
-/// floats.
-class _ShadowPainter extends CustomPainter {
-  _ShadowPainter(this.lift);
-
-  final double lift;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (lift <= 0) return;
-    final strength = (lift / 6).clamp(0.0, 1.0);
-    final k = (1 - lift / 40).clamp(0.6, 1.0);
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: size.center(Offset.zero),
-        width: 20 * k,
-        height: 6 * k,
-      ),
-      Paint()
-        ..color = AppColors.mediaBlack.withValues(alpha: 0.3 * strength)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.5),
-    );
-  }
-
-  @override
-  bool shouldRepaint(_ShadowPainter old) => old.lift != lift;
 }

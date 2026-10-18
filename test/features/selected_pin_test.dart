@@ -103,19 +103,38 @@ void main() {
     const pose = (lift: 9.0, scale: SelectedPin.scale, degrees: 3.0);
     final posed = SelectedPin.apply(
       markers,
+      hidden: ['b'],
       posed: {'b': (pose, bitmap)},
+      shadowed: ['b'],
       shadow: shadow,
     );
-    expect(posed, hasLength(4));
-    final b = posed.firstWhere((m) => m.markerId == const MarkerId('b'));
-    expect(b.icon, bitmap);
-    expect(b.alpha, 1);
-    expect(b.rotation, 3);
-    expect(b.anchor, SelectedPin.anchorFor(9));
-    expect(b.zIndexInt, SelectedPin.pinZ);
+    expect(posed, hasLength(5));
+    // The capsule's own marker stays as it was while hidden: a changed
+    // marker blinks while its bitmap loads again.
+    expect(
+      posed.firstWhere((m) => m.markerId == const MarkerId('b')),
+      hidden.firstWhere((m) => m.markerId == const MarkerId('b')),
+    );
+    final p = posed.firstWhere((m) => m.markerId == SelectedPin.posedId('b'));
+    expect(p.icon, bitmap);
+    expect(p.alpha, 1);
+    expect(p.rotation, 3);
+    expect(p.anchor, SelectedPin.anchorFor(9));
+    expect(p.zIndexInt, SelectedPin.pinZ);
+    expect(p.position, const LatLng(52.1, 21.1));
     final s = posed.firstWhere((m) => m.markerId == SelectedPin.shadowId('b'));
-    expect(s.position, b.position);
-    expect(s.zIndexInt, lessThan(b.zIndexInt));
+    expect(s.position, p.position);
+    expect(s.zIndexInt, lessThan(p.zIndexInt));
+    // The same shadow while Flutter draws the pin: it never changes, so it
+    // never blinks at a hand-over.
+    final drawnByFlutter = SelectedPin.apply(
+      markers,
+      hidden: ['b'],
+      shadowed: ['b'],
+      shadow: shadow,
+    );
+    expect(drawnByFlutter, hasLength(4));
+    expect(drawnByFlutter, contains(s));
   });
 
   test('the posed pin stands on its spot, lifted by its anchor', () {

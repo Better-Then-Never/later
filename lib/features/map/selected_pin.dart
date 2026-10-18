@@ -18,7 +18,9 @@ typedef SelectedPinPose = ({double lift, double scale, double degrees});
 /// the map moves the map draws the pin itself, held in its pose ([apply]): a
 /// Flutter overlay trails a moving map (the map reports its camera after
 /// drawing, in bursts). Every hand-over happens while the map is still, from
-/// the same pose, so it does not show.
+/// the same pose, so it does not show. The shadow is the map's from the
+/// selection to the landing: two see-through shadows over each other during
+/// a hand-over flashed darker.
 abstract final class SelectedPin {
   /// The native pin (MarkerIcons): 48 dp, standing on its spot.
   static const side = 48.0;
@@ -94,7 +96,7 @@ abstract final class SelectedPin {
 
   // The map's own pin in a pose (MarkerIcons draws the bitmaps): the grown
   // pin at the top of a taller bitmap, its anchor lifting it off its spot
-  // and its rotation leaning it, over a still shadow.
+  // and its rotation leaning it; and the still shadow on its spot.
 
   /// The grown pin's bitmap, with room below it to float [maxLift] dp.
   static const pinSide = side * scale;
@@ -119,48 +121,65 @@ abstract final class SelectedPin {
       Offset(0.5, (pinSide + lift.clamp(0.0, maxLift)) / pinHeight);
 
   static MarkerId shadowId(String id) => MarkerId('_shadow_$id');
+  static MarkerId posedId(String id) => MarkerId('_posed_$id');
 
   /// [markers] as the floating pins need them: those of [hidden] invisible
-  /// (Flutter draws them), those of [posed] drawn by the map in their pose
-  /// with their grown pin bitmap, over [shadow]; the same set when none of
-  /// them is on the map.
+  /// (Flutter draws them, or the map in their pose); for those of [posed] a
+  /// pin of their own, drawn by the map in that pose with its grown bitmap;
+  /// under those of [shadowed] the [shadow]. The same set when none of them
+  /// is on the map.
+  ///
+  /// The posed pin is a marker of its own, added and removed, and the
+  /// capsule's marker does not change: a changed marker gets its bitmap
+  /// again and is missing from the map until it has loaded (a blink on
+  /// every touch), an added one shows at once.
   static Set<Marker> apply(
     Set<Marker> markers, {
     Iterable<String> hidden = const [],
     Map<String, (SelectedPinPose, BitmapDescriptor)> posed = const {},
+    Iterable<String> shadowed = const [],
     BitmapDescriptor? shadow,
   }) {
     final hide = {for (final id in hidden) MarkerId(id)};
     final poses = {
       for (final MapEntry(:key, :value) in posed.entries) MarkerId(key): value,
     };
+    final shade = {
+      if (shadow != null)
+        for (final id in shadowed) MarkerId(id),
+    };
     if (!markers.any(
-      (m) => hide.contains(m.markerId) || poses.containsKey(m.markerId),
+      (m) =>
+          hide.contains(m.markerId) ||
+          poses.containsKey(m.markerId) ||
+          shade.contains(m.markerId),
     )) {
       return markers;
     }
     return {
-      for (final m in markers)
-        if (hide.contains(m.markerId))
-          m.copyWith(alphaParam: 0)
-        else if (poses[m.markerId] case (final pose, final pin)) ...[
-          if (shadow != null)
-            Marker(
-              markerId: shadowId(m.markerId.value),
-              position: m.position,
-              icon: shadow,
-              anchor: shadowAnchor,
-              zIndexInt: shadowZ,
-              consumeTapEvents: true,
-            ),
-          m.copyWith(
-            iconParam: pin,
-            anchorParam: anchorFor(pose.lift),
-            rotationParam: pose.degrees,
-            zIndexIntParam: pinZ,
+      for (final m in markers) ...[
+        if (hide.contains(m.markerId)) m.copyWith(alphaParam: 0) else m,
+        if (shade.contains(m.markerId))
+          Marker(
+            markerId: shadowId(m.markerId.value),
+            position: m.position,
+            icon: shadow!,
+            anchor: shadowAnchor,
+            zIndexInt: shadowZ,
+            consumeTapEvents: true,
           ),
-        ] else
-          m,
+        if (poses[m.markerId] case (final pose, final pin))
+          Marker(
+            markerId: posedId(m.markerId.value),
+            position: m.position,
+            icon: pin,
+            anchor: anchorFor(pose.lift),
+            rotation: pose.degrees,
+            zIndexInt: pinZ,
+            consumeTapEvents: m.consumeTapEvents,
+            onTap: m.onTap,
+          ),
+      ],
     };
   }
 

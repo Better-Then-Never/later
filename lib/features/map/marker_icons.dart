@@ -23,9 +23,9 @@ class MarkerIcons {
   BitmapDescriptor forColor(CapsuleColor color) =>
       _capsules[color] ?? _capsules[CapsuleColor.red]!;
 
-  /// The grown pin of [color] and the shadow under it, for the map to draw
-  /// a floating pin while it moves ([SelectedPin.apply]); null until drawn
-  /// (in the background once per run, right after the pins load).
+  /// The grown pin of [color], for the map to draw a floating pin while it
+  /// moves, and the shadow under a selected pin ([SelectedPin.apply]); null
+  /// until drawn (in the background once per run, right after the pins load).
   BitmapDescriptor? selectedPin(CapsuleColor color) => _selectedPins[color];
   BitmapDescriptor? get selectedShadow => _selectedShadow;
 
@@ -76,7 +76,7 @@ class MarkerIcons {
     return _png(recorder, side, height);
   }
 
-  /// The soft oval under a hovering pin, as the overlay draws it.
+  /// The soft oval under a hovering pin.
   static Future<Uint8List> _shadow() {
     const w = SelectedPin.shadowWidth * _pixelRatio;
     const h = SelectedPin.shadowHeight * _pixelRatio;
