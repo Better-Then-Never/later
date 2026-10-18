@@ -27,7 +27,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   `selected_pin_test.dart` (budget, only that marker changes, frames drawn for every colour). The pop itself is too
   quick to judge from stills.
 
-## 2026-10-18, M-02 follow-up: jump, sway and hover instead of a ring
+## 2026-10-18, M-02 follow-up: jump, sway and hover instead of a ring (`f58508a`)
 - **Owner**: the green outline clashed with the other pin colours; asked for motion instead (sway, hover, jump).
 - **Changed**: no ring. The selected pin jumps off its spot (tip 13 dp up), lands, sways once (7°, −5°, 0° around
   its spot, through the marker's rotation, no new bitmaps) and rests hovering 9 dp above a soft blurred shadow
@@ -36,3 +36,31 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
 - **Verified**: phone (debug): hovering with its shadow while the card is open. Tests updated (jump then land,
   rests upright, within `AppMotion.reveal`, anchored at its spot). Not re-measured in profile: same mechanism as
   the first version (6 marker updates instead of 4).
+
+## 2026-10-18, M-02 follow-up 2: no flicker, a smooth sway, a gentle hover
+- **Owner**: the sway was too shaky; after it the pin should hover up and down a little. Then: the selected pin
+  blinked (gone for a moment) while it moved.
+- **Cause of the blink**: every change to a native marker re-sends all its options, and the Android plugin
+  re-creates its bitmap each time (`setIcon` in `MarkersController.changeMarker`); a marker moved step by step
+  blinked at every step. No native marker can be animated without it.
+- **Changed**: the selected pin is drawn by Flutter over the map (`SelectedPinOverlay`); its native marker only
+  turns invisible (one update when selected, one when it is back). The overlay starts and ends exactly as the
+  native pin looks (48 dp, standing on its spot), so the swaps do not show. It grows to 1.14× as it jumps
+  (14 dp up), lands at 9 dp, sways 5° with a fading swing (one frame never turns it more than 0.7°), then hovers
+  ±2.5 dp every 1.6 s above a soft shadow; deselected, it lands back in 180 ms. Jump, sway and landing run every
+  frame; the slow hover takes a step every 33 ms (about a physical pixel; a quarter of the frames).
+  Reduced motion: hovering at once, landing at once.
+- **Placing it**: `MapProjection` (Web Mercator in Dart, bearing, the map's padding) puts the spot on screen from
+  each camera the map reports. Android keeps the map still when its padding changes (the card opening or
+  closing) and moves the reported target instead, telling only with the next camera move. So `MapViewport`
+  reads each camera with the padding in force when the map reported it (a padding counts from the first camera
+  after the map confirmed it; one in between is told by not jumping). Tilt gestures are off (the maths assume a
+  flat map; the compass already turned the map flat).
+- **Verified**: phone (debug): the projection against the map's own `getScreenCoordinate` stays within 0.2 dp
+  with the card opening, after closing it (no camera move), after a pan and on a reselect; a half-transparent
+  native pin under a still overlay showed no double, also mid-pan; hovering with its shadow in light and dark;
+  reduced motion hovering at once. Profile, 1 run each: map_focus 0.3 % janky (worst 8.4 ms) before the hover
+  step, 0.4 % (one 25 ms raster frame of 254) after; capsule_dialog only its first frame over budget (18 ms, as
+  before); map pan and zoom 0 %; fewer frames in all. Tests: `selected_pin_test.dart` (timing, starts and lands
+  as the native pin, follows the map, the hover steps, reduced motion), `map_projection_test.dart`,
+  `map_viewport_test.dart`. Gates green except the known flaky `capsule_creation_test.dart:151` (passes alone).
