@@ -546,8 +546,43 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         }
       }
     } else if (layerId == _bubblesLayer) {
-      // In on the bubble's capsules: two levels closer, around it.
-      unawaited(_moveTo(at, zoom: math.min(_zoom + 2, 19)));
+      // A bubble's feature id is its cluster id.
+      final cluster = num.tryParse(id)?.toInt();
+      unawaited(_openBubble(cluster, at));
+    }
+  }
+
+  /// In on a bubble's capsules: the camera fits them (as the Google map
+  /// does); all in one spot, or none listed, in to where the bubble splits.
+  Future<void> _openBubble(int? cluster, ml.LatLng at) async {
+    final c = await _ready.future;
+    final leaves = cluster == null
+        ? const <Map<String, dynamic>>[]
+        : await c.getClusterLeaves(_capsulesSource, cluster, limit: 1000);
+    if (!mounted) return;
+    final area = bubbleArea(leaves);
+    if (area == null) {
+      final splits = cluster == null
+          ? 0
+          : await c.getClusterExpansionZoom(_capsulesSource, cluster);
+      if (!mounted) return;
+      final zoom = splits > _zoom ? splits + 0.5 : _zoom + 2;
+      return _moveTo(at, zoom: math.min(zoom, 19));
+    }
+    final update = ml.CameraUpdate.newLatLngBounds(
+      ml.LatLngBounds(
+        southwest: ml.LatLng(area.south, area.west),
+        northeast: ml.LatLng(area.north, area.east),
+      ),
+      left: 64,
+      top: 96,
+      right: 64,
+      bottom: NavbarWidget.coveredHeight(context) + 64,
+    );
+    if (AppMotion.reduced(context)) {
+      await c.moveCamera(update);
+    } else {
+      await c.animateCamera(update, duration: AppMotion.slow * 2);
     }
   }
 

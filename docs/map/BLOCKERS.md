@@ -11,8 +11,6 @@
 - **Flying capsules on the first open and on the zoom buttons** (M-03/M-04's sprites): MapLibre's own symbol fade
   (0.3 s) replaces them; capsules fade in as their tiles arrive, bubbles crossfade when they split or merge.
 - **The capsule creation pin picker** still uses Google Maps (its own small map; not part of this mission).
-- **Bubble tap** zooms two levels in around the bubble (the plugin has no "cluster expansion zoom"); the Google
-  map fits the bubble's capsules.
 
 ## Not verified
 - **iOS**: nothing run (no iOS rig in this project). `maplibre_gl` supports iOS; the styles, layers and gesture
@@ -24,9 +22,15 @@
 - **2,000 capsules**: the seed's account sees 1,205; the MapLibre sources take all visible capsules (no viewport
   bound needed: clustering runs in the map's worker). 2,000+ not measured.
 - **APK size** with the second map SDK: not measured.
-- **The "almost ready" screen after the map (M-07)**: not reproduced in this mission (the seed account is complete).
+- **The "almost ready" screen after the map (M-07)**: found by reading, not reproduced on the phone (the seed
+  account is complete). A first Google sign-in is signed in before its profile is created; the home screen showed,
+  then "Almost there" over it after the 3 s grace. Fixed: the launch picture stays until it is known whether the
+  profile exists (or its stream fails); covered in `test/app/session_and_auth_test.dart`.
 
 ## Known limits
+- Two capsules at the very same coordinates show as one pin at the closest zoom (one under the other), as on the
+  Google map. A bubble tap fits the bubble's own capsules (`getClusterLeaves`); when they all stand in one spot it
+  moves in to where the bubble splits.
 - MapLibre's symbol crossfade (fixed at 0.3 s on Android, no setting) makes a splitting bubble and its new pins
   half-transparent for a moment; never a frame without either.
 - The harness records about 120 frames a second with `screenrecord`; the recorder itself can drop frames, so a

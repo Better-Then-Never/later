@@ -54,6 +54,7 @@ import 'widgets/marker_choreography_overlay.dart';
 import 'engine/map_zoom_visuals.dart';
 import 'engine/maplibre_images.dart';
 import 'engine/map_camera_memory.dart';
+import 'engine/bubble_members.dart';
 import '../achievements/streak_pill.dart';
 
 part 'engine/maplibre_map_view.dart';
