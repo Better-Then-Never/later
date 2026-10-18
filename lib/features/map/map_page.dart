@@ -31,6 +31,7 @@ import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
+import 'selected_pin.dart';
 import '../history/own_capsules_store.dart';
 import 'widgets/capsule_info_panel.dart';
 import 'widgets/first_capsule_hint.dart';
@@ -251,6 +252,10 @@ class _MapViewState extends State<_MapView> {
   /// The capsule whose card is open (F-17: our own card replaces the
   /// info-window package, which re-opened itself after being closed).
   Capsule? _selected;
+
+  /// The frame of the selected pin's pop (SelectedPin.frames, M-02).
+  int _pinFrame = 0;
+  Timer? _pinTimer;
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
 
@@ -293,7 +298,21 @@ class _MapViewState extends State<_MapView> {
 
   void _select(Capsule? capsule) {
     if (!mounted || capsule?.id == _selected?.id) return;
-    setState(() => _selected = capsule);
+    _pinTimer?.cancel();
+    final last = SelectedPin.frames.length - 1;
+    setState(() {
+      _selected = capsule;
+      // Reduced motion: the selected pin is simply there, grown and ringed.
+      _pinFrame = AppMotion.reduced(context) ? last : 0;
+    });
+    if (capsule == null || _pinFrame == last) return;
+    _pinTimer = Timer.periodic(SelectedPin.frameTime, (timer) {
+      if (!mounted || _pinFrame >= last) {
+        timer.cancel();
+        return;
+      }
+      setState(() => _pinFrame++);
+    });
   }
 
   @override
@@ -301,6 +320,7 @@ class _MapViewState extends State<_MapView> {
     _focus.removeListener(_onFocusRequested);
     selectedPageNotifier.removeListener(_onTabChanged);
     _bearing.dispose();
+    _pinTimer?.cancel();
     super.dispose();
   }
 
@@ -487,8 +507,19 @@ class _MapViewState extends State<_MapView> {
             ),
       };
     }
+    // The selected capsule's pin pops and sits on top; only that marker
+    // changes, so only it goes to the native map.
+    final selected = _selected;
+    final frames = selected == null
+        ? null
+        : icons.selectedFrames(selected.color);
+    final pins = SelectedPin.apply(
+      _capsuleMarkers,
+      selected?.id,
+      frames?[_pinFrame.clamp(0, frames.length - 1)],
+    );
     final user = _userMarker;
-    return user == null ? _capsuleMarkers : {user, ..._capsuleMarkers};
+    return user == null ? pins : {user, ...pins};
   }
 
   /// The native heatmap throws on an empty point list (BUG-048), so the
