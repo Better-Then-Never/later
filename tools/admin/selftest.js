@@ -6,6 +6,7 @@ const { init } = require('./common');
 const { setAdmin } = require('./set-admin');
 const { setVerified } = require('./set-verified');
 const { backfillCounts } = require('./backfill-counts');
+const { announce, functionsAdmin } = require('./announce');
 
 (async () => {
   const { db, auth } = init([]);
@@ -41,6 +42,21 @@ const { backfillCounts } = require('./backfill-counts');
   assert.equal(counted.followingCount, 1);
   assert.deepEqual(counted.stats, { capsules: 2, publicCapsules: 1 });
   assert.equal((await backfillCounts(db)).changed, 0, 'running again changes nothing');
+
+  // Announcement: written with the functions' firebase-admin (its server
+  // timestamp failed to serialize with this folder's copy); FCM stands in.
+  const fadmin = functionsAdmin();
+  fadmin.initializeApp({ projectId: 'demo-later-admin' });
+  const sent = [];
+  const result = await announce(
+    { db: fadmin.firestore(), messaging: { send: async (m) => sent.push(m) && 'id' } },
+    { title: { en: 'Hello' }, body: { en: 'Test' }, languages: ['en', 'ru'] },
+  );
+  assert.equal(result.sent, 2);
+  assert.deepEqual(sent.map((m) => m.topic).sort(), ['news_en', 'news_ru']);
+  const stored = await db.collection('announcements').doc(result.id).get();
+  assert.equal(stored.get('title').ru, 'Hello', 'missing languages fall back to English');
+  assert.ok(stored.get('createdAt'), 'the server timestamp was written');
 
   console.log('admin scripts: all checks passed');
 })().catch((e) => {
