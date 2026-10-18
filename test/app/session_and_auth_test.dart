@@ -26,6 +26,12 @@ class _RecordingScope extends SessionScoped {
 }
 
 /// A cleanup that waits forever, like a Firestore write while offline.
+class _FailingUsers extends FakeUserRepository {
+  @override
+  Stream<UserProfile?> watchProfile(String uid) =>
+      Stream.error(StateError('permission-denied'));
+}
+
 class _StuckScope extends SessionScoped {
   @override
   void attach(String uid) {}
@@ -127,9 +133,15 @@ void main() {
         await pumpEventQueue();
         expect(session.status, SessionStatus.signedIn);
         expect(session.profileMissing, isFalse, reason: 'signup gap');
+        expect(
+          session.profileKnown,
+          isFalse,
+          reason: 'the launch picture stays, not the home screen (M-07)',
+        );
 
         await Future<void>.delayed(const Duration(milliseconds: 80));
         expect(session.profileMissing, isTrue);
+        expect(session.profileKnown, isTrue);
 
         expect(
           await AccountSettings.completeProfile(
@@ -168,7 +180,10 @@ void main() {
       )..start();
       auth.emit('u2');
       await pumpEventQueue();
+      expect(session.profileKnown, isFalse);
       await users.createProfile(uid: 'u2', name: 'B', username: 'bee');
+      await pumpEventQueue();
+      expect(session.profileKnown, isTrue, reason: 'home from here on');
       await Future<void>.delayed(const Duration(milliseconds: 80));
       expect(session.profileMissing, isFalse);
       auth.emit(null);
@@ -176,6 +191,23 @@ void main() {
       expect(session.profileMissing, isFalse);
       session.dispose();
     });
+
+    test(
+      'a profile stream that fails never keeps the launch picture',
+      () async {
+        final auth = FakeAuthRepository();
+        final session = SessionController(
+          auth: auth,
+          users: _FailingUsers(),
+          missingProfileGrace: const Duration(milliseconds: 50),
+        )..start();
+        auth.emit('u3');
+        await pumpEventQueue();
+        expect(session.profileKnown, isTrue);
+        expect(session.profileMissing, isFalse);
+        session.dispose();
+      },
+    );
   });
 
   group('AuthController', () {

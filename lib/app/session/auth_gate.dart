@@ -54,6 +54,9 @@ class _AuthGateState extends State<AuthGate> {
         if (session.profileMissing) {
           return CompleteProfilePage(key: ValueKey('complete-$uid'));
         }
+        // Not yet known whether the profile exists: never the home screen
+        // first and "Almost there" after it (M-07).
+        if (!session.profileKnown) return const SplashLogo();
         if (_permissionsGrantedFor != uid) {
           return PermissionGatePage(
             key: ValueKey('gate-$uid'),

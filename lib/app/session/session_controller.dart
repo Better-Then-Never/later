@@ -41,6 +41,7 @@ class SessionController extends ChangeNotifier {
   String? _uid;
   UserProfile? _profile;
   bool _profileMissing = false;
+  bool _profileFailed = false;
   Timer? _missingTimer;
   bool _signingOut = false;
   bool _signedOutByUser = false;
@@ -55,6 +56,15 @@ class SessionController extends ChangeNotifier {
   /// failed half-way, a profile removed elsewhere). The app asks for a name
   /// and username instead of showing "Loading..." forever.
   bool get profileMissing => _profileMissing;
+
+  /// Whether it is known yet if the profile exists: it has arrived, or it
+  /// is [profileMissing]. Until then the app shows its launch picture, not
+  /// the home screen: a first Google sign-in creates the profile after the
+  /// sign-in, and the map used to show first, then "Almost there" over it,
+  /// then the map again (M-07). A profile stream that fails counts as known,
+  /// so the app never waits on it forever.
+  bool get profileKnown =>
+      _profile != null || _profileMissing || _profileFailed;
 
   /// After an explicit "Log Out" the app shows the login page (not the
   /// welcome page), as it always did.
@@ -79,29 +89,37 @@ class SessionController extends ChangeNotifier {
     } else {
       _signedOutByUser = false;
       _status = SessionStatus.signedIn;
-      _profileSub = _users.watchProfile(uid).listen(
-        (profile) {
-          _profile = profile;
-          if (profile != null) {
-            _missingTimer?.cancel();
-            _missingTimer = null;
-            _profileMissing = false;
-          } else {
-            _missingTimer ??= Timer(missingProfileGrace, () {
-              _missingTimer = null;
-              if (_profile != null || _uid != uid) return;
-              _profileMissing = true;
+      _profileSub = _users
+          .watchProfile(uid)
+          .listen(
+            (profile) {
+              _profile = profile;
+              _profileFailed = false;
+              if (profile != null) {
+                _missingTimer?.cancel();
+                _missingTimer = null;
+                _profileMissing = false;
+              } else {
+                _missingTimer ??= Timer(missingProfileGrace, () {
+                  _missingTimer = null;
+                  if (_profile != null || _uid != uid) return;
+                  _profileMissing = true;
+                  notifyListeners();
+                });
+              }
               notifyListeners();
-            });
-          }
-          notifyListeners();
-        },
-        onError: (Object e, StackTrace st) => AppLogger.warning(
-          'Profile stream failed',
-          error: e,
-          stackTrace: st,
-        ),
-      );
+            },
+            onError: (Object e, StackTrace st) {
+              AppLogger.warning(
+                'Profile stream failed',
+                error: e,
+                stackTrace: st,
+              );
+              if (_uid != uid) return;
+              _profileFailed = true;
+              notifyListeners();
+            },
+          );
       for (final s in _scoped) {
         s.attach(uid);
       }
@@ -116,6 +134,7 @@ class SessionController extends ChangeNotifier {
     _missingTimer?.cancel();
     _missingTimer = null;
     _profileMissing = false;
+    _profileFailed = false;
     if (_uid != null) {
       for (final s in _scoped.reversed) {
         s.detach();
