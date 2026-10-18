@@ -180,6 +180,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     for (final MapEntry(:key, :value) in images.entries) {
       await c.addImage(key, value);
     }
+    // The data as read here: capsules that arrive while the layers are being
+    // added are sent by [_syncData] once the style is ready.
+    final version = map.capsulesVersion;
+    final me = map.myPosition;
     await c.addGeoJsonSource(_heatSource, _features(map.heatCapsules));
     await c.addSource(
       _capsulesSource,
@@ -192,7 +196,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         clusterMaxZoom: 17,
       ),
     );
-    await c.addGeoJsonSource(_meSource, _point(map.myPosition));
+    await c.addGeoJsonSource(_meSource, _point(me));
     await c.addGeoJsonSource(_selectedSource, _features(const []));
     await c.addHeatmapLayer(
       _heatSource,
@@ -332,8 +336,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       ),
       enableInteraction: false,
     );
-    _dataVersion = map.capsulesVersion;
-    _meAt = map.myPosition;
+    _dataVersion = version;
+    _meAt = me;
     if (!mounted) return;
     setState(() => _styled = true);
     if (_shown case final shown?) {
