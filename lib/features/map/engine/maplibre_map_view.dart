@@ -186,7 +186,9 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       ml.GeojsonSourceProperties(
         data: _features(map.visibleCapsules),
         cluster: true,
-        clusterRadius: 50,
+        // Wider than the Google grid's 64 px cells at 3x: fewer, clearer
+        // bubbles at city zoom.
+        clusterRadius: 60,
         clusterMaxZoom: 17,
       ),
     );
