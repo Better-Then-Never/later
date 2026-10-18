@@ -3,16 +3,22 @@ import 'dart:math' as math;
 import 'package:flutter/animation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+/// How a floating pin stands: how high it floats above its spot (dp), how
+/// big it is (1 = the native pin) and how far it leans (degrees, clockwise).
+typedef SelectedPinPose = ({double lift, double scale, double degrees});
+
 /// The selected capsule's pin (M-02): it grows and jumps off its spot, sways
 /// and settles, then hovers gently up and down above a soft shadow that marks
 /// the spot; deselected, it lands back. No outline: it works for every pin
 /// colour.
 ///
-/// The motion runs in Flutter (`SelectedPinOverlay`), over the map; the
-/// native marker is only hidden meanwhile. Changing a native marker
-/// re-creates its bitmap on Android, so a native pin that moved blinked at
-/// every step. The overlay starts and ends exactly as the native pin looks
-/// (48 dp, standing on its spot), so the swaps do not show.
+/// While the map is still the motion runs in Flutter (`SelectedPinOverlay`)
+/// and the native marker hides: changing a native marker re-creates its
+/// bitmap on Android, so a native pin that moved blinked at every step. While
+/// the map moves the map draws the pin itself, held in its pose ([apply]): a
+/// Flutter overlay trails a moving map (the map reports its camera after
+/// drawing, in bursts). Every hand-over happens while the map is still, from
+/// the same pose, so it does not show.
 abstract final class SelectedPin {
   /// The native pin (MarkerIcons): 48 dp, standing on its spot.
   static const side = 48.0;
@@ -86,6 +92,78 @@ abstract final class SelectedPin {
         math.sin(2 * math.pi * t / _swayPeriod);
   }
 
+  // The map's own pin in a pose (MarkerIcons draws the bitmaps): the grown
+  // pin at the top of a taller bitmap, its anchor lifting it off its spot
+  // and its rotation leaning it, over a still shadow.
+
+  /// The grown pin's bitmap, with room below it to float [maxLift] dp.
+  static const pinSide = side * scale;
+  static const maxLift = 20.0;
+  static const pinHeight = pinSide + maxLift;
+
+  /// The shadow's bitmap, drawn as under the hovering pin, centred under the
+  /// grown pin's tip.
+  static const shadowWidth = 30.0;
+  static const shadowHeight = 12.0;
+  static const shadowAnchor = Offset(
+    0.5,
+    0.5 + tipAbove * scale / shadowHeight,
+  );
+
+  /// Above the clusters (1) and the other pins (0).
+  static const shadowZ = 2;
+  static const pinZ = 3;
+
+  /// The pin's anchor for [lift]: its bottom [lift] dp above the spot.
+  static Offset anchorFor(double lift) =>
+      Offset(0.5, (pinSide + lift.clamp(0.0, maxLift)) / pinHeight);
+
+  static MarkerId shadowId(String id) => MarkerId('_shadow_$id');
+
+  /// [markers] as the floating pins need them: those of [hidden] invisible
+  /// (Flutter draws them), those of [posed] drawn by the map in their pose
+  /// with their grown pin bitmap, over [shadow]; the same set when none of
+  /// them is on the map.
+  static Set<Marker> apply(
+    Set<Marker> markers, {
+    Iterable<String> hidden = const [],
+    Map<String, (SelectedPinPose, BitmapDescriptor)> posed = const {},
+    BitmapDescriptor? shadow,
+  }) {
+    final hide = {for (final id in hidden) MarkerId(id)};
+    final poses = {
+      for (final MapEntry(:key, :value) in posed.entries) MarkerId(key): value,
+    };
+    if (!markers.any(
+      (m) => hide.contains(m.markerId) || poses.containsKey(m.markerId),
+    )) {
+      return markers;
+    }
+    return {
+      for (final m in markers)
+        if (hide.contains(m.markerId))
+          m.copyWith(alphaParam: 0)
+        else if (poses[m.markerId] case (final pose, final pin)) ...[
+          if (shadow != null)
+            Marker(
+              markerId: shadowId(m.markerId.value),
+              position: m.position,
+              icon: shadow,
+              anchor: shadowAnchor,
+              zIndexInt: shadowZ,
+              consumeTapEvents: true,
+            ),
+          m.copyWith(
+            iconParam: pin,
+            anchorParam: anchorFor(pose.lift),
+            rotationParam: pose.degrees,
+            zIndexIntParam: pinZ,
+          ),
+        ] else
+          m,
+    };
+  }
+
   /// Where the markers of [ids] stand, for those on the map (not inside a
   /// cluster, not off screen).
   static Map<String, LatLng> spots(Set<Marker> markers, Iterable<String> ids) {
@@ -96,15 +174,53 @@ abstract final class SelectedPin {
         if (wanted.contains(m.markerId)) m.markerId.value: m.position,
     };
   }
+}
 
-  /// [markers] with those of [ids] invisible (the overlay draws them); the
-  /// same set when none of them is on the map.
-  static Set<Marker> hide(Set<Marker> markers, Iterable<String> ids) {
-    final hidden = {for (final id in ids) MarkerId(id)};
-    if (!markers.any((m) => hidden.contains(m.markerId))) return markers;
-    return {
-      for (final m in markers)
-        hidden.contains(m.markerId) ? m.copyWith(alphaParam: 0) : m,
-    };
+/// Where a floating pin is in its motion. Its overlay advances it while the
+/// map is still; the map page reads it to pose the map's own pin the same
+/// while the map moves, and the overlay goes on from there.
+class PinMotion {
+  /// Milliseconds of motion since the jump began (held while the map moves).
+  int ms = 0;
+
+  /// How long landing takes (none with reduced motion; the overlay sets it).
+  int landMs = SelectedPin.landing.inMilliseconds;
+
+  SelectedPinPose? _landFrom;
+  int _landStart = 0;
+
+  bool get landing => _landFrom != null;
+  bool get landed => landing && ms - _landStart >= landMs;
+
+  /// Deselected: lands from wherever it is now.
+  void land() {
+    if (landing) return;
+    _landFrom = pose;
+    _landStart = ms;
+  }
+
+  /// Selected again: jumps again from its spot.
+  void jumpAgain() {
+    _landFrom = null;
+    ms = 0;
+  }
+
+  SelectedPinPose get pose {
+    final from = _landFrom;
+    if (from == null) {
+      return (
+        lift: SelectedPin.liftAt(ms),
+        scale: SelectedPin.scaleAt(ms),
+        degrees: SelectedPin.rotationAt(ms),
+      );
+    }
+    final t = landMs <= 0
+        ? 1.0
+        : Curves.easeIn.transform(((ms - _landStart) / landMs).clamp(0.0, 1.0));
+    return (
+      lift: from.lift * (1 - t),
+      scale: from.scale + (1 - from.scale) * t,
+      degrees: from.degrees * (1 - t),
+    );
   }
 }

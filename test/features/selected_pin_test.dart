@@ -1,12 +1,15 @@
 // The selected capsule's pin (M-02): it grows and jumps, sways smoothly,
-// hovers, and lands back, drawn by Flutter over the map while its native
-// marker hides (a native pin that moved blinked).
+// hovers, and lands back. Flutter draws it while the map is still (its
+// native marker hides: a native pin that moved blinked); while the map moves
+// the map draws it, held in the same pose (an overlay trails a moving map).
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/features/map/map_projection.dart';
 import 'package:later/features/map/map_viewport.dart';
+import 'package:later/features/map/marker_icons.dart';
 import 'package:later/features/map/selected_pin.dart';
 import 'package:later/features/map/widgets/selected_pin_overlay.dart';
 
@@ -41,6 +44,11 @@ void main() {
     ];
     expect(bob.reduce((a, b) => a > b ? a : b), lessThanOrEqualTo(12));
     expect(bob.reduce((a, b) => a < b ? a : b), greaterThanOrEqualTo(6));
+    expect(
+      12,
+      lessThanOrEqualTo(SelectedPin.maxLift),
+      reason: 'the map can pose it at any height it reaches',
+    );
   });
 
   test('the sway is smooth and dies down before the hover', () {
@@ -59,35 +67,105 @@ void main() {
     expect(SelectedPin.rotationAt(SelectedPin.swayEnd + 500), 0);
   });
 
-  test('only the floating pins hide, and only those on the map', () {
+  test('landing goes from where it was to the plain pin on its spot', () {
+    final motion = PinMotion()..ms = 2000;
+    final hovering = motion.pose;
+    motion.land();
+    expect(motion.pose, hovering, reason: 'no jump when it starts');
+    motion.ms += SelectedPin.landing.inMilliseconds;
+    expect(motion.landed, isTrue);
+    expect(motion.pose, (lift: 0.0, scale: 1.0, degrees: 0.0));
+    motion.jumpAgain();
+    expect(motion.landing, isFalse);
+    expect(motion.pose.lift, 0);
+  });
+
+  test('the floating pins hide, or the map draws them posed, only those on '
+      'the map', () {
     final markers = {_pin('a'), _pin('b', const LatLng(52.1, 21.1)), _pin('c')};
-    final out = SelectedPin.hide(markers, ['b', 'x']);
-    expect(out, hasLength(3));
-    for (final m in out) {
+    final hidden = SelectedPin.apply(markers, hidden: ['b', 'x']);
+    expect(hidden, hasLength(3));
+    for (final m in hidden) {
       expect(m.alpha, m.markerId.value == 'b' ? 0 : 1);
     }
     expect(
-      SelectedPin.hide(markers, ['x']),
+      SelectedPin.apply(markers, hidden: ['x']),
       same(markers),
       reason: 'not on the map (inside a cluster): nothing to send',
     );
-    expect(SelectedPin.hide(markers, const []), same(markers));
+    expect(SelectedPin.apply(markers), same(markers));
     expect(SelectedPin.spots(markers, ['b', 'x']), {
       'b': const LatLng(52.1, 21.1),
+    });
+
+    final bitmap = BitmapDescriptor.defaultMarkerWithHue(1);
+    final shadow = BitmapDescriptor.defaultMarkerWithHue(2);
+    const pose = (lift: 9.0, scale: SelectedPin.scale, degrees: 3.0);
+    final posed = SelectedPin.apply(
+      markers,
+      posed: {'b': (pose, bitmap)},
+      shadow: shadow,
+    );
+    expect(posed, hasLength(4));
+    final b = posed.firstWhere((m) => m.markerId == const MarkerId('b'));
+    expect(b.icon, bitmap);
+    expect(b.alpha, 1);
+    expect(b.rotation, 3);
+    expect(b.anchor, SelectedPin.anchorFor(9));
+    expect(b.zIndexInt, SelectedPin.pinZ);
+    final s = posed.firstWhere((m) => m.markerId == SelectedPin.shadowId('b'));
+    expect(s.position, b.position);
+    expect(s.zIndexInt, lessThan(b.zIndexInt));
+  });
+
+  test('the posed pin stands on its spot, lifted by its anchor', () {
+    // The anchor is at the bitmap's bottom for no lift, higher up the more
+    // it floats, and always inside the bitmap.
+    expect(
+      SelectedPin.anchorFor(0).dy * SelectedPin.pinHeight,
+      closeTo(SelectedPin.pinSide, 1e-9),
+    );
+    expect(
+      SelectedPin.anchorFor(9).dy * SelectedPin.pinHeight,
+      closeTo(SelectedPin.pinSide + 9, 1e-9),
+    );
+    expect(SelectedPin.anchorFor(99).dy, 1);
+    expect(SelectedPin.shadowAnchor.dy, inInclusiveRange(0, 1));
+  });
+
+  testWidgets('the map pin bitmaps are drawn once the pins load', (
+    tester,
+  ) async {
+    await tester.runAsync(() async {
+      await rootBundle.load('assets/icons/map/pin_red.png');
+      final icons = await MarkerIcons.load();
+      for (var i = 0; i < 50; i++) {
+        if (icons.selectedShadow != null &&
+            CapsuleColor.values.every((c) => icons.selectedPin(c) != null)) {
+          break;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+      }
+      expect(icons.selectedShadow, isNotNull);
+      for (final c in CapsuleColor.values) {
+        expect(icons.selectedPin(c), isNotNull);
+      }
     });
   });
 
   group('the overlay', () {
     late MapViewport view;
+    late PinMotion motion;
 
     setUp(() {
       view = MapViewport()
         ..start(const CameraPosition(target: _spot, zoom: 16), _padding);
+      motion = PinMotion();
     });
 
     Future<void> pump(
       WidgetTester tester, {
-      bool landing = false,
+      bool running = true,
       VoidCallback? onLanded,
       bool reduced = false,
     }) async {
@@ -103,7 +181,8 @@ void main() {
               color: CapsuleColor.blue,
               spot: _spot,
               view: view,
-              landing: landing,
+              motion: motion,
+              running: running,
               onLanded: onLanded,
             ),
           ),
@@ -119,6 +198,8 @@ void main() {
       _size,
       view.value!.padding,
     );
+
+    double lift(WidgetTester tester) => projected().dy - pinRect(tester).bottom;
 
     testWidgets('starts exactly as the native pin: 48 dp, on its spot', (
       tester,
@@ -136,13 +217,30 @@ void main() {
       expect(top.width, closeTo(SelectedPin.side * SelectedPin.scale, 0.01));
       expect(projected().dy - top.bottom, closeTo(14, 0.5));
       await tester.pump(const Duration(seconds: 3));
-      final lift = projected().dy - pinRect(tester).bottom;
-      expect(lift, inInclusiveRange(6, 12));
+      final hovering = lift(tester);
+      expect(hovering, inInclusiveRange(6, 12));
       // The slow hover takes a step now and then, not a frame every vsync.
       await tester.pump();
       expect(tester.binding.hasScheduledFrame, isFalse);
       await tester.pump(SelectedPin.hoverStep);
-      expect(projected().dy - pinRect(tester).bottom, isNot(lift));
+      expect(lift(tester), isNot(hovering));
+    });
+
+    testWidgets('held while the map moves, it goes on from the same pose', (
+      tester,
+    ) async {
+      await pump(tester);
+      await tester.pump(const Duration(milliseconds: 500));
+      final held = motion.ms;
+      final pose = motion.pose;
+      await pump(tester, running: false);
+      await tester.pump(const Duration(seconds: 2));
+      expect(motion.ms, held, reason: 'no time passes for it');
+      expect(tester.binding.hasScheduledFrame, isFalse);
+      await pump(tester);
+      expect(motion.pose, pose, reason: 'back exactly as the map drew it');
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(motion.ms, greaterThan(held));
     });
 
     testWidgets('follows the map, with the padding of each camera', (
@@ -170,7 +268,8 @@ void main() {
       var landed = 0;
       await pump(tester, onLanded: () => landed++);
       await tester.pump(const Duration(seconds: 2));
-      await pump(tester, landing: true, onLanded: () => landed++);
+      motion.land();
+      await pump(tester, onLanded: () => landed++);
       await tester.pump(SelectedPin.landing);
       await tester.pump(const Duration(milliseconds: 16));
       expect(landed, 1);
@@ -186,17 +285,10 @@ void main() {
     ) async {
       var landed = 0;
       await pump(tester, reduced: true, onLanded: () => landed++);
-      expect(
-        projected().dy - pinRect(tester).bottom,
-        closeTo(SelectedPin.hoverLift, 0.01),
-      );
+      expect(lift(tester), closeTo(SelectedPin.hoverLift, 0.01));
       expect(tester.binding.hasScheduledFrame, isFalse);
-      await pump(
-        tester,
-        reduced: true,
-        landing: true,
-        onLanded: () => landed++,
-      );
+      motion.land();
+      await pump(tester, reduced: true, onLanded: () => landed++);
       await tester.pump();
       expect(landed, 1);
       expect(pinRect(tester).bottomCenter.dy, closeTo(projected().dy, 0.01));

@@ -239,9 +239,38 @@ class _MyLocationButton extends StatelessWidget {
   }
 }
 
-/// A pin drawn over the map: selected (up), landing, or down on its spot
-/// while its native marker shows again.
+/// A floating pin: selected (up), landing, or down on its spot while its
+/// native marker shows again.
 enum _Float { up, landing, landed }
+
+/// A pin floating over the map (M-02). While the map is still, Flutter draws
+/// it ([SelectedPinOverlay]) and its native marker hides; while the map
+/// moves, the map draws it, posed as the overlay left it ([SelectedPin.apply]):
+/// the map reports its camera after drawing and in bursts, so an overlay
+/// trails a moving map. Each hand-over waits until the map has drawn its side,
+/// so the pin is never missing or doubled.
+class _Floating {
+  _Floating(this.capsule, {required bool still})
+    : native = !still,
+      drawn = still,
+      running = still;
+
+  final Capsule capsule;
+  final motion = PinMotion();
+  _Float phase = _Float.up;
+
+  /// The map draws it, posed.
+  bool native;
+
+  /// The overlay is drawn (also while a hand-over is under way).
+  bool drawn;
+
+  /// The overlay's motion runs (the map is still and its own pin hidden).
+  bool running;
+
+  /// Counts hand-overs: a step left over from an earlier one does nothing.
+  int turn = 0;
+}
 
 class _MapViewState extends State<_MapView> {
   final _mapController = Completer<GoogleMapController>();
@@ -263,9 +292,20 @@ class _MapViewState extends State<_MapView> {
   /// info-window package, which re-opened itself after being closed).
   Capsule? _selected;
 
-  /// The pins Flutter draws over the map (M-02): the selected one, and any
-  /// landing back on their spots after a deselection (SelectedPinOverlay).
-  final _floating = <String, (Capsule, _Float)>{};
+  /// The floating pins (M-02): the selected one, and any landing back on
+  /// their spots after a deselection.
+  final _floating = <String, _Floating>{};
+
+  /// Fingers on the map, and whether its camera moves: the floating pins are
+  /// Flutter's only while neither.
+  int _pointers = 0;
+  bool _cameraMoving = false;
+  bool get _still => _pointers == 0 && !_cameraMoving;
+
+  /// A camera move asked for (a button, a tapped pin) that has not started
+  /// yet; if it never does, the map counts as still again.
+  bool _moveStarted = false;
+  Timer? _expectedMove;
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
 
@@ -319,11 +359,21 @@ class _MapViewState extends State<_MapView> {
   void _select(Capsule? capsule) {
     if (!mounted || capsule?.id == _selected?.id) return;
     setState(() {
-      if (_selected case final previous?) {
-        _floating[previous.id] = (previous, _Float.landing);
+      if (_floating[_selected?.id] case final previous?) {
+        previous
+          ..phase = _Float.landing
+          ..motion.land();
       }
       _selected = capsule;
-      if (capsule != null) _floating[capsule.id] = (capsule, _Float.up);
+      if (capsule == null) return;
+      if (_floating[capsule.id] case final again?) {
+        // Selected again while landing: it jumps again.
+        again
+          ..phase = _Float.up
+          ..motion.jumpAgain();
+      } else {
+        _floating[capsule.id] = _Floating(capsule, still: _still);
+      }
     });
   }
 
@@ -331,15 +381,109 @@ class _MapViewState extends State<_MapView> {
   /// overlay (which looks the same) stays over it until the map has drawn it.
   void _landed(String id) {
     final pin = _floating[id];
-    if (!mounted || pin == null || pin.$2 != _Float.landing) return;
-    setState(() => _floating[id] = (pin.$1, _Float.landed));
+    if (!mounted || pin == null || pin.phase != _Float.landing) return;
+    setState(() => pin.phase = _Float.landed);
     unawaited(
       _afterNativeMap(() {
-        if (_floating[id]?.$2 == _Float.landed) {
+        if (_floating[id]?.phase == _Float.landed) {
           setState(() => _floating.remove(id));
         }
       }),
     );
+  }
+
+  void _pointerDown(PointerDownEvent _) {
+    final wasStill = _still;
+    _pointers++;
+    if (wasStill) _mapMoves();
+  }
+
+  void _pointerUp(PointerEvent _) {
+    if (_pointers == 0) return;
+    _pointers--;
+    if (_still) _mapStill();
+  }
+
+  void _cameraStarted() {
+    _moveStarted = true;
+    final wasStill = _still;
+    _cameraMoving = true;
+    if (wasStill) _mapMoves();
+  }
+
+  void _cameraStopped() {
+    _expectedMove?.cancel();
+    if (!_cameraMoving) return;
+    _cameraMoving = false;
+    if (_still) _mapStill();
+  }
+
+  /// The camera is about to move (a button, a tapped pin): the map takes the
+  /// pins first, so they never trail it. If it does not move after all, the
+  /// map counts as still again.
+  void _expectCameraMove() {
+    _cameraStarted();
+    _moveStarted = false;
+    _expectedMove?.cancel();
+    _expectedMove = Timer(const Duration(milliseconds: 600), () {
+      if (!_moveStarted) _cameraStopped();
+    });
+  }
+
+  /// A finger or the camera starts the map moving: the map takes the pins,
+  /// posed as they are; their overlays go once it has drawn them.
+  void _mapMoves() {
+    if (!mounted) return;
+    final handed = <_Floating>[];
+    setState(() {
+      for (final pin in _floating.values) {
+        pin
+          ..turn += 1
+          ..running = false;
+        // A landed one is the map's already; its overlay goes by itself.
+        if (pin.phase == _Float.landed) continue;
+        pin.native = true;
+        if (pin.drawn) handed.add(pin);
+      }
+    });
+    for (final pin in handed) {
+      final turn = pin.turn;
+      unawaited(
+        _afterNativeMap(() {
+          if (pin.turn == turn) setState(() => pin.drawn = false);
+        }),
+      );
+    }
+  }
+
+  /// The map is still again: the overlays come back over the map's posed
+  /// pins (they line up now), then those hide, then the motion goes on.
+  void _mapStill() {
+    if (!mounted) return;
+    final handed = <_Floating>[];
+    setState(() {
+      for (final pin in _floating.values) {
+        pin.turn++;
+        pin.drawn = true;
+        if (pin.native) {
+          handed.add(pin);
+        } else {
+          pin.running = true;
+        }
+      }
+    });
+    for (final pin in handed) {
+      final turn = pin.turn;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || pin.turn != turn) return;
+        setState(() => pin.native = false);
+        unawaited(
+          _afterNativeMap(() {
+            if (pin.turn == turn) setState(() => pin.running = true);
+          }),
+        );
+      });
+    }
   }
 
   /// Completes once the native map has handled all that this frame sent it:
@@ -380,6 +524,7 @@ class _MapViewState extends State<_MapView> {
     selectedPageNotifier.removeListener(_onTabChanged);
     _bearing.dispose();
     _viewport.dispose();
+    _expectedMove?.cancel();
     super.dispose();
   }
 
@@ -399,6 +544,7 @@ class _MapViewState extends State<_MapView> {
     _select(null);
     final target = LatLng(location.latitude, location.longitude);
     AppLogger.debug('Map focus: ${capsule.id}');
+    _expectCameraMove();
     await controller.animateCamera(CameraUpdate.newLatLngZoom(target, 18));
     AppLogger.debug('Map focus: camera moved');
     _select(capsule);
@@ -407,6 +553,7 @@ class _MapViewState extends State<_MapView> {
   Future<void> _zoomBy(CameraUpdate update) async {
     unawaited(HapticFeedback.selectionClick());
     final controller = await _mapController.future;
+    _expectCameraMove();
     await controller.animateCamera(update);
   }
 
@@ -416,6 +563,7 @@ class _MapViewState extends State<_MapView> {
     if (camera == null) return;
     unawaited(HapticFeedback.selectionClick());
     final controller = await _mapController.future;
+    _expectCameraMove();
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(
         CameraPosition(target: camera.target, zoom: camera.zoom),
@@ -430,6 +578,7 @@ class _MapViewState extends State<_MapView> {
     if ((b.north - b.south).abs() < 1e-4 && (b.east - b.west).abs() < 1e-4) {
       // All in one spot: closer, around it.
       final zoom = await controller.getZoomLevel();
+      _expectCameraMove();
       await controller.animateCamera(
         CameraUpdate.newLatLngZoom(
           LatLng(cluster.at.latitude, cluster.at.longitude),
@@ -438,6 +587,7 @@ class _MapViewState extends State<_MapView> {
       );
       return;
     }
+    _expectCameraMove();
     await controller.animateCamera(
       CameraUpdate.newLatLngBounds(
         LatLngBounds(
@@ -486,6 +636,7 @@ class _MapViewState extends State<_MapView> {
     }
     final controller = await _mapController.future;
     final zoom = await controller.getZoomLevel();
+    _expectCameraMove();
     await controller.animateCamera(
       CameraUpdate.newLatLngZoom(
         LatLng(position.latitude, position.longitude),
@@ -556,7 +707,11 @@ class _MapViewState extends State<_MapView> {
                 capsule.location!.longitude,
               ),
               icon: icons.forColor(capsule.color),
-              onTap: () => _select(capsule),
+              onTap: () {
+                // The map centres a tapped pin.
+                _expectCameraMove();
+                _select(capsule);
+              },
             )
           else
             Marker(
@@ -571,18 +726,32 @@ class _MapViewState extends State<_MapView> {
       };
     }
     final user = _userMarker;
-    // A floating pin's own marker hides (one update each way): it jumps,
-    // sways, hovers and lands in Flutter, over the map (SelectedPinOverlay).
+    // A floating pin's own marker hides while Flutter draws it, and shows it
+    // posed while the map moves (one update each way).
     _floatingSpots = SelectedPin.spots(_capsuleMarkers, _floating.keys);
     // A deselected pin no longer on the map (in a cluster, the heatmap) has
     // nothing to land on.
     _floating.removeWhere(
-      (id, pin) => pin.$2 != _Float.up && !_floatingSpots.containsKey(id),
+      (id, pin) => pin.phase != _Float.up && !_floatingSpots.containsKey(id),
     );
-    final pins = SelectedPin.hide(_capsuleMarkers, [
-      for (final MapEntry(:key, :value) in _floating.entries)
-        if (value.$2 != _Float.landed) key,
-    ]);
+    final hidden = <String>[];
+    final posed = <String, (SelectedPinPose, BitmapDescriptor)>{};
+    for (final MapEntry(key: id, value: pin) in _floating.entries) {
+      if (pin.phase == _Float.landed) continue;
+      if (!pin.native) {
+        hidden.add(id);
+      } else if (pin.motion.ms > 0) {
+        // Not yet off the ground, it looks like the plain pin anyway.
+        final bitmap = icons.selectedPin(pin.capsule.color);
+        if (bitmap != null) posed[id] = (pin.motion.pose, bitmap);
+      }
+    }
+    final pins = SelectedPin.apply(
+      _capsuleMarkers,
+      hidden: hidden,
+      posed: posed,
+      shadow: icons.selectedShadow,
+    );
     return user == null ? pins : {user, ...pins};
   }
 
@@ -678,79 +847,89 @@ class _MapViewState extends State<_MapView> {
       },
       child: Stack(
         children: [
-          GoogleMap(
-            style: dark ? MapStyles.dark : MapStyles.light,
-            // The Google logo stays visible above the floating navigation
-            // bar, above the capsule card while it is open, and below the
-            // status bar: it is never covered (F-12, F-14). The zoom buttons
-            // were hidden under the bar (pinch zooms).
-            padding: mapPadding,
-            zoomControlsEnabled: false,
-            // Flat only: the selected pin's overlay places itself on a flat
-            // map (MapProjection).
-            tiltGesturesEnabled: false,
-            // Our compass sits with the zoom and location buttons.
-            compassEnabled: false,
-            // The capsule card replaces Google's marker toolbar.
-            mapToolbarEnabled: false,
-            mapType: switch (look) {
-              MapLook.standard => MapType.normal,
-              MapLook.satellite => MapType.satellite,
-              MapLook.hybrid => MapType.hybrid,
-            },
-            initialCameraPosition: _viewport.value?.camera ?? camera,
-            onMapCreated: (controller) {
-              if (!_mapController.isCompleted) {
-                _mapController.complete(controller);
-              }
-              if (_focus.pending != null) unawaited(_showFocusedCapsule());
-            },
-            markers: markers,
-            heatmaps: _heatmaps(map),
-            onTap: (_) => _select(null),
-            onCameraMove: (position) {
-              _viewport.moved(position);
-              _bearing.value = position.bearing;
-              // Zoomed out past the markers: their card goes too.
-              if (position.zoom < MapController.markerZoomThreshold) {
-                _select(null);
-              }
-              map.onCameraMove(position.zoom);
-            },
-            onCameraIdle: () async {
-              final controller = await _mapController.future;
-              try {
-                final bounds = await controller.getVisibleRegion();
-                final center = GeoPosition(
-                  (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
-                  (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
-                );
-                map.onCameraIdle(
-                  center,
-                  await controller.getZoomLevel(),
-                  view: GeoBounds(
-                    south: bounds.southwest.latitude,
-                    west: bounds.southwest.longitude,
-                    north: bounds.northeast.latitude,
-                    east: bounds.northeast.longitude,
-                  ),
-                );
-              } on StateError {
-                // The map went away (the tab was rebuilt) while this ran.
-              }
-            },
+          // A finger on the map: the map draws the floating pins until it
+          // is still again (they would trail it).
+          Listener(
+            onPointerDown: _pointerDown,
+            onPointerUp: _pointerUp,
+            onPointerCancel: _pointerUp,
+            child: GoogleMap(
+              style: dark ? MapStyles.dark : MapStyles.light,
+              // The Google logo stays visible above the floating navigation
+              // bar, above the capsule card while it is open, and below the
+              // status bar: it is never covered (F-12, F-14). The zoom buttons
+              // were hidden under the bar (pinch zooms).
+              padding: mapPadding,
+              zoomControlsEnabled: false,
+              // Flat only: the selected pin's overlay places itself on a flat
+              // map (MapProjection).
+              tiltGesturesEnabled: false,
+              // Our compass sits with the zoom and location buttons.
+              compassEnabled: false,
+              // The capsule card replaces Google's marker toolbar.
+              mapToolbarEnabled: false,
+              mapType: switch (look) {
+                MapLook.standard => MapType.normal,
+                MapLook.satellite => MapType.satellite,
+                MapLook.hybrid => MapType.hybrid,
+              },
+              initialCameraPosition: _viewport.value?.camera ?? camera,
+              onMapCreated: (controller) {
+                if (!_mapController.isCompleted) {
+                  _mapController.complete(controller);
+                }
+                if (_focus.pending != null) unawaited(_showFocusedCapsule());
+              },
+              markers: markers,
+              heatmaps: _heatmaps(map),
+              onTap: (_) => _select(null),
+              onCameraMoveStarted: _cameraStarted,
+              onCameraMove: (position) {
+                _viewport.moved(position);
+                _bearing.value = position.bearing;
+                // Zoomed out past the markers: their card goes too.
+                if (position.zoom < MapController.markerZoomThreshold) {
+                  _select(null);
+                }
+                map.onCameraMove(position.zoom);
+              },
+              onCameraIdle: () async {
+                _cameraStopped();
+                final controller = await _mapController.future;
+                try {
+                  final bounds = await controller.getVisibleRegion();
+                  final center = GeoPosition(
+                    (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
+                    (bounds.northeast.longitude + bounds.southwest.longitude) /
+                        2,
+                  );
+                  map.onCameraIdle(
+                    center,
+                    await controller.getZoomLevel(),
+                    view: GeoBounds(
+                      south: bounds.southwest.latitude,
+                      west: bounds.southwest.longitude,
+                      north: bounds.northeast.latitude,
+                      east: bounds.northeast.longitude,
+                    ),
+                  );
+                } on StateError {
+                  // The map went away (the tab was rebuilt) while this ran.
+                }
+              },
+            ),
           ),
-          for (final MapEntry(key: id, value: (capsule, float))
-              in _floating.entries)
-            if (spots[id] case final spot?)
+          for (final MapEntry(key: id, value: pin) in _floating.entries)
+            if (spots[id] case final spot? when pin.drawn)
               Positioned.fill(
                 key: ValueKey(id),
                 child: IgnorePointer(
                   child: SelectedPinOverlay(
-                    color: capsule.color,
+                    color: pin.capsule.color,
                     spot: spot,
                     view: _viewport,
-                    landing: float != _Float.up,
+                    motion: pin.motion,
+                    running: pin.running,
                     onLanded: () => _landed(id),
                   ),
                 ),

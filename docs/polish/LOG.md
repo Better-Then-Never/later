@@ -37,7 +37,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   rests upright, within `AppMotion.reveal`, anchored at its spot). Not re-measured in profile: same mechanism as
   the first version (6 marker updates instead of 4).
 
-## 2026-10-18, M-02 follow-up 2: no flicker, a smooth sway, a gentle hover
+## 2026-10-18, M-02 follow-up 2: no flicker, a smooth sway, a gentle hover (`270c289`)
 - **Owner**: the sway was too shaky; after it the pin should hover up and down a little. Then: the selected pin
   blinked (gone for a moment) while it moved.
 - **Cause of the blink**: every change to a native marker re-sends all its options, and the Android plugin
@@ -64,3 +64,24 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   before); map pan and zoom 0 %; fewer frames in all. Tests: `selected_pin_test.dart` (timing, starts and lands
   as the native pin, follows the map, the hover steps, reduced motion), `map_projection_test.dart`,
   `map_viewport_test.dart`. Gates green except the known flaky `capsule_creation_test.dart:151` (passes alone).
+
+## 2026-10-18, M-02 follow-up 3: the selected pin stays on its spot while the map moves
+- **Owner**: with a capsule selected, moving the map made the pin wander around instead of staying in place.
+- **Cause**: the map reports its camera only after it has drawn the frame, and in bursts (5 to 40 ms apart on a
+  120 Hz screen), so a pin drawn by Flutter always trails a moving map and wobbles. Only a pin the map draws
+  itself stays glued to it.
+- **Changed**: while the map moves (a finger on it, or any camera animation: a tapped pin being centred, the
+  zoom, location and compass buttons, a cluster), the map draws the floating pins, held in the exact pose the
+  overlay left them in: the grown pin lifted by its anchor, leaned by its rotation, over a still shadow (two
+  bitmaps per run, drawn in the background as in the first version). When the map is still again the Flutter
+  pin comes back in the same pose and goes on. Every hand-over waits until the other side has been drawn
+  (`_afterNativeMap`), and starts while the map is still (a finger touching, or before a camera animation is
+  asked for), so the pin is never missing, doubled or trailing. A tapped pin now jumps once the map has
+  centred it.
+- **Verified**: phone (debug): mid-pan one crisp lifted pin over its shadow, no double; after the pan, hover
+  goes on; switching pins (the old one back to normal, the new one hovering), deselecting by a tap on the map,
+  zooming with the button while selected. Profile, 2 runs: map pan and zoom 0 % janky in both apart from one
+  56 ms raster frame in the first zoom run (gone in the second, worst 4.8 ms); map_focus 0.4 % and 1.5 %
+  (first frames and one 14 ms build; the pre-M-02 baseline was 1.8 %, 11.1 ms); capsule_dialog only its first
+  frames. Tests: `selected_pin_test.dart` (motion held and resumed in the same pose, landing, the map's posed
+  pin and shadow, the bitmaps drawn), gates green.
