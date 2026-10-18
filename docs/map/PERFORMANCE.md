@@ -42,5 +42,24 @@ The same six stages each time: white window (0.9 s) → loading logo (0.6 s) →
 area, no map yet (0.9 s) → a beige map with no streets, the user's figure, pins popping in (1.0 s) → streets drawn
 (about 4.5 s after the tap) → clusters settle.
 
-## After
-(to be filled with the same columns)
+## After (MapLibre on, `5a340d0`)
+
+### Under the fingers: not measured yet
+The 3-run measurement (`MAP_LIBRE=1 tool/dev/map_gesture.sh after 3`) was stopped twice because the computer
+ran low on memory during the profile build (BLOCKERS.md). The latest MapLibre numbers with the same harness and
+gestures are the spike's, before the page reached parity (DECISION.md): 0 heat layer changes, 0–1 heat blinks per
+sweep, 0 markers added or removed, 0 recording gaps of 100 ms or more, 0 frozen spans, answer to a finger 30–53 ms,
+Flutter 0 % janky in texture mode.
+
+### Cold start (profile build, 3 recorded launches `build/dev/video/mlcold_*.mp4`, 5 timed)
+Four stages: the launch window in the page background (#F6F6F6, about 0.9 s; no pure white; in one launch of three
+the launch logo for up to 0.2 s) → the page's buttons over the map's ground colour (#F3F3F0, 0.3 to 0.6 s) →
+**streets at the saved place 1.4 to 1.8 s after the tap** (baseline: about 4.5 s, after a beige map without
+streets) → the pins once the capsules arrive, 4.0 to 4.4 s after the tap (the local emulator answers 3.2 to 3.8 s
+after the tap; the map shows them about 0.5 s later).
+
+Process start to the first frame of the signed-in home (`tool/dev/coldstart.sh`): median **963 ms** (938–998),
+budget 2 s. The feel pass ended at 820 ms on the Google page at an earlier commit; Google was not timed again at
+this commit, so the two are not a comparison.
+
+Offline (Wi-Fi off, the emulators over USB): the streets at the saved place come from MapLibre's tile cache.

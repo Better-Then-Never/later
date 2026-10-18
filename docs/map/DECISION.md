@@ -43,7 +43,7 @@ Google Maps cannot meet the core criteria however its layers are fed:
 ## Why B
 The heat, bubbles and pins are layers of the map, drawn on the GPU: their look is a function of the zoom that the
 map evaluates every frame (`MapZoomVisuals`: the heat fades out between zoom 11.6 and 12.3 while the markers fade
-in between 11.2 and 11.8), the capsules are grouped by the map itself (`cluster: true`), and Flutter sends nothing
+in between 11.0 and 11.6, so they are whole before the heat starts to go), the capsules are grouped by the map itself (`cluster: true`), and Flutter sends nothing
 during a gesture. Bubbles split and merge with a crossfade, at every zoom, under the fingers.
 
 ## Package
@@ -68,6 +68,7 @@ OpenFreeMap's Positron and Dark styles with the app's map palette (`assets/map/s
 a service level or satellite is wanted later.
 
 ## Risks
-- A second map SDK in the app (APK size: to be measured), and the capsule creation pin picker stays on Google Maps.
+- A second map SDK in the app: MapLibre's native library is 10.3 MB for arm64 (about 3.6 MB compressed in a
+  download) plus its Java classes; the capsule creation pin picker stays on Google Maps.
 - iOS untested.
 - OpenFreeMap availability (no SLA).

@@ -13,14 +13,14 @@ phone).
 | # | Step | State |
 |---|---|---|
 | 0 | Branch, read STYLE_BIBLE, MOTION_CATALOG, CHECKPOINT_A, RIG | done |
-| 1.1 | Long pinch harness (`map_pinch_sweep`, `map_pinch_wave` in perf_test) | |
-| 1.2 | In-app instrumentation (`MapStats`) | |
-| 1.3 | Recording analyzer `tool/dev/map_gesture_report.py` + driver `tool/dev/map_gesture.sh` | |
-| 1.4 | Baseline × 3, cold start stages | |
-| 1.5 | DIAGNOSIS.md | |
-| 2 | Spikes A (Google, fixed) and B (MapLibre), DECISION.md | |
-| 3 | Implement behind `FeatureFlags` | |
-| 4 | Verify, PERFORMANCE "After", MORNING_SUMMARY.md | |
+| 1.1 | Long pinch harness (`map_pinch_sweep`, `map_pinch_wave` in perf_test) | done |
+| 1.2 | In-app instrumentation (`MapStats`) | done |
+| 1.3 | Recording analyzer `tool/dev/map_gesture_report.py` + driver `tool/dev/map_gesture.sh` | done |
+| 1.4 | Baseline × 3, cold start stages | done |
+| 1.5 | DIAGNOSIS.md | done |
+| 2 | Spikes A (Google, fixed) and B (MapLibre), DECISION.md | done |
+| 3 | Implement behind `FeatureFlags` | done |
+| 4 | Verify, PERFORMANCE "After", MORNING_SUMMARY.md | done except the 3-run gesture measurement (BLOCKERS.md) |
 
 ## Log
 - Branch created; `maplibre_gl` 0.27.1 (Sep 2026, Flutter ≥ 3.29) is compatible with Flutter 3.38.4 here;
@@ -35,5 +35,11 @@ phone).
 - Spike B (MapLibre, `lib/features/map/engine/`, flag `MAP_LIBRE`): `build/perf/maplibre_real` (3 runs),
   `build/perf/maplibre_tlhc` (texture mode, 1 run). Decision: B (DECISION.md). Two MapLibre traps fixed: slow
   closing pinch ignored (gesture speed resource override), SurfaceView → hybrid composition (texture mode).
-- Next: Phase 3, the MapLibre map page to parity (card, selected pin, user position, buttons, compass, focus, taps,
-  filters, dark style, cold start), then measure 3 runs.
+- Phase 3: the MapLibre page at parity behind the flag (`a9adeec`): card, selected pin with its motion, user
+  position, buttons, compass, focus from the list and notifications, taps, filters, dark style, saved camera.
+- Open items inspected (`321a4c3` onwards): M-07 fixed (`8426062`); bubble tap fits the bubble's capsules
+  (`1f47e6e`); pins after a cold start no longer wait for a later data change (`5a340d0`); Russian at 130 %,
+  offline, cold start, APK size and iOS checked (BLOCKERS.md "Verified"); satellite sources listed for the owner.
+- The final 3-run gesture measurement was stopped twice for low memory on the computer (profile build); not
+  restarted without the owner. To run it: close other apps, then `MAP_LIBRE=1 bash tool/dev/map_gesture.sh after 3`
+  (and stop the Gradle daemon afterwards: `cd android && ./gradlew --stop`).
