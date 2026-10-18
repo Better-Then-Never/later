@@ -18,7 +18,7 @@ class MapCompass extends StatelessWidget {
     super.key,
     required this.bearing,
     required this.onTap,
-    this.size = 52,
+    this.size = AppSizes.mapControl,
   });
 
   final ValueListenable<double> bearing;
@@ -100,8 +100,9 @@ class _NeedlePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const half = 15.0;
-    const width = 5.5;
+    // The needle keeps its proportion to the button (15 × 5.5 at 52 dp).
+    final half = size.shortestSide * 0.29;
+    final width = size.shortestSide * 0.105;
     canvas
       ..translate(size.width / 2, size.height / 2)
       ..rotate(angle);

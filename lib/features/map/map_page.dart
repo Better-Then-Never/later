@@ -69,8 +69,8 @@ class _MapView extends StatefulWidget {
   State<_MapView> createState() => _MapViewState();
 }
 
-/// Zoom in and out: one pill of two 52 dp halves, the signs drawn in the
-/// hand-drawn icons' rounded stroke (no icon font).
+/// Zoom in and out: one pill of two map-control-sized halves, the signs
+/// drawn in the hand-drawn icons' rounded stroke (no icon font).
 class _ZoomButtons extends StatelessWidget {
   const _ZoomButtons({required this.onZoomIn, required this.onZoomOut});
 
@@ -89,7 +89,7 @@ class _ZoomButtons extends StatelessWidget {
               behavior: HitTestBehavior.opaque,
               onTap: onTap,
               child: SizedBox.square(
-                dimension: _MyLocationButton.size,
+                dimension: AppSizes.mapControl,
                 child: CustomPaint(
                   painter: _SignPainter(plus: plus, color: palette.icon),
                 ),
@@ -100,7 +100,7 @@ class _ZoomButtons extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: palette.surface,
-        borderRadius: BorderRadius.circular(_MyLocationButton.size / 2),
+        borderRadius: BorderRadius.circular(AppSizes.mapControl / 2),
         border: palette.isDark ? Border.all(color: palette.cardBorder) : null,
         boxShadow: AppShadows.raised(context),
       ),
@@ -108,7 +108,7 @@ class _ZoomButtons extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           half(context.l10n.mapZoomIn, onZoomIn, plus: true),
-          Container(width: 28, height: 1, color: palette.divider),
+          Container(width: 24, height: 1, color: palette.divider),
           half(context.l10n.mapZoomOut, onZoomOut, plus: false),
         ],
       ),
@@ -126,17 +126,14 @@ class _SignPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 2.6
+      ..strokeWidth = 2.4
       ..strokeCap = StrokeCap.round;
     final c = size.center(Offset.zero);
-    const arm = 9.0;
-    canvas.drawLine(c - const Offset(arm, 0), c + const Offset(arm, 0), paint);
+    // The sign keeps its proportion to the button (9 at the old 52 dp).
+    final arm = size.shortestSide * 0.17;
+    canvas.drawLine(c - Offset(arm, 0), c + Offset(arm, 0), paint);
     if (plus) {
-      canvas.drawLine(
-        c - const Offset(0, arm),
-        c + const Offset(0, arm),
-        paint,
-      );
+      canvas.drawLine(c - Offset(0, arm), c + Offset(0, arm), paint);
     }
   }
 
@@ -168,9 +165,9 @@ class _FilterButton extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               Container(
-                width: _MyLocationButton.size,
-                height: _MyLocationButton.size,
-                padding: const EdgeInsets.all(13),
+                width: AppSizes.mapControl,
+                height: AppSizes.mapControl,
+                padding: const EdgeInsets.all(11),
                 decoration: BoxDecoration(
                   color: palette.surface,
                   shape: BoxShape.circle,
@@ -183,11 +180,11 @@ class _FilterButton extends StatelessWidget {
               ),
               if (active > 0)
                 Positioned(
-                  right: 2,
-                  top: 2,
+                  right: 1,
+                  top: 1,
                   child: Container(
-                    width: 14,
-                    height: 14,
+                    width: 12,
+                    height: 12,
                     decoration: BoxDecoration(
                       color: AppColors.brandGreen,
                       shape: BoxShape.circle,
@@ -206,7 +203,7 @@ class _FilterButton extends StatelessWidget {
 class _MyLocationButton extends StatelessWidget {
   const _MyLocationButton({required this.onTap});
 
-  static const size = 52.0;
+  static const size = AppSizes.mapControl;
 
   final VoidCallback onTap;
 
@@ -222,7 +219,7 @@ class _MyLocationButton extends StatelessWidget {
           child: Container(
             width: size,
             height: size,
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: palette.surface,
               shape: BoxShape.circle,
@@ -652,7 +649,7 @@ class _MapViewState extends State<_MapView> {
           Positioned(
             top: MediaQuery.viewPaddingOf(context).top + 12,
             right: 16,
-            child: const StreakPill(height: _MyLocationButton.size),
+            child: const StreakPill(),
           ),
           AnimatedPositioned(
             duration: motion,
@@ -667,7 +664,8 @@ class _MapViewState extends State<_MapView> {
             duration: motion,
             curve: AppMotion.emphasizedCurve,
             right: 16,
-            bottom: bottom + raised + _MyLocationButton.size + 12,
+            bottom:
+                bottom + raised + AppSizes.mapControl + AppSizes.mapControlGap,
             child: _ZoomButtons(
               onZoomIn: () => unawaited(_zoomBy(CameraUpdate.zoomIn())),
               onZoomOut: () => unawaited(_zoomBy(CameraUpdate.zoomOut())),
@@ -678,9 +676,14 @@ class _MapViewState extends State<_MapView> {
             duration: motion,
             curve: AppMotion.emphasizedCurve,
             right: 16,
-            bottom: bottom + raised + _MyLocationButton.size * 3 + 1 + 12 * 2,
+            bottom:
+                bottom +
+                raised +
+                AppSizes.mapControl * 3 +
+                1 +
+                AppSizes.mapControlGap * 2,
             child: MapCompass(
-              size: _MyLocationButton.size,
+              size: AppSizes.mapControl,
               bearing: _bearing,
               onTap: () => unawaited(_faceNorth()),
             ),

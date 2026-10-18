@@ -7,7 +7,7 @@ Status: `UNCHECKED` → `LIKELY_OPEN` / `LIKELY_FIXED` / `NEEDS_PHONE` (static t
 ## Map (M)
 | ID | Item | Status | Triage note |
 |---|---|---|---|
-| M-01 | Map control sizes (zoom, compass, my location, streak pill, filter): one smaller scale, 44×44 taps | LIKELY_OPEN | all are 52 dp (`_MyLocationButton.size`, `StreakPill(height: 52)`) |
+| M-01 | Map control sizes (zoom, compass, my location, streak pill, filter): one smaller scale, 44×44 taps | FIXED | 52 → 44 dp, one token `AppSizes.mapControl` (LOG.md) |
 | M-02 | Selected capsule unclear: animated emphasis on the selected marker | LIKELY_OPEN | native markers, no selection motion |
 | M-03 | Capsules appear with an animation on the first map open | LIKELY_OPEN | native markers; motion deliberately not built in Session A |
 | M-04 | Capsules appear in batches when zooming | LIKELY_OPEN | same family as M-03 |

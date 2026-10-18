@@ -32,6 +32,16 @@ abstract final class AppSpacing {
 
 /// Shadows (DESIGN_SPEC.md §5), in the colour of the current theme (dark mode
 /// uses deeper shadows; cards there also get a hairline edge).
+/// Fixed sizes of shared controls.
+abstract final class AppSizes {
+  /// The floating controls over the map (zoom, compass, my location, filter,
+  /// streak): one scale, as small as a tap target may be (M-01).
+  static const double mapControl = 44;
+
+  /// Space between stacked map controls.
+  static const double mapControlGap = 10;
+}
+
 abstract final class AppShadows {
   static List<BoxShadow> card(BuildContext context) => [
     BoxShadow(
