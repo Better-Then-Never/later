@@ -18,8 +18,8 @@ abstract final class MapZoomVisuals {
   /// Bubbles and pins start here and are whole from [markersTo]: zooming out
   /// they are gone within 0.6 levels (about 0.2 s of a pinch), after the
   /// heat is whole again.
-  static const markersFrom = 11.2;
-  static const markersTo = 11.8;
+  static const markersFrom = 11.0;
+  static const markersTo = 11.6;
 
   /// Ease in and out (CSS ease-in-out), as `cubic-bezier` in the expressions.
   static const _curve = Cubic(0.42, 0, 0.58, 1);

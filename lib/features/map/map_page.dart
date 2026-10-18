@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' show Geolocator;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:maplibre_gl/maplibre_gl.dart' as ml;
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
@@ -32,7 +34,6 @@ import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
-import 'engine/maplibre_map_view.dart';
 import '../../core/config/feature_flags.dart';
 import 'map_stats.dart';
 import 'capsule_heatmap.dart';
@@ -50,7 +51,12 @@ import '../capsules/social/capsule_detail_dialog.dart';
 import 'widgets/map_filter_sheet.dart';
 import 'widgets/selected_pin_overlay.dart';
 import 'widgets/marker_choreography_overlay.dart';
+import 'engine/map_zoom_visuals.dart';
+import 'engine/maplibre_images.dart';
+import 'engine/map_camera_memory.dart';
 import '../achievements/streak_pill.dart';
+
+part 'engine/maplibre_map_view.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});

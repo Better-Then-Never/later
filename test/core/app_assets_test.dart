@@ -4,7 +4,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/assets/app_assets.dart';
 
 void main() {
-  final declared = {...AppIcons.all, ...AppImages.all, ...AppAnimations.all};
+  final declared = {
+    ...AppIcons.all,
+    ...AppImages.all,
+    ...AppAnimations.all,
+    ...AppMapStyles.all,
+  };
 
   test('every typed asset path exists on disk', () {
     final missing = declared.where((path) => !File(path).existsSync());
@@ -12,11 +17,12 @@ void main() {
   });
 
   test('every bundled icon, image and animation has a typed accessor', () {
-    final bundled = ['assets/icons', 'assets/images', 'assets/animations']
-        .expand((dir) => Directory(dir).listSync(recursive: true))
-        .whereType<File>()
-        .map((f) => f.path.replaceAll(r'\', '/'))
-        .toSet();
+    final bundled =
+        ['assets/icons', 'assets/images', 'assets/animations', 'assets/map']
+            .expand((dir) => Directory(dir).listSync(recursive: true))
+            .whereType<File>()
+            .map((f) => f.path.replaceAll(r'\', '/'))
+            .toSet();
     final unreferenced = bundled.difference(declared);
     expect(
       unreferenced,

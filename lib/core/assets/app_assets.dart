@@ -18,6 +18,15 @@ abstract final class AppImages {
   static const all = [laterLogo];
 }
 
+/// The MapLibre map's styles (tool/map/make_map_style.js,
+/// docs/map/DECISION.md).
+abstract final class AppMapStyles {
+  static const light = 'assets/map/style_light.json';
+  static const dark = 'assets/map/style_dark.json';
+
+  static const all = [light, dark];
+}
+
 abstract final class AppAnimations {
   static const laterLogoLoading = 'assets/animations/later_logo_loading.gif';
 

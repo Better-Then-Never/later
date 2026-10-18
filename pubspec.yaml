@@ -92,6 +92,8 @@ flutter:
     - assets/icons/friends/
     - assets/icons/history/
     - assets/icons/map/
+    # MapLibre map styles (tool/map/make_map_style.js, docs/map/DECISION.md).
+    - assets/map/
     - assets/icons/messages/
     - assets/icons/navbar/
     - assets/icons/profile/
