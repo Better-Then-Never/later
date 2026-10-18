@@ -131,17 +131,17 @@ List<MapItem> clusterCapsules(
           if (e.value.length == 1)
             MapItem.pin(e.value.single)
           else
-            _cluster(
-              e.value,
-              'cluster:$z:${cell.round()}:${e.key.$1}:${e.key.$2}',
-            ),
+            _cluster(e.value),
       ];
     }
     cell *= 1.5;
   }
 }
 
-MapItem _cluster(List<Capsule> members, String id) {
+/// A bubble's id comes from its capsules, not its grid cell: the same
+/// capsules make the same bubble at every zoom level, so it stays on the map
+/// as it is instead of going and coming back (M-04).
+MapItem _cluster(List<Capsule> members) {
   var south = 90.0, north = -90.0, west = 180.0, east = -180.0;
   var lat = 0.0, lng = 0.0;
   for (final c in members) {
@@ -154,7 +154,7 @@ MapItem _cluster(List<Capsule> members, String id) {
     lng += p.longitude;
   }
   return MapItem.cluster(
-    id: id,
+    id: 'cluster:${Object.hashAllUnordered(members.map((c) => c.id))}',
     count: members.length,
     bounds: GeoBounds(south: south, west: west, north: north, east: east),
     position: GeoPosition(lat / members.length, lng / members.length),

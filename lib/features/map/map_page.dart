@@ -32,6 +32,10 @@ import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
 import 'map_viewport.dart';
+import 'marker_choreography.dart';
+import 'marker_icons.dart';
+import 'cluster_icons.dart';
+import 'map_projection.dart';
 import 'selected_pin.dart';
 import '../history/own_capsules_store.dart';
 import 'widgets/capsule_info_panel.dart';
@@ -40,6 +44,7 @@ import 'widgets/map_compass.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
 import 'widgets/map_filter_sheet.dart';
 import 'widgets/selected_pin_overlay.dart';
+import 'widgets/marker_choreography_overlay.dart';
 import '../achievements/streak_pill.dart';
 
 class MapPage extends StatelessWidget {
@@ -296,6 +301,22 @@ class _MapViewState extends State<_MapView> {
   /// their spots after a deselection.
   final _floating = <String, _Floating>{};
 
+  /// How capsules come onto the map and leave it (M-03, M-04): the map shows
+  /// its markers once they have landed.
+  final _choreography = MarkerChoreography();
+  int _choreographyVersion = 0;
+
+  /// The first capsules wait until the map has drawn itself: they came in
+  /// over a blank map before (the map cannot say when it has drawn; its
+  /// first stop plus [_mapDraws] covers it), and their lists arrive in
+  /// pieces meanwhile, which then come in together.
+  static const _mapDraws = Duration(milliseconds: 450);
+  DateTime? _firstStop;
+  DateTime? _firstAsked;
+  bool _firstShown = false;
+  bool _choreographyDue = false;
+  Timer? _firstShowTimer;
+
   /// Fingers on the map, and whether its camera moves: the floating pins are
   /// Flutter's only while neither.
   int _pointers = 0;
@@ -415,6 +436,7 @@ class _MapViewState extends State<_MapView> {
 
   void _cameraStopped() {
     _expectedMove?.cancel();
+    _firstStop ??= DateTime.now();
     if (!_cameraMoving) return;
     _cameraMoving = false;
     if (_still) _mapStill();
@@ -437,6 +459,12 @@ class _MapViewState extends State<_MapView> {
   void _mapMoves() {
     if (!mounted) return;
     final handed = <_Floating>[];
+    // Coming capsules land at once (sprites would trail a moving map), and
+    // stand still until the map has drawn them.
+    if (_choreography.active) {
+      _choreographyVersion++;
+      _actLanded(_choreography.finish());
+    }
     setState(() {
       for (final pin in _floating.values) {
         pin
@@ -465,6 +493,8 @@ class _MapViewState extends State<_MapView> {
     if (!mounted) return;
     final handed = <_Floating>[];
     setState(() {
+      // A marker change that waited for the map to be still (_choreograph)
+      // runs in this build.
       for (final pin in _floating.values) {
         pin.turn++;
         pin.drawn = true;
@@ -533,6 +563,7 @@ class _MapViewState extends State<_MapView> {
     _bearing.dispose();
     _viewport.dispose();
     _expectedMove?.cancel();
+    _firstShowTimer?.cancel();
     super.dispose();
   }
 
@@ -703,6 +734,10 @@ class _MapViewState extends State<_MapView> {
     // Only what is on screen, clustered (MapController.items): every marker
     // update runs on Android's main thread.
     final key = (map.itemsVersion, icons.capsulePins);
+    if (_choreographyDue && key == _capsuleMarkersKey) {
+      _choreographyDue = false;
+      _choreograph(map);
+    }
     if (key != _capsuleMarkersKey) {
       _capsuleMarkersKey = key;
       _capsuleMarkers = {
@@ -732,6 +767,7 @@ class _MapViewState extends State<_MapView> {
               onTap: () => unawaited(_zoomTo(item)),
             ),
       };
+      _choreograph(map);
     }
     final user = _userMarker;
     // A floating pin's own marker hides while Flutter draws it, and shows it
@@ -762,13 +798,102 @@ class _MapViewState extends State<_MapView> {
       }
     }
     final pins = SelectedPin.apply(
-      _capsuleMarkers,
+      // What has landed (M-03, M-04); the rest is still on its way.
+      {for (final m in _choreography.onMap.values) m.marker},
       hidden: hidden,
       posed: posed,
       shadowed: shadowed,
       shadow: icons.selectedShadow,
     );
     return user == null ? pins : {user, ...pins};
+  }
+
+  /// The capsules the map should show now go to the choreography, which
+  /// lets newcomers come in and leavers go (M-03, M-04).
+  void _choreograph(MapController map) {
+    // Only on a still map: it may stop for a moment under a finger (a pinch
+    // held). Swapping markers then left a gap while the new ones loaded, and
+    // sprites would trail the map when it goes on; the change waits.
+    if (!_still) {
+      _choreographyDue = true;
+      return;
+    }
+    final animate = !AppMotion.reduced(context);
+    if (!_firstShown && animate && _capsuleMarkers.isNotEmpty) {
+      // From the first stop, or from now when the map has not stopped yet.
+      final from = _firstStop ?? (_firstAsked ??= DateTime.now());
+      final wait = from.add(_mapDraws).difference(DateTime.now());
+      if (wait > Duration.zero) {
+        _firstShowTimer?.cancel();
+        _firstShowTimer = Timer(wait, () {
+          if (mounted) setState(() => _choreographyDue = true);
+        });
+        return;
+      }
+    }
+    if (_capsuleMarkers.isNotEmpty) _firstShown = true;
+    final ratio = map.pixelRatio;
+    final items = {for (final item in map.items) item.id: item};
+    final view = _viewport.value;
+    final size = MediaQuery.sizeOf(context);
+    // A pin a little past the edge still shows part of itself.
+    final screenRect = (Offset.zero & size).inflate(48);
+    Offset? screen(LatLng p) {
+      if (view == null) return null;
+      final o = MapProjection.toScreen(p, view.camera, size, view.padding);
+      return screenRect.contains(o) ? o : null;
+    }
+
+    final shown = <ShownMarker>[];
+    for (final marker in _capsuleMarkers) {
+      final item =
+          items[marker.markerId.value] ??
+          items['capsule:${marker.markerId.value}'];
+      MarkerLook? look;
+      if (item?.capsule case final capsule?) {
+        final image = MarkerIcons.pinPicture(capsule.color);
+        if (image != null) {
+          look = MarkerLook(image, const Size.square(48), const Offset(0.5, 1));
+        }
+      } else if (item != null) {
+        if (ClusterIcons.picture(item.count, ratio) case (
+          final image,
+          final side,
+        )) {
+          look = MarkerLook(image, Size.square(side), const Offset(0.5, 0.5));
+        }
+      }
+      shown.add(ShownMarker(marker, look: look, bounds: item?.bounds));
+    }
+    _choreography.update(
+      shown,
+      screen: screen,
+      centre: view == null
+          ? size.center(Offset.zero)
+          : MapProjection.toScreen(
+              view.camera.target,
+              view.camera,
+              size,
+              view.padding,
+            ),
+      still: {for (final id in _floating.keys) MarkerId(id)},
+      animate: animate,
+    );
+    _choreographyVersion++;
+  }
+
+  /// The coming capsules have landed: the map shows them now, and their
+  /// sprites go once it has drawn them (an added marker shows once its
+  /// bitmap has loaded).
+  void _actLanded(int act) {
+    if (!mounted) return;
+    setState(() {});
+    unawaited(
+      _afterNativeMap(() {
+        _choreography.handedOver(act);
+        setState(() {});
+      }, settle: const Duration(milliseconds: 250)),
+    );
   }
 
   /// The native heatmap throws on an empty point list (BUG-048), so the
@@ -933,6 +1058,16 @@ class _MapViewState extends State<_MapView> {
                   // The map went away (the tab was rebuilt) while this ran.
                 }
               },
+            ),
+          ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: MarkerChoreographyOverlay(
+                choreography: _choreography,
+                view: _viewport,
+                version: _choreographyVersion,
+                onLanded: _actLanded,
+              ),
             ),
           ),
           // Kept while the map draws the pin, only not painted: built again

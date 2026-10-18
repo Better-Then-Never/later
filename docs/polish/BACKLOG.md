@@ -9,14 +9,15 @@ Status: `UNCHECKED` → `LIKELY_OPEN` / `LIKELY_FIXED` / `NEEDS_PHONE` (static t
 |---|---|---|---|
 | M-01 | Map control sizes (zoom, compass, my location, streak pill, filter): one smaller scale, 44×44 taps | FIXED | 52 → 44 dp, one token `AppSizes.mapControl` (LOG.md) |
 | M-02 | Selected capsule unclear: animated emphasis on the selected marker | FIXED | the selected pin jumps, sways, hovers over a shadow and lands back; no blink, stays on its spot while the map moves (LOG.md) |
-| M-03 | Capsules appear with an animation on the first map open | LIKELY_OPEN | native markers; motion deliberately not built in Session A |
-| M-04 | Capsules appear in batches when zooming | LIKELY_OPEN | same family as M-03 |
+| M-03 | Capsules appear with an animation on the first map open | FIXED | pins pop in ring by ring once the map has drawn (LOG.md) |
+| M-04 | Capsules appear in batches when zooming | FIXED | bubbles open into their capsules and close around them, group by group; no blinks (LOG.md) |
 | M-05 | Cluster rework (ask: which element is unreadable; library change = decision gate) | LIKELY_OPEN | own grid clustering in `map_clusters.dart` |
 | M-06 | Map cold start looks clumsy (white screen, person, then map, then capsules) | NEEDS_PHONE | |
 | M-07 | "Almost there" screen shown after the map at the first Google login | NEEDS_PHONE | `settingsCompleteProfileTitle` |
 | M-08 | Capsule preview too far left; inconsistent placement (ask) | NEEDS_PHONE | |
 | M-09 | Remove the words "Visibility" and "From you" from capsule info | LIKELY_OPEN | |
 | M-10 | Remove seconds from the opening countdown | LIKELY_OPEN | `capsule_info_panel.dart` ticks every second, shows seconds |
+| M-11 | Far-out map: bubbles turn into a reworked glow (heatmap) at very far zoom; the current one is disliked | LIKELY_OPEN | owner, 18 Oct; the native heatmap draws nothing on the owner's phone (S20 FE; built with 1,205 points, no error): below zoom 12 the map is empty |
 
 ## Profile, friends, people (P)
 | ID | Item | Status | Triage note |

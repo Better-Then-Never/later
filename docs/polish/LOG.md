@@ -86,7 +86,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   frames. Tests: `selected_pin_test.dart` (motion held and resumed in the same pose, landing, the map's posed
   pin and shadow, the bitmaps drawn), gates green.
 
-## 2026-10-18, M-02 follow-up 4: no blink when a finger touches or lifts, one shadow
+## 2026-10-18, M-02 follow-up 4: no blink when a finger touches or lifts, one shadow (`70a9983`)
 - **Owner**: touching the map (press, hold, move, lift) made the selected pin blink; then the shadow still
   flashed on clicks. Also: the hover pauses while a finger rests on the map (kept: the owner's choice, see below).
 - **How it was found**: `tool/dev/frames.dart` (new) reads `screenrecord --output-format=frames` (raw frames,
@@ -111,3 +111,33 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   before the fix showed the one-frame gap, none in the owner's check after. Tests: `selected_pin_test.dart`
   (the capsule's marker unchanged while posed, the posed pin a marker of its own, the same shadow in both
   modes). Gates green except the known flaky `capsule_creation_test.dart:151` (passes alone).
+
+## 2026-10-18, M-03 + M-04 Capsules come onto the map in groups; bubbles open and close
+- **Was**: on the first open the pins dropped in over a blank map, bit by bit as their lists arrived; zooming
+  swapped every marker at once, and bubbles blinked out and back on every zoom.
+- **Changed**: `MarkerChoreography` (+ `MarkerChoreographyOverlay`) decides what comes and goes: on the first
+  open, once the map has drawn (its first stop + 450 ms), the pins pop in ring by ring from the middle of the
+  screen; zooming in, each bubble shrinks away and its capsules fly out to their spots, group after group, nearest
+  the middle first; zooming out, pins fly into their new bubble, which pops in. Flutter draws the moving ones over
+  the still map; the map gets the markers only when everything has landed (adding markers holds up Android's
+  main thread, where Flutter's frames come from), under the still sprites, which go once the map has drawn
+  them. A finger on the map lands everything at once, still drawn until the map has it. Reduced motion, the
+  selected pin and pins off screen: no show.
+- **Causes fixed on the way** (from the owner's two videos, read frame by frame, and `tool/dev/frames.dart`):
+  - Every marker's bitmap was the 457 px artwork: the map decoded it for every marker it added, which froze the
+    screen ~200 ms right as the show began. Pins are now drawn once at their size on screen
+    (`MarkerIcons._loadPins`); the same pictures are the sprites.
+  - A bubble's id held the zoom level and grid cell, so every bubble left and came back on every zoom. The id
+    now comes from its capsules (`map_clusters.dart`): the same capsules are the same bubble at any zoom.
+  - Markers were swapped while a finger held the map still for a moment (a pinch); now only on a still map.
+  - A touch during the show dropped the sprites at once while the map was still drawing the new markers:
+    about four blank frames. Now they stand where they land until the map has drawn them.
+- **Found, not fixed here (M-11)**: below zoom 12 the map hides the bubbles for the green glow, but the native
+  heatmap draws nothing on the owner's phone (built with 1,205 points, no error, also with default colours), so
+  far out the map was empty.
+- **Verified**: phone, frame recordings: first open (map first, then rings), zoom in and out with the buttons
+  (no frame with markers missing), zoom then touch three times (no blink; before the fix the first run blinked);
+  the owner's videos for the causes. Profile, 1 run: map pan and zoom 0 % janky, capsule_dialog 0.5 %,
+  map_focus 1.2 % (its first frames; 1.8 % before M-02). Tests: `marker_choreography_test.dart` (rings from the
+  middle, bubbles opening and closing, nothing on the map until all landed, a touch lands everything still
+  drawn, reduced motion, a capsule gone before landing). Gates green.

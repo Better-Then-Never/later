@@ -40,7 +40,7 @@ void main(List<String> args) {
       crop.setRange(row * w * 3, (row + 1) * w * 3, bytes, from);
     }
     final inRange = index >= _from && index <= _to;
-    if (inRange && (previous == null || _differs(previous, crop))) {
+    if (inRange && (_all || previous == null || _differs(previous, crop))) {
       if (_boxes) stdout.writeln('$index ${_box(crop, w, h)}');
       final frame = img.Image.fromBytes(
         width: w,
@@ -93,6 +93,9 @@ final _env = Platform.environment;
 final _from = int.tryParse(_env['FROM'] ?? '') ?? 0;
 final _to = int.tryParse(_env['TO'] ?? '') ?? 1 << 30;
 final _boxes = _env['BOXES'] == '1';
+
+// ALL=1 keeps every frame in range, changed or not.
+final _all = _env['ALL'] == '1';
 
 String _box(Uint8List rgb, int w, int h) {
   var l = w, t = h, r = -1, b = -1;

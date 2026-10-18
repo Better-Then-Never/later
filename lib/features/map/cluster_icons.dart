@@ -13,6 +13,7 @@ import '../../core/theme/app_text_styles.dart';
 /// bitmap, so the small bubbles are full tap targets too (D-24).
 abstract final class ClusterIcons {
   static final Map<String, Future<BitmapDescriptor>> _cache = {};
+  static final Map<String, (ui.Image, double)> _pictures = {};
 
   /// What the bubble says: the count, or "99+".
   static String label(int count) => count > 99 ? '99+' : '$count';
@@ -21,6 +22,11 @@ abstract final class ClusterIcons {
     final text = label(count);
     return _cache['$text@$pixelRatio'] ??= _draw(text, pixelRatio);
   }
+
+  /// The bubble's picture and its side in dp, once [forCount] has drawn it
+  /// (capsules coming onto the map are drawn by Flutter for a moment).
+  static (ui.Image, double)? picture(int count, double pixelRatio) =>
+      _pictures['${label(count)}@$pixelRatio'];
 
   static Future<BitmapDescriptor> _draw(String text, double ratio) async {
     final diameter = switch (text.length) {
@@ -62,7 +68,7 @@ abstract final class ClusterIcons {
       size.ceil(),
     );
     final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    image.dispose();
+    _pictures['$text@$ratio'] = (image, size / ratio);
     return BitmapDescriptor.bytes(
       bytes!.buffer.asUint8List(),
       imagePixelRatio: ratio,

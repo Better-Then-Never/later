@@ -129,12 +129,30 @@ class MarkerIcons {
         return icons;
       });
 
+  /// The pin of [color] as Flutter draws it while it comes onto the map
+  /// (MarkerChoreography): the very picture the map gets.
+  static ui.Image? pinPicture(CapsuleColor color) => _pinPictures[color];
+  static final Map<CapsuleColor, ui.Image> _pinPictures = {};
+
+  /// Drawn once at their size on screen: the map decodes a marker's bitmap
+  /// for every marker it adds, on Android's main thread, where Flutter's
+  /// frames come from; the 457 px artwork cost a frame per few pins.
   static Future<Map<CapsuleColor, BitmapDescriptor>> _loadPins() async {
+    final ratio =
+        ui.PlatformDispatcher.instance.implicitView?.devicePixelRatio ?? 3;
     final capsules = <CapsuleColor, BitmapDescriptor>{};
     for (final color in CapsuleColor.values) {
-      capsules[color] = await BitmapDescriptor.asset(
-        const ImageConfiguration(size: Size(48, 48)),
-        AppIcons.mapPin(color.name),
+      final data = await rootBundle.load(AppIcons.mapPin(color.name));
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(),
+        targetWidth: (48 * ratio).round(),
+      );
+      final image = (await codec.getNextFrame()).image;
+      _pinPictures[color] = image;
+      final png = await image.toByteData(format: ui.ImageByteFormat.png);
+      capsules[color] = BitmapDescriptor.bytes(
+        png!.buffer.asUint8List(),
+        imagePixelRatio: ratio,
       );
     }
     return capsules;
