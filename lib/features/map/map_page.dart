@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +32,7 @@ import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
+import 'capsule_heatmap.dart';
 import 'map_viewport.dart';
 import 'marker_choreography.dart';
 import 'marker_icons.dart';
@@ -304,6 +306,10 @@ class _MapViewState extends State<_MapView> {
   /// How capsules come onto the map and leave it (M-03, M-04): the map shows
   /// its markers once they have landed.
   final _choreography = MarkerChoreography();
+
+  /// Far out, where capsules are, as heat (M-11).
+  final _heatmap = CapsuleHeatmap();
+  int? _heatmapVersion;
   int _choreographyVersion = 0;
 
   /// The first capsules wait until the map has drawn itself: they came in
@@ -564,6 +570,7 @@ class _MapViewState extends State<_MapView> {
     _viewport.dispose();
     _expectedMove?.cancel();
     _firstShowTimer?.cancel();
+    _trickleTimer?.cancel();
     super.dispose();
   }
 
@@ -703,14 +710,12 @@ class _MapViewState extends State<_MapView> {
     });
   }
 
-  // Marker and heatmap sets are rebuilt only when the capsules, the icons or
+  // Marker sets are rebuilt only when the capsules, the icons or
   // the zoom band change (F-10): a new Marker carries a new tap closure, so
   // rebuilding them on every position update or frame made the plugin send
   // every marker to the native map again.
   Object? _capsuleMarkersKey;
   Set<Marker> _capsuleMarkers = const {};
-  Object? _heatmapsKey;
-  Set<Heatmap> _heatmapsCache = const {};
   GeoPosition? _userMarkerAt;
   Marker? _userMarker;
 
@@ -728,6 +733,8 @@ class _MapViewState extends State<_MapView> {
           : Marker(
               markerId: const MarkerId('_currentLocation'),
               icon: icons.user,
+              // Above every capsule and bubble.
+              zIndexInt: 4,
               position: LatLng(me.latitude, me.longitude),
             );
     }
@@ -799,7 +806,7 @@ class _MapViewState extends State<_MapView> {
     }
     final pins = SelectedPin.apply(
       // What has landed (M-03, M-04); the rest is still on its way.
-      {for (final m in _choreography.onMap.values) m.marker},
+      {..._choreography.markers},
       hidden: hidden,
       posed: posed,
       shadowed: shadowed,
@@ -810,15 +817,41 @@ class _MapViewState extends State<_MapView> {
 
   /// The capsules the map should show now go to the choreography, which
   /// lets newcomers come in and leavers go (M-03, M-04).
+  double? _choreographedZoom;
+
+  /// The part of the map on screen for [camera] (its corners, turned).
+  GeoBounds? _onScreen(CameraPosition camera) {
+    final padding = _viewport.value?.padding;
+    if (padding == null || !mounted) return null;
+    final size = MediaQuery.sizeOf(context);
+    final corners = [
+      for (final c in [
+        Offset.zero,
+        Offset(size.width, 0),
+        Offset(0, size.height),
+        Offset(size.width, size.height),
+      ])
+        MapProjection.toLatLng(c, camera, size, padding),
+    ];
+    return GeoBounds(
+      south: corners.map((c) => c.latitude).reduce(math.min),
+      north: corners.map((c) => c.latitude).reduce(math.max),
+      west: corners.map((c) => c.longitude).reduce(math.min),
+      east: corners.map((c) => c.longitude).reduce(math.max),
+    );
+  }
+
   void _choreograph(MapController map) {
-    // Only on a still map: it may stop for a moment under a finger (a pinch
-    // held). Swapping markers then left a gap while the new ones loaded, and
-    // sprites would trail the map when it goes on; the change waits.
-    if (!_still) {
+    // Under a finger the markers change at once, on the map itself (sprites
+    // would trail a moving map), the old ones staying until the new ones are
+    // drawn; a programmatic camera move (a button) waits to land them with
+    // the show.
+    final live = _pointers > 0;
+    if (!_still && !live) {
       _choreographyDue = true;
       return;
     }
-    final animate = !AppMotion.reduced(context);
+    final animate = !AppMotion.reduced(context) && !live;
     if (!_firstShown && animate && _capsuleMarkers.isNotEmpty) {
       // From the first stop, or from now when the map has not stopped yet.
       final from = _firstStop ?? (_firstAsked ??= DateTime.now());
@@ -865,8 +898,15 @@ class _MapViewState extends State<_MapView> {
       }
       shown.add(ShownMarker(marker, look: look, bounds: item?.bounds));
     }
+    // Zooming in, the old bubbles open into the new markers; zooming
+    // out, the old ones gather into them.
+    final zoom = view?.camera.zoom;
+    final last = _choreographedZoom;
+    _choreographedZoom = zoom;
     _choreography.update(
       shown,
+      zoomingIn: zoom == null || last == null ? null : zoom > last + 0.01,
+      zoomingOut: zoom == null || last == null ? null : zoom < last - 0.01,
       screen: screen,
       centre: view == null
           ? size.center(Offset.zero)
@@ -878,9 +918,42 @@ class _MapViewState extends State<_MapView> {
             ),
       still: {for (final id in _floating.keys) MarkerId(id)},
       animate: animate,
+      linger: live,
     );
     _choreographyVersion++;
+    if (_choreography.trickling) {
+      _trickleSoon();
+    } else if (_choreography.lingering) {
+      _dropLingeringSoon();
+    }
   }
+
+  /// Under a finger the new markers go onto the map a few at a time
+  /// ([MarkerChoreography.trickle]); the old ones go once the last are drawn.
+  static const _trickleBatch = 12;
+  static const _trickleStep = Duration(milliseconds: 16);
+  Timer? _trickleTimer;
+
+  void _trickleSoon() {
+    if (_trickleTimer?.isActive ?? false) return;
+    _trickleTimer = Timer(_trickleStep, () {
+      if (!mounted) return;
+      setState(() => _choreography.trickle(_trickleBatch));
+      if (_choreography.trickling) {
+        _trickleSoon();
+      } else {
+        _dropLingeringSoon();
+      }
+    });
+  }
+
+  void _dropLingeringSoon() => unawaited(
+    _afterNativeMap(() {
+      if (_choreography.trickling) return;
+      _choreography.dropLingering();
+      setState(() {});
+    }, settle: const Duration(milliseconds: 120)),
+  );
 
   /// The coming capsules have landed: the map shows them now, and their
   /// sprites go once it has drawn them (an added marker shows once its
@@ -894,40 +967,6 @@ class _MapViewState extends State<_MapView> {
         setState(() {});
       }, settle: const Duration(milliseconds: 250)),
     );
-  }
-
-  /// The native heatmap throws on an empty point list (BUG-048), so the
-  /// layer is only added when there is something to show.
-  Set<Heatmap> _heatmaps(MapController map) {
-    final key = (map.capsulesVersion, map.showMarkers);
-    if (_heatmapsKey == key) return _heatmapsCache;
-    _heatmapsKey = key;
-    // Zoomed in the markers say where capsules are; the glow is only the
-    // overview from afar (F-16).
-    return _heatmapsCache = map.showMarkers ? const {} : _buildHeatmaps(map);
-  }
-
-  Set<Heatmap> _buildHeatmaps(MapController map) {
-    final points = [
-      for (final c in map.visibleCapsules)
-        WeightedLatLng(
-          LatLng(c.location!.latitude, c.location!.longitude),
-          weight: 1.0,
-        ),
-    ];
-    if (points.isEmpty) return const {};
-    return {
-      Heatmap(
-        heatmapId: const HeatmapId('capsules_heatmap'),
-        data: points,
-        radius: const HeatmapRadius.fromPixels(40),
-        opacity: 0.7,
-        gradient: const HeatmapGradient([
-          HeatmapGradientColor(AppColors.heatmapLow, 0.2),
-          HeatmapGradientColor(AppColors.heatmapHigh, 1.0),
-        ]),
-      ),
-    };
   }
 
   @override
@@ -979,6 +1018,17 @@ class _MapViewState extends State<_MapView> {
       _askedPadding = mapPadding;
     }
     final markers = _markers(map);
+    if (_heatmapVersion != map.capsulesVersion) {
+      _heatmapVersion = map.capsulesVersion;
+      if (_heatmap.setCapsules(map.heatCapsules)) {
+        // Only new places redraw the heat; panning never does.
+        unawaited(
+          _mapController.future.then(
+            (c) => c.clearTileCache(CapsuleHeatmap.id),
+          ),
+        );
+      }
+    }
     final spots = _floatingSpots;
     return PopScope(
       // Back closes the card first.
@@ -1022,17 +1072,32 @@ class _MapViewState extends State<_MapView> {
                 if (_focus.pending != null) unawaited(_showFocusedCapsule());
               },
               markers: markers,
-              heatmaps: _heatmaps(map),
+              // Far out, where capsules are, as heat (M-11).
+              tileOverlays: {
+                TileOverlay(
+                  tileOverlayId: CapsuleHeatmap.id,
+                  tileProvider: _heatmap,
+                  visible: !map.showMarkers,
+                  // Every level looks the same: a fade would only show two
+                  // see-through layers over each other for a moment.
+                  fadeIn: false,
+                ),
+              },
               onTap: (_) => _select(null),
               onCameraMoveStarted: _cameraStarted,
               onCameraMove: (position) {
                 _viewport.moved(position);
                 _bearing.value = position.bearing;
-                // Zoomed out past the markers: their card goes too.
+                // Zoomed out to the heatmap: no pins, their card goes too.
                 if (position.zoom < MapController.markerZoomThreshold) {
                   _select(null);
                 }
-                map.onCameraMove(position.zoom);
+                // Under a finger the markers follow the zoom at once, so
+                // they need to know what is on screen now.
+                map.onCameraMove(
+                  position.zoom,
+                  view: _pointers > 0 ? _onScreen(position) : null,
+                );
               },
               onCameraIdle: () async {
                 _cameraStopped();

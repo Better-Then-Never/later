@@ -112,7 +112,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   (the capsule's marker unchanged while posed, the posed pin a marker of its own, the same shadow in both
   modes). Gates green except the known flaky `capsule_creation_test.dart:151` (passes alone).
 
-## 2026-10-18, M-03 + M-04 Capsules come onto the map in groups; bubbles open and close
+## 2026-10-18, M-03 + M-04 Capsules come onto the map in groups; bubbles open and close (`172665e`)
 - **Was**: on the first open the pins dropped in over a blank map, bit by bit as their lists arrived; zooming
   swapped every marker at once, and bubbles blinked out and back on every zoom.
 - **Changed**: `MarkerChoreography` (+ `MarkerChoreographyOverlay`) decides what comes and goes: on the first
@@ -141,3 +141,36 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   map_focus 1.2 % (its first frames; 1.8 % before M-02). Tests: `marker_choreography_test.dart` (rings from the
   middle, bubbles opening and closing, nothing on the map until all landed, a touch lands everything still
   drawn, reduced motion, a capsule gone before landing). Gates green.
+
+## 2026-10-18, M-11 A real heatmap far out; the map follows a pinch while the fingers are down
+- **Owner**: far out the map was empty (the numbers vanished); then, on a first try (bubbles turned into soft
+  glows), "that is just the bubbles blurred": the heat must come from every capsule's own place, not the
+  grouping, be less saturated, not only green, and not redraw when the map only moves. Then: under a pinch the
+  bubbles split, merge and turn into heat only once the fingers lift; it must follow while they are down.
+- **Cause of the empty map**: the plugin's native heatmap draws nothing on the owner's phone (built with 1,205
+  points, no error, also with the default colours). A tile layer the app draws itself does show.
+- **Changed**:
+  - `CapsuleHeatmap`: a tile layer the map draws below zoom 12. Heat from every capsule's own place (two in one
+    spot count twice), a soft bump each, on a log scale against the busiest 2 % of places; a cool-to-warm ramp of
+    the app's colours (blue, green, yellow, orange; no red, it means danger), at most 35 % opaque, colour
+    climbing slower than the heat so only real hotspots turn warm. Tiles are drawn in a background isolate;
+    the map keeps them, so panning draws nothing again (measured: panning away 5 new edge tiles, back 0).
+  - The bump has one size on the ground (about 700 m, at least 3 dp very far out), so every zoom level's tiles
+    show the same picture and the swap at a whole zoom number (any small pinch) cannot be seen; no fade-in.
+  - The heat keeps the places of every public band seen this session (`MapController.heatCapsules`), so panning
+    into a new band never takes heat away or redraws it.
+  - Under a finger the markers follow the zoom at once: whenever it crosses a level they are grouped again for
+    what is on screen (`MapProjection.toLatLng` for its corners), swapped on the map itself (no flying under a
+    finger), the new ones added a dozen every frame from the middle out, the old ones kept until the new ones
+    are drawn: never a gap. The buttons and the first open keep the show.
+  - The native heatmap, its two colours and the first glow try are gone.
+- **Verified**: phone: held one-finger zoom out (pins merged into bubbles before lifting) and in (bubbles split
+  before lifting); held across zoom 12 both ways (bubbles to heat and back before lifting); the heat through a
+  slow held zoom (scales smoothly, no jump at the base map's level swap); pan far north and back (no redraw
+  coming back). Profile: the first live version had map_zoom_in at 5.1 % janky (Android's main thread adding
+  ~100 markers at once: 20 to 40 ms waits for a frame surface); adding them a dozen a frame: 0 % (one run),
+  2.8 % (one 40 ms frame of 213) in the full run; pan 0 %, capsule_dialog 0.5 %, map_focus 1.5 %. Tests:
+  `capsule_heatmap_test.dart` (one capsule faint and cool, a crowd warmer but never solid, every capsule counts,
+  the same heat at every level, no tile far from capsules, the same places redraw nothing),
+  `map_projection_test.dart` (screen back to place), `marker_choreography_test.dart` (under a finger: a few at a
+  time, the old kept until the new are drawn). Gates green except the known flaky `capsule_creation_test.dart`.

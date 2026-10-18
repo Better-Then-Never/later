@@ -66,4 +66,23 @@ void main() {
     expect(east.dx, closeTo(200, 0.001));
     expect(east.dy, lessThan(400));
   });
+
+  test('screen back to place: the reverse, also turned and padded', () {
+    const camera = CameraPosition(target: target, zoom: 11.3, bearing: 30);
+    const padding = EdgeInsets.only(top: 40, bottom: 160);
+    for (final p in const [
+      LatLng(52.23, 21.01),
+      LatLng(52.3, 20.9),
+      LatLng(52.1, 21.2),
+    ]) {
+      final back = MapProjection.toLatLng(
+        MapProjection.toScreen(p, camera, size, padding),
+        camera,
+        size,
+        padding,
+      );
+      expect(back.latitude, closeTo(p.latitude, 1e-9));
+      expect(back.longitude, closeTo(p.longitude, 1e-9));
+    }
+  });
 }

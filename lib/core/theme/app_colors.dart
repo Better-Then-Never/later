@@ -36,9 +36,4 @@ abstract final class AppColors {
   /// Darker shades of [infoBlue] for text on its tinted cards.
   static const infoBlue600 = Color(0xFF1E88E5);
   static const infoBlue700 = Color(0xFF1976D2);
-
-  // Map heatmap (F-16): one brand green that deepens with density; no red
-  // (red means danger in the app), no yellow (muddy over the dark map).
-  static const heatmapLow = Color(0x5956C92E);
-  static const heatmapHigh = brandGreen;
 }

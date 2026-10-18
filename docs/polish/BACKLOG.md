@@ -17,7 +17,7 @@ Status: `UNCHECKED` → `LIKELY_OPEN` / `LIKELY_FIXED` / `NEEDS_PHONE` (static t
 | M-08 | Capsule preview too far left; inconsistent placement (ask) | NEEDS_PHONE | |
 | M-09 | Remove the words "Visibility" and "From you" from capsule info | LIKELY_OPEN | |
 | M-10 | Remove seconds from the opening countdown | LIKELY_OPEN | `capsule_info_panel.dart` ticks every second, shows seconds |
-| M-11 | Far-out map: bubbles turn into a reworked glow (heatmap) at very far zoom; the current one is disliked | LIKELY_OPEN | owner, 18 Oct; the native heatmap draws nothing on the owner's phone (S20 FE; built with 1,205 points, no error): below zoom 12 the map is empty |
+| M-11 | Far-out map: bubbles turn into a reworked heatmap at far zoom; the old one was disliked (and drew nothing on the owner's phone) | FIXED | heat from every capsule's place as map tiles, no redraw on pan; markers follow a pinch live (LOG.md) |
 
 ## Profile, friends, people (P)
 | ID | Item | Status | Triage note |

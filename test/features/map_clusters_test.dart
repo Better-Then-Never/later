@@ -87,6 +87,18 @@ void main() {
     expect(pacific.contains(const GeoPosition(0, 0)), isFalse);
   });
 
+  test('the same capsules are the same bubble at any zoom (M-04)', () {
+    final capsules = [
+      for (var i = 0; i < 20; i++) _at(i, 52.2300 + i * 1e-5, 21.0100),
+    ];
+    String clusterId(double zoom) => clusterCapsules(
+      capsules,
+      view: _warsaw,
+      zoom: zoom,
+    ).singleWhere((i) => i.isCluster).id;
+    expect(clusterId(13), clusterId(15));
+  });
+
   test('at street level capsules in one spot are separate pins', () {
     final capsules = [for (var i = 0; i < 5; i++) _at(i, 52.23, 21.01)];
     final items = clusterCapsules(capsules, view: _warsaw, zoom: 19);

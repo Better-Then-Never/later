@@ -94,6 +94,11 @@ class MapController extends ChangeNotifier {
   List<Capsule> _coAuthored = const [];
   List<Capsule> _friends = const [];
   List<Capsule> _public = const [];
+
+  /// Every public capsule loaded this session, from every band: the heatmap
+  /// keeps their places, so panning into a new band never takes heat away
+  /// or redraws it (M-11). Kept until the app restarts.
+  final Map<String, Capsule> _publicSeen = {};
   List<String> _friendIds = const [];
 
   StreamSubscription<GeoPosition>? _positionSub;
@@ -122,7 +127,13 @@ class MapController extends ChangeNotifier {
 
   /// Every capsule the signed-in user may see, de-duplicated; computed once
   /// per change of the capsule lists.
-  List<Capsule> get visibleCapsules => _visible ??= _computeVisible();
+  List<Capsule> get visibleCapsules => _visible ??= _computeVisible(_public);
+
+  /// What the heatmap shows: as [visibleCapsules], with the public capsules
+  /// of every band seen so far (M-11).
+  List<Capsule> get heatCapsules =>
+      _heat ??= _computeVisible(_publicSeen.values);
+  List<Capsule>? _heat;
 
   /// What the map shows at marker zoom: pins and numbered bubbles for the
   /// part on screen (see [clusterCapsules]), recomputed when the camera stops
@@ -149,6 +160,7 @@ class MapController extends ChangeNotifier {
   Future<void> _recluster() async {
     final view = _view;
     final run = ++_clusterRun;
+    _clusteredLevel = showMarkers ? _zoom.floor() : -1;
     if (view == null || !showMarkers) {
       if (_items.isEmpty) return;
       _items = const [];
@@ -172,12 +184,12 @@ class MapController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Capsule> _computeVisible() {
+  List<Capsule> _computeVisible(Iterable<Capsule> public) {
     final uid = _session.uid;
     final friends = _friendIds.toSet();
     final now = DateTime.now();
     final byId = <String, Capsule>{};
-    for (final c in [..._public, ..._friends, ..._own, ..._coAuthored]) {
+    for (final c in [...public, ..._friends, ..._own, ..._coAuthored]) {
       if (c.location == null) continue; // malformed: cannot be placed
       if (!isVisibleTo(c, uid: uid, friendIds: friends)) continue;
       if (!_filter.accepts(c, uid: uid, friendIds: friends, now: now)) {
@@ -190,6 +202,7 @@ class MapController extends ChangeNotifier {
 
   void _capsulesChanged() {
     _visible = null;
+    _heat = null;
     _capsulesVersion++;
   }
 
@@ -309,7 +322,12 @@ class MapController extends ChangeNotifier {
           centerLatitude + _bandHalfHeight,
         )
         .listen(
-          (list) => _set(() => _public = list),
+          (list) => _set(() {
+            _public = list;
+            for (final c in list) {
+              _publicSeen[c.id] = c;
+            }
+          }),
           onError: _logStreamError('public'),
         );
   }
@@ -327,8 +345,21 @@ class MapController extends ChangeNotifier {
   }
 
   /// Called while the camera moves; only crossing the marker threshold
-  /// triggers a rebuild.
-  void onCameraMove(double zoom) => _setZoom(zoom);
+  /// triggers a rebuild. Under a finger ([view] given: what is on screen
+  /// now) the markers follow at once whenever the zoom crosses a level:
+  /// bubbles split and merge while the fingers are still down, not only
+  /// once the map stops.
+  void onCameraMove(double zoom, {GeoBounds? view}) {
+    _setZoom(zoom);
+    if (view == null) return;
+    final level = showMarkers ? zoom.floor() : -1;
+    if (level == _clusteredLevel) return;
+    _view = view;
+    unawaited(_recluster());
+  }
+
+  /// The zoom level the markers were last grouped for (-1: the heatmap).
+  int? _clusteredLevel;
 
   void _setZoom(double zoom) {
     final crossed =

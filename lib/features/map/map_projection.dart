@@ -48,4 +48,31 @@ abstract final class MapProjection {
     );
     return centre + rotated;
   }
+
+  /// The place at [screen] on a map of [size] with [padding], for [camera]:
+  /// the reverse of [toScreen].
+  static LatLng toLatLng(
+    Offset screen,
+    CameraPosition camera,
+    Size size,
+    EdgeInsets padding,
+  ) {
+    final centre = Offset(
+      padding.left + (size.width - padding.horizontal) / 2,
+      padding.top + (size.height - padding.vertical) / 2,
+    );
+    final d = screen - centre;
+    final b = camera.bearing * math.pi / 180;
+    final world =
+        _world(camera.target, camera.zoom) +
+        Offset(
+          d.dx * math.cos(b) - d.dy * math.sin(b),
+          d.dx * math.sin(b) + d.dy * math.cos(b),
+        );
+    final scale = _tile * math.pow(2, camera.zoom);
+    final n = math.pi - 2 * math.pi * world.dy / scale;
+    final lat = math.atan((math.exp(n) - math.exp(-n)) / 2) * 180 / math.pi;
+    final lng = (world.dx / scale * 360 + 360) % 360 - 180;
+    return LatLng(lat, lng);
+  }
 }

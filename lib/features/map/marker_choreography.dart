@@ -167,6 +167,43 @@ class MarkerChoreography {
   final Map<MarkerId, ShownMarker> onMap = {};
   final Map<MarkerId, ShownMarker> _coming = {};
   final Map<MarkerId, ShownMarker> _later = {};
+
+  /// Gone, but still on the map until it has drawn what replaced them
+  /// ([dropLingering]): an added marker shows only once its bitmap has
+  /// loaded, and removing the old one at once left a gap (under a finger).
+  final Map<MarkerId, ShownMarker> _lingering = {};
+
+  /// What the map should have now.
+  Iterable<Marker> get markers sync* {
+    for (final m in onMap.values) {
+      yield m.marker;
+    }
+    for (final m in _lingering.values) {
+      yield m.marker;
+    }
+  }
+
+  bool get lingering => _lingering.isNotEmpty;
+
+  /// New markers under a finger, waiting to be added a few at a time,
+  /// nearest the middle first ([trickle]): the map decodes every added
+  /// marker's picture on Android's main thread, and adding them all at once
+  /// held up the frames for 20 to 40 ms in the middle of a pinch.
+  final List<ShownMarker> _trickle = [];
+
+  bool get trickling => _trickle.isNotEmpty;
+
+  /// Puts the next [count] waiting markers on the map.
+  void trickle(int count) {
+    final n = math.min(count, _trickle.length);
+    for (final m in _trickle.take(n)) {
+      onMap[m.id] = m;
+    }
+    _trickle.removeRange(0, n);
+  }
+
+  /// The map has drawn what replaced the lingering markers: they go.
+  void dropLingering() => _lingering.clear();
   final List<MarkerSprite> sprites = [];
 
   /// The act under way (all its coming sprites carry it) and when it lands.
@@ -197,12 +234,18 @@ class MarkerChoreography {
   /// screen (null when off it) and [centre] is the middle of the screen;
   /// those in [still] (the selected pin) and those off screen come and go
   /// at once, and so does everything when not [animate] (reduced motion).
+  /// Zooming in ([zoomingIn]) the old bubbles open into the new markers;
+  /// zooming out ([zoomingOut]) the old ones gather into the new bubbles;
+  /// panning neither. Unknown (null): whichever fits.
   void update(
     Iterable<ShownMarker> target, {
+    bool? zoomingIn,
+    bool? zoomingOut,
     required Offset? Function(LatLng) screen,
     required Offset centre,
     Set<MarkerId> still = const {},
     bool animate = true,
+    bool linger = false,
   }) {
     final wanted = {for (final t in target) t.id: t};
     final gone = [
@@ -212,23 +255,43 @@ class MarkerChoreography {
     for (final s in gone) {
       onMap.remove(s.id);
       sprites.removeWhere((p) => p.id == s.id);
+      if (linger) _lingering[s.id] = s;
     }
     _coming.removeWhere((id, _) => !wanted.containsKey(id));
     _later.removeWhere((id, _) => !wanted.containsKey(id));
+    _trickle.removeWhere((m) => !wanted.containsKey(m.id));
+    final waiting = {for (final m in _trickle) m.id};
     sprites.removeWhere((p) => !p.leaving && !wanted.containsKey(p.id));
     final added = <ShownMarker>[];
     for (final t in wanted.values) {
-      if (onMap.containsKey(t.id)) {
+      if (_lingering.remove(t.id) != null) {
+        // Back before it left the map: it simply stays.
+        onMap[t.id] = t;
+      } else if (onMap.containsKey(t.id)) {
         onMap[t.id] = t;
       } else if (_coming.containsKey(t.id)) {
         _coming[t.id] = t;
       } else if (_later.containsKey(t.id)) {
         _later[t.id] = t;
+      } else if (waiting.contains(t.id)) {
+        // Still waiting its turn (its look may be newer).
+        final i = _trickle.indexWhere((m) => m.id == t.id);
+        _trickle[i] = t;
       } else {
         added.add(t);
       }
     }
 
+    if (linger) {
+      // Under a finger: no show, a few at a time, the middle first.
+      // Off screen last.
+      double away(ShownMarker m) =>
+          ((screen(m.at) ?? centre + const Offset(1e5, 0)) - centre).distance;
+      _trickle
+        ..addAll(added)
+        ..sort((a, b) => away(a).compareTo(away(b)));
+      return;
+    }
     final moving = <ShownMarker>[];
     final unseen = <ShownMarker>[];
     for (final a in added) {
@@ -277,7 +340,7 @@ class MarkerChoreography {
         if (m.bounds != null) m,
     ];
     final joined = <MarkerId>{};
-    for (final g in leaving) {
+    for (final g in (zoomingOut ?? true) ? leaving : const <ShownMarker>[]) {
       final into = holder(g.at, newBubbles);
       if (into != null && into.id != g.id) {
         (joining[into.id] ??= []).add(g);
@@ -286,8 +349,9 @@ class MarkerChoreography {
     }
     final byId = {for (final m in moving) m.id: m};
     final parents = [
-      for (final g in leaving)
-        if (g.bounds != null && !joined.contains(g.id)) g,
+      if (zoomingIn ?? true)
+        for (final g in leaving)
+          if (g.bounds != null && !joined.contains(g.id)) g,
     ];
     for (final m in moving) {
       if (joining.containsKey(m.id)) continue;
@@ -428,6 +492,7 @@ class MarkerChoreography {
   /// with the returned act), the going ones are gone. Dropping them all at
   /// once left the map blank for a few frames while it drew the new markers.
   int finish() {
+    trickle(_trickle.length);
     onMap
       ..addAll(_coming)
       ..addAll(_later);

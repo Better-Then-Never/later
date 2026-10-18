@@ -166,6 +166,83 @@ void main() {
     expect(_onMap(c), {'a', 'selected'});
   });
 
+  test('zooming in only opens bubbles, zooming out only gathers them', () {
+    // Zooming in: the old bubble's place lies inside a new bubble's area, yet
+    // it opens into the new ones rather than flying into one of them.
+    final c = MarkerChoreography();
+    _update(c, [_bubble('big', 0, 0, span: 60)]);
+    _settle(c);
+    c.update(
+      [_bubble('a', 5, 5), _bubble('b', -40, -40)],
+      zoomingIn: true,
+      zoomingOut: false,
+      screen: _screen,
+      centre: Offset.zero,
+    );
+    expect(c.sprites.where((s) => s.motion == SpriteMotion.merge), isEmpty);
+    expect(
+      c.sprites
+          .where((s) => s.motion == SpriteMotion.fly)
+          .map((s) => s.id.value),
+      unorderedEquals(['a', 'b']),
+    );
+    // Panning: nothing opens or gathers; newcomers simply come in.
+    final p = MarkerChoreography();
+    _update(p, [_bubble('big', 0, 0, span: 60)]);
+    _settle(p);
+    p.update(
+      [_bubble('a', 5, 5)],
+      zoomingIn: false,
+      zoomingOut: false,
+      screen: _screen,
+      centre: Offset.zero,
+    );
+    expect(
+      p.sprites.map((s) => s.motion),
+      unorderedEquals([SpriteMotion.leave, SpriteMotion.pop]),
+    );
+  });
+
+  test('under a finger: swapped at once, the old ones kept until the new '
+      'ones are drawn', () {
+    final c = MarkerChoreography();
+    _update(c, [_bubble('b', 0, 0)]);
+    _settle(c);
+    c.update(
+      [_pin('x', -20, 10), _pin('y', 20, -10)],
+      screen: _screen,
+      centre: Offset.zero,
+      animate: false,
+      linger: true,
+    );
+    expect(c.active, isFalse, reason: 'nothing flies under a finger');
+    // A few at a time, nearest the middle first.
+    expect(_onMap(c), isEmpty);
+    expect(c.trickling, isTrue);
+    c.trickle(1);
+    expect(_onMap(c), {'x'});
+    c.trickle(12);
+    expect(c.trickling, isFalse);
+    expect(_onMap(c), {'x', 'y'});
+    expect(c.lingering, isTrue);
+    expect(
+      c.markers.map((m) => m.markerId.value),
+      unorderedEquals(['b', 'x', 'y']),
+      reason: 'the bubble stays until the map has drawn its pins',
+    );
+    // Back to the bubble before it left: it simply stays.
+    c.update(
+      [_bubble('b', 0, 0)],
+      screen: _screen,
+      centre: Offset.zero,
+      animate: false,
+      linger: true,
+    );
+    expect(_onMap(c), {'b'});
+    c.dropLingering();
+    expect(c.markers.map((m) => m.markerId.value), ['b']);
+  });
+
   test('a capsule gone before it landed never reaches the map', () {
     final c = MarkerChoreography();
     _update(c, [_pin('a', 0, 0), _pin('b', 50, 0)]);
