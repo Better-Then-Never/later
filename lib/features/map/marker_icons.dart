@@ -32,17 +32,13 @@ class MarkerIcons {
   static final Map<CapsuleColor, List<BitmapDescriptor>> _selected = {};
   static Future<void>? _drawingSelected;
 
-  /// Logical size of a pin (as the asset is shown) and of a selected frame
-  /// (room for the grown pin and its ring).
+  /// Logical size of a pin (as the asset is shown).
   static const pinSize = 48.0;
-  static const selectedSize = 72.0;
   static const _pixelRatio = 3.0;
 
-  /// The pin artwork's head in its 457 px square: centre and outer radius.
+  /// The pin artwork's tip in its 457 px square (where it touches the map).
   static const _art = 457.0;
-  static const _headX = 228.0;
-  static const _headY = 205.0;
-  static const _headR = 182.0;
+  static const _tipY = 420.0;
 
   static Future<void> _drawSelected() async {
     for (final color in CapsuleColor.values) {
@@ -53,9 +49,9 @@ class MarkerIcons {
         _selected[color] = [
           for (final f in SelectedPin.frames)
             BitmapDescriptor.bytes(
-              await _frame(pin, f.scale, f.ring),
-              width: selectedSize,
-              height: selectedSize,
+              await _frame(pin, f.scale, f.lift, f.shadow),
+              width: SelectedPin.width,
+              height: SelectedPin.height,
             ),
         ];
       } catch (e) {
@@ -65,24 +61,42 @@ class MarkerIcons {
     }
   }
 
-  /// One frame: the pin grown by [scale] with its tip at the bottom centre
-  /// (where the marker is anchored), a brand-green ring of [ring] opacity just
-  /// outside its outline.
-  static Future<Uint8List> _frame(ui.Image pin, double scale, double ring) {
-    const px = selectedSize * _pixelRatio;
+  /// One frame: a soft shadow on the spot (where the marker is anchored)
+  /// and the pin grown by [scale], its tip [lift] dp above the spot; the
+  /// shadow of [shadow] strength is smaller the higher the pin floats.
+  static Future<Uint8List> _frame(
+    ui.Image pin,
+    double scale,
+    double lift,
+    double shadow,
+  ) {
+    const w = SelectedPin.width * _pixelRatio;
+    const h = SelectedPin.height * _pixelRatio;
+    const spotY = h - SelectedPin.shadowFromBottom * _pixelRatio;
     final side = pinSize * scale * _pixelRatio;
-    final dst = Rect.fromLTWH((px - side) / 2, px - side, side, side);
-    final unit = side / _art;
+    final tipY = spotY - lift * _pixelRatio;
+    final dst = Rect.fromLTWH(
+      (w - side) / 2,
+      tipY - _tipY / _art * side,
+      side,
+      side,
+    );
+    final shadowWidth = (22 - lift * 0.5) * _pixelRatio;
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
     canvas
-      ..drawCircle(
-        Offset(dst.left + _headX * unit, dst.top + _headY * unit),
-        _headR * unit + 3 * _pixelRatio,
+      ..drawOval(
+        Rect.fromCenter(
+          center: const Offset(w / 2, spotY),
+          width: shadowWidth,
+          height: shadowWidth * 0.32,
+        ),
         Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3 * _pixelRatio
-          ..color = AppColors.brandGreen.withValues(alpha: ring),
+          ..color = AppColors.mediaBlack.withValues(alpha: shadow)
+          ..maskFilter = const MaskFilter.blur(
+            BlurStyle.normal,
+            2.5 * _pixelRatio,
+          ),
       )
       ..drawImageRect(
         pin,
@@ -92,7 +106,7 @@ class MarkerIcons {
       );
     return recorder
         .endRecording()
-        .toImage(px.round(), px.round())
+        .toImage(w.round(), h.round())
         .then((image) => image.toByteData(format: ui.ImageByteFormat.png))
         .then((bytes) => bytes!.buffer.asUint8List());
   }

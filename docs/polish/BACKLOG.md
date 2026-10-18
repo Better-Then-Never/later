@@ -8,7 +8,7 @@ Status: `UNCHECKED` → `LIKELY_OPEN` / `LIKELY_FIXED` / `NEEDS_PHONE` (static t
 | ID | Item | Status | Triage note |
 |---|---|---|---|
 | M-01 | Map control sizes (zoom, compass, my location, streak pill, filter): one smaller scale, 44×44 taps | FIXED | 52 → 44 dp, one token `AppSizes.mapControl` (LOG.md) |
-| M-02 | Selected capsule unclear: animated emphasis on the selected marker | FIXED | the selected pin pops to ~1.3× with a green ring, on top (LOG.md) |
+| M-02 | Selected capsule unclear: animated emphasis on the selected marker | FIXED | the selected pin jumps, sways and hovers over a shadow, on top (LOG.md) |
 | M-03 | Capsules appear with an animation on the first map open | LIKELY_OPEN | native markers; motion deliberately not built in Session A |
 | M-04 | Capsules appear in batches when zooming | LIKELY_OPEN | same family as M-03 |
 | M-05 | Cluster rework (ask: which element is unreadable; library change = decision gate) | LIKELY_OPEN | own grid clustering in `map_clusters.dart` |

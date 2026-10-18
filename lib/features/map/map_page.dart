@@ -253,8 +253,8 @@ class _MapViewState extends State<_MapView> {
   /// info-window package, which re-opened itself after being closed).
   Capsule? _selected;
 
-  /// The frame of the selected pin's pop (SelectedPin.frames, M-02).
-  int _pinFrame = 0;
+  /// The step of the selected pin's jump and sway (SelectedPin, M-02).
+  int _pinStep = 0;
   Timer? _pinTimer;
   late final MapFocus _focus;
   bool _reportedLocationProblem = false;
@@ -299,19 +299,19 @@ class _MapViewState extends State<_MapView> {
   void _select(Capsule? capsule) {
     if (!mounted || capsule?.id == _selected?.id) return;
     _pinTimer?.cancel();
-    final last = SelectedPin.frames.length - 1;
+    final last = SelectedPin.steps - 1;
     setState(() {
       _selected = capsule;
-      // Reduced motion: the selected pin is simply there, grown and ringed.
-      _pinFrame = AppMotion.reduced(context) ? last : 0;
+      // Reduced motion: the selected pin is simply there, hovering.
+      _pinStep = AppMotion.reduced(context) ? last : 0;
     });
-    if (capsule == null || _pinFrame == last) return;
-    _pinTimer = Timer.periodic(SelectedPin.frameTime, (timer) {
-      if (!mounted || _pinFrame >= last) {
+    if (capsule == null || _pinStep == last) return;
+    _pinTimer = Timer.periodic(SelectedPin.stepTime, (timer) {
+      if (!mounted || _pinStep >= last) {
         timer.cancel();
         return;
       }
-      setState(() => _pinFrame++);
+      setState(() => _pinStep++);
     });
   }
 
@@ -507,8 +507,8 @@ class _MapViewState extends State<_MapView> {
             ),
       };
     }
-    // The selected capsule's pin pops and sits on top; only that marker
-    // changes, so only it goes to the native map.
+    // The selected capsule's pin jumps, sways and hovers on top; only that
+    // marker changes, so only it goes to the native map.
     final selected = _selected;
     final frames = selected == null
         ? null
@@ -516,7 +516,8 @@ class _MapViewState extends State<_MapView> {
     final pins = SelectedPin.apply(
       _capsuleMarkers,
       selected?.id,
-      frames?[_pinFrame.clamp(0, frames.length - 1)],
+      frames?[SelectedPin.frameAt(_pinStep)],
+      rotation: SelectedPin.rotationAt(_pinStep),
     );
     final user = _userMarker;
     return user == null ? pins : {user, ...pins};

@@ -17,14 +17,22 @@ Marker _pin(String id) => Marker(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('a quick pop that settles, within the motion budget', () {
-    final scales = [for (final f in SelectedPin.frames) f.scale];
-    final peak = scales.reduce((a, b) => a > b ? a : b);
-    expect(scales.first, greaterThan(1));
-    expect(scales.last, lessThan(peak), reason: 'settles after the overshoot');
-    expect(SelectedPin.frames.last.ring, 1);
+  test('a jump, a sway and a hover, within the motion budget', () {
+    final lifts = [for (final f in SelectedPin.frames) f.lift];
+    expect(lifts.first, greaterThan(lifts.last), reason: 'jumps, then lands');
+    expect(lifts.last, greaterThan(0), reason: 'rests hovering');
+    expect(SelectedPin.rotationAt(0), 0, reason: 'no sway mid-jump');
     expect(
-      SelectedPin.frameTime * SelectedPin.frames.length,
+      SelectedPin.rotationAt(SelectedPin.steps - 1),
+      0,
+      reason: 'rests upright',
+    );
+    expect(
+      SelectedPin.frameAt(SelectedPin.steps - 1),
+      SelectedPin.frames.length - 1,
+    );
+    expect(
+      SelectedPin.stepTime * SelectedPin.steps,
       lessThanOrEqualTo(AppMotion.reveal),
     );
   });
@@ -32,11 +40,13 @@ void main() {
   test('only the selected marker changes, and it goes on top', () {
     final markers = {_pin('a'), _pin('b'), _pin('c')};
     final icon = BitmapDescriptor.defaultMarkerWithHue(1);
-    final out = SelectedPin.apply(markers, 'b', icon);
+    final out = SelectedPin.apply(markers, 'b', icon, rotation: 7);
     expect(out, hasLength(3));
     final b = out.firstWhere((m) => m.markerId == const MarkerId('b'));
     expect(b.icon, icon);
     expect(b.zIndexInt, SelectedPin.zIndex);
+    expect(b.rotation, 7);
+    expect(b.anchor, SelectedPin.anchor, reason: 'anchored at its spot');
     expect(out.where((m) => m.markerId != const MarkerId('b')).toSet(), {
       _pin('a'),
       _pin('c'),
