@@ -18,6 +18,9 @@ runs=${2:-1}
 flows=(map_pinch_sweep map_pinch_wave)
 out=build/perf/$label
 PY=build/dev/pyenv/Scripts/python
+# A fresh folder: the watcher would take an earlier run's finished log for
+# this one's.
+rm -rf "$out"
 [ -x "$PY" ] || PY=build/dev/pyenv/bin/python
 
 # Starts and stops a recording at the test's MAPFLOW_START / MAPFLOW_END.
