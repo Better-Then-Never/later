@@ -33,6 +33,7 @@ void main(List<String> args) {
     'largest upd.',
     'in-app gaps ≥100',
     'longest gap ms',
+    'answer ms (avg/max)',
     'video gaps ≥100',
     'video longest ms',
     'frozen ≥150',
@@ -86,6 +87,7 @@ void main(List<String> args) {
         stat('largest_marker_update'),
         stat('frame_gaps_100ms'),
         stat('longest_gap_ms'),
+        '${stat('answer_ms')}/${stat('slowest_answer_ms')}',
       ]);
       final report = File('${run.path}/$flow.report.json');
       if (report.existsSync()) {

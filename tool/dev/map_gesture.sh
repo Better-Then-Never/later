@@ -21,12 +21,23 @@ PY=build/dev/pyenv/Scripts/python
 # A fresh folder: the watcher would take an earlier run's finished log for
 # this one's.
 rm -rf "$out"
+# Real touches (tool/dev/touch/Pinch.java) on the phone.
+[ -f build/dev/touch/pinch.jar ] || "$(dirname "$0")/touch/build.sh" || exit 1
+adbs push build/dev/touch/pinch.jar /data/local/tmp/pinch.jar >/dev/null
+# The phone reaches the emulators through adb reverse, which a USB reconnect
+# drops.
+for port in 9099 8080 9199 5001; do adbs reverse tcp:$port tcp:$port >/dev/null; done
 [ -x "$PY" ] || PY=build/dev/pyenv/bin/python
 
-# Starts and stops a recording at the test's MAPFLOW_START / MAPFLOW_END.
+# Starts and stops a recording at the test's MAPFLOW_START / MAPFLOW_END and
+# plays its MAPFINGERS. Read from the phone's own log as it happens (flutter
+# drive writes drive.log late, in blocks).
 watch_run() {
-  local n=$1 log=$out/run_$1/drive.log k=0 ended=0
-  until [ -f "$log" ]; do sleep 0.5; done
+  local n=$1 log=$out/run_$1/phone.log drive=$out/run_$1/drive.log
+  local k=0 ended=0 fingered=0
+  until [ -f "$drive" ]; do sleep 0.5; done
+  adbs logcat -c
+  (adbs logcat -v brief -s flutter:I >"$log" 2>/dev/null &)
   while true; do
     local starts ends
     starts=$(grep -c "MAPFLOW_START" "$log" 2>/dev/null)
@@ -37,12 +48,23 @@ watch_run() {
       (adbs shell screenrecord --size 540x1200 --bit-rate 12000000 \
         --time-limit 120 "/sdcard/map_flow_$k.mp4" >/dev/null 2>&1 &)
     fi
+    # The test asks for real touches (MAPFINGERS cx cy ms gestures...).
+    local asked
+    asked=$(grep -c "MAPFINGERS" "$log" 2>/dev/null)
+    if [ "$asked" -gt "$fingered" ]; then
+      fingered=$asked
+      local line
+      line=$(grep "MAPFINGERS" "$log" | sed -n "${asked}p" | sed 's/.*MAPFINGERS //' | tr -d '\r')
+      # shellcheck disable=SC2086
+      adbs shell CLASSPATH=/data/local/tmp/pinch.jar app_process /system/bin Pinch $line >/dev/null 2>&1
+    fi
     if [ "$ends" -gt "$ended" ]; then
       ended=$ends
       adbs shell pkill -2 screenrecord >/dev/null 2>&1
     fi
-    if grep -q "All tests passed\|Some tests failed\|Test failed\|run $n failed" "$log"; then
+    if grep -q "All tests passed\|Some tests failed\|Test failed\|run $n failed" "$log" "$drive"; then
       adbs shell pkill -2 screenrecord >/dev/null 2>&1
+      pkill -f "logcat -v brief -s flutter" 2>/dev/null
       sleep 2
       local i=1
       for flow in "${flows[@]}"; do

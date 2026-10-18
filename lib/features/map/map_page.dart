@@ -32,6 +32,8 @@ import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
+import 'engine/maplibre_map_view.dart';
+import '../../core/config/feature_flags.dart';
 import 'map_stats.dart';
 import 'capsule_heatmap.dart';
 import 'map_viewport.dart';
@@ -68,7 +70,7 @@ class MapPage extends StatelessWidget {
             )
             ..setDarkIcons(dark)
             ..start(),
-      child: const _MapView(),
+      child: FeatureFlags.mapLibre ? const MapLibreMapView() : const _MapView(),
     );
   }
 }

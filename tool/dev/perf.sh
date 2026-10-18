@@ -46,6 +46,7 @@ for n in $(seq "$runs"); do
     ${DETAIL:+--dart-define=PERF_DETAIL=true} \
     ${LANG_UNDER_TEST:+--dart-define=PERF_LANG=$LANG_UNDER_TEST} \
     ${MAP_HARNESS:+--dart-define=MAP_HARNESS=true} \
+    ${MAP_LIBRE:+--dart-define=MAP_LIBRE=true} \
     >"$dir/drive.log" 2>&1
   status=$?
   # flutter drive can exit 0 although the test on the phone failed.

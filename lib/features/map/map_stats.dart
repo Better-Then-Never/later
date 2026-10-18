@@ -143,7 +143,21 @@ class MapStats {
     c.heatTileMs += ms;
   });
 
-  void cameraMoved() => _count((c) => c.cameraMoves++);
+  /// How long the map took to answer a finger: from the first touch of a
+  /// gesture to its first camera move.
+  final _sinceDown = Stopwatch();
+  bool _answered = true;
+
+  void cameraMoved() => _count((c) {
+    c.cameraMoves++;
+    if (!_answered) {
+      _answered = true;
+      final ms = _sinceDown.elapsedMilliseconds;
+      c.answers++;
+      c.answerMs += ms;
+      if (ms > c.slowestAnswerMs) c.slowestAnswerMs = ms;
+    }
+  });
   void cameraIdle() => _count((c) => c.cameraIdles++);
 
   /// The capsules were grouped for the screen in [us] microseconds.
@@ -154,6 +168,10 @@ class MapStats {
   });
 
   void gestureStarted() {
+    _sinceDown
+      ..reset()
+      ..start();
+    _answered = false;
     if (!enabled) return;
     _gesture = _Counts();
   }
@@ -204,6 +222,9 @@ class _Counts {
   int worstFrameUs = 0;
   int frameGaps100 = 0;
   int longestGapUs = 0;
+  int answers = 0;
+  int answerMs = 0;
+  int slowestAnswerMs = 0;
 
   /// Every change to the heat layer that can make it disappear or redraw.
   int get heatMutations => heatCreatedOrRemoved + heatChanged + heatCleared;
@@ -214,7 +235,7 @@ class _Counts {
     heatChanged = heatCleared = heatTiles = heatTilesEmpty = heatTileMs = 0;
     styleChanges = cameraMoves = cameraIdles = clusterings = clusterUs = 0;
     slowestClusterUs = activeFrames = jankyFrames = worstFrameUs = 0;
-    frameGaps100 = longestGapUs = 0;
+    frameGaps100 = longestGapUs = answers = answerMs = slowestAnswerMs = 0;
   }
 
   Map<String, int> toJson() => {
@@ -246,6 +267,8 @@ class _Counts {
     'worst_frame_us': worstFrameUs,
     'frame_gaps_100ms': frameGaps100,
     'longest_gap_ms': longestGapUs ~/ 1000,
+    'answer_ms': answers == 0 ? 0 : answerMs ~/ answers,
+    'slowest_answer_ms': slowestAnswerMs,
   };
 }
 

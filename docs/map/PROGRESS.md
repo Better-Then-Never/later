@@ -25,3 +25,15 @@ phone).
 ## Log
 - Branch created; `maplibre_gl` 0.27.1 (Sep 2026, Flutter ≥ 3.29) is compatible with Flutter 3.38.4 here;
   `maplibre` 0.3.6 needs Flutter 3.44 (not usable). OpenFreeMap reachable.
+- 1.1–1.5 done: rig `f61e6b7`, baseline + diagnosis `fc86132` (build/perf/map_baseline).
+- Spike A (Google, heat tiles drawn ahead and served from memory, 3D buildings off; `build/perf/spike_a`, code not
+  kept): tiles 6 ms instead of 26, heat blinks 13 per sweep (baseline 12): Google Maps shows a tile layer blank
+  after every level change however fast the tiles come. Markers cannot fade on Google (plugin re-sets the bitmap).
+- Harness moved to **real touches** (`tool/dev/touch/Pinch.java` through Android's input, played by
+  `map_gesture.sh` from the test's `MAPFINGERS` lines; the test binding must pass device touches on). Baseline
+  again with real touches: `build/perf/baseline_real` (3 runs).
+- Spike B (MapLibre, `lib/features/map/engine/`, flag `MAP_LIBRE`): `build/perf/maplibre_real` (3 runs),
+  `build/perf/maplibre_tlhc` (texture mode, 1 run). Decision: B (DECISION.md). Two MapLibre traps fixed: slow
+  closing pinch ignored (gesture speed resource override), SurfaceView → hybrid composition (texture mode).
+- Next: Phase 3, the MapLibre map page to parity (card, selected pin, user position, buttons, compass, focus, taps,
+  filters, dark style, cold start), then measure 3 runs.

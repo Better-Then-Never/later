@@ -56,6 +56,7 @@ dependencies:
   collection: ^1.19.1
   cached_network_image: ^3.4.1
   flutter_cache_manager: ^3.4.5
+  maplibre_gl: 0.27.1
 
 dev_dependencies:
   flutter_test:

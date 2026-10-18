@@ -28,4 +28,10 @@ abstract final class FeatureFlags {
   /// both sides). Off until checked on a test phone whose contacts may be
   /// read (docs/feel/BLOCKERS.md).
   static const contactSuggestions = false;
+
+  /// The map drawn by MapLibre instead of Google Maps (docs/map/DECISION.md):
+  /// the heat, bubbles and pins as layers of the map itself. Off until it
+  /// passes every check in docs/map/PERFORMANCE.md and the owner has chosen
+  /// the tile source; a build can try it with --dart-define=MAP_LIBRE=true.
+  static const mapLibre = bool.fromEnvironment('MAP_LIBRE');
 }

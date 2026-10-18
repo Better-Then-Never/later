@@ -566,28 +566,30 @@ void main() {
       });
       // Two fingers turn the map, the compass shows; a tap on it turns the
       // map back to north. Recorded: the map's bearing after each, in degrees.
-      /// Two fingers held down: their distance goes through [distances]
-      /// (dp), [msPer] for each step between them, at the phone's pace (8 ms a
-      /// move), then they lift. Zoom changes by log2 of each ratio.
-      Future<void> fingers(List<double> distances, int msPer) async {
-        // One above the other: up to 520 dp apart fits on the screen (a
-        // finger put down off the screen never reaches the map).
-        Offset at(double d, int side) => center + Offset(0, side * d / 2);
-        final a = await tester.startGesture(at(distances.first, -1));
-        final b = await tester.startGesture(at(distances.first, 1));
-        for (var i = 1; i < distances.length; i++) {
-          final steps = msPer ~/ 8;
-          for (var s = 1; s <= steps; s++) {
-            final d =
-                distances[i - 1] +
-                (distances[i] - distances[i - 1]) * s / steps;
-            await a.moveTo(at(d, -1));
-            await b.moveTo(at(d, 1));
-            await tester.pump(const Duration(milliseconds: 8));
-          }
+      /// The gesture as real touches: tool/dev/map_gesture.sh reads this line
+      /// and plays it on the phone with tool/dev/touch/Pinch.java (Android's
+      /// own injection, as a hand's touches arrive); the test only waits.
+      /// Synthetic test events reached Google Maps but not every native map
+      /// (MapLibre missed some), so both maps get the same real fingers.
+      /// [distances] are dp; the line is in screen pixels.
+      Future<void> realFingers(List<List<double>> gestures, int msPer) async {
+        final ratio = tester.view.devicePixelRatio;
+        final c = center * ratio;
+        final parts = <String>[];
+        var total = 0;
+        for (final g in gestures) {
+          if (parts.isNotEmpty) parts.add('/ 350');
+          parts.add(g.map((d) => (d * ratio).round()).join(' '));
+          total += (g.length - 1) * msPer + 350;
         }
-        await a.up();
-        await b.up();
+        // ignore: avoid_print
+        print(
+          'MAPFINGERS ${c.dx.round()} ${c.dy.round()} $msPer ${parts.join(' ')}',
+        );
+        // A test drops the device's own touches unless told to pass them on.
+        binding.shouldPropagateDevicePointerEvents = true;
+        await wait(tester, Duration(milliseconds: total + 1500));
+        binding.shouldPropagateDevicePointerEvents = false;
       }
 
       /// The same view for every run: the seed's city at [zoom].
@@ -616,18 +618,16 @@ void main() {
       // the country, in to the street, out again and back, each pinch 1.9
       // zoom levels in 0.6 s, a short pause between pinches.
       await flow('map_pinch_sweep', setup: () => start(13), () async {
-        for (final (pinches, inward) in const [
-          (4, false),
-          (6, true),
-          (6, false),
-          (4, true),
-        ]) {
-          for (var i = 0; i < pinches; i++) {
-            await fingers(inward ? [140, 520] : [520, 140], 600);
-            await wait(tester, const Duration(milliseconds: 350));
-          }
-        }
-        await wait(tester, const Duration(seconds: 2));
+        await realFingers([
+          for (final (pinches, inward) in const [
+            (4, false),
+            (6, true),
+            (6, false),
+            (4, true),
+          ])
+            for (var i = 0; i < pinches; i++)
+              inward ? const [140.0, 520.0] : const [520.0, 140.0],
+        ], 600);
         stats('map_pinch_sweep');
       });
 
@@ -635,12 +635,12 @@ void main() {
       // the heat / bubble band (zoom 10.8 to 12.7), then across bubble splits
       // (12.7 to 14.6), four times each.
       await flow('map_pinch_wave', setup: () => start(11.7), () async {
-        await fingers([260, 140, 520, 140, 520, 140, 520, 140, 520, 260], 700);
-        await wait(tester, const Duration(milliseconds: 600));
-        await fingers([140, 520], 600);
-        await wait(tester, const Duration(milliseconds: 600));
-        await fingers([260, 140, 520, 140, 520, 140, 520, 140, 520, 260], 700);
-        await wait(tester, const Duration(seconds: 2));
+        const wave = [260.0, 140.0, 520.0, 140.0, 520.0, 140.0, 520.0];
+        await realFingers([
+          [...wave, 140, 520, 260],
+          [140, 520],
+          [...wave, 140, 520, 260],
+        ], 700);
         stats('map_pinch_wave');
       });
 

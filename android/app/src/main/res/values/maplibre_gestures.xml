@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MapLibre's gesture thresholds (overriding the library's own values; only
+     used by the MapLibre map, docs/map/DECISION.md). By default a pinch whose
+     fingers close slower than 0.6 dp per ms never zooms out: a slow zoom-out
+     was ignored for 0.7 s on the phone while Google Maps answered in 0.1 s. -->
+<resources>
+    <dimen name="maplibre_minimum_scale_speed">0.05dp</dimen>
+    <dimen name="maplibre_minimum_angled_scale_speed">0.3dp</dimen>
+</resources>

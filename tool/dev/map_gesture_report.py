@@ -153,7 +153,9 @@ def report(path, frames_csv=None):
         while j > 0 and times[i] - times[j - 1] <= 0.5:
             j -= 1
         best = score[j:i].max() if i > j else 0
-        if best >= 1.5 and score[i] < 0.25 * best:
+        # Bare: nothing left (no heat, not even one pin) right after the map
+        # showed something. A crossfade keeps one of them, so it is not bare.
+        if best >= 1.5 and not heat_on[i] and not markers_on[i]:
             dropouts.append(round(times[i], 3))
 
     # Heat blinks: heat falls below a quarter of its recent best (with no
