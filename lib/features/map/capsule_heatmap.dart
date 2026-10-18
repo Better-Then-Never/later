@@ -8,6 +8,7 @@ import 'package:image/image.dart' as img;
 
 import '../../core/theme/app_colors.dart';
 import '../../data/models/capsule.dart';
+import 'map_stats.dart';
 
 /// The far-out map (M-11): where capsules are, as heat, from every capsule's
 /// own place (not the bubbles), below [MapController.markerZoomThreshold].
@@ -68,7 +69,16 @@ class CapsuleHeatmap implements TileProvider {
 
   @override
   Future<Tile> getTile(int x, int y, int? zoom) async {
-    final z = zoom ?? 0;
+    final watch = Stopwatch()..start();
+    final tile = await _tileAt(x, y, zoom ?? 0);
+    MapStats.instance.heatTile(
+      watch.elapsedMilliseconds,
+      empty: tile.data == null,
+    );
+    return tile;
+  }
+
+  Future<Tile> _tileAt(int x, int y, int z) async {
     final scale = _tile * math.pow(2, z).toDouble();
     final sigma = sigmaAt(z);
     final margin = 3 * sigma;

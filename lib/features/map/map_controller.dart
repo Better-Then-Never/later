@@ -13,6 +13,7 @@ import '../../data/services/location_service.dart';
 import 'cluster_icons.dart';
 import 'current_location.dart';
 import 'map_clusters.dart';
+import 'map_stats.dart';
 import 'marker_icons.dart';
 import '../../data/services/preferences_store.dart';
 import 'map_filter.dart';
@@ -168,7 +169,9 @@ class MapController extends ChangeNotifier {
       notifyListeners();
       return;
     }
+    final watch = Stopwatch()..start();
     final items = clusterCapsules(visibleCapsules, view: view, zoom: _zoom);
+    MapStats.instance.clustered(watch.elapsedMicroseconds);
     for (final item in items) {
       if (!item.isCluster) continue;
       final label = ClusterIcons.label(item.count);

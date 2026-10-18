@@ -32,6 +32,7 @@ import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
 import 'map_styles.dart';
+import 'map_stats.dart';
 import 'capsule_heatmap.dart';
 import 'map_viewport.dart';
 import 'marker_choreography.dart';
@@ -329,6 +330,9 @@ class _MapViewState extends State<_MapView> {
   bool _cameraMoving = false;
   bool get _still => _pointers == 0 && !_cameraMoving;
 
+  /// For measuring: the map is moving or under a finger.
+  void _activeChanged() => MapStats.instance.active.value = !_still;
+
   /// A camera move asked for (a button, a tapped pin) that has not started
   /// yet; if it never does, the map counts as still again.
   bool _moveStarted = false;
@@ -422,14 +426,18 @@ class _MapViewState extends State<_MapView> {
   }
 
   void _pointerDown(PointerDownEvent _) {
+    if (_pointers == 0) MapStats.instance.gestureStarted();
+    MapStats.instance.watchFrames();
     final wasStill = _still;
     _pointers++;
+    _activeChanged();
     if (wasStill) _mapMoves();
   }
 
   void _pointerUp(PointerEvent _) {
     if (_pointers == 0) return;
     _pointers--;
+    _activeChanged();
     if (_still) _mapStill();
   }
 
@@ -437,6 +445,7 @@ class _MapViewState extends State<_MapView> {
     _moveStarted = true;
     final wasStill = _still;
     _cameraMoving = true;
+    _activeChanged();
     if (wasStill) _mapMoves();
   }
 
@@ -445,6 +454,7 @@ class _MapViewState extends State<_MapView> {
     _firstStop ??= DateTime.now();
     if (!_cameraMoving) return;
     _cameraMoving = false;
+    _activeChanged();
     if (_still) _mapStill();
   }
 
@@ -496,6 +506,8 @@ class _MapViewState extends State<_MapView> {
   /// The map is still again: the overlays come back over the map's posed
   /// pins (they line up now), then those hide, then the motion goes on.
   void _mapStill() {
+    // A finger gesture (and its fling) is over: its counts go to the log.
+    MapStats.instance.gestureEnded();
     if (!mounted) return;
     final handed = <_Floating>[];
     setState(() {
@@ -1022,6 +1034,7 @@ class _MapViewState extends State<_MapView> {
       _heatmapVersion = map.capsulesVersion;
       if (_heatmap.setCapsules(map.heatCapsules)) {
         // Only new places redraw the heat; panning never does.
+        MapStats.instance.heatCleared();
         unawaited(
           _mapController.future.then(
             (c) => c.clearTileCache(CapsuleHeatmap.id),
@@ -1029,6 +1042,18 @@ class _MapViewState extends State<_MapView> {
         );
       }
     }
+    final style = dark ? MapStyles.dark : MapStyles.light;
+    final tiles = {
+      TileOverlay(
+        tileOverlayId: CapsuleHeatmap.id,
+        tileProvider: _heatmap,
+        visible: !map.showMarkers,
+        // Every level looks the same: a fade would only show two
+        // see-through layers over each other for a moment.
+        fadeIn: false,
+      ),
+    };
+    MapStats.instance.built(markers: markers, tiles: tiles, style: style);
     final spots = _floatingSpots;
     return PopScope(
       // Back closes the card first.
@@ -1045,7 +1070,7 @@ class _MapViewState extends State<_MapView> {
             onPointerUp: _pointerUp,
             onPointerCancel: _pointerUp,
             child: GoogleMap(
-              style: dark ? MapStyles.dark : MapStyles.light,
+              style: style,
               // The Google logo stays visible above the floating navigation
               // bar, above the capsule card while it is open, and below the
               // status bar: it is never covered (F-12, F-14). The zoom buttons
@@ -1069,23 +1094,19 @@ class _MapViewState extends State<_MapView> {
                 if (!_mapController.isCompleted) {
                   _mapController.complete(controller);
                 }
+                if (MapStats.enabled) {
+                  MapStats.instance.moveCamera = (target, zoom) => controller
+                      .moveCamera(CameraUpdate.newLatLngZoom(target, zoom));
+                }
                 if (_focus.pending != null) unawaited(_showFocusedCapsule());
               },
               markers: markers,
               // Far out, where capsules are, as heat (M-11).
-              tileOverlays: {
-                TileOverlay(
-                  tileOverlayId: CapsuleHeatmap.id,
-                  tileProvider: _heatmap,
-                  visible: !map.showMarkers,
-                  // Every level looks the same: a fade would only show two
-                  // see-through layers over each other for a moment.
-                  fadeIn: false,
-                ),
-              },
+              tileOverlays: tiles,
               onTap: (_) => _select(null),
               onCameraMoveStarted: _cameraStarted,
               onCameraMove: (position) {
+                MapStats.instance.cameraMoved();
                 _viewport.moved(position);
                 _bearing.value = position.bearing;
                 // Zoomed out to the heatmap: no pins, their card goes too.
@@ -1100,6 +1121,7 @@ class _MapViewState extends State<_MapView> {
                 );
               },
               onCameraIdle: () async {
+                MapStats.instance.cameraIdle();
                 _cameraStopped();
                 final controller = await _mapController.future;
                 try {
@@ -1155,6 +1177,8 @@ class _MapViewState extends State<_MapView> {
                   ),
                 ),
               ),
+          if (MapStats.harness)
+            const Positioned(top: 0, left: 0, child: MapHarnessStrip()),
           // What the map shows (B5), top left under the status bar.
           Positioned(
             top: MediaQuery.viewPaddingOf(context).top + 12,
