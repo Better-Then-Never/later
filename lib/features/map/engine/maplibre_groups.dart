@@ -60,8 +60,10 @@ class _GroupStage {
   /// [_MapLibreMapViewState._sendPose]).
   List<GroupNode> _posed = const [];
 
-  /// What the source holds now (for the flash probe only).
+  /// What the source holds now, and the last pictures sent by their number
+  /// (for the flash probe only).
   final sent = <String, _Sent>{};
+  final sentBySeq = <int, Map<String, _Sent>>{};
 
   /// The level whose pins and bubbles are shown (null before the first
   /// capsules).
@@ -334,6 +336,10 @@ class _GroupStage {
     }
     for (final n in _posed) {
       add(n, n.x, n.y);
+    }
+    if (probe) {
+      sentBySeq[seq] = Map.of(sent);
+      sentBySeq.remove(seq - 60);
     }
     return {'type': 'FeatureCollection', 'features': features};
   }

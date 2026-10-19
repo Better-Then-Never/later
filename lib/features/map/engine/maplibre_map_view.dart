@@ -180,7 +180,6 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   // and the layers that draw pins and bubbles.
   bool get _busy =>
       _pointers > 0 || _moving || _stage.animating || _ticker.isActive;
-  Map<String, _Sent> _sentMarkers() => _stage.sent;
   List<String> get _markerLayers => const [_pinsLayer, _bubblesLayer];
 
   // ---------------------------------------------------------------- style

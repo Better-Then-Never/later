@@ -123,9 +123,10 @@ void main(List<String> args) {
   stdout.writeln('\n### flashes\n');
   stdout.writeln(
     '| run | flow | probes | double frames (ids) | missing frames (ids) | '
-    'ghost frames (ids) | video flashes | video fps |',
+    'ghost frames (ids) | torn frames | pictures behind (max) | '
+    'video flashes | video fps |',
   );
-  stdout.writeln('|---|---|---|---|---|---|---|---|');
+  stdout.writeln('|---|---|---|---|---|---|---|---|---|---|');
   for (final run in runs) {
     final name = run.uri.pathSegments.reversed.elementAt(1);
     final numbers = File('${run.path}/perf_numbers.json');
@@ -153,6 +154,7 @@ void main(List<String> args) {
         '${stat('flash_double_frames')} (${stat('flash_doubles')}) | '
         '${stat('flash_missing_frames')} (${stat('flash_missing')}) | '
         '${stat('flash_ghost_frames')} (${stat('flash_ghosts')}) | '
+        '${stat('flash_torn_frames')} | ${stat('flash_behind_max')} | '
         '${v['flash_count'] ?? '-'} | ${v['fps'] ?? '-'} |',
       );
     }

@@ -193,13 +193,19 @@ class MapStats {
   /// map moves or animates, what it drew is compared with what was sent.
   static const flashProbe = bool.fromEnvironment('MAP_FLASH');
 
-  /// One probe: [doubles] ids drawn more than once, [missing] sent and in
-  /// view but not drawn, [ghosts] drawn but not sent.
+  /// One probe: [doubles] ids drawn more than once, [missing] in the
+  /// picture drawn and in view but not drawn, [ghosts] drawn but not in it,
+  /// [torn] parts of the map drawing different pictures, [behind] how many
+  /// pictures the drawn one is behind the newest sent.
   void flashProbed({
     required int doubles,
     required int missing,
     required int ghosts,
+    bool torn = false,
+    int behind = 0,
   }) => _count((c) {
+    if (torn) c.flashTornFrames++;
+    if (behind > c.flashBehindMax) c.flashBehindMax = behind;
     c.flashProbes++;
     if (doubles > 0) c.flashDoubleFrames++;
     c.flashDoubles += doubles;
@@ -364,6 +370,8 @@ class _Counts {
   int flashMissing = 0;
   int flashGhostFrames = 0;
   int flashGhosts = 0;
+  int flashTornFrames = 0;
+  int flashBehindMax = 0;
 
   int pinchSamples = 0;
   int scaleErrorSumMilli = 0;
@@ -384,6 +392,7 @@ class _Counts {
     pinchSamples = scaleErrorSumMilli = scaleErrorMaxMilli = 0;
     flashProbes = flashDoubleFrames = flashDoubles = flashMissingFrames = 0;
     flashMissing = flashGhostFrames = flashGhosts = 0;
+    flashTornFrames = flashBehindMax = 0;
     anchorDriftSumDp = anchorDriftMaxDp = 0;
   }
 
@@ -425,6 +434,8 @@ class _Counts {
     'flash_missing': flashMissing,
     'flash_ghost_frames': flashGhostFrames,
     'flash_ghosts': flashGhosts,
+    'flash_torn_frames': flashTornFrames,
+    'flash_behind_max': flashBehindMax,
     'pinch_samples': pinchSamples,
     'scale_error_milli': pinchSamples == 0
         ? 0
