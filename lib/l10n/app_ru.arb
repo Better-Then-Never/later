@@ -372,6 +372,7 @@
   "mapCapsuleOpen": "Открыть",
   "mapCapsuleOpensIn": "Откроется через {time}",
   "mapCapsuleReady": "Посмотрите, что внутри!",
+  "mapCapsuleUnavailable": "Эта капсула больше недоступна",
   "mapCompass": "Повернуть карту на север",
   "mapCreditsButton": "Данные карты и авторы",
   "mapCreditsDescription": "Карта построена на этих данных. Нажмите на источник, чтобы открыть его.",

@@ -102,7 +102,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   Future<Map<String, Uint8List>> _markerImages(double ratio, bool dark) {
     if (_imagesDark != dark) {
       _imagesDark = dark;
-      _images = MapLibreImages.all(ratio: ratio, dark: dark);
+      _images = MapLibreImages.cached(ratio: ratio, dark: dark);
     }
     return _images!;
   }
@@ -178,9 +178,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
 
   // ----------------------------------------------------------- cold start
 
-  /// The capsule data that first held every source (MapController.allAnswered):
+  /// The capsule data that first held every pin of this start
+  /// (MapController.complete: the pin store's, or every source's answer):
   /// once a picture of it has been drawn, the map is full (StartupReport).
+  /// And the first that held every source's own answer (fresh).
   int? _fullVersion;
+  int? _freshVersion;
+  bool _freshMarked = false;
 
   /// 0: nothing marked yet; 1: the first pins; 2: full.
   int _startStage = 0;
@@ -225,6 +229,11 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   final _afterIdle = <VoidCallback>[];
 
   void _onPictureSent(int features, int? version) {
+    final fresh = _freshVersion;
+    if (!_freshMarked && fresh != null && version != null && version >= fresh) {
+      _freshMarked = true;
+      _afterIdle.add(() => StartupReport.mark('fresh'));
+    }
     if (_startStage < 1 && features > 0) {
       _startStage = 1;
       _afterIdle.add(() => StartupReport.mark('pins_first'));
@@ -271,122 +280,137 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     // added are sent by [_syncData] once the style is ready.
     final version = map.capsulesVersion;
     final me = map.myPosition;
-    // Empty first, filled as a string (_setSource): off the main thread.
-    await c.addGeoJsonSource(_heatSource, _features(const []));
-    // Pins and bubbles, at rest and moving: one source ([_GroupStage]).
-    await c.addGeoJsonSource(_capsulesSource, _features(const []));
-    await c.addGeoJsonSource(_meSource, _point(me));
-    await c.addHeatmapLayer(
-      _heatSource,
-      _heatLayer,
-      ml.HeatmapLayerProperties(
-        heatmapWeight: 1,
-        heatmapIntensity: MapZoomVisuals.heatIntensityExpression(),
-        heatmapRadius: MapZoomVisuals.heatRadiusExpression(),
-        heatmapOpacity: MapZoomVisuals.heatOpacityExpression(),
-        // Cool to warm, the app's own colours (the Google map's ramp, M-11).
-        heatmapColor: const [
-          'interpolate',
-          ['linear'],
-          ['heatmap-density'],
-          0,
-          'rgba(33,150,243,0)',
-          0.02,
-          'rgba(33,150,243,0.12)',
-          0.1,
-          'rgba(86,201,46,0.22)',
-          0.4,
-          'rgba(255,217,0,0.29)',
-          0.8,
-          'rgba(255,152,0,0.35)',
-        ],
+    // Sent in this order (the channel keeps it) and waited for together:
+    // each waited for alone, they took 0.2 to 0.3 s of a cold start.
+    final added = <Future<void>>[
+      // Empty first, filled as a string (_setSource): off the main thread.
+      c.addGeoJsonSource(_heatSource, _features(const [])),
+      // Pins and bubbles, at rest and moving: one source ([_GroupStage]).
+      c.addGeoJsonSource(_capsulesSource, _features(const [])),
+      c.addGeoJsonSource(_meSource, _point(me)),
+    ];
+    added.add(
+      c.addHeatmapLayer(
+        _heatSource,
+        _heatLayer,
+        ml.HeatmapLayerProperties(
+          heatmapWeight: 1,
+          heatmapIntensity: MapZoomVisuals.heatIntensityExpression(),
+          heatmapRadius: MapZoomVisuals.heatRadiusExpression(),
+          heatmapOpacity: MapZoomVisuals.heatOpacityExpression(),
+          // Cool to warm, the app's own colours (the Google map's ramp, M-11).
+          heatmapColor: const [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0,
+            'rgba(33,150,243,0)',
+            0.02,
+            'rgba(33,150,243,0.12)',
+            0.1,
+            'rgba(86,201,46,0.22)',
+            0.4,
+            'rgba(255,217,0,0.29)',
+            0.8,
+            'rgba(255,152,0,0.35)',
+          ],
+        ),
+        maxzoom: MapZoomVisuals.heatTo + 0.1,
       ),
-      maxzoom: MapZoomVisuals.heatTo + 0.1,
     );
     // The soft oval under a floating pin, on the ground under the pins; its
     // filter and strength follow the pin's pose (_sendPose).
-    await c.addSymbolLayer(
-      _capsulesSource,
-      _shadowLayer,
-      const ml.SymbolLayerProperties(
-        iconImage: 'shadow',
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-        iconOpacity: 0,
+    added.add(
+      c.addSymbolLayer(
+        _capsulesSource,
+        _shadowLayer,
+        const ml.SymbolLayerProperties(
+          iconImage: 'shadow',
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+          iconOpacity: 0,
+        ),
+        filter: _posedFilter(const {}),
+        enableInteraction: false,
       ),
-      filter: _posedFilter(const {}),
-      enableInteraction: false,
     );
     // The zoom's opacity (no piece is ever see-through on its own:
     // GroupMotion).
     final opacity = MapZoomVisuals.markerOpacityExpression();
     final pose = _pinPose(_poses());
-    await c.addSymbolLayer(
-      _capsulesSource,
-      _pinsLayer,
-      ml.SymbolLayerProperties(
-        iconImage: const ['get', 'm'],
-        iconAnchor: 'bottom',
-        iconSize: pose['icon-size'],
-        iconOffset: pose['icon-offset'],
-        iconRotate: pose['icon-rotate'],
-        symbolSortKey: pose['symbol-sort-key'],
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-        iconOpacity: opacity,
-      ),
-      filter: const [
-        '==',
-        ['get', 'k'],
-        0,
-      ],
-    );
-    await c.addSymbolLayer(
-      _capsulesSource,
-      _bubblesLayer,
-      ml.SymbolLayerProperties(
-        iconImage: const ['get', 'm'],
-        // Bigger for more capsules: a clear scale by count.
-        iconSize: const [
-          '*',
-          [
-            'interpolate',
-            ['linear'],
-            ['get', 'c'],
-            2,
-            0.9,
-            10,
-            1.0,
-            50,
-            1.12,
-            200,
-            1.25,
-          ],
-          _pieceScale,
+    added.add(
+      c.addSymbolLayer(
+        _capsulesSource,
+        _pinsLayer,
+        ml.SymbolLayerProperties(
+          iconImage: const ['get', 'm'],
+          iconAnchor: 'bottom',
+          iconSize: pose['icon-size'],
+          iconOffset: pose['icon-offset'],
+          iconRotate: pose['icon-rotate'],
+          symbolSortKey: pose['symbol-sort-key'],
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+          iconOpacity: opacity,
+        ),
+        filter: const [
+          '==',
+          ['get', 'k'],
+          0,
         ],
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-        iconOpacity: opacity,
-        // The bigger bubbles on top.
-        symbolSortKey: const ['get', 'c'],
       ),
-      filter: const [
-        '==',
-        ['get', 'k'],
-        1,
-      ],
     );
-    await c.addSymbolLayer(
-      _meSource,
-      _meLayer,
-      const ml.SymbolLayerProperties(
-        iconImage: 'me',
-        iconAnchor: 'bottom',
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
+    added.add(
+      c.addSymbolLayer(
+        _capsulesSource,
+        _bubblesLayer,
+        ml.SymbolLayerProperties(
+          iconImage: const ['get', 'm'],
+          // Bigger for more capsules: a clear scale by count.
+          iconSize: const [
+            '*',
+            [
+              'interpolate',
+              ['linear'],
+              ['get', 'c'],
+              2,
+              0.9,
+              10,
+              1.0,
+              50,
+              1.12,
+              200,
+              1.25,
+            ],
+            _pieceScale,
+          ],
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+          iconOpacity: opacity,
+          // The bigger bubbles on top.
+          symbolSortKey: const ['get', 'c'],
+        ),
+        filter: const [
+          '==',
+          ['get', 'k'],
+          1,
+        ],
       ),
-      enableInteraction: false,
     );
+    added.add(
+      c.addSymbolLayer(
+        _meSource,
+        _meLayer,
+        const ml.SymbolLayerProperties(
+          iconImage: 'me',
+          iconAnchor: 'bottom',
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+        ),
+        enableInteraction: false,
+      ),
+    );
+    await Future.wait(added);
     _dataVersion = version;
     _meAt = me;
     _stage
@@ -534,8 +558,11 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// New capsules or a new position: the sources get them (the pins and
   /// bubbles regrouped by the stage).
   void _syncData(MapController map) {
-    if (_fullVersion == null && map.allAnswered) {
+    if (_fullVersion == null && map.complete) {
       _fullVersion = map.capsulesVersion;
+    }
+    if (_freshVersion == null && map.allAnswered) {
+      _freshVersion = map.capsulesVersion;
     }
     final c = _controller;
     if (!_styled || c == null) return;
@@ -760,8 +787,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (layerId == _pinsLayer) {
       for (final c in map.visibleCapsules) {
         if (c.id == id) {
-          _select(c);
           _centerOn(c);
+          if (map.isStoredOnly(id)) {
+            unawaited(_openStored(map, id));
+          } else {
+            _select(c);
+          }
           return;
         }
       }
@@ -769,6 +800,23 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       final bubble = _stage.node(id);
       if (bubble != null) unawaited(_openBubble(bubble));
     }
+  }
+
+  /// A pin shown from the pin store before its source answered: what it
+  /// holds is never shown; the capsule is read from the server (which checks
+  /// that this user may still see it), or a message says it is gone.
+  Future<void> _openStored(MapController map, String id) async {
+    final capsule = await map.freshCapsule(id);
+    if (!mounted) return;
+    if (capsule != null) {
+      _select(capsule);
+      return;
+    }
+    PopupNotificationService.showError(
+      context: context,
+      message: context.l10n.mapCapsuleUnavailable,
+      position: NotificationPosition.top,
+    );
   }
 
   /// In on a bubble's capsules: the camera fits them (as the Google map

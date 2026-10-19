@@ -164,5 +164,9 @@
   "mapCreditsRenderer": "Map rendered with MapLibre",
   "@mapCreditsRenderer": {
     "description": "The open source library that draws the map; opens its website."
+  },
+  "mapCapsuleUnavailable": "This capsule is no longer available",
+  "@mapCapsuleUnavailable": {
+    "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
   }
 }

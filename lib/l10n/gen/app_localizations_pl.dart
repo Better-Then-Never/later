@@ -1417,6 +1417,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mapCapsuleReady => 'Zobacz, co jest w środku!';
 
   @override
+  String get mapCapsuleUnavailable => 'Ta kapsuła nie jest już dostępna';
+
+  @override
   String get mapCompass => 'Obróć mapę na północ';
 
   @override

@@ -43,6 +43,7 @@ import '../features/settings/device_settings_store.dart';
 import '../features/settings/settings_store.dart';
 import 'appearance/appearance_controller.dart';
 import 'entitlements_store.dart';
+import '../features/map/map_pin_store.dart';
 import 'router/app_link_handler.dart';
 import 'router/app_routes.dart';
 import 'session/session_controller.dart';
@@ -106,6 +107,7 @@ class _AppScopeState extends State<AppScope> {
   );
   final _network = NetworkService();
   late final _ownCapsules = OwnCapsulesStore(_capsules, outbox: _outbox);
+  final _mapPins = MapPinStore();
   late final _favorites = FavoritesStore(_users);
   late final _directory = UserDirectory(_users);
   late final _chatsStore = ChatsStore(_chats);
@@ -139,6 +141,7 @@ class _AppScopeState extends State<AppScope> {
         _notificationsStore,
         _outbox,
         _ownCapsules,
+        _mapPins,
         _favorites,
         _directory,
         _friendsStore,
@@ -228,6 +231,7 @@ class _AppScopeState extends State<AppScope> {
         ),
         ChangeNotifierProvider<MapFocus>.value(value: _mapFocus),
         ChangeNotifierProvider<OwnCapsulesStore>.value(value: _ownCapsules),
+        Provider<MapPinStore>.value(value: _mapPins),
         ChangeNotifierProvider<CapsuleOutbox>.value(value: _outbox),
         ChangeNotifierProvider<FavoritesStore>.value(value: _favorites),
         ChangeNotifierProvider<UserDirectory>.value(value: _directory),

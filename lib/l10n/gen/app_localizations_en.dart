@@ -1369,6 +1369,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapCapsuleReady => 'Check out what\'s inside!';
 
   @override
+  String get mapCapsuleUnavailable => 'This capsule is no longer available';
+
+  @override
   String get mapCompass => 'Turn the map to north';
 
   @override

@@ -74,3 +74,18 @@ Notes:
   the splash has the logo); the tab bar, the map's buttons and their icons in one frame (the streak pill one frame
   later, when its data is read); the cover until the streets, which fade in over 0.3 s. No grey, no white, no empty
   tab bar, no half-drawn map.
+
+## Step 2: the pin store (medians of 5, ms from launch)
+`lib/features/map/map_pin_store.dart`. From here every measurement opens at the same street-level camera
+(`CAMERA=52.2297,21.0122,14.5`, pins and bubbles on screen); earlier ones opened where the last test had left the map.
+
+| Step | What changed | store read | style ready | streets | **full (TTFD)** | fresh (every source's answer drawn) | janky |
+|---|---|---|---|---|---|---|---|
+| 3c | (before the store, its own camera) | – | 2,398 | 2,724 | **3,459** | – | 8 |
+| store | the pins the map last showed, read from the phone when the account signs in; each source's answer replaces its pins | 1,203 | 2,447 | 2,226 | **2,556** | 3,302 | 10 |
+| store + pictures | the 107 marker pictures kept on the phone (drawn once per app version); the sources and layers sent in order and waited for together | 1,189 | 1,525 | 1,869 | **1,875** (1,669–2,539) | 3,038 | 9 |
+
+- The store file for alice (1,205 pins) is 66 KB; it is read 20 to 50 ms after the map starts. 5,000 pins decode in
+  well under 200 ms (test `map_pin_store_test.dart`, on the computer; on the phone the whole read is the `store` mark).
+- `full` is now the first picture of every pin the map had (the store's, drawn and uncovered); `fresh` is the first
+  picture of every source's own answer, about 1.2 s later: the window in which a pin can be stale (below).

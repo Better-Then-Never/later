@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../core/assets/app_assets.dart';
+import '../../../core/logging/app_logger.dart';
+import '../../settings/app_info.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
@@ -19,6 +26,112 @@ abstract final class MapLibreImages {
 
   /// Every picture by its name in the style: `pin_<colour>`, `shadow`,
   /// `bubble_<label>`, `me`. A selected pin is its pin grown by the layer.
+  /// Bump when a picture is drawn differently or its artwork changes (a new
+  /// app version renews the cache by itself).
+  static const drawing = 1;
+
+  /// [all], from this phone's cache when drawn before for this density,
+  /// theme, drawing and app version: drawing them took 0.5 s of every cold
+  /// start (docs/map/COLD_START.md). Nothing personal: the same pictures for
+  /// everyone.
+  static Future<Map<String, Uint8List>> cached({
+    required double ratio,
+    required bool dark,
+    Future<Directory> Function()? directory,
+  }) async {
+    File? file;
+    try {
+      final app = await AppInfo.load();
+      final dir = await (directory ?? _defaultDirectory)();
+      final key =
+          '${ratio.toStringAsFixed(2)}_${dark ? 'dark' : 'light'}_d$drawing'
+          '_${app.version}+${app.build}';
+      file = File(
+        '${dir.path}/${key.replaceAll(RegExp(r'[^\w.+-]'), '_')}.bin',
+      );
+      if (await file.exists()) {
+        final images = decode(await file.readAsBytes());
+        if (images.length == count) return images;
+      }
+    } on Object catch (e) {
+      AppLogger.warning('Map pictures not read', error: e);
+    }
+    final images = await all(ratio: ratio, dark: dark);
+    if (file != null) unawaited(_keep(file, images));
+    return images;
+  }
+
+  /// How many pictures [all] draws: the pins, the shadow, the bubbles, me.
+  static final count = CapsuleColor.values.length + 1 + 99 + 1;
+
+  static Future<Directory> _defaultDirectory() async =>
+      Directory('${(await getApplicationSupportDirectory()).path}/map_images');
+
+  /// Only the newest set stays.
+  static Future<void> _keep(File file, Map<String, Uint8List> images) async {
+    try {
+      final dir = file.parent;
+      if (await dir.exists()) {
+        await for (final old in dir.list()) {
+          if (old is File && old.path != file.path) await old.delete();
+        }
+      } else {
+        await dir.create(recursive: true);
+      }
+      final part = File('${file.path}.part');
+      await part.writeAsBytes(encode(images), flush: true);
+      await part.rename(file.path);
+    } on Object catch (e) {
+      AppLogger.warning('Map pictures not kept', error: e);
+    }
+  }
+
+  static const _magic = 0x4C4D4901;
+
+  /// The pictures as bytes: magic, count, then each name and PNG.
+  static Uint8List encode(Map<String, Uint8List> images) {
+    final out = BytesBuilder(copy: false)
+      ..add(
+        (ByteData(8)
+              ..setUint32(0, _magic)
+              ..setUint32(4, images.length))
+            .buffer
+            .asUint8List(),
+      );
+    for (final MapEntry(:key, :value) in images.entries) {
+      final name = utf8.encode(key);
+      out
+        ..add((ByteData(2)..setUint16(0, name.length)).buffer.asUint8List())
+        ..add(name)
+        ..add((ByteData(4)..setUint32(0, value.length)).buffer.asUint8List())
+        ..add(value);
+    }
+    return out.takeBytes();
+  }
+
+  /// [encode]'s pictures; empty when the bytes are anything else.
+  static Map<String, Uint8List> decode(Uint8List bytes) {
+    try {
+      final data = ByteData.sublistView(bytes);
+      if (data.getUint32(0) != _magic) return const {};
+      final images = <String, Uint8List>{};
+      var at = 8;
+      for (var i = data.getUint32(4); i > 0; i--) {
+        final nameLength = data.getUint16(at);
+        final name = utf8.decode(
+          Uint8List.sublistView(bytes, at + 2, at + 2 + nameLength),
+        );
+        at += 2 + nameLength;
+        final length = data.getUint32(at);
+        images[name] = Uint8List.sublistView(bytes, at + 4, at + 4 + length);
+        at += 4 + length;
+      }
+      return images;
+    } on Object {
+      return const {};
+    }
+  }
+
   /// All drawn at once: one after another, each waiting for its raster,
   /// they took 1.75 s at a cold start (docs/map/COLD_START.md).
   static Future<Map<String, Uint8List>> all({

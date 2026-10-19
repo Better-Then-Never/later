@@ -40,8 +40,22 @@ launch() {
     tr -d '\r' | awk -F': ' '/TotalTime/ { print $2 }'
 }
 
-# A first launch so sign-in and caches are warm.
 adbs shell am force-stop "$APP_ID"
+# CAMERA="52.2297,21.0122,14.5": every launch opens there (the map saves
+# where it stops; a cold start does not move it).
+if [ -n "$CAMERA" ]; then
+  prefs=shared_prefs/FlutterSharedPreferences.xml
+  adbs exec-out run-as "$APP_ID" cat "$prefs" |
+    node -e '
+      let s = require("fs").readFileSync(0, "utf8");
+      const [lat, lng, zoom] = process.argv[1].split(",").map(Number);
+      const value = `${lat.toFixed(5)},${lng.toFixed(5)},${zoom.toFixed(2)}`;
+      s = s.replace(/(name="flutter\.u:[^:"]+:map_camera">)[^<]*/g, `$1${value}`);
+      process.stdout.write(s);
+    ' "$CAMERA" >"$DEV_DIR/coldstart_prefs.xml"
+  adbs exec-in run-as "$APP_ID" sh -c "cat > $prefs" <"$DEV_DIR/coldstart_prefs.xml"
+fi
+# A first launch so sign-in and caches are warm.
 launch >/dev/null
 sleep 12
 

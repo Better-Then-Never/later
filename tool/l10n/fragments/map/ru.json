@@ -33,5 +33,6 @@
   "mapCreditsTitle": "Данные карты",
   "mapCreditsDescription": "Карта построена на этих данных. Нажмите на источник, чтобы открыть его.",
   "mapCreditsImprove": "Улучшить карту",
-  "mapCreditsRenderer": "Карта отрисована с помощью MapLibre"
+  "mapCreditsRenderer": "Карта отрисована с помощью MapLibre",
+  "mapCapsuleUnavailable": "Эта капсула больше недоступна"
 }

@@ -19,6 +19,7 @@ import 'map_stats.dart';
 import 'marker_icons.dart';
 import '../../data/services/preferences_store.dart';
 import 'map_filter.dart';
+import 'map_pin_store.dart';
 
 enum MapLoadState { loading, ready }
 
@@ -37,14 +38,17 @@ class MapController extends ChangeNotifier {
     required CurrentLocation currentLocation,
     required SessionController session,
     PreferencesStore? prefs,
+    MapPinStore? pinStore,
     this.groupsMarkers = true,
   }) : _prefs = prefs,
+       _pinStore = pinStore,
        _capsules = capsules,
        _location = location,
        _currentLocation = currentLocation,
        _session = session;
 
   final CapsuleRepository _capsules;
+  final MapPinStore? _pinStore;
   final LocationService _location;
   final CurrentLocation _currentLocation;
   final SessionController _session;
@@ -204,7 +208,20 @@ class MapController extends ChangeNotifier {
     final friends = _friendIds.toSet();
     final now = DateTime.now();
     final byId = <String, Capsule>{};
-    for (final c in [...public, ..._friends, ..._own, ..._coAuthored]) {
+    // Each source as it answered, or as the map last showed it until then
+    // (the pin store); its stored pins go with its first answer. The
+    // visibility rule runs on the stored ones too, with today's friends: a
+    // friend removed since takes their friends-only pins at once.
+    List<Capsule> of(String source, Iterable<Capsule> live) =>
+        _answered.contains(source)
+        ? List.of(live)
+        : _stored[source] ?? const [];
+    for (final c in [
+      ...of('public', public),
+      ...of('friends', _friends),
+      ...of('own', _own),
+      ...of('co', _coAuthored),
+    ]) {
       if (c.location == null) continue; // malformed: cannot be placed
       if (!isVisibleTo(c, uid: uid, friendIds: friends)) continue;
       if (!_filter.accepts(c, uid: uid, friendIds: friends, now: now)) {
@@ -242,6 +259,7 @@ class MapController extends ChangeNotifier {
     if (uid == null) return;
     StartupReport.mark('map_start');
     _watchCapsules(uid);
+    unawaited(_readStore(uid));
     unawaited(_loadFilter(uid));
 
     // Read at once when it can be: the map then builds with the page's
@@ -426,6 +444,90 @@ class MapController extends ChangeNotifier {
   /// Every source has answered once: the capsules are all there.
   bool get allAnswered => _answered.length == 4;
 
+  /// The pins the map showed last time on this phone, by source, until each
+  /// source answers ([MapPinStore]).
+  final _stored = <String, List<Capsule>>{};
+  bool _storeRead = false;
+
+  /// Every pin of this start is known: each source answered, or the pins
+  /// the map last showed are there to stand in until they do.
+  bool get complete => allAnswered || _storeRead;
+
+  /// Shown from the pin store only: no source has confirmed it yet. Opened
+  /// through [freshCapsule], never from what was stored.
+  bool isStoredOnly(String id) {
+    for (final MapEntry(key: source, value: list) in _stored.entries) {
+      if (!_answered.contains(source) && list.any((c) => c.id == id)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// [id] as the server has it now, if this user may still see it (the
+  /// rules decide): null when it was deleted, hidden or is no longer theirs
+  /// to see.
+  Future<Capsule?> freshCapsule(String id) async {
+    try {
+      final capsule = await _capsules.getById(id);
+      final uid = _session.uid;
+      if (capsule == null ||
+          !isVisibleTo(capsule, uid: uid, friendIds: _friendIds.toSet())) {
+        return null;
+      }
+      return capsule;
+    } on Object catch (e) {
+      AppLogger.warning('Capsule not read', error: e);
+      return null;
+    }
+  }
+
+  Future<void> _readStore(String uid) async {
+    final pins = await _pinStore?.pins(uid) ?? const <StoredPin>[];
+    if (_disposed || pins.isEmpty) return;
+    for (final pin in pins) {
+      (_stored[pin.source.name] ??= []).add(pin.capsule);
+    }
+    _storeRead = true;
+    StartupReport.mark('store');
+    _capsulesChanged();
+    notifyListeners();
+  }
+
+  /// The pins written to the store a moment after the last change, once
+  /// every source has answered (only what the server returned).
+  Timer? _saveTimer;
+
+  void _scheduleSave() {
+    if (_pinStore == null || !allAnswered) return;
+    _saveTimer?.cancel();
+    _saveTimer = Timer(const Duration(seconds: 2), _save);
+  }
+
+  void _save() {
+    _saveTimer = null;
+    final uid = _session.uid;
+    final store = _pinStore;
+    if (uid == null || store == null || !allAnswered) return;
+    final friends = _friendIds.toSet();
+    final byId = <String, StoredPin>{};
+    void add(Iterable<Capsule> list, PinSource source) {
+      for (final c in list) {
+        if (c.location == null) continue;
+        if (!isVisibleTo(c, uid: uid, friendIds: friends)) continue;
+        byId[c.id] = StoredPin(c, source);
+      }
+    }
+
+    // Later ones win: a capsule that is both its owner's and public belongs
+    // to the owner's source.
+    add(_public, PinSource.public);
+    add(_friends, PinSource.friends);
+    add(_coAuthored, PinSource.co);
+    add(_own, PinSource.own);
+    unawaited(store.save(uid, byId.values));
+  }
+
   void _set(VoidCallback update, {String? answered}) {
     _capsulesChanged();
     if (_disposed) return;
@@ -434,6 +536,7 @@ class MapController extends ChangeNotifier {
       StartupReport.mark('data_$answered');
       if (allAnswered) StartupReport.mark('data_all');
     }
+    _scheduleSave();
     unawaited(_recluster());
     AppLogger.debug(
       'Map capsules: own=${_own.length} friends=${_friends.length} '
@@ -451,6 +554,10 @@ class MapController extends ChangeNotifier {
 
   @override
   void dispose() {
+    if (_saveTimer?.isActive ?? false) {
+      _saveTimer!.cancel();
+      _save();
+    }
     _disposed = true;
     _session.removeListener(_onSessionChanged);
     unawaited(_positionSub?.cancel());

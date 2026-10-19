@@ -38,6 +38,7 @@ import 'current_location.dart';
 import 'map_clusters.dart';
 import 'map_controller.dart';
 import 'map_focus.dart';
+import 'map_pin_store.dart';
 import 'map_styles.dart';
 import '../../core/config/feature_flags.dart';
 import 'map_stats.dart';
@@ -84,6 +85,9 @@ class MapPage extends StatelessWidget {
               currentLocation: context.read<CurrentLocation>(),
               session: context.read<SessionController>(),
               prefs: context.read<PreferencesStore>(),
+              pinStore: FeatureFlags.mapLibre
+                  ? context.read<MapPinStore>()
+                  : null,
               groupsMarkers: !FeatureFlags.mapLibre,
             )
             ..setDarkIcons(dark)

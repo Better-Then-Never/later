@@ -1408,6 +1408,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapCapsuleReady => 'Посмотрите, что внутри!';
 
   @override
+  String get mapCapsuleUnavailable => 'Эта капсула больше недоступна';
+
+  @override
   String get mapCompass => 'Повернуть карту на север';
 
   @override

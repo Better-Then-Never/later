@@ -1380,6 +1380,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mapCapsuleReady => '¡Descubre lo que hay dentro!';
 
   @override
+  String get mapCapsuleUnavailable => 'Esta cápsula ya no está disponible';
+
+  @override
   String get mapCompass => 'Orientar el mapa al norte';
 
   @override

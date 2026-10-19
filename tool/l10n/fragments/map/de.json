@@ -33,5 +33,6 @@
   "mapCreditsTitle": "Kartendaten",
   "mapCreditsDescription": "Die Karte entsteht aus diesen Quellen. Tippe auf eine, um sie zu öffnen.",
   "mapCreditsImprove": "Diese Karte verbessern",
-  "mapCreditsRenderer": "Karte dargestellt mit MapLibre"
+  "mapCreditsRenderer": "Karte dargestellt mit MapLibre",
+  "mapCapsuleUnavailable": "Diese Kapsel ist nicht mehr verfügbar"
 }

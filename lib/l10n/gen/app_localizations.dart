@@ -2336,6 +2336,12 @@ abstract class AppLocalizations {
   /// **'Check out what\'s inside!'**
   String get mapCapsuleReady;
 
+  /// A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user.
+  ///
+  /// In en, this message translates to:
+  /// **'This capsule is no longer available'**
+  String get mapCapsuleUnavailable;
+
   /// Screen reader label of the map compass, shown while the map is turned; a tap points it north.
   ///
   /// In en, this message translates to:

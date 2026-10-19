@@ -1397,6 +1397,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapCapsuleReady => 'Schau, was drin ist!';
 
   @override
+  String get mapCapsuleUnavailable => 'Diese Kapsel ist nicht mehr verfügbar';
+
+  @override
   String get mapCompass => 'Karte nach Norden drehen';
 
   @override

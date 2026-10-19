@@ -372,6 +372,7 @@
   "mapCapsuleOpen": "Otwórz",
   "mapCapsuleOpensIn": "Otworzy się za {time}",
   "mapCapsuleReady": "Zobacz, co jest w środku!",
+  "mapCapsuleUnavailable": "Ta kapsuła nie jest już dostępna",
   "mapCompass": "Obróć mapę na północ",
   "mapCreditsButton": "Dane mapy i autorzy",
   "mapCreditsDescription": "Mapa powstaje z tych źródeł. Dotknij, aby je otworzyć.",

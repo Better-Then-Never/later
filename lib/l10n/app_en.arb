@@ -1248,6 +1248,10 @@
   "@mapCapsuleReady": {
     "description": "Line in the small window above a capsule pin when the capsule is already open."
   },
+  "mapCapsuleUnavailable": "This capsule is no longer available",
+  "@mapCapsuleUnavailable": {
+    "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
+  },
   "mapCompass": "Turn the map to north",
   "@mapCompass": {
     "description": "Screen reader label of the map compass, shown while the map is turned; a tap points it north."
