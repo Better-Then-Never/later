@@ -35,10 +35,11 @@ The one fast flag per run is, in every case I looked at, a real change happening
 apart: the bubbles finishing their fade-in as the first pinch leaves the heat, then splitting. One run had a real
 glitch: a bubble opened and closed within 30 ms. It didn't come back.
 
-## Your decision
-- **The credit line**: always visible (default, my recommendation), or shown for the first 5 seconds of each session
-  and then only the "i" (`FeatureFlags.mapCreditCollapses`). OpenStreetMap allows collapsing; OpenMapTiles' licence
-  asks for a visible credit, so ask MapTiler before switching.
+## Decided afterwards (19 Oct, `ca0af3f`)
+- **The credit line goes**: it shows at app start once the map has drawn, until you first touch the map (at most
+  5 seconds), then only the "i", which now sits right next to the filter button. OpenStreetMap allows this;
+  OpenMapTiles' licence asks for a visible credit and doesn't mention collapsing, so asking MapTiler would settle it.
+- **A tapped capsule is centred** again (the Google map did it by itself; MapLibre doesn't).
 
 ## Try it (5 minutes)
 1. Over central Warsaw, zoom slowly in and out from the heat to the streets: bubbles split and gather; watch for
