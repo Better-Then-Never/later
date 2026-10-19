@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:ui' show FramePhase, FrameTiming;
 
 import 'package:flutter/foundation.dart';
@@ -187,6 +188,68 @@ class MapStats {
     if (trace) debugPrint('MAPTOUCH ${_clock.elapsedMicroseconds} $what');
   }
 
+  // The fingers on the map (MapLibre page), and where a pinch began.
+  final _fingers = <int, Offset>{};
+  ({double spread, double zoom, double x, double y})? _pinch;
+
+  void finger(int pointer, Offset? at) {
+    if (!enabled) return;
+    final had = _fingers.length;
+    if (at == null) {
+      _fingers.remove(pointer);
+    } else {
+      _fingers[pointer] = at;
+    }
+    if (_fingers.length != had) _pinch = null;
+  }
+
+  /// The camera under two fingers ([size]: the map's, the fingers' space):
+  /// the map should grow as their spread does, and the place under their
+  /// middle stay under it.
+  void pinchCamera(
+    double zoom,
+    double latitude,
+    double longitude,
+    double bearing,
+    Size size,
+  ) {
+    if (!enabled || _fingers.length != 2 || bearing.abs() > 0.5) return;
+    final [a, b] = _fingers.values.toList();
+    final spread = (a - b).distance;
+    final middle = (a + b) / 2;
+    final scale = 512 * math.pow(2, zoom);
+    final cx = (longitude + 180) / 360;
+    final s = math.sin(latitude * math.pi / 180);
+    final cy = 0.5 - math.log((1 + s) / (1 - s)) / (4 * math.pi);
+    final start = _pinch;
+    if (start == null) {
+      if (spread < 1) return;
+      _pinch = (
+        spread: spread,
+        zoom: zoom,
+        x: cx + (middle.dx - size.width / 2) / scale,
+        y: cy + (middle.dy - size.height / 2) / scale,
+      );
+      return;
+    }
+    final error =
+        (math.log(spread / start.spread) / math.ln2 - (zoom - start.zoom))
+            .abs();
+    final drawn = Offset(
+      size.width / 2 + (start.x - cx) * scale,
+      size.height / 2 + (start.y - cy) * scale,
+    );
+    final drift = (drawn - middle).distance;
+    _count((c) {
+      c.pinchSamples++;
+      final milli = (error * 1000).round();
+      c.scaleErrorSumMilli += milli;
+      if (milli > c.scaleErrorMaxMilli) c.scaleErrorMaxMilli = milli;
+      c.anchorDriftSumDp += drift.round();
+      if (drift > c.anchorDriftMaxDp) c.anchorDriftMaxDp = drift.round();
+    });
+  }
+
   /// The app moved the camera: from where ([source]) and over how long.
   void cameraMove(String source, Duration duration) {
     if (!trace) return;
@@ -262,6 +325,15 @@ class _Counts {
   int answerMs = 0;
   int slowestAnswerMs = 0;
 
+  // Under two fingers: how far the map's scale strays from the fingers'
+  // spread (thousandths of a zoom level) and how far the place under their
+  // middle drifts from it (dp), per camera position.
+  int pinchSamples = 0;
+  int scaleErrorSumMilli = 0;
+  int scaleErrorMaxMilli = 0;
+  int anchorDriftSumDp = 0;
+  int anchorDriftMaxDp = 0;
+
   /// Every change to the heat layer that can make it disappear or redraw.
   int get heatMutations => heatCreatedOrRemoved + heatChanged + heatCleared;
 
@@ -272,6 +344,8 @@ class _Counts {
     styleChanges = cameraMoves = cameraIdles = clusterings = clusterUs = 0;
     slowestClusterUs = activeFrames = jankyFrames = worstFrameUs = 0;
     frameGaps100 = longestGapUs = answers = answerMs = slowestAnswerMs = 0;
+    pinchSamples = scaleErrorSumMilli = scaleErrorMaxMilli = 0;
+    anchorDriftSumDp = anchorDriftMaxDp = 0;
   }
 
   Map<String, int> toJson() => {
@@ -305,6 +379,13 @@ class _Counts {
     'longest_gap_ms': longestGapUs ~/ 1000,
     'answer_ms': answers == 0 ? 0 : answerMs ~/ answers,
     'slowest_answer_ms': slowestAnswerMs,
+    'pinch_samples': pinchSamples,
+    'scale_error_milli': pinchSamples == 0
+        ? 0
+        : scaleErrorSumMilli ~/ pinchSamples,
+    'scale_error_max_milli': scaleErrorMaxMilli,
+    'anchor_drift_dp': pinchSamples == 0 ? 0 : anchorDriftSumDp ~/ pinchSamples,
+    'anchor_drift_max_dp': anchorDriftMaxDp,
   };
 }
 

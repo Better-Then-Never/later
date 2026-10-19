@@ -34,6 +34,8 @@ void main(List<String> args) {
     'in-app gaps ≥100',
     'longest gap ms',
     'answer ms (avg/max)',
+    'scale error, levels (avg/max)',
+    'anchor drift dp (avg/max)',
     'video gaps ≥100',
     'video longest ms',
     'frozen ≥150',
@@ -79,6 +81,14 @@ void main(List<String> args) {
         return v is List && v.isNotEmpty ? '${v.last}' : '-';
       }
 
+      // Thousandths of a zoom level, shown in levels.
+      String levels(String key) {
+        final v = stats['${flow}_$key'];
+        return v is List && v.isNotEmpty
+            ? ((v.last as num) / 1000).toStringAsFixed(3)
+            : '-';
+      }
+
       cells.addAll([
         stat('heat_mutations'),
         stat('heat_tiles'),
@@ -88,6 +98,8 @@ void main(List<String> args) {
         stat('frame_gaps_100ms'),
         stat('longest_gap_ms'),
         '${stat('answer_ms')}/${stat('slowest_answer_ms')}',
+        '${levels('scale_error_milli')}/${levels('scale_error_max_milli')}',
+        '${stat('anchor_drift_dp')}/${stat('anchor_drift_max_dp')}',
       ]);
       final report = File('${run.path}/$flow.report.json');
       if (report.existsSync()) {
@@ -103,6 +115,40 @@ void main(List<String> args) {
         cells.addAll(['-', '-', '-', '-', '-']);
       }
       stdout.writeln('| ${cells.join(' | ')} |');
+    }
+  }
+
+  // The tap zooms (map_tap_zoom): each one level, through how many zooms,
+  // and the largest step from one camera position to the next.
+  stdout.writeln('\n### map_tap_zoom\n');
+  stdout.writeln(
+    '| run | step | zooms passed | largest step (levels) | '
+    'change (levels) |',
+  );
+  stdout.writeln('|---|---|---|---|---|');
+  for (final run in runs) {
+    final numbers = File('${run.path}/perf_numbers.json');
+    if (!numbers.existsSync()) continue;
+    final stats = jsonDecode(numbers.readAsStringSync()) as Map;
+    String value(String key, {bool milli = false}) {
+      final v = stats['map_tap_zoom_$key'];
+      if (v is! List || v.isEmpty) return '-';
+      return milli ? ((v.last as num) / 1000).toStringAsFixed(3) : '${v.last}';
+    }
+
+    final name = run.uri.pathSegments.reversed.elementAt(1);
+    for (final step in [
+      'double_tap',
+      'two_finger_tap',
+      'zoom_in_button',
+      'zoom_out_button',
+    ]) {
+      if (value('${step}_values') == '-') continue;
+      stdout.writeln(
+        '| $name | $step | ${value('${step}_values')} | '
+        '${value('${step}_largest_step_milli', milli: true)} | '
+        '${value('${step}_change_milli', milli: true)} |',
+      );
     }
   }
 }

@@ -811,17 +811,24 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         children: [
           Positioned.fill(child: ColoredBox(color: ground)),
           Listener(
-            onPointerDown: (_) {
-              MapStats.instance.touch('down');
+            onPointerDown: (e) {
+              MapStats.instance
+                ..touch('down')
+                ..finger(e.pointer, e.localPosition);
               if (_pointers++ == 0) MapStats.instance.gestureStarted();
               _active();
             },
-            onPointerUp: (_) {
-              MapStats.instance.touch('up');
+            onPointerMove: (e) =>
+                MapStats.instance.finger(e.pointer, e.localPosition),
+            onPointerUp: (e) {
+              MapStats.instance
+                ..touch('up')
+                ..finger(e.pointer, null);
               _pointers = math.max(0, _pointers - 1);
               _active();
             },
-            onPointerCancel: (_) {
+            onPointerCancel: (e) {
+              MapStats.instance.finger(e.pointer, null);
               _pointers = math.max(0, _pointers - 1);
               _active();
             },
@@ -837,6 +844,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                     )
                   : saved,
               trackCameraPosition: true,
+              // Never out to the whole world, never past street level
+              // (MapLimits, mission 2).
+              minMaxZoomPreference: const ml.MinMaxZoomPreference(
+                MapLimits.minZoom,
+                MapLimits.maxZoom,
+              ),
               compassEnabled: false,
               tiltGesturesEnabled: false,
               annotationOrder: const [],
@@ -868,6 +881,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                   ..cameraAt(position.zoom);
                 _zoom = position.zoom;
                 _bearing.value = position.bearing;
+                MapStats.instance.pinchCamera(
+                  position.zoom,
+                  position.target.latitude,
+                  position.target.longitude,
+                  position.bearing,
+                  MediaQuery.sizeOf(context),
+                );
                 _stage.camera(
                   position,
                   reachDp: _reachDp,

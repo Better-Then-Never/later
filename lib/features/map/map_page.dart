@@ -57,6 +57,7 @@ import 'engine/map_zoom_visuals.dart';
 import 'engine/maplibre_images.dart';
 import 'engine/map_camera_memory.dart';
 import 'engine/capsule_groups.dart';
+import 'engine/map_limits.dart';
 import 'engine/group_motion.dart';
 import '../achievements/streak_pill.dart';
 
