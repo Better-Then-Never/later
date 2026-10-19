@@ -63,3 +63,71 @@ budget 2 s. The feel pass ended at 820 ms on the Google page at an earlier commi
 this commit, so the two are not a comparison.
 
 Offline (Wi-Fi off, the emulators over USB): the streets at the saved place come from MapLibre's tile cache.
+
+## After 2: the finished MapLibre map (mission 2, branch `feature/map-maplibre-polish`, 19 Oct 2026)
+
+`tool/dev/map_gesture.sh` run three times one by one (`build/perf/after_r1`, `after_r2`, `after_r3`), then twice
+with 2,205 capsules (`after_2200`, `after_2200b`; 1,000 extra friends' capsules on the local emulator, removed
+afterwards). The harness now also reports, under two fingers, how far the map's scale strays from the fingers'
+spread (zoom levels) and how far the place under their middle drifts (dp), and a third flow, `map_tap_zoom`.
+
+### Under the fingers (1,205 capsules)
+| Flow | run | Flutter janky % | worst ms | heat mut. | markers +/− | in-app gaps ≥100 | answer ms avg/max | scale error avg/max (levels) | anchor drift (dp) | video gaps ≥100 | frozen ≥150 | heat blinks |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| sweep | r1 | – | – | 0 | 0 | – | – | – | – | 0 | 0 | 1 |
+| sweep | r2 | 0.0 | 5.9 | 0 | 0 | 0 | 41/53 | 0.023/0.228 | 0 | 0 | 0 | 0 |
+| sweep | r3 | 0.4 | 8.7 | 0 | 0 | 0 | 50/71 | 0.027/0.430 | 0 | 0 | 0 | 0 |
+| wave | r1 | – | – | 0 | 0 | – | – | – | – | 0 | 0 | 0 |
+| wave | r2 | 0.0 | 6.6 | 0 | 0 | 0 | 67/83 | 0.018/0.114 | 0 | 0 | 0 | 0 |
+| wave | r3 | 0.0 | 7.7 | 0 | 0 | 0 | 57/69 | 0.020/0.100 | 0 | 0 | 0 | 0 |
+
+Run 1's in-app numbers are missing: its `map_tap_zoom` step failed (below) and the test then records nothing; its
+recordings are read.
+
+- **Dropout frames** (the report's "map suddenly bare") count 112–223 per flow in these runs. They are the heat
+  handing over to the bubbles in the narrowed band (zoom 11.0–11.85): checked frame by frame (`after_r2` wave at
+  4.1 s), the heat thins while bubbles and pins grow in; never a frame with neither. The rule compares with the
+  half second before, which a fast handover now always triggers; it no longer measures a fault.
+- **Heat blinks**: one in r1's sweep and one in `after_2200b`'s wave (at 4.46 s): there the heat leaves while the
+  markers come, as designed; not a blink of the heat.
+- **Scale error**: the map's zoom follows the fingers' spread to 0.02 of a level on average; the largest single
+  difference (0.1–0.43 of a level) is at the start of a fast pinch, where MapLibre ignores the first few pixels of
+  movement (its gesture threshold). **Anchor drift: 0 dp** in every run (the place under the fingers' middle stays
+  under it).
+
+### Tap zooms (`map_tap_zoom`, real touches)
+| run | double tap | two-finger tap | + button | − button |
+|---|---|---|---|---|
+| r1 | 36 zooms, largest step 0.058 | 36, 0.098 | **failed**: 0.306 in one step | – |
+| r2 | 36, 0.059 | 31, 0.104 | 54, 0.090 | 50, 0.108 |
+| r3 | 36, 0.058 | 29, 0.098 | 48, 0.131 | 47, 0.180 |
+| 2,205 capsules | 34, 0.069–0.077 | 30–33, 0.107 | 41–46, 0.140–0.153 | 37–41, 0.155–0.157 |
+
+Every step one level (±0.000), over about 300 ms. **Before** (the owner's recording, animator scale 0): one camera
+position per tap, a whole level in one frame. Run 1's + button had one step of 0.31 of a level (a 42 ms gap in the
+camera's reports) in the first seconds after the app started; it did not come back (BLOCKERS.md).
+
+### 2,205 capsules
+| Flow | janky % | worst ms | >16.7 ms | video gaps ≥100 | frozen ≥150 |
+|---|---|---|---|---|---|
+| sweep, heat on the UI thread | 2.3 | 20.2 | 1 | 0 | 1 |
+| sweep, heat in an isolate (`1c700e2`) | 0.8 | 13.1 | 0 | 0 | 0 |
+| wave, heat in an isolate | 0.0 | 7.6 | 0 | 0 | 0 |
+
+### The owner's recording (`owner5.mp4`, before this mission)
+8 gaps of 100 ms or more in 92 s (165, 101, 151, 121, 136, 235, 202, 170 ms). At 0:59 the map stands still over
+the Warsaw heat with one touch dot, then is at city zoom with bubbles at 1:00, with no frames between; at 1:26 the
+heat jumps a level the same way. Both look like the instant tap zooms of DIAGNOSIS.md §9 (animator scale 0); the
+Google page's clustering also ran on every camera stop then (now off on MapLibre). Not proven from the video
+alone. With the scale back at 1.0, the harness shows no gap of 100 ms or more in any run.
+
+### Tiles
+OpenFreeMap answers a vector tile in 60–150 ms (computer and phone, `curl`, Warsaw, zoom 10–14: 2–130 kB). The
+blurred frames while zooming in are MapLibre drawing the level it has, scaled, until the next level's tiles arrive
+(a fraction of a second on a warm connection); on a cold cache the first zoom into a new area shows them longer.
+MapLibre keeps the tiles it drew in its own disk cache (its default size, not changed), which is what made the
+offline start work; nothing is prefetched (BLOCKERS.md).
+
+### Cold start (`build/dev/video/m2cold_*.mp4`)
+Unchanged: no white frame, streets at the saved place about 1.6 s after the tap, the pins as soon as the capsules
+are read.

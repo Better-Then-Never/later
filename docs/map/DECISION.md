@@ -42,9 +42,12 @@ Google Maps cannot meet the core criteria however its layers are fed:
 
 ## Why B
 The heat, bubbles and pins are layers of the map, drawn on the GPU: their look is a function of the zoom that the
-map evaluates every frame (`MapZoomVisuals`: the heat fades out between zoom 11.6 and 12.3 while the markers fade
-in between 11.0 and 11.6, so they are whole before the heat starts to go), the capsules are grouped by the map itself (`cluster: true`), and Flutter sends nothing
-during a gesture. Bubbles split and merge with a crossfade, at every zoom, under the fingers.
+map evaluates every frame (`MapZoomVisuals`). In mission 1 the map grouped the capsules itself (`cluster: true`)
+and Flutter sent nothing during a gesture; bubbles crossfaded. **Mission 2** (19 Oct) moved the grouping into Dart
+(`CapsuleGroups`, supercluster's method) so each bubble knows what it splits into, and the split and merge is
+drawn by the map from a GeoJSON source sent every frame while it runs (`GroupMotion`, `_GroupStage`): still in
+the map's own space, so it cannot trail the map under the fingers. The heat hands over in a narrower band (11.0 to
+11.85, markers 11.33 to 11.68).
 
 ## Package
 `maplibre_gl` 0.27.1 (pub.dev, published Sep 2026; previous releases monthly since April; BSD-3-Clause; Flutter

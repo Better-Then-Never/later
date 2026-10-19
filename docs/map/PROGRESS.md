@@ -59,15 +59,27 @@ From `feature/map-engine-smoothness` at `55cba7a`. MapLibre with OpenFreeMap is 
 | # | Step | State |
 |---|---|---|
 | 2.0 | Instant tap zooms: cause, shared camera helper, `map_tap_zoom` test | done |
-| 2.1 | Bubble split and merge animation | |
-| 2.2 | Continuous heat / bubble / pin handover | |
-| 2.3 | Zoom feel: tiles, minimum zoom and bounds, finger-dot check, stalls | |
-| 2.4 | Base map in the app's look | |
-| 2.5 | Countdown seconds (M-10), selected emphasis (M-02) | |
-| 4 | Measure on the phone, PERFORMANCE, MORNING_SUMMARY | |
+| 2.1 | Bubble split and merge animation | done |
+| 2.2 | Continuous heat / bubble / pin handover | done |
+| 2.3 | Zoom feel: tiles, minimum zoom and bounds, finger-dot check, stalls | done (no prefetch, no pan bounds: BLOCKERS.md) |
+| 2.4 | Base map in the app's look | done |
+| 2.5 | Countdown seconds (M-10), selected emphasis (M-02) | done (M-01 left as it was) |
+| 4 | Measure on the phone, PERFORMANCE, MORNING_SUMMARY | done |
 
 ## Log
 - 2.0: the tap zooms jumped because the phone's animator scale was 0 (our own M-02 check of 18 Oct; DIAGNOSIS.md
   §9), restored; every app camera move now goes through one helper (`_animate`, traced as `MAPMOVE`), the Google
   clustering no longer runs on the MapLibre page, `map_tap_zoom` proves the animation on the phone (all four
   steps: 36–39 positions for a tap zoom, the largest step at most 0.13 of a level; the recording 0 gaps at 126 fps).
+- 2.1: no split animation existed on MapLibre; the Google map's (M-03/M-04, `marker_choreography.dart`, Flutter
+  sprites over native markers) could not move with MapLibre's camera. Spike: a GeoJSON source updated every frame
+  draws moved pins at full opacity, and a swapped source shows at once (no crossfade). Built: `CapsuleGroups`,
+  `GroupMotion`, `_GroupStage` (`maplibre_groups.dart`); every GeoJSON update now goes as a string (the plugin's
+  map parse ran on Android's main thread); the still layer holds only the area around the screen. `19e7980`.
+- 2.2: narrower handover band, never both at full strength; tested. `19e7980`.
+- 2.3: zoom limits 3 to 19 (`cd77e91`); pan bounds tried and removed (the plugin's bounds took the date line);
+  the harness measures scale error and anchor drift under two fingers; OpenFreeMap tiles 60–150 ms.
+- 2.4: the style colours mixed from AppColors, checked by a test (`4b6fb63`).
+- 2.5: countdown without seconds (`3708a84`); selected pin emphasis seen on the phone.
+- 4: three harness runs plus two with 2,205 capsules; the heat's GeoJSON moved to an isolate (`1c700e2`).
+  PERFORMANCE.md "After 2", BLOCKERS.md, MORNING_SUMMARY.md.

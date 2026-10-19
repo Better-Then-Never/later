@@ -1,53 +1,52 @@
-# MORNING_SUMMARY.md: the map engine in one page
+# MORNING_SUMMARY.md: the MapLibre map, finished (mission 2)
 
-Branch `feature/map-engine-smoothness` (local commits, **not pushed, not merged**). Nothing was deployed and nothing
-touched production: every check ran on the Galaxy S20 FE (120 Hz) against the local Firebase emulators with the
-heavy seed (the signed-in account sees 1,205 capsules). Nothing ran on iOS.
+Branch `feature/map-maplibre-polish` (from `feature/map-engine-smoothness`; local commits, **not pushed, not
+merged**). Nothing deployed, no production data touched: every check ran on the Galaxy S20 FE against the local
+Firebase emulators. Mission 1's summary is in git history (`02fda14`).
+
+## Decided, and open
+- Decided by you on 19 Oct: MapLibre with OpenFreeMap tiles is the map; satellite hidden.
+- **Open: OpenFreeMap in production.** Free, no key, commercial use allowed, but no service guarantee. My
+  recommendation: keep it, and if it ever fails for long, point the same style files at a self-hosted map file
+  (Protomaps/OpenMapTiles, only hosting cost) or a paid MapTiler plan. Nothing to do now.
 
 ## What changed
-- **A second map engine, MapLibre, with OpenFreeMap's tiles** (`FeatureFlags.mapLibre`). **On by default since
-  the owner's decision of 19 Oct 2026**; a build goes back to Google Maps with `--dart-define=MAP_LIBRE=false`.
-- On MapLibre the heat, the bubbles and the pins are layers of the map, drawn on the GPU. Their look follows the
-  zoom every frame, the map groups the capsules itself, and Flutter sends nothing while the fingers move.
-- The MapLibre page matches the Google page: card, selected pin with its motion, user position, buttons, compass,
-  focus from the list and from notifications, taps, filters, dark style, the saved camera, bubble taps that fit
-  their capsules.
-- Fixed on the way: "Almost there" over the map after a first Google sign-in (M-07); pins that waited for a later
-  data change after a cold start on MapLibre.
+- **The abrupt zooms were the phone, not the map.** An earlier test of "reduce motion" left Android's animation
+  speed at 0 on your phone; MapLibre's double tap, two-finger tap and zoom coast use Android's animators, so they
+  jumped a whole level in one frame. Restored. Now each tap zoom passes through 30–78 steps over about 0.3 s, never
+  more than 0.18 of a level at a time (it was one jump). The test rig refuses to measure if this happens again.
+- **Bubbles split and merge again**, on the new map: zooming in, a bubble eases up and opens while its capsules fly
+  out to their spots on a short arc and settle, its number counting down; zooming out they fly back in and the
+  bubble grows under them, counting up. Nearest the middle first; it follows the fingers and can be reversed
+  mid-way; with reduced motion it just switches. No translucent ghosts left behind.
+- **Heat to bubbles is quick and clean**: the heat thins as the bubbles grow in and is gone as soon as they are
+  whole; never all three strong at once, never nothing.
+- **Zoom limits**: no more zooming out to a plain ocean; it stops at about a continent.
+- **The base map's colours come from the app's palette**: calm water, brand-green parks, soft labels; light and
+  dark.
+- The card's countdown no longer shows seconds ("281d 14h 19m").
+- Found on the way: the map was doing the old Google map's grouping work after every stop, and big data updates
+  were parsed on Android's main thread. Both fixed.
 
-## Why MapLibre (numbers: DECISION.md)
-Google Maps cannot stop the blinks, whatever feeds it: a tile layer goes blank at every whole zoom level, and a
-marker cannot fade. Measured with real touches, the same gestures, 3 runs each:
-
-| Per gesture | Google today | MapLibre (spike) |
+## The numbers (PERFORMANCE.md, "After 2")
+| | Before (your recording) | Now |
 |---|---|---|
-| Heat layer changes | 3–9 | **0** |
-| Heat blinks per sweep | 10–16 | **0–1** |
-| Markers added / removed | 490–1,570 | **0** |
-| Recording gaps ≥ 100 ms | 1–3 | **0** |
-| Answer to a finger | 40–86 ms | **30–53 ms** |
-| Flutter frames janky | 0–1.5 % | **0 %** |
-| Cold start: streets on screen | about 4.5 s after the tap | **1.4–1.8 s** |
+| Tap zoom | one jump of a level | 30–78 steps, at most 0.18 of a level each |
+| Recording gaps ≥ 100 ms | 8 in 92 s | 0 in every run |
+| Flutter janky frames | – | 0–0.4 % (0.8 % with 2,205 capsules) |
+| Map scale vs fingers | – | within 0.02 of a level on average |
+| Place under the fingers | – | stays put (0 dp drift) |
+| Heat layer changes, markers re-added | 0 | 0 |
 
-## The acceptance criteria
-| Criterion | State |
-|---|---|
-| No heat removals or blinks during a pinch | met in the spike runs (0 changes, 0–1 blinks) |
-| No frame with neither heat nor markers | met: the markers are whole before the heat fades (tested); frames checked by eye |
-| A crossfade over a zoom band | met: heat 11.6 → 12.3, markers 11.0 → 11.6, eased |
-| Clusters animate | partly: bubbles crossfade when they split or merge (MapLibre's 0.3 s); they do not fly apart |
-| No stalls ≥ 100 ms, ≤ 1 % janky | met in the spike runs (0 gaps, 0 %) |
-| Readable bubbles, a clear selected pin | met: 17 dp bold counts, three disc sizes; the selected pin larger, raised, with a shadow |
-| Cold start: no white, the saved camera, "almost ready" never after the map | met |
-| No regressions | 454 tests pass; Google Maps is one build switch away; on MapLibre the satellite look is hidden (owner's call) and the flying capsules are missing (BLOCKERS.md) |
+## Try it (5 minutes)
+1. Zoom out slowly from a street to the country and back: bubbles gather and open with their capsules flying.
+2. Double tap, and tap with two fingers: smooth, about a third of a second.
+3. Pinch quickly in and out; turn the map with two fingers.
+4. Tap a capsule (card, raised pin); tap a bubble (fits its capsules).
+5. Switch a filter, then the theme (dark map).
 
-## Not done
-- **The final 3-run measurement of the finished page** was stopped twice because the computer ran low on memory
-  during the profile build. It was not restarted without you. The criteria above rest on the spike's runs. To run it:
-  close other apps, then `bash tool/dev/map_gesture.sh after 3`. The 2,000+ capsule check runs with it.
-- iOS is untested.
-
-## Commits on this branch
-`f61e6b7` rig · `fc86132` baseline and diagnosis · `1d79f6d` MapLibre spike, real touches · `a9adeec` MapLibre page
-at parity · `321a4c3` blockers, wider bubbles · `8426062` M-07 · `1f47e6e` bubble tap · `5a340d0` pins after a cold
-start · the docs commit with this file · MapLibre on by default (19 Oct).
+## Weak spots left (BLOCKERS.md)
+- Nothing ran on iOS.
+- Areas never seen show a blurry map for a moment while their tiles load; nothing is downloaded ahead.
+- One run had a single small hitch in a button zoom right after the app started; not seen again.
+- The first open no longer has the "capsules pop in, in rings" show; the pins simply appear.
