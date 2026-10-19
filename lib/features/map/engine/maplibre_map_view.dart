@@ -571,7 +571,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
           : await c.getClusterExpansionZoom(_capsulesSource, cluster);
       if (!mounted) return;
       final zoom = splits > _zoom ? splits + 0.5 : _zoom + 2;
-      return _moveTo(at, zoom: math.min(zoom, 19));
+      return _animate(
+        ml.CameraUpdate.newLatLngZoom(at, math.min(zoom, 19)),
+        'bubble_split',
+      );
     }
     final update = ml.CameraUpdate.newLatLngBounds(
       ml.LatLngBounds(
@@ -583,21 +586,27 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       right: 64,
       bottom: NavbarWidget.coveredHeight(context) + 64,
     );
-    if (AppMotion.reduced(context)) {
-      await c.moveCamera(update);
-    } else {
-      await c.animateCamera(update, duration: AppMotion.slow * 2);
-    }
+    await _animate(update, 'bubble', duration: AppMotion.reveal);
   }
 
-  Future<void> _moveTo(ml.LatLng at, {required double zoom}) async {
+  /// Every camera move the app makes (the buttons, a bubble, a capsule, the
+  /// user's place) goes through here: eased by the map itself over
+  /// [duration] (about a third of a second, like its own double tap; a touch
+  /// stops it where it is), at once with reduced motion. Traced with
+  /// MAP_TRACE ([MapStats.cameraMove]).
+  Future<void> _animate(
+    ml.CameraUpdate update,
+    String source, {
+    Duration duration = AppMotion.slow,
+  }) async {
     final c = await _ready.future;
-    final update = ml.CameraUpdate.newLatLngZoom(at, zoom);
     if (!mounted) return;
-    if (AppMotion.reduced(context)) {
+    final reduced = AppMotion.reduced(context);
+    MapStats.instance.cameraMove(source, reduced ? Duration.zero : duration);
+    if (reduced) {
       await c.moveCamera(update);
     } else {
-      await c.animateCamera(update, duration: AppMotion.slow * 2);
+      await c.animateCamera(update, duration: duration);
     }
   }
 
@@ -616,19 +625,21 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     final location = capsule?.location;
     if (capsule == null || location == null) return;
     _select(null);
-    await _moveTo(ml.LatLng(location.latitude, location.longitude), zoom: 17);
+    await _animate(
+      ml.CameraUpdate.newLatLngZoom(
+        ml.LatLng(location.latitude, location.longitude),
+        17,
+      ),
+      'focus',
+      duration: AppMotion.reveal,
+    );
     _select(capsule);
   }
 
-  Future<void> _camera(ml.CameraUpdate update) async {
+  /// A map button: a tick under the finger, then the move.
+  Future<void> _button(ml.CameraUpdate update, String source) {
     unawaited(HapticFeedback.selectionClick());
-    final c = await _ready.future;
-    if (!mounted) return;
-    if (AppMotion.reduced(context)) {
-      await c.moveCamera(update);
-    } else {
-      await c.animateCamera(update, duration: AppMotion.slow);
-    }
+    return _animate(update, source);
   }
 
   Future<void> _goToMe(MapController map) async {
@@ -656,9 +667,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       }
       return;
     }
-    await _moveTo(
-      ml.LatLng(position.latitude, position.longitude),
-      zoom: _zoom < 14 ? 15 : _zoom,
+    await _animate(
+      ml.CameraUpdate.newLatLngZoom(
+        ml.LatLng(position.latitude, position.longitude),
+        _zoom < 14 ? 15 : _zoom,
+      ),
+      'me',
+      duration: AppMotion.reveal,
     );
   }
 
@@ -759,10 +774,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
           Positioned.fill(child: ColoredBox(color: ground)),
           Listener(
             onPointerDown: (_) {
+              MapStats.instance.touch('down');
               if (_pointers++ == 0) MapStats.instance.gestureStarted();
               _active();
             },
             onPointerUp: (_) {
+              MapStats.instance.touch('up');
               _pointers = math.max(0, _pointers - 1);
               _active();
             },
@@ -808,7 +825,9 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
               onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),
               onMapClick: (_, _) => _select(null),
               onCameraMove: (position) {
-                MapStats.instance.cameraMoved();
+                MapStats.instance
+                  ..cameraMoved()
+                  ..cameraAt(position.zoom);
                 _zoom = position.zoom;
                 _bearing.value = position.bearing;
                 if (!_moving) {
@@ -855,8 +874,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
             bottom:
                 bottom + raised + AppSizes.mapControl + AppSizes.mapControlGap,
             child: _ZoomButtons(
-              onZoomIn: () => unawaited(_camera(ml.CameraUpdate.zoomIn())),
-              onZoomOut: () => unawaited(_camera(ml.CameraUpdate.zoomOut())),
+              onZoomIn: () =>
+                  unawaited(_button(ml.CameraUpdate.zoomIn(), 'zoom_in')),
+              onZoomOut: () =>
+                  unawaited(_button(ml.CameraUpdate.zoomOut(), 'zoom_out')),
             ),
           ),
           AnimatedPositioned(
@@ -872,7 +893,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
             child: MapCompass(
               size: AppSizes.mapControl,
               bearing: _bearing,
-              onTap: () => unawaited(_camera(ml.CameraUpdate.bearingTo(0))),
+              onTap: () =>
+                  unawaited(_button(ml.CameraUpdate.bearingTo(0), 'compass')),
             ),
           ),
           Positioned(

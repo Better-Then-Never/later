@@ -18,7 +18,12 @@ import java.lang.reflect.Method;
  * Two fingers one above the other around (cx, cy) in screen pixels, their
  * distance going d0 → d1 → ..., each segment in msPerSegment, a move every
  * 8 ms, then both lift. Several gestures: separate them with "/" and a pause
- * in ms, e.g. {@code 140 520 / 350 520 140}.
+ * in ms, e.g. {@code 140 520 / 350 520 140}. A two-finger tap is a gesture
+ * that does not move: {@code cx cy 80 300 300}.
+ *
+ * <pre>
+ * ... Pinch tap x y count gapMs     # one finger: count taps, gapMs apart
+ * </pre>
  */
 public final class Pinch {
   private static Object im;
@@ -27,6 +32,20 @@ public final class Pinch {
   public static void main(String[] args) throws Exception {
     im = InputManager.class.getDeclaredMethod("getInstance").invoke(null);
     inject = InputManager.class.getMethod("injectInputEvent", InputEvent.class, int.class);
+    if (args[0].equals("tap")) {
+      float x = Float.parseFloat(args[1]);
+      float y = Float.parseFloat(args[2]);
+      int count = Integer.parseInt(args[3]);
+      long gap = Long.parseLong(args[4]);
+      for (int i = 0; i < count; i++) {
+        if (i > 0) SystemClock.sleep(gap);
+        long down = SystemClock.uptimeMillis();
+        send(down, down, MotionEvent.ACTION_DOWN, 1, x, y, 0);
+        SystemClock.sleep(50);
+        send(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 1, x, y, 0);
+      }
+      return;
+    }
     float cx = Float.parseFloat(args[0]);
     float cy = Float.parseFloat(args[1]);
     int ms = Integer.parseInt(args[2]);

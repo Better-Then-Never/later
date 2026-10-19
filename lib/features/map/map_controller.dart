@@ -35,6 +35,7 @@ class MapController extends ChangeNotifier {
     required CurrentLocation currentLocation,
     required SessionController session,
     PreferencesStore? prefs,
+    this.groupsMarkers = true,
   }) : _prefs = prefs,
        _capsules = capsules,
        _location = location,
@@ -46,6 +47,11 @@ class MapController extends ChangeNotifier {
   final CurrentLocation _currentLocation;
   final SessionController _session;
   final PreferencesStore? _prefs;
+
+  /// Whether this controller groups the capsules into markers for the
+  /// screen (the Google map). MapLibre groups them itself: then nothing is
+  /// grouped here, and a stopped camera costs Flutter nothing.
+  final bool groupsMarkers;
 
   static const _filterKey = 'map_filter';
 
@@ -159,6 +165,7 @@ class MapController extends ChangeNotifier {
       _clusterIcons[ClusterIcons.label(count)];
 
   Future<void> _recluster() async {
+    if (!groupsMarkers) return;
     final view = _view;
     final run = ++_clusterRun;
     _clusteredLevel = showMarkers ? _zoom.floor() : -1;

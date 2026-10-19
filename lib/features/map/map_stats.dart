@@ -160,6 +160,42 @@ class MapStats {
   });
   void cameraIdle() => _count((c) => c.cameraIdles++);
 
+  /// Every camera position the map reports, printed as `MAPCAM <us> <zoom>`
+  /// (`--dart-define=MAP_TRACE=true`), with every move the app starts
+  /// ([cameraMove]): for finding zoom jumps.
+  static const trace = bool.fromEnvironment('MAP_TRACE');
+  final _clock = Stopwatch()..start();
+
+  /// The zooms the camera passed through, with their time in microseconds,
+  /// while [recordZooms] is on (the perf test reads them).
+  final zooms = <(int, double)>[];
+  bool recordZooms = false;
+
+  /// The zoom the camera last reported.
+  double? lastZoom;
+
+  void cameraAt(double zoom) {
+    if (!enabled) return;
+    lastZoom = zoom;
+    final us = _clock.elapsedMicroseconds;
+    if (recordZooms) zooms.add((us, zoom));
+    if (trace) debugPrint('MAPCAM $us ${zoom.toStringAsFixed(3)}');
+  }
+
+  /// A finger went down or up on the map (traced next to the camera).
+  void touch(String what) {
+    if (trace) debugPrint('MAPTOUCH ${_clock.elapsedMicroseconds} $what');
+  }
+
+  /// The app moved the camera: from where ([source]) and over how long.
+  void cameraMove(String source, Duration duration) {
+    if (!trace) return;
+    debugPrint(
+      'MAPMOVE ${_clock.elapsedMicroseconds} $source '
+      '${duration.inMilliseconds}ms',
+    );
+  }
+
   /// The capsules were grouped for the screen in [us] microseconds.
   void clustered(int us) => _count((c) {
     c.clusterings++;

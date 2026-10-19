@@ -50,3 +50,24 @@ phone).
   report that the pin could not move: the sheet's drag-to-close took every vertical drag on the map; the map now
   claims every touch that starts on it (Google's picker too). Checked on the phone: drags in every direction, the
   snap back onto the 1 km edge, "use this spot", back to me, and closing the sheet by its top.
+
+# Mission 2: finish the MapLibre map (19 Oct 2026, branch `feature/map-maplibre-polish`)
+
+From `feature/map-engine-smoothness` at `55cba7a`. MapLibre with OpenFreeMap is the default (owner, 19 Oct);
+`MAP_LIBRE=false` builds the Google map. Never push, merge, deploy or release unless the owner asks in chat.
+
+| # | Step | State |
+|---|---|---|
+| 2.0 | Instant tap zooms: cause, shared camera helper, `map_tap_zoom` test | done |
+| 2.1 | Bubble split and merge animation | |
+| 2.2 | Continuous heat / bubble / pin handover | |
+| 2.3 | Zoom feel: tiles, minimum zoom and bounds, finger-dot check, stalls | |
+| 2.4 | Base map in the app's look | |
+| 2.5 | Countdown seconds (M-10), selected emphasis (M-02) | |
+| 4 | Measure on the phone, PERFORMANCE, MORNING_SUMMARY | |
+
+## Log
+- 2.0: the tap zooms jumped because the phone's animator scale was 0 (our own M-02 check of 18 Oct; DIAGNOSIS.md
+  §9), restored; every app camera move now goes through one helper (`_animate`, traced as `MAPMOVE`), the Google
+  clustering no longer runs on the MapLibre page, `map_tap_zoom` proves the animation on the phone (all four
+  steps: 36–39 positions for a tap zoom, the largest step at most 0.13 of a level; the recording 0 gaps at 126 fps).

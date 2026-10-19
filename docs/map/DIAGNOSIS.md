@@ -65,3 +65,35 @@ Each cause names its owner's defect (mission §1).
 - Six stages (PERFORMANCE.md): the system window is white, the map page waits for `MapController.start` (icons,
   location) before it builds the map, the native map view takes about a second to inflate and shows its beige
   "no tiles" background, the user's figure and pins arrive before the streets.
+
+# Part 2: the MapLibre map (mission of 19 Oct 2026, branch `feature/map-maplibre-polish`)
+
+Evidence: the owner's recording `build/dev/video/owner5.mp4` (copy of `video_2026-10-19_13-36-11 today.mp4`, 92 s,
+576×1280 at about 50 fps, MapLibre profile build, "show touches" on).
+
+## 9. The instant tap zooms (§2.0): the phone's animator scale was 0, set by this project's own test
+- In the recording, frame 1578 zooms out about a level and frame 1590 (16.7 ms after 1589, no stall) about three
+  to four more, with no finger moving: tap zooms that did not animate.
+- Reproduced on the phone with real touches (`tool/dev/touch/Pinch.java`, new `tap` mode) and the camera trace
+  (`--dart-define=MAP_TRACE=true`: `MAPCAM` per camera position, `MAPTOUCH`, `MAPMOVE`): a two-finger tap gave
+  **one** camera position, 11.000, 10 ms after the last finger lifted; the zoom coast after a fast pinch also
+  jumped (10.626 → 11.631 in one step).
+- MapLibre Android (13.5.0) runs its double tap, two-finger tap and zoom coast on Android `ValueAnimator`s (300 ms,
+  decelerate; read from its bytecode). The window manager reported `currentAnimatorScale=0.0` although
+  `settings get global animator_duration_scale` read "null": a reduce-motion check of M-02 on 18 Oct had set it to
+  0 and "restored" it with `settings delete`, which removes the setting but leaves 0 in the window manager. Every
+  Android animator on the phone then finished at once; Flutter's own animations were unaffected (they follow the
+  transition scale), so only the map's native gestures jumped. **Our mistake, not the map's.**
+- Restored with `settings put global animator_duration_scale 1.0` (then deleted again, as it was). Since then: a
+  double tap is 36–39 camera positions over about 300 ms, the largest step 0.05–0.06 of a level; the same for a
+  two-finger tap; the zoom buttons about 300 ms, largest step 0.11–0.13 (`map_tap_zoom` in `perf_test.dart`).
+- `tool/dev/map_gesture.sh` now refuses to measure unless the window manager's scale is 1.0
+  (`tool/dev/touch/AnimScale.java`). A user who switches animations off gets MapLibre's tap zooms without
+  animation, as in every Android app; our own camera moves (buttons, bubbles, a capsule, my location) are native
+  camera animations and stay animated unless the app's reduce-motion setting is on.
+- Found on the way: every camera stop ran the Google page's own clustering and cluster-icon drawing on Flutter's
+  UI thread although the MapLibre page draws its own groups; in texture mode the map's frames are composited by
+  Flutter, so that work could hold the map back. Off on MapLibre (`MapController.groupsMarkers`).
+- Before that change, and once in a loop of taps soon after launch, single camera gaps of 68–163 ms appeared in
+  the middle of a tap zoom (36–117 ms gaps in the recording). They did not come back in later runs (fresh launch,
+  reinstall, dense and sparse areas, with a system trace running); cause not proven (BLOCKERS.md).

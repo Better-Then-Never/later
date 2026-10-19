@@ -7,6 +7,7 @@
 #
 #   tool/dev/map_gesture.sh <label> [runs]     # e.g. baseline 3
 #   MAP_GOOGLE=1 tool/dev/map_gesture.sh google 3   # the Google map instead
+#   MAP_FLOWS=map_tap_zoom tool/dev/map_gesture.sh taps 1   # only these flows
 #
 # Output in build/perf/<label>/run_<n>/: drive.log, perf_numbers.json (the
 # MapStats counts as map_pinch_*_<count>), <flow>.timeline_summary.json and
@@ -16,15 +17,28 @@ source "$(dirname "$0")/env.sh"
 
 label=${1:?usage: map_gesture.sh <label> [runs]}
 runs=${2:-1}
-flows=(map_pinch_sweep map_pinch_wave)
+# MAP_FLOWS="map_tap_zoom" runs only those.
+read -r -a flows <<<"${MAP_FLOWS:-map_pinch_sweep map_pinch_wave map_tap_zoom}"
 out=build/perf/$label
 PY=build/dev/pyenv/Scripts/python
 # A fresh folder: the watcher would take an earlier run's finished log for
 # this one's.
 rm -rf "$out"
 # Real touches (tool/dev/touch/Pinch.java) on the phone.
-[ -f build/dev/touch/pinch.jar ] || "$(dirname "$0")/touch/build.sh" || exit 1
+jar=build/dev/touch/pinch.jar
+if [ ! "$jar" -nt tool/dev/touch/Pinch.java ] || [ ! "$jar" -nt tool/dev/touch/AnimScale.java ]; then
+  "$(dirname "$0")/touch/build.sh" || exit 1
+fi
 adbs push build/dev/touch/pinch.jar /data/local/tmp/pinch.jar >/dev/null
+# Android's animator scale drives MapLibre's tap zooms and zoom coast: at 0
+# (it can read "unset" while 0, see AnimScale.java) they jump.
+scale=$(adbs shell CLASSPATH=/data/local/tmp/pinch.jar app_process /system/bin AnimScale |
+  tr -d '\r' | sed -n 's/^currentAnimatorScale=//p')
+if [ "$scale" != "1.0" ]; then
+  echo "The phone's animator scale is ${scale:-unknown}, not 1.0: restore it with"
+  echo "  adb shell settings put global animator_duration_scale 1.0"
+  exit 1
+fi
 # The phone reaches the emulators through adb reverse, which a USB reconnect
 # drops.
 for port in 9099 8080 9199 5001; do adbs reverse tcp:$port tcp:$port >/dev/null; done

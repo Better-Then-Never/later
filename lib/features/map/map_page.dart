@@ -74,6 +74,7 @@ class MapPage extends StatelessWidget {
               currentLocation: context.read<CurrentLocation>(),
               session: context.read<SessionController>(),
               prefs: context.read<PreferencesStore>(),
+              groupsMarkers: !FeatureFlags.mapLibre,
             )
             ..setDarkIcons(dark)
             ..start(),
