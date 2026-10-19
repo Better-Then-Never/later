@@ -89,6 +89,18 @@ void main() {
       expect(find.text('16.10.2026'), findsOneWidget);
     });
 
+    test('the countdown shows seconds only in the last minute (M-10)', () {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      String text(Duration d) => CapsuleInfoPanel.formatDuration(d, l10n);
+      expect(
+        text(const Duration(days: 281, hours: 14, minutes: 19, seconds: 48)),
+        '281d 14h 19m',
+      );
+      expect(text(const Duration(minutes: 5, seconds: 59)), '5m');
+      expect(text(const Duration(seconds: 42)), '42s');
+      expect(text(const Duration(seconds: -1)), '');
+    });
+
     testWidgets('an open capsule can be opened', (tester) async {
       var opened = 0;
       await tester.pumpWidget(

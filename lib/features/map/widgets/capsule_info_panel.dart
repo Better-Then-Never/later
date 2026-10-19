@@ -44,6 +44,23 @@ class CapsuleInfoPanel extends StatefulWidget {
     return (screen * 0.171).clamp(minHeight * scale, 220 * scale);
   }
 
+  /// Compact countdown ("2d 5h 30m" in English) in the app's language:
+  /// seconds only in the last minute (M-10).
+  static String formatDuration(Duration d, AppLocalizations l10n) {
+    if (d.isNegative) return '';
+    if (d < const Duration(minutes: 1)) {
+      return l10n.mapDurationSeconds(d.inSeconds);
+    }
+    final days = d.inDays;
+    final hours = d.inHours.remainder(24);
+    final minutes = d.inMinutes.remainder(60);
+    return [
+      if (days > 0) l10n.mapDurationDays(days),
+      if (hours > 0 || days > 0) l10n.mapDurationHours(hours),
+      l10n.mapDurationMinutes(minutes),
+    ].join(' ');
+  }
+
   @override
   State<CapsuleInfoPanel> createState() => _CapsuleInfoPanelState();
 }
@@ -84,22 +101,6 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  /// Compact countdown ("2d 5h 30m 15s" in English) in the app's language.
-  static String formatDuration(Duration d, AppLocalizations l10n) {
-    if (d.isNegative) return '';
-    final days = d.inDays;
-    final hours = d.inHours.remainder(24);
-    final minutes = d.inMinutes.remainder(60);
-    final seconds = d.inSeconds.remainder(60);
-    return [
-      if (days > 0) l10n.mapDurationDays(days),
-      if (hours > 0 || days > 0) l10n.mapDurationHours(hours),
-      if (minutes > 0 || hours > 0 || days > 0)
-        l10n.mapDurationMinutes(minutes),
-      l10n.mapDurationSeconds(seconds),
-    ].join(' ');
   }
 
   @override
@@ -157,7 +158,10 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                       isOpen
                           ? l10n.mapCapsuleReady
                           : l10n.mapCapsuleOpensIn(
-                              formatDuration(capsule.timeUntilOpen(_now), l10n),
+                              CapsuleInfoPanel.formatDuration(
+                                capsule.timeUntilOpen(_now),
+                                l10n,
+                              ),
                             ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
