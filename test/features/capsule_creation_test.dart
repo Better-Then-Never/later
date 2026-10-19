@@ -149,6 +149,11 @@ void main() {
       expect(repo.created.single.highQuality, isTrue);
       await pumpEventQueue();
       expect(saved, [photo.path]);
+      // The deletion is real file I/O, done on Dart's I/O thread: under a
+      // busy full run it can come after the event queue is empty.
+      for (var i = 0; i < 50 && photo.existsSync(); i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
       expect(photo.existsSync(), isFalse, reason: 'temp photo deleted after');
       c.dispose();
     },
