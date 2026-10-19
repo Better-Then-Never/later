@@ -682,6 +682,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       for (final c in map.visibleCapsules) {
         if (c.id == id) {
           _select(c);
+          _centerOn(c);
           return;
         }
       }
@@ -718,6 +719,27 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     );
     await _animate(update, 'bubble', duration: AppMotion.reveal);
   }
+
+  /// A capsule tapped: the map moves to put it in the middle, keeping its
+  /// zoom (as the Google map did on its own).
+  void _centerOn(Capsule capsule) {
+    final at = capsule.location;
+    if (at == null) return;
+    unawaited(
+      _animate(
+        ml.CameraUpdate.newLatLng(ml.LatLng(at.latitude, at.longitude)),
+        'select',
+      ),
+    );
+  }
+
+  /// The credit's (i): its 44 dp target placed so the disc stands 8 dp to
+  /// the right of the filter button.
+  static const double _creditLeft =
+      16 +
+      AppSizes.mapControl +
+      8 -
+      (AppSizes.mapControl - MapCreditsButton.disc) / 2;
 
   /// Every camera move the app makes (the buttons, a bubble, a capsule, the
   /// user's place) goes through here: eased by the map itself over
@@ -910,6 +932,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
           Positioned.fill(child: ColoredBox(color: ground)),
           Listener(
             onPointerDown: (e) {
+              MapCreditsControl.mapTouched();
               MapStats.instance
                 ..touch('down')
                 ..finger(e.pointer, e.localPosition);
@@ -1011,6 +1034,17 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
           ),
           if (MapStats.harness)
             const Positioned(top: 0, left: 0, child: MapHarnessStrip()),
+          // The map's data credit, top left right next to the filter button
+          // (its disc 8 dp from it; the line short of the streak pill).
+          Positioned(
+            top: MediaQuery.viewPaddingOf(context).top + 12,
+            left: _creditLeft,
+            child: MapCreditsControl(
+              maxWidth:
+                  MediaQuery.sizeOf(context).width - _creditLeft - 16 - 100,
+              mapShown: _styled,
+            ),
+          ),
           // What the map shows (B5), top left under the status bar.
           Positioned(
             top: MediaQuery.viewPaddingOf(context).top + 12,
@@ -1035,20 +1069,6 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
             right: 16,
             bottom: bottom + raised,
             child: _MyLocationButton(onTap: () => _goToMe(map)),
-          ),
-          // The map's data credit, bottom left above the navigation bar and
-          // the card; its disc lines up with the screen's 16 dp margin.
-          AnimatedPositioned(
-            duration: motion,
-            curve: AppMotion.emphasizedCurve,
-            left: 16 - (AppSizes.mapControl - MapCreditsButton.disc) / 2,
-            bottom: bottom + raised,
-            child: MapCreditsControl(
-              maxWidth:
-                  MediaQuery.sizeOf(context).width -
-                  (16 - (AppSizes.mapControl - MapCreditsButton.disc) / 2) -
-                  (16 + AppSizes.mapControl + 8),
-            ),
           ),
           AnimatedPositioned(
             duration: motion,

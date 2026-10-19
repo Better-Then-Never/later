@@ -16,16 +16,31 @@ import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../settings/app_info.dart';
 import '../map_credits.dart';
 
-/// The map's credit (docs/map/ATTRIBUTION.md), bottom left: an (i) button
-/// in the style of the map's other controls, opening the credits sheet,
-/// and a tiny credit line next to it, always or for the first seconds of a
-/// session ([FeatureFlags.mapCreditCollapses]). Replaces MapLibre's own
-/// button.
+/// The map's credit (docs/map/ATTRIBUTION.md), top left next to the filter
+/// button: an (i) button in the style of the map's other controls, opening
+/// the credits sheet, and a tiny credit line next to it, always or only at
+/// the start of a session ([FeatureFlags.mapCreditCollapses]: until the map
+/// is first touched, at most 5 s). Replaces MapLibre's own button.
 class MapCreditsControl extends StatefulWidget {
-  const MapCreditsControl({super.key, required this.maxWidth});
+  const MapCreditsControl({
+    super.key,
+    required this.maxWidth,
+    this.mapShown = true,
+  });
 
-  /// The room it has (the line never runs under the buttons on the right).
+  /// The room it has (the line never runs under the streak pill).
   final double maxWidth;
+
+  /// The map has drawn: the line's 5 s start only then (seen on a map).
+  final bool mapShown;
+
+  /// The line has gone for this session (only when it collapses).
+  static final collapsed = ValueNotifier<bool>(false);
+
+  /// The map was touched: the line goes (when it collapses).
+  static void mapTouched() {
+    if (FeatureFlags.mapCreditCollapses) collapsed.value = true;
+  }
 
   @override
   State<MapCreditsControl> createState() => _MapCreditsControlState();
@@ -33,20 +48,31 @@ class MapCreditsControl extends StatefulWidget {
 
 class _MapCreditsControlState extends State<MapCreditsControl> {
   final _credits = MapCredits.load();
-
-  /// The line collapsed this session (only when it collapses).
-  static bool _collapsed = false;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    if (FeatureFlags.mapCreditCollapses && !_collapsed) {
-      _timer = Timer(const Duration(seconds: 5), () {
-        _collapsed = true;
-        if (mounted) setState(() {});
-      });
+    _startTimer();
+  }
+
+  @override
+  void didUpdateWidget(MapCreditsControl oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _startTimer();
+  }
+
+  void _startTimer() {
+    if (_timer != null ||
+        !widget.mapShown ||
+        !FeatureFlags.mapCreditCollapses ||
+        MapCreditsControl.collapsed.value) {
+      return;
     }
+    _timer = Timer(
+      const Duration(seconds: 5),
+      () => MapCreditsControl.collapsed.value = true,
+    );
   }
 
   @override
@@ -58,7 +84,6 @@ class _MapCreditsControlState extends State<MapCreditsControl> {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final showLine = !FeatureFlags.mapCreditCollapses || !_collapsed;
     return ConstrainedBox(
       constraints: BoxConstraints(maxWidth: widget.maxWidth),
       child: Row(
@@ -66,35 +91,43 @@ class _MapCreditsControlState extends State<MapCreditsControl> {
         children: [
           MapCreditsButton(onTap: () => showMapCredits(context)),
           Flexible(
-            child: AnimatedOpacity(
-              opacity: showLine ? 1 : 0,
-              duration: AppMotion.of(context, AppMotion.slow),
-              child: FutureBuilder<List<MapCredit>>(
-                future: _credits,
-                builder: (context, snapshot) {
-                  final credits = snapshot.data ?? const [];
-                  if (credits.isEmpty) return const SizedBox.shrink();
-                  // Excluded: the button says the same to a screen reader.
-                  return ExcludeSemantics(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        MapCredits.line(credits),
-                        maxLines: 1,
-                        style: AppTextStyles.body.copyWith(
-                          fontSize: 10,
-                          height: 1.2,
-                          color: palette.textSecondary,
-                          shadows: [
-                            Shadow(color: palette.background, blurRadius: 3),
-                            Shadow(color: palette.background, blurRadius: 1),
-                          ],
+            // Never catches a tap meant for the map under it.
+            child: IgnorePointer(
+              child: ValueListenableBuilder<bool>(
+                valueListenable: MapCreditsControl.collapsed,
+                builder: (context, collapsed, line) => AnimatedOpacity(
+                  opacity: FeatureFlags.mapCreditCollapses && collapsed ? 0 : 1,
+                  duration: AppMotion.of(context, AppMotion.slow),
+                  child: line,
+                ),
+                child: FutureBuilder<List<MapCredit>>(
+                  future: _credits,
+                  builder: (context, snapshot) {
+                    final credits = snapshot.data ?? const [];
+                    if (credits.isEmpty) return const SizedBox.shrink();
+                    // Excluded: the button says the same to a screen reader.
+                    return ExcludeSemantics(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 2),
+                        // One credit a line (the room before the streak
+                        // pill is narrow).
+                        child: Text(
+                          credits.map((c) => c.text).join('\n'),
+                          maxLines: 3,
+                          style: AppTextStyles.body.copyWith(
+                            fontSize: 10,
+                            height: 1.2,
+                            color: palette.textSecondary,
+                            shadows: [
+                              Shadow(color: palette.background, blurRadius: 3),
+                              Shadow(color: palette.background, blurRadius: 1),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),

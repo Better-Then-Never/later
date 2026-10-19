@@ -23,6 +23,37 @@ Widget _onMap({Locale locale = const Locale('en'), bool dark = false}) =>
     );
 
 void main() {
+  setUp(() => MapCreditsControl.collapsed.value = false);
+
+  testWidgets('the line shows at the start, and goes on the first touch of '
+      'the map or after 5 s', (tester) async {
+    double lineOpacity() => tester
+        .widget<AnimatedOpacity>(
+          find.ancestor(
+            of: find.textContaining('OpenStreetMap'),
+            matching: find.byType(AnimatedOpacity),
+          ),
+        )
+        .opacity;
+    await tester.pumpWidget(_onMap());
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
+    expect(lineOpacity(), 1);
+    MapCreditsControl.mapTouched();
+    await tester.pumpAndSettle();
+    expect(lineOpacity(), 0, reason: 'touched');
+
+    MapCreditsControl.collapsed.value = false;
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(_onMap());
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
+    expect(lineOpacity(), 1);
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    expect(lineOpacity(), 0, reason: '5 s');
+  });
+
   testWidgets('a 44 dp target with a label, the credit line next to it', (
     tester,
   ) async {

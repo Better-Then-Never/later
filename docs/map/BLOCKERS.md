@@ -12,10 +12,10 @@
   shows the cached tiles and the capsules, no streets for unseen areas. Fallbacks, all with the same style files:
   VersaTiles (free, no SLA), self-hosted Protomaps/OpenMapTiles (only hosting cost), MapTiler (paid).
 
-- **Open: the map credit's behaviour** (mission 3, docs/map/ATTRIBUTION.md): default a tiny credit line always
-  visible next to a Later-styled (i); `FeatureFlags.mapCreditCollapses = true` shows it only for the first 5 s of
-  a session (OSMF allows it; OpenMapTiles' licence asks for a visible credit and says nothing about collapsing: ask
-  MapTiler before switching).
+- Decided 19 Oct 2026: the map credit line goes away (the owner): it shows at the start of each session until the
+  map is first touched (at most 5 s), then only the (i), now top left next to the filter
+  (`FeatureFlags.mapCreditCollapses = true`). OSMF allows it; OpenMapTiles' licence asks for a visible credit and
+  says nothing about collapsing: ask MapTiler to be sure (docs/map/ATTRIBUTION.md).
 
 ## Open after mission 3 (flashing bubbles, docs/map/FLASH_FIX.md)
 - **One glitch in one of three fast runs**: a "7" bubble opened and closed again within about 30 ms at the first

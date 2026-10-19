@@ -35,9 +35,10 @@ abstract final class FeatureFlags {
   /// Google Maps with --dart-define=MAP_LIBRE=false.
   static const mapLibre = bool.fromEnvironment('MAP_LIBRE', defaultValue: true);
 
-  /// The map's data credit (docs/map/ATTRIBUTION.md). false (default): a
-  /// tiny credit line is always on the map next to the (i) button. true:
-  /// the line shows for the first seconds of each session, then only the
-  /// (i) button stays (OpenStreetMap's guidelines allow it collapsing).
-  static const mapCreditCollapses = false;
+  /// The map's data credit (docs/map/ATTRIBUTION.md). true (the owner's
+  /// choice, 19 Oct 2026): the tiny credit line shows next to the (i) at the
+  /// start of each session, until the map is first touched (at most 5 s),
+  /// then only the (i) stays (OpenStreetMap's guidelines allow it
+  /// collapsing). false: the line is always on the map.
+  static const mapCreditCollapses = true;
 }

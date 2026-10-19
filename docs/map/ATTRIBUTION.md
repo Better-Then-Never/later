@@ -30,11 +30,12 @@ run it, and the credits follow.
 
 ## What the app does now
 - **MapLibre's own (i) button is off the map** (the plugin cannot switch it off; its margins put it off-screen).
-- **On the map, bottom left above the navigation pill**: a small (i) disc in the style of the map's controls (surface,
-  dark border, raised shadow, glyph painted like the zoom signs; 44 dp tap target; screen reader label "Map data and
-  credits") and, next to it, **one tiny line always visible**: "OpenFreeMap © OpenMapTiles Data from OpenStreetMap"
-  (10 sp, secondary text colour with a halo of the ground colour; scaled down, never cut, if the room is short). It
-  moves up with the capsule card and the first-capsule hint, like the other controls.
+- **On the map, top left right next to the filter button** (the owner's wish, 19 Oct): a small (i) disc in the style
+  of the map's controls (surface, dark border, raised shadow, glyph painted like the zoom signs; 44 dp tap target;
+  screen reader label "Map data and credits") and, next to it, the tiny credit line "OpenFreeMap © OpenMapTiles Data
+  from OpenStreetMap" (10 sp, secondary text colour with a halo of the ground colour, up to three lines before the
+  streak pill; it never catches a tap meant for the map). **The line shows at the start of each session and goes on
+  the first touch of the map, at most after 5 s** (the owner asked to remove it; this is the OSMF allowance).
 - **The (i) opens a sheet** (the shared edge sheet): the credits with their links, "Improve this map"
   (openstreetmap.org/fixthemap) and "Map rendered with MapLibre" (maplibre.org).
 - **Settings > About > "Map data and licenses"** opens the same sheet; **"Open-source licenses"** now also lists
@@ -42,14 +43,17 @@ run it, and the credits follow.
   the map style, Noto Sans (OFL 1.1) and Maki (`lib/features/map/map_licenses.dart`).
 - Five languages (en, ru, pl, de, es); the credits themselves stay as the providers write them.
 
-## The switch for the owner
+## The switch
 `FeatureFlags.mapCreditCollapses` (`lib/core/config/feature_flags.dart`):
-- `false` (**default**): the tiny line always shows next to the (i). Meets the OSMF and OpenMapTiles wording as
-  plainly as possible. Risk: none known.
-- `true`: the line shows for the first 5 s of each app session, then only the (i) stays. OSMF allows collapsing
-  after 5 s as long as the licence is findable from an (i) in the corner (it is). Risk: OpenMapTiles' CC-BY design
-  licence asks to "visibly credit" in a map corner and says nothing about collapsing; whether an (i) alone is enough
-  for them is not stated. Ask MapTiler (info@maptiler.com) before switching, or keep the default.
+- `true` (**now, the owner's choice of 19 Oct 2026**): the line shows at the start of each app session until the map
+  is first touched (at most 5 s), then only the (i) stays. OSMF allows collapsing on map interaction or after 5 s as
+  long as the licence is findable from an (i) in the corner (it is). Risk: OpenMapTiles' CC-BY design licence asks
+  to "visibly credit" in a map corner and says nothing about collapsing; whether an (i) alone is enough for them is
+  not stated. To be sure, ask MapTiler (info@maptiler.com).
+- `false`: the tiny line always shows next to the (i). Meets the OSMF and OpenMapTiles wording as plainly as
+  possible.
+- Removing the line altogether (the (i) only, from the start) is not offered: OSMF wants the credit visible without
+  interaction at least at the start.
 
 **Not done, by design**: hiding the credit everywhere except Settings (OSMF requires it visible on the map or at
 start, and OpenMapTiles a visible credit).
