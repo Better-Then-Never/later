@@ -39,13 +39,12 @@ marker cannot fade. Measured with real touches, the same gestures, 3 runs each:
 | No stalls ≥ 100 ms, ≤ 1 % janky | met in the spike runs (0 gaps, 0 %) |
 | Readable bubbles, a clear selected pin | met: 17 dp bold counts, three disc sizes; the selected pin larger, raised, with a shadow |
 | Cold start: no white, the saved camera, "almost ready" never after the map | met |
-| No regressions | 454 tests pass; Google Maps is one build switch away; on MapLibre the satellite look and the flying capsules are missing (BLOCKERS.md) |
+| No regressions | 454 tests pass; Google Maps is one build switch away; on MapLibre the satellite look is hidden (owner's call) and the flying capsules are missing (BLOCKERS.md) |
 
 ## Not done
 - **The final 3-run measurement of the finished page** was stopped twice because the computer ran low on memory
   during the profile build. It was not restarted without you. The criteria above rest on the spike's runs. To run it:
   close other apps, then `bash tool/dev/map_gesture.sh after 3`. The 2,000+ capsule check runs with it.
-- **Your decision**: satellite (a provider with imagery, or hide the setting on the map page).
 - iOS is untested.
 
 ## Commits on this branch

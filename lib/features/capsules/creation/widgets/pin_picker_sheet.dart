@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/assets/app_assets.dart';
+import '../../../../core/config/feature_flags.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -104,7 +105,11 @@ class _PinPickerSheetState extends State<PinPickerSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
-    final look = context.select<DeviceSettingsStore, MapLook>((s) => s.mapLook);
+    // With MapLibre the map has no satellite look and Settings hides the
+    // choice, so a satellite choice made earlier does not stick here.
+    final look = FeatureFlags.mapLibre
+        ? MapLook.standard
+        : context.select<DeviceSettingsStore, MapLook>((s) => s.mapLook);
     final height = MediaQuery.sizeOf(context).height;
     return Container(
       height: height * 0.75,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/session/session_controller.dart';
+import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../data/models/capsule.dart';
 import '../../data/repositories/repositories.dart';
@@ -163,7 +164,8 @@ class SettingsPage extends StatelessWidget {
             ),
             OptionsSettingsRow(
               title: l10n.settingsMapAndCamera,
-              subtitle: _value(mapLook.label),
+              // MapLibre's tiles have no satellite look: no map look to show.
+              subtitle: FeatureFlags.mapLibre ? null : _value(mapLook.label),
               navigateTo: const DeviceSettingsPage(),
             ),
             OptionsSettingsRow(

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../data/services/gallery_service.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../device_settings_store.dart';
 import '../widgets/settings_scaffold.dart';
 
-/// Map look, the camera the capsule camera starts with, photo size, the
-/// gallery copy and distance units: how this phone behaves.
+/// Map look (Google Maps only: MapLibre's tiles have no satellite), the camera
+/// the capsule camera starts with, photo size, the gallery copy and distance
+/// units: how this phone behaves.
 class DeviceSettingsPage extends StatelessWidget {
   const DeviceSettingsPage({super.key});
 
@@ -20,18 +22,19 @@ class DeviceSettingsPage extends StatelessWidget {
       title: l10n.settingsMapAndCamera,
       description: l10n.settingsDeviceDescription,
       children: [
-        OptionsSection(
-          title: l10n.settingsSectionMap,
-          children: [
-            for (final look in MapLook.values)
-              SettingsChoiceRow(
-                title: look.label,
-                selected: store.mapLook == look,
-                withDivider: look != MapLook.values.last,
-                onTap: () => store.setMapLook(look),
-              ),
-          ],
-        ),
+        if (!FeatureFlags.mapLibre)
+          OptionsSection(
+            title: l10n.settingsSectionMap,
+            children: [
+              for (final look in MapLook.values)
+                SettingsChoiceRow(
+                  title: look.label,
+                  selected: store.mapLook == look,
+                  withDivider: look != MapLook.values.last,
+                  onTap: () => store.setMapLook(look),
+                ),
+            ],
+          ),
         OptionsSection(
           title: l10n.settingsSectionCamera,
           footer: l10n.settingsCameraFooter,

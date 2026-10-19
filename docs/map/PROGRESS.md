@@ -44,4 +44,5 @@ phone).
   restarted without the owner. To run it: close other apps, then `bash tool/dev/map_gesture.sh after 3`
   (and stop the Gradle daemon afterwards: `cd android && ./gradlew --stop`).
 - 19 Oct: the owner chose OpenFreeMap and MapLibre as the map; the flag is on by default (`MAP_LIBRE=false` for
-  Google; `MAP_GOOGLE=1` in the perf scripts). Attribution checked on the phone.
+  Google; `MAP_GOOGLE=1` in the perf scripts). Attribution checked on the phone. The owner chose to hide the
+  satellite look: no map-look choice in Settings and the standard map in the pin picker while MapLibre is on.
