@@ -161,6 +161,7 @@ def report(path, frames_csv=None):
     # Heat blinks: heat falls below a quarter of its recent best (with no
     # markers on the map) and comes back above half of it within a second.
     blinks = 0
+    blinks_at = []
     i = 1
     while i < n:
         if active[i] and not markers_on[i]:
@@ -174,6 +175,7 @@ def report(path, frames_csv=None):
                     k += 1
                 if k < n and times[k] - times[i] <= 1.0:
                     blinks += 1
+                    blinks_at.append(round(times[i], 3))
                     i = k
         i += 1
 
@@ -197,6 +199,7 @@ def report(path, frames_csv=None):
         "dropout_frames": len(dropouts),
         "dropouts_at": dropouts[:60],
         "heat_blinks": blinks,
+        "heat_blinks_at": blinks_at,
     }
     if frames_csv:
         with open(frames_csv, "w") as f:

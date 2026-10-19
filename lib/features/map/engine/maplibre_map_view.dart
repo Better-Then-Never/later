@@ -374,7 +374,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         reachDp: _reachDp,
         animate: false,
       );
-    unawaited(_setSource(c, _heatSource, _features(map.heatCapsules)));
+    unawaited(_setHeat(c, map.heatCapsules));
     unawaited(_stage.setCapsules(map.visibleCapsules));
     if (!mounted) return;
     setState(() => _styled = true);
@@ -416,6 +416,37 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     ],
   };
 
+  /// The heat's points, written as GeoJSON in a background isolate from a
+  /// flat list of coordinates: built here for 2,000 capsules it held up a
+  /// frame of a pinch (20 ms) when new capsules arrived.
+  static Future<void> _setHeat(
+    ml.MapLibreMapController c,
+    Iterable<Capsule> capsules,
+  ) async {
+    final at = [
+      for (final capsule in capsules)
+        if (capsule.location case final p?) ...[p.longitude, p.latitude],
+    ];
+    final json = await compute(_pointsJson, Float64List.fromList(at));
+    await c.editGeoJsonSource(_heatSource, json);
+  }
+
+  static String _pointsJson(Float64List at) {
+    final out = StringBuffer('{"type":"FeatureCollection","features":[');
+    for (var i = 0; i + 1 < at.length; i += 2) {
+      if (i > 0) out.write(',');
+      out
+        ..write('{"type":"Feature","properties":{},"geometry":')
+        ..write('{"type":"Point","coordinates":[')
+        ..write(at[i])
+        ..write(',')
+        ..write(at[i + 1])
+        ..write(']}}');
+    }
+    out.write(']}');
+    return out.toString();
+  }
+
   static Map<String, dynamic> _point(GeoPosition? at) => {
     'type': 'FeatureCollection',
     'features': [
@@ -439,7 +470,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (_dataVersion != map.capsulesVersion) {
       _dataVersion = map.capsulesVersion;
       unawaited(_stage.setCapsules(map.visibleCapsules));
-      unawaited(_setSource(c, _heatSource, _features(map.heatCapsules)));
+      unawaited(_setHeat(c, map.heatCapsules));
       // A selected capsule the filter now hides: its card goes.
       final selected = _selected;
       if (selected != null &&
