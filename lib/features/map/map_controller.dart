@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart'
     show BitmapDescriptor;
 
 import '../../app/session/session_controller.dart';
+import '../../app/shell/startup_report.dart';
 import '../../core/logging/app_logger.dart';
 import '../../data/models/capsule.dart';
 import '../../data/models/geo_position.dart';
@@ -231,8 +232,10 @@ class MapController extends ChangeNotifier {
     final uid = _session.uid;
     if (uid == null) return;
     unawaited(_loadFilter(uid));
+    StartupReport.mark('map_start');
 
     _icons = await MarkerIcons.load(dark: _darkIcons);
+    StartupReport.mark('map_icons');
     _availability = await _location.availability();
     // Fastest first: a position already known in this session, then the
     // OS last-known fix (instant), and only then wait for a fresh fix.
@@ -241,6 +244,7 @@ class MapController extends ChangeNotifier {
         await _location.lastKnownPosition() ??
         await _location.currentPosition(timeout: const Duration(seconds: 5));
     if (_disposed) return;
+    StartupReport.mark('map_position');
 
     _currentLocation.update(position);
     _initialCamera = position;
@@ -253,13 +257,13 @@ class MapController extends ChangeNotifier {
     _ownSub = _capsules
         .watchOwn(uid)
         .listen(
-          (list) => _set(() => _own = list),
+          (list) => _set(() => _own = list, answered: 'own'),
           onError: _logStreamError('own'),
         );
     _coSub = _capsules
         .watchCoAuthored(uid)
         .listen(
-          (list) => _set(() => _coAuthored = list),
+          (list) => _set(() => _coAuthored = list, answered: 'co'),
           onError: _logStreamError('co-authored'),
         );
     _session.addListener(_onSessionChanged);
@@ -317,7 +321,7 @@ class MapController extends ChangeNotifier {
     _friendsSub = _capsules
         .watchFriends(_friendIds)
         .listen(
-          (list) => _set(() => _friends = list),
+          (list) => _set(() => _friends = list, answered: 'friends'),
           onError: _logStreamError('friends'),
         );
     notifyListeners();
@@ -337,7 +341,7 @@ class MapController extends ChangeNotifier {
             for (final c in list) {
               _publicSeen[c.id] = c;
             }
-          }),
+          }, answered: 'public'),
           onError: _logStreamError('public'),
         );
   }
@@ -378,10 +382,21 @@ class MapController extends ChangeNotifier {
     if (crossed) notifyListeners();
   }
 
-  void _set(VoidCallback update) {
+  /// The sources that have answered at least once (own, co, friends,
+  /// public).
+  final _answered = <String>{};
+
+  /// Every source has answered once: the capsules are all there.
+  bool get allAnswered => _answered.length == 4;
+
+  void _set(VoidCallback update, {String? answered}) {
     _capsulesChanged();
     if (_disposed) return;
     update();
+    if (answered != null && _answered.add(answered)) {
+      StartupReport.mark('data_$answered');
+      if (allAnswered) StartupReport.mark('data_all');
+    }
     unawaited(_recluster());
     AppLogger.debug(
       'Map capsules: own=${_own.length} friends=${_friends.length} '

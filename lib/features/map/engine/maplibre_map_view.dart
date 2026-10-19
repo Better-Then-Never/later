@@ -80,7 +80,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// The posed pins' ids as last sent (the shadow's filter).
   var _posedIds = <String>{};
   late final Ticker _ticker = createTicker(_tick);
-  late final _stage = _GroupStage(vsync: this);
+  late final _stage = _GroupStage(vsync: this)..onSent = _onPictureSent;
   Duration _last = Duration.zero;
   int _sentAt = -1000;
 
@@ -182,18 +182,55 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       _pointers > 0 || _moving || _stage.animating || _ticker.isActive;
   List<String> get _markerLayers => const [_pinsLayer, _bubblesLayer];
 
+  // ----------------------------------------------------------- cold start
+
+  /// The capsule data that first held every source (MapController.allAnswered):
+  /// once a picture of it has been drawn, the map is full (StartupReport).
+  int? _fullVersion;
+
+  /// 0: nothing marked yet; 1: the first pins; 2: full.
+  int _startStage = 0;
+  bool _shellMarked = false;
+
+  /// Start-up marks waiting for the map's next idle (it has drawn them).
+  final _afterIdle = <VoidCallback>[];
+
+  void _onPictureSent(int features, int? version) {
+    if (_startStage < 1 && features > 0) {
+      _startStage = 1;
+      _afterIdle.add(() => StartupReport.mark('pins_first'));
+    }
+    final full = _fullVersion;
+    if (_startStage < 2 && full != null && version != null && version >= full) {
+      _startStage = 2;
+      _afterIdle.add(StartupReport.fullyDrawn);
+    }
+  }
+
+  void _onMapIdle() {
+    StartupReport.mark('streets');
+    final pending = List.of(_afterIdle);
+    _afterIdle.clear();
+    for (final mark in pending) {
+      mark();
+    }
+  }
+
   // ---------------------------------------------------------------- style
 
   Future<void> _onStyleLoaded() async {
     final c = _controller;
     if (c == null || !mounted) return;
+    StartupReport.mark('style_native');
     final map = context.read<MapController>();
     final ratio = MediaQuery.devicePixelRatioOf(context);
     final dark = Theme.of(context).brightness == Brightness.dark;
     final images = await MapLibreImages.all(ratio: ratio, dark: dark);
+    StartupReport.mark('images_made');
     for (final MapEntry(:key, :value) in images.entries) {
       await c.addImage(key, value);
     }
+    StartupReport.mark('images_added');
     // The data as read here: capsules that arrive while the layers are being
     // added are sent by [_syncData] once the style is ready.
     final version = map.capsulesVersion;
@@ -331,8 +368,9 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         animate: false,
       );
     unawaited(_setHeat(c, map.heatCapsules));
-    unawaited(_stage.setCapsules(map.visibleCapsules));
+    unawaited(_stage.setCapsules(map.visibleCapsules, version: version));
     if (!mounted) return;
+    StartupReport.mark('style');
     setState(() => _styled = true);
     if (_shown case final shown?) _showSelected(shown, jump: false);
     if (_focus.pending != null) unawaited(_showFocusedCapsule());
@@ -460,11 +498,16 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// New capsules or a new position: the sources get them (the pins and
   /// bubbles regrouped by the stage).
   void _syncData(MapController map) {
+    if (_fullVersion == null && map.allAnswered) {
+      _fullVersion = map.capsulesVersion;
+    }
     final c = _controller;
     if (!_styled || c == null) return;
     if (_dataVersion != map.capsulesVersion) {
       _dataVersion = map.capsulesVersion;
-      unawaited(_stage.setCapsules(map.visibleCapsules));
+      unawaited(
+        _stage.setCapsules(map.visibleCapsules, version: map.capsulesVersion),
+      );
       unawaited(_setHeat(c, map.heatCapsules));
       // A selected capsule the filter now hides: its card goes.
       final selected = _selected;
@@ -907,6 +950,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     _styleDark = dark;
     _syncData(map);
 
+    if (!_shellMarked) {
+      _shellMarked = true;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => StartupReport.mark('shell'),
+      );
+    }
     final start = map.initialCamera;
     final selected = _selected;
     final bottom = NavbarWidget.coveredHeight(context) + 12;
@@ -981,6 +1030,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                   ml.AttributionButtonPosition.bottomLeft,
               attributionButtonMargins: const math.Point(-400, -400),
               onMapCreated: (c) {
+                StartupReport.mark('map_created');
                 _controller = c;
                 if (!_ready.isCompleted) _ready.complete(c);
                 c.onFeatureTapped.add(_onFeatureTapped);
@@ -1030,6 +1080,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                 if (position.zoom < MapZoomVisuals.markersFrom) _select(null);
               },
               onCameraIdle: () => unawaited(_onIdle(map)),
+              onMapIdle: _onMapIdle,
             ),
           ),
           if (MapStats.harness)

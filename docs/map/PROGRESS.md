@@ -97,3 +97,22 @@ stays the default (`FeatureFlags.mapLibre`).
 | Final runs: three per speed, select, 2,205 capsules, dark | done; open items in BLOCKERS.md |
 
 Docs: FLASH_FIX.md, ATTRIBUTION.md, PERFORMANCE.md "After 3", MORNING_SUMMARY.md.
+
+# Mission 4: the full map at once, M-06 cold start (19 Oct 2026)
+Branch `feature/map-instant-start` from `fix/map-flash-ghosts-selection` at `c7f3e37`. Numbers in COLD_START.md.
+Never push, merge, deploy or release unless the owner asks in chat.
+
+| Step | State |
+|---|---|
+| 0 Rig: marks, TTFD via reportFullyDrawn at full map, coldstart.sh + coldstart_report.js, baseline | done |
+| 1 Quick wins: splash colour, cover fade, bar in one frame, no GPS wait, Firestore tuning, marker pictures | |
+| 2 Pin store and delta sync, with tests | |
+| 3 One reveal and diff animations | |
+| 4 Tile cache and prefetch, SCALING.md | |
+| 5 Verification matrix, docs | |
+
+## Log
+- Rig: `tool/dev/coldstart.sh 5 --no-build <label>` (VIDEO=1 films launch 1). `am start --splashscreen-show-icon`
+  (the help's `--splashscreen-icon` is unknown on this phone). FlutterActivity reported fully drawn at its first
+  frame: overridden in MainActivity. Baseline TTFD 4.26 s; the marker pictures (1.75 s) and Firestore's first
+  answer (1.75 s) are the two long paths.

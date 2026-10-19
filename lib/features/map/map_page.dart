@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import '../../app/router/app_routes.dart';
 import '../../app/session/session_controller.dart';
 import '../../app/shell/selected_page.dart';
+import '../../app/shell/startup_report.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../app/shell/navbar_widget.dart';

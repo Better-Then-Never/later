@@ -18,9 +18,11 @@ import 'background_uploads_main.dart' show backgroundUploadsMain;
 import 'firebase_setup.dart';
 import 'appearance/appearance_controller.dart';
 import 'later_app.dart';
+import 'shell/startup_report.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+  StartupReport.mark('dart');
   MapLicenses.register();
 
   FlutterError.onError = (details) {
@@ -62,6 +64,7 @@ Future<void> bootstrap() async {
   // second Flutter engine on Android's main thread at every launch; with an
   // empty handler that cost bought nothing and froze startup (POL-001).
 
+  StartupReport.mark('run');
   runApp(
     AppScope(
       preferences: preferences,

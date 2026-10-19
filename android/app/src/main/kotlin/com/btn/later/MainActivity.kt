@@ -32,6 +32,11 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // FlutterActivity reports "fully drawn" at Flutter's first frame; Later
+    // reports it when the map shows its capsules (StartupReport), the time
+    // to full display Android vitals should count (docs/map/COLD_START.md).
+    override fun onFlutterUiDisplayed() {}
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName)
@@ -99,7 +104,7 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
-        // The signed-in home screen drew its first frame (StartupReport).
+        // The map drew its capsules (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->
                 when (call.method) {

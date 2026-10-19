@@ -35,6 +35,12 @@ class _GroupStage {
   bool _dirty = false;
   int _run = 0;
 
+  /// The data version of [groups] (MapController.capsulesVersion), and a
+  /// listener told after each picture has reached the map (its number of
+  /// pieces and that version): the cold start's marks.
+  int? groupedVersion;
+  void Function(int features, int? version)? onSent;
+
   /// The pictures sent, counted (each feature carries its picture's number,
   /// so the flash probe can tell a late picture from a wrong one).
   int seq = 0;
@@ -117,7 +123,7 @@ class _GroupStage {
 
   /// New capsules (or a filter): grouped off Flutter's UI thread; the
   /// picture follows, nothing flies.
-  Future<void> setCapsules(Iterable<Capsule> capsules) async {
+  Future<void> setCapsules(Iterable<Capsule> capsules, {int? version}) async {
     final run = ++_run;
     final points = [
       for (final c in capsules)
@@ -129,6 +135,7 @@ class _GroupStage {
     MapStats.instance.clustered(watch.elapsedMicroseconds);
     if (run != _run) return;
     groups = built;
+    groupedVersion = version;
     _level ??= CapsuleGroups.levelFor(_zoom);
     restart();
   }
@@ -278,6 +285,7 @@ class _GroupStage {
         final picture = _picture();
         final watch = Stopwatch()..start();
         await _setSource(c, _capsulesSource, picture);
+        onSent?.call((picture['features'] as List).length, groupedVersion);
         if (MapStats.trace) {
           debugPrint(
             'MAPSEND $_now features '

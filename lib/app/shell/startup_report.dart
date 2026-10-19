@@ -1,22 +1,76 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
-/// Tells Android when the signed-in home screen first drew
+/// The cold start, measured (docs/map/COLD_START.md). Named moments go to
+/// the device log as `LATERSTART <name>` (debug and profile builds; the
+/// launcher script `tool/dev/coldstart.sh` times them from Android's own
+/// launch), and Android is told when the map has drawn its pins
 /// (`Activity.reportFullyDrawn`): "time to full display" in Android vitals,
-/// and the cold start number in docs/feel/PERFORMANCE.md (logcat
-/// "Fully drawn"). Once per process; Android ignores repeats anyway.
+/// logcat "Fully drawn". Once per process; Android ignores repeats anyway.
 abstract final class StartupReport {
   static const _channel = MethodChannel('later.app/startup');
   static bool _reported = false;
+  static final _marked = <String>{};
 
-  static void homeDrawn() {
+  /// Frames from the first one until shortly after the map is full.
+  static final _frames = <FrameTiming>[];
+  static bool _watching = false;
+
+  /// A named moment of this start, once per process.
+  static void mark(String name) {
+    if (kReleaseMode || !_marked.add(name)) return;
+    Timeline.instantSync('later.start.$name');
+    debugPrint('LATERSTART $name');
+    _watchFrames();
+  }
+
+  /// The signed-in home screen drew its first frame.
+  static void homeDrawn() => mark('home');
+
+  /// The map shows everything it has for this start: the streets and every
+  /// pin (TTFD).
+  static void fullyDrawn() {
     if (_reported) return;
     _reported = true;
+    mark('full');
     unawaited(
       _channel.invokeMethod<void>('fullyDrawn').catchError((Object _) {
         // Platforms without the channel (tests, iOS): nothing to report to.
       }),
     );
+    if (_watching) {
+      // The reveal runs after it: the frames of the next two seconds count.
+      Timer(const Duration(seconds: 2), _reportFrames);
+    }
+  }
+
+  static void _watchFrames() {
+    if (_watching || kReleaseMode) return;
+    _watching = true;
+    SchedulerBinding.instance.addTimingsCallback(_frames.addAll);
+  }
+
+  static void _reportFrames() {
+    SchedulerBinding.instance.removeTimingsCallback(_frames.addAll);
+    // Janky at 120 Hz: build or raster over 8.3 ms (docs/feel/RIG.md).
+    var over8 = 0, over16 = 0, worst = 0;
+    for (final f in _frames) {
+      final ms = [
+        f.buildDuration.inMicroseconds,
+        f.rasterDuration.inMicroseconds,
+      ].reduce((a, b) => a > b ? a : b);
+      if (ms > 8333) over8++;
+      if (ms > 16667) over16++;
+      if (ms > worst) worst = ms;
+    }
+    debugPrint(
+      'LATERSTART frames n=${_frames.length} over8=$over8 over16=$over16 '
+      'worst=${(worst / 1000).toStringAsFixed(1)}',
+    );
+    _frames.clear();
   }
 }
