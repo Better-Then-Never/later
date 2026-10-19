@@ -48,3 +48,29 @@ What a launch looks like (`build/dev/video/coldstart_base.mp4`, first launch, fr
 window in the page grey for about 0.9 s (no logo); the Later logo for one frame; the buttons with the navigation
 bar's white pill **empty for one frame**, then its icons; **the empty map behind the buttons for 1.2 s**; the
 streets all at once; 1.8 s later the heat and the person (that launch opened zoomed out, in the heat).
+
+## Step 1: quick wins (each measured; medians of 5, ms from launch)
+| Step | What changed | streets | own answered | all answered | **full (TTFD)** | janky |
+|---|---|---|---|---|---|---|
+| base | – | 2,856 | 3,675 | 4,327 | **4,262** | 48 |
+| 1 | the capsule reads start first (before the marker icons and the location); no GPS wait with a saved camera; Google's marker icons not loaded on MapLibre; the 107 marker pictures drawn at once and handed to the map at once (1.75 s → 0.5 s) | 2,839 | 2,436 | 3,400 | **3,472** | 8 |
+| 2 | Firestore's cache: emptied once (3,727 cached capsules of old seeds, 17 MB → 1.7 MB), bounded to 40 MB, indexes made by the SDK | 3,836 | 3,694 | 4,535 | **4,802** | 8 |
+| 3 | launch screen, first Flutter frame and the map's cover in the map's ground colour; the cover thins out once the streets are drawn (or 1.8 s after the buttons, or at a touch) | 2,814 | 2,447 | 3,534 | **3,593** | 11 |
+| 3b | the permission check shows the splash, not a loader on the page grey; the first screen's pictures decoded during the splash (home waits at most 150 ms) | 2,873 | 2,461 | 3,374 | **3,537** | 14 |
+| 3c | the saved camera read at once: the map's buttons in the same frame as the tab bar | 2,724 | 2,399 | 3,396 | **3,459** | 8 |
+
+Notes:
+- Step 2 was slower only right after the cleanup: the SDK answers a listened query from its last result plus every
+  cached document read since (Firestore's own log, `--dart-define=FIRESTORE_LOG=true`: "Re-using previous result
+  from SnapshotVersion..."); after the cleanup every capsule had just been read again, so each query looked at all of
+  them. Three launches later (step 3) the first answers were back at 2.4 s. The SDK made two indexes of its own
+  (`privacy, ownerId` for the friends' query, `privacy, location` for the public band), used from then on. Firestore's
+  first answer is still 1.2 s after the map asks: the reason for the pin store (step 2 of the mission).
+- With FlutterFire's own `reportFullyDrawn` gone, `full` waits for the reveal too (the cover gone): it is what the
+  user sees.
+- The video of each launch (`build/dev/video/coldstart_step3c.mp4`, 30 frames a second): the launch window in the
+  map's ground (sampled 243,244,241, the map's #F3F3F0 after the video's compression) from its first frame; the
+  logo for 4 frames (this launch, from `am start`, gets Android 13's splash without its icon; from the home screen
+  the splash has the logo); the tab bar, the map's buttons and their icons in one frame (the streak pill one frame
+  later, when its data is read); the cover until the streets, which fade in over 0.3 s. No grey, no white, no empty
+  tab bar, no half-drawn map.

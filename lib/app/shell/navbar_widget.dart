@@ -22,6 +22,16 @@ class NavbarWidget extends StatelessWidget {
     required this.onItemTapped,
   });
 
+  /// The tabs' pictures, decoded before the first frame of home
+  /// ([AuthGate]): the bar and its icons appear in the same frame.
+  static const icons = [
+    AppIcons.navbarMap,
+    AppIcons.navbarHistory,
+    AppIcons.navbarAdd,
+    AppIcons.navbarMessages,
+    AppIcons.navbarProfile,
+  ];
+
   /// The pill's height (was 80, F-34).
   static const double barHeight = 68;
 

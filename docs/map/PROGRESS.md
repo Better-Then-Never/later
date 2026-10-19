@@ -105,7 +105,7 @@ Never push, merge, deploy or release unless the owner asks in chat.
 | Step | State |
 |---|---|
 | 0 Rig: marks, TTFD via reportFullyDrawn at full map, coldstart.sh + coldstart_report.js, baseline | done |
-| 1 Quick wins: splash colour, cover fade, bar in one frame, no GPS wait, Firestore tuning, marker pictures | |
+| 1 Quick wins: splash colour, cover fade, bar in one frame, no GPS wait, Firestore tuning, marker pictures | done (TTFD 4.26 → 3.46 s) |
 | 2 Pin store and delta sync, with tests | |
 | 3 One reveal and diff animations | |
 | 4 Tile cache and prefetch, SCALING.md | |

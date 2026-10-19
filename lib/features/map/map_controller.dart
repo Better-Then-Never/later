@@ -12,6 +12,7 @@ import '../../data/models/geo_position.dart';
 import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
 import 'cluster_icons.dart';
+import 'engine/map_camera_memory.dart';
 import 'current_location.dart';
 import 'map_clusters.dart';
 import 'map_stats.dart';
@@ -120,7 +121,10 @@ class MapController extends ChangeNotifier {
   MarkerIcons? get icons => _icons;
   GeoPosition get initialCamera => _initialCamera ?? fallbackCamera;
   double get initialCameraZoom =>
-      _usedFallbackCamera ? fallbackZoom : initialZoom;
+      _savedZoom ?? (_usedFallbackCamera ? fallbackZoom : initialZoom);
+
+  /// The zoom of the camera saved when the map last stopped (null: none).
+  double? _savedZoom;
   bool get usedFallbackCamera => _usedFallbackCamera;
   LocationAvailability get availability => _availability;
   GeoPosition? get myPosition => _currentLocation.position;
@@ -228,32 +232,64 @@ class MapController extends ChangeNotifier {
       c.privacy == CapsulePrivacy.public ||
       (c.privacy == CapsulePrivacy.friends && friendIds.contains(c.ownerId));
 
+  /// The capsules are asked for first: they are the slow part, and nothing
+  /// waits for the location. The map opens where it last stopped (M-06,
+  /// [MapCameraMemory]) at once; only a first start, with nowhere saved,
+  /// waits for a position (the OS last-known fix, then at most 5 s for a
+  /// fresh one, then a world view).
   Future<void> start() async {
     final uid = _session.uid;
     if (uid == null) return;
-    unawaited(_loadFilter(uid));
     StartupReport.mark('map_start');
+    _watchCapsules(uid);
+    unawaited(_loadFilter(uid));
 
-    _icons = await MarkerIcons.load(dark: _darkIcons);
-    StartupReport.mark('map_icons');
+    // Read at once when it can be: the map then builds with the page's
+    // first frame, its buttons with the tab bar.
+    final prefs = _prefs;
+    final known = prefs?.stringSync(uid, MapCameraMemory.key);
+    final saved = MapCameraMemory.parse(
+      known ?? await prefs?.string(uid, MapCameraMemory.key),
+    );
+    if (_disposed) return;
+    if (saved case (final latitude, final longitude, final zoom)) {
+      _initialCamera = GeoPosition(latitude, longitude);
+      _savedZoom = zoom;
+      _state = MapLoadState.ready;
+      _loadPublicBand(latitude);
+      // Nobody listens yet when it was read at once.
+      if (known == null) notifyListeners();
+    }
+
+    // Google's marker bitmaps (MapLibre draws its own).
+    if (groupsMarkers) _icons = await MarkerIcons.load(dark: _darkIcons);
     _availability = await _location.availability();
     // Fastest first: a position already known in this session, then the
-    // OS last-known fix (instant), and only then wait for a fresh fix.
+    // OS last-known fix (instant); a fresh fix only with nowhere to open.
     final position =
         _currentLocation.position ??
         await _location.lastKnownPosition() ??
-        await _location.currentPosition(timeout: const Duration(seconds: 5));
+        (saved == null
+            ? await _location.currentPosition(
+                timeout: const Duration(seconds: 5),
+              )
+            : null);
     if (_disposed) return;
     StartupReport.mark('map_position');
 
     _currentLocation.update(position);
-    _initialCamera = position;
-    _usedFallbackCamera = position == null;
-    _state = MapLoadState.ready;
+    if (saved == null) {
+      _initialCamera = position;
+      _usedFallbackCamera = position == null;
+      _state = MapLoadState.ready;
+      _loadPublicBand(initialCamera.latitude);
+    }
     notifyListeners();
 
     if (_availability == LocationAvailability.available) _followPosition();
+  }
 
+  void _watchCapsules(String uid) {
     _ownSub = _capsules
         .watchOwn(uid)
         .listen(
@@ -268,7 +304,6 @@ class MapController extends ChangeNotifier {
         );
     _session.addListener(_onSessionChanged);
     _onSessionChanged();
-    _loadPublicBand(initialCamera.latitude);
   }
 
   bool _darkIcons = false;
@@ -314,7 +349,9 @@ class MapController extends ChangeNotifier {
 
   void _onSessionChanged() {
     final friends = _session.profile?.friends ?? const <String>[];
-    if (listEquals(friends, _friendIds)) return;
+    // The first time even with no friends: their source answers (empty),
+    // or the map never knows it has everything.
+    if (_friendsSub != null && listEquals(friends, _friendIds)) return;
     _friendIds = List.of(friends);
     _capsulesChanged();
     unawaited(_friendsSub?.cancel());

@@ -19,32 +19,47 @@ abstract final class MapLibreImages {
 
   /// Every picture by its name in the style: `pin_<colour>`, `shadow`,
   /// `bubble_<label>`, `me`. A selected pin is its pin grown by the layer.
+  /// All drawn at once: one after another, each waiting for its raster,
+  /// they took 1.75 s at a cold start (docs/map/COLD_START.md).
   static Future<Map<String, Uint8List>> all({
     required double ratio,
     required bool dark,
   }) async {
-    final out = <String, Uint8List>{};
-    for (final color in CapsuleColor.values) {
-      final pin =
-          MarkerIcons.pinPicture(color) ??
-          await _decode(
-            AppIcons.mapPin(color.name),
-            (SelectedPin.side * ratio).round(),
-          );
-      out['pin_${color.name}'] = await _png(pin);
-    }
-    out['shadow'] = await _shadow(ratio);
-    for (var n = 2; n <= 100; n++) {
-      out['bubble_${bubbleLabel(n)}'] = await _bubble(bubbleLabel(n), ratio);
-    }
+    Future<MapEntry<String, Uint8List>> named(
+      String name,
+      Future<Uint8List> png,
+    ) async => MapEntry(name, await png);
+    return Map.fromEntries(
+      await Future.wait([
+        for (final color in CapsuleColor.values)
+          named('pin_${color.name}', _pin(color, ratio)),
+        named('shadow', _shadow(ratio)),
+        for (var n = 2; n <= 100; n++)
+          named('bubble_${bubbleLabel(n)}', _bubble(bubbleLabel(n), ratio)),
+        named('me', _me(dark: dark, ratio: ratio)),
+      ]),
+    );
+  }
+
+  static Future<Uint8List> _pin(CapsuleColor color, double ratio) async => _png(
+    MarkerIcons.pinPicture(color) ??
+        await _decode(
+          AppIcons.mapPin(color.name),
+          (SelectedPin.side * ratio).round(),
+        ),
+  );
+
+  static Future<Uint8List> _me({
+    required bool dark,
+    required double ratio,
+  }) async {
     final user = dark
         ? AppIcons.mapPinUser.replaceFirst(
             AppAssetDirs.icons,
             AppAssetDirs.iconsDark,
           )
         : AppIcons.mapPinUser;
-    out['me'] = await _png(await _decode(user, (64 * ratio).round()));
-    return out;
+    return _png(await _decode(user, (64 * ratio).round()));
   }
 
   static Future<ui.Image> _decode(String asset, int width) async {

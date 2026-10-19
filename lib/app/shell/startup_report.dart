@@ -20,12 +20,18 @@ abstract final class StartupReport {
   static final _frames = <FrameTiming>[];
   static bool _watching = false;
 
+  /// The start begins (bootstrap, binding ready): its first mark, and its
+  /// frames are counted from here.
+  static void begin() {
+    mark('dart');
+    _watchFrames();
+  }
+
   /// A named moment of this start, once per process.
   static void mark(String name) {
     if (kReleaseMode || !_marked.add(name)) return;
     Timeline.instantSync('later.start.$name');
     debugPrint('LATERSTART $name');
-    _watchFrames();
   }
 
   /// The signed-in home screen drew its first frame.

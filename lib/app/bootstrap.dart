@@ -22,7 +22,7 @@ import 'shell/startup_report.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  StartupReport.mark('dart');
+  StartupReport.begin();
   MapLicenses.register();
 
   FlutterError.onError = (details) {
@@ -55,7 +55,9 @@ Future<void> bootstrap() async {
   // pad themselves with the real insets.
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
+  await configureFirestoreCache(preferences);
   await connectEmulatorsIfAsked();
+  indexFirestoreCache();
 
   // No FirebaseMessaging.onBackgroundMessage handler on purpose: every push
   // carries a `notification` payload, which the OS displays by itself while

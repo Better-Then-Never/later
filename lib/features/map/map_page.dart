@@ -30,6 +30,7 @@ import '../../data/repositories/repositories.dart';
 import '../../data/services/location_service.dart';
 import '../../data/services/preferences_store.dart';
 import '../../shared/motion/app_motion_widgets.dart';
+import '../../shared/motion/tint_painter.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/later_loading_bar.dart';
 import '../settings/device_settings_store.dart';

@@ -56,11 +56,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// "Leave your first capsule" closed on this phone (as on the Google page).
   bool _hintClosed = true;
 
-  /// Where the map was when it last stopped (this phone, this account): a
-  /// cold start opens there at once, before any location fix (M-06).
-  ml.CameraPosition? _savedCamera;
-  bool _cameraRead = false;
+  /// What was last saved as the camera (MapController opens there, M-06).
   String? _cameraSaved;
+
+  /// The marker pictures, drawn while the map view starts (ready by the
+  /// time its style is), for the theme they were drawn for.
+  Future<Map<String, Uint8List>>? _images;
+  bool? _imagesDark;
 
   // Fingers and camera, for MapStats.
   int _pointers = 0;
@@ -95,24 +97,14 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     _focus = context.read<MapFocus>()..addListener(_onFocusRequested);
     selectedPageNotifier.addListener(_onTabChanged);
     unawaited(_loadHint());
-    unawaited(_loadCamera());
   }
 
-  Future<void> _loadCamera() async {
-    final uid = context.read<SessionController>().uid;
-    final saved = uid == null
-        ? null
-        : await context.read<PreferencesStore>().string(
-            uid,
-            MapCameraMemory.key,
-          );
-    if (!mounted) return;
-    setState(() {
-      if (MapCameraMemory.parse(saved) case (final lat, final lng, final z)) {
-        _savedCamera = ml.CameraPosition(target: ml.LatLng(lat, lng), zoom: z);
-      }
-      _cameraRead = true;
-    });
+  Future<Map<String, Uint8List>> _markerImages(double ratio, bool dark) {
+    if (_imagesDark != dark) {
+      _imagesDark = dark;
+      _images = MapLibreImages.all(ratio: ratio, dark: dark);
+    }
+    return _images!;
   }
 
   void _saveCamera(ml.CameraPosition camera) {
@@ -140,6 +132,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     selectedPageNotifier.removeListener(_onTabChanged);
     _ticker.dispose();
     _stage.dispose();
+    _revealCap?.cancel();
+    _cover.dispose();
     _bearing.dispose();
     super.dispose();
   }
@@ -191,6 +185,41 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// 0: nothing marked yet; 1: the first pins; 2: full.
   int _startStage = 0;
   bool _shellMarked = false;
+  bool _fullDrawn = false;
+
+  /// The map's ground over the map until it has drawn its streets (M-06):
+  /// thinned out once, so a half-drawn map (blank tiles, streets coming in
+  /// piece by piece) is never seen. Painted, not an opacity layer
+  /// (MOTION_CATALOG.md rule 1).
+  late final AnimationController _cover =
+      AnimationController(vsync: this, value: 1, duration: AppMotion.slow)
+        ..addStatusListener((status) {
+          if (status == AnimationStatus.dismissed && mounted) setState(() {});
+        });
+  bool _revealing = false;
+
+  /// The cover goes at the latest this long after the map's buttons showed
+  /// (no tiles: offline with nothing cached, a slow network).
+  static const _revealAtLatest = Duration(milliseconds: 1800);
+  Timer? _revealCap;
+
+  void _reveal() {
+    if (_revealing || !mounted) return;
+    _revealing = true;
+    _revealCap?.cancel();
+    StartupReport.mark('reveal');
+    if (AppMotion.reduced(context)) {
+      _cover.value = 0;
+    } else {
+      unawaited(_cover.animateTo(0, curve: AppMotion.enter));
+    }
+    _maybeFull();
+  }
+
+  /// Full: every pin of this start drawn, and no longer covered.
+  void _maybeFull() {
+    if (_fullDrawn && _revealing) StartupReport.fullyDrawn();
+  }
 
   /// Start-up marks waiting for the map's next idle (it has drawn them).
   final _afterIdle = <VoidCallback>[];
@@ -203,7 +232,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     final full = _fullVersion;
     if (_startStage < 2 && full != null && version != null && version >= full) {
       _startStage = 2;
-      _afterIdle.add(StartupReport.fullyDrawn);
+      _afterIdle.add(() {
+        _fullDrawn = true;
+        _maybeFull();
+      });
     }
   }
 
@@ -214,6 +246,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     for (final mark in pending) {
       mark();
     }
+    // The streets are drawn, our layers on them.
+    if (_styled) _reveal();
   }
 
   // ---------------------------------------------------------------- style
@@ -225,11 +259,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     final map = context.read<MapController>();
     final ratio = MediaQuery.devicePixelRatioOf(context);
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final images = await MapLibreImages.all(ratio: ratio, dark: dark);
+    final images = await _markerImages(ratio, dark);
     StartupReport.mark('images_made');
-    for (final MapEntry(:key, :value) in images.entries) {
-      await c.addImage(key, value);
-    }
+    // All at once, not one after another each waiting for its answer.
+    await Future.wait([
+      for (final MapEntry(:key, :value) in images.entries)
+        c.addImage(key, value),
+    ]);
     StartupReport.mark('images_added');
     // The data as read here: capsules that arrive while the layers are being
     // added are sent by [_syncData] once the style is ready.
@@ -936,14 +972,11 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     // The map's own ground colour, not a white page, until it has drawn
     // (M-06).
     final ground = dark ? AppColors.mapGroundDark : AppColors.mapGroundLight;
-    final saved = _savedCamera;
-    // A saved camera: the map opens there at once, the capsules come when
-    // they are loaded; otherwise it waits for the start position.
-    if (!_cameraRead ||
-        (saved == null &&
-            (map.state == MapLoadState.loading || map.icons == null))) {
-      return ColoredBox(color: ground);
-    }
+    // Drawn while the map starts.
+    unawaited(_markerImages(MediaQuery.devicePixelRatioOf(context), dark));
+    // Until it knows where to open: at once where it last stopped (M-06),
+    // the capsules coming when they are loaded.
+    if (map.state == MapLoadState.loading) return ColoredBox(color: ground);
     _reportLocationProblem(map);
     // A theme switch loads the other style; its layers are added again.
     if (_styleDark != null && _styleDark != dark) _styled = false;
@@ -955,6 +988,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => StartupReport.mark('shell'),
       );
+      _revealCap = Timer(_revealAtLatest, _reveal);
     }
     final start = map.initialCamera;
     final selected = _selected;
@@ -981,6 +1015,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
           Positioned.fill(child: ColoredBox(color: ground)),
           Listener(
             onPointerDown: (e) {
+              _reveal();
               MapCreditsControl.mapTouched();
               MapStats.instance
                 ..touch('down')
@@ -1007,12 +1042,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
               // source is the owner's decision (DECISION.md).
               styleString: dark ? AppMapStyles.dark : AppMapStyles.light,
               foregroundLoadColor: ground,
-              initialCameraPosition: _debugZoom != null || saved == null
-                  ? ml.CameraPosition(
-                      target: ml.LatLng(start.latitude, start.longitude),
-                      zoom: _debugZoom ?? map.initialCameraZoom,
-                    )
-                  : saved,
+              initialCameraPosition: ml.CameraPosition(
+                target: ml.LatLng(start.latitude, start.longitude),
+                zoom: _debugZoom ?? map.initialCameraZoom,
+              ),
               trackCameraPosition: true,
               // Never out to the whole world, never past street level
               // (MapLimits, mission 2).
@@ -1083,6 +1116,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
               onMapIdle: _onMapIdle,
             ),
           ),
+          if (!_revealing || _cover.value > 0)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(painter: TintPainter(_cover, ground)),
+              ),
+            ),
           if (MapStats.harness)
             const Positioned(top: 0, left: 0, child: MapHarnessStrip()),
           // The map's data credit, top left right next to the filter button
