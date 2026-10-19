@@ -86,6 +86,28 @@ void main() {
     expect(find.text('Map rendered with MapLibre'), findsOneWidget);
   });
 
+  testWidgets('a drag down anywhere on the sheet closes it', (tester) async {
+    tester.view
+      ..physicalSize = const Size(412, 915)
+      ..devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_onMap());
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(MapCreditsButton));
+    await tester.pumpAndSettle();
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
+    // From the middle of the list, not the handle.
+    await tester.fling(
+      find.text('Improve this map'),
+      const Offset(0, 300),
+      1500,
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Improve this map'), findsNothing);
+  });
+
   for (final locale in const ['en', 'ru', 'pl', 'de', 'es']) {
     for (final dark in [false, true]) {
       testWidgets('fits a 320 dp phone at 130 % text, $locale, '

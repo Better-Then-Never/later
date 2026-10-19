@@ -238,7 +238,11 @@ class _MapCreditsSheet extends StatelessWidget {
               withDivider: !last,
               onTap: url == null ? null : () => _open(context, url),
             );
+        // Scrolls only when it does not fit (large text): otherwise a drag
+        // down anywhere on the sheet closes it, not just on its handle.
         return ListView(
+          primary: false,
+          physics: const ClampingScrollPhysics(),
           padding: EdgeInsets.only(
             bottom: MediaQuery.viewPaddingOf(context).bottom + 16,
           ),
