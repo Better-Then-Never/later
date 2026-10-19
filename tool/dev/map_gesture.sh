@@ -109,6 +109,7 @@ for n in $(seq "$runs"); do
     video=$out/run_$n/$flow.mp4
     [ -f "$video" ] || continue
     "$PY" -I tool/dev/map_gesture_report.py "$video" >"${video%.mp4}.report.json"
+    "$PY" -I tool/dev/map_flash_video.py "$video" >"${video%.mp4}.flash.json"
   done
 done
 dart run tool/dev/map_gesture_summary.dart "$out"

@@ -74,6 +74,12 @@ class MapStats {
   /// perf test, so every run starts from the same view).
   Future<void> Function(LatLng target, double zoom)? moveCamera;
 
+  /// For the perf test's taps (MapLibre page): where on the screen (physical
+  /// pixels) a pin stands near the middle, the [skip]th nearest; and a spot
+  /// with no marker near it.
+  Future<Offset?> Function(int skip)? pinOnScreen;
+  Future<Offset?> Function()? emptyOnScreen;
+
   Set<Marker>? _lastMarkers;
   Set<TileOverlay>? _lastTiles;
   String? _lastStyle;
@@ -182,6 +188,26 @@ class MapStats {
     if (recordZooms) zooms.add((us, zoom));
     if (trace) debugPrint('MAPCAM $us ${zoom.toStringAsFixed(3)}');
   }
+
+  /// The flash probe runs (`--dart-define=MAP_FLASH=true`): every frame the
+  /// map moves or animates, what it drew is compared with what was sent.
+  static const flashProbe = bool.fromEnvironment('MAP_FLASH');
+
+  /// One probe: [doubles] ids drawn more than once, [missing] sent and in
+  /// view but not drawn, [ghosts] drawn but not sent.
+  void flashProbed({
+    required int doubles,
+    required int missing,
+    required int ghosts,
+  }) => _count((c) {
+    c.flashProbes++;
+    if (doubles > 0) c.flashDoubleFrames++;
+    c.flashDoubles += doubles;
+    if (missing > 0) c.flashMissingFrames++;
+    c.flashMissing += missing;
+    if (ghosts > 0) c.flashGhostFrames++;
+    c.flashGhosts += ghosts;
+  });
 
   /// A finger went down or up on the map (traced next to the camera).
   void touch(String what) {
@@ -328,6 +354,17 @@ class _Counts {
   // Under two fingers: how far the map's scale strays from the fingers'
   // spread (thousandths of a zoom level) and how far the place under their
   // middle drifts from it (dp), per camera position.
+  // The flash probe (MAP_FLASH): frames where a marker is drawn twice,
+  // where one that should show is missing, and markers drawn that were not
+  // sent (ghosts), from queryRenderedFeatures against what was sent.
+  int flashProbes = 0;
+  int flashDoubleFrames = 0;
+  int flashDoubles = 0;
+  int flashMissingFrames = 0;
+  int flashMissing = 0;
+  int flashGhostFrames = 0;
+  int flashGhosts = 0;
+
   int pinchSamples = 0;
   int scaleErrorSumMilli = 0;
   int scaleErrorMaxMilli = 0;
@@ -345,6 +382,8 @@ class _Counts {
     slowestClusterUs = activeFrames = jankyFrames = worstFrameUs = 0;
     frameGaps100 = longestGapUs = answers = answerMs = slowestAnswerMs = 0;
     pinchSamples = scaleErrorSumMilli = scaleErrorMaxMilli = 0;
+    flashProbes = flashDoubleFrames = flashDoubles = flashMissingFrames = 0;
+    flashMissing = flashGhostFrames = flashGhosts = 0;
     anchorDriftSumDp = anchorDriftMaxDp = 0;
   }
 
@@ -379,6 +418,13 @@ class _Counts {
     'longest_gap_ms': longestGapUs ~/ 1000,
     'answer_ms': answers == 0 ? 0 : answerMs ~/ answers,
     'slowest_answer_ms': slowestAnswerMs,
+    'flash_probes': flashProbes,
+    'flash_double_frames': flashDoubleFrames,
+    'flash_doubles': flashDoubles,
+    'flash_missing_frames': flashMissingFrames,
+    'flash_missing': flashMissing,
+    'flash_ghost_frames': flashGhostFrames,
+    'flash_ghosts': flashGhosts,
     'pinch_samples': pinchSamples,
     'scale_error_milli': pinchSamples == 0
         ? 0

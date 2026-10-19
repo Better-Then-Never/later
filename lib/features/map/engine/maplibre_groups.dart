@@ -37,6 +37,13 @@ class _GroupStage {
   bool _coverSending = false;
   int _run = 0;
 
+  /// What the still and moving sources hold now (for the flash probe only).
+  final sentStill = <String, _Sent>{};
+  final sentMoving = <String, _Sent>{};
+
+  /// A split or merge is under way.
+  bool get animating => _ticker.isActive;
+
   // The camera: its zoom, middle and reach (half the screen's diagonal and a
   // margin), in world units.
   double _zoom = 0;
@@ -210,35 +217,61 @@ class _GroupStage {
       return dx * dx + dy * dy <= r * r;
     }
 
+    final still = [
+      for (final n in groups.at(level))
+        if (!moving.contains(n.id) && near(n)) n,
+    ];
+    if (MapStats.flashProbe) {
+      sentStill
+        ..clear()
+        ..addAll({
+          for (final n in still)
+            n.id: (x: n.x, y: n.y, opacity: 1.0, scale: 1.0),
+        });
+    }
     _coverSending = true;
     try {
       await _setSource(c, _capsulesSource, {
         'type': 'FeatureCollection',
-        'features': [
-          for (final n in groups.at(level))
-            if (!moving.contains(n.id) && near(n)) _feature(n, n.x, n.y),
-        ],
+        'features': [for (final n in still) _feature(n, n.x, n.y)],
       });
     } finally {
       _coverSending = false;
     }
   }
 
-  Future<void> _sendMovingAt(int ms, {GroupTransition? from}) => _sendMoving([
-    for (final (flight, frame) in (from ?? _transition).frames(ms))
-      _feature(
-        flight.node,
-        frame.x,
-        frame.y,
-        count: frame.count,
-        scale: frame.scale,
-        opacity: frame.opacity,
-      ),
-  ]);
+  Future<void> _sendMovingAt(int ms, {GroupTransition? from}) {
+    final frames = (from ?? _transition).frames(ms).toList();
+    if (MapStats.flashProbe) {
+      sentMoving
+        ..clear()
+        ..addAll({
+          for (final (flight, f) in frames)
+            flight.node.id: (
+              x: f.x,
+              y: f.y,
+              opacity: f.opacity,
+              scale: f.scale,
+            ),
+        });
+    }
+    return _sendMoving([
+      for (final (flight, frame) in frames)
+        _feature(
+          flight.node,
+          frame.x,
+          frame.y,
+          count: frame.count,
+          scale: frame.scale,
+          opacity: frame.opacity,
+        ),
+    ]);
+  }
 
   Future<void> _sendMoving(List<Map<String, dynamic>> features) async {
     final c = controller;
     if (c == null) return;
+    if (features.isEmpty) sentMoving.clear();
     _sending = true;
     try {
       await _setSource(c, _movingSource, {

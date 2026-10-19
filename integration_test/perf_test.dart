@@ -490,6 +490,10 @@ void main() {
       'map_pinch_sweep',
       'map_pinch_wave',
       'map_tap_zoom',
+      'map_flash_slow',
+      'map_flash_normal',
+      'map_flash_fast',
+      'map_flash_select',
     ];
     if (_only.isEmpty || mapFlows.any(_only.split(',').contains)) {
       await tab(tester, AppIcons.navbarMap);
@@ -717,6 +721,59 @@ void main() {
           await tester.tap(button(AppL10n.current.mapZoomOut));
         });
         stats('map_tap_zoom');
+      });
+
+      // Flashing bubbles (docs/map/FLASH_FIX.md): over the dense middle of the
+      // seed, from the heat (zoom 11) in to the pins (15) and back, two levels
+      // a pinch, at three speeds (1.5 s, 0.6 s and 0.18 s: a flick), about
+      // 20 s each.
+      // With MAP_FLASH the probe counts what the map drew wrong.
+      for (final (name, ms, cycles) in [
+        ('map_flash_slow', 1500, 3),
+        ('map_flash_normal', 600, 5),
+        ('map_flash_fast', 180, 8),
+      ]) {
+        await flow(name, setup: () => start(11), () async {
+          await realFingers([
+            for (var i = 0; i < cycles; i++) ...[
+              [150.0, 600.0],
+              [150.0, 600.0],
+              [600.0, 150.0],
+              [600.0, 150.0],
+            ],
+          ], ms);
+          stats(name);
+        });
+      }
+
+      // The selected pin (FLASH_FIX.md §selection): select, close by tapping
+      // the map, select another, close and select it again quickly, tap it
+      // twice; real taps where the map shows them.
+      await flow('map_flash_select', setup: () => start(12.8), () async {
+        final hooks = MapStats.instance;
+        final first = await hooks.pinOnScreen?.call(0);
+        final other = await hooks.pinOnScreen?.call(1);
+        final empty = await hooks.emptyOnScreen?.call();
+        if (first == null || other == null || empty == null) {
+          fail('no pins or no empty spot on screen');
+        }
+        // One command, so the gaps are exact (each tap, then the wait).
+        final steps = [
+          (first, 1200),
+          (empty, 1000),
+          (other, 600),
+          (empty, 150),
+          (other, 1000),
+          (empty, 1000),
+          (first, 250),
+          (first, 1000),
+          (empty, 1000),
+        ];
+        await playFingers(
+          'taps ${[for (final (at, ms) in steps) '${at.dx.round()} ${at.dy.round()} $ms'].join(' ')}',
+          steps.fold(0, (sum, s) => sum + s.$2 + 50),
+        );
+        stats('map_flash_select');
       });
 
       await flow('map_compass', () async {

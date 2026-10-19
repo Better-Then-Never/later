@@ -64,6 +64,7 @@ import '../achievements/streak_pill.dart';
 
 part 'engine/maplibre_map_view.dart';
 part 'engine/maplibre_groups.dart';
+part 'engine/maplibre_flash_probe.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});

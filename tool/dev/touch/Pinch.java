@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
  *
  * <pre>
  * ... Pinch tap x y count gapMs     # one finger: count taps, gapMs apart
+ * ... Pinch taps x y waitMs x y waitMs ...   # taps here and there, waiting
  * </pre>
  */
 public final class Pinch {
@@ -32,6 +33,18 @@ public final class Pinch {
   public static void main(String[] args) throws Exception {
     im = InputManager.class.getDeclaredMethod("getInstance").invoke(null);
     inject = InputManager.class.getMethod("injectInputEvent", InputEvent.class, int.class);
+    if (args[0].equals("taps")) {
+      for (int i = 1; i + 2 < args.length; i += 3) {
+        float x = Float.parseFloat(args[i]);
+        float y = Float.parseFloat(args[i + 1]);
+        long down = SystemClock.uptimeMillis();
+        send(down, down, MotionEvent.ACTION_DOWN, 1, x, y, 0);
+        SystemClock.sleep(50);
+        send(down, SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 1, x, y, 0);
+        SystemClock.sleep(Long.parseLong(args[i + 2]));
+      }
+      return;
+    }
     if (args[0].equals("tap")) {
       float x = Float.parseFloat(args[1]);
       float y = Float.parseFloat(args[2]);

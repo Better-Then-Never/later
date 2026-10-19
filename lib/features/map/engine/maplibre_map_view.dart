@@ -86,6 +86,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     // Flutter fell back to hybrid composition, its frames 3x slower to draw.
     ml.MapLibreMap.useHybridComposition = true;
     MapStats.instance.watchFrames();
+    if (MapStats.flashProbe) unawaited(_FlashProbe(this).run());
     _focus = context.read<MapFocus>()..addListener(_onFocusRequested);
     selectedPageNotifier.addListener(_onTabChanged);
     unawaited(_loadHint());
@@ -169,6 +170,24 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   }
 
   void _active() => MapStats.instance.active.value = _pointers > 0 || _moving;
+
+  // For the flash probe (MAP_FLASH): whether anything moves, what was sent,
+  // and the layers that draw pins and bubbles.
+  bool get _busy =>
+      _pointers > 0 || _moving || _stage.animating || _ticker.isActive;
+  _Sent? _sentSelected;
+  Map<String, _Sent> _sentMarkers() => {
+    ..._stage.sentStill,
+    ..._stage.sentMoving,
+    if (_sentSelected case final s?) ?_shown?.id: s,
+  };
+  List<String> get _markerLayers => const [
+    _pinsLayer,
+    _bubblesLayer,
+    _movingPinsLayer,
+    _movingBubblesLayer,
+    _selectedLayer,
+  ];
 
   // ---------------------------------------------------------------- style
 
@@ -521,6 +540,14 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     }
     _ticker.stop();
     _send();
+    if (capsule.location case final at?) {
+      _sentSelected = (
+        x: GroupNode.worldX(at.longitude),
+        y: GroupNode.worldY(at.latitude),
+        opacity: 1.0,
+        scale: 1.0,
+      );
+    }
     await _setSource(c, _selectedSource, _features([capsule]));
     await _drawn();
     if (!mounted || _shown?.id != capsule.id) return;
@@ -597,6 +624,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     await c.setFilter(_pinsLayer, _pinsFilter(null));
     await _drawn();
     if (_shown != null) return;
+    _sentSelected = null;
     await _setSource(c, _selectedSource, _features(const []));
   }
 
@@ -605,6 +633,68 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   double get _reachDp {
     final size = MediaQuery.sizeOf(context);
     return math.sqrt(size.width * size.width + size.height * size.height) / 2;
+  }
+
+  /// The shown pins and bubbles on screen, in physical pixels (for the
+  /// perf test's taps).
+  Future<List<(GroupNode, Offset)>> _onScreenNodes() async {
+    final camera = _controller?.cameraPosition;
+    final level = _stage.level;
+    if (camera == null || level == null) return const [];
+    final size = MediaQuery.sizeOf(context);
+    final ratio = MediaQuery.devicePixelRatioOf(context);
+    // Projected from the camera (the test never turns the map).
+    final scale = CapsuleGroups.worldDp * math.pow(2, camera.zoom);
+    final cx = GroupNode.worldX(camera.target.longitude);
+    final cy = GroupNode.worldY(camera.target.latitude);
+    return [
+      for (final n in _stage.groups.at(level))
+        if (Offset(
+              size.width / 2 + (n.x - cx) * scale,
+              size.height / 2 + (n.y - cy) * scale,
+            )
+            case final at
+            when at.dx > 60 &&
+                at.dx < size.width - 90 &&
+                at.dy > 160 &&
+                at.dy < size.height - 200)
+          (n, at * ratio),
+    ];
+  }
+
+  Future<Offset?> _pinOnScreen(int skip) async {
+    final size = MediaQuery.sizeOf(context);
+    final ratio = MediaQuery.devicePixelRatioOf(context);
+    final middle = Offset(size.width, size.height) * ratio / 2;
+    final shown = await _onScreenNodes();
+    final pins = [
+      for (final (n, at) in shown)
+        if (!n.isBubble) at,
+    ]..sort((a, b) => (a - middle).distance.compareTo((b - middle).distance));
+    debugPrint(
+      'MAPHOOK level ${_stage.level} zoom ${_zoom.toStringAsFixed(2)} '
+      'on screen ${shown.length} pins ${pins.length}',
+    );
+    if (pins.length <= skip) return null;
+    // The pin's body, a little above its tip (the anchor).
+    return pins[skip] - Offset(0, 20 * ratio);
+  }
+
+  Future<Offset?> _emptyOnScreen() async {
+    final size = MediaQuery.sizeOf(context);
+    final ratio = MediaQuery.devicePixelRatioOf(context);
+    // The middle of each marker (a pin stands above its tip).
+    final taken = [
+      for (final (n, at) in await _onScreenNodes())
+        n.isBubble ? at : at - Offset(0, 24 * ratio),
+    ];
+    for (var y = 200.0; y < size.height - 220; y += 40) {
+      for (var x = 70.0; x < size.width - 100; x += 40) {
+        final at = Offset(x, y) * ratio;
+        if (taken.every((t) => (t - at).distance > 64 * ratio)) return at;
+      }
+    }
+    return null;
   }
 
   // ---------------------------------------------------------------- taps
@@ -774,7 +864,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (_pointers == 0) MapStats.instance.gestureEnded();
     final c = _controller;
     if (c == null) return;
-    if (c.cameraPosition case final camera?) _saveCamera(camera);
+    if (c.cameraPosition case final camera?) {
+      _saveCamera(camera);
+      // A jump (moveCamera) may report no move: the zoom and the shown
+      // level catch up here, at once.
+      _zoom = camera.zoom;
+      _stage.camera(camera, reachDp: _reachDp, animate: false);
+    }
     try {
       final bounds = await c.getVisibleRegion();
       map.onCameraIdle(
@@ -894,14 +990,17 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                 if (!_ready.isCompleted) _ready.complete(c);
                 c.onFeatureTapped.add(_onFeatureTapped);
                 if (MapStats.enabled) {
-                  MapStats.instance.moveCamera = (target, zoom) async {
-                    await c.moveCamera(
-                      ml.CameraUpdate.newLatLngZoom(
-                        ml.LatLng(target.latitude, target.longitude),
-                        zoom,
-                      ),
-                    );
-                  };
+                  MapStats.instance
+                    ..moveCamera = (target, zoom) async {
+                      await c.moveCamera(
+                        ml.CameraUpdate.newLatLngZoom(
+                          ml.LatLng(target.latitude, target.longitude),
+                          zoom,
+                        ),
+                      );
+                    }
+                    ..pinOnScreen = _pinOnScreen
+                    ..emptyOnScreen = _emptyOnScreen;
                 }
               },
               onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),

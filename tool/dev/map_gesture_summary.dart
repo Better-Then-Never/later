@@ -118,6 +118,46 @@ void main(List<String> args) {
     }
   }
 
+  // Flashing (docs/map/FLASH_FIX.md): the probe's counts (MAP_FLASH builds)
+  // and the recording's flashes.
+  stdout.writeln('\n### flashes\n');
+  stdout.writeln(
+    '| run | flow | probes | double frames (ids) | missing frames (ids) | '
+    'ghost frames (ids) | video flashes | video fps |',
+  );
+  stdout.writeln('|---|---|---|---|---|---|---|---|');
+  for (final run in runs) {
+    final name = run.uri.pathSegments.reversed.elementAt(1);
+    final numbers = File('${run.path}/perf_numbers.json');
+    final stats = numbers.existsSync()
+        ? jsonDecode(numbers.readAsStringSync()) as Map
+        : const {};
+    for (final flow in [
+      'map_flash_slow',
+      'map_flash_normal',
+      'map_flash_fast',
+      'map_flash_select',
+    ]) {
+      String stat(String key) {
+        final v = stats['${flow}_$key'];
+        return v is List && v.isNotEmpty ? '${v.last}' : '-';
+      }
+
+      final video = File('${run.path}/$flow.flash.json');
+      if (stat('flash_probes') == '-' && !video.existsSync()) continue;
+      final v = video.existsSync()
+          ? jsonDecode(video.readAsStringSync()) as Map
+          : const {};
+      stdout.writeln(
+        '| $name | $flow | ${stat('flash_probes')} | '
+        '${stat('flash_double_frames')} (${stat('flash_doubles')}) | '
+        '${stat('flash_missing_frames')} (${stat('flash_missing')}) | '
+        '${stat('flash_ghost_frames')} (${stat('flash_ghosts')}) | '
+        '${v['flash_count'] ?? '-'} | ${v['fps'] ?? '-'} |',
+      );
+    }
+  }
+
   // The tap zooms (map_tap_zoom): each one level, through how many zooms,
   // and the largest step from one camera position to the next.
   stdout.writeln('\n### map_tap_zoom\n');
