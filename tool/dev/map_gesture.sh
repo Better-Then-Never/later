@@ -6,6 +6,7 @@
 # with neither heat nor markers).
 #
 #   tool/dev/map_gesture.sh <label> [runs]     # e.g. baseline 3
+#   MAP_GOOGLE=1 tool/dev/map_gesture.sh google 3   # the Google map instead
 #
 # Output in build/perf/<label>/run_<n>/: drive.log, perf_numbers.json (the
 # MapStats counts as map_pinch_*_<count>), <flow>.timeline_summary.json and

@@ -1,7 +1,7 @@
 # DECISION.md: which map engine
 
-**Chosen: Option B, MapLibre**, behind `FeatureFlags.mapLibre` (off: Google Maps stays the default). The owner
-decides the tile source before it can be switched on (below).
+**Chosen: Option B, MapLibre**, with **OpenFreeMap**'s tiles: the owner's decision of 19 Oct 2026. MapLibre is the
+default since then (`FeatureFlags.mapLibre`; a build goes back to Google Maps with `--dart-define=MAP_LIBRE=false`).
 
 ## How it was measured
 `tool/dev/map_gesture.sh` on the Galaxy S20 FE (120 Hz), profile builds, the heavy seed (1,205 visible capsules),
@@ -51,21 +51,25 @@ during a gesture. Bubbles split and merge with a crossfade, at every zoom, under
 ≥ 3.29, Dart ≥ 3.7; this project: 3.38.4 / 3.10.3). Android and iOS (iOS not run here: the project has no iOS rig).
 `maplibre` 0.3.x (the newer API) needs Flutter 3.44: not usable yet.
 
-## Tiles: the owner's decision
-| Option | Cost | Key | Notes |
-|---|---|---|---|
-| **OpenFreeMap** (used for development) | free, no limits stated | none | OpenMapTiles schema; volunteer-run, no SLA; attribution "© OpenMapTiles © OpenStreetMap" |
-| MapTiler Cloud | free up to 100k map loads/month, then paid plans | yes | SLA on paid plans; satellite available |
-| Stadia Maps | free for development / small apps, then paid | yes | OSM-based styles |
-| Protomaps (self-hosted) | storage + traffic only | none | one PMTiles file on our own hosting/CDN; most control, most setup |
+## Tiles: decided, OpenFreeMap (19 Oct 2026)
+Free options as checked on 19 Oct 2026 (their own pages; terms change, so check again before relying on a limit):
+| Option | Free for a commercial app? | Limits | Key | Notes |
+|---|---|---|---|---|
+| **OpenFreeMap** (chosen) | yes | none on views or requests | none | donations; no SLA; attribution "OpenFreeMap © OpenMapTiles Data from OpenStreetMap", shown by MapLibre's "i" button from the tile description (checked on the phone) |
+| VersaTiles (tiles.versatiles.org) | yes | none stated | none | OSM attribution only; no 24/7 guarantee yet |
+| Protomaps, self-hosted | yes (only hosting and traffic cost) | our own | none | one PMTiles file on our own storage/CDN; most control, most setup |
+| Protomaps hosted API | no (non-commercial; commercial = GitHub sponsor) | soft 1M tile requests/month | yes | |
+| MapTiler Cloud | no (free plan non-commercial); paid from about $25/month | about 5k sessions, 100k requests/month | yes | satellite and hybrid styles |
+| Stadia Maps | no (free plan non-commercial; any for-profit company counts as commercial); paid from about $20/month | about 200k credits/month | yes | |
 
 What changes against Google: no Google place labels and POIs (OSM's instead), **no satellite or hybrid** with
 OpenFreeMap (the map-look setting would have to fall back or a provider with imagery chosen), OSM attribution must
 stay visible (the "i" button, like the Google logo today). Our look is kept: `tool/map/make_map_style.js` recolours
 OpenFreeMap's Positron and Dark styles with the app's map palette (`assets/map/style_*.json`).
 
-**Recommendation**: OpenFreeMap for the beta (no key, no cost), with the style files ready to point at MapTiler if
-a service level or satellite is wanted later.
+**Decision**: OpenFreeMap (no key, no cost, commercial use allowed). If it ever goes down for long or a service
+level is needed, the same styles work with a self-hosted Protomaps/OpenMapTiles file or a paid MapTiler plan (the
+source URLs in `tool/map/make_map_style.js`).
 
 ## Risks
 - A second map SDK in the app: MapLibre's native library is 10.3 MB for arm64 (about 3.6 MB compressed in a

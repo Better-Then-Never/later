@@ -45,7 +45,7 @@ area, no map yet (0.9 s) → a beige map with no streets, the user's figure, pin
 ## After (MapLibre on, `5a340d0`)
 
 ### Under the fingers: not measured yet
-The 3-run measurement (`MAP_LIBRE=1 tool/dev/map_gesture.sh after 3`) was stopped twice because the computer
+The 3-run measurement (`tool/dev/map_gesture.sh after 3`) was stopped twice because the computer
 ran low on memory during the profile build (BLOCKERS.md). The latest MapLibre numbers with the same harness and
 gestures are the spike's, before the page reached parity (DECISION.md): 0 heat layer changes, 0–1 heat blinks per
 sweep, 0 markers added or removed, 0 recording gaps of 100 ms or more, 0 frozen spans, answer to a finger 30–53 ms,

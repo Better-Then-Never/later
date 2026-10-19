@@ -6,6 +6,7 @@
 #   FLOWS=chat_open,map_pan tool/dev/perf.sh chat 3   # only these flows
 #   LANG_UNDER_TEST=en FLOWS=settings_open_close tool/dev/perf.sh en 3
 #       # the app in that language (the phone may be set to another)
+#   MAP_GOOGLE=1 tool/dev/perf.sh google 3   # the Google map, not MapLibre
 #   KEEP_TIMELINE=1 DETAIL=1 FLOWS=theme_switch tool/dev/perf.sh why 1
 #       # keeps <flow>.timeline.json with an event per widget build, layout
 #       # and paint, for tool/dev/slow_frames.dart (DETAIL slows frames down:
@@ -47,6 +48,7 @@ for n in $(seq "$runs"); do
     ${LANG_UNDER_TEST:+--dart-define=PERF_LANG=$LANG_UNDER_TEST} \
     ${MAP_HARNESS:+--dart-define=MAP_HARNESS=true} \
     ${MAP_LIBRE:+--dart-define=MAP_LIBRE=true} \
+    ${MAP_GOOGLE:+--dart-define=MAP_LIBRE=false} \
     >"$dir/drive.log" 2>&1
   status=$?
   # flutter drive can exit 0 although the test on the phone failed.

@@ -1,11 +1,10 @@
 # BLOCKERS.md: what is not done or not verified (map engine)
 
 ## Owner decisions
-- **Tile source** for MapLibre (DECISION.md): OpenFreeMap is used for development (no key, no cost, no SLA).
-  Until decided, `FeatureFlags.mapLibre` stays off and the Google map is what users get.
-- **Turning the flag on** (`lib/core/config/feature_flags.dart`, today only `--dart-define=MAP_LIBRE=true`).
+- Decided 19 Oct 2026: OpenFreeMap tiles, and MapLibre on by default (`FeatureFlags.mapLibre`).
 - **Satellite / hybrid map look** (the map-look setting, used by the map page, the pin picker and the device
-  settings page): OpenFreeMap has no imagery, so on MapLibre the setting has no effect. Sources looked at: MapTiler
+  settings page): OpenFreeMap has no imagery, so on the map page **the setting now has no effect** (the pin picker,
+  still Google, keeps it). Sources looked at: MapTiler
   (satellite and hybrid styles; a key, a free tier, then paid plans), Esri World Imagery (ArcGIS terms and
   attribution, an account for production use), Sentinel-2 cloudless (free only for non-commercial use, and 10 m
   pixels are too coarse for streets). Either a provider is chosen or the setting is hidden while MapLibre is on.
@@ -16,7 +15,7 @@
 - **The capsule creation pin picker** still uses Google Maps (its own small map; not part of this mission).
 
 ## Not measured
-- **The final "After" numbers under the fingers** (PERFORMANCE.md): `MAP_LIBRE=1 tool/dev/map_gesture.sh after 3`
+- **The final "After" numbers under the fingers** (PERFORMANCE.md): `tool/dev/map_gesture.sh after 3`
   was stopped twice because the computer ran low on memory during the profile build, and was not restarted
   without the owner. The latest MapLibre numbers under the fingers are the spike's (DECISION.md, 3 runs + 1, same
   harness and gestures), from before the page reached parity.

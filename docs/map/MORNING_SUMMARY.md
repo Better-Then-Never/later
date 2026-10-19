@@ -5,9 +5,8 @@ touched production: every check ran on the Galaxy S20 FE (120 Hz) against the lo
 heavy seed (the signed-in account sees 1,205 capsules). Nothing ran on iOS.
 
 ## What changed
-- **A second map engine, MapLibre, behind a flag** (`FeatureFlags.mapLibre`, `--dart-define=MAP_LIBRE=true`).
-  **Off by default: users still get the Google map.** Turning it on is the owner's call, after choosing a tile
-  source (DECISION.md).
+- **A second map engine, MapLibre, with OpenFreeMap's tiles** (`FeatureFlags.mapLibre`). **On by default since
+  the owner's decision of 19 Oct 2026**; a build goes back to Google Maps with `--dart-define=MAP_LIBRE=false`.
 - On MapLibre the heat, the bubbles and the pins are layers of the map, drawn on the GPU. Their look follows the
   zoom every frame, the map groups the capsules itself, and Flutter sends nothing while the fingers move.
 - The MapLibre page matches the Google page: card, selected pin with its motion, user position, buttons, compass,
@@ -40,17 +39,16 @@ marker cannot fade. Measured with real touches, the same gestures, 3 runs each:
 | No stalls ≥ 100 ms, ≤ 1 % janky | met in the spike runs (0 gaps, 0 %) |
 | Readable bubbles, a clear selected pin | met: 17 dp bold counts, three disc sizes; the selected pin larger, raised, with a shadow |
 | Cold start: no white, the saved camera, "almost ready" never after the map | met |
-| No regressions | Google stays the default; 454 tests pass; on MapLibre the satellite look and the flying capsules are missing (BLOCKERS.md) |
+| No regressions | 454 tests pass; Google Maps is one build switch away; on MapLibre the satellite look and the flying capsules are missing (BLOCKERS.md) |
 
 ## Not done
 - **The final 3-run measurement of the finished page** was stopped twice because the computer ran low on memory
   during the profile build. It was not restarted without you. The criteria above rest on the spike's runs. To run it:
-  close other apps, then `MAP_LIBRE=1 bash tool/dev/map_gesture.sh after 3`. The 2,000+ capsule check runs with it.
-- **Your decisions**: the tile source (recommended: OpenFreeMap for the beta), satellite (a provider, or hide the
-  setting on MapLibre), and when to turn the flag on.
+  close other apps, then `bash tool/dev/map_gesture.sh after 3`. The 2,000+ capsule check runs with it.
+- **Your decision**: satellite (a provider with imagery, or hide the setting on the map page).
 - iOS is untested.
 
 ## Commits on this branch
 `f61e6b7` rig · `fc86132` baseline and diagnosis · `1d79f6d` MapLibre spike, real touches · `a9adeec` MapLibre page
 at parity · `321a4c3` blockers, wider bubbles · `8426062` M-07 · `1f47e6e` bubble tap · `5a340d0` pins after a cold
-start · the docs commit with this file.
+start · the docs commit with this file · MapLibre on by default (19 Oct).

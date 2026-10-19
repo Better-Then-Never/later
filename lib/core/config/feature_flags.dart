@@ -29,9 +29,9 @@ abstract final class FeatureFlags {
   /// read (docs/feel/BLOCKERS.md).
   static const contactSuggestions = false;
 
-  /// The map drawn by MapLibre instead of Google Maps (docs/map/DECISION.md):
-  /// the heat, bubbles and pins as layers of the map itself. Off until it
-  /// passes every check in docs/map/PERFORMANCE.md and the owner has chosen
-  /// the tile source; a build can try it with --dart-define=MAP_LIBRE=true.
-  static const mapLibre = bool.fromEnvironment('MAP_LIBRE');
+  /// The map drawn by MapLibre with OpenFreeMap's tiles instead of Google
+  /// Maps (docs/map/DECISION.md; the owner's choice, 19 Oct 2026): the heat,
+  /// bubbles and pins as layers of the map itself. A build goes back to
+  /// Google Maps with --dart-define=MAP_LIBRE=false.
+  static const mapLibre = bool.fromEnvironment('MAP_LIBRE', defaultValue: true);
 }

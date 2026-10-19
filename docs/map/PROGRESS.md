@@ -41,5 +41,7 @@ phone).
   (`1f47e6e`); pins after a cold start no longer wait for a later data change (`5a340d0`); Russian at 130 %,
   offline, cold start, APK size and iOS checked (BLOCKERS.md "Verified"); satellite sources listed for the owner.
 - The final 3-run gesture measurement was stopped twice for low memory on the computer (profile build); not
-  restarted without the owner. To run it: close other apps, then `MAP_LIBRE=1 bash tool/dev/map_gesture.sh after 3`
+  restarted without the owner. To run it: close other apps, then `bash tool/dev/map_gesture.sh after 3`
   (and stop the Gradle daemon afterwards: `cd android && ./gradlew --stop`).
+- 19 Oct: the owner chose OpenFreeMap and MapLibre as the map; the flag is on by default (`MAP_LIBRE=false` for
+  Google; `MAP_GOOGLE=1` in the perf scripts). Attribution checked on the phone.
