@@ -144,5 +144,25 @@
   "mapFilterReset": "Show everything",
   "@mapFilterReset": {
     "description": "Map filter: back to showing everything."
+  },
+  "mapCreditsButton": "Map data and credits",
+  "@mapCreditsButton": {
+    "description": "Screen reader label of the map's (i) button."
+  },
+  "mapCreditsTitle": "Map data",
+  "@mapCreditsTitle": {
+    "description": "Title of the sheet with the map's data sources and their licences."
+  },
+  "mapCreditsDescription": "The map is made from these sources. Tap one to open it.",
+  "@mapCreditsDescription": {
+    "description": "Under the title of the map data sheet."
+  },
+  "mapCreditsImprove": "Improve this map",
+  "@mapCreditsImprove": {
+    "description": "Opens OpenStreetMap's page for reporting a mistake in the map."
+  },
+  "mapCreditsRenderer": "Map rendered with MapLibre",
+  "@mapCreditsRenderer": {
+    "description": "The open source library that draws the map; opens its website."
   }
 }

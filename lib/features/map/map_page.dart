@@ -50,6 +50,7 @@ import '../history/own_capsules_store.dart';
 import 'widgets/capsule_info_panel.dart';
 import 'widgets/first_capsule_hint.dart';
 import 'widgets/map_compass.dart';
+import 'widgets/map_credits_control.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
 import 'widgets/map_filter_sheet.dart';
 import 'widgets/selected_pin_overlay.dart';

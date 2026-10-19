@@ -1411,6 +1411,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapCompass => 'Повернуть карту на север';
 
   @override
+  String get mapCreditsButton => 'Данные карты и авторы';
+
+  @override
+  String get mapCreditsDescription =>
+      'Карта построена на этих данных. Нажмите на источник, чтобы открыть его.';
+
+  @override
+  String get mapCreditsImprove => 'Улучшить карту';
+
+  @override
+  String get mapCreditsRenderer => 'Карта отрисована с помощью MapLibre';
+
+  @override
+  String get mapCreditsTitle => 'Данные карты';
+
+  @override
   String mapDurationDays(int count) {
     return '$countд';
   }
@@ -2478,6 +2494,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsAboutLicenses => 'Лицензии открытого ПО';
+
+  @override
+  String get settingsAboutMapData => 'Данные карты и лицензии';
 
   @override
   String get settingsAboutOpenFailed => 'Не удалось открыть страницу.';

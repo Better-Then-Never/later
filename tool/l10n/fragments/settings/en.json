@@ -504,5 +504,9 @@
   "settingsNotificationsVibrateNeedsSound": "Comes with the sound",
   "@settingsNotificationsVibrateNeedsSound": {
     "description": "Under the vibration switch while sound is off (it is greyed out then)."
+  },
+  "settingsAboutMapData": "Map data and licenses",
+  "@settingsAboutMapData": {
+    "description": "About page: opens the map's data sources and their licences."
   }
 }

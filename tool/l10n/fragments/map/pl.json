@@ -28,5 +28,10 @@
   "mapFilterOpen": "Otwarte",
   "mapFilterLocked": "Otworzą się później",
   "mapFilterColors": "Kolor pinezki",
-  "mapFilterReset": "Pokaż wszystko"
+  "mapFilterReset": "Pokaż wszystko",
+  "mapCreditsButton": "Dane mapy i autorzy",
+  "mapCreditsTitle": "Dane mapy",
+  "mapCreditsDescription": "Mapa powstaje z tych źródeł. Dotknij, aby je otworzyć.",
+  "mapCreditsImprove": "Popraw tę mapę",
+  "mapCreditsRenderer": "Mapa wyświetlana przez MapLibre"
 }

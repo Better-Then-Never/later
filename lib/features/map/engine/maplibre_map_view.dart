@@ -951,11 +951,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
               compassEnabled: false,
               tiltGesturesEnabled: false,
               annotationOrder: const [],
-              // OpenStreetMap's credit stays visible above the navigation
-              // bar and the card, like the Google logo (F-12, F-14).
+              // MapLibre's own (i) button cannot be switched off through
+              // the plugin: it is moved off the map; the app's own credit
+              // replaces it (MapCreditsControl, docs/map/ATTRIBUTION.md).
               attributionButtonPosition:
                   ml.AttributionButtonPosition.bottomLeft,
-              attributionButtonMargins: math.Point(12, bottom + raised),
+              attributionButtonMargins: const math.Point(-400, -400),
               onMapCreated: (c) {
                 _controller = c;
                 if (!_ready.isCompleted) _ready.complete(c);
@@ -1034,6 +1035,20 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
             right: 16,
             bottom: bottom + raised,
             child: _MyLocationButton(onTap: () => _goToMe(map)),
+          ),
+          // The map's data credit, bottom left above the navigation bar and
+          // the card; its disc lines up with the screen's 16 dp margin.
+          AnimatedPositioned(
+            duration: motion,
+            curve: AppMotion.emphasizedCurve,
+            left: 16 - (AppSizes.mapControl - MapCreditsButton.disc) / 2,
+            bottom: bottom + raised,
+            child: MapCreditsControl(
+              maxWidth:
+                  MediaQuery.sizeOf(context).width -
+                  (16 - (AppSizes.mapControl - MapCreditsButton.disc) / 2) -
+                  (16 + AppSizes.mapControl + 8),
+            ),
           ),
           AnimatedPositioned(
             duration: motion,

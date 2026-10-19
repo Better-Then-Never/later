@@ -34,4 +34,10 @@ abstract final class FeatureFlags {
   /// bubbles and pins as layers of the map itself. A build goes back to
   /// Google Maps with --dart-define=MAP_LIBRE=false.
   static const mapLibre = bool.fromEnvironment('MAP_LIBRE', defaultValue: true);
+
+  /// The map's data credit (docs/map/ATTRIBUTION.md). false (default): a
+  /// tiny credit line is always on the map next to the (i) button. true:
+  /// the line shows for the first seconds of each session, then only the
+  /// (i) button stays (OpenStreetMap's guidelines allow it collapsing).
+  static const mapCreditCollapses = false;
 }

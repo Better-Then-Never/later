@@ -8,6 +8,7 @@ import '../core/theme/themed_asset_bundle.dart';
 import '../data/services/preferences_store.dart';
 import '../core/theme/font_warmup.dart';
 import '../features/achievements/achievement_icon.dart';
+import '../features/map/map_licenses.dart';
 import '../firebase_options.dart';
 import 'app_scope.dart';
 // The background upload job's entry point (UploadWorker.kt) must be part
@@ -20,6 +21,7 @@ import 'later_app.dart';
 
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+  MapLicenses.register();
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);

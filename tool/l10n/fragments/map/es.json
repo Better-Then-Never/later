@@ -28,5 +28,10 @@
   "mapFilterOpen": "Abiertas",
   "mapFilterLocked": "Se abren más tarde",
   "mapFilterColors": "Color del pin",
-  "mapFilterReset": "Mostrar todo"
+  "mapFilterReset": "Mostrar todo",
+  "mapCreditsButton": "Datos del mapa y créditos",
+  "mapCreditsTitle": "Datos del mapa",
+  "mapCreditsDescription": "El mapa se crea con estas fuentes. Toca una para abrirla.",
+  "mapCreditsImprove": "Mejorar este mapa",
+  "mapCreditsRenderer": "Mapa representado con MapLibre"
 }

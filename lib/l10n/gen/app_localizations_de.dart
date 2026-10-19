@@ -1400,6 +1400,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mapCompass => 'Karte nach Norden drehen';
 
   @override
+  String get mapCreditsButton => 'Kartendaten und Quellen';
+
+  @override
+  String get mapCreditsDescription =>
+      'Die Karte entsteht aus diesen Quellen. Tippe auf eine, um sie zu öffnen.';
+
+  @override
+  String get mapCreditsImprove => 'Diese Karte verbessern';
+
+  @override
+  String get mapCreditsRenderer => 'Karte dargestellt mit MapLibre';
+
+  @override
+  String get mapCreditsTitle => 'Kartendaten';
+
+  @override
   String mapDurationDays(int count) {
     return '${count}T';
   }
@@ -2435,6 +2451,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsAboutLicenses => 'Open-Source-Lizenzen';
+
+  @override
+  String get settingsAboutMapData => 'Kartendaten und Lizenzen';
 
   @override
   String get settingsAboutOpenFailed => 'Die Seite ließ sich nicht öffnen.';

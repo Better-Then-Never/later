@@ -125,6 +125,21 @@ async function build(source, palette, name) {
   // (the selected pin lagged its own motion). The app animates its markers
   // itself (docs/map/FLASH_FIX.md).
   style.transition = { duration: 0, delay: 0 };
+  // Only the sources a layer draws from; each with its provider's credit
+  // (from its TileJSON), which the app shows from this file
+  // (docs/map/ATTRIBUTION.md).
+  const used = new Set(style.layers.map((l) => l.source).filter(Boolean));
+  for (const id of Object.keys(style.sources)) {
+    if (!used.has(id)) {
+      delete style.sources[id];
+      continue;
+    }
+    const src = style.sources[id];
+    if (src.url && !src.attribution) {
+      const tilejson = await get(src.url);
+      if (tilejson.attribution) src.attribution = tilejson.attribution;
+    }
+  }
   for (const layer of style.layers) {
     const c = colourFor(layer.id, layer.type, palette);
     if (!c) continue;

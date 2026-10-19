@@ -1252,6 +1252,26 @@
   "@mapCompass": {
     "description": "Screen reader label of the map compass, shown while the map is turned; a tap points it north."
   },
+  "mapCreditsButton": "Map data and credits",
+  "@mapCreditsButton": {
+    "description": "Screen reader label of the map's (i) button."
+  },
+  "mapCreditsDescription": "The map is made from these sources. Tap one to open it.",
+  "@mapCreditsDescription": {
+    "description": "Under the title of the map data sheet."
+  },
+  "mapCreditsImprove": "Improve this map",
+  "@mapCreditsImprove": {
+    "description": "Opens OpenStreetMap's page for reporting a mistake in the map."
+  },
+  "mapCreditsRenderer": "Map rendered with MapLibre",
+  "@mapCreditsRenderer": {
+    "description": "The open source library that draws the map; opens its website."
+  },
+  "mapCreditsTitle": "Map data",
+  "@mapCreditsTitle": {
+    "description": "Title of the sheet with the map's data sources and their licences."
+  },
   "mapDurationDays": "{count}d",
   "@mapDurationDays": {
     "description": "Days part of the compact countdown. Keep it as short as possible.",
@@ -2371,6 +2391,10 @@
     "description": "Example text in the empty \"about me\" field."
   },
   "settingsAboutLicenses": "Open-source licenses",
+  "settingsAboutMapData": "Map data and licenses",
+  "@settingsAboutMapData": {
+    "description": "About page: opens the map's data sources and their licences."
+  },
   "settingsAboutOpenFailed": "Could not open the page.",
   "settingsAboutPrivacy": "Privacy policy",
   "settingsAboutTerms": "Terms of use",

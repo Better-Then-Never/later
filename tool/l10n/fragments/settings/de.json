@@ -236,5 +236,6 @@
   "settingsUploadsWifiOnly": "Nur über WLAN hochladen",
   "settingsUploadsWifiOnlyHint": "Kapseln ohne WLAN warten auf dem Telefon, bis WLAN da ist.",
   "settingsNotificationsVibrate": "Vibration",
-  "settingsNotificationsVibrateNeedsSound": "Nur zusammen mit dem Ton"
+  "settingsNotificationsVibrateNeedsSound": "Nur zusammen mit dem Ton",
+  "settingsAboutMapData": "Kartendaten und Lizenzen"
 }
