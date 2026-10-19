@@ -19,6 +19,11 @@ label=${1:?usage: map_gesture.sh <label> [runs]}
 runs=${2:-1}
 # MAP_FLOWS="map_tap_zoom" runs only those.
 read -r -a flows <<<"${MAP_FLOWS:-map_pinch_sweep map_pinch_wave map_tap_zoom}"
+# In the order the test plays them (its list of map flows), so each
+# recording gets its flow's name.
+mapfile -t flows < <(for f in "${flows[@]}"; do
+  echo "$(grep -n "'$f'," integration_test/perf_test.dart | head -1 | cut -d: -f1) $f"
+done | sort -n | cut -d' ' -f2)
 out=build/perf/$label
 PY=build/dev/pyenv/Scripts/python
 # A fresh folder: the watcher would take an earlier run's finished log for

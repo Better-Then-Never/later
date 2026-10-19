@@ -99,6 +99,22 @@ void main() {
       expect(text(const Duration(minutes: 5, seconds: 59)), '5m');
       expect(text(const Duration(seconds: 42)), '42s');
       expect(text(const Duration(seconds: -1)), '');
+      // In every language: no seconds beyond the last minute.
+      for (final (lang, want) in const [
+        ('ru', '98д 4ч 24мин'),
+        ('pl', '98d 4h 24min'),
+        ('de', '98T 4h 24min'),
+        ('es', '98d 4h 24min'),
+      ]) {
+        expect(
+          CapsuleInfoPanel.formatDuration(
+            const Duration(days: 98, hours: 4, minutes: 24, seconds: 31),
+            lookupAppLocalizations(Locale(lang)),
+          ),
+          want,
+          reason: lang,
+        );
+      }
     });
 
     testWidgets('an open capsule can be opened', (tester) async {

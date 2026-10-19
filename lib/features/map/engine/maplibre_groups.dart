@@ -212,7 +212,11 @@ class _GroupStage {
     }
     if (next == shown) return false;
     _level = next;
-    if (!animate) {
+    // Nothing to see moving while the markers are still (almost) see-through
+    // at this zoom: coming out of the heat they simply grow in. A whole city
+    // of pieces flying at once (300 with 2,205 capsules) held Android's main
+    // thread, and the motion stalled, then jumped (FLASH_FIX.md).
+    if (!animate || MapZoomVisuals.markerOpacity(zoom) < 0.1) {
       restart();
       return true;
     }
