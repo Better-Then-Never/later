@@ -19,7 +19,9 @@ import 'map_stats.dart';
 import 'marker_icons.dart';
 import '../../data/services/preferences_store.dart';
 import 'map_filter.dart';
+import 'map_delta_sync.dart';
 import 'map_pin_store.dart';
+import '../../core/config/feature_flags.dart';
 
 enum MapLoadState { loading, ready }
 
@@ -40,6 +42,7 @@ class MapController extends ChangeNotifier {
     PreferencesStore? prefs,
     MapPinStore? pinStore,
     this.groupsMarkers = true,
+    this.deltaSync = FeatureFlags.mapDeltaSync,
   }) : _prefs = prefs,
        _pinStore = pinStore,
        _capsules = capsules,
@@ -58,6 +61,10 @@ class MapController extends ChangeNotifier {
   /// screen (the Google map). MapLibre groups them itself: then nothing is
   /// grouped here, and a stopped camera costs Flutter nothing.
   final bool groupsMarkers;
+
+  /// The friends' and public capsules from the pin store and what changed
+  /// since ([MapDeltaSync]); else read in full at every start.
+  final bool deltaSync;
 
   static const _filterKey = 'map_filter';
 
@@ -274,7 +281,7 @@ class MapController extends ChangeNotifier {
       _initialCamera = GeoPosition(latitude, longitude);
       _savedZoom = zoom;
       _state = MapLoadState.ready;
-      _loadPublicBand(latitude);
+      _wantBand(latitude);
       // Nobody listens yet when it was read at once.
       if (known == null) notifyListeners();
     }
@@ -300,7 +307,7 @@ class MapController extends ChangeNotifier {
       _initialCamera = position;
       _usedFallbackCamera = position == null;
       _state = MapLoadState.ready;
-      _loadPublicBand(initialCamera.latitude);
+      _wantBand(initialCamera.latitude);
     }
     notifyListeners();
 
@@ -320,8 +327,79 @@ class MapController extends ChangeNotifier {
           (list) => _set(() => _coAuthored = list, answered: 'co'),
           onError: _logStreamError('co-authored'),
         );
+  }
+
+  /// The friends' and public capsules, once the store has been read: from
+  /// what it kept and what changed since ([MapDeltaSync]), or all of them.
+  void _startShared(StoredMap stored) {
+    _sharedStarted = true;
     _session.addListener(_onSessionChanged);
+    if (deltaSync && stored.syncedTo != null && stored.bandLatitude != null) {
+      _friendIds = List.of(_session.profile?.friends ?? const <String>[]);
+      _bandCenter = stored.bandLatitude;
+      StartupReport.mark('sync_delta');
+      _delta = MapDeltaSync(
+        capsules: _capsules,
+        stored: stored,
+        friendIds: _friendIds,
+        onChanged: _deltaChanged,
+        onFailed: (_) => _readEverything(),
+      )..start();
+      return;
+    }
     _onSessionChanged();
+    if (_bandWanted case final band?) _loadPublicBand(band);
+  }
+
+  /// The map's sync of friends' and public capsules (null: they are read
+  /// in full).
+  MapDeltaSync? _delta;
+  bool _sharedStarted = false;
+
+  /// The public band's latitude wanted before the store was read.
+  double? _bandWanted;
+
+  void _wantBand(double latitude) {
+    _bandWanted = latitude;
+    if (_sharedStarted && _delta == null && _publicSub == null) {
+      _loadPublicBand(latitude);
+    }
+  }
+
+  void _deltaChanged() {
+    final delta = _delta;
+    if (delta == null) return;
+    _set(
+      () {
+        _friends = delta.friends;
+        _public = delta.public;
+        for (final c in _public) {
+          _publicSeen[c.id] = c;
+        }
+      },
+      answered: [
+        if (delta.friendsAnswered) 'friends',
+        if (delta.publicAnswered) 'public',
+      ],
+    );
+  }
+
+  /// The sync cannot be trusted (an error, a limit, the friends changed, a
+  /// far-away band): the friends' and public capsules are read in full; the
+  /// kept pins stand in until they answer.
+  void _readEverything() {
+    final delta = _delta;
+    if (delta == null) return;
+    _delta = null;
+    delta.dispose();
+    _answered
+      ..remove('friends')
+      ..remove('public');
+    _friendsSub = null;
+    _onSessionChanged();
+    _loadPublicBand(_bandCenter ?? _bandWanted ?? initialCamera.latitude);
+    _capsulesChanged();
+    notifyListeners();
   }
 
   bool _darkIcons = false;
@@ -367,6 +445,10 @@ class MapController extends ChangeNotifier {
 
   void _onSessionChanged() {
     final friends = _session.profile?.friends ?? const <String>[];
+    if (_delta != null) {
+      if (!listEquals(friends, _friendIds)) _readEverything();
+      return;
+    }
     // The first time even with no friends: their source answers (empty),
     // or the map never knows it has everything.
     if (_friendsSub != null && listEquals(friends, _friendIds)) return;
@@ -406,7 +488,14 @@ class MapController extends ChangeNotifier {
   void onCameraIdle(GeoPosition center, double zoom, {GeoBounds? view}) {
     final band = _bandCenter;
     if (band == null || (center.latitude - band).abs() > _bandHalfHeight / 2) {
-      _loadPublicBand(center.latitude);
+      if (_delta != null) {
+        _bandCenter = center.latitude;
+        _readEverything();
+      } else if (_sharedStarted) {
+        _loadPublicBand(center.latitude);
+      } else {
+        _bandWanted = center.latitude;
+      }
     }
     _setZoom(zoom);
     if (view != null) _view = view;
@@ -453,15 +542,27 @@ class MapController extends ChangeNotifier {
   /// the map last showed are there to stand in until they do.
   bool get complete => allAnswered || _storeRead;
 
-  /// Shown from the pin store only: no source has confirmed it yet. Opened
-  /// through [freshCapsule], never from what was stored.
+  /// The stored pins' capsules (only what a pin needs).
+  final _storedObjects = Set<Capsule>.identity();
+
+  /// Shown from what the phone kept: only its pin is known (no source has
+  /// sent it again, or the sync kept it). Opened through [freshCapsule],
+  /// never from what was stored.
   bool isStoredOnly(String id) {
-    for (final MapEntry(key: source, value: list) in _stored.entries) {
-      if (!_answered.contains(source) && list.any((c) => c.id == id)) {
-        return true;
-      }
+    for (final c in visibleCapsules) {
+      if (c.id == id) return _storedObjects.contains(c);
     }
     return false;
+  }
+
+  /// [id] from the phone's copy of Firestore at once (null: not there): a
+  /// stored pin's card opens with it while [freshCapsule] checks.
+  Future<Capsule?> cachedCapsule(String id) async {
+    try {
+      return await _capsules.getCachedById(id);
+    } on Object {
+      return null;
+    }
   }
 
   /// [id] as the server has it now, if this user may still see it (the
@@ -483,15 +584,19 @@ class MapController extends ChangeNotifier {
   }
 
   Future<void> _readStore(String uid) async {
-    final pins = await _pinStore?.pins(uid) ?? const <StoredPin>[];
-    if (_disposed || pins.isEmpty) return;
-    for (final pin in pins) {
-      (_stored[pin.source.name] ??= []).add(pin.capsule);
+    final stored = await _pinStore?.read(uid) ?? StoredMap.none;
+    if (_disposed) return;
+    if (stored.pins.isNotEmpty) {
+      for (final pin in stored.pins) {
+        (_stored[pin.source.name] ??= []).add(pin.capsule);
+        _storedObjects.add(pin.capsule);
+      }
+      _storeRead = true;
+      StartupReport.mark('store');
+      _capsulesChanged();
+      notifyListeners();
     }
-    _storeRead = true;
-    StartupReport.mark('store');
-    _capsulesChanged();
-    notifyListeners();
+    _startShared(stored);
   }
 
   /// The pins written to the store a moment after the last change, once
@@ -525,15 +630,41 @@ class MapController extends ChangeNotifier {
     add(_friends, PinSource.friends);
     add(_coAuthored, PinSource.co);
     add(_own, PinSource.own);
-    unawaited(store.save(uid, byId.values));
+    unawaited(
+      store.save(
+        uid,
+        StoredMap(
+          pins: byId.values.toList(),
+          syncedTo: _delta?.syncedTo ?? _newest([..._friends, ..._public]),
+          friendIds: List.of(_friendIds),
+          bandLatitude: _bandCenter,
+        ),
+      ),
+    );
   }
 
-  void _set(VoidCallback update, {String? answered}) {
+  /// The newest of [capsules]' server times: what a full answer holds up to.
+  static DateTime? _newest(Iterable<Capsule> capsules) {
+    DateTime? newest;
+    for (final c in capsules) {
+      final at = c.createdAt;
+      if (at != null && (newest == null || at.isAfter(newest))) newest = at;
+    }
+    return newest;
+  }
+
+  void _set(VoidCallback update, {Object? answered}) {
     _capsulesChanged();
     if (_disposed) return;
     update();
-    if (answered != null && _answered.add(answered)) {
-      StartupReport.mark('data_$answered');
+    final sources = switch (answered) {
+      final String one => [one],
+      final List<String> some => some,
+      _ => const <String>[],
+    };
+    for (final source in sources) {
+      if (!_answered.add(source)) continue;
+      StartupReport.mark('data_$source');
       if (allAnswered) StartupReport.mark('data_all');
     }
     _scheduleSave();
@@ -554,6 +685,7 @@ class MapController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _delta?.dispose();
     if (_saveTimer?.isActive ?? false) {
       _saveTimer!.cancel();
       _save();

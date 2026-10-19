@@ -459,6 +459,18 @@ service cloud.firestore {
       }
     }
 
+    // Deleted friends-only and public capsules, for the map's sync
+    // (functions/lib/mapsync.js; docs/map/COLD_START.md): written by the
+    // server only, readable by whoever could see the capsule; its id, owner
+    // and privacy, nothing else of it.
+    match /capsule_deletions/{capsuleId} {
+      allow read: if signedIn()
+        && (resource.data.privacy == 'public'
+          || (resource.data.privacy == 'friends'
+            && resource.data.ownerId in myFriends()));
+      allow write: if false;
+    }
+
     function capsuleData(id) {
       return get(/databases/$(database)/documents/capsules/$(id)).data;
     }

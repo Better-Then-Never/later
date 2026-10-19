@@ -154,6 +154,95 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       .snapshots()
       .map(_map);
 
+  List<List<String>> _chunks(List<String> ids) => [
+    for (var i = 0; i < ids.length; i += _whereInLimit)
+      ids.sublist(
+        i,
+        i + _whereInLimit > ids.length ? ids.length : i + _whereInLimit,
+      ),
+  ];
+
+  @override
+  Stream<List<Capsule>> watchFriendsSince(
+    List<String> friendIds,
+    DateTime after, {
+    int limit = 500,
+  }) {
+    final ids = friendIds.toSet().toList();
+    if (ids.isEmpty) return Stream.value(const []);
+    return _combineLatest([
+      for (final chunk in _chunks(ids))
+        _capsules
+            .where('ownerId', whereIn: chunk)
+            .where('privacy', isEqualTo: CapsulePrivacy.friends.name)
+            .where('createdAt', isGreaterThan: Timestamp.fromDate(after))
+            .orderBy('createdAt', descending: true)
+            .limit(limit)
+            .snapshots()
+            .map(_map),
+    ]);
+  }
+
+  @override
+  Stream<List<Capsule>> watchPublicSince(DateTime after, {int limit = 500}) =>
+      _capsules
+          .where('privacy', isEqualTo: CapsulePrivacy.public.name)
+          .where('createdAt', isGreaterThan: Timestamp.fromDate(after))
+          .orderBy('createdAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .map(_map);
+
+  @override
+  Stream<List<CapsuleDeletion>> watchDeletionsSince(
+    List<String> friendIds,
+    DateTime after, {
+    int limit = 500,
+  }) {
+    final deletions = _db.collection(FirestorePaths.capsuleDeletions);
+    final since = Timestamp.fromDate(after);
+    List<CapsuleDeletion> map(QuerySnapshot<Map<String, dynamic>> snap) => [
+      for (final d in snap.docs)
+        CapsuleDeletion(
+          d.id,
+          (d.data()['deletedAt'] as Timestamp?)?.toDate() ?? after,
+        ),
+    ];
+    final ids = friendIds.toSet().toList();
+    return _combineLatest([
+      deletions
+          .where('privacy', isEqualTo: CapsulePrivacy.public.name)
+          .where('deletedAt', isGreaterThan: since)
+          .orderBy('deletedAt', descending: true)
+          .limit(limit)
+          .snapshots()
+          .map(map),
+      for (final chunk in _chunks(ids))
+        deletions
+            .where('ownerId', whereIn: chunk)
+            .where('privacy', isEqualTo: CapsulePrivacy.friends.name)
+            .where('deletedAt', isGreaterThan: since)
+            .orderBy('deletedAt', descending: true)
+            .limit(limit)
+            .snapshots()
+            .map(map),
+    ]);
+  }
+
+  @override
+  Future<Capsule?> getCachedById(String id) async {
+    try {
+      final doc = await _capsules
+          .doc(id)
+          .get(const GetOptions(source: Source.cache));
+      final data = doc.data();
+      return data == null ? null : FirestoreMappers.capsule(doc.id, data);
+    } on Object {
+      // Not on the phone.
+      return null;
+    }
+  }
+
   @override
   String newCapsuleId() => _capsules.doc().id;
 
@@ -326,14 +415,12 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
 
   /// Emits the concatenation of the latest value of every stream once each
   /// has emitted at least once.
-  static Stream<List<Capsule>> _combineLatest(
-    List<Stream<List<Capsule>>> streams,
-  ) {
+  static Stream<List<T>> _combineLatest<T>(List<Stream<List<T>>> streams) {
     if (streams.length == 1) return streams.first;
-    late StreamController<List<Capsule>> controller;
-    final latest = List<List<Capsule>?>.filled(streams.length, null);
-    final subscriptions = <StreamSubscription<List<Capsule>>>[];
-    controller = StreamController<List<Capsule>>(
+    late StreamController<List<T>> controller;
+    final latest = List<List<T>?>.filled(streams.length, null);
+    final subscriptions = <StreamSubscription<List<T>>>[];
+    controller = StreamController<List<T>>(
       onListen: () {
         for (var i = 0; i < streams.length; i++) {
           subscriptions.add(

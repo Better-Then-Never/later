@@ -41,4 +41,12 @@ abstract final class FeatureFlags {
   /// then only the (i) stays (OpenStreetMap's guidelines allow it
   /// collapsing). false: the line is always on the map.
   static const mapCreditCollapses = true;
+
+  /// The map reads only the friends' and public capsules that changed since
+  /// the pins it kept on the phone (docs/map/COLD_START.md, "Delta sync"),
+  /// not all of them at every start. Off until the backend it needs is
+  /// deployed (the deletion records, their rules, two indexes and a TTL
+  /// policy); without it the map would notice and read everything anyway.
+  /// --dart-define=MAP_DELTA=true for the local emulators.
+  static const mapDeltaSync = bool.fromEnvironment('MAP_DELTA');
 }

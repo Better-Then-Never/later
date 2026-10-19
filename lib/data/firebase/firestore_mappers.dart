@@ -16,6 +16,7 @@ abstract final class FirestorePaths {
   static const users = 'users';
   static const usernames = 'usernames';
   static const capsules = 'capsules';
+  static const capsuleDeletions = 'capsule_deletions';
   static const friendRequests = 'friend_requests';
   static const notifications = 'notifications';
   static const fcmTokens = 'fcmTokens';

@@ -112,24 +112,31 @@ void main() {
         'more', () {
       final opens = DateTime(2027, 1, 2, 3, 4);
       final pins = MapPinStore.decode(
-        MapPinStore.encode([
-          StoredPin(_capsule('a', color: CapsuleColor.purple), PinSource.own),
-          StoredPin(
-            _capsule(
-              'b',
-              owner: 'friend',
-              privacy: CapsulePrivacy.friends,
-              openAt: opens,
-            ),
-            PinSource.friends,
+        MapPinStore.encode(
+          StoredMap(
+            pins: [
+              StoredPin(
+                _capsule('a', color: CapsuleColor.purple),
+                PinSource.own,
+              ),
+              StoredPin(
+                _capsule(
+                  'b',
+                  owner: 'friend',
+                  privacy: CapsulePrivacy.friends,
+                  openAt: opens,
+                ),
+                PinSource.friends,
+              ),
+              StoredPin(
+                _capsule('c', owner: 'friend', coAuthors: ['u1', 'x']),
+                PinSource.co,
+              ),
+            ],
           ),
-          StoredPin(
-            _capsule('c', owner: 'friend', coAuthors: ['u1', 'x']),
-            PinSource.co,
-          ),
-        ]),
+        ),
         uid: 'u1',
-      );
+      ).pins;
       expect(pins.map((p) => p.capsule.id), ['a', 'b', 'c']);
       expect(pins.map((p) => p.source), [
         PinSource.own,
@@ -152,31 +159,63 @@ void main() {
       }
     });
 
-    test('anything else reads as no pins', () {
-      final good = MapPinStore.encode([
-        StoredPin(_capsule('a'), PinSource.own),
-      ]);
-      expect(MapPinStore.decode(Uint8List(0), uid: 'u1'), isEmpty);
-      expect(
-        MapPinStore.decode(Uint8List.fromList([1, 2, 3, 4, 5]), uid: 'u1'),
-        isEmpty,
+    test('and where the sync stands', () {
+      final synced = DateTime.fromMillisecondsSinceEpoch(1792440000123);
+      final back = MapPinStore.decode(
+        MapPinStore.encode(
+          StoredMap(
+            pins: [StoredPin(_capsule('a'), PinSource.own)],
+            syncedTo: synced,
+            friendIds: const ['friend', 'other'],
+            bandLatitude: 52.23,
+          ),
+        ),
+        uid: 'u1',
       );
-      expect(
-        MapPinStore.decode(Uint8List.sublistView(good, 0, 20), uid: 'u1'),
-        isEmpty,
+      expect(back.syncedTo, synced);
+      expect(back.friendIds, ['friend', 'other']);
+      expect(back.bandLatitude, 52.23);
+      final never = MapPinStore.decode(
+        MapPinStore.encode(const StoredMap()),
+        uid: 'u1',
       );
+      expect(never.syncedTo, isNull);
+      expect(never.bandLatitude, isNull);
+      expect(never.pins, isEmpty);
+    });
+
+    test('anything else reads as nothing kept', () {
+      final good = MapPinStore.encode(
+        StoredMap(
+          pins: [StoredPin(_capsule('a'), PinSource.own)],
+          syncedTo: DateTime(2026),
+        ),
+      );
+      for (final bytes in [
+        Uint8List(0),
+        Uint8List.fromList([1, 2, 3, 4, 5]),
+        Uint8List.sublistView(good, 0, 40),
+      ]) {
+        final back = MapPinStore.decode(bytes, uid: 'u1');
+        expect(back.pins, isEmpty);
+        expect(back.syncedTo, isNull);
+      }
     });
 
     test('5,000 pins read back quickly', () {
-      final bytes = MapPinStore.encode([
-        for (var i = 0; i < 5000; i++)
-          StoredPin(
-            _capsule('capsule-$i', owner: 'owner-${i % 300}'),
-            PinSource.values[i % 4],
-          ),
-      ]);
+      final bytes = MapPinStore.encode(
+        StoredMap(
+          pins: [
+            for (var i = 0; i < 5000; i++)
+              StoredPin(
+                _capsule('capsule-$i', owner: 'owner-${i % 300}'),
+                PinSource.values[i % 4],
+              ),
+          ],
+        ),
+      );
       final watch = Stopwatch()..start();
-      final pins = MapPinStore.decode(bytes, uid: 'u1');
+      final pins = MapPinStore.decode(bytes, uid: 'u1').pins;
       watch.stop();
       expect(pins, hasLength(5000));
       expect(bytes.length, lessThan(5000 * 60));
@@ -190,18 +229,24 @@ void main() {
     test('its own pins only, gone at sign-out and when another signs '
         'in', () async {
       final pins = store()..attach('u1');
-      await pins.save('u1', [StoredPin(_capsule('a'), PinSource.own)]);
+      await pins.save(
+        'u1',
+        StoredMap(pins: [StoredPin(_capsule('a'), PinSource.own)]),
+      );
       expect(File('${dir.path}/u1.bin').existsSync(), isTrue);
 
       final next = store()..attach('u1');
-      expect((await next.pins('u1')).single.capsule.id, 'a');
-      expect(await next.pins('u2'), isEmpty);
+      expect((await next.read('u1')).pins.single.capsule.id, 'a');
+      expect((await next.read('u2')).pins, isEmpty);
 
       // Another account on this phone: the first one's pins are removed.
       final other = store()..attach('u2');
       await other.settled;
       expect(File('${dir.path}/u1.bin').existsSync(), isFalse);
-      await other.save('u2', [StoredPin(_capsule('b'), PinSource.own)]);
+      await other.save(
+        'u2',
+        StoredMap(pins: [StoredPin(_capsule('b'), PinSource.own)]),
+      );
 
       // Its session ends (sign-out, a revoked token): deleted.
       other.detach();
@@ -263,7 +308,7 @@ void main() {
 
     Future<MapPinStore> storeHolding(List<StoredPin> pins) async {
       final saved = store()..attach('u1');
-      await saved.save('u1', pins);
+      await saved.save('u1', StoredMap(pins: pins));
       return store()..attach('u1');
     }
 
@@ -393,7 +438,7 @@ void main() {
       await pumpEventQueue();
       // Written a moment after the last change.
       await Future<void>.delayed(const Duration(milliseconds: 2200));
-      final kept = await (store()..attach('u1')).pins('u1');
+      final kept = (await (store()..attach('u1')).read('u1')).pins;
       expect(
         {for (final p in kept) p.capsule.id: p.source},
         {

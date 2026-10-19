@@ -936,12 +936,18 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// holds is never shown; the capsule is read from the server (which checks
   /// that this user may still see it), or a message says it is gone.
   Future<void> _openStored(MapController map, String id) async {
+    // At once from the phone's copy of Firestore when it has it; the
+    // server's answer then keeps it open or closes it.
+    final cached = await map.cachedCapsule(id);
+    if (!mounted) return;
+    if (cached != null) _select(cached);
     final capsule = await map.freshCapsule(id);
     if (!mounted) return;
     if (capsule != null) {
-      _select(capsule);
+      if (_selected == null) _select(capsule);
       return;
     }
+    if (_selected?.id == id) _select(null);
     PopupNotificationService.showError(
       context: context,
       message: context.l10n.mapCapsuleUnavailable,

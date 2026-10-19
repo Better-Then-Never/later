@@ -62,6 +62,15 @@ enum CapsuleColor {
   }
 }
 
+/// A friends-only or public capsule that was deleted
+/// (`capsule_deletions/{id}`, functions/lib/mapsync.js).
+class CapsuleDeletion {
+  const CapsuleDeletion(this.id, this.deletedAt);
+
+  final String id;
+  final DateTime deletedAt;
+}
+
 /// A time capsule (`capsules/{id}`).
 class Capsule {
   const Capsule({
