@@ -1,5 +1,6 @@
 // How the MapLibre map's layers look at a zoom (docs/map/DECISION.md): the
-// heat and the markers crossfade over a band of zoom, never both gone.
+// heat and the markers hand over in a short band, never both gone, never both
+// at full strength (mission 2, §2.2).
 import 'dart:math' as math;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -13,16 +14,40 @@ void main() {
     expect(MapZoomVisuals.markerOpacity(15), 1);
   });
 
-  test('never a zoom with neither: the markers are whole before the heat '
-      'starts to fade', () {
-    expect(MapZoomVisuals.markerOpacity(MapZoomVisuals.heatFrom), 1);
+  test('never a zoom with neither, never both at full strength', () {
     for (var z = 9.0; z <= 14; z += 0.01) {
-      final shown = math.max(
-        MapZoomVisuals.heatOpacity(z),
-        MapZoomVisuals.markerOpacity(z),
+      final heat = MapZoomVisuals.heatOpacity(z);
+      final markers = MapZoomVisuals.markerOpacity(z);
+      expect(
+        math.max(heat, markers),
+        greaterThanOrEqualTo(0.5 - 1e-9),
+        reason: 'zoom $z: something shows',
       );
-      expect(shown, closeTo(1, 1e-9), reason: 'zoom $z');
+      expect(
+        math.min(heat, markers),
+        lessThanOrEqualTo(0.5 + 1e-9),
+        reason: 'zoom $z: not both strong',
+      );
     }
+  });
+
+  test('the heat is thin under whole bubbles, and gone soon after', () {
+    expect(
+      MapZoomVisuals.heatOpacity(MapZoomVisuals.markersTo),
+      lessThan(0.25),
+    );
+    expect(
+      MapZoomVisuals.heatTo - MapZoomVisuals.markersTo,
+      lessThanOrEqualTo(0.2),
+    );
+  });
+
+  test('zooming out, the bubbles are gone before the heat is whole', () {
+    expect(
+      MapZoomVisuals.markersTo - MapZoomVisuals.markersFrom,
+      lessThanOrEqualTo(0.35 + 1e-9),
+    );
+    expect(MapZoomVisuals.markerOpacity(MapZoomVisuals.heatFrom), 0);
   });
 
   test('smooth: no step anywhere, one way each', () {
@@ -39,13 +64,6 @@ void main() {
       heat = h;
       markers = m;
     }
-  });
-
-  test('zooming out, the markers are gone within 0.6 of a level', () {
-    expect(
-      MapZoomVisuals.markersTo - MapZoomVisuals.markersFrom,
-      lessThanOrEqualTo(0.6 + 1e-9),
-    );
   });
 
   test('the heat keeps one size on the ground from zoom 11 in, and grows '
@@ -71,12 +89,14 @@ void main() {
   test('the expressions the map evaluates have the same stops', () {
     final heat = MapZoomVisuals.heatOpacityExpression();
     expect(heat.first, 'interpolate');
-    expect(heat.sublist(3), [
-      MapZoomVisuals.heatFrom,
-      1,
-      MapZoomVisuals.heatTo,
-      0,
-    ]);
+    final heatStops = heat.sublist(3);
+    for (var i = 0; i < heatStops.length; i += 2) {
+      final z = (heatStops[i] as num).toDouble();
+      expect(
+        MapZoomVisuals.heatOpacity(z),
+        closeTo((heatStops[i + 1] as num).toDouble(), 1e-9),
+      );
+    }
     final markers = MapZoomVisuals.markerOpacityExpression();
     expect(markers.sublist(3), [
       MapZoomVisuals.markersFrom,
@@ -84,6 +104,10 @@ void main() {
       MapZoomVisuals.markersTo,
       1,
     ]);
+    final moving = MapZoomVisuals.markerOpacityExpression(
+      times: const ['get', 'opacity'],
+    );
+    expect(moving.last, ['get', 'opacity']);
     final radius = MapZoomVisuals.heatRadiusExpression();
     expect(radius[1], ['exponential', 2]);
     // Each stop in the expression is where the function passes.
@@ -92,5 +116,6 @@ void main() {
       final r = (radius[i + 1] as num).toDouble();
       expect(MapZoomVisuals.heatRadius(z), closeTo(r, 1e-9));
     }
+    expect(MapZoomVisuals.heatIntensityExpression().first, 'interpolate');
   });
 }

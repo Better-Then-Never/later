@@ -7,31 +7,54 @@ import 'package:flutter/animation.dart';
 /// MapLibre style expressions ([heatOpacityExpression] ...), which the map
 /// evaluates on the GPU every frame. Tests check the two agree.
 ///
-/// Far out the heat shows; closer in the bubbles and pins. Between
-/// [markersFrom] and [heatTo] both show, crossfading: the markers are whole
-/// before the heat starts to fade, so no zoom shows neither.
+/// Far out the heat shows; closer in the bubbles and pins. They hand over in
+/// a short band: the heat thins to half while the markers grow in and is
+/// gone soon after they are whole, so the base map stays readable under the
+/// bubbles; zooming out the bubbles are gone before the heat is whole again.
+/// No zoom shows neither, none shows both at full strength (mission 2, §2.2).
 abstract final class MapZoomVisuals {
-  /// The heat is whole up to here, and gone at [heatTo].
-  static const heatFrom = 11.6;
-  static const heatTo = 12.3;
+  /// The heat is whole up to here, half at [heatHalf], gone at [heatTo].
+  static const heatFrom = 11.0;
+  static const heatHalf = 11.5;
+  static const heatTo = 11.85;
 
   /// Bubbles and pins start here and are whole from [markersTo]: zooming out
-  /// they are gone within 0.6 levels (about 0.2 s of a pinch), after the
-  /// heat is whole again.
-  static const markersFrom = 11.0;
-  static const markersTo = 11.6;
+  /// they are gone within a third of a level (resting a pinch in the band
+  /// shows them faint only briefly: no ghosts).
+  static const markersFrom = 11.33;
+  static const markersTo = 11.68;
 
   /// Ease in and out (CSS ease-in-out), as `cubic-bezier` in the expressions.
   static const _curve = Cubic(0.42, 0, 0.58, 1);
 
-  static double _between(double zoom, double from, double to) =>
-      _curve.transform(((zoom - from) / (to - from)).clamp(0.0, 1.0));
+  static const _heatStops = [(heatFrom, 1.0), (heatHalf, 0.5), (heatTo, 0.0)];
+  static const _markerStops = [(markersFrom, 0.0), (markersTo, 1.0)];
 
-  static double heatOpacity(double zoom) =>
-      1 - _between(zoom, heatFrom, heatTo);
+  /// How strongly each capsule counts for the heat: lower at city zoom, where
+  /// a whole city of capsules would otherwise turn it orange.
+  static const _intensityStops = [
+    (3.0, 0.5),
+    (6.0, 0.22),
+    (9.0, 0.24),
+    (11.0, 0.2),
+  ];
 
-  static double markerOpacity(double zoom) =>
-      _between(zoom, markersFrom, markersTo);
+  /// Eased between stops, as `interpolate` with `cubic-bezier` does it.
+  static double _eased(double zoom, List<(double, double)> stops) {
+    if (zoom <= stops.first.$1) return stops.first.$2;
+    for (var i = 1; i < stops.length; i++) {
+      final (z1, v1) = stops[i];
+      if (zoom <= z1) {
+        final (z0, v0) = stops[i - 1];
+        return v0 + (v1 - v0) * _curve.transform((zoom - z0) / (z1 - z0));
+      }
+    }
+    return stops.last.$2;
+  }
+
+  static double heatOpacity(double zoom) => _eased(zoom, _heatStops);
+
+  static double markerOpacity(double zoom) => _eased(zoom, _markerStops);
 
   /// The heat's radius in dp: one size on the ground (it doubles with each
   /// level, so the picture does not jump as the zoom crosses whole levels),
@@ -60,24 +83,24 @@ abstract final class MapZoomVisuals {
 
   static const _bezier = ['cubic-bezier', 0.42, 0, 0.58, 1];
 
-  static List<Object> heatOpacityExpression() => [
+  static List<Object> _expression(List<(double, Object)> stops) => [
     'interpolate',
     _bezier,
     ['zoom'],
-    heatFrom,
-    1,
-    heatTo,
-    0,
+    for (final (z, v) in stops) ...[z, v],
   ];
 
-  static List<Object> markerOpacityExpression() => [
+  static List<Object> heatOpacityExpression() => _expression(_heatStops);
+
+  /// [times]: each marker's own opacity on top (a moving one fading).
+  static List<Object> markerOpacityExpression({Object times = 1}) =>
+      _expression([(markersFrom, 0), (markersTo, times)]);
+
+  static List<Object> heatIntensityExpression() => [
     'interpolate',
-    _bezier,
+    ['linear'],
     ['zoom'],
-    markersFrom,
-    0,
-    markersTo,
-    1,
+    for (final (z, v) in _intensityStops) ...[z, v],
   ];
 
   static List<Object> heatRadiusExpression() => [

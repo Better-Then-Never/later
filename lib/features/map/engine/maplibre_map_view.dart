@@ -3,10 +3,10 @@ part of '../map_page.dart';
 /// The map drawn by MapLibre (docs/map/DECISION.md), behind
 /// [FeatureFlags.mapLibre]: the heat, the bubbles and the pins are layers of
 /// the map itself, drawn on the GPU, their look a function of the zoom the map
-/// evaluates every frame ([MapZoomVisuals]), and the capsules grouped by the
-/// map ([_capsulesSource] is a clustered source). Nothing is sent from Flutter
-/// while a finger moves the map. The buttons, the card and the hint are the
-/// Google map page's.
+/// evaluates every frame ([MapZoomVisuals]). The capsules are grouped here
+/// ([_GroupStage]): their bubbles split and merge as the zoom passes half
+/// levels, the moving pieces sent to the map frame by frame. The buttons, the
+/// card and the hint are the Google map page's.
 class MapLibreMapView extends StatefulWidget {
   const MapLibreMapView({super.key});
 
@@ -43,7 +43,7 @@ class _Props implements ml.LayerProperties {
 }
 
 class _MapLibreMapViewState extends State<MapLibreMapView>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   ml.MapLibreMapController? _controller;
   final _ready = Completer<ml.MapLibreMapController>();
   bool _styled = false;
@@ -75,6 +75,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   Capsule? _shown;
   final _motion = PinMotion();
   late final Ticker _ticker = createTicker(_tick);
+  late final _stage = _GroupStage(vsync: this);
   Duration _last = Duration.zero;
   int _sentAt = -1000;
 
@@ -132,6 +133,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     _focus.removeListener(_onFocusRequested);
     selectedPageNotifier.removeListener(_onTabChanged);
     _ticker.dispose();
+    _stage.dispose();
     _bearing.dispose();
     super.dispose();
   }
@@ -184,18 +186,11 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     // added are sent by [_syncData] once the style is ready.
     final version = map.capsulesVersion;
     final me = map.myPosition;
-    await c.addGeoJsonSource(_heatSource, _features(map.heatCapsules));
-    await c.addSource(
-      _capsulesSource,
-      ml.GeojsonSourceProperties(
-        data: _features(map.visibleCapsules),
-        cluster: true,
-        // Wider than the Google grid's 64 px cells at 3x: fewer, clearer
-        // bubbles at city zoom.
-        clusterRadius: 60,
-        clusterMaxZoom: 17,
-      ),
-    );
+    // Empty first, filled as a string (_setSource): off the main thread.
+    await c.addGeoJsonSource(_heatSource, _features(const []));
+    // Pins and bubbles: grouped by [_GroupStage], still and moving.
+    await c.addGeoJsonSource(_capsulesSource, _features(const []));
+    await c.addGeoJsonSource(_movingSource, _features(const []));
     await c.addGeoJsonSource(_meSource, _point(me));
     await c.addGeoJsonSource(_selectedSource, _features(const []));
     await c.addHeatmapLayer(
@@ -203,21 +198,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       _heatLayer,
       ml.HeatmapLayerProperties(
         heatmapWeight: 1,
-        heatmapIntensity: const [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          3,
-          0.5,
-          6,
-          0.22,
-          9,
-          0.3,
-          11,
-          0.27,
-          12,
-          0.32,
-        ],
+        heatmapIntensity: MapZoomVisuals.heatIntensityExpression(),
         heatmapRadius: MapZoomVisuals.heatRadiusExpression(),
         heatmapOpacity: MapZoomVisuals.heatOpacityExpression(),
         // Cool to warm, the app's own colours (the Google map's ramp, M-11).
@@ -244,11 +225,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       _capsulesSource,
       _pinsLayer,
       ml.SymbolLayerProperties(
-        iconImage: const [
-          'concat',
-          'pin_',
-          ['get', 'color'],
-        ],
+        iconImage: const ['get', 'image'],
         iconAnchor: 'bottom',
         iconAllowOverlap: true,
         iconIgnorePlacement: true,
@@ -260,28 +237,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       _capsulesSource,
       _bubblesLayer,
       ml.SymbolLayerProperties(
-        iconImage: const [
-          'concat',
-          'bubble_',
-          [
-            'case',
-            [
-              '>',
-              ['get', 'point_count'],
-              99,
-            ],
-            '99+',
-            [
-              'to-string',
-              ['get', 'point_count'],
-            ],
-          ],
-        ],
+        iconImage: const ['get', 'image'],
         // Bigger for more capsules: a clear scale by count.
         iconSize: const [
           'interpolate',
           ['linear'],
-          ['get', 'point_count'],
+          ['get', 'count'],
           2,
           0.9,
           10,
@@ -295,9 +256,70 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         iconIgnorePlacement: true,
         iconOpacity: opacity,
         // The bigger bubbles on top.
-        symbolSortKey: const ['get', 'point_count'],
+        symbolSortKey: const ['get', 'count'],
       ),
-      filter: const ['has', 'point_count'],
+      filter: const [
+        '==',
+        ['get', 'kind'],
+        'bubble',
+      ],
+    );
+    // The pieces that move while bubbles split and merge, over the still
+    // ones, each with its own size and opacity.
+    final moving = MapZoomVisuals.markerOpacityExpression(
+      times: const ['get', 'opacity'],
+    );
+    await c.addSymbolLayer(
+      _movingSource,
+      _movingPinsLayer,
+      ml.SymbolLayerProperties(
+        iconImage: const ['get', 'image'],
+        iconAnchor: 'bottom',
+        iconSize: const ['get', 'scale'],
+        iconAllowOverlap: true,
+        iconIgnorePlacement: true,
+        iconOpacity: moving,
+      ),
+      filter: const [
+        '==',
+        ['get', 'kind'],
+        'pin',
+      ],
+      enableInteraction: false,
+    );
+    await c.addSymbolLayer(
+      _movingSource,
+      _movingBubblesLayer,
+      ml.SymbolLayerProperties(
+        iconImage: const ['get', 'image'],
+        iconSize: const [
+          '*',
+          [
+            'interpolate',
+            ['linear'],
+            ['get', 'count'],
+            2,
+            0.9,
+            10,
+            1.0,
+            50,
+            1.12,
+            200,
+            1.25,
+          ],
+          ['get', 'scale'],
+        ],
+        iconAllowOverlap: true,
+        iconIgnorePlacement: true,
+        iconOpacity: moving,
+        symbolSortKey: const ['get', 'count'],
+      ),
+      filter: const [
+        '==',
+        ['get', 'kind'],
+        'bubble',
+      ],
+      enableInteraction: false,
     );
     await c.addSymbolLayer(
       _selectedSource,
@@ -338,6 +360,22 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     );
     _dataVersion = version;
     _meAt = me;
+    _stage
+      ..controller = c
+      ..camera(
+        c.cameraPosition ??
+            ml.CameraPosition(
+              target: ml.LatLng(
+                map.initialCamera.latitude,
+                map.initialCamera.longitude,
+              ),
+              zoom: map.initialCameraZoom,
+            ),
+        reachDp: _reachDp,
+        animate: false,
+      );
+    unawaited(_setSource(c, _heatSource, _features(map.heatCapsules)));
+    unawaited(_stage.setCapsules(map.visibleCapsules));
     if (!mounted) return;
     setState(() => _styled = true);
     if (_shown case final shown?) {
@@ -346,12 +384,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (_focus.pending != null) unawaited(_showFocusedCapsule());
   }
 
-  /// Unclustered capsules, without the one drawn on its own (selected).
+  /// The pins, without the one drawn on its own (selected).
   static List<Object> _pinsFilter(String? hidden) => [
     'all',
     [
-      '!',
-      ['has', 'point_count'],
+      '==',
+      ['get', 'kind'],
+      'pin',
     ],
     [
       '!=',
@@ -392,17 +431,15 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     ],
   };
 
-  /// New capsules or a new position: the sources get them (the map regroups
-  /// on its own).
+  /// New capsules or a new position: the sources get them (the pins and
+  /// bubbles regrouped by the stage).
   void _syncData(MapController map) {
     final c = _controller;
     if (!_styled || c == null) return;
     if (_dataVersion != map.capsulesVersion) {
       _dataVersion = map.capsulesVersion;
-      unawaited(
-        c.setGeoJsonSource(_capsulesSource, _features(map.visibleCapsules)),
-      );
-      unawaited(c.setGeoJsonSource(_heatSource, _features(map.heatCapsules)));
+      unawaited(_stage.setCapsules(map.visibleCapsules));
+      unawaited(_setSource(c, _heatSource, _features(map.heatCapsules)));
       // A selected capsule the filter now hides: its card goes.
       final selected = _selected;
       if (selected != null &&
@@ -412,7 +449,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     }
     if (_meAt != map.myPosition) {
       _meAt = map.myPosition;
-      unawaited(c.setGeoJsonSource(_meSource, _point(map.myPosition)));
+      unawaited(_setSource(c, _meSource, _point(map.myPosition)));
     }
   }
 
@@ -453,7 +490,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     }
     _ticker.stop();
     _send();
-    await c.setGeoJsonSource(_selectedSource, _features([capsule]));
+    await _setSource(c, _selectedSource, _features([capsule]));
     await _drawn();
     if (!mounted || _shown?.id != capsule.id) return;
     unawaited(c.setFilter(_pinsLayer, _pinsFilter(capsule.id)));
@@ -529,7 +566,14 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     await c.setFilter(_pinsLayer, _pinsFilter(null));
     await _drawn();
     if (_shown != null) return;
-    await c.setGeoJsonSource(_selectedSource, _features(const []));
+    await _setSource(c, _selectedSource, _features(const []));
+  }
+
+  /// How far the screen reaches from its middle (dp): half its diagonal,
+  /// so a turned map counts its corners too.
+  double get _reachDp {
+    final size = MediaQuery.sizeOf(context);
+    return math.sqrt(size.width * size.width + size.height * size.height) / 2;
   }
 
   // ---------------------------------------------------------------- taps
@@ -550,36 +594,30 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         }
       }
     } else if (layerId == _bubblesLayer) {
-      // A bubble's feature id is its cluster id.
-      final cluster = num.tryParse(id)?.toInt();
-      unawaited(_openBubble(cluster, at));
+      final bubble = _stage.node(id);
+      if (bubble != null) unawaited(_openBubble(bubble));
     }
   }
 
   /// In on a bubble's capsules: the camera fits them (as the Google map
-  /// does); all in one spot, or none listed, in to where the bubble splits.
-  Future<void> _openBubble(int? cluster, ml.LatLng at) async {
-    final c = await _ready.future;
-    final leaves = cluster == null
-        ? const <Map<String, dynamic>>[]
-        : await c.getClusterLeaves(_capsulesSource, cluster, limit: 1000);
-    if (!mounted) return;
-    final area = bubbleArea(leaves);
-    if (area == null) {
-      final splits = cluster == null
-          ? 0
-          : await c.getClusterExpansionZoom(_capsulesSource, cluster);
-      if (!mounted) return;
-      final zoom = splits > _zoom ? splits + 0.5 : _zoom + 2;
+  /// does); all in one spot, in to where the bubble splits.
+  Future<void> _openBubble(GroupNode bubble) async {
+    final at = ml.LatLng(bubble.latitude, bubble.longitude);
+    final tiny =
+        bubble.north - bubble.south < 1e-4 && bubble.east - bubble.west < 1e-4;
+    if (tiny) {
+      final level = _stage.level ?? CapsuleGroups.levelFor(_zoom);
+      final splits =
+          _stage.groups.splitsAt(bubble, level) ?? CapsuleGroups.maxLevel + 1;
       return _animate(
-        ml.CameraUpdate.newLatLngZoom(at, math.min(zoom, 19)),
+        ml.CameraUpdate.newLatLngZoom(at, math.max(splits.toDouble(), _zoom)),
         'bubble_split',
       );
     }
     final update = ml.CameraUpdate.newLatLngBounds(
       ml.LatLngBounds(
-        southwest: ml.LatLng(area.south, area.west),
-        northeast: ml.LatLng(area.north, area.east),
+        southwest: ml.LatLng(bubble.south, bubble.west),
+        northeast: ml.LatLng(bubble.north, bubble.east),
       ),
       left: 64,
       top: 96,
@@ -830,6 +868,15 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                   ..cameraAt(position.zoom);
                 _zoom = position.zoom;
                 _bearing.value = position.bearing;
+                _stage.camera(
+                  position,
+                  reachDp: _reachDp,
+                  // Unseen below the markers' band, and at once with
+                  // reduced motion.
+                  animate:
+                      !AppMotion.reduced(context) &&
+                      position.zoom > MapZoomVisuals.markersFrom,
+                );
                 if (!_moving) {
                   _moving = true;
                   _active();

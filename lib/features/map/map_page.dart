@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' show Geolocator;
@@ -54,10 +56,12 @@ import 'widgets/marker_choreography_overlay.dart';
 import 'engine/map_zoom_visuals.dart';
 import 'engine/maplibre_images.dart';
 import 'engine/map_camera_memory.dart';
-import 'engine/bubble_members.dart';
+import 'engine/capsule_groups.dart';
+import 'engine/group_motion.dart';
 import '../achievements/streak_pill.dart';
 
 part 'engine/maplibre_map_view.dart';
+part 'engine/maplibre_groups.dart';
 
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
