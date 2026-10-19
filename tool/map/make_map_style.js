@@ -119,6 +119,12 @@ function colourFor(id, type, p) {
 async function build(source, palette, name) {
   const style = await get(BASE + source);
   style.name = `Later ${name}`;
+  // No style transitions: MapLibre faded every symbol it newly placed in
+  // over 300 ms (pins and bubbles flashed see-through while zooming, old
+  // tiles faded out as ghosts), and eased every paint change the app makes
+  // (the selected pin lagged its own motion). The app animates its markers
+  // itself (docs/map/FLASH_FIX.md).
+  style.transition = { duration: 0, delay: 0 };
   for (const layer of style.layers) {
     const c = colourFor(layer.id, layer.type, palette);
     if (!c) continue;
