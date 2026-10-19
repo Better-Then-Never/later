@@ -56,9 +56,15 @@ function launch(n, ttid, file) {
     .filter((k) => !['run', 'home', 'shell', 'streets', 'data_own', 'data_all', 'pins_first', 'full'].includes(k))
     .map((k) => `${k}=${rel(k)}`)
     .join(' ');
+  // The slowest frames on the launch's clock (they are timed from 'dart').
+  const slowRaw = /LATERSTART frames .* slow=(\S*)/.exec(lines.find((l) => l.includes('LATERSTART frames')) || '');
+  const dart = rel('dart');
+  const slow = slowRaw && slowRaw[1] && dart !== null
+    ? slowRaw[1].split(',').map((s) => { const [t, br] = s.split(':'); return `${Number(t) + dart}:${br}`; }).join(' ')
+    : '';
   console.log(
     `launch ${n}: ` + columns.map((c) => `${c} ${row[c] ?? '?'}`).join(', ') +
-      (frames ? ` (of ${frames.n} frames)` : '') + (extra ? `  [${extra}]` : ''),
+      (frames ? ` (of ${frames.n} frames)` : '') + (extra ? `  [${extra}]` : '') + (slow ? `  slow ${slow}` : ''),
   );
 }
 

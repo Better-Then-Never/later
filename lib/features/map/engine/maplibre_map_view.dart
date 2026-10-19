@@ -82,7 +82,105 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// The posed pins' ids as last sent (the shadow's filter).
   var _posedIds = <String>{};
   late final Ticker _ticker = createTicker(_tick);
-  late final _stage = _GroupStage(vsync: this)..onSent = _onPictureSent;
+  late final _stage = _GroupStage(vsync: this)
+    ..onSent = _onPictureSent
+    ..onLife = _onLife;
+
+  /// The layers' clock while pieces grow in or shrink away (_GroupStage
+  /// life): the pins' and bubbles' sizes, sent every frame until done.
+  late final Ticker _lifeTicker = createTicker((_) => _tickLife());
+  int _lifeT = 0;
+
+  void _onLife() {
+    if (!_lifeTicker.isActive) unawaited(_lifeTicker.start());
+  }
+
+  void _tickLife() {
+    _sendLife();
+    if (_stage.living) return;
+    _lifeTicker.stop();
+    _stage.lifeDone();
+  }
+
+  void _sendLife() {
+    final c = _controller;
+    if (c == null || !_styled) return;
+    _lifeT = _stage.now;
+    unawaited(
+      c.setLayerProperties(
+        _pinsLayer,
+        _Props({'icon-size': _pinPose(_poses(), _lifeT)['icon-size']!}),
+      ),
+    );
+    unawaited(
+      c.setLayerProperties(
+        _bubblesLayer,
+        _Props({'icon-size': _bubbleSize(_lifeT)}),
+      ),
+    );
+  }
+
+  /// A piece's size for its life at the clock's [t]: growing in from its
+  /// 'a', shrinking away from its 'g', else 1 (the same ease out and in as
+  /// AppMotion.enter and exit).
+  static List<Object> _lifeScale(int t) => [
+    '*',
+    [
+      'interpolate',
+      ['cubic-bezier', 0, 0, 0.58, 1],
+      [
+        '-',
+        t,
+        [
+          'coalesce',
+          ['get', 'a'],
+          -1e9,
+        ],
+      ],
+      0,
+      0,
+      _GroupStage.growMs,
+      1,
+    ],
+    [
+      'interpolate',
+      ['cubic-bezier', 0.42, 0, 1, 1],
+      [
+        '-',
+        t,
+        [
+          'coalesce',
+          ['get', 'g'],
+          1e15,
+        ],
+      ],
+      0,
+      1,
+      _GroupStage.shrinkMs,
+      0,
+    ],
+  ];
+
+  /// The bubbles' size: bigger for more capsules, a moving piece's own,
+  /// and its life.
+  static List<Object> _bubbleSize(int t) => [
+    '*',
+    [
+      'interpolate',
+      ['linear'],
+      ['get', 'c'],
+      2,
+      0.9,
+      10,
+      1.0,
+      50,
+      1.12,
+      200,
+      1.25,
+    ],
+    _pieceScale,
+    _lifeScale(t),
+  ];
   Duration _last = Duration.zero;
   int _sentAt = -1000;
 
@@ -134,6 +232,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     _stage.dispose();
     _revealCap?.cancel();
     _cover.dispose();
+    _lifeTicker.dispose();
+    _pinsWait?.cancel();
     _bearing.dispose();
     super.dispose();
   }
@@ -217,8 +317,32 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     } else {
       unawaited(_cover.animateTo(0, curve: AppMotion.enter));
     }
+    _revealPins();
     _maybeFull();
   }
+
+  /// The pins and bubbles appear in one go once the map is uncovered and
+  /// every pin of this start has been grouped (the pin store's, or every
+  /// source's answer); on a first start at most [_pinsAtLatest] after the
+  /// first source answered, later ones growing in as they come.
+  void _revealPins() {
+    if (!_stage.hidden || !_revealing || !mounted) return;
+    final grouped = _stage.groupedVersion;
+    final full = _fullVersion;
+    final ready =
+        grouped != null && (full == null ? _pinsWaited : grouped >= full);
+    if (!ready) return;
+    _pinsWait?.cancel();
+    StartupReport.mark('pins_reveal');
+    _stage.reveal(instant: AppMotion.reduced(context));
+    if (_controller case final c?) {
+      unawaited(_setHeat(c, context.read<MapController>().heatCapsules));
+    }
+  }
+
+  static const _pinsAtLatest = Duration(seconds: 1);
+  Timer? _pinsWait;
+  bool _pinsWaited = false;
 
   /// Full: every pin of this start drawn, and no longer covered.
   void _maybeFull() {
@@ -229,6 +353,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   final _afterIdle = <VoidCallback>[];
 
   void _onPictureSent(int features, int? version) {
+    _revealPins();
     final fresh = _freshVersion;
     if (!_freshMarked && fresh != null && version != null && version >= fresh) {
       _freshMarked = true;
@@ -337,7 +462,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     // The zoom's opacity (no piece is ever see-through on its own:
     // GroupMotion).
     final opacity = MapZoomVisuals.markerOpacityExpression();
-    final pose = _pinPose(_poses());
+    final pose = _pinPose(_poses(), _lifeT);
     added.add(
       c.addSymbolLayer(
         _capsulesSource,
@@ -367,23 +492,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         ml.SymbolLayerProperties(
           iconImage: const ['get', 'm'],
           // Bigger for more capsules: a clear scale by count.
-          iconSize: const [
-            '*',
-            [
-              'interpolate',
-              ['linear'],
-              ['get', 'c'],
-              2,
-              0.9,
-              10,
-              1.0,
-              50,
-              1.12,
-              200,
-              1.25,
-            ],
-            _pieceScale,
-          ],
+          iconSize: _bubbleSize(_lifeT),
           iconAllowOverlap: true,
           iconIgnorePlacement: true,
           iconOpacity: opacity,
@@ -427,7 +536,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
         reachDp: _reachDp,
         animate: false,
       );
-    unawaited(_setHeat(c, map.heatCapsules));
+    // The heat comes with the pins (_revealPins), never in steps.
+    if (!_stage.hidden) unawaited(_setHeat(c, map.heatCapsules));
     unawaited(_stage.setCapsules(map.visibleCapsules, version: version));
     if (!mounted) return;
     StartupReport.mark('style');
@@ -448,7 +558,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   /// other pin as it is. One layer, one update: the selected pin is the
   /// same marker as when it rests, so it is never drawn twice or missing
   /// (docs/map/FLASH_FIX.md).
-  static Map<String, Object> _pinPose(Map<String, SelectedPinPose> poses) {
+  static Map<String, Object> _pinPose(
+    Map<String, SelectedPinPose> poses,
+    int lifeT,
+  ) {
     Object pick(Object Function(SelectedPinPose) of, Object rest) =>
         poses.isEmpty
         ? rest
@@ -465,7 +578,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
             rest,
           ];
     return {
-      'icon-size': ['*', _pieceScale, pick((p) => p.scale, 1)],
+      'icon-size': [
+        '*',
+        _pieceScale,
+        pick((p) => p.scale, 1),
+        _lifeScale(lifeT),
+      ],
       // In the icon's own units: its size multiplies the offset.
       'icon-offset': pick(
         (p) => [
@@ -561,6 +679,12 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (_fullVersion == null && map.complete) {
       _fullVersion = map.capsulesVersion;
     }
+    if (_pinsWait == null && map.visibleCapsules.isNotEmpty) {
+      _pinsWait = Timer(_pinsAtLatest, () {
+        _pinsWaited = true;
+        _revealPins();
+      });
+    }
     if (_freshVersion == null && map.allAnswered) {
       _freshVersion = map.capsulesVersion;
     }
@@ -569,9 +693,13 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (_dataVersion != map.capsulesVersion) {
       _dataVersion = map.capsulesVersion;
       unawaited(
-        _stage.setCapsules(map.visibleCapsules, version: map.capsulesVersion),
+        _stage.setCapsules(
+          map.visibleCapsules,
+          version: map.capsulesVersion,
+          animate: !AppMotion.reduced(context),
+        ),
       );
-      unawaited(_setHeat(c, map.heatCapsules));
+      if (!_stage.hidden) unawaited(_setHeat(c, map.heatCapsules));
       // A selected capsule the filter now hides: its card goes.
       final selected = _selected;
       if (selected != null &&
@@ -681,7 +809,9 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       _stage.posed = [if (_landingPin case (final c, _)?) c, ?_shown];
       unawaited(c.setFilter(_shadowLayer, _posedFilter(ids)));
     }
-    unawaited(c.setLayerProperties(_pinsLayer, _Props(_pinPose(poses))));
+    unawaited(
+      c.setLayerProperties(_pinsLayer, _Props(_pinPose(poses, _lifeT))),
+    );
     unawaited(
       c.setLayerProperties(
         _shadowLayer,

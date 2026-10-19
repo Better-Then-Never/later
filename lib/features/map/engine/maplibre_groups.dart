@@ -75,6 +75,78 @@ class _GroupStage {
   /// capsules).
   int? get level => _level;
 
+  // ------------------------------------------------------- life (M-06)
+
+  /// Pieces grow in when the map is first uncovered, from the middle out in
+  /// rings, and later when a capsule arrives; a capsule gone shrinks away.
+  /// Each piece carries when that began ('a', 'g', on [now]'s clock) and the
+  /// layers scale it by the clock the view sends them every frame
+  /// ([_MapLibreMapViewState._lifeScale]): no picture is sent for it.
+  static const ringSpread = 150;
+  static final growMs = AppMotion.standard.inMilliseconds;
+  static final shrinkMs = AppMotion.fast.inMilliseconds;
+
+  /// "Not yet": a piece's 'a' until the reveal.
+  static const _later = 1000000000000000;
+
+  /// Until [reveal]: every piece hidden (the map is still covered, or not
+  /// every capsule has arrived), so nothing is seen arriving in steps.
+  bool hidden = true;
+  final _appear = <String, int>{};
+  final _gone = <String, (GroupNode, int)>{};
+  int _lifeEnd = 0;
+
+  /// The view runs the layers' clock while pieces grow or shrink.
+  VoidCallback? onLife;
+
+  /// The clock 'a' and 'g' are on.
+  int get now => _now;
+  bool get living => _now < _lifeEnd;
+
+  /// Everything shown appears: growing in from the middle out, or at once
+  /// ([instant]: reduced motion).
+  void reveal({required bool instant}) {
+    if (!hidden) return;
+    hidden = false;
+    final level = _level;
+    if (!instant && level != null) {
+      final start = _now;
+      final reach = _reach > 0 ? _reach : 1;
+      for (final n in groups.at(level)) {
+        final dx = n.x - _cx, dy = n.y - _cy;
+        final ring = (math.sqrt(dx * dx + dy * dy) / reach).clamp(0.0, 1.0);
+        _appear[n.id] = start + (ring * ringSpread).round();
+      }
+      _lifeEnd = start + ringSpread + growMs;
+      onLife?.call();
+    }
+    _send();
+  }
+
+  /// A capsule arrived or went after the reveal: only those pieces grow in
+  /// or shrink away; the rest stays as it is.
+  void _diff(CapsuleGroups before, int level) {
+    final (:added, :gone) = CapsuleGroups.changes(before, groups, level);
+    if (added.isEmpty && gone.isEmpty) return;
+    final start = _now;
+    for (final id in added) {
+      _appear[id] = start;
+    }
+    for (final MapEntry(key: id, value: n) in gone.entries) {
+      _gone[id] = (n, start);
+    }
+    _lifeEnd = math.max(_lifeEnd, start + math.max(growMs, shrinkMs));
+    onLife?.call();
+  }
+
+  /// The pieces have grown and shrunk: sent once more without them.
+  void lifeDone() {
+    final now = _now;
+    _appear.removeWhere((_, at) => now - at >= growMs);
+    _gone.removeWhere((_, entry) => now - entry.$2 >= shrinkMs);
+    _send();
+  }
+
   /// A split or merge is under way.
   bool get animating => _ticker.isActive;
 
@@ -123,7 +195,11 @@ class _GroupStage {
 
   /// New capsules (or a filter): grouped off Flutter's UI thread; the
   /// picture follows, nothing flies.
-  Future<void> setCapsules(Iterable<Capsule> capsules, {int? version}) async {
+  Future<void> setCapsules(
+    Iterable<Capsule> capsules, {
+    int? version,
+    bool animate = true,
+  }) async {
     final run = ++_run;
     final points = [
       for (final c in capsules)
@@ -134,9 +210,11 @@ class _GroupStage {
     final built = await compute(CapsuleGroups.build, points);
     MapStats.instance.clustered(watch.elapsedMicroseconds);
     if (run != _run) return;
+    final before = groups;
     groups = built;
     groupedVersion = version;
     _level ??= CapsuleGroups.levelFor(_zoom);
+    if (!hidden && animate) _diff(before, _level!);
     restart();
   }
 
@@ -318,6 +396,7 @@ class _GroupStage {
     if (probe) sent.clear();
     final features = <Map<String, dynamic>>[];
     final ids = <String>{};
+    final now = _now;
     void add(
       GroupNode n,
       double px,
@@ -325,9 +404,19 @@ class _GroupStage {
       int? count,
       double scale = 1,
       double opacity = 1,
+      int? gone,
     }) {
       if (!ids.add(n.id)) return;
-      final feature = _feature(n, px, py, count: count, scale: scale);
+      final appear = hidden ? _later : _appear[n.id];
+      final feature = _feature(
+        n,
+        px,
+        py,
+        count: count,
+        scale: scale,
+        appear: appear != null && now - appear < growMs ? appear : null,
+        gone: gone,
+      );
       if (probe) feature['properties']['seq'] = seq;
       features.add(feature);
       if (probe) sent[n.id] = (x: px, y: py, opacity: opacity, scale: scale);
@@ -349,6 +438,10 @@ class _GroupStage {
     for (final n in _posed) {
       add(n, n.x, n.y);
     }
+    // Gone ones, shrinking where they stood.
+    for (final MapEntry(key: id, value: (n, at)) in _gone.entries) {
+      if (now - at < shrinkMs && !ids.contains(id)) add(n, n.x, n.y, gone: at);
+    }
     if (probe) {
       sentBySeq[seq] = Map.of(sent);
       sentBySeq.remove(seq - 60);
@@ -365,6 +458,8 @@ class _GroupStage {
     double y, {
     int? count,
     double scale = 1,
+    int? appear,
+    int? gone,
   }) {
     final shown = count ?? n.count;
     double round(double v) => (v * 1e6).roundToDouble() / 1e6;
@@ -380,6 +475,8 @@ class _GroupStage {
             : 'pin_${n.color}',
         if (n.isBubble) 'c': shown,
         if (scale != 1) 's': (scale * 1000).roundToDouble() / 1000,
+        'a': ?appear,
+        'g': ?gone,
       },
       'geometry': {
         'type': 'Point',

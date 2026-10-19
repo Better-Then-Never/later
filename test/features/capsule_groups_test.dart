@@ -110,4 +110,34 @@ void main() {
     expect(groups.at(CapsuleGroups.maxLevel + 1), hasLength(2000));
     expect(watch.elapsedMilliseconds, lessThan(500));
   });
+
+  group('what a change of data shows (M-06)', () {
+    test('a new capsule grows in, a gone one shrinks; the rest stays', () {
+      final before = CapsuleGroups.build([...near, far]);
+      final after = CapsuleGroups.build([...near, _p('new', 52.2600, 20.9500)]);
+      final (:added, :gone) = CapsuleGroups.changes(before, after, 15);
+      expect(added, {'new'});
+      expect(gone.keys, {'z'});
+      expect(gone['z']!.latitude, closeTo(52.3, 1e-9));
+    });
+
+    test('a capsule joining a bubble changes only its number', () {
+      final before = CapsuleGroups.build(near.take(2).toList());
+      final after = CapsuleGroups.build(near);
+      final (:added, :gone) = CapsuleGroups.changes(before, after, 15);
+      expect(added, isEmpty);
+      expect(gone, isEmpty);
+      expect(after.at(15).single.count, 3);
+    });
+
+    test('the same data: nothing moves', () {
+      final (:added, :gone) = CapsuleGroups.changes(
+        CapsuleGroups.build([...near, far]),
+        CapsuleGroups.build([far, ...near.reversed]),
+        13,
+      );
+      expect(added, isEmpty);
+      expect(gone, isEmpty);
+    });
+  });
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ui' show FramePhase;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
@@ -23,9 +24,13 @@ abstract final class StartupReport {
   /// The start begins (bootstrap, binding ready): its first mark, and its
   /// frames are counted from here.
   static void begin() {
+    _began = Timeline.now;
     mark('dart');
     _watchFrames();
   }
+
+  /// When [begin] ran, on the frames' clock (microseconds).
+  static int _began = 0;
 
   /// A named moment of this start, once per process.
   static void mark(String name) {
@@ -73,9 +78,25 @@ abstract final class StartupReport {
       if (ms > 16667) over16++;
       if (ms > worst) worst = ms;
     }
+    // The slowest, as ms after "dart": build/raster ms.
+    final slow =
+        _frames
+            .where(
+              (f) =>
+                  f.buildDuration.inMicroseconds > 8333 ||
+                  f.rasterDuration.inMicroseconds > 8333,
+            )
+            .toList()
+          ..sort((a, b) => b.totalSpan.compareTo(a.totalSpan));
+    String ms(Duration d) => (d.inMicroseconds / 1000).toStringAsFixed(0);
+    final at = [
+      for (final f in slow.take(8))
+        '${((f.timestampInMicroseconds(FramePhase.vsyncStart) - _began) / 1000).round()}'
+            ':${ms(f.buildDuration)}/${ms(f.rasterDuration)}',
+    ].join(',');
     debugPrint(
       'LATERSTART frames n=${_frames.length} over8=$over8 over16=$over16 '
-      'worst=${(worst / 1000).toStringAsFixed(1)}',
+      'worst=${(worst / 1000).toStringAsFixed(1)} slow=$at',
     );
     _frames.clear();
   }

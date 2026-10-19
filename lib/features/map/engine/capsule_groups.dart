@@ -136,6 +136,40 @@ class CapsuleGroups {
 
   static final empty = CapsuleGroups.build(const []);
 
+  /// What changed at [level] from [before] to [after]: the pieces that are
+  /// new (they grow in) and those gone (they shrink away where they stood).
+  /// A bubble that grew from the same capsule is the same bubble (its id
+  /// also names the level it formed at, which a capsule joining can move):
+  /// only its number changes, in place.
+  static ({Set<String> added, Map<String, GroupNode> gone}) changes(
+    CapsuleGroups before,
+    CapsuleGroups after,
+    int level,
+  ) {
+    final old = {for (final n in before.at(level)) n.id: n};
+    final next = {for (final n in after.at(level)) n.id: n};
+    final added = {
+      for (final id in next.keys)
+        if (!old.containsKey(id)) id,
+    };
+    final gone = {
+      for (final MapEntry(key: id, value: n) in old.entries)
+        if (!next.containsKey(id)) id: n,
+    };
+    final goneBubbles = {
+      for (final n in gone.values)
+        if (n.isBubble) n.leafId: n.id,
+    };
+    for (final id in [...added]) {
+      final n = next[id]!;
+      final was = n.isBubble ? goneBubbles.remove(n.leafId) : null;
+      if (was == null) continue;
+      added.remove(id);
+      gone.remove(was);
+    }
+    return (added: added, gone: gone);
+  }
+
   final Map<int, List<GroupNode>> _levels;
 
   /// For each level L: the node at L that holds each node of L + 1.

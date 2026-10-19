@@ -89,3 +89,26 @@ Notes:
   well under 200 ms (test `map_pin_store_test.dart`, on the computer; on the phone the whole read is the `store` mark).
 - `full` is now the first picture of every pin the map had (the store's, drawn and uncovered); `fresh` is the first
   picture of every source's own answer, about 1.2 s later: the window in which a pin can be stale (below).
+
+## Step 3: one reveal, then only what changes (E)
+- **Hidden until the reveal.** Every pin and bubble the map is sent before it is uncovered carries "not yet" ('a'
+  far in the future), so nothing is seen arriving under a thinning cover or in steps. On the first map idle after
+  our layers are in (the cover's moment), and once every pin of this start is grouped (the pin store's picture, or
+  on a first start every source's answer, at most 1 s after the first one), they grow in: from the middle of the
+  screen out in rings (150 ms between the middle and the edge), each over 200 ms with AppMotion.enter's curve. The
+  heat comes with them. Reduced motion: at once.
+- **How it is drawn.** Each piece carries when it began to grow ('a') or shrink ('g') on the stage's clock; the
+  pins' and bubbles' `icon-size` multiply by a function of that clock, which the view sends to the two layers once a
+  frame while anything grows or shrinks (`_lifeScale`). No picture is sent for the motion itself. When it is done
+  the next picture leaves the marks out.
+- **Afterwards only what changes moves.** A new capsule's pin (or a new bubble) grows in, a gone one shrinks away where
+  it stood (150 ms, AppMotion.exit's curve); a bubble that a capsule joins or leaves keeps its place and changes its
+  number (`CapsuleGroups.changes`: a bubble grown from the same capsule is the same bubble, even when its id's level
+  moved). The live answers that replace the stored pins change nothing when nothing changed. A filter change shows
+  the same way.
+
+Measured (`build/perf/coldstart_reveal2.txt`, zoom 13.5 over the centre, 5 launches): full **2,741** ms median
+(2,351–2,984: the streets take longer at this zoom than at 14.5); in the video the streets fade in, the pins grow from
+nothing to their size in about 0.1 s with the nearer ones first, then hold still; the live answers (fresh at
+3.4–3.9 s) moved nothing. No frame over 16.7 ms between the reveal and the end of its motion in any of the five
+launches; the slow builds (11–22 ms) are 0.3–0.6 s before it, under the cover.
