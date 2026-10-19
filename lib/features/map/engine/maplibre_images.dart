@@ -17,8 +17,8 @@ abstract final class MapLibreImages {
   /// What a bubble says: the count, or "99+" (labels for 2 to 100 are drawn).
   static String bubbleLabel(int count) => count > 99 ? '99+' : '$count';
 
-  /// Every picture by its name in the style: `pin_<colour>`,
-  /// `pin_selected_<colour>`, `shadow`, `bubble_<label>`, `me`.
+  /// Every picture by its name in the style: `pin_<colour>`, `shadow`,
+  /// `bubble_<label>`, `me`. A selected pin is its pin grown by the layer.
   static Future<Map<String, Uint8List>> all({
     required double ratio,
     required bool dark,
@@ -32,10 +32,6 @@ abstract final class MapLibreImages {
             (SelectedPin.side * ratio).round(),
           );
       out['pin_${color.name}'] = await _png(pin);
-      out['pin_selected_${color.name}'] = await _scaled(
-        pin,
-        SelectedPin.side * SelectedPin.scale * ratio,
-      );
     }
     out['shadow'] = await _shadow(ratio);
     for (var n = 2; n <= 100; n++) {
@@ -64,17 +60,6 @@ abstract final class MapLibreImages {
       (await image.toByteData(
         format: ui.ImageByteFormat.png,
       ))!.buffer.asUint8List();
-
-  static Future<Uint8List> _scaled(ui.Image image, double side) {
-    final recorder = ui.PictureRecorder();
-    Canvas(recorder).drawImageRect(
-      image,
-      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-      Rect.fromLTWH(0, 0, side, side),
-      Paint()..filterQuality = FilterQuality.medium,
-    );
-    return _record(recorder, side, side);
-  }
 
   /// The soft oval under the selected, floating pin.
   static Future<Uint8List> _shadow(double ratio) {

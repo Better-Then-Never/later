@@ -32,7 +32,16 @@ void main() {
       closeTo(14, 0.01),
       reason: 'the top of the jump',
     );
-    expect(SelectedPin.scaleAt(110), SelectedPin.scale);
+    // It grows over AppMotion.fast (150 ms), eased: never a pop in a frame.
+    expect(SelectedPin.scaleAt(110), lessThan(SelectedPin.scale));
+    expect(SelectedPin.scaleAt(150), SelectedPin.scale);
+    for (var ms = 0; ms < 150; ms += 8) {
+      expect(
+        SelectedPin.scaleAt(ms + 8) - SelectedPin.scaleAt(ms),
+        lessThan(0.03),
+        reason: 'at  ms',
+      );
+    }
     expect(SelectedPin.liftAt(SelectedPin.jumpEnd), SelectedPin.hoverLift);
     final bob = [
       for (
@@ -233,8 +242,12 @@ void main() {
       await pump(tester);
       await tester.pump(const Duration(milliseconds: 110));
       final top = pinRect(tester);
-      expect(top.width, closeTo(SelectedPin.side * SelectedPin.scale, 0.01));
       expect(projected().dy - top.bottom, closeTo(14, 0.5));
+      await tester.pump(const Duration(milliseconds: 40));
+      expect(
+        pinRect(tester).width,
+        closeTo(SelectedPin.side * SelectedPin.scale, 0.01),
+      );
       await tester.pump(const Duration(seconds: 3));
       final hovering = lift(tester);
       expect(hovering, inInclusiveRange(6, 12));

@@ -42,12 +42,11 @@ void main() {
     expect(t.flights.where((f) => f.kind == FlightKind.open), hasLength(1));
     expect(t.moving, {'a', 'b', 'c'});
     for (final f in flying) {
-      // They leave from the bubble, small and not yet seen ...
+      // They leave from under the bubble (drawn over them), small ...
       final first = f.at(f.start)!;
       expect(first.x, bubble.x);
       expect(first.y, bubble.y);
       expect(first.scale, 0.5);
-      expect(first.opacity, 0);
       // ... and stand whole on their own spot until the change ends.
       final last = f.at(t.end)!;
       expect(last.x, f.node.x);
@@ -78,15 +77,74 @@ void main() {
     expect(form.at(t.end)!.scale, closeTo(1, 1e-9));
   });
 
-  test('the number counts down as capsules leave', () {
+  test('nothing is ever see-through, at any speed, either way', () {
+    for (final speed in [0.0, 3.0, 8.0, 20.0]) {
+      for (final (from, to) in [(15, _pins), (_pins, 15)]) {
+        final t = plan(three, from, to);
+        final again = GroupMotion.plan(
+          three,
+          from: from,
+          to: to,
+          now: 0,
+          onScreen: (_) => true,
+          centre: centre,
+          zoomSpeed: speed,
+        );
+        for (final transition in [t, again]) {
+          for (var ms = 0; ms <= transition.end; ms += 4) {
+            for (final (_, frame) in transition.frames(ms)) {
+              expect(frame.opacity, 1, reason: 'speed $speed at $ms ms');
+            }
+          }
+        }
+      }
+    }
+  });
+
+  test('the bubble shrinks away instead of vanishing', () {
     final t = plan(three, 15, _pins);
     final open = t.flights.firstWhere((f) => f.kind == FlightKind.open);
-    final counts = [
-      for (var ms = open.start; ms < open.end; ms += 5) open.at(ms)!.count,
-    ];
-    expect(counts.first, 2);
-    for (var i = 1; i < counts.length; i++) {
-      expect(counts[i], lessThanOrEqualTo(counts[i - 1]));
+    final late = open.at(open.end - 1)!;
+    expect(late.scale, lessThan(0.35));
+    var last = double.infinity;
+    for (var ms = open.start + open.duration ~/ 5; ms < open.end; ms += 2) {
+      final s = open.at(ms)!.scale;
+      expect(s, lessThanOrEqualTo(last + 1e-9));
+      last = s;
+    }
+  });
+
+  test('a faster zoom moves for less time, and never skips', () {
+    expect(GroupMotion.pace(0), 1);
+    expect(GroupMotion.pace(2), 1);
+    expect(GroupMotion.pace(4), closeTo(0.5, 1e-9));
+    expect(GroupMotion.pace(50), 0.35);
+    for (final (from, to) in [(15, _pins), (_pins, 15)]) {
+      final slow = plan(three, from, to);
+      final fast = GroupMotion.plan(
+        three,
+        from: from,
+        to: to,
+        now: 0,
+        onScreen: (_) => true,
+        centre: centre,
+        zoomSpeed: 10,
+      );
+      expect(fast.flights.length, slow.flights.length, reason: 'not skipped');
+      expect(fast.end, lessThanOrEqualTo(slow.end * 0.4));
+      // A flick still takes the eye along: about a tenth of a second.
+      expect(fast.end, greaterThanOrEqualTo(80));
+    }
+  });
+
+  test('a moving bubble keeps its number (a new number is a new picture)', () {
+    for (final (from, to) in [(15, _pins), (_pins, 15)]) {
+      final t = plan(three, from, to);
+      for (var ms = 0; ms <= t.end; ms += 5) {
+        for (final (flight, frame) in t.frames(ms)) {
+          expect(frame.count, flight.node.count);
+        }
+      }
     }
   });
 

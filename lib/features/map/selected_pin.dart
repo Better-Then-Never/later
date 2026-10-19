@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/animation.dart';
+
+import '../../core/theme/app_motion.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// How a floating pin stands: how high it floats above its spot (dp), how
@@ -74,9 +76,10 @@ abstract final class SelectedPin {
     return hoverLift + _bob * math.sin(2 * math.pi * t);
   }
 
-  /// How big the pin is [ms] after the selection: it grows as it rises.
+  /// How big the pin is [ms] after the selection: it grows as it rises,
+  /// over [AppMotion.fast] (eased out; no size pop in one frame).
   static double scaleAt(int ms) {
-    final rise = _jump[1].$1;
+    final rise = AppMotion.fast.inMilliseconds;
     if (ms >= rise) return scale;
     if (ms <= 0) return 1;
     return 1 + (scale - 1) * Curves.easeOut.transform(ms / rise);
@@ -218,19 +221,34 @@ class PinMotion {
     _landStart = ms;
   }
 
-  /// Selected again: jumps again from its spot.
-  void jumpAgain() {
+  /// Selected again: jumps again from its spot, or, caught while landing
+  /// ([fromHere]), from where it is (no snap down first).
+  void jumpAgain({bool fromHere = false}) {
+    _jumpFrom = fromHere ? pose : null;
     _landFrom = null;
     ms = 0;
   }
 
+  /// Where a jump caught mid-landing starts; it joins the jump's own path
+  /// within [_catchUpMs].
+  SelectedPinPose? _jumpFrom;
+  static const _catchUpMs = 120;
+
   SelectedPinPose get pose {
     final from = _landFrom;
     if (from == null) {
-      return (
+      final jump = (
         lift: SelectedPin.liftAt(ms),
         scale: SelectedPin.scaleAt(ms),
         degrees: SelectedPin.rotationAt(ms),
+      );
+      final start = _jumpFrom;
+      if (start == null || ms >= _catchUpMs) return jump;
+      final t = Curves.easeOut.transform(ms / _catchUpMs);
+      return (
+        lift: start.lift + (jump.lift - start.lift) * t,
+        scale: start.scale + (jump.scale - start.scale) * t,
+        degrees: start.degrees + (jump.degrees - start.degrees) * t,
       );
     }
     final t = landMs <= 0

@@ -5,21 +5,27 @@ import 'package:flutter/animation.dart';
 import '../../../core/theme/app_motion.dart';
 import 'capsule_groups.dart';
 
-/// How a pin or bubble moves while the shown level changes.
+/// How a pin or bubble moves while the shown level changes. Nothing is ever
+/// see-through: pieces grow and shrink, and come and go hidden under a
+/// bubble (the bubbles are drawn over the pins, bigger bubbles over smaller
+/// ones). A fade, squeezed into the tenth of a second of a fast zoom, read
+/// as a flash (docs/map/FLASH_FIX.md).
 enum FlightKind {
-  /// A bubble opening (zooming in): it eases up a little, then shrinks and
-  /// fades in place while its capsules leave it; its number counts down.
+  /// A bubble opening (zooming in): it eases up a little, then shrinks away
+  /// in place while its capsules leave it. Its number stays: a changing
+  /// number is a new picture each time, and MapLibre rebuilt every tile's
+  /// icons for it, holding the map for a few frames (FLASH_FIX.md).
   open,
 
   /// A pin or smaller bubble leaving the bubble it was in for its own spot,
-  /// on a short arc, growing, with a small settle.
+  /// from under it, on a short arc, growing, with a small settle.
   fly,
 
   /// A pin or bubble flying into the bubble it joins (zooming out),
-  /// shrinking; gone as it arrives.
+  /// shrinking; gone as it arrives, under the bubble.
   merge,
 
-  /// The bubble they join, growing in under them; its number counts up.
+  /// The bubble they join, growing over them, with its number.
   form,
 
   /// A capsule caught mid-flight by the next change: on to its spot, whole.
@@ -49,7 +55,6 @@ class Flight {
     required this.toY,
     required this.start,
     required this.duration,
-    this.counts = const [],
   });
 
   final GroupNode node;
@@ -62,10 +67,6 @@ class Flight {
   /// Milliseconds on the transition's clock.
   final int start;
   final int duration;
-
-  /// For [FlightKind.open] and [FlightKind.form]: when (ms) how many
-  /// capsules left or arrived, for the number.
-  final List<(int, int)> counts;
 
   int get end => start + duration;
 
@@ -85,17 +86,10 @@ class Flight {
     switch (kind) {
       case FlightKind.open:
         if (ms >= end) return null;
-        final left = _counted(ms);
-        final scale = t < 0.25
-            ? 1 + 0.08 * AppMotion.enter.transform(t / 0.25)
-            : 1.08 - 0.68 * AppMotion.exit.transform((t - 0.25) / 0.75);
-        return FlightFrame(
-          fromX,
-          fromY,
-          scale,
-          1 - AppMotion.exit.transform(t),
-          math.max(2, node.count - left),
-        );
+        final scale = t < 0.2
+            ? 1 + 0.06 * AppMotion.enter.transform(t / 0.2)
+            : 1.06 - 0.81 * AppMotion.exit.transform((t - 0.2) / 0.8);
+        return FlightFrame(fromX, fromY, scale, 1, node.count);
       case FlightKind.fly:
         if (ms < start) return null;
         final k = AppMotion.enter.transform(t);
@@ -105,7 +99,7 @@ class Flight {
           fromX + dx * k,
           fromY + dy * k - lift,
           0.5 + 0.5 * settle.transform(t),
-          (t * 5).clamp(0.0, 1.0),
+          1,
           node.count,
         );
       case FlightKind.merge:
@@ -115,8 +109,8 @@ class Flight {
         return FlightFrame(
           fromX + (toX - fromX) * k,
           fromY + (toY - fromY) * k,
-          1 - 0.5 * k,
-          t < 0.6 ? 1 : 1 - (t - 0.6) / 0.4,
+          1 - 0.55 * k,
+          1,
           node.count,
         );
       case FlightKind.glide:
@@ -133,19 +127,11 @@ class Flight {
         return FlightFrame(
           toX,
           toY,
-          0.3 + 0.7 * pop.transform(t),
-          (t * 3).clamp(0.0, 1.0),
-          ms >= end ? node.count : math.max(2, _counted(ms)),
+          0.4 + 0.6 * pop.transform(t),
+          1,
+          node.count,
         );
     }
-  }
-
-  int _counted(int ms) {
-    var n = 0;
-    for (final (at, count) in counts) {
-      if (at <= ms) n += count;
-    }
-    return n;
   }
 }
 
@@ -195,10 +181,19 @@ class GroupTransition {
 /// bubble that splits opens while its capsules fly out of it to their own
 /// spots; zooming out, the capsules fly into the bubble they join, which
 /// grows in under them. Groups nearest the middle of the screen first, a few
-/// tens of milliseconds apart. Only what is on screen moves, at most
-/// [limit] flights; the rest changes at once.
+/// tens of milliseconds apart. Only what is on screen moves (everything on
+/// it: a phone screen holds far fewer than [limit] pieces). The faster the
+/// zoom changes, the shorter the motion ([pace]); it is never skipped, so a
+/// fast zoom out still gathers the capsules into their bubbles.
 abstract final class GroupMotion {
-  static const limit = 60;
+  /// A safety bound on the moving pieces (each is one feature of the frame).
+  static const limit = 400;
+
+  /// How much of the full motion a change gets when the zoom moves at
+  /// [zoomSpeed] levels a second: all of it up to 2, then less, down to a
+  /// third (a flick: about 100 ms instead of 300).
+  static double pace(double zoomSpeed) =>
+      zoomSpeed <= 2 ? 1.0 : (2 / zoomSpeed).clamp(0.35, 1.0);
 
   /// A capsule caught mid-flight by the next change finishes its way in
   /// this long.
@@ -216,9 +211,12 @@ abstract final class GroupMotion {
     required int now,
     required bool Function(GroupNode node) onScreen,
     required (double, double) centre,
+    double zoomSpeed = 0,
     GroupTransition? previous,
   }) {
     if (from == to) return GroupTransition.none;
+    final k = pace(zoomSpeed);
+    int ms(Duration d) => (d.inMilliseconds * k).round();
     // A change while another runs starts from what is drawn now.
     (double, double)? drawnAt(String id) => previous?.positionOf(id, now);
     final zoomingIn = to > from;
@@ -250,7 +248,8 @@ abstract final class GroupMotion {
 
     final gap = kept.length <= 1
         ? 0
-        : math.min(groupGap, maxSpread ~/ (kept.length - 1));
+        : (math.min(groupGap, maxSpread ~/ (kept.length - 1)) * k).round();
+    final memberStep = (memberGap * k).round();
     final flights = <Flight>[];
     final moving = <String>{};
     (double, double) at(GroupNode n) => drawnAt(n.id) ?? (n.x, n.y);
@@ -264,11 +263,9 @@ abstract final class GroupMotion {
       });
       if (zoomingIn) {
         final (hx, hy) = at(holder);
-        final departures = <(int, int)>[];
         for (var i = 0; i < members.length; i++) {
           final m = members[i];
-          final s = start + i * memberGap;
-          departures.add((s, m.count));
+          final s = start + i * memberStep;
           flights.add(
             Flight(
               node: m,
@@ -278,7 +275,7 @@ abstract final class GroupMotion {
               toX: m.x,
               toY: m.y,
               start: s,
-              duration: AppMotion.slow.inMilliseconds,
+              duration: ms(AppMotion.slow),
             ),
           );
           moving.add(m.id);
@@ -292,18 +289,15 @@ abstract final class GroupMotion {
             toX: hx,
             toY: hy,
             start: start,
-            duration: AppMotion.standard.inMilliseconds,
-            counts: departures,
+            duration: ms(AppMotion.standard),
           ),
         );
       } else {
-        final merge = AppMotion.emphasized.inMilliseconds;
-        final arrivals = <(int, int)>[];
+        final merge = ms(AppMotion.emphasized);
         for (var i = 0; i < members.length; i++) {
           final m = members[i];
           final (mx, my) = at(m);
-          final s = start + i * memberGap;
-          arrivals.add((s + (merge * 0.8).round(), m.count));
+          final s = start + i * memberStep;
           flights.add(
             Flight(
               node: m,
@@ -326,8 +320,7 @@ abstract final class GroupMotion {
             toX: holder.x,
             toY: holder.y,
             start: start + (merge * 0.55).round(),
-            duration: AppMotion.emphasized.inMilliseconds,
-            counts: arrivals,
+            duration: ms(AppMotion.emphasized),
           ),
         );
         moving.add(holder.id);
@@ -358,7 +351,7 @@ abstract final class GroupMotion {
             toX: node.x,
             toY: node.y,
             start: now,
-            duration: catchUp,
+            duration: (catchUp * k).round(),
           ),
         );
         planned.add(node.id);

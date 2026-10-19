@@ -61,10 +61,16 @@ class _FlashProbe {
       return;
     }
     final counts = <String, int>{};
+    var oldest = 1 << 30;
     for (final f in drawn) {
-      final id = ((f as Map)['properties'] as Map?)?['id'];
+      final properties = (f as Map)['properties'] as Map?;
+      final id = properties?['id'];
       if (id is String) counts[id] = (counts[id] ?? 0) + 1;
+      final seq = properties?['seq'];
+      if (seq is num && seq < oldest) oldest = seq.toInt();
     }
+    // How many pictures behind what was sent the drawn one is.
+    final behind = oldest == 1 << 30 ? 0 : _view._stage.seq - oldest;
     final selected = _view._shown?.id;
     var doubles = 0;
     for (final MapEntry(:key, :value) in counts.entries) {
@@ -104,6 +110,11 @@ class _FlashProbe {
           debugPrint('MAPFLASH ghost $id');
         }
       }
+    }
+    if (missing > 0 || ghosts > 0) {
+      debugPrint(
+        'MAPFLASH frame behind $behind missing $missing ghosts $ghosts',
+      );
     }
     MapStats.instance.flashProbed(
       doubles: doubles,

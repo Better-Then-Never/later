@@ -27,6 +27,9 @@ class GroupNode {
     required this.north,
   });
 
+  /// One capsule's pin, as every level holds it when it stands alone.
+  factory GroupNode.pin(GroupPoint p) => GroupNode._leaf(p);
+
   factory GroupNode._leaf(GroupPoint p) => GroupNode._(
     id: p.id,
     x: worldX(p.longitude),

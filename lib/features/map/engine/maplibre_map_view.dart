@@ -18,13 +18,11 @@ class MapLibreMapView extends StatefulWidget {
 const _capsulesSource = 'capsules';
 const _heatSource = 'capsules_heat';
 const _meSource = 'me';
-const _selectedSource = 'selected';
 const _heatLayer = 'heat';
 const _pinsLayer = 'pins';
 const _bubblesLayer = 'bubbles';
 const _meLayer = 'me';
 const _shadowLayer = 'selected_shadow';
-const _selectedLayer = 'selected_pin';
 
 /// For tuning on the phone (debug): start at this zoom.
 final double? _debugZoom = double.tryParse(
@@ -69,11 +67,18 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   bool _moving = false;
 
   /// The capsule whose card is open, and its pin's motion (M-02): it jumps,
-  /// sways and hovers as a layer of its own ([_selectedLayer]), moved by its
-  /// paint (no new pictures, nothing else re-laid out).
+  /// sways and hovers, the same marker as at rest, grown and lifted by the
+  /// pins layer ([_pinPose]); [_shown] is the pin posed (until it has
+  /// landed).
   Capsule? _selected;
   Capsule? _shown;
-  final _motion = PinMotion();
+  var _motion = PinMotion();
+
+  /// A pin landing while another rises (another capsule was picked).
+  (Capsule, PinMotion)? _landingPin;
+
+  /// The posed pins' ids as last sent (the shadow's filter).
+  var _posedIds = <String>{};
   late final Ticker _ticker = createTicker(_tick);
   late final _stage = _GroupStage(vsync: this);
   Duration _last = Duration.zero;
@@ -175,19 +180,8 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   // and the layers that draw pins and bubbles.
   bool get _busy =>
       _pointers > 0 || _moving || _stage.animating || _ticker.isActive;
-  _Sent? _sentSelected;
-  Map<String, _Sent> _sentMarkers() => {
-    ..._stage.sentStill,
-    ..._stage.sentMoving,
-    if (_sentSelected case final s?) ?_shown?.id: s,
-  };
-  List<String> get _markerLayers => const [
-    _pinsLayer,
-    _bubblesLayer,
-    _movingPinsLayer,
-    _movingBubblesLayer,
-    _selectedLayer,
-  ];
+  Map<String, _Sent> _sentMarkers() => _stage.sent;
+  List<String> get _markerLayers => const [_pinsLayer, _bubblesLayer];
 
   // ---------------------------------------------------------------- style
 
@@ -207,11 +201,9 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     final me = map.myPosition;
     // Empty first, filled as a string (_setSource): off the main thread.
     await c.addGeoJsonSource(_heatSource, _features(const []));
-    // Pins and bubbles: grouped by [_GroupStage], still and moving.
+    // Pins and bubbles, at rest and moving: one source ([_GroupStage]).
     await c.addGeoJsonSource(_capsulesSource, _features(const []));
-    await c.addGeoJsonSource(_movingSource, _features(const []));
     await c.addGeoJsonSource(_meSource, _point(me));
-    await c.addGeoJsonSource(_selectedSource, _features(const []));
     await c.addHeatmapLayer(
       _heatSource,
       _heatLayer,
@@ -239,84 +231,56 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       ),
       maxzoom: MapZoomVisuals.heatTo + 0.1,
     );
+    // The soft oval under a floating pin, on the ground under the pins; its
+    // filter and strength follow the pin's pose (_sendPose).
+    await c.addSymbolLayer(
+      _capsulesSource,
+      _shadowLayer,
+      const ml.SymbolLayerProperties(
+        iconImage: 'shadow',
+        iconAllowOverlap: true,
+        iconIgnorePlacement: true,
+        iconOpacity: 0,
+      ),
+      filter: _posedFilter(const {}),
+      enableInteraction: false,
+    );
+    // The zoom's opacity (no piece is ever see-through on its own:
+    // GroupMotion).
     final opacity = MapZoomVisuals.markerOpacityExpression();
+    final pose = _pinPose(_poses());
     await c.addSymbolLayer(
       _capsulesSource,
       _pinsLayer,
       ml.SymbolLayerProperties(
-        iconImage: const ['get', 'image'],
+        iconImage: const ['get', 'm'],
         iconAnchor: 'bottom',
+        iconSize: pose['icon-size'],
+        iconOffset: pose['icon-offset'],
+        iconRotate: pose['icon-rotate'],
+        symbolSortKey: pose['symbol-sort-key'],
         iconAllowOverlap: true,
         iconIgnorePlacement: true,
         iconOpacity: opacity,
       ),
-      filter: _pinsFilter(_shown?.id),
+      filter: const [
+        '==',
+        ['get', 'k'],
+        0,
+      ],
     );
     await c.addSymbolLayer(
       _capsulesSource,
       _bubblesLayer,
       ml.SymbolLayerProperties(
-        iconImage: const ['get', 'image'],
+        iconImage: const ['get', 'm'],
         // Bigger for more capsules: a clear scale by count.
-        iconSize: const [
-          'interpolate',
-          ['linear'],
-          ['get', 'count'],
-          2,
-          0.9,
-          10,
-          1.0,
-          50,
-          1.12,
-          200,
-          1.25,
-        ],
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-        iconOpacity: opacity,
-        // The bigger bubbles on top.
-        symbolSortKey: const ['get', 'count'],
-      ),
-      filter: const [
-        '==',
-        ['get', 'kind'],
-        'bubble',
-      ],
-    );
-    // The pieces that move while bubbles split and merge, over the still
-    // ones, each with its own size and opacity.
-    final moving = MapZoomVisuals.markerOpacityExpression(
-      times: const ['get', 'opacity'],
-    );
-    await c.addSymbolLayer(
-      _movingSource,
-      _movingPinsLayer,
-      ml.SymbolLayerProperties(
-        iconImage: const ['get', 'image'],
-        iconAnchor: 'bottom',
-        iconSize: const ['get', 'scale'],
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-        iconOpacity: moving,
-      ),
-      filter: const [
-        '==',
-        ['get', 'kind'],
-        'pin',
-      ],
-      enableInteraction: false,
-    );
-    await c.addSymbolLayer(
-      _movingSource,
-      _movingBubblesLayer,
-      ml.SymbolLayerProperties(
-        iconImage: const ['get', 'image'],
         iconSize: const [
           '*',
           [
             'interpolate',
             ['linear'],
-            ['get', 'count'],
+            ['get', 'c'],
             2,
             0.9,
             10,
@@ -326,45 +290,19 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
             200,
             1.25,
           ],
-          ['get', 'scale'],
+          _pieceScale,
         ],
         iconAllowOverlap: true,
         iconIgnorePlacement: true,
-        iconOpacity: moving,
-        symbolSortKey: const ['get', 'count'],
+        iconOpacity: opacity,
+        // The bigger bubbles on top.
+        symbolSortKey: const ['get', 'c'],
       ),
       filter: const [
         '==',
-        ['get', 'kind'],
-        'bubble',
+        ['get', 'k'],
+        1,
       ],
-      enableInteraction: false,
-    );
-    await c.addSymbolLayer(
-      _selectedSource,
-      _shadowLayer,
-      const ml.SymbolLayerProperties(
-        iconImage: 'shadow',
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-        iconOpacity: 0,
-      ),
-      enableInteraction: false,
-    );
-    await c.addSymbolLayer(
-      _selectedSource,
-      _selectedLayer,
-      const ml.SymbolLayerProperties(
-        iconImage: [
-          'concat',
-          'pin_selected_',
-          ['get', 'color'],
-        ],
-        iconAnchor: 'bottom',
-        iconAllowOverlap: true,
-        iconIgnorePlacement: true,
-      ),
-      enableInteraction: false,
     );
     await c.addSymbolLayer(
       _meSource,
@@ -397,24 +335,63 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     unawaited(_stage.setCapsules(map.visibleCapsules));
     if (!mounted) return;
     setState(() => _styled = true);
-    if (_shown case final shown?) {
-      unawaited(_showSelected(shown, jump: false));
-    }
+    if (_shown case final shown?) _showSelected(shown, jump: false);
     if (_focus.pending != null) unawaited(_showFocusedCapsule());
   }
 
-  /// The pins, without the one drawn on its own (selected).
-  static List<Object> _pinsFilter(String? hidden) => [
-    'all',
+  /// A piece's own size (moving, GroupMotion); 1 when not sent.
+  static const _pieceScale = [
+    'coalesce',
+    ['get', 's'],
+    1,
+  ];
+
+  /// The pins layer's size, lift and lean: each posed pin ([poses], by its
+  /// capsule's id) grown, floating and leaning, on top of the others; every
+  /// other pin as it is. One layer, one update: the selected pin is the
+  /// same marker as when it rests, so it is never drawn twice or missing
+  /// (docs/map/FLASH_FIX.md).
+  static Map<String, Object> _pinPose(Map<String, SelectedPinPose> poses) {
+    Object pick(Object Function(SelectedPinPose) of, Object rest) =>
+        poses.isEmpty
+        ? rest
+        : [
+            'case',
+            for (final MapEntry(:key, value: pose) in poses.entries) ...[
+              [
+                '==',
+                ['get', 'id'],
+                key,
+              ],
+              of(pose),
+            ],
+            rest,
+          ];
+    return {
+      'icon-size': ['*', _pieceScale, pick((p) => p.scale, 1)],
+      // In the icon's own units: its size multiplies the offset.
+      'icon-offset': pick(
+        (p) => [
+          'literal',
+          [0, -p.lift / p.scale],
+        ],
+        [
+          'literal',
+          [0, 0],
+        ],
+      ),
+      'icon-rotate': pick((p) => p.degrees, 0),
+      'symbol-sort-key': pick((_) => 1, 0),
+    };
+  }
+
+  /// The posed pins' ids, as a filter (the shadow's).
+  static List<Object> _posedFilter(Iterable<String> ids) => [
+    'in',
+    ['get', 'id'],
     [
-      '==',
-      ['get', 'kind'],
-      'pin',
-    ],
-    [
-      '!=',
-      ['get', 'id'],
-      hidden ?? '',
+      'literal',
+      [...ids, ''],
     ],
   ];
 
@@ -509,60 +486,40 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     if (!mounted || capsule?.id == _selected?.id) return;
     setState(() => _selected = capsule);
     if (capsule != null) {
-      unawaited(_showSelected(capsule, jump: true));
+      _showSelected(capsule, jump: true);
     } else if (_shown != null) {
       _motion.land();
       _run();
     }
   }
 
-  /// The selected capsule's pin leaves the pins layer for its own: hidden
-  /// there by the filter, drawn here grown and lifted.
-  ///
-  /// The grown pin covers the plain one, so the plain one is hidden only once
-  /// the new layer is drawn (a source is read in the background: hidden at
-  /// once, the pin was missing for a frame).
-  Future<void> _showSelected(Capsule capsule, {required bool jump}) async {
+  /// The selected capsule's pin rises where it stands: the same marker,
+  /// grown and floating ([_pinPose]). Another pin still up lands meanwhile;
+  /// the same pin caught landing rises again from where it is.
+  void _showSelected(Capsule capsule, {required bool jump}) {
     final previous = _shown;
     _shown = capsule;
-    final c = _controller;
-    if (c == null || !_styled) return;
+    final caught = previous?.id == capsule.id && _motion.landing;
     if (previous != null && previous.id != capsule.id) {
-      // Another pin was up: its plain pin is back under it first, so swapping
-      // the layer's capsule never leaves its spot empty.
-      await c.setFilter(_pinsLayer, _pinsFilter(null));
-      await _drawn();
-      if (!mounted || _shown?.id != capsule.id) return;
+      _landingPin = (previous, _motion..land());
+      _motion = PinMotion();
     }
-    _motion.jumpAgain();
+    _motion.jumpAgain(fromHere: caught);
     if (!jump || AppMotion.reduced(context)) {
       _motion.ms = SelectedPin.swayEnd;
     }
-    _ticker.stop();
-    _send();
-    if (capsule.location case final at?) {
-      _sentSelected = (
-        x: GroupNode.worldX(at.longitude),
-        y: GroupNode.worldY(at.latitude),
-        opacity: 1.0,
-        scale: 1.0,
-      );
-    }
-    await _setSource(c, _selectedSource, _features([capsule]));
-    await _drawn();
-    if (!mounted || _shown?.id != capsule.id) return;
-    unawaited(c.setFilter(_pinsLayer, _pinsFilter(capsule.id)));
+    _sendPose();
     _run();
   }
 
-  /// A few frames: what was just sent to the map is drawn.
-  Future<void> _drawn() =>
-      Future<void>.delayed(const Duration(milliseconds: 50));
-
   void _run() {
     if (AppMotion.reduced(context)) {
-      _motion.landMs = 0;
-      if (_motion.landing) unawaited(_finishLanding());
+      // No motion: landed at once, the hover held still.
+      _landingPin = null;
+      if (_motion.landing) {
+        _shown = null;
+      }
+      _sendPose();
       return;
     }
     _motion.landMs = SelectedPin.landing.inMilliseconds;
@@ -572,60 +529,75 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
   }
 
   void _tick(Duration elapsed) {
-    _motion.ms += (elapsed - _last).inMilliseconds;
+    final step = (elapsed - _last).inMilliseconds;
     _last = elapsed;
+    _motion.ms += step;
+    if (_landingPin case (_, final other)?) {
+      other.ms += step;
+      // Down: at rest in the next pose sent.
+      if (other.landed) _landingPin = null;
+    }
     if (_motion.landing && _motion.landed) {
+      // Down on its spot: the same marker at rest, in one update.
       _ticker.stop();
-      unawaited(_finishLanding());
+      _shown = null;
+      _sendPose();
       return;
     }
-    // Every frame while it jumps, sways and lands; the slow hover a step
+    // Every frame while a pin jumps, sways or lands; the slow hover a step
     // every 33 ms (SelectedPin.hoverStep).
-    final hovering = !_motion.landing && _motion.ms >= SelectedPin.swayEnd;
+    final hovering =
+        _landingPin == null &&
+        !_motion.landing &&
+        _motion.ms >= SelectedPin.swayEnd;
     if (hovering &&
         _motion.ms - _sentAt < SelectedPin.hoverStep.inMilliseconds) {
       return;
     }
-    _send();
+    _sendPose();
   }
 
-  /// The pin's pose as the layer's paint and rotation: lifted by its
-  /// translation, leaning by its rotation; the shadow stronger the higher it
-  /// floats.
-  void _send() {
+  /// The posed pins: the one landing, then the selected one.
+  Map<String, SelectedPinPose> _poses() => {
+    if (_landingPin case (final c, final m)?) c.id: m.pose,
+    if (_shown case final c?) c.id: _motion.pose,
+  };
+
+  /// The pins' pose in one update of the pins layer, and the shadows under
+  /// the floating ones, stronger the higher they float.
+  void _sendPose() {
     final c = _controller;
     if (c == null || !_styled) return;
     _sentAt = _motion.ms;
-    final pose = _motion.pose;
-    unawaited(
-      c.setLayerProperties(
-        _selectedLayer,
-        _Props({
-          'icon-translate': [0, -pose.lift],
-          'icon-rotate': pose.degrees,
-        }),
-      ),
-    );
+    final poses = _poses();
+    final ids = poses.keys.toSet();
+    if (ids.length != _posedIds.length || !ids.containsAll(_posedIds)) {
+      _posedIds = ids;
+      _stage.posed = [if (_landingPin case (final c, _)?) c, ?_shown];
+      unawaited(c.setFilter(_shadowLayer, _posedFilter(ids)));
+    }
+    unawaited(c.setLayerProperties(_pinsLayer, _Props(_pinPose(poses))));
     unawaited(
       c.setLayerProperties(
         _shadowLayer,
-        _Props({'icon-opacity': (pose.lift / 6).clamp(0.0, 1.0)}),
+        _Props({
+          'icon-opacity': poses.isEmpty
+              ? 0
+              : [
+                  'case',
+                  for (final MapEntry(:key, value: pose) in poses.entries) ...[
+                    [
+                      '==',
+                      ['get', 'id'],
+                      key,
+                    ],
+                    (pose.lift / 6).clamp(0.0, 1.0),
+                  ],
+                  0,
+                ],
+        }),
       ),
     );
-  }
-
-  /// Down on its spot: back into the pins layer, and its own layer emptied
-  /// once the plain pin is drawn under it.
-  Future<void> _finishLanding() async {
-    final landed = _shown;
-    _shown = null;
-    final c = _controller;
-    if (c == null || !_styled || landed == null) return;
-    await c.setFilter(_pinsLayer, _pinsFilter(null));
-    await _drawn();
-    if (_shown != null) return;
-    _sentSelected = null;
-    await _setSource(c, _selectedSource, _features(const []));
   }
 
   /// How far the screen reaches from its middle (dp): half its diagonal,
