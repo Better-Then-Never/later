@@ -131,3 +131,20 @@ offline start work; nothing is prefetched (BLOCKERS.md).
 ### Cold start (`build/dev/video/m2cold_*.mp4`)
 Unchanged: no white frame, streets at the saved place about 1.6 s after the tap, the pins as soon as the capsules
 are read.
+
+## After 3: no flashing (mission 3, branch `fix/map-flash-ghosts-selection`, 19 Oct 2026)
+New flows and checks: `map_flash_slow/normal/fast` (heat to pins and back, two levels a pinch in 1.5 s, 0.6 s,
+0.18 s), `map_flash_select`, the engine probe (`MAP_FLASH`) and the video check (`tool/dev/map_flash_video.py`);
+details and every number in docs/map/FLASH_FIX.md.
+
+| | Before (`flash_base`) | After (`9154fb2`) |
+|---|---|---|
+| Frames with a marker drawn twice (slow / normal / fast / select) | 27 / 3 / 6 / 78 | 0 / 0 / 0 / 0 |
+| Frames with a visible marker missing | 0 / 2 / 1 / 0 | 0 / 0 / 0 / 0 (light) |
+| Frames with a leftover (ghost) | 1 / 0 / 3 / 0 | 0 / 0 / 0 / 0 |
+| Video flags per 20 s flow (slow / normal / fast; after: in each of three runs) | 0 / 2 / 1 | 0 / 0 / 1 |
+| The owner's recording, same detector | 17 in 70 s | – |
+| Tap zooms (three runs): zooms passed, largest step | – | 28–52, ≤ 0.15 of a level |
+
+With 2,205 capsules (`final_2200`, one commit before the last): Flutter 0–0.4 % janky (worst 10.2 ms), no
+recording gap of 100 ms or more, tap zooms 20–37 steps (largest 0.18). Frame delivery in every flash flow: no gap of 100 ms or more (`map_gesture_report.py`).

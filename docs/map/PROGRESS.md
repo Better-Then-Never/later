@@ -83,3 +83,17 @@ From `feature/map-engine-smoothness` at `55cba7a`. MapLibre with OpenFreeMap is 
 - 2.5: countdown without seconds (`3708a84`); selected pin emphasis seen on the phone.
 - 4: three harness runs plus two with 2,205 capsules; the heat's GeoJSON moved to an isolate (`1c700e2`).
   PERFORMANCE.md "After 2", BLOCKERS.md, MORNING_SUMMARY.md.
+
+# Mission 3: flashing bubbles, ghosts, the double selected pin, the map credit (19 Oct 2026)
+Branch `fix/map-flash-ghosts-selection` from `feature/map-maplibre-polish` at `aced9e8`. MapLibre with OpenFreeMap
+stays the default (`FeatureFlags.mapLibre`).
+
+| Step | State |
+|---|---|
+| Flash detector (engine probe, video check, flows) and baseline (`26d732b`) | done |
+| Causes and fixes: no style transitions (`7117939`), one picture and one selected marker, solid motion, no cap, pace, fixed numbers, compact features (`f50dba8`), no unseen flights (`9154fb2`) | done |
+| Fast zoom out collapses | done (frame by frame) |
+| The map credit: Later-styled (i), tiny line, sheet, About entry, licences (`626a249`) | done |
+| Final runs: three per speed, select, 2,205 capsules, dark | done; open items in BLOCKERS.md |
+
+Docs: FLASH_FIX.md, ATTRIBUTION.md, PERFORMANCE.md "After 3", MORNING_SUMMARY.md.

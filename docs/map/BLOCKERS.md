@@ -12,6 +12,29 @@
   shows the cached tiles and the capsules, no streets for unseen areas. Fallbacks, all with the same style files:
   VersaTiles (free, no SLA), self-hosted Protomaps/OpenMapTiles (only hosting cost), MapTiler (paid).
 
+- **Open: the map credit's behaviour** (mission 3, docs/map/ATTRIBUTION.md): default a tiny credit line always
+  visible next to a Later-styled (i); `FeatureFlags.mapCreditCollapses = true` shows it only for the first 5 s of
+  a session (OSMF allows it; OpenMapTiles' licence asks for a visible credit and says nothing about collapsing: ask
+  MapTiler before switching).
+
+## Open after mission 3 (flashing bubbles, docs/map/FLASH_FIX.md)
+- **One glitch in one of three fast runs**: a "7" bubble opened and closed again within about 30 ms at the first
+  fast flick out of the heat (`final_r1`, 2.3 s). Not reproduced in a traced run (the shown level only stepped
+  forward). Suspected: MapLibre re-cutting the source's tiles as the flick crosses a whole zoom level. Not proven.
+- **Dark mode**: one probe run (`final_dark`) counted 2 / 4 / 5 frames with a level-12 bubble missing for a frame
+  (slow / normal / fast), all in frames where the map showed two consecutive pictures, and far fewer probes than in
+  light (184 and 24 instead of about 1,500; why is not known). Light on the same code: 0.
+  Not repeated; needs a second dark run before calling it either way.
+- **Torn frames**: 1–3 frames per 20 s flow where tiles show two consecutive pictures (MapLibre parses each tile of
+  a source on its own worker). One frame each (8 ms); not seen by eye.
+- **Reduced motion not measured on the phone**: the system's "remove animations" sets Android's animator scale to
+  0, which the gesture harness refuses (it breaks MapLibre's own tap zooms). By the code: no flights (pieces switch
+  at once), the selected pin rises and lands without motion.
+- The video detector cannot tell a real fast change (a zoom fade completing in one camera jump, a bubble opening)
+  from a flash: its flags were looked at frame by frame (FLASH_FIX.md "Final").
+- **"About me"**: Settings' About page is named "About me" ("О себе", "Über mich", "O mnie", "Sobre mí") in every
+  language though it is the app's About page. Found in mission 3; not changed (outside it).
+
 ## Not built
 - **The first open's pop-in in rings** (M-03 on the Google map): on MapLibre the pins of the first screen appear at
   once when the capsules are read. The split and merge on zooming is built (mission 2).
