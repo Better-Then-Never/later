@@ -1,8 +1,11 @@
 // Builds the MapLibre map styles (assets/map/style_light.json,
 // style_dark.json) from OpenFreeMap's Positron and Dark styles, recoloured
-// with the app's own map palette (the Google styles in
-// lib/features/map/map_styles.dart, F-15/D-22): green parks, blue water, white
-// roads, soft greys; tiles, fonts and sprites stay OpenFreeMap's.
+// from the app's colour tokens (lib/core/theme/app_colors.dart): the ground is
+// the map's own ground colour, parks and woods the brand green and water the
+// info blue mixed into it (calm, never a saturated ocean), roads white on
+// the ground (low contrast, so capsules stand out), soft grey labels. Tiles,
+// fonts (Noto Sans: Latin and Cyrillic) and sprites stay OpenFreeMap's.
+// test/features/map_style_test.dart checks the files against the tokens.
 //
 //   node tool/map/make_map_style.js
 //
@@ -27,13 +30,38 @@ function get(url) {
   });
 }
 
-// The app's palette (map_styles.dart), by what a layer draws.
+// The app's tokens (AppColors) the map's colours are mixed from.
+const TOKENS = {
+  brandGreen: '#56c92e',
+  infoBlue: '#2196f3',
+  groundLight: '#f3f3f0',
+  groundDark: '#1b1b1b',
+};
+
+// [a] mixed into [b], [share] of [a] (the test mixes the same way).
+function mix(a, b, share) {
+  const ch = (hex, i) => parseInt(hex.slice(1 + 2 * i, 3 + 2 * i), 16);
+  const out = [0, 1, 2].map((i) =>
+    Math.round(ch(a, i) * share + ch(b, i) * (1 - share))
+      .toString(16)
+      .padStart(2, '0'),
+  );
+  return '#' + out.join('');
+}
+
+// How much of a token goes into the ground, by what a layer draws.
+const SHARES = {
+  light: { park: 0.26, wood: 0.14, water: 0.18 },
+  dark: { park: 0.2, wood: 0.1, water: 0.14 },
+};
+
+// The map's palette, by what a layer draws.
 const LIGHT = {
-  background: '#f3f3f0',
-  park: '#c9e9b6',
-  wood: '#d7ecc7',
-  water: '#a9d3f2',
-  waterLabel: '#3f74a8',
+  background: TOKENS.groundLight,
+  park: mix(TOKENS.brandGreen, TOKENS.groundLight, SHARES.light.park),
+  wood: mix(TOKENS.brandGreen, TOKENS.groundLight, SHARES.light.wood),
+  water: mix(TOKENS.infoBlue, TOKENS.groundLight, SHARES.light.water),
+  waterLabel: '#5b84ab',
   residential: '#eeeeeb',
   building: '#e7e7e3',
   roadMinor: '#ffffff',
@@ -42,15 +70,15 @@ const LIGHT = {
   motorway: '#f6f6f6',
   motorwayCasing: '#d9d9d9',
   rail: '#e6e6e6',
-  label: '#333333',
-  labelMinor: '#7a7a7a',
+  label: '#444444',
+  labelMinor: '#808080',
   boundary: '#cfcfcf',
 };
 const DARK = {
-  background: '#1b1b1b',
-  park: '#1e3a1c',
-  wood: '#1d2a1c',
-  water: '#16263a',
+  background: TOKENS.groundDark,
+  park: mix(TOKENS.brandGreen, TOKENS.groundDark, SHARES.dark.park),
+  wood: mix(TOKENS.brandGreen, TOKENS.groundDark, SHARES.dark.wood),
+  water: mix(TOKENS.infoBlue, TOKENS.groundDark, SHARES.dark.water),
   waterLabel: '#6f9ccc',
   residential: '#212121',
   building: '#262626',
