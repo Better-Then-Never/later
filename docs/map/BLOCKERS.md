@@ -17,6 +17,38 @@
   (`FeatureFlags.mapCreditCollapses = true`). OSMF allows it; OpenMapTiles' licence asks for a visible credit and
   says nothing about collapsing: ask MapTiler to be sure (docs/map/ATTRIBUTION.md).
 
+## Open after mission 4 (the full map at once, docs/map/COLD_START.md)
+- **Owner: delta sync's backend is not deployed** (function `recordCapsuleDeletion`, `capsule_deletions` rules, four
+  indexes, the TTL policy); `FeatureFlags.mapDeltaSync` is off, so the app still reads every friends' and public
+  capsule at each start (as before). Deploy steps in COLD_START.md. The four indexes are only checked by reasoning:
+  the emulator does not enforce indexes; a wrong one makes its query fail, and the map then reads everything (tested).
+  Deletions made before the deploy have no record (see COLD_START.md for a safe order).
+- **Owner: OpenFreeMap's terms** (updated 14 Oct 2026) forbid collecting tiles "in automated ways" except offline
+  downloads the user asks for (at most 3,000 tiles or 50 MB, 4 parallel requests, a User-Agent naming the app). No
+  prefetch was built. ATTRIBUTION.md's "commercial use allowed" came from their front page; the current terms page
+  does not say it either way: worth reading again before relying on it.
+- **A tap in the merge window** (the 1 to 1.5 s after the reveal, before a source answers) opens the card when the
+  phone's Firestore copy answers, 0.85 s in the measured case, busy with the start's queries; the pin rises then
+  too. Later taps are instant. Fix if wanted: raise the pin and show a shaped card skeleton at once.
+- **Offline, the pins can come 0.25 s before the streets** (the cover's 1.8 s limit passes first: MapLibre's style
+  takes 2.7 s offline while it fails to check its description again).
+- **Firestore's first answer is still 1.2 s or more after the map asks** (the SDK's local queue at a start). Not
+  seen any more (the store), but it sets when "fresh" data arrive and the merge-window tap above.
+- **The first frames rasterize in 30 to 100 ms** (Impeller's first frames and MapLibre's start, under the splash or
+  the cover): not seen as motion, but they delay the start by a few frames.
+- **The launch screen from `am start` (the rig) shows no logo** on this Samsung (Android 13), though
+  `windowSplashScreenBehavior=icon_preferred` is set; from the home screen it shows the logo. Only the rig's video
+  differs.
+- **iOS not run**: the launch colour is a named colour (`LaunchBackground`, light and dark) referenced from the
+  storyboard, written by hand without Xcode.
+- **Not measured on the phone**: 4,000 capsules (2,205 were; 5,000 stored pins decode in milliseconds in a test), a
+  throttled network, account switch and sign-out on the phone (unit tests only: they would sign the test account
+  out), Russian and large text (no text in the sequence).
+- **Torn frames vary a lot between runs** (4 to 29 per flow; the mission 3 code 4 to 6 the same evening); the
+  select flow's camera now centres on the tapped capsule, which sends the picture again as it moves.
+- **Rig:** a functions test run left its Firestore emulator on port 8280 (process 27312); stopping it was not
+  allowed here. The next `npm run test:emulate` in functions/ needs that port.
+
 ## Open after mission 3 (flashing bubbles, docs/map/FLASH_FIX.md)
 - **One glitch in one of three fast runs**: a "7" bubble opened and closed again within about 30 ms at the first
   fast flick out of the heat (`final_r1`, 2.3 s). Not reproduced in a traced run (the shown level only stepped

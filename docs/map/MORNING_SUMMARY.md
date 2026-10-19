@@ -1,57 +1,46 @@
-# MORNING_SUMMARY.md: no flashing bubbles (mission 3)
+# MORNING_SUMMARY.md: the full map with every capsule, at once (M-06)
 
-Branch `fix/map-flash-ghosts-selection` (from `feature/map-maplibre-polish`; local commits, **not pushed, not
+Branch `feature/map-instant-start` (from `fix/map-flash-ghosts-selection`; local commits, **not pushed, not
 merged**). Nothing deployed, no production data touched: every check ran on the Galaxy S20 FE against the local
-Firebase emulators. MapLibre with OpenFreeMap stays the map. Mission 2's summary is in git history (`aced9e8`).
+emulators. Mission 3's summary is in git history (`4ff4829`). Details and every number: COLD_START.md.
 
-## What was wrong, and what changed
-- **The flashing bubbles** had several causes, each measured and fixed:
-  - MapLibre faded every newly placed pin and bubble in over 300 ms and faded old ones out at their old places.
-    That made the "lighter then solid" frames and the fuzzy green discs. **Turned off.**
-  - Pieces landing were drawn twice for a moment (two sources), which doubled the shadow.
-  - Moving pieces faded in a tenth of a second on a fast zoom.
-  - Above 60 pieces they didn't move at all, hence "only some flash".
-  - The changing number in a bubble made the map re-lay out all its icons each time.
-- Now one picture holds every pin and bubble. Moving pieces grow and shrink but are never see-through, everything on
-  screen moves, and bubble numbers stay fixed while moving.
-- **Fast zoom out collapses**: the motion gets shorter (down to about 0.1 s) but is never skipped; capsules fly into
-  their bubble at any speed. A flick straight into the heat clears them with the zoom, as you asked before.
-- **The selected pin is one marker**: it grows (0.15 s) and rises in place, its shadow with it, and lands exactly on
-  its spot. No second copy, no jump at the end.
-- **The map's "i"** is now ours: a small disc like the other map buttons, plus a tiny credit line always on the map
-  ("OpenFreeMap © OpenMapTiles Data from OpenStreetMap"). Tapping it lists the sources with links, "Improve this
-  map" and "Map rendered with MapLibre". The same list is in Settings > About > "Map data and licenses", and the
-  licences page now names MapLibre and the map data.
-
-## The numbers (FLASH_FIX.md, PERFORMANCE.md "After 3")
-| | Before | Now |
+## What you will see now
+| After tapping the icon | Before | Now |
 |---|---|---|
-| Your recording / our detector | 17 flash flags in 70 s | – |
-| Frames with a pin or bubble drawn twice | 27–78 per flow | 0 |
-| Frames with a visible one missing, or a leftover | up to 3 per flow | 0 (light) |
-| Flash flags per 20 s of zooming (slow / normal / fast) | 0 / 2 / 1 | 0 / 0 / 1 (three runs) |
+| 0 to 1.2 s | a plain grey screen | the map's own colour (light or dark), with the Later logo |
+| 1.3 s | buttons over an empty map (1.7 s) | the buttons and the tab bar, all icons in one frame |
+| about 2.2 s | streets at 2.7 s, no pins | the streets fade in where you left the map, and **every pin and bubble grows in from the middle, in one motion** |
+| afterwards | pins at 5.2 s, then friends', public ones and regrouping until 7.2 s | nothing moves unless a capsule really changed (a new one grows in, a deleted one shrinks away) |
 
-The one fast flag per run is, in every case I looked at, a real change happening faster than the detector can tell
-apart: the bubbles finishing their fade-in as the first pinch leaves the heat, then splitting. One run had a real
-glitch: a bubble opened and closed within 30 ms. It didn't come back.
+## How
+- The phone keeps the pins the map last showed (only what a pin needs: place, colour, owner, opening time; never a
+  title or photo), per account, deleted at sign-out. A start draws them at once; Firestore's answers then replace
+  them, so a deleted or hidden capsule goes about a second later and a removed friend's pins never show.
+  Tapping a pin from that moment opens the capsule as the server has it now.
+- The 107 marker pictures are kept on the phone (they took 1.75 s to draw at every start), the map no longer waits
+  for the GPS, and it asks for the capsules first.
+- Firestore's cache on the phone was emptied once (3,727 capsules of old test data) and is bounded.
+- Measured (median of 5 launches, from Android's launch): **full map 2.15 s** (was 4.26 s; your phone's 5.2 to 7.2 s
+  from the tap); first start after sign-in 3.4 s, after clearing the app's data 4.0 s (in one reveal); offline,
+  dark and "remove animations" checked. Janky frames during the start: 48 → 9.
 
-## Decided afterwards (19 Oct, `ca0af3f`)
-- **The credit line goes**: it shows at app start once the map has drawn, until you first touch the map (at most
-  5 seconds), then only the "i", which now sits right next to the filter button. OpenStreetMap allows this;
-  OpenMapTiles' licence asks for a visible credit and doesn't mention collapsing, so asking MapTiler would settle it.
-- **A tapped capsule is centred** again (the Google map did it by itself; MapLibre doesn't).
+## Waiting for you
+- **Delta sync is built but off.** It makes a start read only the friends' and public capsules that changed
+  (today it re-reads all of them: 1,114 for the test account; Firestore bills them whenever a listener was away
+  for over 30 minutes). It needs a small backend change: a function that records deleted capsules, its rules, four
+  indexes and a 30-day TTL. Tested on the emulators; **deploy it, then switch the flag on** (exact steps in
+  COLD_START.md, "Delta sync").
+- **Prefetching map tiles is not allowed** by OpenFreeMap's current terms (14 Oct 2026) except as offline downloads
+  the user asks for. Not built; it would not speed up the start anyway (the last view's tiles are cached).
 
 ## Try it (5 minutes)
-1. Over central Warsaw, zoom slowly in and out from the heat to the streets: bubbles split and gather; watch for
-   flashing or fuzzy leftovers.
-2. Flick quickly in and out a few times.
-3. With capsules open (zoom 15), flick out fast: they should fly into bubbles, not vanish.
-4. Tap a capsule, then tap the map: the pin lands once, in place. Tap one, then another quickly.
-5. Tap the "i" bottom left; then Settings > About > "Map data and licenses".
-6. Repeat 1–4 in dark mode.
+1. Kill the app and open it five times in a row; then switch the phone to dark mode and do it twice more. Watch
+   for: a colour flash, an empty map behind the buttons, pins coming in steps, bubbles regrouping after they appear.
+2. Turn Wi-Fi off and open it once: the streets you saw last and your pins, no spinner.
+3. Delete a capsule from another phone (or remove a friend), then open the app: it may show for a second, then it
+   goes. Tap a pin within the first second after the map appears: the card shows the real capsule.
 
 ## Weak spots left (BLOCKERS.md)
-- Dark mode: one test run counted a few one-frame gaps (light: none). Needs a second run.
-- The one-off 30 ms bubble glitch on a fast flick (above).
-- Reduced motion was not measured on the phone; by the code, everything switches at once.
-- Settings' About page is called "About me" in every language. I spotted it on the way and didn't touch it.
+- A pin tapped within about a second of the map appearing opens its card up to 0.85 s late.
+- Offline, the pins can come a quarter second before the streets.
+- iOS not run; 4,000 capsules and a slow network not measured on the phone.

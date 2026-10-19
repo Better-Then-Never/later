@@ -108,8 +108,8 @@ Never push, merge, deploy or release unless the owner asks in chat.
 | 1 Quick wins: splash colour, cover fade, bar in one frame, no GPS wait, Firestore tuning, marker pictures | done (TTFD 4.26 → 3.46 s) |
 | 2 Pin store and delta sync, with tests | done; delta sync off until the backend is deployed |
 | 3 One reveal and diff animations | done |
-| 4 Tile cache and prefetch, SCALING.md | |
-| 5 Verification matrix, docs | |
+| 4 Tile cache and prefetch, SCALING.md | done (no prefetch: OpenFreeMap's terms) |
+| 5 Verification matrix, docs | done (COLD_START.md, MORNING_SUMMARY.md, BLOCKERS.md) |
 
 ## Log
 - Rig: `tool/dev/coldstart.sh 5 --no-build <label>` (VIDEO=1 films launch 1). `am start --splashscreen-show-icon`

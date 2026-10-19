@@ -64,6 +64,16 @@ out=build/perf/coldstart_$label.txt
 : >"$out"
 for n in $(seq "$launches"); do
   adbs shell am force-stop "$APP_ID"
+  # FRESH=store: no pins kept (a first start after sign-in); FRESH=data: no
+  # pins, marker pictures, tiles or Firestore cache either (a first start
+  # after clearing the app's data, still signed in).
+  case "$FRESH" in
+    store) adbs shell "run-as $APP_ID rm -rf files/map_pins" ;;
+    data)
+      adbs shell "run-as $APP_ID sh -c 'rm -rf files/map_pins files/map_images \
+        files/mbgl-offline.db* databases/firestore.*'"
+      ;;
+  esac
   sleep 3
   adbs logcat -c
   if [ -n "$VIDEO" ] && [ "$n" = 1 ]; then

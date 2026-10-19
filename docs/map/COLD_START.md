@@ -184,3 +184,62 @@ time.
 ## Scaling (G)
 Server-side pin tiles for public capsules (Snap Map's principle): designed, not built; the trigger is in
 `docs/map/SCALING.md` (over about 20,000 public capsules, over 1,000 in a city, or delta sync's public limit hit).
+
+## Verification matrix (Section 6; phone, profile, local emulators; ms from launch)
+| Case | How | Result |
+|---|---|---|
+| Warm start with the store | 5 launches, zoom 14.5 (`store2`) / 13.5 (`reveal2`) | full **1,875** / **2,741** ms median; no colour flash, no empty tab bar, one reveal, nothing moves afterwards |
+| First start after sign-in (no store; Firestore cache kept) | `FRESH=store`, 5 launches (`first_store`) | streets at 2,429; **all pins in one reveal at 3,377** (median full 3,468) |
+| After clearing the app's data (no store, pictures, tiles or Firestore cache; still signed in) | `FRESH=data`, 5 launches (`first_data`) | home 1,485 (the profile from the server); streets 2,839; **pins in one reveal at 3,971** median (1 s after the first source); the friends' pins, answering 0.6 to 1.2 s later, grow in as new ones; full **4,830** |
+| Offline (Wi-Fi off and Firestore unreachable; no store that launch) | 1 launch, video (`offline.mp4`) | no spinner, no grey: shell 1.2 s, cover, pins from Firestore's phone copy and the cached streets at about 3 s (the pins 0.25 s before the streets: the cover's 1.8 s limit came first; MapLibre's style took 2.7 s offline instead of 1.4 while it failed to check the style's description again) |
+| Dark | system night mode, 3 launches + video (`dark`) | full 2,359; every frame of the launch the dark ground (27,27,27 = #1B1B1B) until the dark streets fade in |
+| Reduced motion | the system's "remove animations" (all three scales 0; restored to 1.0) | the cover goes in one frame with the streets, the pins appear at full size two frames later: no fade, no growth |
+| A pin tapped in the merge window | tapped 0.7 s after the reveal, 1.7 s before its source answered (`tap_merge.mp4`) | the card opened with the real capsule ("First snow"), never the stored record; **0.85 s after the tap** (the phone's Firestore copy answered then, busy with the start's queries) |
+| A capsule deleted elsewhere | delta mode: a friend's friends-only capsule deleted with the app closed | its record written by the function; the pin removed by the deletions listener; the store saved without it |
+| 2,205 capsules | 1,000 extra friends' capsules (`store2200`, 3 launches) | store 113 KB, read 20 ms after the map starts; full **2,400** ms median (1,205: 2,427 in delta mode, 2,556 at 14.5 before the pictures were kept) |
+| 1,000 capsules gone at once | the extra 1,000 removed on the emulator, the store still holding them | shown from the store, then removed as Firestore drops them (its phone copy re-checks each one with the server: the rig's "limbo" churn, docs/feel/RIG.md) |
+| Account switch, sign-out wipe, a friend removed, a pending capsule, 5,000 pins, bad files | unit tests (`map_pin_store_test.dart`, `map_start_test.dart`, `map_delta_sync_test.dart`) | pass (not run on the phone: it would sign the owner's test account out) |
+| Russian, large text | – | not run: nothing of the sequence is text (the map's labels are OpenFreeMap's) |
+| Slow network | – | not run: no way to throttle this phone without root; the offline and cleared-data cases bound it |
+
+Regressions (same harness as mission 3):
+- Tap zooms (`m4_r1`): 35 to 47 positions each, largest step 0.108 of a level (mission 3: at most 0.15).
+- Flash flows, video flags (`m4_r1`, `m4_probe2`): 0 / 0 / 1 / 0 for slow / normal / fast / select, the same as mission
+  3's final. Engine probe, two runs on this code against one on the mission 3 code (`m3_probe_ab`, `c7f3e37`) the same
+  evening: double frames 0–1 / 0 / 1 / 0 (mission 3 code: 0 / 1 / 0 / 0), missing 0–2 per flow (0–2), ghosts 0–1
+  (0–2), torn frames 4 to 29 per flow (4 to 6). One-frame counts that vary from run to run on both; mission 3's
+  all-zero probe run was a good one. The select flow's torn frames (0 and 29 in two runs) are the camera now centring
+  on the tapped capsule (the owner's request after mission 3), which sends the picture again as it moves.
+- All 524 tests, the token check and the Firestore rules tests (73) pass.
+
+## Final (`build/perf/coldstart_final.txt`, 5 launches, zoom 14.5, the build that ships: delta sync off)
+Medians from Android's launch (a finger's tap on the icon is about 0.1 s earlier): first frame 1,155; the map's
+buttons and tab bar 1,232; streets 2,135; **full (TTFD) 2,147** (1,703–2,531); every source answered 3,391; 9
+janky frames of about 200 (none over 16.7 ms during the reveal's motion).
+
+| Time after tapping the icon | What the user sees |
+|---|---|
+| 0 to about 1.2 s | The launch screen in the map's own colour (light or dark, the app's choice), the Later logo when opened from the home screen |
+| about 1.3 s | The map's buttons and the tab bar with all their icons, in one frame, over a cover in the map's colour |
+| about 2.2 s (1.8 to 2.6) | The streets fade in where the map last was, and every pin and bubble grows in from the middle out in one motion (0.35 s) |
+| about 3.5 s | Firestore's answers are merged: nothing on screen changes unless a capsule really did (a new one grows in, a gone one shrinks away) |
+
+Before (section 1 of the mission, the owner's phone): a plain grey screen until 1.7 s, the buttons over an empty map,
+streets at 2.7 s, the first pins at 5.2 s, then friends', public ones and regrouping until 7.2 s. Budgets: streets
+at most 2.5 s (2.1 s), TTFD at most 3.0 s warm and ideally under 2.5 s (2.15 s), a first start without the store in
+one reveal within 4 s (3.4 s; 4.0 s with every cache cleared), no colour flash, no empty map, no steps, no regroup.
+
+## The architecture, in short
+- **Launch:** `values(-night)/colors.xml` splash colour = the map's ground; Android 12+ is told the app's light or
+  dark (`UiModeManager.setApplicationNightMode`); `windowSplashScreenBehavior=icon_preferred`; iOS
+  `LaunchBackground` named colour. `SplashLogo` (the first Flutter frame) in the same colour; the permission check
+  shows it too; home waits at most 150 ms for its icons, decoded during the splash.
+- **Map controller:** the capsules first; the saved camera read at once (no location wait); the pin store read when
+  the account signs in; each source's answer replaces its stored pins (`MapPinStore`, `MapController`); with delta
+  sync on, the friends' and public sources come from `MapDeltaSync`.
+- **Map view:** marker pictures kept per app version (`MapLibreImages.cached`); sources and layers sent at once; a
+  painted cover until the first map idle after our layers (at most 1.8 s after the buttons); pins hidden until the
+  reveal, then grown in rings; only real changes animate afterwards (`_GroupStage` life, `CapsuleGroups.changes`).
+- **Firestore:** cache bounded to 40 MB, emptied once per cache generation, indexed by the SDK.
+- **Measuring:** `StartupReport` marks + Android's `reportFullyDrawn` at the full map; `tool/dev/coldstart.sh`
+  (`CAMERA`, `FRESH`, `VIDEO`) and `tool/dev/coldstart_report.js`.
