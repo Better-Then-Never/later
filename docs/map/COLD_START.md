@@ -164,3 +164,23 @@ source answered at about 3.1 s. A friend's friends-only capsule in the middle of
 with the app closed: the function wrote its record (13 s later on the emulator's first run of the function), the
 running app's deletions listener removed the pin and the store saved 1,204 pins with `syncedTo` = the deletion's
 time.
+
+## Base map readiness (F)
+- **MapLibre's tile cache is on the phone and persists**: `files/mbgl-offline.db` (53 MB on the test phone, MapLibre
+  Android's default ambient cache of 50 MB, least recently used out; the plugin has no setting for its size). The last
+  view's tiles are in it, which is why the streets come from the phone at a cold start and why an offline start shows
+  them (mission 1, BLOCKERS "Verified"). The time to the streets (1.7 to 3.0 s after the launch) is MapLibre decoding
+  and laying out those cached tiles (more labels at zoom 13.5 than at 14.5), not the network: tiles, sprites and fonts
+  are cached for a week to ten years (`Cache-Control`), and an outdated TileJSON is used while it is checked again.
+- **Prefetching is not built.** OpenFreeMap's terms (updated 14 Oct 2026, openfreemap.org/tos) forbid collecting data
+  "in automated ways, except for offline downloads": a download the user asks for, at most 3,000 tiles or 50 MB, at
+  most 4 requests in parallel, with a User-Agent naming the app; anything larger by asking them. A background
+  prefetch around the last view or the home region is neither, so it would need their consent (the owner's
+  decision, docs/map/BLOCKERS.md). It would also not speed up a cold start: the last view's tiles are cached already;
+  it would only help a first zoom into an area never seen.
+- **The cover thins out on the first map idle after our layers are in** (all tiles of the view drawn), at the latest
+  1.8 s after the buttons showed or at a touch.
+
+## Scaling (G)
+Server-side pin tiles for public capsules (Snap Map's principle): designed, not built; the trigger is in
+`docs/map/SCALING.md` (over about 20,000 public capsules, over 1,000 in a city, or delta sync's public limit hit).

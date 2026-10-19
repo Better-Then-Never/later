@@ -106,7 +106,7 @@ Never push, merge, deploy or release unless the owner asks in chat.
 |---|---|
 | 0 Rig: marks, TTFD via reportFullyDrawn at full map, coldstart.sh + coldstart_report.js, baseline | done |
 | 1 Quick wins: splash colour, cover fade, bar in one frame, no GPS wait, Firestore tuning, marker pictures | done (TTFD 4.26 → 3.46 s) |
-| 2 Pin store and delta sync, with tests | store done (TTFD 1.88 s at 14.5); delta sync next |
+| 2 Pin store and delta sync, with tests | done; delta sync off until the backend is deployed |
 | 3 One reveal and diff animations | done |
 | 4 Tile cache and prefetch, SCALING.md | |
 | 5 Verification matrix, docs | |
@@ -116,3 +116,7 @@ Never push, merge, deploy or release unless the owner asks in chat.
   (the help's `--splashscreen-icon` is unknown on this phone). FlutterActivity reported fully drawn at its first
   frame: overridden in MainActivity. Baseline TTFD 4.26 s; the marker pictures (1.75 s) and Firestore's first
   answer (1.75 s) are the two long paths.
+- Quick wins `665f9a0`, pin store `fb36bd5`, reveal `9c10566`, delta sync `0ba06cd` (all in COLD_START.md). Rules
+  tests: run only the Firestore ones next to the dev emulators (`npx firebase emulators:exec --only firestore
+  --config firebase.json --project demo-later-rules "node --test firestore.test.js"` in tools/rules-tests): the dev
+  Functions emulator holds 9299. A functions test run leaves its Firestore on 8280 (not stopped here).
