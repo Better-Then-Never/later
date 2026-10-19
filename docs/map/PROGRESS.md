@@ -45,4 +45,8 @@ phone).
   (and stop the Gradle daemon afterwards: `cd android && ./gradlew --stop`).
 - 19 Oct: the owner chose OpenFreeMap and MapLibre as the map; the flag is on by default (`MAP_LIBRE=false` for
   Google; `MAP_GOOGLE=1` in the perf scripts). Attribution checked on the phone. The owner chose to hide the
-  satellite look: no map-look choice in Settings and the standard map in the pin picker while MapLibre is on.
+  satellite look: no map-look choice in Settings while MapLibre is on.
+- 19 Oct: the capsule creation pin picker on MapLibre too (the 1 km circle as a GeoJSON polygon). Fixed the owner's
+  report that the pin could not move: the sheet's drag-to-close took every vertical drag on the map; the map now
+  claims every touch that starts on it (Google's picker too). Checked on the phone: drags in every direction, the
+  snap back onto the 1 km edge, "use this spot", back to me, and closing the sheet by its top.

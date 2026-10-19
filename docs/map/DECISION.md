@@ -73,6 +73,7 @@ source URLs in `tool/map/make_map_style.js`).
 
 ## Risks
 - A second map SDK in the app: MapLibre's native library is 10.3 MB for arm64 (about 3.6 MB compressed in a
-  download) plus its Java classes; the capsule creation pin picker stays on Google Maps.
+  download) plus its Java classes. The capsule creation pin picker is on MapLibre too (19 Oct); Google Maps stays
+  in the app only for `MAP_LIBRE=false`.
 - iOS untested.
 - OpenFreeMap availability (no SLA).

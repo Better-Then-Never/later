@@ -3,15 +3,14 @@
 ## Owner decisions
 - Decided 19 Oct 2026: OpenFreeMap tiles, and MapLibre on by default (`FeatureFlags.mapLibre`).
 - Decided 19 Oct 2026: **the satellite / hybrid map look is hidden** while MapLibre is on (OpenFreeMap has no
-  imagery). Settings shows no map-look choice, and the pin picker (still Google) draws the standard map; a choice
-  saved earlier is kept, so it returns with `MAP_LIBRE=false`. If satellite is wanted back: MapTiler has satellite
+  imagery). Settings shows no map-look choice; a choice saved earlier is kept, so it returns with
+  `MAP_LIBRE=false`. If satellite is wanted back: MapTiler has satellite
   and hybrid styles (paid for commercial use); Esri World Imagery needs an ArcGIS account and its terms; Sentinel-2
   cloudless is non-commercial only and too coarse for streets.
 
 ## Not built on the MapLibre map
 - **Flying capsules on the first open and on the zoom buttons** (M-03/M-04's sprites): MapLibre's own symbol fade
   (0.3 s) replaces them; capsules fade in as their tiles arrive, bubbles crossfade when they split or merge.
-- **The capsule creation pin picker** still uses Google Maps (its own small map; not part of this mission).
 
 ## Not measured
 - **The final "After" numbers under the fingers** (PERFORMANCE.md): `tool/dev/map_gesture.sh after 3`

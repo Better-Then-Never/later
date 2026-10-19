@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:later/core/errors/app_failure.dart';
 import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/capsule.dart';
@@ -186,6 +187,19 @@ void main() {
       c.dispose();
     },
   );
+
+  test('the circle the pin may move in is 1 km round, closed', () {
+    const here = GeoPosition(52.2297, 21.0122);
+    final ring = PinPickerSheet.ring(here, 1000);
+    expect(ring, hasLength(257));
+    expect(ring.last, ring.first, reason: 'a closed GeoJSON ring');
+    for (final [lng, lat] in ring) {
+      expect(
+        Geolocator.distanceBetween(here.latitude, here.longitude, lat, lng),
+        closeTo(1000, 5),
+      );
+    }
+  });
 
   test('the pin moves within 1 km of where the phone is', () async {
     const here = GeoPosition(52.2297, 21.0122);
