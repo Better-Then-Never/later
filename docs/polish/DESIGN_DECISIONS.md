@@ -83,3 +83,6 @@ timings.
 - **D-07 No fake settings.** Language and App appearance were removed rather than kept as "coming soon": the
   app has no translations and no dark palette (IDEAS_NOT_DONE.md). Rows for a support email, privacy policy and
   terms appear only once the links exist (`lib/core/config/app_links.dart`, BLOCKERS.md B-01/B-02).
+- **D-08 A fade behind the system buttons, not a blur.** The page colour fades in behind Android's navigation
+  bar on the tab pages (`SystemBarFade`, G-03): 80 dp with three buttons, a 24 dp eased edge, 97 % at the bottom,
+  the same in light and dark. The owner chose it over a frosted strip in Figma (20 Oct 2026); it costs nothing.

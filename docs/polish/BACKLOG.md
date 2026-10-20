@@ -65,4 +65,4 @@ Status: `UNCHECKED` → `LIKELY_OPEN` / `LIKELY_FIXED` / `NEEDS_PHONE` (static t
 |---|---|---|---|
 | G-01 | No emoji in the UI; Material placeholders recorded in PLACEHOLDER_ICONS.md | LIKELY_OPEN | emoji in 11 files (streak flame, passport, profile, ...) |
 | G-02 | Cyrillic font close to Inria Sans (decision gate, comparison first) | LIKELY_OPEN | |
-| G-03 | Frosted surface behind the Android navigation bar | LIKELY_OPEN | |
+| G-03 | Frosted surface behind the Android navigation bar | NEEDS_PHONE | the owner chose a soft fade over the frosted strip (Figma page 11): the page colour fades in behind the system buttons under the tab bar, no blur; checked on the emulator, the phone check is the owner's (LOG.md) |
