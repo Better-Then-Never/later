@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../app/entitlements_store.dart';
@@ -5,18 +7,19 @@ import '../../../app/entitlements_store.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/gallery_service.dart';
 import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
-import '../../../shared/widgets/capsule/capsule_date_pill.dart';
-import '../../../shared/widgets/capsule/capsule_place_pill.dart';
+import '../../../shared/widgets/capsule/capsule_place_chip.dart';
 import '../../../shared/styles/box_decorations.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_text.dart';
@@ -26,7 +29,6 @@ import '../../../shared/widgets/photo_viewer.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/options_menu.dart';
-import '../../../shared/widgets/profile_page_divider.dart';
 import '../../map/current_location.dart';
 import '../../messages/widgets/group_friends_picker.dart';
 import '../../settings/device_settings_store.dart';
@@ -38,7 +40,6 @@ import 'creation_draft.dart';
 import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
-import 'widgets/capsule_image_preview.dart';
 import 'widgets/loop_frame_strip.dart';
 import 'widgets/open_date_calendar.dart';
 import 'widgets/pin_picker_sheet.dart';
@@ -320,85 +321,56 @@ class _CapsuleCreationView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          DefaultText(
-                            l10n.capsulesCreationPreview,
-                            fontSize: screen.width * 0.05,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          // The capsule as it will look (capsule v3): the
+                          // photo as a square, the title and its place, the
+                          // words, when it is left and opens.
                           Container(
                             width: screen.width,
-                            height: screen.height * 0.4,
                             decoration: BoxDecorations.whiteCard(context),
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                  width: screen.width * 0.45,
-                                  height: double.infinity,
-                                  // A look at the whole photo before saving.
-                                  child: GestureDetector(
-                                    onTap: () => PhotoViewer.show(
-                                      context,
-                                      Uri.file(controller.imagePath).toString(),
-                                      heroTag: controller.isLoop
-                                          ? null
-                                          : 'creation-photo',
-                                    ),
-                                    child: controller.isLoop
-                                        ? ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              AppRadii.l,
-                                            ),
-                                            child: LoopPicture(
-                                              sources: controller.framePaths,
-                                              frameDelay: Duration(
-                                                milliseconds:
-                                                    controller.frameDelayMs,
-                                              ),
-                                            ),
-                                          )
-                                        : Hero(
-                                            tag: 'creation-photo',
-                                            child: CapsuleImagePreview(
-                                              imagePath: controller.imagePath,
-                                            ),
-                                          ),
+                                _PreviewPhoto(
+                                  controller: controller,
+                                  onRetake: () => AppRoutes.toCamera(
+                                    context,
+                                    replace: true,
+                                    privacy: initialPrivacy,
+                                    recipientId: recipientId,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      CapsuleCreationTitleInput(
-                                        controller: controller.titleController,
-                                      ),
-                                      ProfilePageDivider(
-                                        width: screen.width * 0.5,
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: CapsuleCreationTitleInput(
+                                              controller:
+                                                  controller.titleController,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          // A tap moves the pin (B4).
+                                          CapsulePlaceChip.at(
+                                            position: controller.position,
+                                            label: l10n.capsulesPinTitle,
+                                            onTap: () => _choosePlace(context),
+                                          ),
+                                        ],
                                       ),
                                       CapsuleCreationDescriptionInputField(
                                         controller:
                                             controller.descriptionController,
                                       ),
-                                      CapsuleDatePill(
-                                        height: screen.height * 0.045,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      // A tap moves the pin (B4).
-                                      Semantics(
-                                        button: controller.position != null,
-                                        hint: l10n.capsulesPinTitle,
-                                        child: GestureDetector(
-                                          onTap: () => _choosePlace(context),
-                                          child: CapsulePlacePill(
-                                            height: screen.height * 0.05,
-                                            iconPath: AppIcons.capsuleLocation,
-                                            position: controller.position,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
+                                      _PreviewDates(openAt: openAt),
                                     ],
                                   ),
                                 ),
@@ -565,6 +537,122 @@ class _CapsuleCreationView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The photo on the preview card, a square as the opened capsule shows it
+/// (a loop plays); a tap shows it whole, Retake goes back to the camera.
+class _PreviewPhoto extends StatelessWidget {
+  const _PreviewPhoto({required this.controller, required this.onRetake});
+
+  final CapsuleCreationController controller;
+  final VoidCallback onRetake;
+
+  @override
+  Widget build(BuildContext context) {
+    final loop = controller.isLoop;
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // A look at the whole photo before saving.
+          GestureDetector(
+            onTap: () => PhotoViewer.show(
+              context,
+              Uri.file(controller.imagePath).toString(),
+              heroTag: loop ? null : 'creation-photo',
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadii.m),
+              child: loop
+                  ? LoopPicture(
+                      sources: controller.framePaths,
+                      frameDelay: Duration(
+                        milliseconds: controller.frameDelayMs,
+                      ),
+                    )
+                  : Hero(
+                      tag: 'creation-photo',
+                      child: Image.file(
+                        File(controller.imagePath),
+                        fit: BoxFit.cover,
+                        // Decoded at the card's size, not the camera's.
+                        cacheWidth:
+                            (MediaQuery.sizeOf(context).width *
+                                    MediaQuery.devicePixelRatioOf(context))
+                                .round(),
+                      ),
+                    ),
+            ),
+          ),
+          Positioned(
+            left: 10,
+            top: 10,
+            child: Semantics(
+              button: true,
+              child: AppPressable(
+                child: GestureDetector(
+                  onTap: onRetake,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: AppColors.mediaScrim,
+                      borderRadius: AppRadii.lCircular,
+                    ),
+                    child: Text(
+                      context.l10n.capsulesCreationRetake,
+                      style: const TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.onMedia,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "Left today · opens anytime" (or the day it opens) under the words, as
+/// the opened capsule shows its dates.
+class _PreviewDates extends StatelessWidget {
+  const _PreviewDates({required this.openAt});
+
+  final DateTime? openAt;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final opens = openAt;
+    return Row(
+      children: [
+        Image.asset(AppIcons.capsuleTimer, width: 16),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            opens == null
+                ? l10n.capsulesCreationLeftToday
+                : l10n.capsulesCreationLeftTodayOpens(
+                    AppDates.medium(opens, l10n.localeName),
+                  ),
+            style: AppTextStyles.body.copyWith(
+              fontSize: 13,
+              color: context.palette.textSecondary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

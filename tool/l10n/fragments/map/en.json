@@ -11,10 +11,6 @@
   "@mapLocationUnknown": {
     "description": "Toast on the map when no position could be found although location is allowed."
   },
-  "mapCapsuleReady": "Check out what's inside!",
-  "@mapCapsuleReady": {
-    "description": "Line in the small window above a capsule pin when the capsule is already open."
-  },
   "mapCapsuleOpensIn": "Opens in {time}",
   "@mapCapsuleOpensIn": {
     "description": "Countdown in the small window above a locked capsule's pin. {time} is a compact duration made of the mapDuration* parts, e.g. '2d 5h 30m 15s'.",
@@ -72,10 +68,6 @@
   "mapCapsuleLocked": "Locked",
   "@mapCapsuleLocked": {
     "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."
-  },
-  "mapCapsuleNoDescription": "This capsule has no description.",
-  "@mapCapsuleNoDescription": {
-    "description": "Shown in the capsule card opened from the map when the capsule has no description."
   },
   "mapMyLocation": "My location",
   "mapFirstCapsuleTitle": "Leave your first capsule",
@@ -168,5 +160,61 @@
   "mapCapsuleUnavailable": "This capsule is no longer available",
   "@mapCapsuleUnavailable": {
     "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
+  },
+  "mapCapsuleOpenedToday": "Opened today",
+  "@mapCapsuleOpenedToday": {
+    "description": "The map card of a capsule that opened today."
+  },
+  "mapCapsuleOpenedYesterday": "Opened yesterday",
+  "@mapCapsuleOpenedYesterday": {
+    "description": "The map card of a capsule that opened yesterday."
+  },
+  "mapCapsuleOpenedOn": "Opened on {date}",
+  "@mapCapsuleOpenedOn": {
+    "description": "The map card of a capsule that opened earlier. {date} like \"14 Jun 2026\".",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
+  },
+  "mapCapsuleOpenAnytime": "Open anytime",
+  "@mapCapsuleOpenAnytime": {
+    "description": "The map card of a capsule without an opening date."
+  },
+  "mapCapsuleOpensOn": "Opens on {date}",
+  "@mapCapsuleOpensOn": {
+    "description": "Under the countdown of a locked capsule on its map card. {date} like \"1 Dec 2026\".",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "1 Dec 2026"
+      }
+    }
+  },
+  "mapCapsuleLeftBy": "Left by {name} · {date}",
+  "@mapCapsuleLeftBy": {
+    "description": "Second line of a locked capsule's map card: who left it and when.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      },
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
+  "mapCapsuleLeftOn": "Left {date}",
+  "@mapCapsuleLeftOn": {
+    "description": "Second line of a map card when the author is not shown: when it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
   }
 }

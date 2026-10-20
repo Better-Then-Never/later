@@ -431,6 +431,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authWelcomeTo => 'Добро пожаловать в';
 
   @override
+  String get capsulesAuthorChip => 'Автор';
+
+  @override
   String capsulesBy(String name) {
     return 'Автор: $name';
   }
@@ -563,20 +566,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesComments => 'Комментарии';
 
   @override
-  String capsulesCommentsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count комментария',
-      many: '$count комментариев',
-      few: '$count комментария',
-      one: '$count комментарий',
-      zero: 'Комментировать',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get capsulesCommentsEarlier => 'Показать более ранние';
 
   @override
@@ -586,10 +575,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCommentsEmptyHint => 'Напишите первым.';
 
   @override
+  String capsulesCommentsEmptyHintFor(String name) {
+    return '$name увидит то, что вы здесь напишете.';
+  }
+
+  @override
+  String capsulesCommentsPill(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Комментарии · $count',
+      zero: 'Комментировать',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesComposerDone => 'Готово';
 
   @override
   String get capsulesComposerTitle => 'Описание';
+
+  @override
+  String get capsulesCopied => 'Скопировано';
+
+  @override
+  String get capsulesCopyText => 'Копировать текст';
 
   @override
   String get capsulesCreationAllowComments => 'Разрешить комментарии';
@@ -630,13 +641,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCreationDescriptionHint => 'Добавьте описание...';
 
   @override
+  String get capsulesCreationLeftToday =>
+      'Оставлена сегодня · открыть можно в любое время';
+
+  @override
+  String capsulesCreationLeftTodayOpens(String date) {
+    return 'Оставлена сегодня · откроется $date';
+  }
+
+  @override
   String get capsulesCreationOpenAt => 'Откроется';
 
   @override
-  String get capsulesCreationPreview => 'Предпросмотр капсулы';
+  String get capsulesCreationPrivacy => 'Видимость';
 
   @override
-  String get capsulesCreationPrivacy => 'Видимость';
+  String get capsulesCreationRetake => 'Переснять';
 
   @override
   String get capsulesCreationSelectDate => 'Выберите дату';
@@ -661,6 +681,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesCreationTitleHint => 'Название...';
+
+  @override
+  String capsulesDatesLeft(String date) {
+    return 'Оставлена $date';
+  }
+
+  @override
+  String capsulesDatesLeftOpened(String left, String opened) {
+    return 'Оставлена $left · открыта $opened';
+  }
 
   @override
   String get capsulesDefaultTitle => 'Капсула';
@@ -706,6 +736,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesLoopMark => 'Луп';
+
+  @override
+  String get capsulesMore => 'Ещё';
 
   @override
   String get capsulesOpenInMonth => 'Через месяц';
@@ -758,6 +791,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesQuickReply => 'Ответить автору';
 
   @override
+  String get capsulesQuickReplyAttached => 'прикреплена к сообщению';
+
+  @override
   String capsulesQuickReplyHint(String name) {
     return 'Напишите $name…';
   }
@@ -779,8 +815,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesReply => 'Ответить';
 
   @override
-  String capsulesReplyHint(String name) {
-    return 'Ответ для $name...';
+  String capsulesReplyTo(String name) {
+    return 'Ответить: $name';
+  }
+
+  @override
+  String capsulesReplyingTo(String name) {
+    return 'Ответ для: $name';
   }
 
   @override
@@ -791,6 +832,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesReportCapsule => 'Пожаловаться на капсулу';
+
+  @override
+  String get capsulesReportHint =>
+      'Команда Later посмотрит. Автор не узнает, кто пожаловался.';
 
   @override
   String get capsulesReportNudity => 'Обнажённость';
@@ -821,6 +866,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String capsulesShareMessage(String title, String link) {
     return 'Капсула времени в Later: $title\n$link';
   }
+
+  @override
+  String get capsulesShowOnMap => 'Показать на карте';
 
   @override
   String get capsulesSpeedFast => 'Быстро';
@@ -1391,13 +1439,34 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String mapCapsuleLeftBy(String name, String date) {
+    return 'От $name · $date';
+  }
+
+  @override
+  String mapCapsuleLeftOn(String date) {
+    return 'Оставлена $date';
+  }
+
+  @override
   String get mapCapsuleLocked => 'Закрыта';
 
   @override
-  String get mapCapsuleNoDescription => 'У этой капсулы нет описания.';
+  String get mapCapsuleOpen => 'Открыть';
 
   @override
-  String get mapCapsuleOpen => 'Открыть';
+  String get mapCapsuleOpenAnytime => 'Можно открыть в любое время';
+
+  @override
+  String mapCapsuleOpenedOn(String date) {
+    return 'Открыта $date';
+  }
+
+  @override
+  String get mapCapsuleOpenedToday => 'Открыта сегодня';
+
+  @override
+  String get mapCapsuleOpenedYesterday => 'Открыта вчера';
 
   @override
   String mapCapsuleOpensIn(String time) {
@@ -1405,7 +1474,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get mapCapsuleReady => 'Посмотрите, что внутри!';
+  String mapCapsuleOpensOn(String date) {
+    return 'Откроется $date';
+  }
 
   @override
   String get mapCapsuleUnavailable => 'Эта капсула больше недоступна';

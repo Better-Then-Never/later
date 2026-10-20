@@ -49,3 +49,11 @@ material-icon lib/shared/widgets/user/user_name_and_username.dart Icons.verified
 material-icon lib/shared/widgets/user/verified_name.dart Icons.verified  # verified badge
 # Locked capsule on a friend's profile: the same symbol as the history list.
 material-icon lib/features/friends/widgets/profile/friend_capsules_strip.dart Icons.lock_clock  # locked capsule
+
+# Capsule v3 reactions: placeholders until the owner draws them (docs/polish/PLACEHOLDER_ICONS.md)
+material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.favorite_border  # placeholder (reaction: heart)
+material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.sentiment_very_satisfied  # placeholder (reaction: laugh)
+material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.sentiment_neutral  # placeholder (reaction: wow)
+material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.sentiment_dissatisfied  # placeholder (reaction: sad)
+material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.local_fire_department_outlined  # placeholder (reaction: fire)
+material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.celebration_outlined  # placeholder (reaction: clap)

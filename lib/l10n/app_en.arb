@@ -304,6 +304,10 @@
   "@authWelcomeTo": {
     "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
   },
+  "capsulesAuthorChip": "Author",
+  "@capsulesAuthorChip": {
+    "description": "Small chip next to the name of the capsule's author in its comments."
+  },
   "capsulesBy": "By {name}",
   "@capsulesBy": {
     "description": "Screen reader label of the author line on a capsule (opens their profile).",
@@ -452,21 +456,31 @@
   "capsulesCommentHint": "Add a comment...",
   "capsulesCommentTooLong": "Comments can be up to 500 characters",
   "capsulesComments": "Comments",
-  "capsulesCommentsCount": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
-  "@capsulesCommentsCount": {
-    "description": "Button under a capsule that opens its comments.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "capsulesCommentsEarlier": "Show earlier comments",
   "@capsulesCommentsEarlier": {
     "description": "First row of a long comment thread: loads older comments."
   },
   "capsulesCommentsEmpty": "No comments yet",
   "capsulesCommentsEmptyHint": "Be the first to say something.",
+  "capsulesCommentsEmptyHintFor": "{name} will see what you write here.",
+  "@capsulesCommentsEmptyHintFor": {
+    "description": "Under \"No comments yet\": who will read the first comment.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "capsulesCommentsPill": "{count, plural, =0{Comment} other{Comments · {count}}}",
+  "@capsulesCommentsPill": {
+    "description": "The pill at the bottom of an opened capsule that opens its comments.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "capsulesComposerDone": "Done",
   "@capsulesComposerDone": {
     "description": "The capsule description composer (a sheet over creation)."
@@ -474,6 +488,14 @@
   "capsulesComposerTitle": "Description",
   "@capsulesComposerTitle": {
     "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesCopied": "Copied",
+  "@capsulesCopied": {
+    "description": "Toast after a comment's text was copied."
+  },
+  "capsulesCopyText": "Copy text",
+  "@capsulesCopyText": {
+    "description": "In the menu of a long-pressed comment."
   },
   "capsulesCreationAllowComments": "Allow comments",
   "capsulesCreationAllowReactions": "Allow reactions",
@@ -504,17 +526,31 @@
   "@capsulesCreationDescriptionHint": {
     "description": "Hint in the capsule description field."
   },
+  "capsulesCreationLeftToday": "Left today · opens anytime",
+  "@capsulesCreationLeftToday": {
+    "description": "Under a new capsule's title: it is left today and opens anytime."
+  },
+  "capsulesCreationLeftTodayOpens": "Left today · opens {date}",
+  "@capsulesCreationLeftTodayOpens": {
+    "description": "Under a new capsule's title: it is left today and opens on {date}.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
+  },
   "capsulesCreationOpenAt": "Open At",
   "@capsulesCreationOpenAt": {
     "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
   },
-  "capsulesCreationPreview": "Capsule Preview",
-  "@capsulesCreationPreview": {
-    "description": "Section title above the card that shows how the capsule will look."
-  },
   "capsulesCreationPrivacy": "Privacy",
   "@capsulesCreationPrivacy": {
     "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
+  },
+  "capsulesCreationRetake": "Retake",
+  "@capsulesCreationRetake": {
+    "description": "Chip on the photo of a new capsule: back to the camera."
   },
   "capsulesCreationSelectDate": "Select date",
   "@capsulesCreationSelectDate": {
@@ -547,6 +583,30 @@
   "capsulesCreationTitleHint": "Add Title...",
   "@capsulesCreationTitleHint": {
     "description": "Hint in the capsule title field (one line, large bold font, narrow: keep it very short)."
+  },
+  "capsulesDatesLeft": "Left {date}",
+  "@capsulesDatesLeft": {
+    "description": "An opened capsule without an opening date: the day it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2025"
+      }
+    }
+  },
+  "capsulesDatesLeftOpened": "Left {left} · opened {opened}",
+  "@capsulesDatesLeftOpened": {
+    "description": "An opened capsule: the day it was left and the day it opened.",
+    "placeholders": {
+      "left": {
+        "type": "String",
+        "example": "14 Jun 2025"
+      },
+      "opened": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
   },
   "capsulesDefaultTitle": "Capsule",
   "@capsulesDefaultTitle": {
@@ -603,6 +663,10 @@
   "@capsulesLoopMark": {
     "description": "Screen reader label of the mark on a loop capsule's picture."
   },
+  "capsulesMore": "More",
+  "@capsulesMore": {
+    "description": "Spoken name of the ⋯ button of an opened capsule."
+  },
   "capsulesOpenInMonth": "In a month",
   "capsulesOpenInWeek": "In a week",
   "capsulesOpenInYear": "In a year",
@@ -652,6 +716,10 @@
   "@capsulesQuickReply": {
     "description": "Screen reader label of the reply button on someone's capsule."
   },
+  "capsulesQuickReplyAttached": "goes with your message",
+  "@capsulesQuickReplyAttached": {
+    "description": "Under the capsule's title in the quick reply card: the capsule is sent along."
+  },
   "capsulesQuickReplyHint": "Write to {name}…",
   "@capsulesQuickReplyHint": {
     "description": "Hint of the quick reply field (the capsule's author).",
@@ -683,17 +751,33 @@
   },
   "capsulesReactionFailed": "Could not save your reaction",
   "capsulesReply": "Reply",
-  "capsulesReplyHint": "Reply to {name}...",
-  "@capsulesReplyHint": {
+  "capsulesReplyTo": "Reply to {name}",
+  "@capsulesReplyTo": {
+    "description": "The pill at the bottom of someone else's capsule that writes to them in chat, and the title of that card.",
     "placeholders": {
       "name": {
-        "type": "String"
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "capsulesReplyingTo": "Replying to {name}",
+  "@capsulesReplyingTo": {
+    "description": "Chip above the comment field while replying to someone.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Erin"
       }
     }
   },
   "capsulesReport": "Report",
   "capsulesReportAbuse": "Harassment or hate",
   "capsulesReportCapsule": "Report capsule",
+  "capsulesReportHint": "The Later team will look at it. The author is not told who reported it.",
+  "@capsulesReportHint": {
+    "description": "Under \"What is wrong with it?\" when reporting."
+  },
   "capsulesReportNudity": "Nudity",
   "capsulesReportOther": "Something else",
   "capsulesReportPrivacy": "Private information",
@@ -718,6 +802,10 @@
         "example": "https://later-da778.web.app/?capsuleId=abc"
       }
     }
+  },
+  "capsulesShowOnMap": "Show on the map",
+  "@capsulesShowOnMap": {
+    "description": "In the ⋯ menu of an opened capsule: closes it and centres the map on its pin."
   },
   "capsulesSpeedFast": "Fast",
   "@capsulesSpeedFast": {
@@ -1222,17 +1310,59 @@
       }
     }
   },
+  "mapCapsuleLeftBy": "Left by {name} · {date}",
+  "@mapCapsuleLeftBy": {
+    "description": "Second line of a locked capsule's map card: who left it and when.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      },
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
+  "mapCapsuleLeftOn": "Left {date}",
+  "@mapCapsuleLeftOn": {
+    "description": "Second line of a map card when the author is not shown: when it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
   "mapCapsuleLocked": "Locked",
   "@mapCapsuleLocked": {
     "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."
   },
-  "mapCapsuleNoDescription": "This capsule has no description.",
-  "@mapCapsuleNoDescription": {
-    "description": "Shown in the capsule card opened from the map when the capsule has no description."
-  },
   "mapCapsuleOpen": "Open",
   "@mapCapsuleOpen": {
     "description": "Button in the window above an open capsule's pin: shows the capsule. A verb."
+  },
+  "mapCapsuleOpenAnytime": "Open anytime",
+  "@mapCapsuleOpenAnytime": {
+    "description": "The map card of a capsule without an opening date."
+  },
+  "mapCapsuleOpenedOn": "Opened on {date}",
+  "@mapCapsuleOpenedOn": {
+    "description": "The map card of a capsule that opened earlier. {date} like \"14 Jun 2026\".",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
+  },
+  "mapCapsuleOpenedToday": "Opened today",
+  "@mapCapsuleOpenedToday": {
+    "description": "The map card of a capsule that opened today."
+  },
+  "mapCapsuleOpenedYesterday": "Opened yesterday",
+  "@mapCapsuleOpenedYesterday": {
+    "description": "The map card of a capsule that opened yesterday."
   },
   "mapCapsuleOpensIn": "Opens in {time}",
   "@mapCapsuleOpensIn": {
@@ -1244,9 +1374,15 @@
       }
     }
   },
-  "mapCapsuleReady": "Check out what's inside!",
-  "@mapCapsuleReady": {
-    "description": "Line in the small window above a capsule pin when the capsule is already open."
+  "mapCapsuleOpensOn": "Opens on {date}",
+  "@mapCapsuleOpensOn": {
+    "description": "Under the countdown of a locked capsule on its map card. {date} like \"1 Dec 2026\".",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "1 Dec 2026"
+      }
+    }
   },
   "mapCapsuleUnavailable": "This capsule is no longer available",
   "@mapCapsuleUnavailable": {

@@ -2,7 +2,6 @@
   "mapLocationServiceOff": "Включите геолокацию, чтобы видеть капсулы рядом с вами",
   "mapLocationDenied": "Разрешите доступ к геопозиции, чтобы видеть капсулы рядом с вами",
   "mapLocationUnknown": "Не удалось определить вашу геопозицию",
-  "mapCapsuleReady": "Посмотрите, что внутри!",
   "mapCapsuleOpensIn": "Откроется через {time}",
   "mapDurationDays": "{count}д",
   "mapDurationHours": "{count}ч",
@@ -10,7 +9,6 @@
   "mapDurationSeconds": "{count}с",
   "mapCapsuleOpen": "Открыть",
   "mapCapsuleLocked": "Закрыта",
-  "mapCapsuleNoDescription": "У этой капсулы нет описания.",
   "mapMyLocation": "Моё местоположение",
   "mapFirstCapsuleTitle": "Оставьте первую капсулу",
   "mapFirstCapsuleBody": "Сделайте фото здесь и выберите, когда оно откроется.",
@@ -34,5 +32,12 @@
   "mapCreditsDescription": "Карта построена на этих данных. Нажмите на источник, чтобы открыть его.",
   "mapCreditsImprove": "Улучшить карту",
   "mapCreditsRenderer": "Карта отрисована с помощью MapLibre",
-  "mapCapsuleUnavailable": "Эта капсула больше недоступна"
+  "mapCapsuleUnavailable": "Эта капсула больше недоступна",
+  "mapCapsuleOpenedToday": "Открыта сегодня",
+  "mapCapsuleOpenedYesterday": "Открыта вчера",
+  "mapCapsuleOpenedOn": "Открыта {date}",
+  "mapCapsuleOpenAnytime": "Можно открыть в любое время",
+  "mapCapsuleOpensOn": "Откроется {date}",
+  "mapCapsuleLeftBy": "От {name} · {date}",
+  "mapCapsuleLeftOn": "Оставлена {date}"
 }

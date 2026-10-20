@@ -12,6 +12,9 @@ import 'package:later/features/map/map_focus.dart';
 import 'package:later/data/models/geo_position.dart';
 import 'package:later/features/map/widgets/capsule_info_panel.dart';
 
+import 'package:later/data/models/user_profile.dart';
+
+import '../helpers/capsule_host.dart';
 import '../helpers/test_app.dart';
 import 'package:later/features/map/map_filter.dart';
 
@@ -36,10 +39,11 @@ Future<void> _loadAppFont() async {
   await loader.load();
 }
 
-/// A capsule that opens [opensIn] from now (already open when null).
-Capsule _panelCapsule({Duration? opensIn}) => Capsule(
+/// A capsule that opens [opensIn] from now (already open when null), left
+/// by [owner].
+Capsule _panelCapsule({Duration? opensIn, String owner = 'me'}) => Capsule(
   id: 'c',
-  ownerId: 'me',
+  ownerId: owner,
   title: 'Picnic by the river',
   privacy: CapsulePrivacy.public,
   color: CapsuleColor.red,
@@ -47,23 +51,27 @@ Capsule _panelCapsule({Duration? opensIn}) => Capsule(
   openAt: opensIn == null ? null : DateTime.now().add(opensIn),
 );
 
-/// The info panel at the size the map gives it on a 320 dp phone.
+/// The info panel at the size the map gives it on a 320 dp phone (the card
+/// spans the width less 16 dp on each side).
 Widget _panel(
   Capsule capsule, {
   Locale locale = const Locale('en'),
   bool dark = false,
   VoidCallback? onMoreInfo,
-}) => testApp(
-  locale: locale,
-  theme: dark ? AppTheme.dark : AppTheme.light,
-  home: Scaffold(
-    body: Center(
-      child: SizedBox(
-        width: 320 * 0.58,
-        height: CapsuleInfoPanel.minHeight,
-        child: CapsuleInfoPanel(
-          capsule: capsule,
-          onMoreInfo: onMoreInfo ?? () {},
+}) => capsuleHost(
+  people: const [UserProfile(uid: 'bob', name: 'Bob Stone', username: 'bob')],
+  child: testApp(
+    locale: locale,
+    theme: dark ? AppTheme.dark : AppTheme.light,
+    home: Scaffold(
+      body: Center(
+        child: SizedBox(
+          width: 320 - 32,
+          height: CapsuleInfoPanel.minHeight,
+          child: CapsuleInfoPanel(
+            capsule: capsule,
+            onMoreInfo: onMoreInfo ?? () {},
+          ),
         ),
       ),
     ),
@@ -86,7 +94,56 @@ void main() {
       );
       expect(find.textContaining('Opens in 2d 3h '), findsOneWidget);
       expect(find.text('Locked'), findsOneWidget);
-      expect(find.text('16.10.2026'), findsOneWidget);
+      // Your own capsule: when you left it, and the day it opens.
+      expect(find.text('Left 16 Oct 2026'), findsOneWidget);
+      expect(find.textContaining('Opens on '), findsOneWidget);
+      // A locked capsule never shows its photo: no button to open it.
+      expect(find.byType(ElevatedButton), findsNothing);
+    });
+
+    testWidgets('names who left a locked capsule', (tester) async {
+      await tester.pumpWidget(
+        _panel(_panelCapsule(owner: 'bob', opensIn: _locked)),
+      );
+      await tester.pump();
+      expect(find.text('Left by Bob Stone · 16 Oct 2026'), findsOneWidget);
+    });
+
+    test('the wait line runs from the day it was left to the day it opens', () {
+      final c = Capsule(
+        id: 'w',
+        ownerId: 'me',
+        title: 'w',
+        privacy: CapsulePrivacy.public,
+        color: CapsuleColor.red,
+        createdAt: DateTime(2026, 1, 1),
+        openAt: DateTime(2026, 1, 11),
+      );
+      expect(CapsuleInfoPanel.waitDone(c, DateTime(2026, 1, 1)), 0);
+      expect(
+        CapsuleInfoPanel.waitDone(c, DateTime(2026, 1, 6)),
+        closeTo(0.5, 0.001),
+      );
+      expect(CapsuleInfoPanel.waitDone(c, DateTime(2027, 1, 1)), 1);
+    });
+
+    test('says when an open capsule opened', () {
+      final l10n = lookupAppLocalizations(const Locale('en'));
+      final now = DateTime(2026, 6, 14, 18);
+      Capsule opened(DateTime? at) => Capsule(
+        id: 'o',
+        ownerId: 'me',
+        title: 'o',
+        privacy: CapsulePrivacy.public,
+        color: CapsuleColor.red,
+        openAt: at,
+      );
+      String label(DateTime? at) =>
+          CapsuleInfoPanel.openedLabel(opened(at), now, l10n);
+      expect(label(null), 'Open anytime');
+      expect(label(DateTime(2026, 6, 14, 9)), 'Opened today');
+      expect(label(DateTime(2026, 6, 13, 23)), 'Opened yesterday');
+      expect(label(DateTime(2026, 6, 1)), 'Opened on 1 Jun 2026');
     });
 
     test('the countdown shows seconds only in the last minute (M-10)', () {
@@ -122,7 +179,7 @@ void main() {
       await tester.pumpWidget(
         _panel(_panelCapsule(), onMoreInfo: () => opened++),
       );
-      expect(find.text("Check out what's inside!"), findsOneWidget);
+      expect(find.text('Open anytime'), findsOneWidget);
       await tester.tap(find.text('Open'));
       expect(opened, 1);
     });
@@ -309,33 +366,37 @@ void main() {
         ..physicalSize = const Size(411, 914)
         ..devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        testApp(
-          home: MediaQuery(
-            data: MediaQueryData(
-              size: const Size(411, 914),
-              textScaler: scaler,
-            ),
-            child: Scaffold(
-              body: Builder(
-                builder: (context) => Center(
-                  child: SizedBox(
-                    width: 379,
-                    height: CapsuleInfoPanel.heightFor(context),
-                    child: CapsuleInfoPanel(
-                      capsule: _panelCapsule(),
-                      onMoreInfo: () {},
+      for (final opensIn in [null, _locked]) {
+        await tester.pumpWidget(
+          capsuleHost(
+            child: testApp(
+              home: MediaQuery(
+                data: MediaQueryData(
+                  size: const Size(411, 914),
+                  textScaler: scaler,
+                ),
+                child: Scaffold(
+                  body: Builder(
+                    builder: (context) => Center(
+                      child: SizedBox(
+                        width: 379,
+                        height: CapsuleInfoPanel.heightFor(context),
+                        child: CapsuleInfoPanel(
+                          capsule: _panelCapsule(opensIn: opensIn),
+                          onMoreInfo: () {},
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pump();
-      expect(tester.takeException(), isNull, reason: 'no overflow');
-      expect(find.text('Open'), findsOneWidget);
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull, reason: 'no overflow $opensIn');
+        expect(find.text(opensIn == null ? 'Open' : 'Locked'), findsOneWidget);
+      }
     });
   }
 }

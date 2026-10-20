@@ -46,6 +46,9 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Spam'));
     await tester.pumpAndSettle();
+    expect(social.reports, isEmpty, reason: 'a reason alone sends nothing');
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Report'));
+    await tester.pumpAndSettle();
     expect(social.reports.single['targetPath'], 'users/bob');
     expect(social.reports.single['target'], ReportTarget.user);
     expect(social.reports.single['reason'], ReportReason.spam);
@@ -93,6 +96,8 @@ void main() {
     await tester.tap(find.text('Report'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Spam'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Report'));
     await tester.pumpAndSettle();
     expect(social.reports.single['targetPath'], 'users/leo');
     await tester.pump(const Duration(seconds: 5));

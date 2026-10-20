@@ -2,7 +2,6 @@
   "mapLocationServiceOff": "Włącz lokalizację, żeby widzieć kapsuły w pobliżu",
   "mapLocationDenied": "Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu",
   "mapLocationUnknown": "Nie udało się ustalić twojej lokalizacji",
-  "mapCapsuleReady": "Zobacz, co jest w środku!",
   "mapCapsuleOpensIn": "Otworzy się za {time}",
   "mapDurationDays": "{count}d",
   "mapDurationHours": "{count}h",
@@ -10,7 +9,6 @@
   "mapDurationSeconds": "{count}s",
   "mapCapsuleOpen": "Otwórz",
   "mapCapsuleLocked": "Zamknięta",
-  "mapCapsuleNoDescription": "Ta kapsuła nie ma opisu.",
   "mapMyLocation": "Moja lokalizacja",
   "mapFirstCapsuleTitle": "Zostaw pierwszą kapsułę",
   "mapFirstCapsuleBody": "Zrób tu zdjęcie i wybierz, kiedy się otworzy.",
@@ -34,5 +32,12 @@
   "mapCreditsDescription": "Mapa powstaje z tych źródeł. Dotknij, aby je otworzyć.",
   "mapCreditsImprove": "Popraw tę mapę",
   "mapCreditsRenderer": "Mapa wyświetlana przez MapLibre",
-  "mapCapsuleUnavailable": "Ta kapsuła nie jest już dostępna"
+  "mapCapsuleUnavailable": "Ta kapsuła nie jest już dostępna",
+  "mapCapsuleOpenedToday": "Otwarta dzisiaj",
+  "mapCapsuleOpenedYesterday": "Otwarta wczoraj",
+  "mapCapsuleOpenedOn": "Otwarta {date}",
+  "mapCapsuleOpenAnytime": "Otwórz, kiedy chcesz",
+  "mapCapsuleOpensOn": "Otworzy się {date}",
+  "mapCapsuleLeftBy": "Od {name} · {date}",
+  "mapCapsuleLeftOn": "Zostawiona {date}"
 }

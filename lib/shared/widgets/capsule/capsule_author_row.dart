@@ -37,6 +37,53 @@ class CapsuleAuthorRow extends StatelessWidget {
     ];
   }
 
+  /// The names [capsule] shows to the viewer ("Bob Stone", "Bob Stone with
+  /// Carol", "With Carol"), or null when it shows nobody or the names are
+  /// still loading. It listens to [UserDirectory]: call it from a build.
+  static String? namesOf(BuildContext context, Capsule capsule) {
+    final me = context.read<SessionController>().uid;
+    final showOwner = shows(capsule, me);
+    final others = coAuthorsShown(capsule, me);
+    if (!showOwner && others.isEmpty) return null;
+    final (name, withNames) = _names(context, capsule, showOwner, others);
+    final l10n = context.l10n;
+    if (showOwner) {
+      if (name.isEmpty) return null;
+      return withNames.isEmpty ? name : l10n.capsulesByWith(name, withNames);
+    }
+    return withNames.isEmpty ? null : l10n.capsulesWith(withNames);
+  }
+
+  /// The author's name when [capsule] shows it to the viewer, else null (also
+  /// while it is loading). It listens to [UserDirectory]: call it from a
+  /// build.
+  static String? ownerNameOf(BuildContext context, Capsule capsule) {
+    final me = context.read<SessionController>().uid;
+    if (!shows(capsule, me)) return null;
+    final name = context.select<UserDirectory, String>(
+      (d) => d.profile(capsule.ownerId)?.name ?? '',
+    );
+    return name.isEmpty ? null : name;
+  }
+
+  /// The first word of [ownerNameOf], for short buttons ("Reply to Jonas").
+  static String? ownerFirstNameOf(BuildContext context, Capsule capsule) =>
+      ownerNameOf(context, capsule)?.split(' ').first;
+
+  static (String, String) _names(
+    BuildContext context,
+    Capsule capsule,
+    bool showOwner,
+    List<String> others,
+  ) => context.select<UserDirectory, (String, String)>(
+    (d) => (
+      showOwner ? d.profile(capsule.ownerId)?.name ?? '' : '',
+      [
+        for (final id in others) d.profile(id)?.name ?? '',
+      ].where((n) => n.isNotEmpty).join(', '),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final me = context.read<SessionController>().uid;
@@ -44,14 +91,7 @@ class CapsuleAuthorRow extends StatelessWidget {
     final showOwner = shows(capsule, me);
     final others = coAuthorsShown(capsule, me);
     if (!showOwner && others.isEmpty) return const SizedBox.shrink();
-    final (name, withNames) = context.select<UserDirectory, (String, String)>(
-      (d) => (
-        showOwner ? d.profile(owner)?.name ?? '' : '',
-        [
-          for (final id in others) d.profile(id)?.name ?? '',
-        ].where((n) => n.isNotEmpty).join(', '),
-      ),
-    );
+    final (name, withNames) = _names(context, capsule, showOwner, others);
     final l10n = context.l10n;
     final String text;
     final String label;

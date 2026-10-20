@@ -9,9 +9,8 @@ import 'package:later/shared/widgets/buttons/default_green_button.dart';
 /// The rules accept 2000 characters; 2001-2200 used to fail to save.
 const int maxDescriptionLength = 2000;
 
-/// The description on the capsule card: what is written so far; a tap
-/// opens the composer, a roomy field with a counter (B4), instead of
-/// typing into the narrow column next to the photo.
+/// The description on the capsule card: what is written so far (three
+/// lines of it); a tap opens the composer, a roomy field with a counter (B4).
 class CapsuleCreationDescriptionInputField extends StatelessWidget {
   final TextEditingController controller;
 
@@ -23,37 +22,35 @@ class CapsuleCreationDescriptionInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Expanded(
-      child: Semantics(
-        button: true,
-        label: l10n.capsulesCreationDescriptionHint,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () => DescriptionComposer.show(context, controller),
-          child: ExcludeSemantics(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: ListenableBuilder(
-                  listenable: controller,
-                  builder: (context, _) {
-                    final text = controller.text.trim();
-                    return Text(
-                      text.isEmpty
-                          ? l10n.capsulesCreationDescriptionHint
-                          : text,
-                      overflow: TextOverflow.fade,
-                      style: TextStyle(
-                        fontFamily: kAppFontFamily,
-                        fontSize: 15,
-                        color: text.isEmpty
-                            ? context.palette.textMuted
-                            : context.palette.textPrimary,
-                      ),
-                    );
-                  },
-                ),
+    return Semantics(
+      button: true,
+      label: l10n.capsulesCreationDescriptionHint,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => DescriptionComposer.show(context, controller),
+        child: ExcludeSemantics(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: SizedBox(
+              width: double.infinity,
+              child: ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) {
+                  final text = controller.text.trim();
+                  return Text(
+                    text.isEmpty ? l10n.capsulesCreationDescriptionHint : text,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 15,
+                      height: 1.3,
+                      color: text.isEmpty
+                          ? context.palette.textMuted
+                          : context.palette.textPrimary,
+                    ),
+                  );
+                },
               ),
             ),
           ),

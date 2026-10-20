@@ -32,10 +32,6 @@
   "@capsulesCreationSubmit": {
     "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
   },
-  "capsulesCreationPreview": "Capsule Preview",
-  "@capsulesCreationPreview": {
-    "description": "Section title above the card that shows how the capsule will look."
-  },
   "capsulesCreationSettings": "Capsule Settings",
   "@capsulesCreationSettings": {
     "description": "Section title above the privacy, open date and colour rows."
@@ -96,24 +92,7 @@
   },
   "capsulesErrorSaveFailed": "Failed to save capsule",
   "capsulesComments": "Comments",
-  "capsulesCommentsCount": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
-  "@capsulesCommentsCount": {
-    "description": "Button under a capsule that opens its comments.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "capsulesCommentHint": "Add a comment...",
-  "capsulesReplyHint": "Reply to {name}...",
-  "@capsulesReplyHint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "capsulesReply": "Reply",
   "capsulesCommentsEmpty": "No comments yet",
   "capsulesCommentsEmptyHint": "Be the first to say something.",
@@ -436,5 +415,114 @@
   "capsulesComposerDone": "Done",
   "@capsulesComposerDone": {
     "description": "The capsule description composer (a sheet over creation)."
+  },
+  "capsulesDatesLeftOpened": "Left {left} · opened {opened}",
+  "@capsulesDatesLeftOpened": {
+    "description": "An opened capsule: the day it was left and the day it opened.",
+    "placeholders": {
+      "left": {
+        "type": "String",
+        "example": "14 Jun 2025"
+      },
+      "opened": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
+  },
+  "capsulesDatesLeft": "Left {date}",
+  "@capsulesDatesLeft": {
+    "description": "An opened capsule without an opening date: the day it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2025"
+      }
+    }
+  },
+  "capsulesCommentsPill": "{count, plural, =0{Comment} other{Comments · {count}}}",
+  "@capsulesCommentsPill": {
+    "description": "The pill at the bottom of an opened capsule that opens its comments.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "capsulesReplyTo": "Reply to {name}",
+  "@capsulesReplyTo": {
+    "description": "The pill at the bottom of someone else's capsule that writes to them in chat, and the title of that card.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "capsulesShowOnMap": "Show on the map",
+  "@capsulesShowOnMap": {
+    "description": "In the ⋯ menu of an opened capsule: closes it and centres the map on its pin."
+  },
+  "capsulesMore": "More",
+  "@capsulesMore": {
+    "description": "Spoken name of the ⋯ button of an opened capsule."
+  },
+  "capsulesCopyText": "Copy text",
+  "@capsulesCopyText": {
+    "description": "In the menu of a long-pressed comment."
+  },
+  "capsulesCopied": "Copied",
+  "@capsulesCopied": {
+    "description": "Toast after a comment's text was copied."
+  },
+  "capsulesAuthorChip": "Author",
+  "@capsulesAuthorChip": {
+    "description": "Small chip next to the name of the capsule's author in its comments."
+  },
+  "capsulesReplyingTo": "Replying to {name}",
+  "@capsulesReplyingTo": {
+    "description": "Chip above the comment field while replying to someone.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Erin"
+      }
+    }
+  },
+  "capsulesCommentsEmptyHintFor": "{name} will see what you write here.",
+  "@capsulesCommentsEmptyHintFor": {
+    "description": "Under \"No comments yet\": who will read the first comment.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "capsulesQuickReplyAttached": "goes with your message",
+  "@capsulesQuickReplyAttached": {
+    "description": "Under the capsule's title in the quick reply card: the capsule is sent along."
+  },
+  "capsulesReportHint": "The Later team will look at it. The author is not told who reported it.",
+  "@capsulesReportHint": {
+    "description": "Under \"What is wrong with it?\" when reporting."
+  },
+  "capsulesCreationRetake": "Retake",
+  "@capsulesCreationRetake": {
+    "description": "Chip on the photo of a new capsule: back to the camera."
+  },
+  "capsulesCreationLeftToday": "Left today · opens anytime",
+  "@capsulesCreationLeftToday": {
+    "description": "Under a new capsule's title: it is left today and opens anytime."
+  },
+  "capsulesCreationLeftTodayOpens": "Left today · opens {date}",
+  "@capsulesCreationLeftTodayOpens": {
+    "description": "Under a new capsule's title: it is left today and opens on {date}.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
   }
 }

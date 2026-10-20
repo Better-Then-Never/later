@@ -26,6 +26,10 @@ class WidgetTree extends StatelessWidget {
       builder: (context, selectedPage, child) {
         return Scaffold(
           backgroundColor: context.palette.background,
+          // Only a keyboard of the tabs' own fields resizes them: one opened
+          // by a card on top (a quick reply) left the map and its buttons
+          // jumping about behind the scrim.
+          resizeToAvoidBottomInset: ModalRoute.isCurrentOf(context) ?? true,
           body: Stack(
             children: [
               TabStack(index: selectedPage, children: pages),

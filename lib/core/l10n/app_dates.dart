@@ -7,4 +7,9 @@ import 'package:intl/intl.dart';
 abstract final class AppDates {
   static String short(DateTime date, String locale) =>
       DateFormat('dd.MM.yyyy', locale).format(date);
+
+  /// A date inside a sentence ("Left 14 Jun 2025 · opened 14 Jun 2026"):
+  /// the day, the short month and the year in the app's language.
+  static String medium(DateTime date, String locale) =>
+      DateFormat('d MMM y', locale).format(date);
 }

@@ -61,11 +61,16 @@ class AppCardRoute<T> extends PageRoute<T> {
     required this.builder,
     required Color barrierColor,
     required String barrierLabel,
+    this.alignment = Alignment.center,
     super.settings,
   }) : _barrierColor = barrierColor,
        _barrierLabel = barrierLabel;
 
   final WidgetBuilder builder;
+
+  /// Where the card sits in the space above the keyboard: centred, or at
+  /// the bottom (right above the keyboard, as the quick reply does).
+  final AlignmentGeometry alignment;
   final Color _barrierColor;
   final String _barrierLabel;
 
@@ -109,7 +114,10 @@ class AppCardRoute<T> extends PageRoute<T> {
               ? MediaQuery.viewInsetsOf(context).bottom
               : 0,
         ),
-        child: Center(child: _DragToClose(child: builder(context))),
+        child: Align(
+          alignment: alignment,
+          child: _DragToClose(child: builder(context)),
+        ),
       ),
     ),
   );
@@ -131,6 +139,94 @@ class AppCardRoute<T> extends PageRoute<T> {
     // every frame (the capsule dialog went 20 % janky); scaling it made
     // Impeller draw its letters again at every new size (glyph atlas).
     final travel = MediaQuery.sizeOf(context).height * 0.6;
+    return AnimatedBuilder(
+      animation: curve,
+      child: child,
+      builder: (context, child) => Transform.translate(
+        offset: Offset(0, travel * (1 - curve.value)),
+        child: child,
+      ),
+    );
+  }
+}
+
+/// A sheet from the bottom edge over the page, on a scrim: the opened
+/// capsule (v3). A page route like [AppCardRoute], so a [Hero] can fly into
+/// it (the photo comes from the map card). It rises from below the screen;
+/// out: a tap above it, back, or a drag down past a third of it or with a
+/// flick. It hugs its content, up to the screen less the status bar and
+/// 12 dp, and at most 560 dp wide. Reduced motion: no animation.
+class AppSheetRoute<T> extends PageRoute<T> {
+  AppSheetRoute({
+    required this.builder,
+    required Color barrierColor,
+    required String barrierLabel,
+    super.settings,
+  }) : _barrierColor = barrierColor,
+       _barrierLabel = barrierLabel;
+
+  final WidgetBuilder builder;
+  final Color _barrierColor;
+  final String _barrierLabel;
+
+  @override
+  Color? get barrierColor => _barrierColor;
+
+  @override
+  bool get barrierDismissible => true;
+
+  @override
+  String? get barrierLabel => _barrierLabel;
+
+  @override
+  bool get opaque => false;
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Duration get transitionDuration => AppMotion.emphasized;
+
+  @override
+  Duration get reverseTransitionDuration => AppMotion.standard;
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
+    final media = MediaQuery.of(context);
+    return Material(
+      type: MaterialType.transparency,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: media.size.height - media.padding.top - 12,
+            maxWidth: 560,
+          ),
+          child: _DragToClose(child: builder(context)),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (AppMotion.reduced(context)) return child;
+    final curve = CurvedAnimation(
+      parent: animation,
+      curve: AppMotion.emphasizedCurve,
+      reverseCurve: AppMotion.exit,
+    );
+    // A rise only, from just below the screen (no fade: see AppCardRoute).
+    final travel = MediaQuery.sizeOf(context).height;
     return AnimatedBuilder(
       animation: curve,
       child: child,

@@ -10,13 +10,13 @@ import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/app_sheets.dart';
-import '../../map/widgets/capsule_preview_card.dart';
 import 'capsule_comments_sheet.dart';
+import 'capsule_sheet.dart';
 import 'capsule_social_controller.dart';
-import 'capsule_social_panel.dart';
 
-/// An opened capsule over the current screen: the photo card and, below it,
-/// reactions and comments (when the capsule is open and allows them).
+/// An opened capsule over the current screen (capsule v3): a sheet from the
+/// bottom with the photo, the words, reactions and comments (when the capsule
+/// is open and allows them) and its actions.
 abstract final class CapsuleDetailDialog {
   static Future<void> show(
     BuildContext context,
@@ -29,7 +29,7 @@ abstract final class CapsuleDetailDialog {
     final withSocial =
         uid != null &&
         capsule.isOpen(DateTime.now()) &&
-        CapsuleSocialPanel.showsAnything(capsule);
+        CapsuleSheet.showsAnything(capsule);
     // Someone else's open capsule counts for "Curious" (B7), once.
     if (FeatureFlags.achievements &&
         uid != null &&
@@ -38,52 +38,42 @@ abstract final class CapsuleDetailDialog {
         capsule.isOpen(DateTime.now())) {
       unawaited(social.markViewed(uid, capsule.id));
     }
-    // The card route: rises and grows in, closes on a tap outside or a drag
-    // down (MOTION_CATALOG.md).
+    // The sheet route: rises from the bottom edge, closes on a tap above it
+    // or a drag down (MOTION_CATALOG.md).
     return Navigator.of(context).push(
-      AppCardRoute<void>(
+      AppSheetRoute<void>(
         barrierColor: context.palette.scrim,
         barrierLabel: MaterialLocalizations.of(
           context,
         ).modalBarrierDismissLabel,
-        builder: (dialogContext) => Material(
-          type: MaterialType.transparency,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CapsulePreviewCard(
-                  capsule: capsule,
-                  onPlaceTap: onPlaceTap == null
-                      ? null
-                      : () {
-                          Navigator.of(dialogContext).pop();
-                          onPlaceTap();
-                        },
-                ),
-                if (withSocial) ...[
-                  const SizedBox(height: 8),
-                  ChangeNotifierProvider(
-                    create: (_) => CapsuleSocialController(
-                      capsule: capsule,
-                      uid: uid,
-                      social: social,
-                    ),
-                    child: Builder(
-                      builder: (context) => _CommentsOnOpen(
-                        open: openComments,
-                        child: CapsuleSocialPanel(
-                          controller: context.read<CapsuleSocialController>(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+        builder: (sheetContext) {
+          final onPlace = onPlaceTap == null
+              ? null
+              : () {
+                  Navigator.of(sheetContext).pop();
+                  onPlaceTap();
+                };
+          if (!withSocial) {
+            return CapsuleSheet(capsule: capsule, onPlaceTap: onPlace);
+          }
+          return ChangeNotifierProvider(
+            create: (_) => CapsuleSocialController(
+              capsule: capsule,
+              uid: uid,
+              social: social,
             ),
-          ),
-        ),
+            child: Builder(
+              builder: (context) => _CommentsOnOpen(
+                open: openComments,
+                child: CapsuleSheet(
+                  capsule: capsule,
+                  controller: context.read<CapsuleSocialController>(),
+                  onPlaceTap: onPlace,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
