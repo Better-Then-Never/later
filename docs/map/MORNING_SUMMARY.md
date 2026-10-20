@@ -9,7 +9,7 @@ emulators. Mission 3's summary is in git history (`4ff4829`). Details and every 
 |---|---|---|
 | 0 to 1.2 s | a plain grey screen | the map's own colour (light or dark), with the Later logo |
 | 1.3 s | buttons over an empty map (1.7 s) | the buttons and the tab bar, all icons in one frame |
-| about 2.2 s | streets at 2.7 s, no pins | the streets fade in where you left the map, and **every pin and bubble grows in from the middle, in one motion** |
+| about 2.2 s | streets at 2.7 s, no pins | the streets fade in **centred on you** (at the zoom you last used), and **every pin and bubble grows in from the middle, in one motion** |
 | afterwards | pins at 5.2 s, then friends', public ones and regrouping until 7.2 s | nothing moves unless a capsule really changed (a new one grows in, a deleted one shrinks away) |
 
 ## How

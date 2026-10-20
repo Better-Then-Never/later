@@ -136,6 +136,10 @@ class MapController extends ChangeNotifier {
 
   /// The zoom of the camera saved when the map last stopped (null: none).
   double? _savedZoom;
+
+  /// The longest a start waits for the phone's last known position before
+  /// it opens where the map last stopped instead.
+  static const _whereAtMost = Duration(milliseconds: 300);
   bool get usedFallbackCamera => _usedFallbackCamera;
   LocationAvailability get availability => _availability;
   GeoPosition? get myPosition => _currentLocation.position;
@@ -256,11 +260,13 @@ class MapController extends ChangeNotifier {
       c.privacy == CapsulePrivacy.public ||
       (c.privacy == CapsulePrivacy.friends && friendIds.contains(c.ownerId));
 
-  /// The capsules are asked for first: they are the slow part, and nothing
-  /// waits for the location. The map opens where it last stopped (M-06,
-  /// [MapCameraMemory]) at once; only a first start, with nowhere saved,
-  /// waits for a position (the OS last-known fix, then at most 5 s for a
-  /// fresh one, then a world view).
+  /// The capsules are asked for first: they are the slow part, and they
+  /// never wait for the location. The map opens on the user (the owner's
+  /// choice, 20 Oct 2026): at the phone's last known position, asked for
+  /// at most [_whereAtMost] (about 0.1 s), at the zoom the map was last
+  /// left at; without a position where the map last stopped
+  /// ([MapCameraMemory]); on a first start, with nothing saved, a fresh fix
+  /// is waited for (at most 5 s), then a world view.
   Future<void> start() async {
     final uid = _session.uid;
     if (uid == null) return;
@@ -269,31 +275,32 @@ class MapController extends ChangeNotifier {
     unawaited(_readStore(uid));
     unawaited(_loadFilter(uid));
 
-    // Read at once when it can be: the map then builds with the page's
-    // first frame, its buttons with the tab bar.
     final prefs = _prefs;
-    final known = prefs?.stringSync(uid, MapCameraMemory.key);
     final saved = MapCameraMemory.parse(
-      known ?? await prefs?.string(uid, MapCameraMemory.key),
+      prefs?.stringSync(uid, MapCameraMemory.key) ??
+          await prefs?.string(uid, MapCameraMemory.key),
     );
     if (_disposed) return;
-    if (saved case (final latitude, final longitude, final zoom)) {
-      _initialCamera = GeoPosition(latitude, longitude);
-      _savedZoom = zoom;
-      _state = MapLoadState.ready;
-      _wantBand(latitude);
-      // Nobody listens yet when it was read at once.
-      if (known == null) notifyListeners();
-    }
+    _savedZoom = saved?.$3;
 
     // Google's marker bitmaps (MapLibre draws its own).
     if (groupsMarkers) _icons = await MarkerIcons.load(dark: _darkIcons);
-    _availability = await _location.availability();
-    // Fastest first: a position already known in this session, then the
-    // OS last-known fix (instant); a fresh fix only with nowhere to open.
+    // Where the user is: a position already known in this session, else
+    // the phone's last known fix (both asked at once, never waited for
+    // long); a fresh fix only on a first start, with nowhere saved.
+    final (availability, lastKnown) =
+        await (
+          _location.availability(),
+          _currentLocation.position != null
+              ? Future.value(_currentLocation.position)
+              : _location.lastKnownPosition(),
+        ).wait.timeout(
+          _whereAtMost,
+          onTimeout: () => (LocationAvailability.available, null),
+        );
+    _availability = availability;
     final position =
-        _currentLocation.position ??
-        await _location.lastKnownPosition() ??
+        lastKnown ??
         (saved == null
             ? await _location.currentPosition(
                 timeout: const Duration(seconds: 5),
@@ -303,12 +310,11 @@ class MapController extends ChangeNotifier {
     StartupReport.mark('map_position');
 
     _currentLocation.update(position);
-    if (saved == null) {
-      _initialCamera = position;
-      _usedFallbackCamera = position == null;
-      _state = MapLoadState.ready;
-      _wantBand(initialCamera.latitude);
-    }
+    _initialCamera =
+        position ?? (saved == null ? null : GeoPosition(saved.$1, saved.$2));
+    _usedFallbackCamera = _initialCamera == null;
+    _state = MapLoadState.ready;
+    _wantBand(initialCamera.latitude);
     notifyListeners();
 
     if (_availability == LocationAvailability.available) _followPosition();

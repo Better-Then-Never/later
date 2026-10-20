@@ -243,3 +243,11 @@ one reveal within 4 s (3.4 s; 4.0 s with every cache cleared), no colour flash, 
 - **Firestore:** cache bounded to 40 MB, emptied once per cache generation, indexed by the SDK.
 - **Measuring:** `StartupReport` marks + Android's `reportFullyDrawn` at the full map; `tool/dev/coldstart.sh`
   (`CAMERA`, `FRESH`, `VIDEO`) and `tool/dev/coldstart_report.js`.
+
+## Opens on the user (the owner's choice, 20 Oct 2026)
+Every start opens centred on the user at the zoom the map was last left at: the phone's last known position, asked
+for at once with the location permission check and waited for at most 0.3 s; without a position, where the map last
+stopped; a first start with nothing saved still waits for a fresh fix (at most 5 s). The map's buttons are built
+with the tab bar as before; only the map under the cover waits for the position. Measured (3 launches, `onme`): the
+position 80 to 96 ms after the map starts; full 1,610 ms median. Tests: `map_start_test.dart` (on the user; no
+position; the phone slow to answer).

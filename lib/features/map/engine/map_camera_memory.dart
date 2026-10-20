@@ -1,6 +1,6 @@
-/// Where the map was when it last stopped, kept on this phone per account, so
-/// a cold start opens there at once, before any location fix (M-06). Saved as
-/// "lat,lng,zoom".
+/// Where the map was when it last stopped, kept on this phone per account: a
+/// start opens on the user at this zoom, and here when the phone has no
+/// position (M-06). Saved as "lat,lng,zoom".
 abstract final class MapCameraMemory {
   static const key = 'map_camera';
 

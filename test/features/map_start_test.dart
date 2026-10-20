@@ -90,29 +90,51 @@ void main() {
     groupsMarkers: false,
   );
 
-  test('opens where the map last stopped at once, the capsules first '
-      '(M-06)', () async {
-    final prefs = await prefsWith({
-      'u:u1:${MapCameraMemory.key}': MapCameraMemory.format(52.23, 21.01, 14.5),
-    });
-    final map = controller(prefs);
-    unawaited(map.start());
+  Future<PreferencesStore> saved() => prefsWith({
+    'u:u1:${MapCameraMemory.key}': MapCameraMemory.format(52.23, 21.01, 14.5),
+  });
 
-    // Before anything was awaited: the map can be built in this frame.
+  test('opens on the user, at the zoom the map was last left at; the '
+      'capsules first (M-06)', () async {
+    final map = controller(await saved());
+    unawaited(map.start());
+    await pumpEventQueue();
+    // Asked for before the position: own, co-authored and friends'.
+    expect(map.state, MapLoadState.loading);
+    expect(map.visibleCapsules.map((c) => c.id), ['own-0', 'own-1', 'own-2']);
+
+    location.lastKnown.complete(const GeoPosition(50.06, 19.94));
+    await pumpEventQueue();
+    expect(map.state, MapLoadState.ready);
+    expect(map.initialCamera.latitude, 50.06);
+    expect(map.initialCameraZoom, 14.5);
+    // No fresh fix waited for: the last known one is enough.
+    expect(location.calls, isNot(contains('current')));
+    expect(map.allAnswered, isTrue);
+    map.dispose();
+  });
+
+  test('no position on the phone: where the map last stopped', () async {
+    final map = controller(await saved());
+    unawaited(map.start());
+    await pumpEventQueue();
+    location.lastKnown.complete(null);
+    await pumpEventQueue();
+    expect(map.state, MapLoadState.ready);
+    expect(map.initialCamera.latitude, 52.23);
+    expect(map.usedFallbackCamera, isFalse);
+    expect(location.calls, isNot(contains('current')));
+    map.dispose();
+  });
+
+  test('the phone slow to answer: where the map last stopped, after a '
+      'moment', () async {
+    final map = controller(await saved());
+    unawaited(map.start());
+    await Future<void>.delayed(const Duration(milliseconds: 400));
     expect(map.state, MapLoadState.ready);
     expect(map.initialCamera.latitude, 52.23);
     expect(map.initialCameraZoom, 14.5);
-
-    await pumpEventQueue();
-    // The location never answered, yet every source did.
-    expect(location.lastKnown.isCompleted, isFalse);
-    expect(map.visibleCapsules.map((c) => c.id), ['own-0', 'own-1', 'own-2']);
-    expect(map.allAnswered, isTrue);
-    // No fresh fix is waited for when there is somewhere to open.
-    location.lastKnown.complete(null);
-    await pumpEventQueue();
-    expect(location.calls, isNot(contains('current')));
-    expect(map.usedFallbackCamera, isFalse);
     map.dispose();
   });
 

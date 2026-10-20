@@ -1158,9 +1158,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     final ground = dark ? AppColors.mapGroundDark : AppColors.mapGroundLight;
     // Drawn while the map starts.
     unawaited(_markerImages(MediaQuery.devicePixelRatioOf(context), dark));
-    // Until it knows where to open: at once where it last stopped (M-06),
-    // the capsules coming when they are loaded.
-    if (map.state == MapLoadState.loading) return ColoredBox(color: ground);
+    // The map itself waits until it knows where to open (the user's last
+    // known position, about 0.1 s); its buttons do not, so they come with
+    // the tab bar, over the cover.
+    final placed = map.state != MapLoadState.loading;
     _reportLocationProblem(map);
     // A theme switch loads the other style; its layers are added again.
     if (_styleDark != null && _styleDark != dark) _styled = false;
@@ -1197,109 +1198,110 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
       child: Stack(
         children: [
           Positioned.fill(child: ColoredBox(color: ground)),
-          Listener(
-            onPointerDown: (e) {
-              _reveal();
-              MapCreditsControl.mapTouched();
-              MapStats.instance
-                ..touch('down')
-                ..finger(e.pointer, e.localPosition);
-              if (_pointers++ == 0) MapStats.instance.gestureStarted();
-              _active();
-            },
-            onPointerMove: (e) =>
-                MapStats.instance.finger(e.pointer, e.localPosition),
-            onPointerUp: (e) {
-              MapStats.instance
-                ..touch('up')
-                ..finger(e.pointer, null);
-              _pointers = math.max(0, _pointers - 1);
-              _active();
-            },
-            onPointerCancel: (e) {
-              MapStats.instance.finger(e.pointer, null);
-              _pointers = math.max(0, _pointers - 1);
-              _active();
-            },
-            child: ml.MapLibreMap(
-              // The app's map palette over OpenFreeMap tiles; the tile
-              // source is the owner's decision (DECISION.md).
-              styleString: dark ? AppMapStyles.dark : AppMapStyles.light,
-              foregroundLoadColor: ground,
-              initialCameraPosition: ml.CameraPosition(
-                target: ml.LatLng(start.latitude, start.longitude),
-                zoom: _debugZoom ?? map.initialCameraZoom,
-              ),
-              trackCameraPosition: true,
-              // Never out to the whole world, never past street level
-              // (MapLimits, mission 2).
-              minMaxZoomPreference: const ml.MinMaxZoomPreference(
-                MapLimits.minZoom,
-                MapLimits.maxZoom,
-              ),
-              compassEnabled: false,
-              tiltGesturesEnabled: false,
-              annotationOrder: const [],
-              // MapLibre's own (i) button cannot be switched off through
-              // the plugin: it is moved off the map; the app's own credit
-              // replaces it (MapCreditsControl, docs/map/ATTRIBUTION.md).
-              attributionButtonPosition:
-                  ml.AttributionButtonPosition.bottomLeft,
-              attributionButtonMargins: const math.Point(-400, -400),
-              onMapCreated: (c) {
-                StartupReport.mark('map_created');
-                _controller = c;
-                if (!_ready.isCompleted) _ready.complete(c);
-                c.onFeatureTapped.add(_onFeatureTapped);
-                if (MapStats.enabled) {
-                  MapStats.instance
-                    ..moveCamera = (target, zoom) async {
-                      await c.moveCamera(
-                        ml.CameraUpdate.newLatLngZoom(
-                          ml.LatLng(target.latitude, target.longitude),
-                          zoom,
-                        ),
-                      );
-                    }
-                    ..pinOnScreen = _pinOnScreen
-                    ..emptyOnScreen = _emptyOnScreen;
-                }
-              },
-              onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),
-              onMapClick: (_, _) => _select(null),
-              onCameraMove: (position) {
+          if (placed)
+            Listener(
+              onPointerDown: (e) {
+                _reveal();
+                MapCreditsControl.mapTouched();
                 MapStats.instance
-                  ..cameraMoved()
-                  ..cameraAt(position.zoom);
-                _zoom = position.zoom;
-                _bearing.value = position.bearing;
-                MapStats.instance.pinchCamera(
-                  position.zoom,
-                  position.target.latitude,
-                  position.target.longitude,
-                  position.bearing,
-                  MediaQuery.sizeOf(context),
-                );
-                _stage.camera(
-                  position,
-                  reachDp: _reachDp,
-                  // Unseen below the markers' band, and at once with
-                  // reduced motion.
-                  animate:
-                      !AppMotion.reduced(context) &&
-                      position.zoom > MapZoomVisuals.markersFrom,
-                );
-                if (!_moving) {
-                  _moving = true;
-                  _active();
-                }
-                // Zoomed out to the heat: no pins, their card goes too.
-                if (position.zoom < MapZoomVisuals.markersFrom) _select(null);
+                  ..touch('down')
+                  ..finger(e.pointer, e.localPosition);
+                if (_pointers++ == 0) MapStats.instance.gestureStarted();
+                _active();
               },
-              onCameraIdle: () => unawaited(_onIdle(map)),
-              onMapIdle: _onMapIdle,
+              onPointerMove: (e) =>
+                  MapStats.instance.finger(e.pointer, e.localPosition),
+              onPointerUp: (e) {
+                MapStats.instance
+                  ..touch('up')
+                  ..finger(e.pointer, null);
+                _pointers = math.max(0, _pointers - 1);
+                _active();
+              },
+              onPointerCancel: (e) {
+                MapStats.instance.finger(e.pointer, null);
+                _pointers = math.max(0, _pointers - 1);
+                _active();
+              },
+              child: ml.MapLibreMap(
+                // The app's map palette over OpenFreeMap tiles; the tile
+                // source is the owner's decision (DECISION.md).
+                styleString: dark ? AppMapStyles.dark : AppMapStyles.light,
+                foregroundLoadColor: ground,
+                initialCameraPosition: ml.CameraPosition(
+                  target: ml.LatLng(start.latitude, start.longitude),
+                  zoom: _debugZoom ?? map.initialCameraZoom,
+                ),
+                trackCameraPosition: true,
+                // Never out to the whole world, never past street level
+                // (MapLimits, mission 2).
+                minMaxZoomPreference: const ml.MinMaxZoomPreference(
+                  MapLimits.minZoom,
+                  MapLimits.maxZoom,
+                ),
+                compassEnabled: false,
+                tiltGesturesEnabled: false,
+                annotationOrder: const [],
+                // MapLibre's own (i) button cannot be switched off through
+                // the plugin: it is moved off the map; the app's own credit
+                // replaces it (MapCreditsControl, docs/map/ATTRIBUTION.md).
+                attributionButtonPosition:
+                    ml.AttributionButtonPosition.bottomLeft,
+                attributionButtonMargins: const math.Point(-400, -400),
+                onMapCreated: (c) {
+                  StartupReport.mark('map_created');
+                  _controller = c;
+                  if (!_ready.isCompleted) _ready.complete(c);
+                  c.onFeatureTapped.add(_onFeatureTapped);
+                  if (MapStats.enabled) {
+                    MapStats.instance
+                      ..moveCamera = (target, zoom) async {
+                        await c.moveCamera(
+                          ml.CameraUpdate.newLatLngZoom(
+                            ml.LatLng(target.latitude, target.longitude),
+                            zoom,
+                          ),
+                        );
+                      }
+                      ..pinOnScreen = _pinOnScreen
+                      ..emptyOnScreen = _emptyOnScreen;
+                  }
+                },
+                onStyleLoadedCallback: () => unawaited(_onStyleLoaded()),
+                onMapClick: (_, _) => _select(null),
+                onCameraMove: (position) {
+                  MapStats.instance
+                    ..cameraMoved()
+                    ..cameraAt(position.zoom);
+                  _zoom = position.zoom;
+                  _bearing.value = position.bearing;
+                  MapStats.instance.pinchCamera(
+                    position.zoom,
+                    position.target.latitude,
+                    position.target.longitude,
+                    position.bearing,
+                    MediaQuery.sizeOf(context),
+                  );
+                  _stage.camera(
+                    position,
+                    reachDp: _reachDp,
+                    // Unseen below the markers' band, and at once with
+                    // reduced motion.
+                    animate:
+                        !AppMotion.reduced(context) &&
+                        position.zoom > MapZoomVisuals.markersFrom,
+                  );
+                  if (!_moving) {
+                    _moving = true;
+                    _active();
+                  }
+                  // Zoomed out to the heat: no pins, their card goes too.
+                  if (position.zoom < MapZoomVisuals.markersFrom) _select(null);
+                },
+                onCameraIdle: () => unawaited(_onIdle(map)),
+                onMapIdle: _onMapIdle,
+              ),
             ),
-          ),
           if (!_revealing || _cover.value > 0)
             Positioned.fill(
               child: IgnorePointer(
