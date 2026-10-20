@@ -14,12 +14,14 @@ import '../../../../core/assets/app_assets.dart';
 import '../../../../core/config/feature_flags.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_dimens.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/geo_position.dart';
 import '../../../../shared/widgets/app_sheets.dart';
 import '../../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../map/map_styles.dart';
+import '../../../map/widgets/map_credits_control.dart';
 import '../../../settings/device_settings_store.dart';
 
 /// Fine-tunes where a capsule goes (B4): a map under a fixed pin, moved by
@@ -100,6 +102,9 @@ class _PinPickerSheetState extends State<PinPickerSheet> {
   final _libre = Completer<ml.MapLibreMapController>();
   late GeoPosition _spot = widget.start ?? widget.here;
   bool _tooFar = false;
+
+  /// MapLibre has drawn its style (the credit line's 5 s start then).
+  bool _styled = false;
 
   /// The map takes every touch that starts on it: otherwise the sheet's
   /// drag-to-close wins every vertical drag and the pin cannot move.
@@ -197,17 +202,27 @@ class _PinPickerSheetState extends State<PinPickerSheet> {
     compassEnabled: false,
     rotateGesturesEnabled: false,
     tiltGesturesEnabled: false,
-    // OpenStreetMap's credit, as on the map page.
+    // MapLibre's own (i) button cannot be switched off through the plugin:
+    // it is moved off the map; Later's own credit replaces it, as on the
+    // map page (MapCreditsControl, docs/map/ATTRIBUTION.md).
     attributionButtonPosition: ml.AttributionButtonPosition.bottomLeft,
-    attributionButtonMargins: const math.Point(12, 12),
+    attributionButtonMargins: const math.Point(-400, -400),
     onMapCreated: (c) {
       if (!_libre.isCompleted) _libre.complete(c);
     },
-    onStyleLoadedCallback: () => unawaited(_addReach(palette.textMuted)),
+    onStyleLoadedCallback: () {
+      if (mounted) setState(() => _styled = true);
+      unawaited(_addReach(palette.textMuted));
+    },
     onCameraMove: (camera) =>
         _onMove(camera.target.latitude, camera.target.longitude),
     onCameraIdle: () => unawaited(_onIdle()),
   );
+
+  /// The credit's 44 dp target placed so its disc stands 12 dp from the
+  /// map's corner.
+  static const double _creditInset =
+      12 - (AppSizes.mapControl - MapCreditsButton.disc) / 2;
 
   Widget _googleMap(AppPalette palette, MapLook look) => GoogleMap(
     style: palette.isDark ? MapStyles.dark : MapStyles.light,
@@ -285,7 +300,10 @@ class _PinPickerSheetState extends State<PinPickerSheet> {
                   // MapLibre has no satellite look: Settings hides the
                   // choice, so one made earlier does not stick here.
                   if (FeatureFlags.mapLibre)
-                    _mapLibre(palette)
+                    Listener(
+                      onPointerDown: (_) => MapCreditsControl.mapTouched(),
+                      child: _mapLibre(palette),
+                    )
                   else
                     _googleMap(
                       palette,
@@ -300,6 +318,23 @@ class _PinPickerSheetState extends State<PinPickerSheet> {
                       child: Image.asset(widget.pinAsset, width: 44),
                     ),
                   ),
+                  // The map's data credit, bottom left: its disc 12 dp from
+                  // the corner like the button opposite; the line short of
+                  // that button.
+                  if (FeatureFlags.mapLibre)
+                    Positioned(
+                      left: _creditInset,
+                      bottom: _creditInset,
+                      child: MapCreditsControl(
+                        maxWidth:
+                            MediaQuery.sizeOf(context).width -
+                            _creditInset -
+                            12 -
+                            48 -
+                            8,
+                        mapShown: _styled,
+                      ),
+                    ),
                   Positioned(
                     right: 12,
                     bottom: 12,

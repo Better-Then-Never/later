@@ -38,6 +38,8 @@ run it, and the credits follow.
   the first touch of the map, at most after 5 s** (the owner asked to remove it; this is the OSMF allowance).
 - **The (i) opens a sheet** (the shared edge sheet): the credits with their links, "Improve this map"
   (openstreetmap.org/fixthemap) and "Map rendered with MapLibre" (maplibre.org).
+- **The capsule pin picker** (Create capsule > Move the pin, also MapLibre) has the same (i) bottom left and the same
+  line (gone once the map is touched this session); MapLibre's own button is off its map too (20 Oct 2026).
 - **Settings > About > "Map data and licenses"** opens the same sheet; **"Open-source licenses"** now also lists
   MapLibre Native (BSD 2-Clause text), OpenStreetMap data (ODbL), the OpenMapTiles schema (CC-BY 4.0), OpenFreeMap,
   the map style, Noto Sans (OFL 1.1) and Maki (`lib/features/map/map_licenses.dart`).
