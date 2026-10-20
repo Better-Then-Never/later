@@ -3,9 +3,13 @@
 // used, e.g. after `gcloud auth application-default login`).
 'use strict';
 
-const admin = require('firebase-admin');
-
-function init(argv = process.argv.slice(2)) {
+/**
+ * [firebaseAdmin] is the copy of firebase-admin to start: announce.js passes
+ * the functions' own, because functions/lib/broadcast.js writes with that
+ * copy's FieldValue (a sentinel from another copy cannot be serialized).
+ */
+function init(argv = process.argv.slice(2), firebaseAdmin = require('firebase-admin')) {
+  const admin = firebaseAdmin;
   const production = argv.includes('--production');
   const projectIndex = argv.indexOf('--project');
   const projectId = projectIndex >= 0 ? argv[projectIndex + 1] : 'demo-later-admin';
