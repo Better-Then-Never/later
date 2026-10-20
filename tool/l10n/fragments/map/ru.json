@@ -39,5 +39,6 @@
   "mapCapsuleOpenAnytime": "Можно открыть в любое время",
   "mapCapsuleOpensOn": "Откроется {date}",
   "mapCapsuleLeftBy": "От {name} · {date}",
-  "mapCapsuleLeftOn": "Оставлена {date}"
+  "mapCapsuleLeftOn": "Оставлена {date}",
+  "mapCapsuleYoursToOpen": "Ждёт вас"
 }

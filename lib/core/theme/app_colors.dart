@@ -10,6 +10,14 @@ abstract final class AppColors {
   static const brandGreen = Color(0xFF56C92E);
   static const placeYellow = Color(0xFFFFD900);
   static const danger = Color(0xFFFD4140);
+
+  // The capsule colours as the pins draw them (assets/icons/map/pin_*.png).
+  static const capsuleRed = Color(0xFFF84038);
+  static const capsuleBlue = Color(0xFF38A8F8);
+  static const capsuleGreen = Color(0xFF50C028);
+  static const capsuleYellow = Color(0xFFF8C830);
+  static const capsuleOrange = Color(0xFFF09038);
+  static const capsulePurple = Color(0xFFC038E8);
   static const materialRed = Color(0xFFF44336);
   static const redAccent = Color(0xFFFF5252);
   static const errorPopup = Color(0xFFFF5757);

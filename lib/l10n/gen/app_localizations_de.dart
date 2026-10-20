@@ -874,6 +874,42 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String capsulesWrapFrom(String name) {
+    return 'Von $name';
+  }
+
+  @override
+  String get capsulesWrapFromYou => 'Von dir';
+
+  @override
+  String get capsulesWrapHold => 'Zum Öffnen halten';
+
+  @override
+  String get capsulesWrapHoldLonger => 'Etwas länger halten';
+
+  @override
+  String get capsulesWrapKeepHolding => 'Weiter halten';
+
+  @override
+  String capsulesWrapLeftIn(String date, String place) {
+    return 'Hinterlassen am $date in $place';
+  }
+
+  @override
+  String get capsulesWrapOpen => 'Kapsel öffnen';
+
+  @override
+  String capsulesWrapWaited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Tage gewartet',
+      one: '1 Tag gewartet',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesYou => 'Du';
 
   @override
@@ -1471,6 +1507,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get mapCapsuleUnavailable => 'Diese Kapsel ist nicht mehr verfügbar';
+
+  @override
+  String get mapCapsuleYoursToOpen => 'Wartet auf dich';
 
   @override
   String get mapCompass => 'Karte nach Norden drehen';

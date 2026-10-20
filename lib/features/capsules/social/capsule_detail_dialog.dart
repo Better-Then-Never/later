@@ -10,13 +10,17 @@ import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/app_sheets.dart';
+import '../opening/capsule_openings.dart';
+import '../opening/capsule_wrap.dart';
 import 'capsule_comments_sheet.dart';
 import 'capsule_sheet.dart';
 import 'capsule_social_controller.dart';
 
 /// An opened capsule over the current screen (capsule v3): a sheet from the
 /// bottom with the photo, the words, reactions and comments (when the capsule
-/// is open and allows them) and its actions.
+/// is open and allows them) and its actions. The first time, it arrives
+/// wrapped (D1); not when it is opened for its comments (from a comment
+/// notification, so it was seen before).
 abstract final class CapsuleDetailDialog {
   static Future<void> show(
     BuildContext context,
@@ -38,6 +42,9 @@ abstract final class CapsuleDetailDialog {
         capsule.isOpen(DateTime.now())) {
       unawaited(social.markViewed(uid, capsule.id));
     }
+    final openings = context.read<CapsuleOpenings>();
+    final wrapped =
+        !openComments && openings.isWrapped(capsule, uid, DateTime.now());
     // The sheet route: rises from the bottom edge, closes on a tap above it
     // or a drag down (MOTION_CATALOG.md).
     return Navigator.of(context).push(
@@ -53,30 +60,42 @@ abstract final class CapsuleDetailDialog {
                   Navigator.of(sheetContext).pop();
                   onPlaceTap();
                 };
-          if (!withSocial) {
-            return CapsuleSheet(capsule: capsule, onPlaceTap: onPlace);
-          }
-          return ChangeNotifierProvider(
-            create: (_) => CapsuleSocialController(
-              capsule: capsule,
-              uid: uid,
-              social: social,
-            ),
-            child: Builder(
-              builder: (context) => _CommentsOnOpen(
-                open: openComments,
-                child: CapsuleSheet(
-                  capsule: capsule,
-                  controller: context.read<CapsuleSocialController>(),
-                  onPlaceTap: onPlace,
-                ),
-              ),
-            ),
+          final sheet = withSocial
+              ? _social(capsule, uid, social, openComments, onPlace)
+              : CapsuleSheet(capsule: capsule, onPlaceTap: onPlace);
+          if (!wrapped) return sheet;
+          return CapsuleWrapHost(
+            capsule: capsule,
+            radius: CapsuleSheet.radius,
+            onOpened: () => unawaited(openings.markOpened(uid!, capsule.id)),
+            child: sheet,
           );
         },
       ),
     );
   }
+
+  /// The sheet with its reactions and comments.
+  static Widget _social(
+    Capsule capsule,
+    String uid,
+    SocialRepository social,
+    bool openComments,
+    VoidCallback? onPlace,
+  ) => ChangeNotifierProvider(
+    create: (_) =>
+        CapsuleSocialController(capsule: capsule, uid: uid, social: social),
+    child: Builder(
+      builder: (context) => _CommentsOnOpen(
+        open: openComments,
+        child: CapsuleSheet(
+          capsule: capsule,
+          controller: context.read<CapsuleSocialController>(),
+          onPlaceTap: onPlace,
+        ),
+      ),
+    ),
+  );
 }
 
 /// Opens the comments once the dialog is up, when it was opened for them

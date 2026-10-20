@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/app_dates.dart';
 import '../../../core/l10n/l10n.dart';
@@ -14,6 +16,7 @@ import '../../../data/models/capsule.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/loop_mark.dart';
+import '../../capsules/opening/capsule_openings.dart';
 import '../../capsules/social/capsule_sheet.dart';
 
 /// The card above a tapped pin (capsule v3): a picture, the title, who left
@@ -134,6 +137,13 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
     final isOpen = _isOpen;
     final l10n = context.l10n;
     final palette = context.palette;
+    final uid = context.select<SessionController, String?>((s) => s.uid);
+    // Not unwrapped yet (D1): it waits for its first open.
+    final wrapped =
+        isOpen &&
+        context.select<CapsuleOpenings, bool>(
+          (o) => o.isWrapped(capsule, uid, _now),
+        );
     final left = AppDates.medium(capsule.createdAt ?? _now, l10n.localeName);
     final String second;
     if (isOpen) {
@@ -186,7 +196,9 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                   const SizedBox(height: 4),
                   if (isOpen)
                     Text(
-                      CapsuleInfoPanel.openedLabel(capsule, _now, l10n),
+                      wrapped
+                          ? l10n.mapCapsuleYoursToOpen
+                          : CapsuleInfoPanel.openedLabel(capsule, _now, l10n),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: _line(palette.accentText, bold: true),

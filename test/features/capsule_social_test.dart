@@ -5,16 +5,10 @@ import 'package:later/data/models/capsule.dart';
 import 'package:later/shared/widgets/capsule/capsule_author_row.dart';
 import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
-import 'package:later/data/services/profile_image_cache.dart';
-import 'package:later/app/session/session_controller.dart';
-import 'package:later/data/repositories/repositories.dart';
-import 'package:later/data/services/geocoding_service.dart';
 import 'package:later/features/capsules/social/capsule_comments_sheet.dart';
 import 'package:later/features/capsules/social/capsule_detail_dialog.dart';
 import 'package:later/features/capsules/social/capsule_sheet.dart';
 import 'package:later/features/capsules/social/capsule_social_controller.dart';
-import 'package:later/features/users/user_directory.dart';
-import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
 import '../helpers/capsule_host.dart';
@@ -27,14 +21,6 @@ const _capsule = Capsule(
   privacy: CapsulePrivacy.public,
   color: CapsuleColor.blue,
 );
-
-class _Session extends ChangeNotifier implements SessionController {
-  @override
-  String? get uid => 'me';
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
 
 void main() {
   late FakeSocialRepository social;
@@ -231,22 +217,10 @@ void main() {
           text: 'Lovely place',
         ),
       ];
-      final users = FakeUserRepository()
-        ..put(const UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe'));
       await tester.pumpWidget(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider<SessionController>.value(value: _Session()),
-            Provider<SocialRepository>.value(value: social),
-            Provider(create: (_) => GeocodingService()),
-            ChangeNotifierProvider(create: (_) => UserDirectory(users)),
-            ChangeNotifierProvider(
-              create: (_) => ProfileImageCache(
-                FakeImageStorageRepository(),
-                evict: (_) async {},
-              ),
-            ),
-          ],
+        capsuleHost(
+          social: social,
+          people: const [UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe')],
           child: testApp(
             home: Builder(
               builder: (context) => TextButton(

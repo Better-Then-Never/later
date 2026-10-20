@@ -10,6 +10,7 @@ import 'package:later/features/map/current_location.dart';
 import 'package:later/features/map/map_controller.dart';
 import 'package:later/features/map/map_focus.dart';
 import 'package:later/data/models/geo_position.dart';
+import 'package:later/features/capsules/opening/capsule_openings.dart';
 import 'package:later/features/map/widgets/capsule_info_panel.dart';
 
 import 'package:later/data/models/user_profile.dart';
@@ -58,7 +59,9 @@ Widget _panel(
   Locale locale = const Locale('en'),
   bool dark = false,
   VoidCallback? onMoreInfo,
+  CapsuleOpenings? openings,
 }) => capsuleHost(
+  openings: openings,
   people: const [UserProfile(uid: 'bob', name: 'Bob Stone', username: 'bob')],
   child: testApp(
     locale: locale,
@@ -182,6 +185,16 @@ void main() {
       expect(find.text('Open anytime'), findsOneWidget);
       await tester.tap(find.text('Open'));
       expect(opened, 1);
+    });
+
+    testWidgets('one not unwrapped yet is yours to open', (tester) async {
+      final openings = await testOpenings(since: DateTime(2026, 10, 1));
+      final bobs = _panelCapsule(owner: 'bob');
+      await tester.pumpWidget(_panel(bobs, openings: openings));
+      expect(find.text('Yours to open'), findsOneWidget);
+      await openings.markOpened('me', bobs.id);
+      await tester.pump();
+      expect(find.text('Open anytime'), findsOneWidget);
     });
 
     testWidgets('speaks the app language', (tester) async {

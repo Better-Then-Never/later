@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_motion.dart';
@@ -203,7 +205,7 @@ class AppSheetRoute<T> extends PageRoute<T> {
         alignment: Alignment.bottomCenter,
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: media.size.height - media.padding.top - 12,
+            maxHeight: math.max(0, media.size.height - media.padding.top - 12),
             maxWidth: 560,
           ),
           child: _DragToClose(child: builder(context)),

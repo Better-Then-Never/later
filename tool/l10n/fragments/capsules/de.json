@@ -130,5 +130,13 @@
   "capsulesReportHint": "Das Later-Team sieht es sich an. Der Autor erfährt nicht, wer es gemeldet hat.",
   "capsulesCreationRetake": "Neu aufnehmen",
   "capsulesCreationLeftToday": "Heute hinterlassen · jederzeit zu öffnen",
-  "capsulesCreationLeftTodayOpens": "Heute hinterlassen · öffnet sich am {date}"
+  "capsulesCreationLeftTodayOpens": "Heute hinterlassen · öffnet sich am {date}",
+  "capsulesWrapWaited": "{count, plural, =1{1 Tag gewartet} other{{count} Tage gewartet}}",
+  "capsulesWrapFrom": "Von {name}",
+  "capsulesWrapFromYou": "Von dir",
+  "capsulesWrapLeftIn": "Hinterlassen am {date} in {place}",
+  "capsulesWrapHold": "Zum Öffnen halten",
+  "capsulesWrapKeepHolding": "Weiter halten",
+  "capsulesWrapHoldLonger": "Etwas länger halten",
+  "capsulesWrapOpen": "Kapsel öffnen"
 }

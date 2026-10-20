@@ -829,6 +829,56 @@
       }
     }
   },
+  "capsulesWrapFrom": "From {name}",
+  "@capsulesWrapFrom": {
+    "description": "The gift tag on a wrapped capsule: who left it (the name is shown bold).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesWrapFromYou": "From you",
+  "@capsulesWrapFromYou": {
+    "description": "The gift tag on a wrapped capsule the user left themselves."
+  },
+  "capsulesWrapHold": "Hold to open",
+  "@capsulesWrapHold": {
+    "description": "Under a wrapped capsule: press and hold it to open it."
+  },
+  "capsulesWrapHoldLonger": "Hold a little longer",
+  "@capsulesWrapHoldLonger": {
+    "description": "Under a wrapped capsule after it was let go too early."
+  },
+  "capsulesWrapKeepHolding": "Keep holding",
+  "@capsulesWrapKeepHolding": {
+    "description": "Under a wrapped capsule while it is being held."
+  },
+  "capsulesWrapLeftIn": "Left {date} in {place}",
+  "@capsulesWrapLeftIn": {
+    "description": "The gift tag on a wrapped capsule: when and where it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesWrapOpen": "Open the capsule",
+  "@capsulesWrapOpen": {
+    "description": "Screen reader label of a wrapped capsule; a double tap opens it at once."
+  },
+  "capsulesWrapWaited": "{count, plural, =1{Waited 1 day} other{Waited {count} days}}",
+  "@capsulesWrapWaited": {
+    "description": "On a wrapped capsule, top: how long it waited since it was left.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "capsulesYou": "You",
   "commonBack": "Back",
   "@commonBack": {
@@ -1387,6 +1437,10 @@
   "mapCapsuleUnavailable": "This capsule is no longer available",
   "@mapCapsuleUnavailable": {
     "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
+  },
+  "mapCapsuleYoursToOpen": "Yours to open",
+  "@mapCapsuleYoursToOpen": {
+    "description": "The map card of an open capsule the user has not unwrapped yet."
   },
   "mapCompass": "Turn the map to north",
   "@mapCompass": {

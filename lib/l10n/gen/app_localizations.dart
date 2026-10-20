@@ -1466,6 +1466,54 @@ abstract class AppLocalizations {
   /// **'With {names}'**
   String capsulesWith(String names);
 
+  /// The gift tag on a wrapped capsule: who left it (the name is shown bold).
+  ///
+  /// In en, this message translates to:
+  /// **'From {name}'**
+  String capsulesWrapFrom(String name);
+
+  /// The gift tag on a wrapped capsule the user left themselves.
+  ///
+  /// In en, this message translates to:
+  /// **'From you'**
+  String get capsulesWrapFromYou;
+
+  /// Under a wrapped capsule: press and hold it to open it.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to open'**
+  String get capsulesWrapHold;
+
+  /// Under a wrapped capsule after it was let go too early.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold a little longer'**
+  String get capsulesWrapHoldLonger;
+
+  /// Under a wrapped capsule while it is being held.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep holding'**
+  String get capsulesWrapKeepHolding;
+
+  /// The gift tag on a wrapped capsule: when and where it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'Left {date} in {place}'**
+  String capsulesWrapLeftIn(String date, String place);
+
+  /// Screen reader label of a wrapped capsule; a double tap opens it at once.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the capsule'**
+  String get capsulesWrapOpen;
+
+  /// On a wrapped capsule, top: how long it waited since it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Waited 1 day} other{Waited {count} days}}'**
+  String capsulesWrapWaited(int count);
+
   /// No description provided for @capsulesYou.
   ///
   /// In en, this message translates to:
@@ -2449,6 +2497,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This capsule is no longer available'**
   String get mapCapsuleUnavailable;
+
+  /// The map card of an open capsule the user has not unwrapped yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Yours to open'**
+  String get mapCapsuleYoursToOpen;
 
   /// Screen reader label of the map compass, shown while the map is turned; a tap points it north.
   ///

@@ -885,6 +885,44 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String capsulesWrapFrom(String name) {
+    return 'От $name';
+  }
+
+  @override
+  String get capsulesWrapFromYou => 'От вас';
+
+  @override
+  String get capsulesWrapHold => 'Удерживайте, чтобы открыть';
+
+  @override
+  String get capsulesWrapHoldLonger => 'Удерживайте чуть дольше';
+
+  @override
+  String get capsulesWrapKeepHolding => 'Продолжайте удерживать';
+
+  @override
+  String capsulesWrapLeftIn(String date, String place) {
+    return 'Оставлена $date, $place';
+  }
+
+  @override
+  String get capsulesWrapOpen => 'Открыть капсулу';
+
+  @override
+  String capsulesWrapWaited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ждала $count дня',
+      many: 'Ждала $count дней',
+      few: 'Ждала $count дня',
+      one: 'Ждала $count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesYou => 'Вы';
 
   @override
@@ -1480,6 +1518,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get mapCapsuleUnavailable => 'Эта капсула больше недоступна';
+
+  @override
+  String get mapCapsuleYoursToOpen => 'Ждёт вас';
 
   @override
   String get mapCompass => 'Повернуть карту на север';

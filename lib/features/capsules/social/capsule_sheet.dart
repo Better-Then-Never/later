@@ -46,6 +46,9 @@ class CapsuleSheet extends StatelessWidget {
   /// Closes the sheet's route first, then shows the capsule on the map.
   final VoidCallback? onPlaceTap;
 
+  /// The sheet's top corners.
+  static const double radius = 28;
+
   /// The photo's [Hero] tag (by capsule, not URL: capsules may share one).
   /// Only one widget per route may carry it.
   static Object photoHeroTag(Capsule capsule) => 'capsule-photo:${capsule.id}';
@@ -73,7 +76,7 @@ class CapsuleSheet extends StatelessWidget {
     final description = capsule.description?.trim() ?? '';
     return Material(
       color: palette.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(radius)),
       clipBehavior: Clip.antiAlias,
       child: SafeArea(
         top: false,

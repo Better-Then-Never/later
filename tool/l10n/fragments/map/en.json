@@ -216,5 +216,9 @@
         "example": "6 Oct 2025"
       }
     }
+  },
+  "mapCapsuleYoursToOpen": "Yours to open",
+  "@mapCapsuleYoursToOpen": {
+    "description": "The map card of an open capsule the user has not unwrapped yet."
   }
 }

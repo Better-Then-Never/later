@@ -130,5 +130,13 @@
   "capsulesReportHint": "Команда Later посмотрит. Автор не узнает, кто пожаловался.",
   "capsulesCreationRetake": "Переснять",
   "capsulesCreationLeftToday": "Оставлена сегодня · открыть можно в любое время",
-  "capsulesCreationLeftTodayOpens": "Оставлена сегодня · откроется {date}"
+  "capsulesCreationLeftTodayOpens": "Оставлена сегодня · откроется {date}",
+  "capsulesWrapWaited": "{count, plural, one{Ждала {count} день} few{Ждала {count} дня} many{Ждала {count} дней} other{Ждала {count} дня}}",
+  "capsulesWrapFrom": "От {name}",
+  "capsulesWrapFromYou": "От вас",
+  "capsulesWrapLeftIn": "Оставлена {date}, {place}",
+  "capsulesWrapHold": "Удерживайте, чтобы открыть",
+  "capsulesWrapKeepHolding": "Продолжайте удерживать",
+  "capsulesWrapHoldLonger": "Удерживайте чуть дольше",
+  "capsulesWrapOpen": "Открыть капсулу"
 }

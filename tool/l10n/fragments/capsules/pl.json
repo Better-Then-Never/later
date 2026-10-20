@@ -130,5 +130,13 @@
   "capsulesReportHint": "Zespół Later to sprawdzi. Autor nie dowie się, kto to zgłosił.",
   "capsulesCreationRetake": "Zrób ponownie",
   "capsulesCreationLeftToday": "Zostawiona dziś · otwórz, kiedy chcesz",
-  "capsulesCreationLeftTodayOpens": "Zostawiona dziś · otworzy się {date}"
+  "capsulesCreationLeftTodayOpens": "Zostawiona dziś · otworzy się {date}",
+  "capsulesWrapWaited": "{count, plural, one{Czekała {count} dzień} few{Czekała {count} dni} many{Czekała {count} dni} other{Czekała {count} dnia}}",
+  "capsulesWrapFrom": "Od {name}",
+  "capsulesWrapFromYou": "Od ciebie",
+  "capsulesWrapLeftIn": "Zostawiona {date}, {place}",
+  "capsulesWrapHold": "Przytrzymaj, aby otworzyć",
+  "capsulesWrapKeepHolding": "Trzymaj dalej",
+  "capsulesWrapHoldLonger": "Przytrzymaj trochę dłużej",
+  "capsulesWrapOpen": "Otwórz kapsułę"
 }

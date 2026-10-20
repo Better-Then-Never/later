@@ -39,5 +39,6 @@
   "mapCapsuleOpenAnytime": "Jederzeit zu öffnen",
   "mapCapsuleOpensOn": "Öffnet sich am {date}",
   "mapCapsuleLeftBy": "Von {name} · {date}",
-  "mapCapsuleLeftOn": "Hinterlassen am {date}"
+  "mapCapsuleLeftOn": "Hinterlassen am {date}",
+  "mapCapsuleYoursToOpen": "Wartet auf dich"
 }
