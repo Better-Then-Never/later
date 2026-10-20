@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +7,9 @@ import '../../features/auth/login_page.dart';
 import '../../features/auth/permission_gate_page.dart';
 import '../../features/auth/welcome_page.dart';
 import '../../features/settings/pages/complete_profile_page.dart';
+import '../../core/assets/app_assets.dart';
+import '../shell/navbar_widget.dart';
+import '../shell/startup_report.dart';
 import '../shell/widget_tree_wrapper_page.dart';
 import '../router/app_routes.dart';
 import '../../shared/widgets/splash_logo.dart';
@@ -24,6 +29,42 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   String? _permissionsGrantedFor;
   SessionStatus? _lastStatus;
+
+  /// The pictures of home's first screen: the tab bar's and the map
+  /// buttons'. Decoded while the splash shows, so home's first frame has
+  /// them all (the bar's white pill and the buttons drew a frame before
+  /// their icons, docs/map/COLD_START.md).
+  static const _firstScreen = [
+    ...NavbarWidget.icons,
+    AppIcons.historyFilter,
+    AppIcons.mapPinUser,
+  ];
+
+  /// Home waits for them at most this long after the first frame.
+  static const _imagesAtLatest = Duration(milliseconds: 150);
+  bool _imagesStarted = false;
+  bool _imagesDone = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Again for the other theme's icons (ThemedAssetBundle), never waited
+    // for then.
+    final images = Future.wait([
+      for (final image in _firstScreen)
+        precacheImage(AssetImage(image), context),
+    ]);
+    if (_imagesStarted) return;
+    _imagesStarted = true;
+    unawaited(
+      images.timeout(_imagesAtLatest, onTimeout: () => const []).whenComplete(
+        () {
+          StartupReport.mark('shell_images');
+          if (mounted) setState(() => _imagesDone = true);
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +95,9 @@ class _AuthGateState extends State<AuthGate> {
         if (session.profileMissing) {
           return CompleteProfilePage(key: ValueKey('complete-$uid'));
         }
+        // Not yet known whether the profile exists: never the home screen
+        // first and "Almost there" after it (M-07).
+        if (!session.profileKnown) return const SplashLogo();
         if (_permissionsGrantedFor != uid) {
           return PermissionGatePage(
             key: ValueKey('gate-$uid'),
@@ -61,6 +105,7 @@ class _AuthGateState extends State<AuthGate> {
             onAllGranted: () => setState(() => _permissionsGrantedFor = uid),
           );
         }
+        if (!_imagesDone) return const SplashLogo();
         return WidgetTreeWrapper(key: ValueKey('home-$uid'));
     }
   }

@@ -1369,7 +1369,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapCapsuleReady => 'Check out what\'s inside!';
 
   @override
+  String get mapCapsuleUnavailable => 'This capsule is no longer available';
+
+  @override
   String get mapCompass => 'Turn the map to north';
+
+  @override
+  String get mapCreditsButton => 'Map data and credits';
+
+  @override
+  String get mapCreditsDescription =>
+      'The map is made from these sources. Tap one to open it.';
+
+  @override
+  String get mapCreditsImprove => 'Improve this map';
+
+  @override
+  String get mapCreditsRenderer => 'Map rendered with MapLibre';
+
+  @override
+  String get mapCreditsTitle => 'Map data';
 
   @override
   String mapDurationDays(int count) {
@@ -2394,6 +2413,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAboutLicenses => 'Open-source licenses';
+
+  @override
+  String get settingsAboutMapData => 'Map data and licenses';
 
   @override
   String get settingsAboutOpenFailed => 'Could not open the page.';

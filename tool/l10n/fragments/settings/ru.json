@@ -236,5 +236,6 @@
   "settingsUploadsWifiOnly": "Загружать только по Wi-Fi",
   "settingsUploadsWifiOnlyHint": "Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится.",
   "settingsNotificationsVibrate": "Вибрация",
-  "settingsNotificationsVibrateNeedsSound": "Работает вместе со звуком"
+  "settingsNotificationsVibrateNeedsSound": "Работает вместе со звуком",
+  "settingsAboutMapData": "Данные карты и лицензии"
 }

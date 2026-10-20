@@ -463,6 +463,113 @@ describe('capsules', () => {
   });
 });
 
+describe("the map's sync (docs/map/COLD_START.md)", () => {
+  const since = Timestamp.fromMillis(Date.now() - 3600 * 1000);
+  const capsule = (owner, privacy) => ({
+    ownerId: owner,
+    imageUrl: 'https://img',
+    title: 'T',
+    location: new GeoPoint(52.2, 21.0),
+    privacy,
+    createdAt: Timestamp.now(),
+    color: 'red',
+  });
+  const deletion = (owner, privacy) => ({
+    ownerId: owner,
+    privacy,
+    deletedAt: Timestamp.now(),
+    expireAt: Timestamp.fromMillis(Date.now() + 30 * 24 * 3600 * 1000),
+  });
+
+  beforeEach(() =>
+    seed(async (db) => {
+      await setDoc(doc(db, 'capsules/bobNew'), capsule('bob', 'friends'));
+      await setDoc(doc(db, 'capsules/carolNew'), capsule('carol', 'public'));
+      await setDoc(doc(db, 'capsule_deletions/bobGone'), deletion('bob', 'friends'));
+      await setDoc(doc(db, 'capsule_deletions/carolGone'), deletion('carol', 'friends'));
+      await setDoc(doc(db, 'capsule_deletions/carolPublicGone'), deletion('carol', 'public'));
+    }),
+  );
+
+  test('new capsules since a time: friends-only of friends, and public', async () => {
+    const db = as('alice');
+    const friends = await assertSucceeds(
+      getDocs(
+        query(
+          collection(db, 'capsules'),
+          where('ownerId', 'in', ['bob']),
+          where('privacy', '==', 'friends'),
+          where('createdAt', '>', since),
+          orderBy('createdAt', 'desc'),
+          limit(500),
+        ),
+      ),
+    );
+    assert.deepEqual(friends.docs.map((d) => d.id), ['bobNew']);
+    const pub = await assertSucceeds(
+      getDocs(
+        query(
+          collection(db, 'capsules'),
+          where('privacy', '==', 'public'),
+          where('createdAt', '>', since),
+          orderBy('createdAt', 'desc'),
+          limit(500),
+        ),
+      ),
+    );
+    assert.deepEqual(pub.docs.map((d) => d.id), ['carolNew']);
+  });
+
+  test('a deletion is read by whoever could see the capsule, nobody else', async () => {
+    const alice = as('alice');
+    await assertSucceeds(getDoc(doc(alice, 'capsule_deletions/bobGone')));
+    await assertSucceeds(getDoc(doc(alice, 'capsule_deletions/carolPublicGone')));
+    await assertFails(getDoc(doc(alice, 'capsule_deletions/carolGone')), 'not her friend');
+    await assertFails(getDoc(doc(anon(), 'capsule_deletions/carolPublicGone')));
+
+    const friends = await assertSucceeds(
+      getDocs(
+        query(
+          collection(alice, 'capsule_deletions'),
+          where('ownerId', 'in', ['bob']),
+          where('privacy', '==', 'friends'),
+          where('deletedAt', '>', since),
+          orderBy('deletedAt', 'desc'),
+        ),
+      ),
+    );
+    assert.deepEqual(friends.docs.map((d) => d.id), ['bobGone']);
+    const pub = await assertSucceeds(
+      getDocs(
+        query(
+          collection(alice, 'capsule_deletions'),
+          where('privacy', '==', 'public'),
+          where('deletedAt', '>', since),
+          orderBy('deletedAt', 'desc'),
+        ),
+      ),
+    );
+    assert.deepEqual(pub.docs.map((d) => d.id), ['carolPublicGone']);
+    await assertFails(
+      getDocs(
+        query(
+          collection(alice, 'capsule_deletions'),
+          where('ownerId', 'in', ['carol']),
+          where('privacy', '==', 'friends'),
+        ),
+      ),
+    );
+    await assertFails(getDocs(collection(alice, 'capsule_deletions')));
+  });
+
+  test('only the server writes them', async () => {
+    const alice = as('alice');
+    await assertFails(setDoc(doc(alice, 'capsule_deletions/fake'), deletion('alice', 'public')));
+    await assertFails(deleteDoc(doc(alice, 'capsule_deletions/carolPublicGone')));
+    await assertFails(updateDoc(doc(alice, 'capsule_deletions/bobGone'), { privacy: 'public' }));
+  });
+});
+
 describe('blocking', () => {
   test('only you block; only you and the blocked user see it', async () => {
     const block = { blockedAt: serverTimestamp() };

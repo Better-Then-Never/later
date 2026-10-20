@@ -236,5 +236,6 @@
   "settingsUploadsWifiOnly": "Subir solo con Wi-Fi",
   "settingsUploadsWifiOnlyHint": "Las cápsulas hechas sin Wi-Fi esperan en el teléfono hasta tener Wi-Fi.",
   "settingsNotificationsVibrate": "Vibración",
-  "settingsNotificationsVibrateNeedsSound": "Va junto con el sonido"
+  "settingsNotificationsVibrateNeedsSound": "Va junto con el sonido",
+  "settingsAboutMapData": "Datos del mapa y licencias"
 }

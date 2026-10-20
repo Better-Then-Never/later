@@ -2,6 +2,7 @@
 // while it is turned.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:later/core/theme/app_dimens.dart';
 import 'package:later/features/map/widgets/map_compass.dart';
 
 import '../helpers/test_app.dart';
@@ -43,7 +44,12 @@ void main() {
     bearing.value = 90;
     await tester.pumpAndSettle();
     expect(label, findsOneWidget);
-    expect(tester.getSize(find.byType(MapCompass)), const Size(52, 52));
+    // One scale for every map control, never under the 44 dp tap minimum.
+    expect(
+      tester.getSize(find.byType(MapCompass)),
+      const Size.square(AppSizes.mapControl),
+    );
+    expect(AppSizes.mapControl, greaterThanOrEqualTo(44));
     await tester.tap(find.byType(MapCompass));
     expect(taps, 1);
 

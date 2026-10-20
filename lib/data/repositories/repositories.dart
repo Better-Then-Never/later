@@ -307,6 +307,34 @@ abstract interface class CapsuleRepository {
     int limit,
   });
 
+  // The map's sync (docs/map/COLD_START.md): what changed since the pins the
+  // phone keeps. Capsules are never edited, so a change is a new capsule
+  // (its server-set createdAt) or a deleted one.
+
+  /// Friends-only capsules of [friendIds] created after [after], newest
+  /// first, at most [limit] per chunk of friends.
+  Stream<List<Capsule>> watchFriendsSince(
+    List<String> friendIds,
+    DateTime after, {
+    int limit,
+  });
+
+  /// Public capsules created after [after], anywhere, newest first, at most
+  /// [limit].
+  Stream<List<Capsule>> watchPublicSince(DateTime after, {int limit});
+
+  /// Friends-only capsules of [friendIds] and public capsules deleted after
+  /// [after] (functions/lib/mapsync.js), at most [limit] of each query.
+  Stream<List<CapsuleDeletion>> watchDeletionsSince(
+    List<String> friendIds,
+    DateTime after, {
+    int limit,
+  });
+
+  /// [getById] from this phone's copy only (no wait for the network; null
+  /// when it has none): what to show at once, while [getById] checks.
+  Future<Capsule?> getCachedById(String id);
+
   /// An id for a new capsule, made on the device (see [CapsuleDraft.id]).
   String newCapsuleId();
 

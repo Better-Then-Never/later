@@ -27,6 +27,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:integration_test/integration_test.dart';
 import 'package:later/app/appearance/appearance_controller.dart';
 import 'package:later/app/bootstrap.dart';
@@ -37,6 +38,7 @@ import 'package:later/features/achievements/streak_pill.dart';
 import 'package:later/features/capsules/creation/capsule_creation_page.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/map/map_focus.dart';
+import 'package:later/features/map/map_stats.dart';
 import 'package:later/features/map/widgets/capsule_preview_card.dart';
 import 'package:later/features/map/widgets/map_compass.dart';
 import 'package:later/features/messages/widgets/chat_list_item.dart';
@@ -485,6 +487,13 @@ void main() {
       'map_zoom_in',
       'map_pan_markers',
       'map_compass',
+      'map_pinch_sweep',
+      'map_pinch_wave',
+      'map_tap_zoom',
+      'map_flash_slow',
+      'map_flash_normal',
+      'map_flash_fast',
+      'map_flash_select',
     ];
     if (_only.isEmpty || mapFlows.any(_only.split(',').contains)) {
       await tab(tester, AppIcons.navbarMap);
@@ -562,6 +571,211 @@ void main() {
       });
       // Two fingers turn the map, the compass shows; a tap on it turns the
       // map back to north. Recorded: the map's bearing after each, in degrees.
+      /// The gesture as real touches: tool/dev/map_gesture.sh reads this line
+      /// and plays it on the phone with tool/dev/touch/Pinch.java (Android's
+      /// own injection, as a hand's touches arrive); the test only waits.
+      /// Synthetic test events reached Google Maps but not every native map
+      /// (MapLibre missed some), so both maps get the same real fingers.
+      /// [distances] are dp; the line is in screen pixels.
+      /// Real touches: tool/dev/map_gesture.sh hands [args] as they are to
+      /// the injector (tool/dev/touch/Pinch.java), which takes [ms].
+      Future<void> playFingers(String args, int ms) async {
+        // ignore: avoid_print
+        print('MAPFINGERS $args');
+        // A test drops the device's own touches unless told to pass them on.
+        binding.shouldPropagateDevicePointerEvents = true;
+        await wait(tester, Duration(milliseconds: ms + 1500));
+        binding.shouldPropagateDevicePointerEvents = false;
+      }
+
+      Future<void> realFingers(List<List<double>> gestures, int msPer) async {
+        final ratio = tester.view.devicePixelRatio;
+        final c = center * ratio;
+        final parts = <String>[];
+        var total = 0;
+        for (final g in gestures) {
+          if (parts.isNotEmpty) parts.add('/ 350');
+          parts.add(g.map((d) => (d * ratio).round()).join(' '));
+          total += (g.length - 1) * msPer + 350;
+        }
+        await playFingers(
+          '${c.dx.round()} ${c.dy.round()} $msPer ${parts.join(' ')}',
+          total,
+        );
+      }
+
+      /// The same view for every run: the seed's city at [zoom].
+      Future<void> start(double zoom) async {
+        await MapStats.instance.moveCamera?.call(
+          const LatLng(_seedLatitude, _seedLongitude),
+          zoom,
+        );
+        await wait(tester, const Duration(seconds: 3));
+        MapStats.instance.reset();
+        // For tool/dev/map_gesture.sh, which starts recording the screen.
+        // ignore: avoid_print
+        print('MAPFLOW_START');
+        await wait(tester, const Duration(milliseconds: 1500));
+      }
+
+      void stats(String name) {
+        // ignore: avoid_print
+        print('MAPFLOW_END');
+        MapStats.instance.total.toJson().forEach(
+          (key, value) => record('${name}_$key', value),
+        );
+      }
+
+      // The owner's session (docs/map/PERFORMANCE.md): from the city out to
+      // the country, in to the street, out again and back, each pinch 1.9
+      // zoom levels in 0.6 s, a short pause between pinches.
+      await flow('map_pinch_sweep', setup: () => start(13), () async {
+        await realFingers([
+          for (final (pinches, inward) in const [
+            (4, false),
+            (6, true),
+            (6, false),
+            (4, true),
+          ])
+            for (var i = 0; i < pinches; i++)
+              inward ? const [140.0, 520.0] : const [520.0, 140.0],
+        ], 600);
+        stats('map_pinch_sweep');
+      });
+
+      // "Pinching up and down": fingers stay down and go in and out across
+      // the heat / bubble band (zoom 10.8 to 12.7), then across bubble splits
+      // (12.7 to 14.6), four times each.
+      await flow('map_pinch_wave', setup: () => start(11.7), () async {
+        const wave = [260.0, 140.0, 520.0, 140.0, 520.0, 140.0, 520.0];
+        await realFingers([
+          [...wave, 140, 520, 260],
+          [140, 520],
+          [...wave, 140, 520, 260],
+        ], 700);
+        stats('map_pinch_wave');
+      });
+
+      // A double tap, a two-finger tap and the zoom buttons each move the
+      // map one level, animated: the camera passes through many zooms, none
+      // more than a quarter of a level from the one before (an Android
+      // animator scale of 0 makes MapLibre's tap zooms jump; PERFORMANCE.md).
+      // A warm-up pair first, printed but not judged: in some runs the first
+      // gestures soon after the map opened stalled (docs/map/DIAGNOSIS.md).
+      await flow('map_tap_zoom', setup: () => start(13), () async {
+        final c = center * tester.view.devicePixelRatio;
+        final (x, y) = (c.dx.round(), c.dy.round());
+        Finder button(String label) => find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == label,
+        );
+        Future<void> step(
+          String name,
+          int change,
+          Future<void> Function() act, {
+          bool judged = true,
+        }) async {
+          final stats = MapStats.instance;
+          final before = stats.lastZoom ?? 13;
+          stats
+            ..zooms.clear()
+            ..recordZooms = true;
+          await act();
+          await wait(tester, const Duration(milliseconds: 800));
+          stats.recordZooms = false;
+          final zooms = [before, for (final (_, z) in stats.zooms) z];
+          final trace = [
+            for (var i = 1; i < stats.zooms.length; i++)
+              '${(stats.zooms[i].$1 - stats.zooms[i - 1].$1) ~/ 1000}ms:'
+                  '${(stats.zooms[i].$2 - stats.zooms[i - 1].$2).toStringAsFixed(3)}',
+          ];
+          // ignore: avoid_print
+          print('MAPTAPZOOM $name ${trace.join(' ')}');
+          if (!judged) return;
+          var largest = 0.0;
+          for (var i = 1; i < zooms.length; i++) {
+            largest = math.max(largest, (zooms[i] - zooms[i - 1]).abs());
+          }
+          final values = {for (final z in zooms) z.toStringAsFixed(3)}.length;
+          final moved = zooms.last - before;
+          record('map_tap_zoom_${name}_values', values);
+          record(
+            'map_tap_zoom_${name}_largest_step_milli',
+            (largest * 1000).round(),
+          );
+          record('map_tap_zoom_${name}_change_milli', (moved * 1000).round());
+          expect(values, greaterThanOrEqualTo(6), reason: '$name: zooms');
+          expect(largest, lessThanOrEqualTo(0.25), reason: '$name: a jump');
+          expect(moved, closeTo(change, 0.1), reason: '$name: one level');
+        }
+
+        Future<void> doubleTap() => playFingers('tap $x $y 2 120', 300);
+        Future<void> twoFingerTap() => playFingers('$x $y 80 400 400', 100);
+        await step('warm_up_double_tap', 1, doubleTap, judged: false);
+        await step('warm_up_two_finger_tap', -1, twoFingerTap, judged: false);
+        await step('double_tap', 1, doubleTap);
+        await step('two_finger_tap', -1, twoFingerTap);
+        await step('zoom_in_button', 1, () async {
+          await tester.tap(button(AppL10n.current.mapZoomIn));
+        });
+        await step('zoom_out_button', -1, () async {
+          await tester.tap(button(AppL10n.current.mapZoomOut));
+        });
+        stats('map_tap_zoom');
+      });
+
+      // Flashing bubbles (docs/map/FLASH_FIX.md): over the dense middle of the
+      // seed, from the heat (zoom 11) in to the pins (15) and back, two levels
+      // a pinch, at three speeds (1.5 s, 0.6 s and 0.18 s: a flick), about
+      // 20 s each.
+      // With MAP_FLASH the probe counts what the map drew wrong.
+      for (final (name, ms, cycles) in [
+        ('map_flash_slow', 1500, 3),
+        ('map_flash_normal', 600, 5),
+        ('map_flash_fast', 180, 8),
+      ]) {
+        await flow(name, setup: () => start(11), () async {
+          await realFingers([
+            for (var i = 0; i < cycles; i++) ...[
+              [150.0, 600.0],
+              [150.0, 600.0],
+              [600.0, 150.0],
+              [600.0, 150.0],
+            ],
+          ], ms);
+          stats(name);
+        });
+      }
+
+      // The selected pin (FLASH_FIX.md §selection): select, close by tapping
+      // the map, select another, close and select it again quickly, tap it
+      // twice; real taps where the map shows them.
+      await flow('map_flash_select', setup: () => start(12.8), () async {
+        final hooks = MapStats.instance;
+        final first = await hooks.pinOnScreen?.call(0);
+        final other = await hooks.pinOnScreen?.call(1);
+        final empty = await hooks.emptyOnScreen?.call();
+        if (first == null || other == null || empty == null) {
+          fail('no pins or no empty spot on screen');
+        }
+        // One command, so the gaps are exact (each tap, then the wait).
+        final steps = [
+          (first, 1200),
+          (empty, 1000),
+          (other, 600),
+          (empty, 150),
+          (other, 1000),
+          (empty, 1000),
+          (first, 250),
+          (first, 1000),
+          (empty, 1000),
+        ];
+        await playFingers(
+          'taps ${[for (final (at, ms) in steps) '${at.dx.round()} ${at.dy.round()} $ms'].join(' ')}',
+          steps.fold(0, (sum, s) => sum + s.$2 + 50),
+        );
+        stats('map_flash_select');
+      });
+
       await flow('map_compass', () async {
         double bearing() =>
             tester.widget<MapCompass>(find.byType(MapCompass)).bearing.value;

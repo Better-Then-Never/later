@@ -1417,7 +1417,26 @@ class AppLocalizationsPl extends AppLocalizations {
   String get mapCapsuleReady => 'Zobacz, co jest w środku!';
 
   @override
+  String get mapCapsuleUnavailable => 'Ta kapsuła nie jest już dostępna';
+
+  @override
   String get mapCompass => 'Obróć mapę na północ';
+
+  @override
+  String get mapCreditsButton => 'Dane mapy i autorzy';
+
+  @override
+  String get mapCreditsDescription =>
+      'Mapa powstaje z tych źródeł. Dotknij, aby je otworzyć.';
+
+  @override
+  String get mapCreditsImprove => 'Popraw tę mapę';
+
+  @override
+  String get mapCreditsRenderer => 'Mapa wyświetlana przez MapLibre';
+
+  @override
+  String get mapCreditsTitle => 'Dane mapy';
 
   @override
   String mapDurationDays(int count) {
@@ -2483,6 +2502,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsAboutLicenses => 'Licencje open source';
+
+  @override
+  String get settingsAboutMapData => 'Dane mapy i licencje';
 
   @override
   String get settingsAboutOpenFailed => 'Nie udało się otworzyć strony.';

@@ -2336,11 +2336,47 @@ abstract class AppLocalizations {
   /// **'Check out what\'s inside!'**
   String get mapCapsuleReady;
 
+  /// A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user.
+  ///
+  /// In en, this message translates to:
+  /// **'This capsule is no longer available'**
+  String get mapCapsuleUnavailable;
+
   /// Screen reader label of the map compass, shown while the map is turned; a tap points it north.
   ///
   /// In en, this message translates to:
   /// **'Turn the map to north'**
   String get mapCompass;
+
+  /// Screen reader label of the map's (i) button.
+  ///
+  /// In en, this message translates to:
+  /// **'Map data and credits'**
+  String get mapCreditsButton;
+
+  /// Under the title of the map data sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'The map is made from these sources. Tap one to open it.'**
+  String get mapCreditsDescription;
+
+  /// Opens OpenStreetMap's page for reporting a mistake in the map.
+  ///
+  /// In en, this message translates to:
+  /// **'Improve this map'**
+  String get mapCreditsImprove;
+
+  /// The open source library that draws the map; opens its website.
+  ///
+  /// In en, this message translates to:
+  /// **'Map rendered with MapLibre'**
+  String get mapCreditsRenderer;
+
+  /// Title of the sheet with the map's data sources and their licences.
+  ///
+  /// In en, this message translates to:
+  /// **'Map data'**
+  String get mapCreditsTitle;
 
   /// Days part of the compact countdown. Keep it as short as possible.
   ///
@@ -3961,6 +3997,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open-source licenses'**
   String get settingsAboutLicenses;
+
+  /// About page: opens the map's data sources and their licences.
+  ///
+  /// In en, this message translates to:
+  /// **'Map data and licenses'**
+  String get settingsAboutMapData;
 
   /// No description provided for @settingsAboutOpenFailed.
   ///

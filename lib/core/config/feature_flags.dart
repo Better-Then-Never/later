@@ -28,4 +28,25 @@ abstract final class FeatureFlags {
   /// both sides). Off until checked on a test phone whose contacts may be
   /// read (docs/feel/BLOCKERS.md).
   static const contactSuggestions = false;
+
+  /// The map drawn by MapLibre with OpenFreeMap's tiles instead of Google
+  /// Maps (docs/map/DECISION.md; the owner's choice, 19 Oct 2026): the heat,
+  /// bubbles and pins as layers of the map itself. A build goes back to
+  /// Google Maps with --dart-define=MAP_LIBRE=false.
+  static const mapLibre = bool.fromEnvironment('MAP_LIBRE', defaultValue: true);
+
+  /// The map's data credit (docs/map/ATTRIBUTION.md). true (the owner's
+  /// choice, 19 Oct 2026): the tiny credit line shows next to the (i) at the
+  /// start of each session, until the map is first touched (at most 5 s),
+  /// then only the (i) stays (OpenStreetMap's guidelines allow it
+  /// collapsing). false: the line is always on the map.
+  static const mapCreditCollapses = true;
+
+  /// The map reads only the friends' and public capsules that changed since
+  /// the pins it kept on the phone (docs/map/COLD_START.md, "Delta sync"),
+  /// not all of them at every start. Off until the backend it needs is
+  /// deployed (the deletion records, their rules, two indexes and a TTL
+  /// policy); without it the map would notice and read everything anyway.
+  /// --dart-define=MAP_DELTA=true for the local emulators.
+  static const mapDeltaSync = bool.fromEnvironment('MAP_DELTA');
 }

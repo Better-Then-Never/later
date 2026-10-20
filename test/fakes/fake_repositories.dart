@@ -1000,6 +1000,54 @@ class FakeCapsuleRepository implements CapsuleRepository {
     int limit = 300,
   }) => Stream.value(const []);
 
+  // The map's sync: driven by the test.
+  final friendsSince = StreamController<List<Capsule>>.broadcast();
+  final publicSince = StreamController<List<Capsule>>.broadcast();
+  final deletionsSince = StreamController<List<CapsuleDeletion>>.broadcast();
+
+  /// What each sync query was asked for: its cursor, and the friends.
+  final sinceAsked = <String, DateTime>{};
+  List<String>? friendsSinceIds;
+
+  @override
+  Stream<List<Capsule>> watchFriendsSince(
+    List<String> friendIds,
+    DateTime after, {
+    int limit = 500,
+  }) {
+    sinceAsked['friends'] = after;
+    friendsSinceIds = friendIds;
+    return friendsSince.stream;
+  }
+
+  @override
+  Stream<List<Capsule>> watchPublicSince(DateTime after, {int limit = 500}) {
+    sinceAsked['public'] = after;
+    return publicSince.stream;
+  }
+
+  @override
+  Stream<List<CapsuleDeletion>> watchDeletionsSince(
+    List<String> friendIds,
+    DateTime after, {
+    int limit = 500,
+  }) {
+    sinceAsked['deletions'] = after;
+    return deletionsSince.stream;
+  }
+
+  /// The phone's copy, for [getCachedById].
+  final cached = <String, Capsule>{};
+
+  @override
+  Future<Capsule?> getCachedById(String id) async => cached[id];
+
+  Future<void> closeSync() async {
+    await friendsSince.close();
+    await publicSince.close();
+    await deletionsSince.close();
+  }
+
   var _ids = 0;
 
   /// The next creates fail like an upload without network.

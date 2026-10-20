@@ -32,6 +32,11 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    // FlutterActivity reports "fully drawn" at Flutter's first frame; Later
+    // reports it when the map shows its capsules (StartupReport), the time
+    // to full display Android vitals should count (docs/map/COLD_START.md).
+    override fun onFlutterUiDisplayed() {}
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName)
@@ -99,12 +104,27 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
-        // The signed-in home screen drew its first frame (StartupReport).
+        // The map drew its capsules (StartupReport).
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/startup")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "fullyDrawn" -> {
                         reportFullyDrawn()
+                        result.success(null)
+                    }
+                    // The app's light or dark for the launch screen of the next
+                    // starts (AppearanceController): Android 12+ keeps it.
+                    "nightMode" -> {
+                        if (android.os.Build.VERSION.SDK_INT >= 31) {
+                            val modes = getSystemService(android.app.UiModeManager::class.java)
+                            modes?.setApplicationNightMode(
+                                when (call.arguments as? String) {
+                                    "dark" -> android.app.UiModeManager.MODE_NIGHT_YES
+                                    "light" -> android.app.UiModeManager.MODE_NIGHT_NO
+                                    else -> android.app.UiModeManager.MODE_NIGHT_AUTO
+                                },
+                            )
+                        }
                         result.success(null)
                     }
                     else -> result.notImplemented()

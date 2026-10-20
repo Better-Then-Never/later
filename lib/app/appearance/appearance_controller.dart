@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../data/services/preferences_store.dart';
 
@@ -64,6 +67,7 @@ class AppearanceController extends ChangeNotifier {
     final language = _prefs.deviceStringSync(_languageKey);
     _language = supportedLanguages.contains(language) ? language : null;
     _uiSize = UiSize.parse(_prefs.deviceStringSync(_uiSizeKey));
+    _tellLaunchScreen();
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
@@ -71,8 +75,22 @@ class AppearanceController extends ChangeNotifier {
     willChange?.call();
     _themeMode = mode;
     notifyListeners();
+    _tellLaunchScreen();
     await _prefs.setDeviceString(_themeKey, mode.name);
   }
+
+  /// The phone's launch screen follows the system's light or dark, not the
+  /// app's: Android 12+ is told the app's choice, so a start in a theme
+  /// other than the phone's never flashes the other colour.
+  void _tellLaunchScreen() => unawaited(
+    _launch.invokeMethod<void>('nightMode', _themeMode.name).catchError((
+      Object _,
+    ) {
+      // Tests, iOS, older Android: nothing to tell.
+    }),
+  );
+
+  static const _launch = MethodChannel('later.app/startup');
 
   /// [code] null follows the phone's language.
   Future<void> setLanguage(String? code) async {

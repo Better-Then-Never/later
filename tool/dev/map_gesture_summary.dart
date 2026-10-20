@@ -1,0 +1,196 @@
+// One table for the map gesture check (tool/dev/map_gesture.sh): per flow and
+// run, Flutter's frames (timeline), the map's own counts (MapStats, from
+// perf_numbers.json) and the recording's report (map_gesture_report.py).
+//
+//   dart run tool/dev/map_gesture_summary.dart build/perf/<label>
+import 'dart:convert';
+import 'dart:io';
+
+const _budgetUs = 8333; // 120 Hz
+const _flows = ['map_pinch_sweep', 'map_pinch_wave'];
+
+void main(List<String> args) {
+  final dir = Directory(args.isEmpty ? 'build/perf' : args.first);
+  final runs =
+      dir
+          .listSync()
+          .whereType<Directory>()
+          .where(
+            (d) => d.uri.pathSegments.reversed.elementAt(1).startsWith('run_'),
+          )
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
+  final columns = [
+    'run',
+    'frames',
+    'janky %',
+    'worst ms',
+    '>16.7 ms',
+    'heat mut.',
+    'heat tiles',
+    'marker upd.',
+    'markers +/-/~',
+    'largest upd.',
+    'in-app gaps ≥100',
+    'longest gap ms',
+    'answer ms (avg/max)',
+    'scale error, levels (avg/max)',
+    'anchor drift dp (avg/max)',
+    'video gaps ≥100',
+    'video longest ms',
+    'frozen ≥150',
+    'dropout frames',
+    'heat blinks',
+  ];
+  for (final flow in _flows) {
+    stdout.writeln('\n### $flow\n');
+    stdout.writeln('| ${columns.join(' | ')} |');
+    stdout.writeln('|${List.filled(columns.length, '---').join('|')}|');
+    for (final run in runs) {
+      final name = run.uri.pathSegments.reversed.elementAt(1);
+      final cells = <String>[name];
+      final summary = File('${run.path}/$flow.timeline_summary.json');
+      if (summary.existsSync()) {
+        final s = jsonDecode(summary.readAsStringSync()) as Map;
+        final build = (s['frame_build_times'] as List).cast<num>();
+        final raster = (s['frame_rasterizer_times'] as List).cast<num>();
+        final n = build.length < raster.length ? build.length : raster.length;
+        var janky = 0, over = 0;
+        num worst = 0;
+        for (var i = 0; i < n; i++) {
+          final w = build[i] > raster[i] ? build[i] : raster[i];
+          if (w > _budgetUs) janky++;
+          if (w > 16667) over++;
+          if (w > worst) worst = w;
+        }
+        cells.addAll([
+          '$n',
+          (n == 0 ? 0 : janky * 100 / n).toStringAsFixed(1),
+          (worst / 1000).toStringAsFixed(1),
+          '$over',
+        ]);
+      } else {
+        cells.addAll(['-', '-', '-', '-']);
+      }
+      final numbers = File('${run.path}/perf_numbers.json');
+      final stats = numbers.existsSync()
+          ? jsonDecode(numbers.readAsStringSync()) as Map
+          : const {};
+      String stat(String key) {
+        final v = stats['${flow}_$key'];
+        return v is List && v.isNotEmpty ? '${v.last}' : '-';
+      }
+
+      // Thousandths of a zoom level, shown in levels.
+      String levels(String key) {
+        final v = stats['${flow}_$key'];
+        return v is List && v.isNotEmpty
+            ? ((v.last as num) / 1000).toStringAsFixed(3)
+            : '-';
+      }
+
+      cells.addAll([
+        stat('heat_mutations'),
+        stat('heat_tiles'),
+        stat('marker_updates'),
+        '${stat('markers_added')}/${stat('markers_removed')}/${stat('markers_changed')}',
+        stat('largest_marker_update'),
+        stat('frame_gaps_100ms'),
+        stat('longest_gap_ms'),
+        '${stat('answer_ms')}/${stat('slowest_answer_ms')}',
+        '${levels('scale_error_milli')}/${levels('scale_error_max_milli')}',
+        '${stat('anchor_drift_dp')}/${stat('anchor_drift_max_dp')}',
+      ]);
+      final report = File('${run.path}/$flow.report.json');
+      if (report.existsSync()) {
+        final r = jsonDecode(report.readAsStringSync()) as Map;
+        cells.addAll([
+          '${r['gaps_100ms']}',
+          '${r['longest_gap_ms']}',
+          '${r['frozen_150ms']}',
+          '${r['dropout_frames']}',
+          '${r['heat_blinks']}',
+        ]);
+      } else {
+        cells.addAll(['-', '-', '-', '-', '-']);
+      }
+      stdout.writeln('| ${cells.join(' | ')} |');
+    }
+  }
+
+  // Flashing (docs/map/FLASH_FIX.md): the probe's counts (MAP_FLASH builds)
+  // and the recording's flashes.
+  stdout.writeln('\n### flashes\n');
+  stdout.writeln(
+    '| run | flow | probes | double frames (ids) | missing frames (ids) | '
+    'ghost frames (ids) | torn frames | pictures behind (max) | '
+    'video flashes | video fps |',
+  );
+  stdout.writeln('|---|---|---|---|---|---|---|---|---|---|');
+  for (final run in runs) {
+    final name = run.uri.pathSegments.reversed.elementAt(1);
+    final numbers = File('${run.path}/perf_numbers.json');
+    final stats = numbers.existsSync()
+        ? jsonDecode(numbers.readAsStringSync()) as Map
+        : const {};
+    for (final flow in [
+      'map_flash_slow',
+      'map_flash_normal',
+      'map_flash_fast',
+      'map_flash_select',
+    ]) {
+      String stat(String key) {
+        final v = stats['${flow}_$key'];
+        return v is List && v.isNotEmpty ? '${v.last}' : '-';
+      }
+
+      final video = File('${run.path}/$flow.flash.json');
+      if (stat('flash_probes') == '-' && !video.existsSync()) continue;
+      final v = video.existsSync()
+          ? jsonDecode(video.readAsStringSync()) as Map
+          : const {};
+      stdout.writeln(
+        '| $name | $flow | ${stat('flash_probes')} | '
+        '${stat('flash_double_frames')} (${stat('flash_doubles')}) | '
+        '${stat('flash_missing_frames')} (${stat('flash_missing')}) | '
+        '${stat('flash_ghost_frames')} (${stat('flash_ghosts')}) | '
+        '${stat('flash_torn_frames')} | ${stat('flash_behind_max')} | '
+        '${v['flash_count'] ?? '-'} | ${v['fps'] ?? '-'} |',
+      );
+    }
+  }
+
+  // The tap zooms (map_tap_zoom): each one level, through how many zooms,
+  // and the largest step from one camera position to the next.
+  stdout.writeln('\n### map_tap_zoom\n');
+  stdout.writeln(
+    '| run | step | zooms passed | largest step (levels) | '
+    'change (levels) |',
+  );
+  stdout.writeln('|---|---|---|---|---|');
+  for (final run in runs) {
+    final numbers = File('${run.path}/perf_numbers.json');
+    if (!numbers.existsSync()) continue;
+    final stats = jsonDecode(numbers.readAsStringSync()) as Map;
+    String value(String key, {bool milli = false}) {
+      final v = stats['map_tap_zoom_$key'];
+      if (v is! List || v.isEmpty) return '-';
+      return milli ? ((v.last as num) / 1000).toStringAsFixed(3) : '${v.last}';
+    }
+
+    final name = run.uri.pathSegments.reversed.elementAt(1);
+    for (final step in [
+      'double_tap',
+      'two_finger_tap',
+      'zoom_in_button',
+      'zoom_out_button',
+    ]) {
+      if (value('${step}_values') == '-') continue;
+      stdout.writeln(
+        '| $name | $step | ${value('${step}_values')} | '
+        '${value('${step}_largest_step_milli', milli: true)} | '
+        '${value('${step}_change_milli', milli: true)} |',
+      );
+    }
+  }
+}

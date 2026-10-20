@@ -22,7 +22,7 @@ import 'streak_flame.dart';
 /// pill has an orange ring; when a capsule counts, the colour comes back and
 /// the flame swells. Hidden without a streak. A tap explains it.
 class StreakPill extends StatelessWidget {
-  const StreakPill({super.key, this.height = 52});
+  const StreakPill({super.key, this.height = AppSizes.mapControl});
 
   final double height;
 
@@ -49,7 +49,7 @@ class StreakPill extends StatelessWidget {
           onTap: () => StreakCard.show(context),
           child: Container(
             height: height,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 13),
             decoration: BoxDecoration(
               color: palette.surface,
               borderRadius: BorderRadius.circular(height / 2),
@@ -66,15 +66,15 @@ class StreakPill extends StatelessWidget {
                 // A new key when the streak grows or is saved: it swells.
                 StreakFlame(
                   key: ValueKey('$days-$atRisk'),
-                  size: 20,
+                  size: 17,
                   greyed: atRisk,
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 5),
                 Text(
                   '$days',
                   style: TextStyle(
                     fontFamily: kAppFontFamily,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: atRisk ? palette.textSecondary : palette.textPrimary,
                   ),

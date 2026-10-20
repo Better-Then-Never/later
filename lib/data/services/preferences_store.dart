@@ -38,6 +38,11 @@ class PreferencesStore {
   Future<String?> string(String uid, String name) async =>
       (await _prefs).getString(_key(uid, name));
 
+  /// [string] without waiting, once loaded ([init], before the first
+  /// frame); null before that.
+  String? stringSync(String uid, String name) =>
+      _ready?.getString(_key(uid, name));
+
   Future<void> setString(String uid, String name, String value) async =>
       (await _prefs).setString(_key(uid, name), value);
 

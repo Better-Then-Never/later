@@ -7,6 +7,7 @@ import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../map/widgets/map_credits_control.dart';
 import '../app_info.dart';
 import '../widgets/settings_scaffold.dart';
 
@@ -47,6 +48,10 @@ class AboutPage extends StatelessWidget {
                 OptionsSettingsRow(
                   title: l10n.settingsAboutTerms,
                   onTap: () => _open(context, AppLinks.termsOfService),
+                ),
+                OptionsSettingsRow(
+                  title: l10n.settingsAboutMapData,
+                  onTap: () => showMapCredits(context),
                 ),
                 OptionsSettingsRow(
                   title: l10n.settingsAboutLicenses,

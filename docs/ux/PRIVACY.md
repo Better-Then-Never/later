@@ -32,6 +32,22 @@ text; the points below are what it should add).
 - Account deletion also removes the user's reactions and comments on other people's capsules.
 - Announcements: the device subscribes to a topic of its language when "News from Later" is on.
 
+## On the phone: the map's start (M-06, docs/map/COLD_START.md)
+| Data | Where | Who can read it |
+|---|---|---|
+| The map's pins as last shown: per pin its id, owner id, place (as shown, so rounded for approximate capsules), colour, privacy, opening time and which query it came from; never a title, photo or text | `map_pins/<uid>.bin` in the app's private storage | the app only. Only pins the server returned to this account. Deleted when the account signs out or its session ends (revoked, deleted), and when another account signs in on the phone |
+| The map's marker pictures (pins, bubbles, the user's figure) | `map_images/` in the app's private storage | nothing personal: the same pictures for everyone |
+| The last camera of the map (place and zoom) | the app's preferences, per account | the app only (already kept before this change) |
+
+- **Stale for a moment, never shown in detail:** a cold start draws the stored pins at once; each of the map's four
+  queries (own, co-authored, friends', public) replaces its stored pins with its first answer, about 1 to 2 s later.
+  A capsule deleted, made private, a friend removed or a user blocked since the last start can therefore show as a
+  pin for that moment; a removed friend's friends-only pins never show (the visibility rule runs on stored pins with
+  today's friends). Tapping a stored pin before its query has answered reads the capsule from the server, which checks
+  that the user may still see it, or says it is no longer available. Nothing of a capsule but its pin is ever kept.
+- **Firestore's own cache on the phone** (which already held every capsule the user saw, with titles and photos
+  links) is now bounded to 40 MB and was emptied once to drop old test data; its content is unchanged otherwise.
+
 ## Not changed
 No analytics, no ads, no location history: places are stored only as coarse cells for the Explorer achievement and
 only by the server.

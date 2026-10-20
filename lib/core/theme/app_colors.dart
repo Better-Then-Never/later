@@ -23,6 +23,11 @@ abstract final class AppColors {
   /// Text and icons on brand green, danger red, info blue.
   static const onAccent = Color(0xFFFFFFFF);
 
+  // The MapLibre map's ground (assets/map/style_*.json, the Google map's
+  // palette): shown until the map has drawn, so a cold start has no white.
+  static const mapGroundLight = Color(0xFFF3F3F0);
+  static const mapGroundDark = Color(0xFF1B1B1B);
+
   /// Text and icons drawn over photos and the camera preview.
   static const onMedia = Color(0xFFFFFFFF);
   static const onMediaMuted = Color(0xB3FFFFFF);
@@ -36,9 +41,4 @@ abstract final class AppColors {
   /// Darker shades of [infoBlue] for text on its tinted cards.
   static const infoBlue600 = Color(0xFF1E88E5);
   static const infoBlue700 = Color(0xFF1976D2);
-
-  // Map heatmap (F-16): one brand green that deepens with density; no red
-  // (red means danger in the app), no yellow (muddy over the dark map).
-  static const heatmapLow = Color(0x5956C92E);
-  static const heatmapHigh = brandGreen;
 }

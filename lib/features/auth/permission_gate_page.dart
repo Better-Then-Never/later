@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/l10n/l10n.dart';
 import '../../data/services/preferences_store.dart';
-import '../../shared/widgets/later_loading_bar.dart';
+import '../../shared/widgets/splash_logo.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
 import 'package:later/core/theme/app_text_styles.dart';
@@ -200,12 +200,9 @@ class _PermissionGatePageState extends State<PermissionGatePage>
 
   @override
   Widget build(BuildContext context) {
-    if (!_loaded) {
-      return Scaffold(
-        backgroundColor: context.palette.background,
-        body: const Center(child: LaterLoadingBar(width: 150, height: 150)),
-      );
-    }
+    // At every start, for a few frames: the splash's picture, not a
+    // loader on another colour (docs/map/COLD_START.md).
+    if (!_loaded) return const SplashLogo();
 
     final screenHeight = MediaQuery.of(context).size.height;
     final l10n = context.l10n;

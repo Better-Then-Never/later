@@ -19,6 +19,7 @@ const gamification = require('./lib/gamification');
 const broadcast = require('./lib/broadcast');
 const chats = require('./lib/chats');
 const contacts = require('./lib/contacts');
+const mapsync = require('./lib/mapsync');
 
 admin.initializeApp();
 
@@ -314,6 +315,15 @@ exports.updateCapsuleStats = onDocumentCreated(
     }
     return result;
   }),
+);
+
+// A deleted friends-only or public capsule, recorded for the map's sync
+// (functions/lib/mapsync.js, docs/map/COLD_START.md).
+exports.recordCapsuleDeletion = onDocumentDeleted(
+  'capsules/{capsuleId}',
+  logged('Capsule deletion', (e) =>
+    mapsync.onCapsuleDeleted(services(), e.params.capsuleId, data(e.data)),
+  ),
 );
 
 // The app opened someone else's capsule for the first time (B7).

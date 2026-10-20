@@ -8,6 +8,7 @@ import 'package:later/data/models/user_settings.dart';
 import 'package:later/data/services/cache_service.dart';
 import 'package:later/data/services/preferences_store.dart';
 import 'package:later/features/settings/device_settings_store.dart';
+import 'package:later/features/settings/pages/device_settings_page.dart';
 import 'package:later/features/settings/pages/notification_settings_page.dart';
 import 'package:later/features/settings/settings_store.dart';
 import 'package:provider/provider.dart';
@@ -67,6 +68,27 @@ void main() {
       expect(store.distanceUnit, DistanceUnit.miles);
       expect(store.photoQuality, PhotoQuality.high);
       expect(store.saveToGallery, isTrue);
+    });
+  });
+
+  group('DeviceSettingsPage', () {
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    testWidgets('no satellite look on the MapLibre map (its tiles have none)', (
+      tester,
+    ) async {
+      final store = DeviceSettingsStore(PreferencesStore())..attach('alice');
+      await tester.pumpWidget(
+        ChangeNotifierProvider<DeviceSettingsStore>.value(
+          value: store,
+          child: testApp(home: const DeviceSettingsPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Satellite'), findsNothing);
+      expect(find.text('Satellite with labels'), findsNothing);
+      expect(find.text('CAMERA'), findsOneWidget);
+      store.detach();
     });
   });
 
