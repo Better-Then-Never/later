@@ -181,7 +181,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   in `3708a84`. M-08 and M-09 checked by the owner on the phone: the card is centred, and it shows neither
   "Visibility" nor "From you". Closed at the owner's word.
 
-## 2026-10-20, G-03 The page colour fades in behind Android's navigation buttons
+## 2026-10-20, G-03 The page colour fades in behind Android's navigation buttons (`0df3cd1`)
 - **Was**: edge to edge with a fully transparent system bar: cards, photos and the map ran straight under the
   back, home and recents buttons.
 - **Designed first** (Figma "Later Prototype", page "11 · G-03 navigation bar"): today, a frosted strip, a soft
@@ -200,3 +200,13 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   5 % the design leaves). Keyboard up: no band. My Capsules and the map, light and dark, match the Figma frames.
   Not measured in profile: a single gradient draw, no blur or offscreen layer. Tests: `system_bar_fade_test.dart`
   (80 and 56 dp, the 24 dp eased edge, nothing without a bar, the page colour in light and dark, taps go through).
+
+## 2026-10-20, G-03 follow-up: a lighter fade
+- **Owner** (on the phone, light and dark): too strong; asked for less opacity and judged it by eye.
+- **Changed**: the edge now fills in to 70 % (was 95 %) and the bottom ends at 80 % (was 97 %), in both themes;
+  same height (bar + 32 dp) and the same eased 24 dp edge.
+- **Verified**: the owner on the phone (S20 FE, three buttons, profile build): "good". The 95 % version was
+  profiled on the phone against main, one run each (janky %, worst frame): My Capsules scroll 0 % / 3.9 ms
+  (main 0.3 % / 10.2 ms), profile scroll 0 % / 4.5 ms (0 % / 8.0 ms), map pan 0 % / 3.7 ms (0 % / 3.8 ms), tab
+  switches 0.7 % (1.1 %), theme switch 0.4 % (0.8 %): no cost; a lighter gradient draws the same way. Only
+  `system_bar_fade_test.dart` re-run (the owner asked for no test pass).

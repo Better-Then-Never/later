@@ -51,18 +51,18 @@ void main() {
   double height(WidgetTester tester) =>
       tester.getSize(find.byType(SystemBarFade)).height;
 
-  testWidgets('three buttons: 80 dp, clear at the top, 97 % at the bottom', (
+  testWidgets('three buttons: 80 dp, clear at the top, 80 % at the bottom', (
     tester,
   ) async {
     await tester.pumpWidget(app(bar: 48));
     expect(height(tester), 80);
     final g = gradient(tester);
     expect(g.colors.first.a, 0);
-    expect(g.colors.last.a, closeTo(0.97, 0.001));
-    // The edge fills in over 24 dp, eased: halfway it is just under half.
+    expect(g.colors.last.a, closeTo(0.8, 0.001));
+    // The edge fills in over 24 dp, eased: halfway it is half of its 70 %.
     expect(g.stops![4], closeTo(24 / 80, 1e-9));
-    expect(g.colors[4].a, closeTo(0.95, 0.001));
-    expect(g.colors[2].a, closeTo(0.475, 0.001));
+    expect(g.colors[4].a, closeTo(0.7, 0.001));
+    expect(g.colors[2].a, closeTo(0.35, 0.001));
     expect(g.stops, orderedEquals([...g.stops!]..sort()));
   });
 

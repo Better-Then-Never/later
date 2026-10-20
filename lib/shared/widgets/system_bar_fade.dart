@@ -8,10 +8,11 @@ import 'package:later/core/theme/app_palette.dart';
 ///
 /// It covers the bar plus [extra] above it (80 dp with three buttons, 56 dp
 /// with gestures) and sits under the floating tab bar. The top edge fills in
-/// over [edge], eased at both ends, to 95 %, and the bottom ends at 97 %
-/// (Figma, page "11 · G-03 navigation bar"). Nothing is drawn without a
-/// bottom bar or while the keyboard is up (the bottom padding is then 0).
-/// A plain gradient, no blur: it costs nothing to draw.
+/// over [edge], eased at both ends, to 70 %, and the bottom ends at 80 %
+/// (Figma, page "11 · G-03 navigation bar"; lighter after the owner saw it
+/// on the phone). Nothing is drawn without a bottom bar or while the
+/// keyboard is up (the bottom padding is then 0). A plain gradient, no blur:
+/// it costs nothing to draw.
 class SystemBarFade extends StatelessWidget {
   const SystemBarFade({super.key, this.extra = 32});
 
@@ -21,8 +22,8 @@ class SystemBarFade extends StatelessWidget {
   /// How long the top edge takes to go from clear to [_edgeAlpha].
   static const double edge = 24;
 
-  static const double _edgeAlpha = 0.95;
-  static const double _bottomAlpha = 0.97;
+  static const double _edgeAlpha = 0.7;
+  static const double _bottomAlpha = 0.8;
 
   /// Points along the edge where the smoothstep curve is sampled.
   static const _samples = [0.0, 0.25, 0.5, 0.75, 1.0];
