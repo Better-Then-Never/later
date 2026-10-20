@@ -174,3 +174,9 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   the same heat at every level, no tile far from capsules, the same places redraw nothing),
   `map_projection_test.dart` (screen back to place), `marker_choreography_test.dart` (under a finger: a few at a
   time, the old kept until the new are drawn). Gates green except the known flaky `capsule_creation_test.dart`.
+
+## M-05, M-06, M-07, M-08, M-09, M-10: closed (20 Oct 2026)
+- Done in the map missions after this session (docs/map/PROGRESS.md): M-05 by the MapLibre map's grouping and
+  bubbles (missions 2 and 3), M-06 by the instant start (mission 4, docs/map/COLD_START.md), M-07 in `8426062`, M-10
+  in `3708a84`. M-08 and M-09 checked by the owner on the phone: the card is centred, and it shows neither
+  "Visibility" nor "From you". Closed at the owner's word.

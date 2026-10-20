@@ -11,12 +11,12 @@ Status: `UNCHECKED` → `LIKELY_OPEN` / `LIKELY_FIXED` / `NEEDS_PHONE` (static t
 | M-02 | Selected capsule unclear: animated emphasis on the selected marker | FIXED | the selected pin jumps, sways, hovers over a shadow and lands back; no blink, stays on its spot while the map moves (LOG.md) |
 | M-03 | Capsules appear with an animation on the first map open | FIXED | pins pop in ring by ring once the map has drawn (LOG.md) |
 | M-04 | Capsules appear in batches when zooming | FIXED | bubbles open into their capsules and close around them, group by group; no blinks (LOG.md) |
-| M-05 | Cluster rework (ask: which element is unreadable; library change = decision gate) | LIKELY_OPEN | own grid clustering in `map_clusters.dart` |
-| M-06 | Map cold start looks clumsy (white screen, person, then map, then capsules) | NEEDS_PHONE | |
-| M-07 | "Almost there" screen shown after the map at the first Google login | NEEDS_PHONE | `settingsCompleteProfileTitle` |
-| M-08 | Capsule preview too far left; inconsistent placement (ask) | NEEDS_PHONE | |
-| M-09 | Remove the words "Visibility" and "From you" from capsule info | LIKELY_OPEN | |
-| M-10 | Remove seconds from the opening countdown | LIKELY_OPEN | `capsule_info_panel.dart` ticks every second, shows seconds |
+| M-05 | Cluster rework (ask: which element is unreadable; library change = decision gate) | FIXED | replaced by the MapLibre map (owner's choice, 19 Oct): Dart grouping (`CapsuleGroups`), bigger bubbles with the count in 17 dp bold, splitting and merging as you zoom, no flashing (docs/map/, missions 2 and 3); closed by the owner 20 Oct |
+| M-06 | Map cold start looks clumsy (white screen, person, then map, then capsules) | FIXED | one sequence in the map's colour, every pin at once about 2.1 s after the launch, opening on the user (docs/map/COLD_START.md, mission 4); closed 20 Oct |
+| M-07 | "Almost there" screen shown after the map at the first Google login | FIXED | the launch picture until the profile is known (`8426062`) |
+| M-08 | Capsule preview too far left; inconsistent placement (ask) | FIXED | the card is centred (at most 440 dp wide) on the MapLibre map; checked by the owner 20 Oct |
+| M-09 | Remove the words "Visibility" and "From you" from capsule info | ALREADY_FIXED | the map's card shows neither; checked by the owner 20 Oct |
+| M-10 | Remove seconds from the opening countdown | FIXED | the card's countdown without seconds, the last minute aside (`3708a84`) |
 | M-11 | Far-out map: bubbles turn into a reworked heatmap at far zoom; the old one was disliked (and drew nothing on the owner's phone) | FIXED | heat from every capsule's place as map tiles, no redraw on pan; markers follow a pinch live (LOG.md) |
 
 ## Profile, friends, people (P)
