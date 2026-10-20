@@ -10,7 +10,7 @@ and G (profile v2, passport, other screens) are for later.
 | Phase | Items | Needs the backend | State |
 |---|---|---|---|
 | 1 | A1–A10, C1 | no | done, committed locally |
-| 2 | D1–D4: the wrapped first open, press and hold | no | next |
+| 2 | D1–D4: the wrapped first open, press and hold | no | done, committed locally (sound waits for H2) |
 | 3 | B1–B5, C2, F1, F2: how it opens, Adjust, "is open" pushes | yes: a lock in the data first (below) | plan for the owner first |
 | 4 | F3, F4: notifications by location | yes | later |
 
@@ -52,6 +52,39 @@ Not in phase 1, on purpose:
   the comments sheet (Author chip, long-press menu, Replying to, the empty hint), the report confirm.
 - On the phone (debug build, local emulators), light and dark: map card, sheet, comments with a thread,
   the long-press menu, quick reply above the keyboard and its toast, the Create preview.
+
+## Phase 2 (done)
+
+| ID | What | Where |
+|---|---|---|
+| D1 | The first open of a capsule arrives wrapped over the whole sheet: the cover pattern (the app's line icons, as the profile covers) in the capsule's colour, paler in light and deeper in dark, its pin on a white seal, a gift tag (From, title, "Left {date} in {place}") on a string, "Waited N days". The map card says "Yours to open" until then | `lib/features/capsules/opening/capsule_wrap.dart`, `capsule_info_panel.dart` |
+| D2 | Press and hold about a second: the ring fills, the pin wobbles, ticks you can feel come closer together; letting go early winds it back ("Hold a little longer") | `CapsuleWrap` |
+| D3 | One firmer tick, then the wrapping tears apart from the pin onto the capsule. The paper sound and chime wait for H2 | `CapsuleWrap` |
+| D4 | Every later open is instant; reduced motion gives a plain fade; a screen reader's double tap opens it at once | `lib/features/capsules/opening/capsule_openings.dart` |
+
+Which capsules arrive wrapped (`CapsuleOpenings`):
+
+- Remembered on the phone, per account (the last 2000 unwrapped). The rule needs no backend, so it is
+  per phone: on a second phone the first open is wrapped again.
+- Only capsules that could first be opened after the phone first asked (`unwrapped_since`): after the
+  update nothing the user may have seen before arrives wrapped. To try it, open a capsule a friend left,
+  or one that reached its date, after installing.
+- Someone else's capsule always; your own (or one you made with others) only when it waited for a date.
+- Not when it is opened for its comments (from a comment notification).
+- New colour tokens: the six capsule colours as the pins draw them (`AppColors.capsuleRed` …); the
+  wrapping takes them 60 % towards white in light, 70 % towards black in dark (the prototype's blue).
+- New motion tokens: `holdToOpen`, `holdWindBack`, `tear`, `tearCurve` (`MOTION_CATALOG.md`).
+
+### Checked
+
+- `tool/dev/checks.sh`: format, analyze, 546 tests, design tokens, no unused strings.
+- New tests (`test/features/capsule_opening_test.dart`, `map_test.dart`): who gets the wrapping, the
+  phone's start, your own capsules, remembered across a restart; arrives wrapped with its tag; early
+  release winds back; a one-second hold tears it open and the next open is instant; the screen reader
+  tap; the card's "Yours to open".
+- On the phone, light and dark, with capsules made in the emulator after the phone's start: the card,
+  the wrapping, an early release, and the tear recorded frame by frame (ring, tear along the edge, the
+  seal dropping away, the sheet underneath). Haptics need a person holding the phone to judge.
 
 ## Owner side (H)
 
