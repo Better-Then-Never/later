@@ -142,7 +142,7 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   middle, bubbles opening and closing, nothing on the map until all landed, a touch lands everything still
   drawn, reduced motion, a capsule gone before landing). Gates green.
 
-## 2026-10-18, M-11 A real heatmap far out; the map follows a pinch while the fingers are down
+## 2026-10-18, M-11 A real heatmap far out; the map follows a pinch while the fingers are down (`e12f7e8`)
 - **Owner**: far out the map was empty (the numbers vanished); then, on a first try (bubbles turned into soft
   glows), "that is just the bubbles blurred": the heat must come from every capsule's own place, not the
   grouping, be less saturated, not only green, and not redraw when the map only moves. Then: under a pinch the
@@ -175,8 +175,38 @@ Branch `polish/interactive-fixes`. Newest last. Each entry: date, item, what cha
   `map_projection_test.dart` (screen back to place), `marker_choreography_test.dart` (under a finger: a few at a
   time, the old kept until the new are drawn). Gates green except the known flaky `capsule_creation_test.dart`.
 
-## M-05, M-06, M-07, M-08, M-09, M-10: closed (20 Oct 2026)
+## M-05, M-06, M-07, M-08, M-09, M-10: closed (20 Oct 2026) (`922f310`)
 - Done in the map missions after this session (docs/map/PROGRESS.md): M-05 by the MapLibre map's grouping and
   bubbles (missions 2 and 3), M-06 by the instant start (mission 4, docs/map/COLD_START.md), M-07 in `8426062`, M-10
   in `3708a84`. M-08 and M-09 checked by the owner on the phone: the card is centred, and it shows neither
   "Visibility" nor "From you". Closed at the owner's word.
+
+## 2026-10-20, G-03 The page colour fades in behind Android's navigation buttons (`0df3cd1`)
+- **Was**: edge to edge with a fully transparent system bar: cards, photos and the map ran straight under the
+  back, home and recents buttons.
+- **Designed first** (Figma "Later Prototype", page "11 · G-03 navigation bar"): today, a frosted strip, a soft
+  fade and Android's own backdrop, light and dark, over the list and the map, three buttons and gestures. The owner
+  chose the soft fade, kept dark as strong as light, and asked for a quicker top edge ("edge 1") in both themes.
+- **Changed**: `SystemBarFade` (`lib/shared/widgets/system_bar_fade.dart`) sits in the tab shell between the tabs
+  and the floating tab bar (`widget_tree.dart`). It is the page colour (`palette.background`), covers the system bar
+  plus 32 dp (80 dp with three buttons, 56 dp with gestures), its top edge fills in over 24 dp along a smoothstep
+  curve to 95 %, and it ends at 97 % at the bottom. It ignores touches, draws nothing without a bottom bar or while
+  the keyboard is up (the bottom padding is then 0), and is not on pushed pages (camera, photo viewer, scan,
+  settings, chat open above the shell). No blur: one gradient rectangle.
+- **Verified**: Android emulator (Medium Phone, 1080 × 2400, three buttons), not the phone: the phone had the
+  owner's v0.0.35 release (versionCode 14) open, and a debug build would have replaced it. Pixel profiles of the
+  left margin (no tab bar): light map, detail falls from 52 to 4 levels over the 24 dp edge, then 2 (page colour
+  246 = #F6F6F6); dark map, 30 to 1 (20 = #141414); card text under the buttons keeps 10 to 14 levels (the 3 to
+  5 % the design leaves). Keyboard up: no band. My Capsules and the map, light and dark, match the Figma frames.
+  Not measured in profile: a single gradient draw, no blur or offscreen layer. Tests: `system_bar_fade_test.dart`
+  (80 and 56 dp, the 24 dp eased edge, nothing without a bar, the page colour in light and dark, taps go through).
+
+## 2026-10-20, G-03 follow-up: a lighter fade
+- **Owner** (on the phone, light and dark): too strong; asked for less opacity and judged it by eye.
+- **Changed**: the edge now fills in to 70 % (was 95 %) and the bottom ends at 80 % (was 97 %), in both themes;
+  same height (bar + 32 dp) and the same eased 24 dp edge.
+- **Verified**: the owner on the phone (S20 FE, three buttons, profile build): "good". The 95 % version was
+  profiled on the phone against main, one run each (janky %, worst frame): My Capsules scroll 0 % / 3.9 ms
+  (main 0.3 % / 10.2 ms), profile scroll 0 % / 4.5 ms (0 % / 8.0 ms), map pan 0 % / 3.7 ms (0 % / 3.8 ms), tab
+  switches 0.7 % (1.1 %), theme switch 0.4 % (0.8 %): no cost; a lighter gradient draws the same way. Only
+  `system_bar_fade_test.dart` re-run (the owner asked for no test pass).
