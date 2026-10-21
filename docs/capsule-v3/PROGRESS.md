@@ -56,19 +56,20 @@ Not in phase 1, on purpose:
 ## Matched to Figma (2026-10-21)
 
 The owner found phase 1 off from the design. Every screen was rebuilt from the frames' own values
-(, not from memory) and checked on the phone side by side, light and dark:
+(`get_design_context`, not from memory) and checked on the phone side by side, light and dark:
 
 | Screen | Frame |
 |---|---|
-| Map card, open / locked | ,  |
-| Opened sheet, light / dark | ,  |
-| Comments, comment menu, empty | , ,  |
-| Quick reply, ⋯ menu, report | , ,  |
-| Create (header, preview, settings, options, button) |  |
+| Map card, open / locked | `7080:1085`, `7080:1191` |
+| Opened sheet, light / dark | `7080:1302`, `7080:1460` |
+| Comments, comment menu, empty | `7084:1258`, `7084:1530`, `7084:1630` |
+| Quick reply, ⋯ menu, report | `7084:1762`, `7084:1868`, `7084:1965` |
+| Create (header, preview, settings, options, button) | `7094:2148` |
 
-The quick reply had been built from an older v2 frame (). New shared pieces: (Figma "Pill v2"), , , , ,
-. Four of the owner's icons came from the Figma library (send arrow, heart, done check,
-write) with dark variants. Tokens:  is green at 30 %, dark  #7FD95A. The
+The quick reply had been built from an older v2 frame (`7047:784`). New shared pieces: `PillV2`
+(Figma "Pill v2"), `showAnchoredMenu`, `PageHeaderV2`, `SheetHandle.v2`, `PhotoBadge`,
+`SendCircle`. Four of the owner's icons came from the Figma library (send arrow, heart, done check,
+write) with dark variants. Tokens: `accentSoft` is green at 30 %, dark `accentText` #7FD95A. The
 countdown shows days and hours while a day or more is left ("41d 6h"). Still not built: the Adjust
 chip on the Create photo (C2, phase 3).
 
