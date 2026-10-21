@@ -53,6 +53,25 @@ Not in phase 1, on purpose:
 - On the phone (debug build, local emulators), light and dark: map card, sheet, comments with a thread,
   the long-press menu, quick reply above the keyboard and its toast, the Create preview.
 
+## Matched to Figma (2026-10-21)
+
+The owner found phase 1 off from the design. Every screen was rebuilt from the frames' own values
+(, not from memory) and checked on the phone side by side, light and dark:
+
+| Screen | Frame |
+|---|---|
+| Map card, open / locked | ,  |
+| Opened sheet, light / dark | ,  |
+| Comments, comment menu, empty | , ,  |
+| Quick reply, ⋯ menu, report | , ,  |
+| Create (header, preview, settings, options, button) |  |
+
+The quick reply had been built from an older v2 frame (). New shared pieces: (Figma "Pill v2"), , , , ,
+. Four of the owner's icons came from the Figma library (send arrow, heart, done check,
+write) with dark variants. Tokens:  is green at 30 %, dark  #7FD95A. The
+countdown shows days and hours while a day or more is left ("41d 6h"). Still not built: the Adjust
+chip on the Create photo (C2, phase 3).
+
 ## Phase 2 (done)
 
 | ID | What | Where |
