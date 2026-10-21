@@ -431,6 +431,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get authWelcomeTo => 'Добро пожаловать в';
 
   @override
+  String get capsulesAdjust => 'Кадр';
+
+  @override
+  String get capsulesAdjustHint => 'По нажатию откроется всё фото.';
+
+  @override
+  String get capsulesAdjustTitle =>
+      'Перетащите или разведите пальцы, чтобы приблизить';
+
+  @override
   String get capsulesAuthorChip => 'Автор';
 
   @override
@@ -729,6 +739,46 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesFramesTitle => 'Кадры';
 
   @override
+  String get capsulesHowAnytimeHint => 'Откройте, когда захотите';
+
+  @override
+  String get capsulesHowAnywhere => 'Где угодно';
+
+  @override
+  String get capsulesHowAnywhereHint =>
+      'Где бы вы ни были, когда она откроется';
+
+  @override
+  String get capsulesHowHere => 'Только когда вернусь сюда';
+
+  @override
+  String get capsulesHowHereSoon => 'В пределах 150 м · скоро';
+
+  @override
+  String get capsulesHowPick => 'Выбрать дату';
+
+  @override
+  String get capsulesHowPickHint => 'Выберите день в календаре';
+
+  @override
+  String get capsulesHowSummaryAnytime =>
+      'Открывается в любое время. Остаётся на карте там, где вы её оставили.';
+
+  @override
+  String capsulesHowSummaryDate(String date) {
+    return 'Откроется $date. Остаётся на карте там, где вы её оставили.';
+  }
+
+  @override
+  String get capsulesHowTitle => 'Как откроется?';
+
+  @override
+  String get capsulesHowWhen => 'Когда';
+
+  @override
+  String get capsulesHowWhere => 'Где';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Убрать меня из соавторов';
 
   @override
@@ -760,19 +810,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesOpenInMonth => 'Через месяц';
 
   @override
-  String get capsulesOpenInWeek => 'Через неделю';
-
-  @override
   String get capsulesOpenInYear => 'Через год';
-
-  @override
-  String get capsulesOpenNow => 'Открыть сразу';
-
-  @override
-  String get capsulesOpenPickDate => 'Выбрать дату…';
-
-  @override
-  String get capsulesOpenTomorrow => 'Завтра';
 
   @override
   String get capsulesPinBack => 'Вернуться ко мне';

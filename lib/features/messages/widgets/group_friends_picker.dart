@@ -255,31 +255,34 @@ class _GroupFriendsPickerState extends State<GroupFriendsPicker> {
                         : l10n.messagesNothingMatches(_query),
                     assetPath: AppIcons.profileMyFriends,
                   )
-                : ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                    itemCount: ids.length,
-                    itemBuilder: (context, index) {
-                      final id = ids[index];
-                      final profile = directory.profile(id);
-                      final picked = _picked.contains(id);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: DecoratedBox(
-                          decoration: BoxDecorations.whiteCard(context),
-                          child: Semantics(
-                            checked: picked,
-                            child: UserListTile(
-                              uid: id,
-                              name: profile?.name ?? '',
-                              username: profile?.username ?? '',
-                              screenWidth: screen.width,
-                              onTap: () => _toggle(id),
-                              trailing: _PickMark(picked: picked),
+                : SheetList(
+                    list: ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                      itemCount: ids.length,
+                      itemBuilder: (context, index) {
+                        final id = ids[index];
+                        final profile = directory.profile(id);
+                        final picked = _picked.contains(id);
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: DecoratedBox(
+                            decoration: BoxDecorations.whiteCard(context),
+                            child: Semantics(
+                              checked: picked,
+                              child: UserListTile(
+                                uid: id,
+                                name: profile?.name ?? '',
+                                username: profile?.username ?? '',
+                                screenWidth: screen.width,
+                                onTap: () => _toggle(id),
+                                trailing: _PickMark(picked: picked),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
           ),
           SafeArea(

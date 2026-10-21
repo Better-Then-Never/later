@@ -432,6 +432,16 @@ class AppLocalizationsPl extends AppLocalizations {
   String get authWelcomeTo => 'Witaj w';
 
   @override
+  String get capsulesAdjust => 'Dopasuj';
+
+  @override
+  String get capsulesAdjustHint => 'Po dotknięciu otworzy się całe zdjęcie.';
+
+  @override
+  String get capsulesAdjustTitle =>
+      'Przeciągnij, aby przesunąć, rozsuń palce, aby powiększyć';
+
+  @override
   String get capsulesAuthorChip => 'Autor';
 
   @override
@@ -731,6 +741,46 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesFramesTitle => 'Klatki';
 
   @override
+  String get capsulesHowAnytimeHint => 'Otwórz, kiedy chcesz';
+
+  @override
+  String get capsulesHowAnywhere => 'Gdziekolwiek';
+
+  @override
+  String get capsulesHowAnywhereHint =>
+      'Gdziekolwiek będziesz, gdy się otworzy';
+
+  @override
+  String get capsulesHowHere => 'Tylko gdy tu wrócę';
+
+  @override
+  String get capsulesHowHereSoon => 'W promieniu 150 m · już wkrótce';
+
+  @override
+  String get capsulesHowPick => 'Wybierz datę';
+
+  @override
+  String get capsulesHowPickHint => 'Wybierz dzień w kalendarzu';
+
+  @override
+  String get capsulesHowSummaryAnytime =>
+      'Otworzysz ją, kiedy chcesz. Zostaje na mapie tam, gdzie ją zostawisz.';
+
+  @override
+  String capsulesHowSummaryDate(String date) {
+    return 'Otworzy się $date. Zostaje na mapie tam, gdzie ją zostawisz.';
+  }
+
+  @override
+  String get capsulesHowTitle => 'Jak się otworzy?';
+
+  @override
+  String get capsulesHowWhen => 'Kiedy';
+
+  @override
+  String get capsulesHowWhere => 'Gdzie';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Usuń mnie ze współautorów';
 
   @override
@@ -762,19 +812,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesOpenInMonth => 'Za miesiąc';
 
   @override
-  String get capsulesOpenInWeek => 'Za tydzień';
-
-  @override
   String get capsulesOpenInYear => 'Za rok';
-
-  @override
-  String get capsulesOpenNow => 'Otwórz od razu';
-
-  @override
-  String get capsulesOpenPickDate => 'Wybierz datę…';
-
-  @override
-  String get capsulesOpenTomorrow => 'Jutro';
 
   @override
   String get capsulesPinBack => 'Wróć do mnie';

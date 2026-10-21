@@ -18,6 +18,7 @@ import '../../../data/services/gallery_service.dart';
 import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../../shared/widgets/system_bar_fade.dart';
 import '../../../shared/widgets/capsule/capsule_place_chip.dart';
 import '../../../shared/widgets/page_header.dart';
 import '../../../shared/widgets/loop_picture.dart';
@@ -36,7 +37,9 @@ import 'creation_draft.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/loop_frame_strip.dart';
-import 'widgets/open_date_calendar.dart';
+import '../../../shared/widgets/capsule/cropped_photo.dart';
+import 'widgets/adjust_photo_page.dart';
+import 'widgets/how_it_opens_sheet.dart';
 import 'widgets/pin_picker_sheet.dart';
 import 'widgets/capsule_submit_button.dart';
 import '../../../core/l10n/app_dates.dart';
@@ -203,46 +206,18 @@ class _CapsuleCreationView extends StatelessWidget {
     if (pick != null) controller.coAuthors = pick.friends;
   }
 
-  /// Quick choices first; the calendar only for another day.
+  /// "How does it open?": when (and, after the server update, where).
   Future<void> _chooseOpenDate(BuildContext context) async {
-    final l10n = context.l10n;
     final controller = context.read<CapsuleCreationController>();
-    final now = DateTime.now();
-    final choice = await showChoiceMenu<_OpenChoice>(
+    final result = await HowItOpensSheet.show(
       context,
-      title: l10n.capsulesCreationOpenAt,
-      choices: [
-        MenuChoice(_OpenChoice.tomorrow, l10n.capsulesOpenTomorrow),
-        MenuChoice(_OpenChoice.week, l10n.capsulesOpenInWeek),
-        MenuChoice(_OpenChoice.month, l10n.capsulesOpenInMonth),
-        MenuChoice(_OpenChoice.year, l10n.capsulesOpenInYear),
-        MenuChoice(_OpenChoice.pick, l10n.capsulesOpenPickDate),
-        if (controller.openAt != null)
-          MenuChoice(_OpenChoice.now, l10n.capsulesOpenNow),
-      ],
+      openAt: controller.openAt,
     );
-    if (choice == null || !context.mounted) return;
-    switch (choice) {
-      case _OpenChoice.tomorrow:
-        controller.setOpenDate(now.add(const Duration(days: 1)));
-      case _OpenChoice.week:
-        controller.setOpenDate(now.add(const Duration(days: 7)));
-      case _OpenChoice.month:
-        controller.setOpenDate(CapsuleCreationController.addMonths(now, 1));
-      case _OpenChoice.year:
-        controller.setOpenDate(CapsuleCreationController.addMonths(now, 12));
-      case _OpenChoice.now:
-        controller.clearOpenDate();
-      case _OpenChoice.pick:
-        // The app's own calendar (F-27), not the stock picker.
-        final picked = await OpenDateCalendar.show(
-          context,
-          first: now.add(const Duration(days: 1)),
-          last: DateTime(now.year + 5, 12, 31),
-          selected: controller.openAt,
-        );
-        if (picked != null) controller.setOpenDate(picked);
-    }
+    if (result.cancelled || !context.mounted) return;
+    final openAt = result.openAt;
+    openAt == null
+        ? controller.clearOpenDate()
+        : controller.setOpenDate(openAt);
   }
 
   /// Saves; true when the capsule is made (or kept to upload later).
@@ -273,12 +248,15 @@ class _CapsuleCreationView extends StatelessWidget {
     final controller = context.watch<CapsuleCreationController>();
     final l10n = context.l10n;
     final openAt = controller.openAt;
-    void retake() => AppRoutes.toCamera(
-      context,
-      replace: true,
-      privacy: initialPrivacy,
-      recipientId: recipientId,
-    );
+    // Only the photo changes: the title, the words and the settings stay.
+    Future<void> retake() async {
+      final shot = await AppRoutes.retakePhoto(context);
+      if (shot == null || !context.mounted) return;
+      context.read<CapsuleCreationController>().replacePhoto(
+        shot.imagePath,
+        framePaths: shot.frames,
+      );
+    }
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -287,202 +265,234 @@ class _CapsuleCreationView extends StatelessWidget {
         resizeToAvoidBottomInset: false,
         backgroundColor: context.palette.backgroundAlt,
         // The header stays put (edge-to-edge: content scrolling under the
-        // status bar would otherwise carry the title into it).
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        // status bar would otherwise carry the title into it). Create
+        // capsule floats over the page on a fade, as the tab bar does.
+        body: Stack(
           children: [
-            PageHeaderV2(
-              title: l10n.capsulesCreationTitle,
-              backLabel: l10n.commonBack,
-              onBack: () => Navigator.pop(context),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                child: AppStaggerScope(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // The capsule as it will look (Figma "Preview v3"):
-                      // the photo as a square, the title and its place, the
-                      // words, when it is left and opens.
-                      _CardV2(
-                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 14),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _PreviewPhoto(
-                              controller: controller,
-                              onRetake: retake,
-                            ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PageHeaderV2(
+                  title: l10n.capsulesCreationTitle,
+                  backLabel: l10n.commonBack,
+                  onBack: () => Navigator.pop(context),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    // Room to scroll the last card above the floating button.
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      12,
+                      16,
+                      24 + 48 + 12 + MediaQuery.viewPaddingOf(context).bottom,
+                    ),
+                    child: AppStaggerScope(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // The capsule as it will look (Figma "Preview v3"):
+                          // the photo as a square, the title and its place, the
+                          // words, when it is left and opens.
+                          _CardV2(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _PreviewPhoto(
+                                  controller: controller,
+                                  onRetake: retake,
+                                ),
+                                const SizedBox(height: 8),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                        child: CapsuleCreationTitleInput(
-                                          controller:
-                                              controller.titleController,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: CapsuleCreationTitleInput(
+                                              controller:
+                                                  controller.titleController,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          // A tap moves the pin (B4).
+                                          CapsulePlaceChip.at(
+                                            position: controller.position,
+                                            label: l10n.capsulesPinTitle,
+                                            onTap: () => _choosePlace(context),
+                                          ),
+                                        ],
                                       ),
-                                      const SizedBox(width: 8),
-                                      // A tap moves the pin (B4).
-                                      CapsulePlaceChip.at(
-                                        position: controller.position,
-                                        label: l10n.capsulesPinTitle,
-                                        onTap: () => _choosePlace(context),
+                                      const SizedBox(height: 8),
+                                      CapsuleCreationDescriptionInputField(
+                                        controller:
+                                            controller.descriptionController,
                                       ),
+                                      const SizedBox(height: 8),
+                                      _PreviewDates(openAt: openAt),
                                     ],
                                   ),
-                                  const SizedBox(height: 8),
-                                  CapsuleCreationDescriptionInputField(
-                                    controller:
-                                        controller.descriptionController,
+                                ),
+                              ],
+                            ),
+                          ),
+                          // A loop: its frames, to reorder or thin out.
+                          if (controller.isLoop) ...[
+                            const SizedBox(height: 10),
+                            LoopFrameStrip(controller: controller),
+                          ],
+                          const SizedBox(height: 8),
+                          AppStaggerItem(
+                            index: 0,
+                            child: _GroupLabel(l10n.capsulesCreationSettings),
+                          ),
+                          AppStaggerItem(
+                            index: 1,
+                            child: _CardV2(
+                              child: Column(
+                                children: [
+                                  _RowV2(
+                                    iconPath: AppIcons.capsuleTimer,
+                                    title: l10n.capsulesCreationOpenAt,
+                                    // Once set, the rule is a line under the
+                                    // title (Figma "Create: after Done").
+                                    value: openAt == null
+                                        ? l10n.capsulesCreationAnytime
+                                        : null,
+                                    subtitle: openAt == null
+                                        ? null
+                                        : AppDates.medium(
+                                            openAt,
+                                            l10n.localeName,
+                                          ),
+                                    onTap: () => _chooseOpenDate(context),
                                   ),
-                                  const SizedBox(height: 8),
-                                  _PreviewDates(openAt: openAt),
+                                  const _RowDivider(inset: 58),
+                                  _RowV2(
+                                    iconPath: AppIcons.capsulePrivacy,
+                                    title: l10n.capsulesCreationPrivacy,
+                                    value: controller.privacy.who(l10n),
+                                    onTap: () => _choosePrivacy(context),
+                                  ),
+                                  const _RowDivider(inset: 58),
+                                  _RowV2(
+                                    iconPath: AppIcons.profileMyFriends,
+                                    tint: true,
+                                    title: l10n.capsulesCreationCoAuthors,
+                                    value: controller.coAuthors.isEmpty
+                                        ? l10n.capsulesCreationCoAuthorsNone
+                                        : l10n.capsulesCreationCoAuthorsCount(
+                                            controller.coAuthors.length,
+                                          ),
+                                    onTap: () => _chooseCoAuthors(context),
+                                  ),
+                                  const _RowDivider(inset: 58),
+                                  _RowV2(
+                                    iconPath: AppIcons.capsulePinColor,
+                                    title: l10n.capsulesCreationColor,
+                                    value: controller.color.localized(l10n),
+                                    onTap: () => _chooseColor(context),
+                                  ),
+                                  if (controller.isLoop) ...[
+                                    const _RowDivider(inset: 58),
+                                    _RowV2(
+                                      iconPath: AppIcons.capsuleTimer,
+                                      title: l10n.capsulesCreationSpeed,
+                                      value: _speedLabel(
+                                        l10n,
+                                        controller.frameDelayMs,
+                                      ),
+                                      onTap: () => _chooseSpeed(context),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      // A loop: its frames, to reorder or thin out.
-                      if (controller.isLoop) ...[
-                        const SizedBox(height: 10),
-                        LoopFrameStrip(controller: controller),
-                      ],
-                      const SizedBox(height: 8),
-                      AppStaggerItem(
-                        index: 0,
-                        child: _GroupLabel(l10n.capsulesCreationSettings),
-                      ),
-                      AppStaggerItem(
-                        index: 1,
-                        child: _CardV2(
-                          child: Column(
-                            children: [
-                              _RowV2(
-                                iconPath: AppIcons.capsuleTimer,
-                                title: l10n.capsulesCreationOpenAt,
-                                value: openAt != null
-                                    ? AppDates.short(openAt, l10n.localeName)
-                                    : l10n.capsulesCreationAnytime,
-                                onTap: () => _chooseOpenDate(context),
-                              ),
-                              const _RowDivider(inset: 58),
-                              _RowV2(
-                                iconPath: AppIcons.capsulePrivacy,
-                                title: l10n.capsulesCreationPrivacy,
-                                value: controller.privacy.who(l10n),
-                                onTap: () => _choosePrivacy(context),
-                              ),
-                              const _RowDivider(inset: 58),
-                              _RowV2(
-                                iconPath: AppIcons.profileMyFriends,
-                                tint: true,
-                                title: l10n.capsulesCreationCoAuthors,
-                                value: controller.coAuthors.isEmpty
-                                    ? l10n.capsulesCreationCoAuthorsNone
-                                    : l10n.capsulesCreationCoAuthorsCount(
-                                        controller.coAuthors.length,
-                                      ),
-                                onTap: () => _chooseCoAuthors(context),
-                              ),
-                              const _RowDivider(inset: 58),
-                              _RowV2(
-                                iconPath: AppIcons.capsulePinColor,
-                                title: l10n.capsulesCreationColor,
-                                value: controller.color.localized(l10n),
-                                onTap: () => _chooseColor(context),
-                              ),
-                              if (controller.isLoop) ...[
-                                const _RowDivider(inset: 58),
-                                _RowV2(
-                                  iconPath: AppIcons.capsuleTimer,
-                                  title: l10n.capsulesCreationSpeed,
-                                  value: _speedLabel(
-                                    l10n,
-                                    controller.frameDelayMs,
+                          ),
+                          const SizedBox(height: 8),
+                          AppStaggerItem(
+                            index: 2,
+                            child: _GroupLabel(l10n.capsulesCreationOptions),
+                          ),
+                          AppStaggerItem(
+                            index: 3,
+                            child: _CardV2(
+                              child: Column(
+                                children: [
+                                  if (FeatureFlags.comments) ...[
+                                    _SwitchRowV2(
+                                      title: l10n.capsulesCreationAllowComments,
+                                      value: controller.allowComments,
+                                      onChanged: (v) =>
+                                          controller.allowComments = v,
+                                    ),
+                                    const _RowDivider(inset: 16),
+                                  ],
+                                  if (FeatureFlags.reactions) ...[
+                                    _SwitchRowV2(
+                                      title:
+                                          l10n.capsulesCreationAllowReactions,
+                                      value: controller.allowReactions,
+                                      onChanged: (v) =>
+                                          controller.allowReactions = v,
+                                    ),
+                                    const _RowDivider(inset: 16),
+                                  ],
+                                  _SwitchRowV2(
+                                    title: l10n.capsulesCreationShowAuthor,
+                                    subtitle:
+                                        l10n.capsulesCreationShowAuthorHint,
+                                    value: controller.showAuthor,
+                                    onChanged: (v) => controller.showAuthor = v,
                                   ),
-                                  onTap: () => _chooseSpeed(context),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      AppStaggerItem(
-                        index: 2,
-                        child: _GroupLabel(l10n.capsulesCreationOptions),
-                      ),
-                      AppStaggerItem(
-                        index: 3,
-                        child: _CardV2(
-                          child: Column(
-                            children: [
-                              if (FeatureFlags.comments) ...[
-                                _SwitchRowV2(
-                                  title: l10n.capsulesCreationAllowComments,
-                                  value: controller.allowComments,
-                                  onChanged: (v) =>
-                                      controller.allowComments = v,
-                                ),
-                                const _RowDivider(inset: 16),
-                              ],
-                              if (FeatureFlags.reactions) ...[
-                                _SwitchRowV2(
-                                  title: l10n.capsulesCreationAllowReactions,
-                                  value: controller.allowReactions,
-                                  onChanged: (v) =>
-                                      controller.allowReactions = v,
-                                ),
-                                const _RowDivider(inset: 16),
-                              ],
-                              _SwitchRowV2(
-                                title: l10n.capsulesCreationShowAuthor,
-                                subtitle: l10n.capsulesCreationShowAuthorHint,
-                                value: controller.showAuthor,
-                                onChanged: (v) => controller.showAuthor = v,
+                                  const _RowDivider(inset: 16),
+                                  _SwitchRowV2(
+                                    title: l10n.capsulesCreationApproximate,
+                                    subtitle:
+                                        l10n.capsulesCreationApproximateHint,
+                                    value:
+                                        controller.locationPrecision ==
+                                        LocationPrecision.approximate,
+                                    onChanged: (v) =>
+                                        controller.approximateLocation = v,
+                                  ),
+                                ],
                               ),
-                              const _RowDivider(inset: 16),
-                              _SwitchRowV2(
-                                title: l10n.capsulesCreationApproximate,
-                                subtitle: l10n.capsulesCreationApproximateHint,
-                                value:
-                                    controller.locationPrecision ==
-                                    LocationPrecision.approximate,
-                                onChanged: (v) =>
-                                    controller.approximateLocation = v,
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
+              ],
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SystemBarFade(
+                extra: 48 + 12 + 24,
+                color: context.palette.backgroundAlt,
+              ),
+            ),
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.viewPaddingOf(context).bottom + 12,
+              child: CapsuleSubmitButton(
+                label: l10n.capsulesCreationSubmit,
+                saving: controller.isSaving,
+                onSave: () => _save(context),
+                onDone: () => Navigator.of(context).pop(),
               ),
             ),
           ],
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-            child: CapsuleSubmitButton(
-              label: l10n.capsulesCreationSubmit,
-              saving: controller.isSaving,
-              onSave: () => _save(context),
-              onDone: () => Navigator.of(context).pop(),
-            ),
-          ),
         ),
       ),
     );
@@ -542,14 +552,20 @@ class _RowV2 extends StatelessWidget {
     required this.value,
     required this.onTap,
     this.tint = false,
+    this.subtitle,
   });
 
   final String iconPath;
 
+  /// A grey line under the title.
+  final String? subtitle;
+
   /// The icon is drawn in colour: shown in the icons' ink instead.
   final bool tint;
   final String title;
-  final String value;
+
+  /// The value on the right; none when the row has a [subtitle].
+  final String? value;
   final VoidCallback onTap;
 
   @override
@@ -578,19 +594,38 @@ class _RowV2 extends StatelessWidget {
                   color: tint ? palette.icon : null,
                 ),
                 const SizedBox(width: 14),
-                Expanded(child: Text(title, style: row(palette.textPrimary))),
-                const SizedBox(width: 14),
-                // As wide as its words, up to 150 dp.
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 150),
-                  child: Text(
-                    value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.end,
-                    style: row(palette.textMuted),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: row(palette.textPrimary)),
+                      if (subtitle case final line?)
+                        Text(
+                          line,
+                          style: TextStyle(
+                            fontFamily: kAppFontFamily,
+                            fontSize: 13,
+                            height: 1.25,
+                            color: palette.textSecondary,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
+                if (value case final words?) ...[
+                  const SizedBox(width: 14),
+                  // As wide as its words, up to 150 dp.
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 150),
+                    child: Text(
+                      words,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                      style: row(palette.textMuted),
+                    ),
+                  ),
+                ],
                 const SizedBox(width: 14),
                 Image.asset(AppIcons.goHere, width: 20),
               ],
@@ -698,9 +733,19 @@ class _PreviewPhoto extends StatelessWidget {
   final CapsuleCreationController controller;
   final VoidCallback onRetake;
 
+  Future<void> _adjust(BuildContext context) async {
+    final crop = await AdjustPhotoPage.show(
+      context,
+      imagePath: controller.imagePath,
+      crop: controller.crop,
+    );
+    if (crop != null) controller.crop = crop;
+  }
+
   @override
   Widget build(BuildContext context) {
     final loop = controller.isLoop;
+    final crop = controller.crop;
     return AspectRatio(
       aspectRatio: 1,
       child: Stack(
@@ -713,6 +758,7 @@ class _PreviewPhoto extends StatelessWidget {
               Uri.file(controller.imagePath).toString(),
               heroTag: loop ? null : 'creation-photo',
               fromRadius: 16,
+              crop: crop,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
@@ -725,14 +771,21 @@ class _PreviewPhoto extends StatelessWidget {
                     )
                   : Hero(
                       tag: 'creation-photo',
-                      child: Image.file(
-                        File(controller.imagePath),
-                        fit: BoxFit.cover,
-                        // Decoded at the card's size, not the camera's.
-                        cacheWidth:
-                            (MediaQuery.sizeOf(context).width *
-                                    MediaQuery.devicePixelRatioOf(context))
-                                .round(),
+                      child: CroppedPhoto(
+                        crop: crop,
+                        image: (fit) => Image.file(
+                          File(controller.imagePath),
+                          fit: fit,
+                          gaplessPlayback: true,
+                          // Decoded at the size it shows, not the camera's
+                          // (larger when zoomed in).
+                          cacheWidth:
+                              (MediaQuery.sizeOf(context).width *
+                                      MediaQuery.devicePixelRatioOf(context) /
+                                      (crop?.w ?? 1))
+                                  .round()
+                                  .clamp(1, 3000),
+                        ),
                       ),
                     ),
             ),
@@ -750,6 +803,21 @@ class _PreviewPhoto extends StatelessWidget {
               ),
             ),
           ),
+          // Which square the capsule shows (a loop shows its middle).
+          if (!loop)
+            Positioned(
+              right: 10,
+              top: 10,
+              child: Semantics(
+                button: true,
+                child: AppPressable(
+                  child: GestureDetector(
+                    onTap: () => _adjust(context),
+                    child: PhotoBadge(text: context.l10n.capsulesAdjust),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -788,8 +856,6 @@ class _PreviewDates extends StatelessWidget {
     );
   }
 }
-
-enum _OpenChoice { tomorrow, week, month, year, pick, now }
 
 /// Privacy names in the app's language (the model's `label` is English).
 extension on CapsulePrivacy {

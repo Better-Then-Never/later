@@ -1180,6 +1180,12 @@ describe('social and gamification (night session)', () => {
     await assertFails(setDoc(doc(db, 'capsules/a3'), fresh({ capturedAt: Timestamp.fromMillis(Date.now() + 3600 * 1000) })));
     await assertFails(setDoc(doc(db, 'capsules/a4'), fresh({ frames: Array(11).fill('https://f') })));
     await assertFails(setDoc(doc(db, 'capsules/a5'), fresh({ locationPrecision: 'fuzzy' })));
+    // The square it shows (capsule v3 Adjust): four shares inside the photo.
+    await assertSucceeds(setDoc(doc(db, 'capsules/a8'), fresh({ crop: { x: 0.1, y: 0.2, w: 0.5, h: 0.28125 } })));
+    await assertFails(setDoc(doc(db, 'capsules/a9'), fresh({ crop: { x: 0.6, y: 0, w: 0.5, h: 0.3 } })));
+    await assertFails(setDoc(doc(db, 'capsules/a10'), fresh({ crop: { x: 0, y: 0, w: 0.5 } })));
+    await assertFails(setDoc(doc(db, 'capsules/a11'), fresh({ crop: { x: 0, y: 0, w: 0.5, h: 0.5, z: 1 } })));
+    await assertFails(setDoc(doc(db, 'capsules/a12'), fresh({ crop: 'middle' })));
   });
 
   test('reactions: whoever sees the capsule, as themselves, allowed types only', async () => {

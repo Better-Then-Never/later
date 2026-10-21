@@ -66,6 +66,12 @@ abstract final class AppRoutes {
     return replace ? nav.pushReplacement(route) : nav.push(route);
   }
 
+  /// The camera for Retake on the Create page: gives back the new photo
+  /// (or loop) instead of opening a new capsule.
+  static Future<CameraShot?> retakePhoto(BuildContext context) => Navigator.of(
+    context,
+  ).push(appSheetRoute<CameraShot>(const CameraPage(retake: true)));
+
   /// Capsule form after taking the photo (replaces the camera route).
   static Future<void> toCapsuleCreation(
     BuildContext context, {

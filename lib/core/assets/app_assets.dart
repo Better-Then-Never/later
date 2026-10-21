@@ -139,6 +139,9 @@ abstract final class AppIcons {
   static const share = 'assets/icons/profile/share.png';
   static const shareBlack = 'assets/icons/profile/share_black.png';
 
+  /// The share sign in white, on dark discs over photos in both themes.
+  static const shareWhite = '${AppAssetDirs.iconsDark}profile/share_black.png';
+
   /// Every file under assets/icons (used by the asset test).
   static List<String> get all => [
     authGoogle,

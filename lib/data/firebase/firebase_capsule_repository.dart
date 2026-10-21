@@ -277,15 +277,19 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
           ]
         : const <Reference>[];
     var frameUrls = const <String>[];
-    // A small copy for lists, chats and the map card. Rules deployed before
-    // it refuse it: the capsule is then saved without one.
+    // A small copy for lists, chats and the map card: the square the
+    // capsule shows (capsule v3 Adjust; the middle one by default). Rules
+    // deployed before it refuse it: the capsule is then saved without one.
     final thumbRef = _thumbRef(draft.ownerId, doc.id);
     String? thumbUrl;
     try {
-      final thumb = await _processor.capsuleJpegFromFile(
+      final crop = draft.crop;
+      final thumb = await _processor.capsuleSquareJpegFromFile(
         draft.imagePath,
-        maxDimension: thumbSize,
-        quality: 75,
+        size: thumbSize,
+        crop: crop == null
+            ? null
+            : (x: crop.x, y: crop.y, w: crop.w, h: crop.h),
       );
       await thumbRef.putData(
         thumb,

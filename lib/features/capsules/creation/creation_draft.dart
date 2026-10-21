@@ -25,6 +25,7 @@ class CreationDraft {
     this.showAuthor = true,
     this.locationPrecision = LocationPrecision.exact,
     this.frameDelayMs = Capsule.defaultFrameDelayMs,
+    this.crop,
     this.pin,
     this.recipientId,
     this.capturedAt,
@@ -44,6 +45,9 @@ class CreationDraft {
   final bool showAuthor;
   final LocationPrecision locationPrecision;
   final int frameDelayMs;
+
+  /// The square chosen with Adjust.
+  final CapsuleCrop? crop;
 
   /// Where the pin was moved to (null: where the phone is).
   final GeoPosition? pin;
@@ -65,6 +69,7 @@ class CreationDraft {
     'showAuthor': showAuthor,
     'locationPrecision': locationPrecision.name,
     'frameDelayMs': frameDelayMs,
+    'crop': ?crop?.toMap(),
     if (pin case final p?) 'pin': [p.latitude, p.longitude],
     'recipientId': ?recipientId,
     'capturedAt': ?capturedAt?.toIso8601String(),
@@ -93,6 +98,7 @@ class CreationDraft {
       locationPrecision: LocationPrecision.parse(j['locationPrecision']),
       frameDelayMs:
           (j['frameDelayMs'] as num?)?.toInt() ?? Capsule.defaultFrameDelayMs,
+      crop: CapsuleCrop.parse(j['crop']),
       pin: pin is List && pin.length == 2
           ? GeoPosition((pin[0] as num).toDouble(), (pin[1] as num).toDouble())
           : null,

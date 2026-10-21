@@ -304,6 +304,18 @@
   "@authWelcomeTo": {
     "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
   },
+  "capsulesAdjust": "Adjust",
+  "@capsulesAdjust": {
+    "description": "Chip on the Create preview photo: choose which square of the photo the capsule shows."
+  },
+  "capsulesAdjustHint": "The whole photo opens when someone taps it.",
+  "@capsulesAdjustHint": {
+    "description": "Under the Adjust title: the crop only changes the square, not the photo."
+  },
+  "capsulesAdjustTitle": "Drag to move, pinch to zoom",
+  "@capsulesAdjustTitle": {
+    "description": "Title over the photo in Adjust."
+  },
   "capsulesAuthorChip": "Author",
   "@capsulesAuthorChip": {
     "description": "Small chip next to the name of the capsule's author in its comments."
@@ -651,6 +663,59 @@
   "@capsulesFramesTitle": {
     "description": "Title of the frame strip of a loop being created."
   },
+  "capsulesHowAnytimeHint": "Open it whenever you like",
+  "@capsulesHowAnytimeHint": {
+    "description": "Under \"Anytime\" in the \"How does it open?\" sheet."
+  },
+  "capsulesHowAnywhere": "Anywhere",
+  "@capsulesHowAnywhere": {
+    "description": "Where option: the capsule opens wherever you are."
+  },
+  "capsulesHowAnywhereHint": "Wherever you are when it opens",
+  "@capsulesHowAnywhereHint": {
+    "description": "Under \"Anywhere\" in the \"How does it open?\" sheet."
+  },
+  "capsulesHowHere": "Only when I'm back here",
+  "@capsulesHowHere": {
+    "description": "Where option: the capsule opens only within 150 m of where it was left."
+  },
+  "capsulesHowHereSoon": "Within 150 m of this spot · coming soon",
+  "@capsulesHowHereSoon": {
+    "description": "Under \"Only when I'm back here\" while the option is not available yet."
+  },
+  "capsulesHowPick": "Pick a date",
+  "@capsulesHowPick": {
+    "description": "An option in the \"How does it open?\" sheet: choose the day on a calendar."
+  },
+  "capsulesHowPickHint": "Choose a day on the calendar",
+  "@capsulesHowPickHint": {
+    "description": "Under \"Pick a date\" before a day is chosen."
+  },
+  "capsulesHowSummaryAnytime": "Opens anytime. It stays on the map where you left it.",
+  "@capsulesHowSummaryAnytime": {
+    "description": "The rule in words, at the bottom of the \"How does it open?\" sheet."
+  },
+  "capsulesHowSummaryDate": "Opens on {date}. It stays on the map where you left it.",
+  "@capsulesHowSummaryDate": {
+    "description": "The rule in words with a date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesHowTitle": "How does it open?",
+  "@capsulesHowTitle": {
+    "description": "Title of the sheet that sets when (and where) a capsule opens."
+  },
+  "capsulesHowWhen": "When",
+  "@capsulesHowWhen": {
+    "description": "Group label in the \"How does it open?\" sheet (shown in capitals)."
+  },
+  "capsulesHowWhere": "Where",
+  "@capsulesHowWhere": {
+    "description": "Group label in the \"How does it open?\" sheet (shown in capitals)."
+  },
   "capsulesLeaveCoAuthors": "Remove me as co-author",
   "@capsulesLeaveCoAuthors": {
     "description": "Capsule menu item for a co-author: take themselves off the capsule."
@@ -681,17 +746,7 @@
     "description": "Spoken name of the ⋯ button of an opened capsule."
   },
   "capsulesOpenInMonth": "In a month",
-  "capsulesOpenInWeek": "In a week",
   "capsulesOpenInYear": "In a year",
-  "capsulesOpenNow": "Open right away",
-  "@capsulesOpenNow": {
-    "description": "Open date menu: remove the date, the capsule is open at once"
-  },
-  "capsulesOpenPickDate": "Pick a date…",
-  "capsulesOpenTomorrow": "Tomorrow",
-  "@capsulesOpenTomorrow": {
-    "description": "Open date preset"
-  },
   "capsulesPinBack": "Back to where I am",
   "@capsulesPinBack": {
     "description": "Button on the pin map: back to the phone's position."

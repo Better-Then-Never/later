@@ -411,13 +411,22 @@ service cloud.firestore {
         }
       }
 
+      function validCrop(c) {
+        return c is map && c.keys().hasOnly(['x', 'y', 'w', 'h'])
+          && c.keys().hasAll(['x', 'y', 'w', 'h'])
+          && c.x is number && c.y is number && c.w is number && c.h is number
+          && c.x >= 0 && c.y >= 0 && c.w > 0 && c.h > 0
+          && c.x + c.w <= 1.0001 && c.y + c.h <= 1.0001;
+      }
+
       function validCapsule() {
         let d = request.resource.data;
         return d.keys().hasOnly(['ownerId', 'imageUrl', 'title', 'description',
             'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
             'sharedWith', 'capturedAt', 'utcOffsetMinutes', 'showAuthor',
             'allowComments', 'allowReactions', 'locationPrecision', 'frames',
-            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors', 'countryCode'])
+            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors', 'countryCode',
+            'crop'])
           && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
             'privacy', 'createdAt', 'color'])
           && d.ownerId == me()
@@ -447,6 +456,8 @@ service cloud.firestore {
           && (d.get('countryCode', 'XX') is string
             && d.get('countryCode', 'XX').matches('^[A-Z]{2}$'))
           && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
+          // The square it shows (capsule v3 Adjust): shares of the photo.
+          && (!d.keys().hasAny(['crop']) || validCrop(d.crop))
           && isServerTime(d.createdAt)
           && (d.get('isScheduled', false) is bool)
           && (d.get('openAt', null) == null || d.openAt is timestamp)

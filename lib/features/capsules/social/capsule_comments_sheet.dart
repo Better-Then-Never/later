@@ -190,7 +190,11 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Padding(
-        padding: EdgeInsets.only(bottom: keyboard),
+        // One gap that follows the keyboard down to the system bar and
+        // stops there (it dropped under the bar, then jumped back).
+        padding: EdgeInsets.only(
+          bottom: math.max(keyboard, media.viewPadding.bottom),
+        ),
         child: Column(
           children: [
             const SheetHandle.v2(),
@@ -231,54 +235,52 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
                   }
                   // The first row offers older comments when there are.
                   final more = _c.canLoadMoreComments ? 1 : 0;
-                  return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    itemCount: thread.length + more,
-                    itemBuilder: (context, index) {
-                      if (index < more) {
-                        return Center(
-                          child: _c.isLoadingMoreComments
-                              ? const Padding(
-                                  padding: EdgeInsets.all(12),
-                                  child: SizedBox.square(
-                                    dimension: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
+                  return SheetList(
+                    list: ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(bottom: 12),
+                      itemCount: thread.length + more,
+                      itemBuilder: (context, index) {
+                        if (index < more) {
+                          return Center(
+                            child: _c.isLoadingMoreComments
+                                ? const Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: SizedBox.square(
+                                      dimension: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
                                     ),
+                                  )
+                                : TextButton(
+                                    onPressed: _c.loadMoreComments,
+                                    child: Text(l10n.capsulesCommentsEarlier),
                                   ),
-                                )
-                              : TextButton(
-                                  onPressed: _c.loadMoreComments,
-                                  child: Text(l10n.capsulesCommentsEarlier),
-                                ),
+                          );
+                        }
+                        final comment = thread[index - more];
+                        return Builder(
+                          key: ValueKey(comment.id),
+                          builder: (row) => _CommentRow(
+                            comment: comment,
+                            isMine: comment.authorId == _c.uid,
+                            isAuthor: comment.authorId == _c.capsule.ownerId,
+                            pressed: comment.id == _pressedId,
+                            onReply: comment.replyTo == null
+                                ? () => _startReply(comment)
+                                : null,
+                            onLongPress: () => _options(comment, row),
+                          ),
                         );
-                      }
-                      final comment = thread[index - more];
-                      return Builder(
-                        key: ValueKey(comment.id),
-                        builder: (row) => _CommentRow(
-                          comment: comment,
-                          isMine: comment.authorId == _c.uid,
-                          isAuthor: comment.authorId == _c.capsule.ownerId,
-                          pressed: comment.id == _pressedId,
-                          onReply: comment.replyTo == null
-                              ? () => _startReply(comment)
-                              : null,
-                          onLongPress: () => _options(comment, row),
-                        ),
-                      );
-                    },
+                      },
+                    ),
                   );
                 },
               ),
             ),
             Container(
-              padding: EdgeInsets.fromLTRB(
-                12,
-                10,
-                12,
-                10 + (media.viewInsets.bottom > 0 ? 0 : media.padding.bottom),
-              ),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
               decoration: BoxDecoration(
                 color: palette.surface,
                 border: Border(top: BorderSide(color: palette.divider)),

@@ -15,6 +15,7 @@ import '../../../data/models/capsule.dart';
 import '../../../data/models/social.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/motion/reaction_burst.dart';
+import '../../../shared/widgets/app_radio.dart';
 import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../history/own_capsules_store.dart';
@@ -163,7 +164,7 @@ class _ReportReasonSheetState extends State<ReportReasonSheet> {
                       height: 42,
                       child: Row(
                         children: [
-                          _Radio(on: _reason == entry.key),
+                          AppRadio(on: _reason == entry.key),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
@@ -226,35 +227,6 @@ class _ReportReasonSheetState extends State<ReportReasonSheet> {
       ),
     );
   }
-}
-
-/// A 20 dp radio: a grey ring, or a green ring with a green dot.
-class _Radio extends StatelessWidget {
-  const _Radio({required this.on});
-
-  final bool on;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: 20,
-    height: 20,
-    padding: const EdgeInsets.all(4),
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      border: Border.all(
-        color: on ? AppColors.brandGreen : context.palette.disabled,
-        width: 2,
-      ),
-    ),
-    child: on
-        ? const DecoratedBox(
-            decoration: BoxDecoration(
-              color: AppColors.brandGreen,
-              shape: BoxShape.circle,
-            ),
-          )
-        : null,
-  );
 }
 
 /// The six reactions across the width (Figma "Reactions"): an equal mark each, with

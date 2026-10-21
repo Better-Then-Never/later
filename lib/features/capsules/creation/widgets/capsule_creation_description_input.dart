@@ -6,8 +6,9 @@ import 'package:later/core/theme/app_text_styles.dart';
 import 'package:later/shared/widgets/app_sheets.dart';
 import 'package:later/shared/widgets/buttons/default_green_button.dart';
 
-/// The rules accept 2000 characters; 2001-2200 used to fail to save.
-const int maxDescriptionLength = 2000;
+/// A capsule's words stay short (the owner's limit; the rules still accept
+/// up to 2000 from older versions).
+const int maxDescriptionLength = 200;
 
 /// The description on the capsule card: what is written so far (three
 /// lines of it); a tap opens the composer, a roomy field with a counter (B4).
@@ -27,7 +28,12 @@ class CapsuleCreationDescriptionInputField extends StatelessWidget {
       label: l10n.capsulesCreationDescriptionHint,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => DescriptionComposer.show(context, controller),
+        onTap: () {
+          // The title gave its focus back when the composer closed and
+          // the keyboard jumped up on it.
+          FocusManager.instance.primaryFocus?.unfocus();
+          DescriptionComposer.show(context, controller);
+        },
         child: ExcludeSemantics(
           child: Padding(
             padding: EdgeInsets.zero,
@@ -69,9 +75,9 @@ class DescriptionComposer extends StatelessWidget {
   static Future<void> show(
     BuildContext context,
     TextEditingController controller,
-  ) => showEdgeSheet<void>(
+  ) => showOnKeyboard<void>(
     context,
-    (_) => DescriptionComposer(controller: controller),
+    DescriptionComposer(controller: controller),
   );
 
   @override
@@ -79,8 +85,8 @@ class DescriptionComposer extends StatelessWidget {
     final palette = context.palette;
     final l10n = context.l10n;
     final width = MediaQuery.sizeOf(context).width;
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+    return SizedBox(
+      width: MediaQuery.sizeOf(context).width,
       child: Container(
         decoration: BoxDecoration(
           color: palette.surface,

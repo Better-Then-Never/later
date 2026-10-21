@@ -3,6 +3,7 @@ import 'package:later/app/router/app_link_handler.dart';
 import 'package:flutter/services.dart';
 import 'package:later/core/l10n/l10n.dart';
 import 'package:later/data/models/capsule.dart';
+import 'package:later/data/services/app_image_cache.dart';
 import 'package:later/features/users/user_directory.dart';
 import 'package:later/shared/widgets/popup/popup_notification_service.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +56,37 @@ class SharingService {
             capsule.title,
             AppLinkHandler.capsuleWebLink(capsule.id),
           ),
+          subject: capsule.title,
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        PopupNotificationService.showError(
+          context: context,
+          message: l10n.profileErrorShare,
+          position: NotificationPosition.bottom,
+        );
+      }
+    }
+  }
+
+  /// Shares the photo itself with its title: a private capsule's link would
+  /// open for nobody else, so its owner shares the picture.
+  static Future<void> shareCapsulePhoto({
+    required BuildContext context,
+    required Capsule capsule,
+  }) async {
+    final l10n = context.l10n;
+    try {
+      final url = capsule.imageUrl;
+      if (url == null) throw StateError('no photo');
+      final path = url.startsWith('file:')
+          ? Uri.parse(url).toFilePath()
+          : (await AppImageCache.manager.getSingleFile(url)).path;
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(path, mimeType: 'image/jpeg')],
+          text: capsule.title,
           subject: capsule.title,
         ),
       );

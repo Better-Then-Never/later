@@ -37,6 +37,19 @@ class ImageProcessor {
     int quality = 85,
   }) => Isolate.run(() => _fit(bytes, maxDimension, quality));
 
+  /// A capsule's square (capsule v3 thumbnail): the part of the photo at
+  /// [x], [y], [w], [h] (shares of its width and height; the middle square
+  /// when null) as a [size] px square.
+  Future<Uint8List> capsuleSquareJpegFromFile(
+    String path, {
+    required int size,
+    ({double x, double y, double w, double h})? crop,
+    int quality = 80,
+  }) async {
+    final bytes = await File(path).readAsBytes();
+    return Isolate.run(() => _cropSquare(bytes, crop, size, quality));
+  }
+
   /// Avatar: centre-cropped square (no distortion) of [size] px.
   Future<Uint8List> squareJpeg(
     Uint8List bytes, {
@@ -75,6 +88,33 @@ class ImageProcessor {
       width: image.width,
       height: image.height,
     );
+  }
+
+  static Uint8List _cropSquare(
+    Uint8List bytes,
+    ({double x, double y, double w, double h})? crop,
+    int size,
+    int quality,
+  ) {
+    final decoded = img.decodeImage(bytes);
+    if (decoded == null) return bytes;
+    final image = img.bakeOrientation(decoded);
+    if (crop == null) {
+      final square = img.copyResizeCropSquare(image, size: size);
+      return Uint8List.fromList(img.encodeJpg(square, quality: quality));
+    }
+    final x = (crop.x * image.width).round().clamp(0, image.width - 1);
+    final y = (crop.y * image.height).round().clamp(0, image.height - 1);
+    final side = (crop.w * image.width).round().clamp(1, image.width - x);
+    final square = img.copyCrop(
+      image,
+      x: x,
+      y: y,
+      width: side,
+      height: side.clamp(1, image.height - y),
+    );
+    final out = img.copyResize(square, width: size, height: size);
+    return Uint8List.fromList(img.encodeJpg(out, quality: quality));
   }
 
   static Uint8List _square(Uint8List bytes, int size, int quality) {

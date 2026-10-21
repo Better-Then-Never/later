@@ -79,7 +79,7 @@ class CapsuleCreationController extends ChangeNotifier {
   }
 
   final String ownerId;
-  final String _photoPath;
+  String _photoPath;
   final List<String> _frames;
 
   /// Every file the camera made for this capsule, removed frames too, so
@@ -96,6 +96,27 @@ class CapsuleCreationController extends ChangeNotifier {
 
   /// A loop keeps at least two frames.
   bool get canRemoveFrame => _frames.length > 2;
+
+  /// A new photo (or loop) from Retake: the title, the words and every
+  /// setting stay as they are; the square starts again from the middle.
+  void replacePhoto(String imagePath, {List<String> framePaths = const []}) {
+    _photoPath = imagePath;
+    _frames
+      ..clear()
+      ..addAll(framePaths);
+    _taken.addAll([imagePath, ...framePaths]);
+    _crop = null;
+    notifyListeners();
+  }
+
+  /// The square the capsule shows, chosen with Adjust (null: the middle).
+  CapsuleCrop? _crop;
+  CapsuleCrop? get crop => isLoop ? null : _crop;
+
+  set crop(CapsuleCrop? value) {
+    _crop = value;
+    notifyListeners();
+  }
 
   void removeFrame(int index) {
     if (!canRemoveFrame || index < 0 || index >= _frames.length) return;
@@ -247,6 +268,7 @@ class CapsuleCreationController extends ChangeNotifier {
     _showAuthor = d.showAuthor;
     _precision = d.locationPrecision;
     _frameDelayMs = d.frameDelayMs;
+    _crop = d.crop;
     if (d.pin case final pin?) {
       _here = _position;
       _position = pin;
@@ -301,6 +323,7 @@ class CapsuleCreationController extends ChangeNotifier {
           showAuthor: _showAuthor,
           locationPrecision: _precision,
           frameDelayMs: _frameDelayMs,
+          crop: crop,
           pin: pin,
           recipientId: recipientId,
           capturedAt: capturedAt,
@@ -451,6 +474,7 @@ class CapsuleCreationController extends ChangeNotifier {
         imagePath: imagePath,
         framePaths: framePaths,
         frameDelayMs: _frameDelayMs,
+        crop: crop,
         openAt: _openAt,
         recipientId: recipientId,
         capturedAt: capturedAt,

@@ -15,6 +15,10 @@ abstract final class AppTheme {
       brightness: Brightness.light,
     ),
     fontFamily: kAppFontFamily,
+    // No Android ink splash or press highlight anywhere: it spilled over the
+    // rounded cards (rows, switches, menus).
+    splashFactory: NoSplash.splashFactory,
+    highlightColor: Colors.transparent,
     extensions: const [AppPalette.light],
   );
 
@@ -28,6 +32,8 @@ abstract final class AppTheme {
         brightness: Brightness.dark,
       ).copyWith(surface: palette.surface, onSurface: palette.textPrimary),
       fontFamily: kAppFontFamily,
+      splashFactory: NoSplash.splashFactory,
+      highlightColor: Colors.transparent,
       scaffoldBackgroundColor: palette.background,
       canvasColor: palette.surface,
       dividerColor: palette.divider,

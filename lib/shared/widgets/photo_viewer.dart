@@ -7,6 +7,7 @@ import '../../core/assets/app_assets.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
+import '../../data/models/capsule.dart';
 import '../../data/services/app_image_cache.dart';
 import 'buttons/default_icon_button.dart';
 import 'loop_picture.dart';
@@ -23,6 +24,7 @@ class PhotoViewer extends StatefulWidget {
     this.heroTag,
     this.aspect,
     this.fromRadius = 20,
+    this.crop,
   });
 
   final String url;
@@ -33,6 +35,9 @@ class PhotoViewer extends StatefulWidget {
 
   /// The corners of the tapped picture the photo flies from.
   final double fromRadius;
+
+  /// The square the tapped picture showed (null: its middle).
+  final CapsuleCrop? crop;
 
   /// The tapped picture's [Hero] tag: the photo flies from it to full screen
   /// and back.
@@ -55,6 +60,7 @@ class PhotoViewer extends StatefulWidget {
     Duration frameDelay = const Duration(milliseconds: 300),
     Object? heroTag,
     double fromRadius = 20,
+    CapsuleCrop? crop,
   }) async {
     final reduced = AppMotion.reduced(context);
     double? aspect;
@@ -81,6 +87,7 @@ class PhotoViewer extends StatefulWidget {
           heroTag: heroTag,
           aspect: aspect,
           fromRadius: fromRadius,
+          crop: crop,
         ),
         // The page itself moves in only without a hero: the photo grows a
         // little as it fades (one picture-sized layer, briefly).
@@ -140,21 +147,23 @@ class PhotoViewer extends StatefulWidget {
   State<PhotoViewer> createState() => _PhotoViewerState();
 }
 
-/// The flying photo: at the start the tapped square (cropped, rounded), at
-/// the end the whole photo fitted to the screen, and every step between, so
-/// nothing jumps or blinks.
+/// The flying photo: at the start the tapped square (the capsule's chosen
+/// square, rounded), at the end the whole photo fitted to the screen, and
+/// every step between, so nothing jumps or blinks.
 class _PhotoFlight extends StatelessWidget {
   const _PhotoFlight({
     required this.animation,
     required this.image,
     required this.aspect,
     required this.radius,
+    required this.crop,
   });
 
   final Animation<double> animation;
   final ImageProvider image;
   final double aspect;
   final double radius;
+  final CapsuleCrop? crop;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -175,17 +184,38 @@ class _PhotoFlight extends StatelessWidget {
           width: width,
           height: height,
         );
-        final window = Rect.lerp(Offset.zero & size, whole, t)!;
+        // Where the whole photo sits at the start: so that the chosen
+        // square fills the tapped square.
+        final square = Offset.zero & size;
+        final crop = this.crop ?? CapsuleCrop.centre(aspect);
+        final fullWidth = square.width / crop.w;
+        final fullHeight = square.height / crop.h;
+        final from = Rect.fromLTWH(
+          -crop.x * fullWidth,
+          -crop.y * fullHeight,
+          fullWidth,
+          fullHeight,
+        );
+        final window = Rect.lerp(square, whole, t)!;
+        final photo = Rect.lerp(from, whole, t)!;
         return Stack(
           children: [
             Positioned.fromRect(
               rect: window,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(radius * (1 - t)),
-                child: Image(
-                  image: image,
-                  fit: BoxFit.cover,
-                  gaplessPlayback: true,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fromRect(
+                      rect: photo.shift(-window.topLeft),
+                      child: Image(
+                        image: image,
+                        fit: BoxFit.fill,
+                        gaplessPlayback: true,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -319,6 +349,7 @@ class _PhotoViewerState extends State<PhotoViewer>
                 image: image,
                 aspect: aspect,
                 radius: widget.fromRadius,
+                crop: widget.crop,
               ),
         child: photo,
       );

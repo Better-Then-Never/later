@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/app_dates.dart';
@@ -16,6 +17,7 @@ import '../../../shared/widgets/app_network_image.dart';
 import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/capsule/capsule_place_chip.dart';
+import '../../../shared/widgets/capsule/cropped_photo.dart';
 import '../../../shared/widgets/loop_picture.dart';
 import '../../../shared/widgets/photo_viewer.dart';
 import '../../../shared/widgets/pill_v2.dart';
@@ -182,6 +184,7 @@ class CapsuleSheetPhoto extends StatelessWidget {
         frames: capsule.frames,
         frameDelay: Duration(milliseconds: capsule.frameDelayMs),
         heroTag: tag,
+        crop: capsule.crop,
       ),
       child: Hero(
         tag: tag,
@@ -198,7 +201,10 @@ class CapsuleSheetPhoto extends StatelessWidget {
                   frameDelay: Duration(milliseconds: capsule.frameDelayMs),
                 )
               else
-                AppNetworkImage(url: url),
+                CroppedPhoto(
+                  crop: capsule.crop,
+                  image: (fit) => AppNetworkImage(url: url, fit: fit),
+                ),
               if (capsule.isLoop)
                 Positioned(
                   left: 10,
@@ -395,7 +401,13 @@ class _PhotoActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final share = CapsuleSheet.shareable(capsule);
+    final link = CapsuleSheet.shareable(capsule);
+    // Your own private capsule shares its photo instead of a link (known
+    // from who is signed in: it may have no reactions or comments).
+    final me = context.read<SessionController>().uid;
+    final mine =
+        me != null && (capsule.ownerId == me || capsule.coAuthors.contains(me));
+    final share = link || mine;
     final choices = _choices;
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -403,9 +415,16 @@ class _PhotoActions extends StatelessWidget {
         if (share)
           _PhotoButton(
             label: l10n.capsulesShare,
-            onTap: () =>
-                SharingService.shareCapsule(context: context, capsule: capsule),
-            child: Image.asset(AppIcons.share, width: 20),
+            onTap: () => link
+                ? SharingService.shareCapsule(
+                    context: context,
+                    capsule: capsule,
+                  )
+                : SharingService.shareCapsulePhoto(
+                    context: context,
+                    capsule: capsule,
+                  ),
+            child: Image.asset(AppIcons.shareWhite, width: 20),
           ),
         if (share && choices.isNotEmpty) const SizedBox(width: 8),
         if (choices.isNotEmpty)

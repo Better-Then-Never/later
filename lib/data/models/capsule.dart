@@ -71,6 +71,58 @@ class CapsuleDeletion {
   final DateTime deletedAt;
 }
 
+/// The square of a photo a capsule shows wherever it is square (capsule v3
+/// "Adjust"): its left, top, width and height as shares of the photo's
+/// width and height (a square in pixels, so [w] and [h] differ unless the
+/// photo is square). The whole photo still opens on a tap.
+class CapsuleCrop {
+  const CapsuleCrop({
+    required this.x,
+    required this.y,
+    required this.w,
+    required this.h,
+  });
+
+  final double x;
+  final double y;
+  final double w;
+  final double h;
+
+  /// The middle square of a photo [aspect] wide (width over height): what
+  /// a cover crop shows, the default.
+  factory CapsuleCrop.centre(double aspect) => aspect >= 1
+      ? CapsuleCrop(x: (1 - 1 / aspect) / 2, y: 0, w: 1 / aspect, h: 1)
+      : CapsuleCrop(x: 0, y: (1 - aspect) / 2, w: 1, h: aspect);
+
+  /// Read from Firestore; null unless all four are in 0..1 and the square
+  /// lies inside the photo.
+  static CapsuleCrop? parse(Object? value) {
+    if (value is! Map) return null;
+    double? n(Object? v) => v is num ? v.toDouble() : null;
+    final x = n(value['x']);
+    final y = n(value['y']);
+    final w = n(value['w']);
+    final h = n(value['h']);
+    if (x == null || y == null || w == null || h == null) return null;
+    if (x < 0 || y < 0 || w <= 0 || h <= 0) return null;
+    if (x + w > 1.0001 || y + h > 1.0001) return null;
+    return CapsuleCrop(x: x, y: y, w: w, h: h);
+  }
+
+  Map<String, double> toMap() => {'x': x, 'y': y, 'w': w, 'h': h};
+
+  @override
+  bool operator ==(Object other) =>
+      other is CapsuleCrop &&
+      other.x == x &&
+      other.y == y &&
+      other.w == w &&
+      other.h == h;
+
+  @override
+  int get hashCode => Object.hash(x, y, w, h);
+}
+
 /// A time capsule (`capsules/{id}`).
 class Capsule {
   const Capsule({
@@ -95,6 +147,7 @@ class Capsule {
     this.frames = const [],
     this.frameDelayMs = defaultFrameDelayMs,
     this.thumbUrl,
+    this.crop,
     this.placeName,
     this.reactionCounts = const {},
     this.reactionTotal = 0,
@@ -150,8 +203,12 @@ class Capsule {
   final List<String> frames;
   final int frameDelayMs;
 
-  /// A small version of the image for lists and markers.
+  /// A small version of the image for lists and markers (since capsule v3,
+  /// the [crop] square).
   final String? thumbUrl;
+
+  /// The square it shows (null: the middle of the photo).
+  final CapsuleCrop? crop;
 
   /// Where it was made, in words ("Old Town, Warsaw").
   final String? placeName;
@@ -204,6 +261,7 @@ class Capsule {
     frames: frames,
     frameDelayMs: frameDelayMs,
     thumbUrl: thumbUrl,
+    crop: crop,
     placeName: placeName,
     reactionCounts: reactionCounts ?? this.reactionCounts,
     reactionTotal: reactionTotal ?? this.reactionTotal,
@@ -236,6 +294,7 @@ class Capsule {
       _listEquals(other.frames, frames) &&
       other.frameDelayMs == frameDelayMs &&
       other.thumbUrl == thumbUrl &&
+      other.crop == crop &&
       other.placeName == placeName &&
       _mapEquals(other.reactionCounts, reactionCounts) &&
       other.reactionTotal == reactionTotal &&
@@ -297,7 +356,11 @@ class CapsuleDraft {
     this.countryCode,
     this.coAuthors = const [],
     this.highQuality = false,
+    this.crop,
   });
+
+  /// The square chosen with Adjust (null: the middle of the photo).
+  final CapsuleCrop? crop;
 
   /// Friends who made it with the owner (at most [Capsule.maxCoAuthors]).
   final List<String> coAuthors;
@@ -359,6 +422,7 @@ class CapsuleDraft {
     countryCode: countryCode,
     coAuthors: coAuthors,
     highQuality: highQuality,
+    crop: crop,
   );
 
   /// Local files of a loop capsule, in order; [imagePath] is the first.

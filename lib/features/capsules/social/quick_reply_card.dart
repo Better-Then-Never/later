@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
-import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
@@ -29,18 +26,7 @@ class QuickReplyCard extends StatefulWidget {
   final Capsule capsule;
 
   static Future<void> show(BuildContext context, Capsule capsule) =>
-      Navigator.of(context).push(
-        AppCardRoute<void>(
-          builder: (_) => QuickReplyCard(capsule: capsule),
-          alignment: Alignment.bottomCenter,
-          // The keyboard lifts it; rising as well looked like a jolt.
-          rise: false,
-          barrierColor: context.palette.scrim,
-          barrierLabel: MaterialLocalizations.of(
-            context,
-          ).modalBarrierDismissLabel,
-        ),
-      );
+      showOnKeyboard<void>(context, QuickReplyCard(capsule: capsule));
 
   @override
   State<QuickReplyCard> createState() => _QuickReplyCardState();
@@ -50,24 +36,8 @@ class _QuickReplyCardState extends State<QuickReplyCard> {
   final _text = TextEditingController();
   bool _sending = false;
 
-  /// Shown once the keyboard starts to rise, so the two come up together
-  /// (it sat at the bottom first, then jumped up with the keyboard); after
-  /// [_waitForKeyboard] it shows anyway (a hardware keyboard).
-  bool _shown = false;
-  Timer? _wait;
-  static const _waitForKeyboard = Duration(milliseconds: 700);
-
-  @override
-  void initState() {
-    super.initState();
-    _wait = Timer(_waitForKeyboard, () {
-      if (mounted) setState(() => _shown = true);
-    });
-  }
-
   @override
   void dispose() {
-    _wait?.cancel();
     _text.dispose();
     super.dispose();
   }
@@ -111,10 +81,6 @@ class _QuickReplyCardState extends State<QuickReplyCard> {
     final l10n = context.l10n;
     final capsule = widget.capsule;
     final name = CapsuleAuthorRow.ownerFirstNameOf(context, capsule);
-    if (!_shown && MediaQuery.viewInsetsOf(context).bottom > 0) {
-      _shown = true;
-      _wait?.cancel();
-    }
     final head = TextStyle(
       fontFamily: kAppFontFamily,
       fontSize: 18,
@@ -122,138 +88,130 @@ class _QuickReplyCardState extends State<QuickReplyCard> {
       fontWeight: FontWeight.bold,
       color: palette.textPrimary,
     );
-    return AnimatedOpacity(
-      opacity: _shown ? 1 : 0,
-      duration: AppMotion.of(context, AppMotion.fast),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-          child: Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(maxWidth: 480),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: palette.surface,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: AppShadows.raised(context),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        name == null
-                            ? l10n.capsulesQuickReply
-                            : l10n.capsulesReplyTo(name),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: head,
-                      ),
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        child: Container(
+          width: double.infinity,
+          constraints: const BoxConstraints(maxWidth: 480),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: palette.surface,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: AppShadows.raised(context),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      name == null
+                          ? l10n.capsulesQuickReply
+                          : l10n.capsulesReplyTo(name),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: head,
                     ),
-                    // The app's own cross in a 44 dp target (it was a small ×).
-                    Semantics(
-                      button: true,
-                      label: MaterialLocalizations.of(
-                        context,
-                      ).closeButtonTooltip,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.of(context).pop(),
-                        child: Transform.translate(
-                          offset: const Offset(10, 0),
-                          child: SizedBox.square(
-                            dimension: 44,
-                            child: Center(
-                              child: Image.asset(
-                                AppIcons.capsuleClose,
-                                width: 16,
-                              ),
+                  ),
+                  // The app's own cross in a 44 dp target (it was a small ×).
+                  Semantics(
+                    button: true,
+                    label: MaterialLocalizations.of(context).closeButtonTooltip,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => Navigator.of(context).pop(),
+                      child: Transform.translate(
+                        offset: const Offset(10, 0),
+                        child: SizedBox.square(
+                          dimension: 44,
+                          child: Center(
+                            child: Image.asset(
+                              AppIcons.capsuleClose,
+                              width: 16,
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                _CapsuleChip(capsule: capsule),
-                const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _text,
-                        autofocus: true,
-                        minLines: 1,
-                        maxLines: 4,
-                        textCapitalization: TextCapitalization.sentences,
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(
-                            Chat.maxMessageLength,
-                          ),
-                        ],
-                        style: TextStyle(
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _CapsuleChip(capsule: capsule),
+              const SizedBox(height: 10),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _text,
+                      autofocus: true,
+                      minLines: 1,
+                      maxLines: 4,
+                      textCapitalization: TextCapitalization.sentences,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(Chat.maxMessageLength),
+                      ],
+                      style: TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: 16,
+                        height: 1.25,
+                        color: palette.textPrimary,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: name == null
+                            ? l10n.messagesInputHint
+                            : l10n.capsulesQuickReplyHint(name),
+                        hintStyle: TextStyle(
                           fontFamily: kAppFontFamily,
                           fontSize: 16,
                           height: 1.25,
-                          color: palette.textPrimary,
+                          color: palette.textMuted,
                         ),
-                        decoration: InputDecoration(
-                          hintText: name == null
-                              ? l10n.messagesInputHint
-                              : l10n.capsulesQuickReplyHint(name),
-                          hintStyle: TextStyle(
-                            fontFamily: kAppFontFamily,
-                            fontSize: 16,
-                            height: 1.25,
-                            color: palette.textMuted,
+                        isDense: true,
+                        filled: true,
+                        fillColor: palette.surface,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                            color: palette.accentText,
+                            width: 1.5,
                           ),
-                          isDense: true,
-                          filled: true,
-                          fillColor: palette.surface,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 10,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(
-                              color: palette.accentText,
-                              width: 1.5,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide(
-                              color: palette.accentText,
-                              width: 1.5,
-                            ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(
+                            color: palette.accentText,
+                            width: 1.5,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    _sending
-                        ? const SizedBox.square(
-                            dimension: 44,
-                            child: Padding(
-                              padding: EdgeInsets.all(10),
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          )
-                        : SendCircle(
-                            tooltip: l10n.messagesSend,
-                            onTap: () => _send(name),
+                  ),
+                  const SizedBox(width: 8),
+                  _sending
+                      ? const SizedBox.square(
+                          dimension: 44,
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                  ],
-                ),
-              ],
-            ),
+                        )
+                      : SendCircle(
+                          tooltip: l10n.messagesSend,
+                          onTap: () => _send(name),
+                        ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

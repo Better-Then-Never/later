@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -378,3 +379,113 @@ class SheetHandle extends StatelessWidget {
     );
   }
 }
+
+/// A list in an edge sheet that lets the sheet close with a drag down
+/// anywhere: a short list leaves its empty space to the sheet's own drag,
+/// and pulling a long one down past its top closes the sheet too (one used
+/// to have to reach for the handle).
+class SheetList extends StatefulWidget {
+  const SheetList({super.key, required this.list});
+
+  /// The list, built with `shrinkWrap: true` so it is only as tall as its
+  /// rows.
+  final Widget list;
+
+  @override
+  State<SheetList> createState() => _SheetListState();
+}
+
+class _SheetListState extends State<SheetList> {
+  /// Pulled this far past the top, the sheet closes.
+  static const _closeAfter = 64.0;
+
+  double _pulled = 0;
+  bool _closing = false;
+
+  bool _onScroll(ScrollNotification n) {
+    if (n is OverscrollNotification &&
+        n.dragDetails != null &&
+        n.overscroll < 0) {
+      _pulled -= n.overscroll;
+      if (_pulled > _closeAfter && !_closing) {
+        _closing = true;
+        Navigator.of(context).maybePop();
+      }
+    } else if (n is ScrollEndNotification ||
+        (n is ScrollUpdateNotification && n.metrics.pixels > 0)) {
+      _pulled = 0;
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: Align(alignment: Alignment.topCenter, child: widget.list),
+      );
+}
+
+/// A card that types (a quick reply, the description) shown together with
+/// the keyboard: it stays hidden until the keyboard starts to rise and then
+/// comes up on it (it used to sit at the bottom first and be pushed up a
+/// moment later). After [wait] it shows anyway (a hardware keyboard).
+class AppearWithKeyboard extends StatefulWidget {
+  const AppearWithKeyboard({super.key, required this.child});
+
+  final Widget child;
+
+  static const wait = Duration(milliseconds: 700);
+
+  @override
+  State<AppearWithKeyboard> createState() => _AppearWithKeyboardState();
+}
+
+class _AppearWithKeyboardState extends State<AppearWithKeyboard> {
+  bool _shown = false;
+  Timer? _wait;
+
+  @override
+  void initState() {
+    super.initState();
+    _wait = Timer(AppearWithKeyboard.wait, () {
+      if (mounted) setState(() => _shown = true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _wait?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_shown && MediaQuery.viewInsetsOf(context).bottom > 0) {
+      _shown = true;
+      _wait?.cancel();
+    }
+    return AnimatedOpacity(
+      opacity: _shown ? 1 : 0,
+      duration: AppMotion.of(context, AppMotion.fast),
+      child: widget.child,
+    );
+  }
+}
+
+/// Opens [child] (a card that types) at the bottom, on the keyboard: it
+/// fades in as the keyboard rises and closes on a tap outside, back or a
+/// drag down.
+Future<T?> showOnKeyboard<T>(BuildContext context, Widget child) =>
+    Navigator.of(context).push(
+      AppCardRoute<T>(
+        builder: (_) => AppearWithKeyboard(child: child),
+        alignment: Alignment.bottomCenter,
+        // The keyboard lifts it; rising as well looked like a jolt.
+        rise: false,
+        barrierColor: context.palette.scrim,
+        barrierLabel: MaterialLocalizations.of(
+          context,
+        ).modalBarrierDismissLabel,
+      ),
+    );

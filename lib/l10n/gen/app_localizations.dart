@@ -680,6 +680,24 @@ abstract class AppLocalizations {
   /// **'Welcome to'**
   String get authWelcomeTo;
 
+  /// Chip on the Create preview photo: choose which square of the photo the capsule shows.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust'**
+  String get capsulesAdjust;
+
+  /// Under the Adjust title: the crop only changes the square, not the photo.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole photo opens when someone taps it.'**
+  String get capsulesAdjustHint;
+
+  /// Title over the photo in Adjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move, pinch to zoom'**
+  String get capsulesAdjustTitle;
+
   /// Small chip next to the name of the capsule's author in its comments.
   ///
   /// In en, this message translates to:
@@ -1190,6 +1208,78 @@ abstract class AppLocalizations {
   /// **'Frames'**
   String get capsulesFramesTitle;
 
+  /// Under "Anytime" in the "How does it open?" sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Open it whenever you like'**
+  String get capsulesHowAnytimeHint;
+
+  /// Where option: the capsule opens wherever you are.
+  ///
+  /// In en, this message translates to:
+  /// **'Anywhere'**
+  String get capsulesHowAnywhere;
+
+  /// Under "Anywhere" in the "How does it open?" sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wherever you are when it opens'**
+  String get capsulesHowAnywhereHint;
+
+  /// Where option: the capsule opens only within 150 m of where it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'Only when I\'m back here'**
+  String get capsulesHowHere;
+
+  /// Under "Only when I'm back here" while the option is not available yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Within 150 m of this spot · coming soon'**
+  String get capsulesHowHereSoon;
+
+  /// An option in the "How does it open?" sheet: choose the day on a calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get capsulesHowPick;
+
+  /// Under "Pick a date" before a day is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a day on the calendar'**
+  String get capsulesHowPickHint;
+
+  /// The rule in words, at the bottom of the "How does it open?" sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens anytime. It stays on the map where you left it.'**
+  String get capsulesHowSummaryAnytime;
+
+  /// The rule in words with a date.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}. It stays on the map where you left it.'**
+  String capsulesHowSummaryDate(String date);
+
+  /// Title of the sheet that sets when (and where) a capsule opens.
+  ///
+  /// In en, this message translates to:
+  /// **'How does it open?'**
+  String get capsulesHowTitle;
+
+  /// Group label in the "How does it open?" sheet (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get capsulesHowWhen;
+
+  /// Group label in the "How does it open?" sheet (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get capsulesHowWhere;
+
   /// Capsule menu item for a co-author: take themselves off the capsule.
   ///
   /// In en, this message translates to:
@@ -1232,35 +1322,11 @@ abstract class AppLocalizations {
   /// **'In a month'**
   String get capsulesOpenInMonth;
 
-  /// No description provided for @capsulesOpenInWeek.
-  ///
-  /// In en, this message translates to:
-  /// **'In a week'**
-  String get capsulesOpenInWeek;
-
   /// No description provided for @capsulesOpenInYear.
   ///
   /// In en, this message translates to:
   /// **'In a year'**
   String get capsulesOpenInYear;
-
-  /// Open date menu: remove the date, the capsule is open at once
-  ///
-  /// In en, this message translates to:
-  /// **'Open right away'**
-  String get capsulesOpenNow;
-
-  /// No description provided for @capsulesOpenPickDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick a date…'**
-  String get capsulesOpenPickDate;
-
-  /// Open date preset
-  ///
-  /// In en, this message translates to:
-  /// **'Tomorrow'**
-  String get capsulesOpenTomorrow;
 
   /// Button on the pin map: back to the phone's position.
   ///

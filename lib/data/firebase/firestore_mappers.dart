@@ -175,6 +175,7 @@ abstract final class FirestoreMappers {
           ? (data['frameDelayMs'] as int).clamp(80, 2000)
           : Capsule.defaultFrameDelayMs,
       thumbUrl: _nonEmptyString(data['thumbUrl']),
+      crop: CapsuleCrop.parse(data['crop']),
       placeName: _nonEmptyString(data['placeName']),
       reactionCounts: {
         for (final e in _map(data['reactionCounts']).entries)
@@ -202,6 +203,7 @@ abstract final class FirestoreMappers {
     'placeName',
     'coAuthors',
     'countryCode',
+    'crop',
   };
 
   /// The newest of them (co-authors, thumbnails, the country: this
@@ -211,6 +213,8 @@ abstract final class FirestoreMappers {
     'thumbUrl',
     'coAuthors',
     'countryCode',
+    // Capsule v3 (Adjust): rules from before it refuse it.
+    'crop',
   };
 
   /// [capsule] without [capsuleFieldsAddedLatest].
@@ -262,6 +266,7 @@ abstract final class FirestoreMappers {
       'frameDelayMs': draft.frameDelayMs.clamp(80, 2000),
     },
     if (thumbUrl != null) 'thumbUrl': thumbUrl,
+    if (draft.crop case final crop?) 'crop': crop.toMap(),
     if (draft.placeName case final String place when place.trim().isNotEmpty)
       'placeName': place.length > 200 ? place.substring(0, 200) : place,
     if (draft.countryCode case final String code

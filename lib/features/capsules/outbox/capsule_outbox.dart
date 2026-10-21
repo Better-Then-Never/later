@@ -36,6 +36,7 @@ class PendingCapsule {
     imageUrl: Uri.file(draft.imagePath).toString(),
     frames: [for (final f in draft.framePaths) Uri.file(f).toString()],
     frameDelayMs: draft.frameDelayMs,
+    crop: draft.crop,
     createdAt: queuedAt,
     capturedAt: draft.capturedAt,
     openAt: draft.openAt,
@@ -375,6 +376,7 @@ class CapsuleOutbox extends ChangeNotifier
       // Frame files are named after the capsule; only their number is kept.
       if (d.framePaths.isNotEmpty) 'frames': d.framePaths.length,
       if (d.framePaths.isNotEmpty) 'frameDelayMs': d.frameDelayMs,
+      'crop': ?d.crop?.toMap(),
     };
   }
 
@@ -416,6 +418,7 @@ class CapsuleOutbox extends ChangeNotifier
         ],
         frameDelayMs:
             (j['frameDelayMs'] as num?)?.toInt() ?? Capsule.defaultFrameDelayMs,
+        crop: CapsuleCrop.parse(j['crop']),
       ),
     );
   }

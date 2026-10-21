@@ -14,10 +14,13 @@ import 'package:later/core/theme/app_palette.dart';
 /// keyboard is up (the bottom padding is then 0). A plain gradient, no blur:
 /// it costs nothing to draw.
 class SystemBarFade extends StatelessWidget {
-  const SystemBarFade({super.key, this.extra = 32});
+  const SystemBarFade({super.key, this.extra = 32, this.color});
 
   /// How far the fade reaches above the system bar.
   final double extra;
+
+  /// The page colour it fades to (the page background by default).
+  final Color? color;
 
   /// How long the top edge takes to go from clear to [_edgeAlpha].
   static const double edge = 24;
@@ -31,10 +34,10 @@ class SystemBarFade extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final inset = MediaQuery.paddingOf(context).bottom;
-    if (inset <= 0) return const SizedBox.shrink();
+    if (inset <= 0 && color == null) return const SizedBox.shrink();
     final height = inset + extra;
     final reach = math.min(edge, height) / height;
-    final page = context.palette.background;
+    final page = color ?? context.palette.background;
     final stops = <double>[];
     final colors = <Color>[];
     for (final t in _samples) {
