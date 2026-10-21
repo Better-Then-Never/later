@@ -1511,12 +1511,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String mapCapsuleOpensIn(String time) {
-    return 'Öffnet sich in $time';
+    return 'In $time';
   }
 
   @override
   String mapCapsuleOpensOn(String date) {
-    return 'Öffnet sich am $date';
+    return 'Öffnet am $date';
   }
 
   @override

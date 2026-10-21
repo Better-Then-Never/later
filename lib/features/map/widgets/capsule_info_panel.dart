@@ -99,7 +99,9 @@ class CapsuleInfoPanel extends StatefulWidget {
     ).difference(DateUtils.dateOnly(opened)).inDays;
     if (days <= 0) return l10n.mapCapsuleOpenedToday;
     if (days == 1) return l10n.mapCapsuleOpenedYesterday;
-    return l10n.mapCapsuleOpenedOn(AppDates.medium(opened, l10n.localeName));
+    return l10n.mapCapsuleOpenedOn(
+      AppDates.compact(opened, l10n.localeName, now),
+    );
   }
 
   @override
@@ -157,14 +159,19 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         context.select<CapsuleOpenings, bool>(
           (o) => o.isWrapped(capsule, uid, _now),
         );
-    final left = AppDates.medium(capsule.createdAt ?? _now, l10n.localeName);
+    final left = AppDates.compact(
+      capsule.createdAt ?? _now,
+      l10n.localeName,
+      _now,
+    );
     final String second;
     if (isOpen) {
       second =
           CapsuleAuthorRow.namesOf(context, capsule) ??
           l10n.mapCapsuleLeftOn(left);
     } else {
-      final owner = CapsuleAuthorRow.ownerNameOf(context, capsule);
+      // The first name, so the date still fits ("Left by Bob · 6 Oct").
+      final owner = CapsuleAuthorRow.ownerFirstNameOf(context, capsule);
       second = owner == null
           ? l10n.mapCapsuleLeftOn(left)
           : l10n.mapCapsuleLeftBy(owner, left);
@@ -201,18 +208,23 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                     ),
                   ),
                   SizedBox(height: isOpen ? 2 : 3),
-                  Text(
+                  _SecondLine(
                     second,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    date: left,
                     style: _line(palette.textSecondary),
                   ),
                   SizedBox(height: isOpen ? 2 : 3),
                   if (isOpen)
                     Row(
+                      // The check stays by the first line when it wraps.
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset(AppIcons.profileDone, width: 14),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 1),
+                          child: Image.asset(AppIcons.profileDone, width: 14),
+                        ),
                         const SizedBox(width: 4),
+                        // Two lines when it must: the open card has room.
                         Flexible(
                           child: Text(
                             wrapped
@@ -222,7 +234,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                                     _now,
                                     l10n,
                                   ),
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: _line(palette.accentText, bold: true),
                           ),
@@ -235,15 +247,13 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                         Image.asset(AppIcons.capsuleTimer, width: 16),
                         const SizedBox(width: 5),
                         Flexible(
-                          child: Text(
+                          child: _Fit(
                             l10n.mapCapsuleOpensIn(
                               CapsuleInfoPanel.formatDuration(
                                 capsule.timeUntilOpen(_now),
                                 l10n,
                               ),
                             ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: _line(palette.textPrimary, bold: true),
                           ),
                         ),
@@ -253,12 +263,14 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                     _WaitLine(done: CapsuleInfoPanel.waitDone(capsule, _now)),
                     if (capsule.openAt != null) ...[
                       const SizedBox(height: 3),
-                      Text(
+                      _Fit(
                         l10n.mapCapsuleOpensOn(
-                          AppDates.medium(capsule.openAt!, l10n.localeName),
+                          AppDates.compact(
+                            capsule.openAt!,
+                            l10n.localeName,
+                            _now,
+                          ),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: _line(palette.textMuted, size: 12),
                       ),
                     ],
@@ -289,6 +301,85 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         fontWeight: bold ? FontWeight.bold : FontWeight.normal,
         color: color,
       );
+}
+
+/// Who left it and when. A line a little too long shrinks a little (up to
+/// [_shrink]); a longer one lets the name give way ("Left by Jonathan… ·
+/// 21 Dec 2025") so the date at the end stays whole.
+class _SecondLine extends StatelessWidget {
+  const _SecondLine(this.text, {required this.date, required this.style});
+
+  final String text;
+
+  /// The date the line ends with, if it does.
+  final String date;
+  final TextStyle style;
+
+  /// The most the line may shrink before the name gives way.
+  static const _shrink = 0.88;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      final width = (TextPainter(
+        text: TextSpan(text: text, style: style),
+        maxLines: 1,
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout()).width;
+      if (width <= box.maxWidth) {
+        return Text(text, maxLines: 1, style: style);
+      }
+      if (width * _shrink <= box.maxWidth) {
+        return FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(text, maxLines: 1, style: style),
+        );
+      }
+      return _split();
+    },
+  );
+
+  Widget _split() {
+    if (!text.endsWith(date) || text == date) {
+      return Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: style,
+      );
+    }
+    return Row(
+      children: [
+        Flexible(
+          child: Text(
+            text.substring(0, text.length - date.length),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: style,
+          ),
+        ),
+        Text(date, maxLines: 1, style: style),
+      ],
+    );
+  }
+}
+
+/// A line that must be read whole (a countdown, a date): it shrinks a
+/// little rather than lose its end when a language runs long.
+class _Fit extends StatelessWidget {
+  const _Fit(this.text, {required this.style});
+
+  final String text;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) => FittedBox(
+    fit: BoxFit.scaleDown,
+    alignment: Alignment.centerLeft,
+    child: Text(text, maxLines: 1, style: style),
+  );
 }
 
 /// How much of a locked capsule's wait is done, as a thin green line.
@@ -331,6 +422,8 @@ class _Thumbnail extends StatelessWidget {
     if (isOpen && url != null) {
       return Hero(
         tag: CapsuleSheet.photoHeroTag(capsule),
+        // Straight from square to square (the default arc bends it).
+        createRectTween: (begin, end) => RectTween(begin: begin, end: end),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(14),
           child: SizedBox.square(

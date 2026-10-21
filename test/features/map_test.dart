@@ -11,6 +11,7 @@ import 'package:later/features/map/map_controller.dart';
 import 'package:later/features/map/map_focus.dart';
 import 'package:later/data/models/geo_position.dart';
 import 'package:later/features/capsules/opening/capsule_openings.dart';
+import 'package:later/core/l10n/app_dates.dart';
 import 'package:later/features/map/widgets/capsule_info_panel.dart';
 
 import 'package:later/data/models/user_profile.dart';
@@ -81,6 +82,10 @@ Widget _panel(
   ),
 );
 
+/// The panel capsule's day as the card writes it (no year in this year).
+String _left() =>
+    AppDates.compact(DateTime(2026, 10, 16), 'en', DateTime.now());
+
 const _locked = Duration(days: 12, hours: 23, minutes: 59, seconds: 59);
 
 void main() {
@@ -98,7 +103,7 @@ void main() {
       expect(find.textContaining('Opens in 2d 3h'), findsOneWidget);
       expect(find.text('Locked'), findsOneWidget);
       // Your own capsule: when you left it, and the day it opens.
-      expect(find.text('Left 16 Oct 2026'), findsOneWidget);
+      expect(find.text('Left ${_left()}'), findsOneWidget);
       expect(find.textContaining('Opens on '), findsOneWidget);
       // A locked capsule never shows its photo: no button to open it.
       expect(find.byType(ElevatedButton), findsNothing);
@@ -109,7 +114,8 @@ void main() {
         _panel(_panelCapsule(owner: 'bob', opensIn: _locked)),
       );
       await tester.pump();
-      expect(find.text('Left by Bob Stone · 16 Oct 2026'), findsOneWidget);
+      // The first name, so the date fits.
+      expect(find.text('Left by Bob · ${_left()}'), findsOneWidget);
     });
 
     test('the wait line runs from the day it was left to the day it opens', () {
@@ -146,7 +152,9 @@ void main() {
       expect(label(null), 'Open anytime');
       expect(label(DateTime(2026, 6, 14, 9)), 'Opened today');
       expect(label(DateTime(2026, 6, 13, 23)), 'Opened yesterday');
-      expect(label(DateTime(2026, 6, 1)), 'Opened on 1 Jun 2026');
+      // The year only when it is not this one (the card is narrow).
+      expect(label(DateTime(2026, 6, 1)), 'Opened on 1 Jun');
+      expect(label(DateTime(2025, 12, 22)), 'Opened on 22 Dec 2025');
     });
 
     test(
@@ -210,7 +218,7 @@ void main() {
           locale: const Locale('ru'),
         ),
       );
-      expect(find.textContaining('Откроется через 2д 3ч'), findsOneWidget);
+      expect(find.textContaining('Через 2д 3ч'), findsOneWidget);
       expect(find.text('Закрыта'), findsOneWidget);
     });
 

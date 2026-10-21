@@ -2,7 +2,7 @@
   "mapLocationServiceOff": "Activa la ubicación para ver cápsulas cerca de ti",
   "mapLocationDenied": "Permite el acceso a tu ubicación para ver cápsulas cerca de ti",
   "mapLocationUnknown": "No hemos podido detectar tu ubicación",
-  "mapCapsuleOpensIn": "Se abre en {time}",
+  "mapCapsuleOpensIn": "En {time}",
   "mapDurationDays": "{count}d",
   "mapDurationHours": "{count}h",
   "mapDurationMinutes": "{count}min",

@@ -184,6 +184,8 @@ class CapsuleSheetPhoto extends StatelessWidget {
         ),
         child: Hero(
           tag: tag,
+          // Straight from square to square (the default arc bends it).
+          createRectTween: (begin, end) => RectTween(begin: begin, end: end),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Stack(

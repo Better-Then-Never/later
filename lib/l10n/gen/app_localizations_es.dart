@@ -1493,7 +1493,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String mapCapsuleOpensIn(String time) {
-    return 'Se abre en $time';
+    return 'En $time';
   }
 
   @override

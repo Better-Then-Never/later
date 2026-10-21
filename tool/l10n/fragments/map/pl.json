@@ -2,7 +2,7 @@
   "mapLocationServiceOff": "Włącz lokalizację, żeby widzieć kapsuły w pobliżu",
   "mapLocationDenied": "Zezwól na dostęp do lokalizacji, żeby widzieć kapsuły w pobliżu",
   "mapLocationUnknown": "Nie udało się ustalić twojej lokalizacji",
-  "mapCapsuleOpensIn": "Otworzy się za {time}",
+  "mapCapsuleOpensIn": "Za {time}",
   "mapDurationDays": "{count}d",
   "mapDurationHours": "{count}h",
   "mapDurationMinutes": "{count}min",
@@ -37,7 +37,7 @@
   "mapCapsuleOpenedYesterday": "Otwarta wczoraj",
   "mapCapsuleOpenedOn": "Otwarta {date}",
   "mapCapsuleOpenAnytime": "Otwórz, kiedy chcesz",
-  "mapCapsuleOpensOn": "Otworzy się {date}",
+  "mapCapsuleOpensOn": "Otwarcie {date}",
   "mapCapsuleLeftBy": "Od {name} · {date}",
   "mapCapsuleLeftOn": "Zostawiona {date}",
   "mapCapsuleYoursToOpen": "Czeka na ciebie"

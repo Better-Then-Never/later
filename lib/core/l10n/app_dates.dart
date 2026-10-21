@@ -12,4 +12,11 @@ abstract final class AppDates {
   /// the day, the short month and the year in the app's language.
   static String medium(DateTime date, String locale) =>
       DateFormat('d MMM y', locale).format(date);
+
+  /// [medium] without the year when [date] is in [now]'s year ("22 Sep"),
+  /// for the narrow map card.
+  static String compact(DateTime date, String locale, DateTime now) =>
+      date.year == now.year
+      ? DateFormat('d MMM', locale).format(date)
+      : medium(date, locale);
 }

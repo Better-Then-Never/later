@@ -1509,7 +1509,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapCapsuleOpen => 'Открыть';
 
   @override
-  String get mapCapsuleOpenAnytime => 'Можно открыть в любое время';
+  String get mapCapsuleOpenAnytime => 'В любое время';
 
   @override
   String mapCapsuleOpenedOn(String date) {
@@ -1524,7 +1524,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String mapCapsuleOpensIn(String time) {
-    return 'Откроется через $time';
+    return 'Через $time';
   }
 
   @override

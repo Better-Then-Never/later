@@ -1533,12 +1533,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String mapCapsuleOpensIn(String time) {
-    return 'Otworzy się za $time';
+    return 'Za $time';
   }
 
   @override
   String mapCapsuleOpensOn(String date) {
-    return 'Otworzy się $date';
+    return 'Otwarcie $date';
   }
 
   @override
