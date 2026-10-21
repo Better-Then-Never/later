@@ -73,6 +73,28 @@ write) with dark variants. Tokens: `accentSoft` is green at 30 %, dark `accentTe
 countdown shows days and hours while a day or more is left ("41d 6h"). Still not built: the Adjust
 chip on the Create photo (C2, phase 3).
 
+## Owner's pass on the release build (2026-10-21)
+
+- Opened capsule: as tall as its content; share (the owner's share icon, white on a dark disc) and ⋯
+  on the photo's corner; "Comments" and "Reply to" share the width; reactions across the width;
+  a bigger place tag. A private capsule of your own shares its photo (a link would open for nobody
+  else).
+- No Android ink splash anywhere (theme).
+- Comments: Reply under every comment, a drag down on the empty space (or past the top) closes the
+  sheet (also the co-author picker), the composer no longer dips under the system bar as the
+  keyboard closes, the keyboard no longer makes the sheet jump.
+- Create: descriptions up to 200 characters (the rules still accept 2000 from older versions); the
+  title no longer takes the keyboard back after the description; the description and the quick
+  reply rise with the keyboard; Retake keeps the title, the words and the settings; Create capsule
+  floats on a fade.
+- "How it opens" is the planned sheet (Figma 7094:2488): When works; Where shows "Only when I'm back
+  here" as coming soon until the phase 3 lock exists.
+- C2 Adjust (Figma 7099:2191): the square window over the whole photo, drag and pinch up to 3×. The
+  square is saved as `crop` (x, y, w, h: shares of the photo) and the thumbnail is cut from it at
+  upload, so lists and the map card show it at once. The opened capsule and the photo's flight to
+  full screen start from it. Rules: `validCapsule` accepts `crop` (tested); until they are
+  deployed the app's retry drops the field, so capsules still save (the thumbnail keeps the square).
+
 ## Phase 2 (done)
 
 | ID | What | Where |

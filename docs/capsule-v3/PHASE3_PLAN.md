@@ -77,7 +77,7 @@ A capsule that opens at once and anywhere ("Anytime, Anywhere") stays one docume
   date not reached: countdown, distance, Locked; date reached: "Ready to open", Go there; there: Hold
   to open, which unlocks it and then shows the wrapping (phase 2).
 - **B5:** one dates line everywhere: "opens anytime", "opens 20 Oct 2027", "opens 20 Oct 2027, here".
-- **C2:** Adjust on the Create preview: the whole photo with a square window, drag and pinch up to 3×.
+- **C2 (built 2026-10-21, rules waiting for deploy):** Adjust on the Create preview: the whole photo with a square window, drag and pinch up to 3×.
   The square is saved with the capsule as `crop` (x, y, size as shares of the photo) and used wherever
   the photo is square; the thumbnail is cut from it at upload. A tap still shows the whole photo.
 - **F1, F2:** new notification types in the app (in-app list and push), texts in five languages.
