@@ -2474,11 +2474,11 @@ abstract class AppLocalizations {
   /// **'Open anytime'**
   String get mapCapsuleOpenAnytime;
 
-  /// The map card of a capsule that opened earlier. {date} like "14 Jun 2026".
+  /// The map card of an open capsule: by the check, with the day it opened on the line below.
   ///
   /// In en, this message translates to:
-  /// **'Opened on {date}'**
-  String mapCapsuleOpenedOn(String date);
+  /// **'Opened on'**
+  String get mapCapsuleOpenedOnLabel;
 
   /// The map card of a capsule that opened today.
   ///

@@ -1481,9 +1481,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mapCapsuleOpenAnytime => 'Ábrela cuando quieras';
 
   @override
-  String mapCapsuleOpenedOn(String date) {
-    return 'Abierta el $date';
-  }
+  String get mapCapsuleOpenedOnLabel => 'Abierta el';
 
   @override
   String get mapCapsuleOpenedToday => 'Abierta hoy';

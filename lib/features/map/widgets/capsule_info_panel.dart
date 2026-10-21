@@ -52,7 +52,7 @@ class CapsuleInfoPanel extends StatefulWidget {
     final scale = MediaQuery.textScalerOf(context).scale(13) / 13;
     final open = capsule != null && capsule.isOpen(DateTime.now());
     // The text column at the normal size, and the card's padding.
-    final column = open ? 62.0 : 88.0;
+    final column = open ? 76.0 : 88.0;
     return math
         .max(open ? openHeight : minHeight, column * scale + 20)
         .clamp(0.0, 220.0);
@@ -87,20 +87,24 @@ class CapsuleInfoPanel extends StatefulWidget {
 
   /// When an open capsule opened, in words: today, yesterday or the day;
   /// "Open anytime" for one without a date.
-  static String openedLabel(
+  ///
+  /// The words go by the check; a day ("Opened on" / "3 Oct 2025") goes on
+  /// the line under them.
+  static (String, String?) openedLabel(
     Capsule capsule,
     DateTime now,
     AppLocalizations l10n,
   ) {
     final opened = capsule.openAt;
-    if (opened == null) return l10n.mapCapsuleOpenAnytime;
+    if (opened == null) return (l10n.mapCapsuleOpenAnytime, null);
     final days = DateUtils.dateOnly(
       now,
     ).difference(DateUtils.dateOnly(opened)).inDays;
-    if (days <= 0) return l10n.mapCapsuleOpenedToday;
-    if (days == 1) return l10n.mapCapsuleOpenedYesterday;
-    return l10n.mapCapsuleOpenedOn(
-      AppDates.compact(opened, l10n.localeName, now),
+    if (days <= 0) return (l10n.mapCapsuleOpenedToday, null);
+    if (days == 1) return (l10n.mapCapsuleOpenedYesterday, null);
+    return (
+      l10n.mapCapsuleOpenedOnLabel,
+      AppDates.medium(opened, l10n.localeName),
     );
   }
 
@@ -215,31 +219,11 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                   ),
                   SizedBox(height: isOpen ? 2 : 3),
                   if (isOpen)
-                    Row(
-                      // The check stays by the first line when it wraps.
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 1),
-                          child: Image.asset(AppIcons.profileDone, width: 14),
-                        ),
-                        const SizedBox(width: 4),
-                        // Two lines when it must: the open card has room.
-                        Flexible(
-                          child: Text(
-                            wrapped
-                                ? l10n.mapCapsuleYoursToOpen
-                                : CapsuleInfoPanel.openedLabel(
-                                    capsule,
-                                    _now,
-                                    l10n,
-                                  ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: _line(palette.accentText, bold: true),
-                          ),
-                        ),
-                      ],
+                    _OpenedStatus(
+                      label: wrapped
+                          ? (l10n.mapCapsuleYoursToOpen, null)
+                          : CapsuleInfoPanel.openedLabel(capsule, _now, l10n),
+                      style: _line(palette.accentText, bold: true),
                     )
                   else ...[
                     Row(
@@ -301,6 +285,45 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         fontWeight: bold ? FontWeight.bold : FontWeight.normal,
         color: color,
       );
+}
+
+/// An open capsule's state in green: the check with the words ("Opened
+/// today", "Opened on"), and the day on its own line under the words.
+class _OpenedStatus extends StatelessWidget {
+  const _OpenedStatus({required this.label, required this.style});
+
+  final (String, String?) label;
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final (words, day) = label;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Image.asset(AppIcons.profileDone, width: 14),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                words,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: style,
+              ),
+            ),
+          ],
+        ),
+        if (day != null)
+          Padding(
+            // Under the words, not under the check.
+            padding: const EdgeInsets.only(left: 18),
+            child: _Fit(day, style: style),
+          ),
+      ],
+    );
+  }
 }
 
 /// Who left it and when. A line a little too long shrinks a little (up to

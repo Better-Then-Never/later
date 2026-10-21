@@ -169,15 +169,9 @@
   "@mapCapsuleOpenedYesterday": {
     "description": "The map card of a capsule that opened yesterday."
   },
-  "mapCapsuleOpenedOn": "Opened on {date}",
-  "@mapCapsuleOpenedOn": {
-    "description": "The map card of a capsule that opened earlier. {date} like \"14 Jun 2026\".",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "14 Jun 2026"
-      }
-    }
+  "mapCapsuleOpenedOnLabel": "Opened on",
+  "@mapCapsuleOpenedOnLabel": {
+    "description": "The map card of an open capsule: by the check, with the day it opened on the line below."
   },
   "mapCapsuleOpenAnytime": "Open anytime",
   "@mapCapsuleOpenAnytime": {

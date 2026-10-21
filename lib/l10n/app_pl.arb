@@ -395,7 +395,7 @@
   "mapCapsuleLocked": "Zamknięta",
   "mapCapsuleOpen": "Otwórz",
   "mapCapsuleOpenAnytime": "Otwórz, kiedy chcesz",
-  "mapCapsuleOpenedOn": "Otwarta {date}",
+  "mapCapsuleOpenedOnLabel": "Otwarta",
   "mapCapsuleOpenedToday": "Otwarta dzisiaj",
   "mapCapsuleOpenedYesterday": "Otwarta wczoraj",
   "mapCapsuleOpensIn": "Za {time}",

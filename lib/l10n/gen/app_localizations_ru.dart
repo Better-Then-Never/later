@@ -1512,9 +1512,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mapCapsuleOpenAnytime => 'В любое время';
 
   @override
-  String mapCapsuleOpenedOn(String date) {
-    return 'Открыта $date';
-  }
+  String get mapCapsuleOpenedOnLabel => 'Открыта';
 
   @override
   String get mapCapsuleOpenedToday => 'Открыта сегодня';

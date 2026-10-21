@@ -35,7 +35,7 @@
   "mapCapsuleUnavailable": "Эта капсула больше недоступна",
   "mapCapsuleOpenedToday": "Открыта сегодня",
   "mapCapsuleOpenedYesterday": "Открыта вчера",
-  "mapCapsuleOpenedOn": "Открыта {date}",
+  "mapCapsuleOpenedOnLabel": "Открыта",
   "mapCapsuleOpenAnytime": "В любое время",
   "mapCapsuleOpensOn": "Откроется {date}",
   "mapCapsuleLeftBy": "От {name} · {date}",

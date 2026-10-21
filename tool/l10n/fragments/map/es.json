@@ -35,7 +35,7 @@
   "mapCapsuleUnavailable": "Esta cápsula ya no está disponible",
   "mapCapsuleOpenedToday": "Abierta hoy",
   "mapCapsuleOpenedYesterday": "Abierta ayer",
-  "mapCapsuleOpenedOn": "Abierta el {date}",
+  "mapCapsuleOpenedOnLabel": "Abierta el",
   "mapCapsuleOpenAnytime": "Ábrela cuando quieras",
   "mapCapsuleOpensOn": "Se abre el {date}",
   "mapCapsuleLeftBy": "De {name} · {date}",

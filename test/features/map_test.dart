@@ -147,14 +147,14 @@ void main() {
         color: CapsuleColor.red,
         openAt: at,
       );
-      String label(DateTime? at) =>
+      (String, String?) label(DateTime? at) =>
           CapsuleInfoPanel.openedLabel(opened(at), now, l10n);
-      expect(label(null), 'Open anytime');
-      expect(label(DateTime(2026, 6, 14, 9)), 'Opened today');
-      expect(label(DateTime(2026, 6, 13, 23)), 'Opened yesterday');
-      // The year only when it is not this one (the card is narrow).
-      expect(label(DateTime(2026, 6, 1)), 'Opened on 1 Jun');
-      expect(label(DateTime(2025, 12, 22)), 'Opened on 22 Dec 2025');
+      expect(label(null), ('Open anytime', null));
+      expect(label(DateTime(2026, 6, 14, 9)), ('Opened today', null));
+      expect(label(DateTime(2026, 6, 13, 23)), ('Opened yesterday', null));
+      // The day goes on its own line, always with the year.
+      expect(label(DateTime(2026, 6, 1)), ('Opened on', '1 Jun 2026'));
+      expect(label(DateTime(2025, 12, 22)), ('Opened on', '22 Dec 2025'));
     });
 
     test(

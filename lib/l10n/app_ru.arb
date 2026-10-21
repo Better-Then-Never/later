@@ -395,7 +395,7 @@
   "mapCapsuleLocked": "Закрыта",
   "mapCapsuleOpen": "Открыть",
   "mapCapsuleOpenAnytime": "В любое время",
-  "mapCapsuleOpenedOn": "Открыта {date}",
+  "mapCapsuleOpenedOnLabel": "Открыта",
   "mapCapsuleOpenedToday": "Открыта сегодня",
   "mapCapsuleOpenedYesterday": "Открыта вчера",
   "mapCapsuleOpensIn": "Через {time}",
