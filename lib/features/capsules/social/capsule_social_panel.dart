@@ -257,7 +257,7 @@ class _Radio extends StatelessWidget {
   );
 }
 
-/// The six reactions in one row (Figma "Reactions"): a 36 dp mark each, with
+/// The six reactions across the width (Figma "Reactions"): an equal mark each, with
 /// how many people chose it; the user's choice is tinted soft green with a
 /// green outline. The heart is the app's own drawing; the other marks are
 /// Material placeholders until the owner's drawings exist
@@ -294,76 +294,80 @@ class CapsuleReactionsBar extends StatelessWidget {
     final mine = controller.myReaction;
     final counts = controller.counts;
     final palette = context.palette;
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
+    // Across the whole width: six equal marks.
+    return Row(
       children: [
-        for (final type in ReactionType.values)
-          Semantics(
-            button: true,
-            selected: mine == type,
-            label: context.l10n.capsulesReactWith(type.emoji),
-            child: AppPressable(
-              child: GestureDetector(
-                onTap: () => _react(context, type),
-                child: AnimatedContainer(
-                  duration: AppMotion.of(context, AppMotion.fast),
-                  curve: AppMotion.standardCurve,
-                  height: 36,
-                  padding: EdgeInsets.only(
-                    left: 7,
-                    right: (counts[type] ?? 0) > 0 ? 9 : 7,
-                  ),
-                  decoration: BoxDecoration(
-                    color: mine == type
-                        ? AppColors.brandGreen.withValues(alpha: 0.25)
-                        : palette.surface,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
+        for (final (i, type) in ReactionType.values.indexed) ...[
+          if (i > 0) const SizedBox(width: 6),
+          Expanded(
+            child: Semantics(
+              button: true,
+              selected: mine == type,
+              label: context.l10n.capsulesReactWith(type.emoji),
+              child: AppPressable(
+                child: GestureDetector(
+                  onTap: () => _react(context, type),
+                  child: AnimatedContainer(
+                    duration: AppMotion.of(context, AppMotion.fast),
+                    curve: AppMotion.standardCurve,
+                    height: 42,
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    decoration: BoxDecoration(
                       color: mine == type
-                          ? AppColors.brandGreen
-                          : palette.divider,
-                      width: mine == type ? 1.5 : 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ReactionBurst(
-                        active: mine == type,
-                        child: switch (markOf(type)) {
-                          final icon? => Icon(
-                            icon,
-                            size: 20,
-                            color: palette.icon,
-                          ),
-                          null => Image.asset(
-                            AppIcons.capsuleFavorites,
-                            width: 20,
-                          ),
-                        },
+                          ? AppColors.brandGreen.withValues(alpha: 0.25)
+                          : palette.surface,
+                      borderRadius: BorderRadius.circular(21),
+                      border: Border.all(
+                        color: mine == type
+                            ? AppColors.brandGreen
+                            : palette.divider,
+                        width: mine == type ? 1.5 : 1,
                       ),
-                      if ((counts[type] ?? 0) > 0) ...[
-                        const SizedBox(width: 3),
-                        Text(
-                          '${counts[type]}',
-                          style: TextStyle(
-                            fontFamily: kAppFontFamily,
-                            fontSize: 15,
-                            height: 1.1,
-                            fontWeight: FontWeight.bold,
-                            color: mine == type
-                                ? palette.accentText
-                                : palette.textPrimary,
+                    ),
+                    // A big count shrinks rather than spill out.
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ReactionBurst(
+                            active: mine == type,
+                            child: switch (markOf(type)) {
+                              final icon? => Icon(
+                                icon,
+                                size: 22,
+                                color: palette.icon,
+                              ),
+                              null => Image.asset(
+                                AppIcons.capsuleFavorites,
+                                width: 22,
+                              ),
+                            },
                           ),
-                        ),
-                      ],
-                    ],
+                          if ((counts[type] ?? 0) > 0) ...[
+                            const SizedBox(width: 3),
+                            Text(
+                              '${counts[type]}',
+                              style: TextStyle(
+                                fontFamily: kAppFontFamily,
+                                fontSize: 15,
+                                height: 1.1,
+                                fontWeight: FontWeight.bold,
+                                color: mine == type
+                                    ? palette.accentText
+                                    : palette.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
+        ],
       ],
     );
   }

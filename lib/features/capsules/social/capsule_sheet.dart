@@ -10,6 +10,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/social.dart';
+import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/widgets/anchored_menu.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../../../shared/widgets/app_sheets.dart';
@@ -26,12 +27,13 @@ import 'capsule_social_controller.dart';
 import 'capsule_social_panel.dart';
 import 'quick_reply_card.dart';
 
-/// An opened capsule (capsule v3, Figma "v3 Capsule / Opened"): a tall sheet
-/// over the map with the photo first (a square; a tap shows it whole), the
-/// title and its place (a tap: the map), who left it, when it was left and
-/// opened, the words, the six reactions and the newest comment; pinned at the
-/// bottom, the actions with words. [controller] is null when there is
-/// nothing social to show.
+/// An opened capsule (capsule v3, Figma "v3 Capsule / Opened"): a sheet over
+/// the map, as tall as what it shows, with the photo first (a square; a tap
+/// shows it whole; share and ⋯ on its corner), the title and its place (a
+/// tap: the map), who left it, when it was left and opened, the words, the
+/// six reactions across the width and the newest comment; under them the
+/// comments and a reply to the author as pills with words. [controller] is
+/// null when there is nothing social to show.
 class CapsuleSheet extends StatelessWidget {
   const CapsuleSheet({
     super.key,
@@ -79,82 +81,80 @@ class CapsuleSheet extends StatelessWidget {
       color: palette.surface,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(radius)),
       clipBehavior: Clip.antiAlias,
-      child: LayoutBuilder(
-        // The sheet stands as tall as the route lets it; the actions stay
-        // at the bottom.
-        builder: (context, box) => SizedBox(
-          height: box.maxHeight.isFinite ? box.maxHeight : null,
-          child: Column(
-            children: [
-              const SheetHandle.v2(),
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      // As tall as its content (it scrolls when that is taller than the
+      // screen allows); the pills stay at the bottom.
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SheetHandle.v2(),
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CapsuleSheetPhoto(
+                    capsule: capsule,
+                    actions: _PhotoActions(
+                      capsule: capsule,
+                      controller: social,
+                      onPlaceTap: onPlaceTap,
+                    ),
+                  ),
+                  gap,
+                  Row(
                     children: [
-                      CapsuleSheetPhoto(capsule: capsule),
-                      gap,
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              capsule.title,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: kAppFontFamily,
-                                fontSize: 26,
-                                height: 1.1,
-                                fontWeight: FontWeight.bold,
-                                color: palette.textPrimary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          CapsulePlaceChip(capsule: capsule, onTap: onPlaceTap),
-                        ],
-                      ),
-                      CapsuleAuthorRow(capsule: capsule, top: 10),
-                      gap,
-                      _DatesLine(capsule: capsule),
-                      if (description.isNotEmpty) ...[
-                        gap,
-                        Text(
-                          description,
-                          style: AppTextStyles.body.copyWith(
+                      Expanded(
+                        child: Text(
+                          capsule.title,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: kAppFontFamily,
+                            fontSize: 26,
+                            height: 1.1,
+                            fontWeight: FontWeight.bold,
                             color: palette.textPrimary,
-                            height: 1.3,
                           ),
                         ),
-                      ],
-                      if (reactions) ...[
-                        gap,
-                        ListenableBuilder(
-                          listenable: social,
-                          builder: (context, _) =>
-                              CapsuleReactionsBar(controller: social),
-                        ),
-                      ],
-                      if (comments)
-                        ListenableBuilder(
-                          listenable: social,
-                          builder: (context, _) =>
-                              _NewestComment(controller: social),
-                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      CapsulePlaceChip(capsule: capsule, onTap: onPlaceTap),
                     ],
                   ),
-                ),
+                  CapsuleAuthorRow(capsule: capsule, top: 10),
+                  gap,
+                  _DatesLine(capsule: capsule),
+                  if (description.isNotEmpty) ...[
+                    gap,
+                    Text(
+                      description,
+                      style: AppTextStyles.body.copyWith(
+                        color: palette.textPrimary,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                  if (reactions) ...[
+                    gap,
+                    ListenableBuilder(
+                      listenable: social,
+                      builder: (context, _) =>
+                          CapsuleReactionsBar(controller: social),
+                    ),
+                  ],
+                  if (comments)
+                    ListenableBuilder(
+                      listenable: social,
+                      builder: (context, _) =>
+                          _NewestComment(controller: social),
+                    ),
+                ],
               ),
-              _ActionBar(
-                capsule: capsule,
-                controller: social,
-                comments: comments,
-                onPlaceTap: onPlaceTap,
-              ),
-            ],
+            ),
           ),
-        ),
+          _ActionBar(capsule: capsule, controller: social, comments: comments),
+        ],
       ),
     );
   }
@@ -163,56 +163,67 @@ class CapsuleSheet extends StatelessWidget {
 /// The capsule's photo as a square with rounded corners (a loop plays, with
 /// a "Loop · N frames" badge); a tap shows the whole photo full screen.
 class CapsuleSheetPhoto extends StatelessWidget {
-  const CapsuleSheetPhoto({super.key, required this.capsule});
+  const CapsuleSheetPhoto({super.key, required this.capsule, this.actions});
 
   final Capsule capsule;
+
+  /// Buttons on the top right corner (share, ⋯).
+  final Widget? actions;
 
   @override
   Widget build(BuildContext context) {
     final url = capsule.imageUrl;
     if (url == null) return const SizedBox.shrink();
     final tag = CapsuleSheet.photoHeroTag(capsule);
-    return AspectRatio(
-      aspectRatio: 1,
-      child: GestureDetector(
-        onTap: () => PhotoViewer.show(
-          context,
-          url,
-          frames: capsule.frames,
-          frameDelay: Duration(milliseconds: capsule.frameDelayMs),
-          heroTag: tag,
-        ),
-        child: Hero(
-          tag: tag,
-          // Straight from square to square (the default arc bends it).
-          createRectTween: (begin, end) => RectTween(begin: begin, end: end),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                if (capsule.isLoop)
-                  LoopPicture(
-                    sources: capsule.frames,
-                    frameDelay: Duration(milliseconds: capsule.frameDelayMs),
-                  )
-                else
-                  AppNetworkImage(url: url),
-                if (capsule.isLoop)
-                  Positioned(
-                    left: 10,
-                    top: 10,
-                    child: PhotoBadge(
-                      text: context.l10n.capsulesLoopBadge(
-                        capsule.frames.length,
-                      ),
-                    ),
+    final photo = GestureDetector(
+      onTap: () => PhotoViewer.show(
+        context,
+        url,
+        frames: capsule.frames,
+        frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+        heroTag: tag,
+      ),
+      child: Hero(
+        tag: tag,
+        // Straight from square to square (the default arc bends it).
+        createRectTween: (begin, end) => RectTween(begin: begin, end: end),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (capsule.isLoop)
+                LoopPicture(
+                  sources: capsule.frames,
+                  frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+                )
+              else
+                AppNetworkImage(url: url),
+              if (capsule.isLoop)
+                Positioned(
+                  left: 10,
+                  top: 10,
+                  child: PhotoBadge(
+                    text: context.l10n.capsulesLoopBadge(capsule.frames.length),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
+    );
+    final corner = actions;
+    return AspectRatio(
+      aspectRatio: 1,
+      child: corner == null
+          ? photo
+          : Stack(
+              fit: StackFit.expand,
+              children: [
+                photo,
+                Positioned(top: 10, right: 10, child: corner),
+              ],
+            ),
     );
   }
 }
@@ -358,19 +369,16 @@ class _NewestComment extends StatelessWidget {
 
 enum _MenuChoice { showOnMap, leave, report }
 
-/// Pinned at the bottom: the comments (soft) and a reply to the author
-/// (outlined) as pills with words, then share and ⋯.
-class _ActionBar extends StatelessWidget {
-  const _ActionBar({
+/// Share and ⋯ on the photo's corner: dark round buttons, white signs.
+class _PhotoActions extends StatelessWidget {
+  const _PhotoActions({
     required this.capsule,
     required this.controller,
-    required this.comments,
     required this.onPlaceTap,
   });
 
   final Capsule capsule;
   final CapsuleSocialController? controller;
-  final bool comments;
   final VoidCallback? onPlaceTap;
 
   bool get _owner => controller?.isOwner ?? false;
@@ -386,88 +394,44 @@ class _ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.palette;
     final l10n = context.l10n;
-    final social = controller;
-    final reply = social != null && !_owner;
     final share = CapsuleSheet.shareable(capsule);
     final choices = _choices;
-    final bottom = MediaQuery.viewPaddingOf(context).bottom;
-    if (!comments && !reply && !share && choices.isEmpty) {
-      return SizedBox(height: 8 + bottom);
-    }
-    final author = reply
-        ? CapsuleAuthorRow.ownerFirstNameOf(context, capsule)
-        : null;
-    return Container(
-      padding: EdgeInsets.fromLTRB(12, 10, 8, 10 + bottom),
-      decoration: BoxDecoration(
-        color: palette.surface,
-        border: Border(top: BorderSide(color: palette.divider)),
-      ),
-      child: Row(
-        children: [
-          // The comments pill keeps its words; the reply pill takes what is
-          // left and shortens the name if it must.
-          Expanded(
-            child: Row(
-              children: [
-                if (comments)
-                  ListenableBuilder(
-                    listenable: social!,
-                    builder: (context, _) => PillV2(
-                      label: l10n.capsulesCommentsPill(social.commentCount),
-                      kind: PillV2Kind.soft,
-                      onTap: () => CapsuleCommentsSheet.show(context, social),
-                    ),
-                  ),
-                if (reply) ...[
-                  if (comments) const SizedBox(width: 6),
-                  Flexible(
-                    child: PillV2(
-                      label: author == null
-                          ? l10n.capsulesQuickReply
-                          : l10n.capsulesReplyTo(author),
-                      kind: PillV2Kind.outline,
-                      onTap: () => QuickReplyCard.show(context, capsule),
-                    ),
-                  ),
-                ],
-              ],
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (share)
+          _PhotoButton(
+            label: l10n.capsulesShare,
+            onTap: () =>
+                SharingService.shareCapsule(context: context, capsule: capsule),
+            child: Image.asset(AppIcons.share, width: 20),
+          ),
+        if (share && choices.isNotEmpty) const SizedBox(width: 8),
+        if (choices.isNotEmpty)
+          Builder(
+            builder: (button) => _PhotoButton(
+              label: l10n.capsulesMore,
+              onTap: () => _menu(button, choices),
+              child: const Icon(
+                Icons.more_horiz,
+                size: 22,
+                color: AppColors.onMedia,
+              ),
             ),
           ),
-          if (share)
-            _IconButton36(
-              tooltip: l10n.capsulesShare,
-              onTap: () => SharingService.shareCapsule(
-                context: context,
-                capsule: capsule,
-              ),
-              child: Image.asset(AppIcons.capsuleSendArrow, width: 22),
-            ),
-          if (choices.isNotEmpty) ...[
-            const SizedBox(width: 6),
-            Builder(
-              builder: (buttonContext) => _IconButton36(
-                tooltip: l10n.capsulesMore,
-                onTap: () => _menu(buttonContext, choices),
-                child: Icon(Icons.more_horiz, size: 24, color: palette.icon),
-              ),
-            ),
-          ],
-        ],
-      ),
+      ],
     );
   }
 
-  /// A small menu above the ⋯ button: show on the map, leave as co-author,
+  /// A small menu under the ⋯ button: show on the map, leave as co-author,
   /// report (Figma "v3b Capsule / More menu").
-  Future<void> _menu(BuildContext context, List<_MenuChoice> choices) async {
-    final l10n = context.l10n;
+  Future<void> _menu(BuildContext button, List<_MenuChoice> choices) async {
+    final l10n = button.l10n;
     final choice = await showAnchoredMenu<_MenuChoice>(
-      context,
+      button,
       width: 228,
-      above: true,
+      alignEnd: true,
       scrim: true,
       items: [
         for (final c in choices)
@@ -483,15 +447,15 @@ class _ActionBar extends StatelessWidget {
           ),
       ],
     );
-    if (choice == null || !context.mounted) return;
+    if (choice == null || !button.mounted) return;
     switch (choice) {
       case _MenuChoice.showOnMap:
         onPlaceTap?.call();
       case _MenuChoice.leave:
-        await leaveCapsule(context, capsule.id);
+        await leaveCapsule(button, capsule.id);
       case _MenuChoice.report:
         await reportFlow(
-          context,
+          button,
           controller!,
           target: ReportTarget.capsule,
           targetPath: 'capsules/${capsule.id}',
@@ -500,29 +464,97 @@ class _ActionBar extends StatelessWidget {
   }
 }
 
-/// A 36 dp icon button of the sheet's action bar.
-class _IconButton36 extends StatelessWidget {
-  const _IconButton36({
-    required this.tooltip,
+/// A 36 dp dark round button on the photo (no hold-to-see label).
+class _PhotoButton extends StatelessWidget {
+  const _PhotoButton({
+    required this.label,
     required this.onTap,
     required this.child,
   });
 
-  final String tooltip;
+  final String label;
   final VoidCallback onTap;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Tooltip(
-    message: tooltip,
-    child: Semantics(
-      button: true,
-      label: tooltip,
-      child: InkResponse(
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: label,
+    child: AppPressable(
+      child: GestureDetector(
         onTap: onTap,
-        radius: 22,
-        child: SizedBox.square(dimension: 36, child: Center(child: child)),
+        child: Container(
+          width: 36,
+          height: 36,
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            color: AppColors.mediaScrim,
+            shape: BoxShape.circle,
+          ),
+          child: ExcludeSemantics(child: child),
+        ),
       ),
     ),
   );
+}
+
+/// At the bottom: the comments (soft) and a reply to the author (outlined)
+/// as pills with words, sharing the width so the name fits.
+class _ActionBar extends StatelessWidget {
+  const _ActionBar({
+    required this.capsule,
+    required this.controller,
+    required this.comments,
+  });
+
+  final Capsule capsule;
+  final CapsuleSocialController? controller;
+  final bool comments;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = context.l10n;
+    final social = controller;
+    final reply = social != null && !social.isOwner;
+    final bottom = MediaQuery.viewPaddingOf(context).bottom;
+    if (!comments && !reply) return SizedBox(height: 8 + bottom);
+    final author = reply
+        ? CapsuleAuthorRow.ownerFirstNameOf(context, capsule)
+        : null;
+    final commentsPill = comments
+        ? ListenableBuilder(
+            listenable: social!,
+            builder: (context, _) => PillV2(
+              label: l10n.capsulesCommentsPill(social.commentCount),
+              kind: PillV2Kind.soft,
+              onTap: () => CapsuleCommentsSheet.show(context, social),
+            ),
+          )
+        : null;
+    final replyPill = reply
+        ? PillV2(
+            label: author == null
+                ? l10n.capsulesQuickReply
+                : l10n.capsulesReplyTo(author),
+            kind: PillV2Kind.outline,
+            onTap: () => QuickReplyCard.show(context, capsule),
+          )
+        : null;
+    return Container(
+      padding: EdgeInsets.fromLTRB(12, 10, 12, 10 + bottom),
+      decoration: BoxDecoration(
+        color: palette.surface,
+        border: Border(top: BorderSide(color: palette.divider)),
+      ),
+      child: Row(
+        children: [
+          if (commentsPill != null) Expanded(child: commentsPill),
+          if (commentsPill != null && replyPill != null)
+            const SizedBox(width: 8),
+          if (replyPill != null) Expanded(child: replyPill),
+        ],
+      ),
+    );
+  }
 }

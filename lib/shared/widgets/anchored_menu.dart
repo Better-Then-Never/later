@@ -27,14 +27,16 @@ class AnchoredMenuItem<T> {
 
 /// A small menu of the v2 design (Figma "Comment menu", "More menu"): a
 /// surface card with 18 dp corners and the raised shadow, rows of 16 dp
-/// words. It opens by [anchorContext]'s widget: [above] it, lined up with its
-/// right edge (the ⋯ button, over a [scrim]), or at [offset] from its top
-/// left corner (a long-pressed comment). Returns the chosen value, or null.
+/// words. It opens by [anchorContext]'s widget: [above] it or under it
+/// ([alignEnd]), lined up with its right edge (the ⋯ button, over a
+/// [scrim]), or at [offset] from its top left corner (a long-pressed
+/// comment). Returns the chosen value, or null.
 Future<T?> showAnchoredMenu<T>(
   BuildContext anchorContext, {
   required double width,
   required List<AnchoredMenuItem<T>> items,
   bool above = false,
+  bool alignEnd = false,
   Offset offset = Offset.zero,
   bool scrim = false,
 }) {
@@ -48,6 +50,7 @@ Future<T?> showAnchoredMenu<T>(
       width: width,
       items: items,
       above: above,
+      alignEnd: alignEnd,
       offset: offset,
       barrierColor: scrim ? anchorContext.palette.scrim : Colors.transparent,
       barrierLabel: MaterialLocalizations.of(
@@ -63,6 +66,7 @@ class _AnchoredMenuRoute<T> extends PopupRoute<T> {
     required this.width,
     required this.items,
     required this.above,
+    required this.alignEnd,
     required this.offset,
     required Color barrierColor,
     required String barrierLabel,
@@ -73,6 +77,7 @@ class _AnchoredMenuRoute<T> extends PopupRoute<T> {
   final double width;
   final List<AnchoredMenuItem<T>> items;
   final bool above;
+  final bool alignEnd;
   final Offset offset;
   final Color _barrierColor;
   final String _barrierLabel;
@@ -99,8 +104,14 @@ class _AnchoredMenuRoute<T> extends PopupRoute<T> {
     final height = items.fold<double>(12, (sum, item) => sum + item.height);
     final screen = media.size;
     const margin = 8.0;
-    final left = above ? anchor.right - 4 - width : anchor.left + offset.dx;
-    final top = above ? anchor.top - 4 - height : anchor.top + offset.dy;
+    final left = above || alignEnd
+        ? anchor.right - width
+        : anchor.left + offset.dx;
+    final top = above
+        ? anchor.top - 4 - height
+        : alignEnd
+        ? anchor.bottom + 6
+        : anchor.top + offset.dy;
     return Stack(
       children: [
         Positioned(

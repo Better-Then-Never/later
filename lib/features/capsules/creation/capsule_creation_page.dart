@@ -712,6 +712,7 @@ class _PreviewPhoto extends StatelessWidget {
               context,
               Uri.file(controller.imagePath).toString(),
               heroTag: loop ? null : 'creation-photo',
+              fromRadius: 16,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),

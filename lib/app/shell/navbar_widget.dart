@@ -42,14 +42,17 @@ class NavbarWidget extends StatelessWidget {
 
   /// How much of the bottom of the screen the floating bar covers, system
   /// navigation included (the map keeps its logo and controls above it).
-  static double coveredHeight(BuildContext context) {
-    final media = MediaQuery.of(context);
-    return barHeight + media.size.height * 0.01 + media.viewPadding.bottom;
-  }
+  ///
+  /// Reads only the size and the system padding: the whole MediaQuery made
+  /// the map rebuild on every frame of a keyboard opened over it.
+  static double coveredHeight(BuildContext context) =>
+      barHeight +
+      MediaQuery.sizeOf(context).height * 0.01 +
+      MediaQuery.viewPaddingOf(context).bottom;
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenHeight = MediaQuery.sizeOf(context).height;
     final l10n = context.l10n;
     return Padding(
       padding: EdgeInsets.only(bottom: screenHeight * 0.01),

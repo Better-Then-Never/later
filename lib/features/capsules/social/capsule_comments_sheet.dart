@@ -172,23 +172,25 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
       color: palette.textPrimary,
     );
 
-    return Padding(
-      // The composer rides on top of the keyboard.
-      padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
-      child: Container(
-        // 650 of 800 dp in the design, less when the keyboard needs room (it
-        // never reaches under the status bar).
-        height: math.min(
-          media.size.height * 650 / 800,
-          media.size.height -
-              media.viewInsets.bottom -
-              media.viewPadding.top -
-              12,
-        ),
-        decoration: BoxDecoration(
-          color: palette.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        ),
+    // 650 of 800 dp in the design. The sheet stays put while the keyboard
+    // opens: the composer rides on the keyboard and the list gets shorter
+    // (the whole sheet jumping up to the top looked broken). Only a keyboard
+    // that would leave the list too little room lifts the sheet, never under
+    // the status bar.
+    final keyboard = media.viewInsets.bottom;
+    final ceiling = media.size.height - media.viewPadding.top - 12;
+    final height = math.min(
+      ceiling,
+      math.max(media.size.height * 650 / 800, keyboard + 260),
+    );
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: palette.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: keyboard),
         child: Column(
           children: [
             const SheetHandle.v2(),
@@ -458,10 +460,11 @@ class _ReplyingChip extends StatelessWidget {
         onTap: onClose,
         child: ExcludeSemantics(
           child: Container(
-            padding: const EdgeInsets.fromLTRB(10, 4, 8, 4),
+            height: 32,
+            padding: const EdgeInsets.only(left: 12),
             decoration: BoxDecoration(
               color: palette.pill,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -479,15 +482,12 @@ class _ReplyingChip extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  '×',
-                  style: TextStyle(
-                    fontFamily: kAppFontFamily,
-                    fontSize: 14,
-                    height: 1.3,
-                    fontWeight: FontWeight.bold,
-                    color: palette.textSecondary,
+                // The app's own cross, with room around it for a thumb.
+                SizedBox(
+                  width: 36,
+                  height: 32,
+                  child: Center(
+                    child: Image.asset(AppIcons.capsuleClose, width: 12),
                   ),
                 ),
               ],
@@ -593,7 +593,7 @@ class _CommentRow extends StatelessWidget {
                     color: palette.textPrimary,
                   ),
                 ),
-                if (onReply != null && !isMine)
+                if (onReply != null)
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: onReply,

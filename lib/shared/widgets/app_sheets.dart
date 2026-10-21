@@ -64,11 +64,16 @@ class AppCardRoute<T> extends PageRoute<T> {
     required Color barrierColor,
     required String barrierLabel,
     this.alignment = Alignment.center,
+    this.rise = true,
     super.settings,
   }) : _barrierColor = barrierColor,
        _barrierLabel = barrierLabel;
 
   final WidgetBuilder builder;
+
+  /// The card rises from below the screen; false: it fades in where it is
+  /// (a card over the keyboard, which lifts it as it opens).
+  final bool rise;
 
   /// Where the card sits in the space above the keyboard: centred, or at
   /// the bottom (right above the keyboard, as the quick reply does).
@@ -132,6 +137,12 @@ class AppCardRoute<T> extends PageRoute<T> {
     Widget child,
   ) {
     if (AppMotion.reduced(context)) return child;
+    if (!rise) {
+      return FadeTransition(
+        opacity: CurvedAnimation(parent: animation, curve: AppMotion.enter),
+        child: child,
+      );
+    }
     final curve = CurvedAnimation(
       parent: animation,
       curve: AppMotion.emphasizedCurve,
@@ -160,6 +171,8 @@ class AppCardRoute<T> extends PageRoute<T> {
 /// (the opened capsule takes all of it), at most 560 dp wide. Reduced
 /// motion: no animation.
 class AppSheetRoute<T> extends PageRoute<T> {
+  double _top = 0;
+
   AppSheetRoute({
     required this.builder,
     required Color barrierColor,
@@ -199,7 +212,13 @@ class AppSheetRoute<T> extends PageRoute<T> {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
   ) {
-    final media = MediaQuery.of(context);
+    // Only the size and the status bar: the whole MediaQuery would rebuild
+    // the sheet on every frame of a keyboard opened over it.
+    final height = MediaQuery.sizeOf(context).height;
+    // The tallest status bar seen: Android's share sheet hides it for a
+    // moment, and the sheet grew into the gap (it jumped up).
+    _top = math.max(_top, MediaQuery.paddingOf(context).top);
+    final top = _top;
     return Material(
       type: MaterialType.transparency,
       child: Align(
@@ -207,7 +226,7 @@ class AppSheetRoute<T> extends PageRoute<T> {
         child: ConstrainedBox(
           constraints: BoxConstraints(
             // 23 dp under the status bar, as the design (52 of 800).
-            maxHeight: math.max(0, media.size.height - media.padding.top - 23),
+            maxHeight: math.max(0, height - top - 23),
             maxWidth: 560,
           ),
           child: _DragToClose(child: builder(context)),

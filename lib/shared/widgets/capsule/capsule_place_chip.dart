@@ -74,11 +74,11 @@ class _CapsulePlaceChipState extends State<CapsulePlaceChip> {
           snapshot.data ?? (widget._always ? context.l10n.commonLoading : null);
       if (name == null || name.isEmpty) return const SizedBox.shrink();
       final chip = Container(
-        constraints: const BoxConstraints(maxWidth: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        constraints: const BoxConstraints(maxWidth: 160),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
           color: AppColors.placeYellow,
-          borderRadius: BorderRadius.circular(11),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Text(
           name,
@@ -86,7 +86,7 @@ class _CapsulePlaceChipState extends State<CapsulePlaceChip> {
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontFamily: kAppFontFamily,
-            fontSize: 12,
+            fontSize: 14,
             height: 1,
             fontWeight: FontWeight.bold,
             color: AppColors.onAccent,
