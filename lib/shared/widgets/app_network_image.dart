@@ -17,6 +17,7 @@ class AppNetworkImage extends StatelessWidget {
     required this.url,
     this.fit = BoxFit.cover,
     this.cacheWidth,
+    this.placeholder,
   });
 
   final String url;
@@ -24,6 +25,10 @@ class AppNetworkImage extends StatelessWidget {
 
   /// Decode width in pixels (rounded up to a bucket).
   final int? cacheWidth;
+
+  /// Shown while the photo loads instead of the grey box (the photo fades
+  /// in over it).
+  final Widget? placeholder;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,7 @@ class AppNetworkImage extends StatelessWidget {
         return Stack(
           fit: StackFit.passthrough,
           children: [
-            ColoredBox(color: context.palette.skeleton),
+            placeholder ?? ColoredBox(color: context.palette.skeleton),
             AnimatedOpacity(
               opacity: frame == null ? 0 : 1,
               duration: AppMotion.of(context, AppMotion.fast),

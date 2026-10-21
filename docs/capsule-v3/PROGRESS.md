@@ -95,6 +95,18 @@ chip on the Create photo (C2, phase 3).
   full screen start from it. Rules: `validCapsule` accepts `crop` (tested); until they are
   deployed the app's retry drops the field, so capsules still save (the thumbnail keeps the square).
 
+## Opening and closing as one piece (2026-10-22)
+
+- The owner: share and ⋯ came only after the sheet was open, the white went down faster than the
+  photo, the opening and closing felt clumsy. Cause: the photo flew as a Hero on its own path and
+  curve (drawn over everything, so it hid the buttons until it landed) while the white slid up
+  from below the screen on another curve.
+- Now the sheet grows out of the card's thumbnail (`AppSheetRoute.origin`): the photo starts on
+  it and grows into place while the sheet's top edge follows it; the white, the handle and the
+  buttons fade in with it; closing is the same motion back, 250 ms both ways. The photo lies on the
+  card's thumbnail (same decode, from memory), so no grey box while the full photo loads.
+  Frame-by-frame tests: `test/shared/sheets_test.dart`.
+
 ## Phase 2 (done)
 
 | ID | What | Where |

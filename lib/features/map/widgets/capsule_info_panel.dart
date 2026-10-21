@@ -14,6 +14,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../shared/widgets/app_network_image.dart';
+import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/loop_mark.dart';
 import '../../../shared/widgets/pill_v2.dart';
@@ -24,8 +25,8 @@ import '../../capsules/social/capsule_sheet.dart';
 /// "Card locked"): a picture, the title, who left it and, for an open
 /// capsule, a check with when it opened and the Open pill; for a locked one,
 /// the countdown, how much of the wait is done, the day it opens and a soft
-/// Locked pill. A locked capsule shows its pin, never its photo. The photo
-/// flies into the opened capsule as a [Hero].
+/// Locked pill. A locked capsule shows its pin, never its photo. The opened
+/// capsule grows out of the photo ([SheetOrigin]).
 class CapsuleInfoPanel extends StatefulWidget {
   const CapsuleInfoPanel({
     super.key,
@@ -34,7 +35,9 @@ class CapsuleInfoPanel extends StatefulWidget {
   });
 
   final Capsule capsule;
-  final VoidCallback onMoreInfo;
+
+  /// Opens the capsule, from where its photo is on screen.
+  final ValueChanged<SheetOrigin?> onMoreInfo;
 
   /// The locked card's height at the normal text size: its five short lines
   /// with the padding and the dark theme's border (the tallest card).
@@ -115,6 +118,7 @@ class CapsuleInfoPanel extends StatefulWidget {
 class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   Timer? _timer;
   DateTime _now = DateTime.now();
+  final _photo = GlobalKey();
 
   bool get _isOpen => widget.capsule.isOpen(_now);
 
@@ -192,6 +196,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         builder: (context, box) => Row(
           children: [
             _Thumbnail(
+              key: _photo,
               capsule: capsule,
               isOpen: isOpen,
               size: math.min(76, box.hasBoundedHeight ? box.maxHeight : 76),
@@ -264,7 +269,15 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
             ),
             const SizedBox(width: 12),
             if (isOpen)
-              PillV2(label: l10n.mapCapsuleOpen, onTap: widget.onMoreInfo)
+              PillV2(
+                label: l10n.mapCapsuleOpen,
+                onTap: () => widget.onMoreInfo(
+                  SheetOrigin.of(
+                    _photo.currentContext,
+                    radius: _Thumbnail.radius,
+                  ),
+                ),
+              )
             else
               PillV2(
                 label: l10n.mapCapsuleLocked,
@@ -425,11 +438,11 @@ class _WaitLine extends StatelessWidget {
   );
 }
 
-/// The card's picture: the photo of an open capsule (the [Hero] the opened
-/// capsule's photo flies from), or the capsule's pin on a muted tile while it
-/// is locked.
+/// The card's picture: the photo of an open capsule (the opened capsule
+/// grows out of it), or the capsule's pin on a muted tile while it is locked.
 class _Thumbnail extends StatelessWidget {
   const _Thumbnail({
+    super.key,
     required this.capsule,
     required this.isOpen,
     required this.size,
@@ -439,26 +452,27 @@ class _Thumbnail extends StatelessWidget {
   final bool isOpen;
   final double size;
 
+  static const double radius = 14;
+
   @override
   Widget build(BuildContext context) {
     final url = capsule.thumbUrl ?? capsule.imageUrl;
     if (isOpen && url != null) {
-      return Hero(
-        tag: CapsuleSheet.photoHeroTag(capsule),
-        // Straight from square to square (the default arc bends it).
-        createRectTween: (begin, end) => RectTween(begin: begin, end: end),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: SizedBox.square(
-            dimension: size,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                AppNetworkImage(url: url),
-                if (capsule.isLoop)
-                  const Positioned(left: 6, bottom: 6, child: LoopMark()),
-              ],
-            ),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(radius),
+        child: SizedBox.square(
+          dimension: size,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // The opened capsule lays this same picture under its photo.
+              AppNetworkImage(
+                url: url,
+                cacheWidth: CapsuleSheetPhoto.thumbDecodeWidth,
+              ),
+              if (capsule.isLoop)
+                const Positioned(left: 6, bottom: 6, child: LoopMark()),
+            ],
           ),
         ),
       );
@@ -469,7 +483,7 @@ class _Thumbnail extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: context.palette.surfaceMuted,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(radius),
       ),
       child: Image.asset(
         AppIcons.mapPin(capsule.color.name),

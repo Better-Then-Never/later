@@ -25,6 +25,7 @@ abstract final class CapsuleDetailDialog {
   static Future<void> show(
     BuildContext context,
     Capsule capsule, {
+    SheetOrigin? from,
     VoidCallback? onPlaceTap,
     bool openComments = false,
   }) {
@@ -45,10 +46,12 @@ abstract final class CapsuleDetailDialog {
     final openings = context.read<CapsuleOpenings>();
     final wrapped =
         !openComments && openings.isWrapped(capsule, uid, DateTime.now());
-    // The sheet route: rises from the bottom edge, closes on a tap above it
+    // The sheet route: rises from the bottom edge, or grows out of the
+    // tapped photo [from] (not under the wrapping); closes on a tap above it
     // or a drag down (MOTION_CATALOG.md).
     return Navigator.of(context).push(
       AppSheetRoute<void>(
+        origin: wrapped ? null : from,
         barrierColor: context.palette.scrim,
         barrierLabel: MaterialLocalizations.of(
           context,

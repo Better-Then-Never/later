@@ -74,7 +74,7 @@ Widget _panel(
           height: CapsuleInfoPanel.minHeight,
           child: CapsuleInfoPanel(
             capsule: capsule,
-            onMoreInfo: onMoreInfo ?? () {},
+            onMoreInfo: (_) => onMoreInfo?.call(),
           ),
         ),
       ),
@@ -408,7 +408,7 @@ void main() {
                         height: CapsuleInfoPanel.heightFor(context),
                         child: CapsuleInfoPanel(
                           capsule: _panelCapsule(opensIn: opensIn),
-                          onMoreInfo: () {},
+                          onMoreInfo: (_) {},
                         ),
                       ),
                     ),

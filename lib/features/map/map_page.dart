@@ -683,9 +683,10 @@ class _MapViewState extends State<_MapView> {
 
   Widget _infoPanel(Capsule capsule) => CapsuleInfoPanel(
     capsule: capsule,
-    onMoreInfo: () => CapsuleDetailDialog.show(
+    onMoreInfo: (from) => CapsuleDetailDialog.show(
       context,
       capsule,
+      from: from,
       // Back to the capsule's place on the map.
       onPlaceTap: () => _focus.focus(capsule),
     ),

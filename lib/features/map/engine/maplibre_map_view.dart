@@ -1423,9 +1423,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                             height: cardHeight,
                             child: CapsuleInfoPanel(
                               capsule: selected,
-                              onMoreInfo: () => CapsuleDetailDialog.show(
+                              onMoreInfo: (from) => CapsuleDetailDialog.show(
                                 context,
                                 selected,
+                                from: from,
                                 // Back to the capsule's place on the map.
                                 onPlaceTap: () => _focus.focus(selected),
                               ),

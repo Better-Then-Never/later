@@ -79,10 +79,9 @@ class CapsuleSheet extends StatelessWidget {
         social != null && FeatureFlags.comments && capsule.allowComments;
     final description = capsule.description?.trim() ?? '';
     const gap = SizedBox(height: 10);
-    return Material(
+    return SheetSurface(
       color: palette.surface,
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(radius)),
-      clipBehavior: Clip.antiAlias,
+      radius: radius,
       // As tall as its content (it scrolls when that is taller than the
       // screen allows); the pills stay at the bottom.
       child: Column(
@@ -164,6 +163,8 @@ class CapsuleSheet extends StatelessWidget {
 
 /// The capsule's photo as a square with rounded corners (a loop plays, with
 /// a "Loop · N frames" badge); a tap shows the whole photo full screen.
+/// Opened from the map card, it grows out of the card's thumbnail
+/// ([SheetPicture]).
 class CapsuleSheetPhoto extends StatelessWidget {
   const CapsuleSheetPhoto({super.key, required this.capsule, this.actions});
 
@@ -172,64 +173,72 @@ class CapsuleSheetPhoto extends StatelessWidget {
   /// Buttons on the top right corner (share, ⋯).
   final Widget? actions;
 
+  /// The decode width of the map card's thumbnail, in pixels. The opened
+  /// photo lies on the same picture, straight from memory, so it shows from
+  /// the first frame (while the photo itself loads).
+  static const thumbDecodeWidth = 384;
+
   @override
   Widget build(BuildContext context) {
     final url = capsule.imageUrl;
     if (url == null) return const SizedBox.shrink();
     final tag = CapsuleSheet.photoHeroTag(capsule);
-    final photo = GestureDetector(
-      onTap: () => PhotoViewer.show(
-        context,
-        url,
-        frames: capsule.frames,
-        frameDelay: Duration(milliseconds: capsule.frameDelayMs),
-        heroTag: tag,
-        crop: capsule.crop,
-      ),
-      child: Hero(
-        tag: tag,
-        // Straight from square to square (the default arc bends it).
-        createRectTween: (begin, end) => RectTween(begin: begin, end: end),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (capsule.isLoop)
-                LoopPicture(
-                  sources: capsule.frames,
-                  frameDelay: Duration(milliseconds: capsule.frameDelayMs),
-                )
-              else
-                CroppedPhoto(
-                  crop: capsule.crop,
-                  image: (fit) => AppNetworkImage(url: url, fit: fit),
-                ),
-              if (capsule.isLoop)
-                Positioned(
-                  left: 10,
-                  top: 10,
-                  child: PhotoBadge(
-                    text: context.l10n.capsulesLoopBadge(capsule.frames.length),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
     final corner = actions;
     return AspectRatio(
       aspectRatio: 1,
-      child: corner == null
-          ? photo
-          : Stack(
+      child: SheetPicture(
+        radius: 20,
+        over: [
+          if (capsule.isLoop)
+            Positioned(
+              left: 10,
+              top: 10,
+              child: PhotoBadge(
+                text: context.l10n.capsulesLoopBadge(capsule.frames.length),
+              ),
+            ),
+          if (corner != null) Positioned(top: 10, right: 10, child: corner),
+        ],
+        child: GestureDetector(
+          onTap: () => PhotoViewer.show(
+            context,
+            url,
+            frames: capsule.frames,
+            frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+            heroTag: tag,
+            crop: capsule.crop,
+          ),
+          child: Hero(
+            tag: tag,
+            // Straight from square to square (the default arc bends it).
+            createRectTween: (begin, end) => RectTween(begin: begin, end: end),
+            child: Stack(
               fit: StackFit.expand,
               children: [
-                photo,
-                Positioned(top: 10, right: 10, child: corner),
+                AppNetworkImage(
+                  url: capsule.thumbUrl ?? url,
+                  cacheWidth: thumbDecodeWidth,
+                ),
+                if (capsule.isLoop)
+                  LoopPicture(
+                    sources: capsule.frames,
+                    frameDelay: Duration(milliseconds: capsule.frameDelayMs),
+                  )
+                else
+                  CroppedPhoto(
+                    crop: capsule.crop,
+                    image: (fit) => AppNetworkImage(
+                      url: url,
+                      fit: fit,
+                      // The thumbnail under it until it loads.
+                      placeholder: const SizedBox.shrink(),
+                    ),
+                  ),
               ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }

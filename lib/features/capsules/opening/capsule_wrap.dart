@@ -48,8 +48,8 @@ class _CapsuleWrapHostState extends State<CapsuleWrapHost> {
 
   @override
   Widget build(BuildContext context) => HeroMode(
-    // The photo must not fly in over the wrapping; once it is open it flies
-    // back to the map card as usual.
+    // The photo flies nowhere from under the wrapping (full screen waits
+    // for it to open).
     enabled: !_wrapped,
     child: Stack(
       children: [
