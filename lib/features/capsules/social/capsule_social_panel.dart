@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/assets/app_assets.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -75,7 +75,7 @@ void showReportResult(BuildContext context, AppFailure? failure) {
     PopupNotificationService.showSuccess(
       context: context,
       message: context.l10n.capsulesReportSent,
-      position: NotificationPosition.bottom,
+      position: NotificationPosition.top,
     );
   }
 }
@@ -87,7 +87,8 @@ void showReportResult(BuildContext context, AppFailure? failure) {
 Future<ReportReason?> pickReportReason(BuildContext context) =>
     showEdgeSheet<ReportReason>(context, (_) => const ReportReasonSheet());
 
-/// The reasons to report something, with a confirm button.
+/// The reasons to report something, with a confirm button (Figma "Report
+/// sheet"): a reason first, then the red Report button.
 class ReportReasonSheet extends StatefulWidget {
   const ReportReasonSheet({super.key});
 
@@ -110,6 +111,12 @@ class _ReportReasonSheetState extends State<ReportReasonSheet> {
       ReportReason.privacy: l10n.capsulesReportPrivacy,
       ReportReason.other: l10n.capsulesReportOther,
     };
+    TextStyle row(Color color) => TextStyle(
+      fontFamily: kAppFontFamily,
+      fontSize: 16,
+      height: 1.25,
+      color: color,
+    );
     return Container(
       decoration: BoxDecoration(
         color: palette.surface,
@@ -119,55 +126,58 @@ class _ReportReasonSheetState extends State<ReportReasonSheet> {
       ),
       child: SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(child: SheetHandle()),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 2),
-              child: Text(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(child: SheetHandle.v2()),
+              const SizedBox(height: 4),
+              Text(
                 l10n.capsulesReportTitle,
                 style: AppTextStyles.sectionTitle.copyWith(
                   color: palette.textPrimary,
+                  height: 1.2,
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
-              child: Text(
+              const SizedBox(height: 4),
+              Text(
                 l10n.capsulesReportHint,
-                style: AppTextStyles.body.copyWith(
+                style: TextStyle(
+                  fontFamily: kAppFontFamily,
                   fontSize: 13,
+                  height: 1.25,
                   color: palette.textSecondary,
                 ),
               ),
-            ),
-            RadioGroup<ReportReason>(
-              groupValue: _reason,
-              onChanged: (r) => setState(() => _reason = r),
-              child: Column(
-                children: [
-                  for (final entry in reasons.entries)
-                    RadioListTile<ReportReason>(
-                      value: entry.key,
-                      dense: true,
-                      activeColor: AppColors.brandGreen,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      title: Text(
-                        entry.value,
-                        style: AppTextStyles.body.copyWith(
-                          fontSize: 16,
-                          color: palette.textPrimary,
-                        ),
+              const SizedBox(height: 4),
+              for (final entry in reasons.entries)
+                Semantics(
+                  button: true,
+                  selected: _reason == entry.key,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => setState(() => _reason = entry.key),
+                    child: SizedBox(
+                      height: 42,
+                      child: Row(
+                        children: [
+                          _Radio(on: _reason == entry.key),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              entry.value,
+                              style: row(palette.textPrimary),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: SizedBox(
+                  ),
+                ),
+              const SizedBox(height: 36),
+              SizedBox(
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
@@ -187,48 +197,84 @@ class _ReportReasonSheetState extends State<ReportReasonSheet> {
                     style: const TextStyle(
                       fontFamily: kAppFontFamily,
                       fontSize: 16,
+                      height: 1.2,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(
-                  l10n.commonCancel,
-                  style: AppTextStyles.body.copyWith(
-                    fontSize: 15,
-                    color: palette.textSecondary,
+              const SizedBox(height: 4),
+              Center(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      l10n.commonCancel,
+                      style: row(palette.textSecondary),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 4),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// The six reactions in one row; the user's choice is tinted soft green and
-/// each shows how many people chose it. The marks are Material placeholders
-/// until the owner's drawings exist (docs/polish/PLACEHOLDER_ICONS.md).
+/// A 20 dp radio: a grey ring, or a green ring with a green dot.
+class _Radio extends StatelessWidget {
+  const _Radio({required this.on});
+
+  final bool on;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: 20,
+    height: 20,
+    padding: const EdgeInsets.all(4),
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(
+        color: on ? AppColors.brandGreen : context.palette.disabled,
+        width: 2,
+      ),
+    ),
+    child: on
+        ? const DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.brandGreen,
+              shape: BoxShape.circle,
+            ),
+          )
+        : null,
+  );
+}
+
+/// The six reactions in one row (Figma "Reactions"): a 36 dp mark each, with
+/// how many people chose it; the user's choice is tinted soft green with a
+/// green outline. The heart is the app's own drawing; the other marks are
+/// Material placeholders until the owner's drawings exist
+/// (docs/polish/PLACEHOLDER_ICONS.md).
 class CapsuleReactionsBar extends StatelessWidget {
   const CapsuleReactionsBar({super.key, required this.controller});
 
   final CapsuleSocialController controller;
 
-  /// The mark of each reaction (placeholders for the hand-drawn ones).
-  static IconData markOf(ReactionType type) => switch (type) {
-    ReactionType.heart => Icons.favorite_border,
+  /// The placeholder mark of each reaction but the heart.
+  static IconData? markOf(ReactionType type) => switch (type) {
+    ReactionType.heart => null,
     ReactionType.laugh => Icons.sentiment_very_satisfied,
-    ReactionType.wow => Icons.sentiment_neutral,
+    ReactionType.wow => Icons.sentiment_satisfied,
     ReactionType.sad => Icons.sentiment_dissatisfied,
-    ReactionType.fire => Icons.local_fire_department_outlined,
-    ReactionType.clap => Icons.celebration_outlined,
+    ReactionType.fire => Icons.local_fire_department,
+    ReactionType.clap => Icons.celebration,
   };
 
   Future<void> _react(BuildContext context, ReactionType type) async {
@@ -263,14 +309,16 @@ class CapsuleReactionsBar extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: AppMotion.of(context, AppMotion.fast),
                   curve: AppMotion.standardCurve,
-                  height: 38,
+                  height: 36,
                   padding: EdgeInsets.only(
-                    left: 9,
-                    right: (counts[type] ?? 0) > 0 ? 11 : 9,
+                    left: 7,
+                    right: (counts[type] ?? 0) > 0 ? 9 : 7,
                   ),
                   decoration: BoxDecoration(
-                    color: mine == type ? palette.accentSoft : palette.surface,
-                    borderRadius: AppRadii.lCircular,
+                    color: mine == type
+                        ? AppColors.brandGreen.withValues(alpha: 0.25)
+                        : palette.surface,
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: mine == type
                           ? AppColors.brandGreen
@@ -283,21 +331,26 @@ class CapsuleReactionsBar extends StatelessWidget {
                     children: [
                       ReactionBurst(
                         active: mine == type,
-                        child: Icon(
-                          markOf(type),
-                          size: 20,
-                          color: mine == type
-                              ? palette.accentText
-                              : palette.icon,
-                        ),
+                        child: switch (markOf(type)) {
+                          final icon? => Icon(
+                            icon,
+                            size: 20,
+                            color: palette.icon,
+                          ),
+                          null => Image.asset(
+                            AppIcons.capsuleFavorites,
+                            width: 20,
+                          ),
+                        },
                       ),
                       if ((counts[type] ?? 0) > 0) ...[
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 3),
                         Text(
                           '${counts[type]}',
                           style: TextStyle(
                             fontFamily: kAppFontFamily,
                             fontSize: 15,
+                            height: 1.1,
                             fontWeight: FontWeight.bold,
                             color: mine == type
                                 ? palette.accentText
@@ -314,34 +367,4 @@ class CapsuleReactionsBar extends StatelessWidget {
       ],
     );
   }
-}
-
-/// The usual share sign: three nodes, two links, in the icons' round stroke.
-class ShareSignPainter extends CustomPainter {
-  const ShareSignPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final a = Offset(w * 0.74, h * 0.2);
-    final b = Offset(w * 0.24, h * 0.5);
-    final c = Offset(w * 0.74, h * 0.8);
-    final line = Paint()
-      ..color = color
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round;
-    canvas
-      ..drawLine(a, b, line)
-      ..drawLine(b, c, line);
-    final dot = Paint()..color = color;
-    for (final o in [a, b, c]) {
-      canvas.drawCircle(o, w * 0.13, dot);
-    }
-  }
-
-  @override
-  bool shouldRepaint(ShareSignPainter old) => old.color != color;
 }

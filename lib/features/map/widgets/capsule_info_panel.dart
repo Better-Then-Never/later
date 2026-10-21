@@ -16,14 +16,16 @@ import '../../../data/models/capsule.dart';
 import '../../../shared/widgets/app_network_image.dart';
 import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/loop_mark.dart';
+import '../../../shared/widgets/pill_v2.dart';
 import '../../capsules/opening/capsule_openings.dart';
 import '../../capsules/social/capsule_sheet.dart';
 
-/// The card above a tapped pin (capsule v3): a picture, the title, who left
-/// it and, for an open capsule, when it opened with a normal-size Open pill;
-/// for a locked one, the countdown in ink, how much of the wait is done, the
-/// day it opens and a quiet Locked pill. A locked capsule shows its pin, never
-/// its photo. The photo flies into the opened capsule as a [Hero].
+/// The card above a tapped pin (capsule v3, Figma "v3 Map / Card open" and
+/// "Card locked"): a picture, the title, who left it and, for an open
+/// capsule, a check with when it opened and the Open pill; for a locked one,
+/// the countdown, how much of the wait is done, the day it opens and a soft
+/// Locked pill. A locked capsule shows its pin, never its photo. The photo
+/// flies into the opened capsule as a [Hero].
 class CapsuleInfoPanel extends StatefulWidget {
   const CapsuleInfoPanel({
     super.key,
@@ -34,20 +36,31 @@ class CapsuleInfoPanel extends StatefulWidget {
   final Capsule capsule;
   final VoidCallback onMoreInfo;
 
-  /// The card's height at the normal text size: the 76 dp picture, or the
-  /// four short lines of a locked capsule, with the padding.
-  static const double minHeight = 124;
+  /// The locked card's height at the normal text size: its five short lines
+  /// with the padding and the dark theme's border (the tallest card).
+  static const double minHeight = 108;
 
-  /// The card's height on this screen: [minHeight] grown with the system
-  /// text size, at most 200. Measured at the card's small text: Android 14+
-  /// scales large text less than small text (nonlinear).
-  static double heightFor(BuildContext context) {
+  /// The open card's height at the normal text size: the 76 dp picture with
+  /// the padding.
+  static const double openHeight = 96;
+
+  /// The card's height on this screen for [capsule] (the locked height when
+  /// unknown), grown with the system text size, at most 220. Measured at the
+  /// card's small text: Android 14+ scales large text less than small text
+  /// (nonlinear).
+  static double heightFor(BuildContext context, {Capsule? capsule}) {
     final scale = MediaQuery.textScalerOf(context).scale(13) / 13;
-    return (minHeight * scale).clamp(minHeight, 200);
+    final open = capsule != null && capsule.isOpen(DateTime.now());
+    // The text column at the normal size, and the card's padding.
+    final column = open ? 62.0 : 88.0;
+    return math
+        .max(open ? openHeight : minHeight, column * scale + 20)
+        .clamp(0.0, 220.0);
   }
 
-  /// Compact countdown ("2d 5h 30m" in English) in the app's language:
-  /// seconds only in the last minute (M-10).
+  /// Compact countdown in the app's language, as the locked card shows it:
+  /// days and hours ("41d 6h") while a day or more is left, then hours and
+  /// minutes; seconds only in the last minute (M-10).
   static String formatDuration(Duration d, AppLocalizations l10n) {
     if (d.isNegative) return '';
     if (d < const Duration(minutes: 1)) {
@@ -59,7 +72,7 @@ class CapsuleInfoPanel extends StatefulWidget {
     return [
       if (days > 0) l10n.mapDurationDays(days),
       if (hours > 0 || days > 0) l10n.mapDurationHours(hours),
-      l10n.mapDurationMinutes(minutes),
+      if (days == 0) l10n.mapDurationMinutes(minutes),
     ].join(' ');
   }
 
@@ -162,7 +175,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         color: palette.surface,
         borderRadius: BorderRadius.circular(22),
         border: palette.isDark ? Border.all(color: palette.cardBorder) : null,
-        boxShadow: AppShadows.mapInfo(context),
+        boxShadow: AppShadows.raised(context),
       ),
       child: LayoutBuilder(
         builder: (context, box) => Row(
@@ -184,29 +197,42 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.sectionTitle.copyWith(
                       color: palette.textPrimary,
+                      height: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: isOpen ? 2 : 3),
                   Text(
                     second,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: _line(palette.textSecondary),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: isOpen ? 2 : 3),
                   if (isOpen)
-                    Text(
-                      wrapped
-                          ? l10n.mapCapsuleYoursToOpen
-                          : CapsuleInfoPanel.openedLabel(capsule, _now, l10n),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: _line(palette.accentText, bold: true),
+                    Row(
+                      children: [
+                        Image.asset(AppIcons.profileDone, width: 14),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            wrapped
+                                ? l10n.mapCapsuleYoursToOpen
+                                : CapsuleInfoPanel.openedLabel(
+                                    capsule,
+                                    _now,
+                                    l10n,
+                                  ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: _line(palette.accentText, bold: true),
+                          ),
+                        ),
+                      ],
                     )
                   else ...[
                     Row(
                       children: [
-                        Image.asset(AppIcons.capsuleTimer, width: 15),
+                        Image.asset(AppIcons.capsuleTimer, width: 16),
                         const SizedBox(width: 5),
                         Flexible(
                           child: Text(
@@ -223,7 +249,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 3),
                     _WaitLine(done: CapsuleInfoPanel.waitDone(capsule, _now)),
                     if (capsule.openAt != null) ...[
                       const SizedBox(height: 3),
@@ -240,11 +266,15 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             if (isOpen)
-              _OpenPill(onTap: widget.onMoreInfo)
+              PillV2(label: l10n.mapCapsuleOpen, onTap: widget.onMoreInfo)
             else
-              const _LockedPill(),
+              PillV2(
+                label: l10n.mapCapsuleLocked,
+                kind: PillV2Kind.soft,
+                size: PillV2Size.small,
+              ),
           ],
         ),
       ),
@@ -255,6 +285,7 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
       TextStyle(
         fontFamily: kAppFontFamily,
         fontSize: size,
+        height: 1.25,
         fontWeight: bold ? FontWeight.bold : FontWeight.normal,
         color: color,
       );
@@ -273,60 +304,8 @@ class _WaitLine extends StatelessWidget {
       height: 4,
       child: LinearProgressIndicator(
         value: done,
-        backgroundColor: context.palette.surfaceMuted,
+        backgroundColor: context.palette.pill,
         color: AppColors.brandGreen,
-      ),
-    ),
-  );
-}
-
-/// The open capsule's way in: a normal-size green pill (it was a full-width
-/// button).
-class _OpenPill extends StatelessWidget {
-  const _OpenPill({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => ElevatedButton(
-    style: ElevatedButton.styleFrom(
-      backgroundColor: AppColors.brandGreen,
-      foregroundColor: AppColors.onAccent,
-      elevation: 0,
-      shape: const StadiumBorder(),
-      minimumSize: const Size(0, 40),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-    ),
-    onPressed: onTap,
-    child: Text(
-      context.l10n.mapCapsuleOpen,
-      style: const TextStyle(
-        fontFamily: kAppFontFamily,
-        fontSize: 15,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  );
-}
-
-/// A locked capsule's state: a quiet pill, not a disabled button.
-class _LockedPill extends StatelessWidget {
-  const _LockedPill();
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    decoration: BoxDecoration(
-      color: context.palette.accentSoft,
-      borderRadius: AppRadii.lCircular,
-    ),
-    child: Text(
-      context.l10n.mapCapsuleLocked,
-      style: TextStyle(
-        fontFamily: kAppFontFamily,
-        fontSize: 13,
-        fontWeight: FontWeight.bold,
-        color: context.palette.accentText,
       ),
     ),
   );
@@ -353,7 +332,7 @@ class _Thumbnail extends StatelessWidget {
       return Hero(
         tag: CapsuleSheet.photoHeroTag(capsule),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadii.s),
+          borderRadius: BorderRadius.circular(14),
           child: SizedBox.square(
             dimension: size,
             child: Stack(
@@ -371,12 +350,15 @@ class _Thumbnail extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      padding: EdgeInsets.all(size * 0.2),
+      alignment: Alignment.center,
       decoration: BoxDecoration(
         color: context.palette.surfaceMuted,
-        borderRadius: BorderRadius.circular(AppRadii.s),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: Image.asset(AppIcons.mapPin(capsule.color.name)),
+      child: Image.asset(
+        AppIcons.mapPin(capsule.color.name),
+        width: size * 48 / 76,
+      ),
     );
   }
 }

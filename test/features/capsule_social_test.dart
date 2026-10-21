@@ -279,7 +279,7 @@ void main() {
       // The newest comment shows under the reactions.
       expect(find.text('Lovely place'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.local_fire_department_outlined));
+      await tester.tap(find.byIcon(Icons.local_fire_department));
       await tester.pumpAndSettle();
       expect(social.reactions['cap']!['me'], ReactionType.fire);
       expect(find.text('1'), findsOneWidget, reason: 'the count by the fire');

@@ -499,9 +499,13 @@
   },
   "capsulesCreationAllowComments": "Allow comments",
   "capsulesCreationAllowReactions": "Allow reactions",
+  "capsulesCreationAnytime": "Anytime",
+  "@capsulesCreationAnytime": {
+    "description": "Create page, \"How it opens\" row: no opening date."
+  },
   "capsulesCreationApproximate": "Approximate location",
   "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
-  "capsulesCreationCoAuthors": "Co-authors",
+  "capsulesCreationCoAuthors": "Made with",
   "@capsulesCreationCoAuthors": {
     "description": "Capsule creation row: friends who made the capsule with the user."
   },
@@ -514,11 +518,11 @@
       }
     }
   },
-  "capsulesCreationCoAuthorsNone": "Just me",
+  "capsulesCreationCoAuthorsNone": "Only me",
   "@capsulesCreationCoAuthorsNone": {
     "description": "Value of the co-authors row when nobody is picked."
   },
-  "capsulesCreationColor": "Color",
+  "capsulesCreationColor": "Colour",
   "@capsulesCreationColor": {
     "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
   },
@@ -540,11 +544,15 @@
       }
     }
   },
-  "capsulesCreationOpenAt": "Open At",
+  "capsulesCreationOpenAt": "How it opens",
   "@capsulesCreationOpenAt": {
     "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
   },
-  "capsulesCreationPrivacy": "Privacy",
+  "capsulesCreationOptions": "Options",
+  "@capsulesCreationOptions": {
+    "description": "Create page: the group label above the switches (shown in capitals)."
+  },
+  "capsulesCreationPrivacy": "Who sees it",
   "@capsulesCreationPrivacy": {
     "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
   },
@@ -552,11 +560,7 @@
   "@capsulesCreationRetake": {
     "description": "Chip on the photo of a new capsule: back to the camera."
   },
-  "capsulesCreationSelectDate": "Select date",
-  "@capsulesCreationSelectDate": {
-    "description": "Shown in the open date row until a date is picked. Keep it short."
-  },
-  "capsulesCreationSettings": "Capsule Settings",
+  "capsulesCreationSettings": "Settings",
   "@capsulesCreationSettings": {
     "description": "Section title above the privacy, open date and colour rows."
   },
@@ -572,11 +576,11 @@
   "@capsulesCreationSpeed": {
     "description": "Creation row of a loop capsule: how fast its frames play."
   },
-  "capsulesCreationSubmit": "Create Capsule",
+  "capsulesCreationSubmit": "Create capsule",
   "@capsulesCreationSubmit": {
     "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
   },
-  "capsulesCreationTitle": "Create Capsule",
+  "capsulesCreationTitle": "New capsule",
   "@capsulesCreationTitle": {
     "description": "Header title of the screen where a new capsule is set up after taking the photo."
   },
@@ -659,6 +663,15 @@
   "@capsulesLinkNotShared": {
     "description": "Shown when a capsule link opens a capsule the user may not see (or that is gone)."
   },
+  "capsulesLoopBadge": "{count, plural, =1{Loop · 1 frame} other{Loop · {count} frames}}",
+  "@capsulesLoopBadge": {
+    "description": "On the photo of an opened loop capsule: it is a loop of this many frames.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "capsulesLoopMark": "Loop",
   "@capsulesLoopMark": {
     "description": "Screen reader label of the mark on a loop capsule's picture."
@@ -698,18 +711,6 @@
   "capsulesPinUse": "Put it here",
   "@capsulesPinUse": {
     "description": "Button: the capsule goes to the pin."
-  },
-  "capsulesPrivacyFriends": "Friends",
-  "@capsulesPrivacyFriends": {
-    "description": "Capsule visibility: only the owner's friends can see it."
-  },
-  "capsulesPrivacyPrivate": "Private",
-  "@capsulesPrivacyPrivate": {
-    "description": "Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'."
-  },
-  "capsulesPrivacyPublic": "Public",
-  "@capsulesPrivacyPublic": {
-    "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
   },
   "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again.",
   "capsulesQuickReply": "Reply to the author",
@@ -818,6 +819,18 @@
   "capsulesSpeedSlow": "Slow",
   "@capsulesSpeedSlow": {
     "description": "Loop speed: 500 ms per frame."
+  },
+  "capsulesWhoEveryone": "Everyone",
+  "@capsulesWhoEveryone": {
+    "description": "Create page, \"Who sees it\" row: a public capsule."
+  },
+  "capsulesWhoFriends": "Friends",
+  "@capsulesWhoFriends": {
+    "description": "Create page, \"Who sees it\" row: a friends-only capsule."
+  },
+  "capsulesWhoOnlyMe": "Only me",
+  "@capsulesWhoOnlyMe": {
+    "description": "Create page, \"Who sees it\" row: a private capsule."
   },
   "capsulesWith": "With {names}",
   "@capsulesWith": {

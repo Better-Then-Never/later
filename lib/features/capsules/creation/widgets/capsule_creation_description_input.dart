@@ -30,7 +30,7 @@ class CapsuleCreationDescriptionInputField extends StatelessWidget {
         onTap: () => DescriptionComposer.show(context, controller),
         child: ExcludeSemantics(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
+            padding: EdgeInsets.zero,
             child: SizedBox(
               width: double.infinity,
               child: ListenableBuilder(
@@ -43,7 +43,7 @@ class CapsuleCreationDescriptionInputField extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: kAppFontFamily,
-                      fontSize: 15,
+                      fontSize: 14,
                       height: 1.3,
                       color: text.isEmpty
                           ? context.palette.textMuted

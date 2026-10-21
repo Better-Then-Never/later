@@ -589,6 +589,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesCreationAllowReactions => 'Permitir reacciones';
 
   @override
+  String get capsulesCreationAnytime => 'Cuando quieras';
+
+  @override
   String get capsulesCreationApproximate => 'Ubicación aproximada';
 
   @override
@@ -596,7 +599,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'A un kilómetro aproximado, no en el punto exacto';
 
   @override
-  String get capsulesCreationCoAuthors => 'Coautores';
+  String get capsulesCreationCoAuthors => 'Hecha con';
 
   @override
   String capsulesCreationCoAuthorsCount(int count) {
@@ -627,19 +630,19 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationOpenAt => 'Se abre el';
+  String get capsulesCreationOpenAt => 'Cómo se abre';
 
   @override
-  String get capsulesCreationPrivacy => 'Visibilidad';
+  String get capsulesCreationOptions => 'Opciones';
+
+  @override
+  String get capsulesCreationPrivacy => 'Quién la ve';
 
   @override
   String get capsulesCreationRetake => 'Repetir';
 
   @override
-  String get capsulesCreationSelectDate => 'Elige una fecha';
-
-  @override
-  String get capsulesCreationSettings => 'Ajustes de la cápsula';
+  String get capsulesCreationSettings => 'Ajustes';
 
   @override
   String get capsulesCreationShowAuthor => 'Mostrar mi nombre';
@@ -654,7 +657,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesCreationSubmit => 'Crear cápsula';
 
   @override
-  String get capsulesCreationTitle => 'Crear cápsula';
+  String get capsulesCreationTitle => 'Nueva cápsula';
 
   @override
   String get capsulesCreationTitleHint => 'Título...';
@@ -712,6 +715,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesLinkNotShared => 'Esta cápsula no está compartida contigo';
 
   @override
+  String capsulesLoopBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bucle · $count fotogramas',
+      one: 'Bucle · 1 fotograma',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesLoopMark => 'Bucle';
 
   @override
@@ -750,15 +764,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get capsulesPinUse => 'Ponerla aquí';
-
-  @override
-  String get capsulesPrivacyFriends => 'Amigos';
-
-  @override
-  String get capsulesPrivacyPrivate => 'Privada';
-
-  @override
-  String get capsulesPrivacyPublic => 'Pública';
 
   @override
   String get capsulesQueued =>
@@ -855,6 +860,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Lenta';
+
+  @override
+  String get capsulesWhoEveryone => 'Todos';
+
+  @override
+  String get capsulesWhoFriends => 'Amigos';
+
+  @override
+  String get capsulesWhoOnlyMe => 'Solo yo';
 
   @override
   String capsulesWith(String names) {

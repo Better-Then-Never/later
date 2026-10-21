@@ -21,9 +21,10 @@ class CapsuleCreationTitleInput extends StatelessWidget {
         hintText: context.l10n.capsulesCreationTitleHint,
         counterText: '',
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 4),
+        contentPadding: EdgeInsets.zero,
         hintStyle: TextStyle(
-          fontSize: 24,
+          fontSize: 26,
+          height: 1.1,
           fontFamily: kAppFontFamily,
           fontWeight: FontWeight.bold,
           color: palette.textMuted,
@@ -31,7 +32,8 @@ class CapsuleCreationTitleInput extends StatelessWidget {
         border: InputBorder.none,
       ),
       style: TextStyle(
-        fontSize: 24,
+        fontSize: 26,
+        height: 1.1,
         fontFamily: kAppFontFamily,
         fontWeight: FontWeight.bold,
         color: palette.textPrimary,

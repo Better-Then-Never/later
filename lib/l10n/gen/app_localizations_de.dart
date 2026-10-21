@@ -595,6 +595,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesCreationAllowReactions => 'Reaktionen erlauben';
 
   @override
+  String get capsulesCreationAnytime => 'Jederzeit';
+
+  @override
   String get capsulesCreationApproximate => 'Ungefährer Standort';
 
   @override
@@ -602,7 +605,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Etwa einen Kilometer daneben, nicht genau';
 
   @override
-  String get capsulesCreationCoAuthors => 'Mitautoren';
+  String get capsulesCreationCoAuthors => 'Gemacht mit';
 
   @override
   String capsulesCreationCoAuthorsCount(int count) {
@@ -634,19 +637,19 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationOpenAt => 'Öffnet sich am';
+  String get capsulesCreationOpenAt => 'Wie sie sich öffnet';
 
   @override
-  String get capsulesCreationPrivacy => 'Sichtbarkeit';
+  String get capsulesCreationOptions => 'Optionen';
+
+  @override
+  String get capsulesCreationPrivacy => 'Wer sie sieht';
 
   @override
   String get capsulesCreationRetake => 'Neu aufnehmen';
 
   @override
-  String get capsulesCreationSelectDate => 'Datum wählen';
-
-  @override
-  String get capsulesCreationSettings => 'Kapseleinstellungen';
+  String get capsulesCreationSettings => 'Einstellungen';
 
   @override
   String get capsulesCreationShowAuthor => 'Meinen Namen zeigen';
@@ -662,7 +665,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesCreationSubmit => 'Kapsel erstellen';
 
   @override
-  String get capsulesCreationTitle => 'Kapsel erstellen';
+  String get capsulesCreationTitle => 'Neue Kapsel';
 
   @override
   String get capsulesCreationTitleHint => 'Titel...';
@@ -722,6 +725,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get capsulesLinkNotShared => 'Diese Kapsel ist nicht mit dir geteilt';
 
   @override
+  String capsulesLoopBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Loop · $count Bilder',
+      one: 'Loop · 1 Bild',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesLoopMark => 'Loop';
 
   @override
@@ -761,15 +775,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get capsulesPinUse => 'Hier setzen';
-
-  @override
-  String get capsulesPrivacyFriends => 'Freunde';
-
-  @override
-  String get capsulesPrivacyPrivate => 'Privat';
-
-  @override
-  String get capsulesPrivacyPublic => 'Öffentlich';
 
   @override
   String get capsulesQueued =>
@@ -867,6 +872,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Langsam';
+
+  @override
+  String get capsulesWhoEveryone => 'Alle';
+
+  @override
+  String get capsulesWhoFriends => 'Freunde';
+
+  @override
+  String get capsulesWhoOnlyMe => 'Nur ich';
 
   @override
   String capsulesWith(String names) {

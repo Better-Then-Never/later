@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/models/geo_position.dart';
@@ -76,10 +75,10 @@ class _CapsulePlaceChipState extends State<CapsulePlaceChip> {
       if (name == null || name.isEmpty) return const SizedBox.shrink();
       final chip = Container(
         constraints: const BoxConstraints(maxWidth: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: const BoxDecoration(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        decoration: BoxDecoration(
           color: AppColors.placeYellow,
-          borderRadius: AppRadii.lCircular,
+          borderRadius: BorderRadius.circular(11),
         ),
         child: Text(
           name,
@@ -87,7 +86,8 @@ class _CapsulePlaceChipState extends State<CapsulePlaceChip> {
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
             fontFamily: kAppFontFamily,
-            fontSize: 13,
+            fontSize: 12,
+            height: 1,
             fontWeight: FontWeight.bold,
             color: AppColors.onAccent,
           ),

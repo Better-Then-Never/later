@@ -581,6 +581,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesCreationAllowReactions => 'Allow reactions';
 
   @override
+  String get capsulesCreationAnytime => 'Anytime';
+
+  @override
   String get capsulesCreationApproximate => 'Approximate location';
 
   @override
@@ -588,7 +591,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'About a kilometre off, not the exact spot';
 
   @override
-  String get capsulesCreationCoAuthors => 'Co-authors';
+  String get capsulesCreationCoAuthors => 'Made with';
 
   @override
   String capsulesCreationCoAuthorsCount(int count) {
@@ -602,10 +605,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationCoAuthorsNone => 'Just me';
+  String get capsulesCreationCoAuthorsNone => 'Only me';
 
   @override
-  String get capsulesCreationColor => 'Color';
+  String get capsulesCreationColor => 'Colour';
 
   @override
   String get capsulesCreationDescriptionHint => 'Add description...';
@@ -619,19 +622,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationOpenAt => 'Open At';
+  String get capsulesCreationOpenAt => 'How it opens';
 
   @override
-  String get capsulesCreationPrivacy => 'Privacy';
+  String get capsulesCreationOptions => 'Options';
+
+  @override
+  String get capsulesCreationPrivacy => 'Who sees it';
 
   @override
   String get capsulesCreationRetake => 'Retake';
 
   @override
-  String get capsulesCreationSelectDate => 'Select date';
-
-  @override
-  String get capsulesCreationSettings => 'Capsule Settings';
+  String get capsulesCreationSettings => 'Settings';
 
   @override
   String get capsulesCreationShowAuthor => 'Show my name';
@@ -643,10 +646,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesCreationSpeed => 'Speed';
 
   @override
-  String get capsulesCreationSubmit => 'Create Capsule';
+  String get capsulesCreationSubmit => 'Create capsule';
 
   @override
-  String get capsulesCreationTitle => 'Create Capsule';
+  String get capsulesCreationTitle => 'New capsule';
 
   @override
   String get capsulesCreationTitleHint => 'Add Title...';
@@ -704,6 +707,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesLinkNotShared => 'This capsule is not shared with you';
 
   @override
+  String capsulesLoopBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Loop · $count frames',
+      one: 'Loop · 1 frame',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesLoopMark => 'Loop';
 
   @override
@@ -743,15 +757,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesPinUse => 'Put it here';
-
-  @override
-  String get capsulesPrivacyFriends => 'Friends';
-
-  @override
-  String get capsulesPrivacyPrivate => 'Private';
-
-  @override
-  String get capsulesPrivacyPublic => 'Public';
 
   @override
   String get capsulesQueued =>
@@ -848,6 +853,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Slow';
+
+  @override
+  String get capsulesWhoEveryone => 'Everyone';
+
+  @override
+  String get capsulesWhoFriends => 'Friends';
+
+  @override
+  String get capsulesWhoOnlyMe => 'Only me';
 
   @override
   String capsulesWith(String names) {

@@ -41,7 +41,8 @@ class _CapsuleSubmitButtonState extends State<CapsuleSubmitButton> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * 0.06;
+    // 48 dp (Figma "Create capsule").
+    const height = 48.0;
     final compact = widget.saving || _done;
     final motion = AppMotion.of(context, AppMotion.emphasized);
     return Semantics(
@@ -95,7 +96,8 @@ class _CapsuleSubmitButtonState extends State<CapsuleSubmitButton> {
                               maxLines: 1,
                               style: const TextStyle(
                                 fontFamily: kAppFontFamily,
-                                fontSize: 30,
+                                fontSize: 20,
+                                height: 1.1,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.onAccent,
                               ),

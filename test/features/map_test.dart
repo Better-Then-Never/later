@@ -95,7 +95,7 @@ void main() {
           ),
         ),
       );
-      expect(find.textContaining('Opens in 2d 3h '), findsOneWidget);
+      expect(find.textContaining('Opens in 2d 3h'), findsOneWidget);
       expect(find.text('Locked'), findsOneWidget);
       // Your own capsule: when you left it, and the day it opens.
       expect(find.text('Left 16 Oct 2026'), findsOneWidget);
@@ -149,33 +149,37 @@ void main() {
       expect(label(DateTime(2026, 6, 1)), 'Opened on 1 Jun 2026');
     });
 
-    test('the countdown shows seconds only in the last minute (M-10)', () {
-      final l10n = lookupAppLocalizations(const Locale('en'));
-      String text(Duration d) => CapsuleInfoPanel.formatDuration(d, l10n);
-      expect(
-        text(const Duration(days: 281, hours: 14, minutes: 19, seconds: 48)),
-        '281d 14h 19m',
-      );
-      expect(text(const Duration(minutes: 5, seconds: 59)), '5m');
-      expect(text(const Duration(seconds: 42)), '42s');
-      expect(text(const Duration(seconds: -1)), '');
-      // In every language: no seconds beyond the last minute.
-      for (final (lang, want) in const [
-        ('ru', '98д 4ч 24мин'),
-        ('pl', '98d 4h 24min'),
-        ('de', '98T 4h 24min'),
-        ('es', '98d 4h 24min'),
-      ]) {
+    test(
+      'the countdown: days and hours, then minutes, seconds last (M-10)',
+      () {
+        final l10n = lookupAppLocalizations(const Locale('en'));
+        String text(Duration d) => CapsuleInfoPanel.formatDuration(d, l10n);
         expect(
-          CapsuleInfoPanel.formatDuration(
-            const Duration(days: 98, hours: 4, minutes: 24, seconds: 31),
-            lookupAppLocalizations(Locale(lang)),
-          ),
-          want,
-          reason: lang,
+          text(const Duration(days: 281, hours: 14, minutes: 19, seconds: 48)),
+          '281d 14h',
         );
-      }
-    });
+        expect(text(const Duration(hours: 3, minutes: 5)), '3h 5m');
+        expect(text(const Duration(minutes: 5, seconds: 59)), '5m');
+        expect(text(const Duration(seconds: 42)), '42s');
+        expect(text(const Duration(seconds: -1)), '');
+        // In every language: no seconds beyond the last minute.
+        for (final (lang, want) in const [
+          ('ru', '98д 4ч'),
+          ('pl', '98d 4h'),
+          ('de', '98T 4h'),
+          ('es', '98d 4h'),
+        ]) {
+          expect(
+            CapsuleInfoPanel.formatDuration(
+              const Duration(days: 98, hours: 4, minutes: 24, seconds: 31),
+              lookupAppLocalizations(Locale(lang)),
+            ),
+            want,
+            reason: lang,
+          );
+        }
+      },
+    );
 
     testWidgets('an open capsule can be opened', (tester) async {
       var opened = 0;
@@ -206,7 +210,7 @@ void main() {
           locale: const Locale('ru'),
         ),
       );
-      expect(find.textContaining('Откроется через 2д 3ч '), findsOneWidget);
+      expect(find.textContaining('Откроется через 2д 3ч'), findsOneWidget);
       expect(find.text('Закрыта'), findsOneWidget);
     });
 

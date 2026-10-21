@@ -156,8 +156,9 @@ class AppCardRoute<T> extends PageRoute<T> {
 /// capsule (v3). A page route like [AppCardRoute], so a [Hero] can fly into
 /// it (the photo comes from the map card). It rises from below the screen;
 /// out: a tap above it, back, or a drag down past a third of it or with a
-/// flick. It hugs its content, up to the screen less the status bar and
-/// 12 dp, and at most 560 dp wide. Reduced motion: no animation.
+/// flick. Its content gets up to the screen less the status bar and 23 dp
+/// (the opened capsule takes all of it), at most 560 dp wide. Reduced
+/// motion: no animation.
 class AppSheetRoute<T> extends PageRoute<T> {
   AppSheetRoute({
     required this.builder,
@@ -205,7 +206,8 @@ class AppSheetRoute<T> extends PageRoute<T> {
         alignment: Alignment.bottomCenter,
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            maxHeight: math.max(0, media.size.height - media.padding.top - 12),
+            // 23 dp under the status bar, as the design (52 of 800).
+            maxHeight: math.max(0, media.size.height - media.padding.top - 23),
             maxWidth: 560,
           ),
           child: _DragToClose(child: builder(context)),
@@ -335,17 +337,22 @@ class EdgeSheet extends StatelessWidget {
 
 /// The grab handle at the top of a sheet: it can be dragged down to close.
 class SheetHandle extends StatelessWidget {
-  const SheetHandle({super.key});
+  const SheetHandle({super.key}) : _v2 = false;
+
+  /// The v2 sheets' grabber (capsule v3): divider grey, 20 dp to the content.
+  const SheetHandle.v2({super.key}) : _v2 = true;
+
+  final bool _v2;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 4),
+      padding: EdgeInsets.only(top: 8, bottom: _v2 ? 8 : 4),
       child: Container(
         width: 36,
         height: 4,
         decoration: BoxDecoration(
-          color: context.palette.disabled,
+          color: _v2 ? context.palette.divider : context.palette.disabled,
           borderRadius: BorderRadius.circular(2),
         ),
       ),

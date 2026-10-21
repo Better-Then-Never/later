@@ -610,6 +610,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesCreationAllowReactions => 'Pozwól reagować';
 
   @override
+  String get capsulesCreationAnytime => 'Kiedy chcesz';
+
+  @override
   String get capsulesCreationApproximate => 'Przybliżona lokalizacja';
 
   @override
@@ -617,7 +620,7 @@ class AppLocalizationsPl extends AppLocalizations {
       'Około kilometra obok, nie w dokładnym miejscu';
 
   @override
-  String get capsulesCreationCoAuthors => 'Współautorzy';
+  String get capsulesCreationCoAuthors => 'Razem z';
 
   @override
   String capsulesCreationCoAuthorsCount(int count) {
@@ -651,19 +654,19 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationOpenAt => 'Otworzy się';
+  String get capsulesCreationOpenAt => 'Jak się otworzy';
 
   @override
-  String get capsulesCreationPrivacy => 'Widoczność';
+  String get capsulesCreationOptions => 'Opcje';
+
+  @override
+  String get capsulesCreationPrivacy => 'Kto ją zobaczy';
 
   @override
   String get capsulesCreationRetake => 'Zrób ponownie';
 
   @override
-  String get capsulesCreationSelectDate => 'Wybierz datę';
-
-  @override
-  String get capsulesCreationSettings => 'Ustawienia kapsuły';
+  String get capsulesCreationSettings => 'Ustawienia';
 
   @override
   String get capsulesCreationShowAuthor => 'Pokazuj moje imię';
@@ -678,7 +681,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesCreationSubmit => 'Utwórz kapsułę';
 
   @override
-  String get capsulesCreationTitle => 'Utwórz kapsułę';
+  String get capsulesCreationTitle => 'Nowa kapsuła';
 
   @override
   String get capsulesCreationTitleHint => 'Dodaj tytuł...';
@@ -737,6 +740,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesLinkNotShared => 'Ta kapsuła nie jest ci udostępniona';
 
   @override
+  String capsulesLoopBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Pętla · $count klatki',
+      many: 'Pętla · $count klatek',
+      few: 'Pętla · $count klatki',
+      one: 'Pętla · $count klatka',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesLoopMark => 'Pętla';
 
   @override
@@ -775,15 +791,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesPinUse => 'Postaw tutaj';
-
-  @override
-  String get capsulesPrivacyFriends => 'Dla znajomych';
-
-  @override
-  String get capsulesPrivacyPrivate => 'Prywatna';
-
-  @override
-  String get capsulesPrivacyPublic => 'Publiczna';
 
   @override
   String get capsulesQueued =>
@@ -880,6 +887,15 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Wolno';
+
+  @override
+  String get capsulesWhoEveryone => 'Wszyscy';
+
+  @override
+  String get capsulesWhoFriends => 'Znajomi';
+
+  @override
+  String get capsulesWhoOnlyMe => 'Tylko ja';
 
   @override
   String capsulesWith(String names) {

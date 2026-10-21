@@ -10,11 +10,11 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/social.dart';
-import '../../../core/theme/app_dimens.dart';
+import '../../../shared/motion/app_motion_widgets.dart';
+import '../../../shared/widgets/anchored_menu.dart';
 import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/capsule/capsule_author_row.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
-import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../../notifications/notification_texts.dart';
@@ -22,10 +22,11 @@ import '../../users/user_directory.dart';
 import 'capsule_social_controller.dart';
 import 'capsule_social_panel.dart';
 
-/// The comments of a capsule (capsule v3): one level of replies on a thread
-/// line, newest at the bottom, the author's comments marked, a composer under
-/// the list. Long press a comment for a small menu beside it: reply, copy,
-/// and delete (author or capsule owner) or report.
+/// The comments of a capsule (capsule v3, Figma "v3b Capsule / Comments"):
+/// one level of replies on a thread line, newest at the bottom, the author's
+/// comments marked, a composer under the list. Long press a comment for a
+/// small menu by it: reply, copy, and delete (author or capsule owner) or
+/// report.
 class CapsuleCommentsSheet extends StatefulWidget {
   const CapsuleCommentsSheet({super.key, required this.controller});
 
@@ -91,54 +92,31 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
     _focus.requestFocus();
   }
 
-  /// The small menu beside a long-pressed comment ([row] is its context):
-  /// reply, copy, then delete (yours, or any on your capsule) or report.
+  /// The small menu by a long-pressed comment ([row] is its context; Figma
+  /// "Comment menu"): reply, copy, then delete (yours, or any on your
+  /// capsule) or report.
   Future<void> _options(CapsuleComment comment, BuildContext row) async {
     final l10n = context.l10n;
-    final palette = context.palette;
     final canDelete = _c.canDelete(comment);
-    final box = row.findRenderObject()! as RenderBox;
-    final overlay =
-        Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
-    final origin = box.localToGlobal(Offset.zero, ancestor: overlay);
-    // Under the comment, lined up with its text (a narrow anchor: the menu
-    // lines up with its left edge).
-    final anchor = Rect.fromLTWH(
-      origin.dx + 56,
-      origin.dy + box.size.height - 8,
-      1,
-      8,
-    );
     setState(() => _pressedId = comment.id);
-    TextStyle item(Color color) =>
-        AppTextStyles.body.copyWith(fontSize: 16, color: color);
-    final choice = await showMenu<String>(
-      context: context,
-      position: RelativeRect.fromRect(anchor, Offset.zero & overlay.size),
-      color: palette.surface,
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    final choice = await showAnchoredMenu<String>(
+      row,
+      width: 200,
+      offset: const Offset(120, 40),
       items: [
-        PopupMenuItem(
-          value: 'reply',
-          child: Text(l10n.capsulesReply, style: item(palette.textPrimary)),
-        ),
-        PopupMenuItem(
-          value: 'copy',
-          child: Text(l10n.capsulesCopyText, style: item(palette.textPrimary)),
-        ),
+        AnchoredMenuItem(value: 'reply', label: l10n.capsulesReply),
+        AnchoredMenuItem(value: 'copy', label: l10n.capsulesCopyText),
         if (canDelete)
-          PopupMenuItem(
+          AnchoredMenuItem(
             value: 'delete',
-            child: Text(
-              l10n.capsulesCommentDelete,
-              style: item(AppColors.danger),
-            ),
+            label: l10n.capsulesCommentDelete,
+            danger: true,
           )
         else
-          PopupMenuItem(
+          AnchoredMenuItem(
             value: 'report',
-            child: Text(l10n.capsulesReport, style: item(AppColors.danger)),
+            label: l10n.capsulesReport,
+            danger: true,
           ),
       ],
     );
@@ -185,16 +163,23 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
     final replyName = _replyTo == null
         ? null
         : (directory.profile(_replyTo!.authorId)?.name ?? '');
-    final owner = CapsuleAuthorRow.ownerNameOf(context, _c.capsule);
+    final owner = CapsuleAuthorRow.ownerFirstNameOf(context, _c.capsule);
+    final title = TextStyle(
+      fontFamily: kAppFontFamily,
+      fontSize: 18,
+      height: 1.2,
+      fontWeight: FontWeight.bold,
+      color: palette.textPrimary,
+    );
 
     return Padding(
       // The composer rides on top of the keyboard.
       padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
       child: Container(
-        // Three quarters of the screen, less when the keyboard needs room
-        // (it never reaches under the status bar).
+        // 650 of 800 dp in the design, less when the keyboard needs room (it
+        // never reaches under the status bar).
         height: math.min(
-          media.size.height * 0.75,
+          media.size.height * 650 / 800,
           media.size.height -
               media.viewInsets.bottom -
               media.viewPadding.top -
@@ -202,37 +187,25 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
         ),
         decoration: BoxDecoration(
           color: palette.surface,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppSheets.radius),
-          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
           children: [
-            const SheetHandle(),
+            const SheetHandle.v2(),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
               child: Row(
                 children: [
-                  Text(
-                    l10n.capsulesComments,
-                    style: TextStyle(
-                      fontFamily: kAppFontFamily,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: palette.textPrimary,
-                    ),
-                  ),
+                  Text(l10n.capsulesComments, style: title),
                   ListenableBuilder(
                     listenable: _c,
                     builder: (context, _) => _c.commentCount == 0
                         ? const SizedBox.shrink()
-                        : Text(
-                            '  ${_c.commentCount}',
-                            style: TextStyle(
-                              fontFamily: kAppFontFamily,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: palette.textMuted,
+                        : Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Text(
+                              '${_c.commentCount}',
+                              style: title.copyWith(color: palette.textMuted),
                             ),
                           ),
                   ),
@@ -248,18 +221,16 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
                   }
                   final thread = _c.thread;
                   if (thread.isEmpty) {
-                    return DefaultEmptyInboxInfo(
-                      message: l10n.capsulesCommentsEmpty,
-                      subtitle: owner == null
+                    return _Empty(
+                      hint: owner == null
                           ? l10n.capsulesCommentsEmptyHint
                           : l10n.capsulesCommentsEmptyHintFor(owner),
-                      assetPath: AppIcons.messagesNew,
                     );
                   }
                   // The first row offers older comments when there are.
                   final more = _c.canLoadMoreComments ? 1 : 0;
                   return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+                    padding: const EdgeInsets.only(bottom: 12),
                     itemCount: thread.length + more,
                     itemBuilder: (context, index) {
                       if (index < more) {
@@ -299,71 +270,166 @@ class _CapsuleCommentsSheetState extends State<CapsuleCommentsSheet> {
                 },
               ),
             ),
-            DecoratedBox(
+            Container(
+              padding: EdgeInsets.fromLTRB(
+                12,
+                10,
+                12,
+                10 + (media.viewInsets.bottom > 0 ? 0 : media.padding.bottom),
+              ),
               decoration: BoxDecoration(
+                color: palette.surface,
                 border: Border(top: BorderSide(color: palette.divider)),
               ),
-              child: const SizedBox(width: double.infinity),
-            ),
-            if (replyName != null)
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-                  child: _ReplyingChip(
-                    name: replyName,
-                    onClose: () => setState(() => _replyTo = null),
-                  ),
-                ),
-              ),
-            SafeArea(
-              top: false,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(12, 8, 8, 8),
-                color: palette.surface,
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _text,
-                        focusNode: _focus,
-                        minLines: 1,
-                        maxLines: 4,
-                        maxLength: CapsuleComment.maxLength,
-                        textCapitalization: TextCapitalization.sentences,
-                        style: TextStyle(
-                          fontFamily: kAppFontFamily,
-                          color: palette.textPrimary,
-                        ),
-                        decoration: InputDecoration(
-                          counterText: '',
-                          isDense: true,
-                          prefixIcon: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: UserRoundAvatar(userId: _c.uid, radius: 14),
-                          ),
-                          prefixIconConstraints: const BoxConstraints(
-                            minWidth: 40,
-                            minHeight: 40,
-                          ),
-                          hintText: l10n.capsulesCommentHint,
-                          filled: true,
-                          fillColor: palette.surfaceMuted,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        onSubmitted: (_) => _send(),
-                      ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (replyName != null) ...[
+                    _ReplyingChip(
+                      name: replyName,
+                      onClose: () => setState(() => _replyTo = null),
                     ),
-                    IconButton(
-                      tooltip: l10n.messagesSend,
-                      onPressed: _sending ? null : _send,
-                      icon: Image.asset(AppIcons.messagesSend, width: 30),
-                    ),
+                    const SizedBox(height: 8),
                   ],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(child: _field(context)),
+                      const SizedBox(width: 8),
+                      SendCircle(
+                        tooltip: l10n.messagesSend,
+                        onTap: _sending ? null : _send,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// The grey field with the user's picture inside.
+  Widget _field(BuildContext context) {
+    final palette = context.palette;
+    return Container(
+      constraints: const BoxConstraints(minHeight: 44),
+      padding: const EdgeInsets.fromLTRB(6, 0, 14, 0),
+      decoration: BoxDecoration(
+        color: palette.pill,
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          UserRoundAvatar(userId: _c.uid, radius: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextField(
+              controller: _text,
+              focusNode: _focus,
+              minLines: 1,
+              maxLines: 4,
+              maxLength: CapsuleComment.maxLength,
+              textCapitalization: TextCapitalization.sentences,
+              style: TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 16,
+                height: 1.25,
+                color: palette.textPrimary,
+              ),
+              decoration: InputDecoration(
+                counterText: '',
+                isDense: true,
+                hintText: context.l10n.capsulesCommentHint,
+                hintStyle: TextStyle(
+                  fontFamily: kAppFontFamily,
+                  fontSize: 16,
+                  height: 1.25,
+                  color: palette.textMuted,
                 ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                border: InputBorder.none,
+              ),
+              onSubmitted: (_) => _send(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The 44 dp green send button with the white arrow (Figma "Send").
+class SendCircle extends StatelessWidget {
+  const SendCircle({super.key, required this.tooltip, required this.onTap});
+
+  final String tooltip;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: tooltip,
+    child: AppPressable(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            color: AppColors.brandGreen,
+            shape: BoxShape.circle,
+          ),
+          // The camera's white back arrow, turned to point ahead.
+          child: RotatedBox(
+            quarterTurns: 2,
+            child: Image.asset(AppIcons.cameraBack, width: 22),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// No comments yet: the "write" drawing, the words, who will read them.
+class _Empty extends StatelessWidget {
+  const _Empty({required this.hint});
+
+  final String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = context.l10n;
+    return Align(
+      alignment: const Alignment(0, -0.2),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(AppIcons.profileWriteNewMessage, width: 64),
+            const SizedBox(height: 6),
+            Text(
+              l10n.capsulesCommentsEmpty,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.sectionTitle.copyWith(
+                color: palette.textPrimary,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              hint,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: kAppFontFamily,
+                fontSize: 13,
+                height: 1.25,
+                color: palette.textSecondary,
               ),
             ),
           ],
@@ -384,33 +450,50 @@ class _ReplyingChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     final l10n = context.l10n;
-    return Container(
-      padding: const EdgeInsets.only(left: 12),
-      decoration: BoxDecoration(
-        color: palette.surfaceMuted,
-        borderRadius: AppRadii.lCircular,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              l10n.capsulesReplyingTo(name),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.body.copyWith(
-                fontSize: 13,
-                color: palette.textSecondary,
-              ),
+    return Semantics(
+      button: true,
+      label: '${l10n.capsulesReplyingTo(name)}, ${l10n.commonCancel}',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onClose,
+        child: ExcludeSemantics(
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(10, 4, 8, 4),
+            decoration: BoxDecoration(
+              color: palette.pill,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    l10n.capsulesReplyingTo(name),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 13,
+                      height: 1.25,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '×',
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 14,
+                    height: 1.3,
+                    fontWeight: FontWeight.bold,
+                    color: palette.textSecondary,
+                  ),
+                ),
+              ],
             ),
           ),
-          IconButton(
-            tooltip: l10n.commonCancel,
-            visualDensity: VisualDensity.compact,
-            onPressed: onClose,
-            icon: Image.asset(AppIcons.capsuleClose, width: 14),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -450,113 +533,108 @@ class _CommentRow extends StatelessWidget {
           );
     final at = comment.createdAt;
     final reply = comment.replyTo != null;
-    final content = Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        UserRoundAvatar(userId: comment.authorId, radius: reply ? 13 : 16),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 6,
-                children: [
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontFamily: kAppFontFamily,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: palette.textPrimary,
-                    ),
-                  ),
-                  if (isAuthor)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 1,
-                      ),
-                      decoration: BoxDecoration(
-                        color: palette.accentSoft,
-                        borderRadius: AppRadii.lCircular,
-                      ),
-                      child: Text(
-                        l10n.capsulesAuthorChip,
-                        style: TextStyle(
-                          fontFamily: kAppFontFamily,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: palette.accentText,
+    TextStyle small(Color color, {bool bold = false, double size = 13}) =>
+        TextStyle(
+          fontFamily: kAppFontFamily,
+          fontSize: size,
+          height: 1.25,
+          fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+          color: color,
+        );
+    final row = Padding(
+      padding: EdgeInsets.fromLTRB(reply ? 58 : 16, 8, 16, 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UserRoundAvatar(userId: comment.authorId, radius: reply ? 13 : 16),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  children: [
+                    Text(name, style: small(palette.textPrimary, bold: true)),
+                    if (isAuthor)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.accentSoft,
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Text(
+                          l10n.capsulesAuthorChip,
+                          style: small(
+                            palette.accentText,
+                            bold: true,
+                            size: 12,
+                          ).copyWith(height: 1),
                         ),
                       ),
-                    ),
-                  if (at != null)
-                    Text(
-                      NotificationTexts.time(at, DateTime.now(), l10n: l10n),
-                      style: TextStyle(
-                        fontFamily: kAppFontFamily,
-                        fontSize: 12,
-                        color: palette.textMuted,
+                    if (at != null)
+                      Text(
+                        NotificationTexts.time(at, DateTime.now(), l10n: l10n),
+                        style: small(palette.textMuted, size: 12),
                       ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 2),
-              Text(
-                comment.text,
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  fontSize: 15,
-                  color: palette.textPrimary,
+                  ],
                 ),
-              ),
-              if (onReply != null && !isMine)
-                GestureDetector(
-                  onTap: onReply,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      l10n.capsulesReply,
-                      style: TextStyle(
-                        fontFamily: kAppFontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: palette.accentText,
+                const SizedBox(height: 2),
+                Text(
+                  comment.text,
+                  style: TextStyle(
+                    fontFamily: kAppFontFamily,
+                    fontSize: 14,
+                    height: 1.3,
+                    color: palette.textPrimary,
+                  ),
+                ),
+                if (onReply != null && !isMine)
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onReply,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        l10n.capsulesReply,
+                        style: small(palette.accentText, bold: true),
                       ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
     return Material(
       color: pressed ? palette.accentSoft : Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
         onLongPress: onLongPress,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(4, 6, 4, 6),
-          // A reply hangs on a thread line under its comment's picture.
-          child: reply
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 22),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        left: BorderSide(color: palette.divider, width: 2),
+        // A reply hangs on a thread line under its comment's picture.
+        child: reply
+            ? Stack(
+                children: [
+                  Positioned(
+                    left: 31,
+                    top: 0,
+                    bottom: 8,
+                    child: Container(
+                      width: 2,
+                      decoration: BoxDecoration(
+                        color: palette.divider,
+                        borderRadius: BorderRadius.circular(1),
                       ),
                     ),
-                    child: content,
                   ),
-                )
-              : content,
-        ),
+                  row,
+                ],
+              )
+            : row,
       ),
     );
   }

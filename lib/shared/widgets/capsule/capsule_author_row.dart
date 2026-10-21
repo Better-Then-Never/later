@@ -11,14 +11,18 @@ import '../../../features/friends/friends_store.dart';
 import '../../../features/users/user_directory.dart';
 import '../user/user_round_avatar.dart';
 
-/// Who left a capsule (and with whom), under its title: a small picture and
-/// the names; a tap opens the profile of the one pictured. Others see it
-/// unless the author chose not to be shown (`showAuthor`); the owner and the
-/// co-authors always see who made it with them.
+/// Who left a capsule (and with whom), under its title (Figma "Author"): a
+/// 24 dp picture, the name in bold and "with …" after it; a tap opens the
+/// profile of the one pictured. Others see it unless the author chose not to
+/// be shown (`showAuthor`); the owner and the co-authors always see who
+/// made it with them.
 class CapsuleAuthorRow extends StatelessWidget {
-  const CapsuleAuthorRow({super.key, required this.capsule});
+  const CapsuleAuthorRow({super.key, required this.capsule, this.top = 0});
 
   final Capsule capsule;
+
+  /// Space above it, only when it shows.
+  final double top;
 
   /// Whether [capsule] shows its author to [viewer].
   static bool shows(Capsule capsule, String? viewer) =>
@@ -103,40 +107,57 @@ class CapsuleAuthorRow extends StatelessWidget {
       label = text;
     }
     if (text.isEmpty || (showOwner && name.isEmpty)) {
-      return const SizedBox(height: 24);
+      return SizedBox(height: 24 + top);
     }
     final pictured = showOwner ? owner : others.first;
-    return Semantics(
-      button: true,
-      label: label,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          final isFriend = context.read<FriendsStore>().friendIds.contains(
-            pictured,
+    final palette = context.palette;
+    // The name in bold, the rest ("with Carol") regular and grey.
+    final at = showOwner ? text.indexOf(name) : -1;
+    final regular = TextStyle(
+      fontFamily: kAppFontFamily,
+      fontSize: 14,
+      height: 1.3,
+      color: palette.textSecondary,
+    );
+    final bold = regular.copyWith(
+      fontWeight: FontWeight.bold,
+      color: palette.textPrimary,
+    );
+    final words = at < 0
+        ? TextSpan(text: text, style: regular)
+        : TextSpan(
+            children: [
+              TextSpan(text: text.substring(0, at), style: regular),
+              TextSpan(text: name, style: bold),
+              TextSpan(text: text.substring(at + name.length), style: regular),
+            ],
           );
-          isFriend
-              ? AppRoutes.toFriendProfile(context, pictured)
-              : AppRoutes.toAddFriendProfile(context, pictured);
-        },
-        child: ExcludeSemantics(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 32),
+    return Padding(
+      padding: EdgeInsets.only(top: top),
+      child: Semantics(
+        button: true,
+        label: label,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            final isFriend = context.read<FriendsStore>().friendIds.contains(
+              pictured,
+            );
+            isFriend
+                ? AppRoutes.toFriendProfile(context, pictured)
+                : AppRoutes.toAddFriendProfile(context, pictured);
+          },
+          child: ExcludeSemantics(
             child: Row(
               children: [
-                UserRoundAvatar(userId: pictured, radius: 11),
-                const SizedBox(width: 6),
+                UserRoundAvatar(userId: pictured, radius: 12),
+                const SizedBox(width: 8),
                 Flexible(
-                  child: Text(
-                    text,
+                  child: Text.rich(
+                    words,
                     // Names of friends who made it too get a second line.
                     maxLines: withNames.isEmpty ? 1 : 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.body.copyWith(
-                      color: context.palette.textSecondary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
                   ),
                 ),
               ],

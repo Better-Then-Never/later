@@ -609,6 +609,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCreationAllowReactions => 'Разрешить реакции';
 
   @override
+  String get capsulesCreationAnytime => 'В любое время';
+
+  @override
   String get capsulesCreationApproximate => 'Примерное место';
 
   @override
@@ -616,7 +619,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Примерно в километре, а не точно';
 
   @override
-  String get capsulesCreationCoAuthors => 'Соавторы';
+  String get capsulesCreationCoAuthors => 'Вместе с';
 
   @override
   String capsulesCreationCoAuthorsCount(int count) {
@@ -650,19 +653,19 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationOpenAt => 'Откроется';
+  String get capsulesCreationOpenAt => 'Как откроется';
 
   @override
-  String get capsulesCreationPrivacy => 'Видимость';
+  String get capsulesCreationOptions => 'Параметры';
+
+  @override
+  String get capsulesCreationPrivacy => 'Кто увидит';
 
   @override
   String get capsulesCreationRetake => 'Переснять';
 
   @override
-  String get capsulesCreationSelectDate => 'Выберите дату';
-
-  @override
-  String get capsulesCreationSettings => 'Настройки капсулы';
+  String get capsulesCreationSettings => 'Настройки';
 
   @override
   String get capsulesCreationShowAuthor => 'Показывать моё имя';
@@ -677,7 +680,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesCreationSubmit => 'Создать капсулу';
 
   @override
-  String get capsulesCreationTitle => 'Создать капсулу';
+  String get capsulesCreationTitle => 'Новая капсула';
 
   @override
   String get capsulesCreationTitleHint => 'Название...';
@@ -735,6 +738,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get capsulesLinkNotShared => 'Эта капсула вам не открыта';
 
   @override
+  String capsulesLoopBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Луп · $count кадра',
+      many: 'Луп · $count кадров',
+      few: 'Луп · $count кадра',
+      one: 'Луп · $count кадр',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesLoopMark => 'Луп';
 
   @override
@@ -773,15 +789,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesPinUse => 'Поставить здесь';
-
-  @override
-  String get capsulesPrivacyFriends => 'Для друзей';
-
-  @override
-  String get capsulesPrivacyPrivate => 'Личная';
-
-  @override
-  String get capsulesPrivacyPublic => 'Публичная';
 
   @override
   String get capsulesQueued =>
@@ -878,6 +885,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Медленно';
+
+  @override
+  String get capsulesWhoEveryone => 'Все';
+
+  @override
+  String get capsulesWhoFriends => 'Друзья';
+
+  @override
+  String get capsulesWhoOnlyMe => 'Только я';
 
   @override
   String capsulesWith(String names) {

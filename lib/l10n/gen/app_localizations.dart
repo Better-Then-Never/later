@@ -992,6 +992,12 @@ abstract class AppLocalizations {
   /// **'Allow reactions'**
   String get capsulesCreationAllowReactions;
 
+  /// Create page, "How it opens" row: no opening date.
+  ///
+  /// In en, this message translates to:
+  /// **'Anytime'**
+  String get capsulesCreationAnytime;
+
   /// No description provided for @capsulesCreationApproximate.
   ///
   /// In en, this message translates to:
@@ -1007,7 +1013,7 @@ abstract class AppLocalizations {
   /// Capsule creation row: friends who made the capsule with the user.
   ///
   /// In en, this message translates to:
-  /// **'Co-authors'**
+  /// **'Made with'**
   String get capsulesCreationCoAuthors;
 
   /// Value of the co-authors row: how many friends are picked.
@@ -1019,13 +1025,13 @@ abstract class AppLocalizations {
   /// Value of the co-authors row when nobody is picked.
   ///
   /// In en, this message translates to:
-  /// **'Just me'**
+  /// **'Only me'**
   String get capsulesCreationCoAuthorsNone;
 
   /// Row title: the colour of the capsule's map pin (tapping cycles the colours).
   ///
   /// In en, this message translates to:
-  /// **'Color'**
+  /// **'Colour'**
   String get capsulesCreationColor;
 
   /// Hint in the capsule description field.
@@ -1049,13 +1055,19 @@ abstract class AppLocalizations {
   /// Row title: the day the capsule opens. The chosen date is shown next to it.
   ///
   /// In en, this message translates to:
-  /// **'Open At'**
+  /// **'How it opens'**
   String get capsulesCreationOpenAt;
+
+  /// Create page: the group label above the switches (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get capsulesCreationOptions;
 
   /// Row title: who can see the capsule (tapping cycles Public / Friends / Private).
   ///
   /// In en, this message translates to:
-  /// **'Privacy'**
+  /// **'Who sees it'**
   String get capsulesCreationPrivacy;
 
   /// Chip on the photo of a new capsule: back to the camera.
@@ -1064,16 +1076,10 @@ abstract class AppLocalizations {
   /// **'Retake'**
   String get capsulesCreationRetake;
 
-  /// Shown in the open date row until a date is picked. Keep it short.
-  ///
-  /// In en, this message translates to:
-  /// **'Select date'**
-  String get capsulesCreationSelectDate;
-
   /// Section title above the privacy, open date and colour rows.
   ///
   /// In en, this message translates to:
-  /// **'Capsule Settings'**
+  /// **'Settings'**
   String get capsulesCreationSettings;
 
   /// Creation setting: show the author on the capsule.
@@ -1097,13 +1103,13 @@ abstract class AppLocalizations {
   /// Button at the bottom of the creation screen that saves the new capsule. Keep it short.
   ///
   /// In en, this message translates to:
-  /// **'Create Capsule'**
+  /// **'Create capsule'**
   String get capsulesCreationSubmit;
 
   /// Header title of the screen where a new capsule is set up after taking the photo.
   ///
   /// In en, this message translates to:
-  /// **'Create Capsule'**
+  /// **'New capsule'**
   String get capsulesCreationTitle;
 
   /// Hint in the capsule title field (one line, large bold font, narrow: keep it very short).
@@ -1202,6 +1208,12 @@ abstract class AppLocalizations {
   /// **'This capsule is not shared with you'**
   String get capsulesLinkNotShared;
 
+  /// On the photo of an opened loop capsule: it is a loop of this many frames.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Loop · 1 frame} other{Loop · {count} frames}}'**
+  String capsulesLoopBadge(int count);
+
   /// Screen reader label of the mark on a loop capsule's picture.
   ///
   /// In en, this message translates to:
@@ -1279,24 +1291,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Put it here'**
   String get capsulesPinUse;
-
-  /// Capsule visibility: only the owner's friends can see it.
-  ///
-  /// In en, this message translates to:
-  /// **'Friends'**
-  String get capsulesPrivacyFriends;
-
-  /// Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'.
-  ///
-  /// In en, this message translates to:
-  /// **'Private'**
-  String get capsulesPrivacyPrivate;
-
-  /// Capsule visibility: everyone can see it. Agrees with 'capsule'.
-  ///
-  /// In en, this message translates to:
-  /// **'Public'**
-  String get capsulesPrivacyPublic;
 
   /// No description provided for @capsulesQueued.
   ///
@@ -1459,6 +1453,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Slow'**
   String get capsulesSpeedSlow;
+
+  /// Create page, "Who sees it" row: a public capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get capsulesWhoEveryone;
+
+  /// Create page, "Who sees it" row: a friends-only capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get capsulesWhoFriends;
+
+  /// Create page, "Who sees it" row: a private capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Only me'**
+  String get capsulesWhoOnlyMe;
 
   /// Line on the user's own capsule (or one they co-authored) naming the others who made it.
   ///

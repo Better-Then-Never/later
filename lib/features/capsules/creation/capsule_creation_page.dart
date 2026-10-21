@@ -7,7 +7,6 @@ import '../../../app/entitlements_store.dart';
 import '../../../app/router/app_routes.dart';
 import '../../../app/session/session_controller.dart';
 import '../../../core/assets/app_assets.dart';
-import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
@@ -20,14 +19,10 @@ import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/capsule/capsule_place_chip.dart';
-import '../../../shared/styles/box_decorations.dart';
-import '../../../shared/widgets/buttons/default_icon_button.dart';
-import '../../../shared/widgets/default_text.dart';
 import '../../../shared/widgets/page_header.dart';
 import '../../../shared/widgets/loop_picture.dart';
 import '../../../shared/widgets/photo_viewer.dart';
 import '../../../shared/widgets/options/options_section.dart';
-import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../map/current_location.dart';
 import '../../messages/widgets/group_friends_picker.dart';
@@ -35,9 +30,9 @@ import '../../settings/device_settings_store.dart';
 import '../../settings/settings_store.dart';
 import '../outbox/capsule_outbox.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
+import '../social/capsule_sheet.dart';
 import 'capsule_creation_controller.dart';
 import 'creation_draft.dart';
-import 'widgets/capsule_creation_cycled_info.dart';
 import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/loop_frame_strip.dart';
@@ -127,7 +122,7 @@ class _CapsuleCreationView extends StatelessWidget {
       title: l10n.capsulesCreationPrivacy,
       selected: controller.privacy,
       choices: [
-        for (final p in CapsulePrivacy.values) MenuChoice(p, p.localized(l10n)),
+        for (final p in CapsulePrivacy.values) MenuChoice(p, p.who(l10n)),
       ],
     );
     if (chosen != null) controller.privacy = chosen;
@@ -276,9 +271,14 @@ class _CapsuleCreationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<CapsuleCreationController>();
-    final screen = MediaQuery.sizeOf(context);
     final l10n = context.l10n;
     final openAt = controller.openAt;
+    void retake() => AppRoutes.toCamera(
+      context,
+      replace: true,
+      privacy: initialPrivacy,
+      recipientId: recipientId,
+    );
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -291,234 +291,182 @@ class _CapsuleCreationView extends StatelessWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            PageHeader(
-              mainText: l10n.capsulesCreationTitle,
-              leadingButton: DefaultIconButton(
-                onTap: () => AppRoutes.toCamera(
-                  context,
-                  replace: true,
-                  privacy: initialPrivacy,
-                  recipientId: recipientId,
-                ),
-                assetPath: AppIcons.goBack,
-                semanticLabel: context.l10n.commonBack,
-              ),
-              trailingButton: DefaultIconButton(
-                onTap: () => Navigator.pop(context),
-                assetPath: AppIcons.capsuleClose,
-                semanticLabel: MaterialLocalizations.of(
-                  context,
-                ).closeButtonTooltip,
-              ),
+            PageHeaderV2(
+              title: l10n.capsulesCreationTitle,
+              backLabel: l10n.commonBack,
+              onBack: () => Navigator.pop(context),
             ),
             Expanded(
               child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 child: AppStaggerScope(
-                  child: SafeArea(
-                    top: false,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // The capsule as it will look (capsule v3): the
-                          // photo as a square, the title and its place, the
-                          // words, when it is left and opens.
-                          Container(
-                            width: screen.width,
-                            decoration: BoxDecorations.whiteCard(context),
-                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _PreviewPhoto(
-                                  controller: controller,
-                                  onRetake: () => AppRoutes.toCamera(
-                                    context,
-                                    replace: true,
-                                    privacy: initialPrivacy,
-                                    recipientId: recipientId,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 4,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: CapsuleCreationTitleInput(
-                                              controller:
-                                                  controller.titleController,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          // A tap moves the pin (B4).
-                                          CapsulePlaceChip.at(
-                                            position: controller.position,
-                                            label: l10n.capsulesPinTitle,
-                                            onTap: () => _choosePlace(context),
-                                          ),
-                                        ],
-                                      ),
-                                      CapsuleCreationDescriptionInputField(
-                                        controller:
-                                            controller.descriptionController,
-                                      ),
-                                      _PreviewDates(openAt: openAt),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // The capsule as it will look (Figma "Preview v3"):
+                      // the photo as a square, the title and its place, the
+                      // words, when it is left and opens.
+                      _CardV2(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _PreviewPhoto(
+                              controller: controller,
+                              onRetake: retake,
                             ),
-                          ),
-                          // A loop: its frames, to reorder or thin out.
-                          if (controller.isLoop) ...[
-                            const SizedBox(height: 10),
-                            LoopFrameStrip(controller: controller),
-                          ],
-                          const SizedBox(height: 8),
-                          AppStaggerItem(
-                            index: 0,
-                            child: DefaultText(
-                              l10n.capsulesCreationSettings,
-                              fontSize: screen.width * 0.05,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          AppStaggerItem(
-                            index: 1,
-                            child: Container(
-                              width: screen.width,
-                              decoration: BoxDecorations.whiteCard(context),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  OptionsSettingsRow(
-                                    minVerticalPadding: 10,
-                                    title: l10n.capsulesCreationPrivacy,
-                                    leadingIconPath: AppIcons.capsulePrivacy,
-                                    trailing: CapsuleCreationCycledInfo(
-                                      infoText: controller.privacy.localized(
-                                        l10n,
-                                      ),
-                                    ),
-                                    onTap: () => _choosePrivacy(context),
-                                  ),
-                                  OptionsSettingsRow(
-                                    minVerticalPadding: 10,
-                                    title: l10n.capsulesCreationOpenAt,
-                                    trailing: CapsuleCreationCycledInfo(
-                                      infoText: openAt != null
-                                          ? AppDates.short(
-                                              openAt,
-                                              l10n.localeName,
-                                            )
-                                          : l10n.capsulesCreationSelectDate,
-                                    ),
-                                    leadingIconPath: AppIcons.capsuleTimer,
-                                    onTap: () => _chooseOpenDate(context),
-                                  ),
-                                  if (controller.isLoop)
-                                    OptionsSettingsRow(
-                                      minVerticalPadding: 10,
-                                      title: l10n.capsulesCreationSpeed,
-                                      trailing: CapsuleCreationCycledInfo(
-                                        infoText: _speedLabel(
-                                          l10n,
-                                          controller.frameDelayMs,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: CapsuleCreationTitleInput(
+                                          controller:
+                                              controller.titleController,
                                         ),
                                       ),
-                                      leadingIconPath: AppIcons.capsuleTimer,
-                                      onTap: () => _chooseSpeed(context),
-                                    ),
-                                  OptionsSettingsRow(
-                                    minVerticalPadding: 10,
-                                    title: l10n.capsulesCreationCoAuthors,
-                                    trailing: CapsuleCreationCycledInfo(
-                                      infoText: controller.coAuthors.isEmpty
-                                          ? l10n.capsulesCreationCoAuthorsNone
-                                          : l10n.capsulesCreationCoAuthorsCount(
-                                              controller.coAuthors.length,
-                                            ),
-                                    ),
-                                    leadingIconPath: AppIcons.profileMyFriends,
-                                    tintLeadingIcon: true,
-                                    onTap: () => _chooseCoAuthors(context),
-                                  ),
-                                  OptionsSettingsRow(
-                                    minVerticalPadding: 10,
-                                    title: l10n.capsulesCreationColor,
-                                    trailing: CapsuleCreationCycledInfo(
-                                      infoText: controller.color.localized(
-                                        l10n,
+                                      const SizedBox(width: 8),
+                                      // A tap moves the pin (B4).
+                                      CapsulePlaceChip.at(
+                                        position: controller.position,
+                                        label: l10n.capsulesPinTitle,
+                                        onTap: () => _choosePlace(context),
                                       ),
-                                      trailingLeadingIconPath:
-                                          AppIcons.capsulePin(
-                                            controller.color.name,
-                                          ),
-                                    ),
-                                    leadingIconPath: AppIcons.capsulePinColor,
-                                    onTap: () => _chooseColor(context),
-                                    withDivider: false,
+                                    ],
                                   ),
+                                  const SizedBox(height: 8),
+                                  CapsuleCreationDescriptionInputField(
+                                    controller:
+                                        controller.descriptionController,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  _PreviewDates(openAt: openAt),
                                 ],
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          AppStaggerItem(
-                            index: 2,
-                            child: Container(
-                              width: screen.width,
-                              decoration: BoxDecorations.whiteCard(context),
-                              child: Column(
-                                children: [
-                                  if (FeatureFlags.comments)
-                                    OptionsSwitchRow(
-                                      title: l10n.capsulesCreationAllowComments,
-                                      value: controller.allowComments,
-                                      onChanged: (v) =>
-                                          controller.allowComments = v,
-                                    ),
-                                  if (FeatureFlags.reactions)
-                                    OptionsSwitchRow(
-                                      title:
-                                          l10n.capsulesCreationAllowReactions,
-                                      value: controller.allowReactions,
-                                      onChanged: (v) =>
-                                          controller.allowReactions = v,
-                                    ),
-                                  OptionsSwitchRow(
-                                    title: l10n.capsulesCreationShowAuthor,
-                                    subtitle:
-                                        l10n.capsulesCreationShowAuthorHint,
-                                    value: controller.showAuthor,
-                                    onChanged: (v) => controller.showAuthor = v,
-                                  ),
-                                  OptionsSwitchRow(
-                                    title: l10n.capsulesCreationApproximate,
-                                    subtitle:
-                                        l10n.capsulesCreationApproximateHint,
-                                    value:
-                                        controller.locationPrecision ==
-                                        LocationPrecision.approximate,
-                                    withDivider: false,
-                                    onChanged: (v) =>
-                                        controller.approximateLocation = v,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
+                      // A loop: its frames, to reorder or thin out.
+                      if (controller.isLoop) ...[
+                        const SizedBox(height: 10),
+                        LoopFrameStrip(controller: controller),
+                      ],
+                      const SizedBox(height: 8),
+                      AppStaggerItem(
+                        index: 0,
+                        child: _GroupLabel(l10n.capsulesCreationSettings),
+                      ),
+                      AppStaggerItem(
+                        index: 1,
+                        child: _CardV2(
+                          child: Column(
+                            children: [
+                              _RowV2(
+                                iconPath: AppIcons.capsuleTimer,
+                                title: l10n.capsulesCreationOpenAt,
+                                value: openAt != null
+                                    ? AppDates.short(openAt, l10n.localeName)
+                                    : l10n.capsulesCreationAnytime,
+                                onTap: () => _chooseOpenDate(context),
+                              ),
+                              const _RowDivider(inset: 58),
+                              _RowV2(
+                                iconPath: AppIcons.capsulePrivacy,
+                                title: l10n.capsulesCreationPrivacy,
+                                value: controller.privacy.who(l10n),
+                                onTap: () => _choosePrivacy(context),
+                              ),
+                              const _RowDivider(inset: 58),
+                              _RowV2(
+                                iconPath: AppIcons.profileMyFriends,
+                                tint: true,
+                                title: l10n.capsulesCreationCoAuthors,
+                                value: controller.coAuthors.isEmpty
+                                    ? l10n.capsulesCreationCoAuthorsNone
+                                    : l10n.capsulesCreationCoAuthorsCount(
+                                        controller.coAuthors.length,
+                                      ),
+                                onTap: () => _chooseCoAuthors(context),
+                              ),
+                              const _RowDivider(inset: 58),
+                              _RowV2(
+                                iconPath: AppIcons.capsulePinColor,
+                                title: l10n.capsulesCreationColor,
+                                value: controller.color.localized(l10n),
+                                onTap: () => _chooseColor(context),
+                              ),
+                              if (controller.isLoop) ...[
+                                const _RowDivider(inset: 58),
+                                _RowV2(
+                                  iconPath: AppIcons.capsuleTimer,
+                                  title: l10n.capsulesCreationSpeed,
+                                  value: _speedLabel(
+                                    l10n,
+                                    controller.frameDelayMs,
+                                  ),
+                                  onTap: () => _chooseSpeed(context),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      AppStaggerItem(
+                        index: 2,
+                        child: _GroupLabel(l10n.capsulesCreationOptions),
+                      ),
+                      AppStaggerItem(
+                        index: 3,
+                        child: _CardV2(
+                          child: Column(
+                            children: [
+                              if (FeatureFlags.comments) ...[
+                                _SwitchRowV2(
+                                  title: l10n.capsulesCreationAllowComments,
+                                  value: controller.allowComments,
+                                  onChanged: (v) =>
+                                      controller.allowComments = v,
+                                ),
+                                const _RowDivider(inset: 16),
+                              ],
+                              if (FeatureFlags.reactions) ...[
+                                _SwitchRowV2(
+                                  title: l10n.capsulesCreationAllowReactions,
+                                  value: controller.allowReactions,
+                                  onChanged: (v) =>
+                                      controller.allowReactions = v,
+                                ),
+                                const _RowDivider(inset: 16),
+                              ],
+                              _SwitchRowV2(
+                                title: l10n.capsulesCreationShowAuthor,
+                                subtitle: l10n.capsulesCreationShowAuthorHint,
+                                value: controller.showAuthor,
+                                onChanged: (v) => controller.showAuthor = v,
+                              ),
+                              const _RowDivider(inset: 16),
+                              _SwitchRowV2(
+                                title: l10n.capsulesCreationApproximate,
+                                subtitle: l10n.capsulesCreationApproximateHint,
+                                value:
+                                    controller.locationPrecision ==
+                                    LocationPrecision.approximate,
+                                onChanged: (v) =>
+                                    controller.approximateLocation = v,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -527,7 +475,7 @@ class _CapsuleCreationView extends StatelessWidget {
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
             child: CapsuleSubmitButton(
               label: l10n.capsulesCreationSubmit,
               saving: controller.isSaving,
@@ -539,6 +487,207 @@ class _CapsuleCreationView extends StatelessWidget {
       ),
     );
   }
+}
+
+/// A card of the v2 Create page: the surface, 20 dp corners, the card shadow.
+class _CardV2 extends StatelessWidget {
+  const _CardV2({required this.child, this.padding = EdgeInsets.zero});
+
+  final Widget child;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    width: double.infinity,
+    padding: padding,
+    clipBehavior: Clip.antiAlias,
+    decoration: BoxDecoration(
+      color: context.palette.surface,
+      borderRadius: BorderRadius.circular(AppRadii.m),
+      boxShadow: AppShadows.card(context),
+    ),
+    child: child,
+  );
+}
+
+/// "SETTINGS", "OPTIONS": a small grey label above a card.
+class _GroupLabel extends StatelessWidget {
+  const _GroupLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+    child: Text(
+      text.toUpperCase(),
+      style: TextStyle(
+        fontFamily: kAppFontFamily,
+        fontSize: 12,
+        height: 1.2,
+        letterSpacing: 0.96,
+        fontWeight: FontWeight.bold,
+        color: context.palette.textSecondary,
+      ),
+    ),
+  );
+}
+
+/// A settings row of the v2 design (Figma "Row v2", regular): a 28 dp icon,
+/// the title, the value in grey and an arrow.
+class _RowV2 extends StatelessWidget {
+  const _RowV2({
+    required this.iconPath,
+    required this.title,
+    required this.value,
+    required this.onTap,
+    this.tint = false,
+  });
+
+  final String iconPath;
+
+  /// The icon is drawn in colour: shown in the icons' ink instead.
+  final bool tint;
+  final String title;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    TextStyle row(Color color) => TextStyle(
+      fontFamily: kAppFontFamily,
+      fontSize: 16,
+      height: 1.25,
+      color: color,
+    );
+    return Semantics(
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 6, 12, 6),
+            child: Row(
+              children: [
+                Image.asset(
+                  iconPath,
+                  width: 28,
+                  height: 28,
+                  color: tint ? palette.icon : null,
+                ),
+                const SizedBox(width: 14),
+                Expanded(child: Text(title, style: row(palette.textPrimary))),
+                const SizedBox(width: 14),
+                // As wide as its words, up to 150 dp.
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 150),
+                  child: Text(
+                    value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: row(palette.textMuted),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Image.asset(AppIcons.goHere, width: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A switch row of the v2 design: the title (and a grey line under it) and
+/// the app's switch.
+class _SwitchRowV2 extends StatelessWidget {
+  const _SwitchRowV2({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+    this.subtitle,
+  });
+
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return MergeSemantics(
+      child: InkWell(
+        onTap: () => onChanged(!value),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontFamily: kAppFontFamily,
+                          fontSize: 16,
+                          height: 1.25,
+                          color: palette.textPrimary,
+                        ),
+                      ),
+                      if (subtitle != null)
+                        Text(
+                          subtitle!,
+                          style: TextStyle(
+                            fontFamily: kAppFontFamily,
+                            fontSize: 13,
+                            height: 1.25,
+                            color: palette.textSecondary,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // The switch at the design's size (Figma "Switch" 44 x 27).
+                SizedBox(
+                  width: 44.2,
+                  height: 27.2,
+                  child: FittedBox(
+                    child: AppSwitch(
+                      value: value,
+                      onChanged: onChanged,
+                      compact: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The 1 dp line between rows, starting at [inset].
+class _RowDivider extends StatelessWidget {
+  const _RowDivider({required this.inset});
+
+  final double inset;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.only(left: inset),
+    child: Divider(height: 1, thickness: 1, color: context.palette.divider),
+  );
 }
 
 /// The photo on the preview card, a square as the opened capsule shows it
@@ -565,7 +714,7 @@ class _PreviewPhoto extends StatelessWidget {
               heroTag: loop ? null : 'creation-photo',
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppRadii.m),
+              borderRadius: BorderRadius.circular(16),
               child: loop
                   ? LoopPicture(
                       sources: controller.framePaths,
@@ -595,25 +744,7 @@ class _PreviewPhoto extends StatelessWidget {
               child: AppPressable(
                 child: GestureDetector(
                   onTap: onRetake,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: const BoxDecoration(
-                      color: AppColors.mediaScrim,
-                      borderRadius: AppRadii.lCircular,
-                    ),
-                    child: Text(
-                      context.l10n.capsulesCreationRetake,
-                      style: const TextStyle(
-                        fontFamily: kAppFontFamily,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.onMedia,
-                      ),
-                    ),
-                  ),
+                  child: PhotoBadge(text: context.l10n.capsulesCreationRetake),
                 ),
               ),
             ),
@@ -661,10 +792,11 @@ enum _OpenChoice { tomorrow, week, month, year, pick, now }
 
 /// Privacy names in the app's language (the model's `label` is English).
 extension on CapsulePrivacy {
-  String localized(AppLocalizations l10n) => switch (this) {
-    CapsulePrivacy.public => l10n.capsulesPrivacyPublic,
-    CapsulePrivacy.friends => l10n.capsulesPrivacyFriends,
-    CapsulePrivacy.private => l10n.capsulesPrivacyPrivate,
+  /// Who sees it, in words ("Everyone", "Friends", "Only me").
+  String who(AppLocalizations l10n) => switch (this) {
+    CapsulePrivacy.public => l10n.capsulesWhoEveryone,
+    CapsulePrivacy.friends => l10n.capsulesWhoFriends,
+    CapsulePrivacy.private => l10n.capsulesWhoOnlyMe,
   };
 }
 
