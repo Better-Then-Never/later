@@ -15,7 +15,6 @@
   "@settingsSignedInWithGoogle": {
     "description": "Under the Password row for accounts that sign in with Google only."
   },
-  "settingsCustomizeProfile": "Customize profile",
   "settingsSectionNotificationsPrivacy": "NOTIFICATIONS AND PRIVACY",
   "settingsNotifications": "Notifications",
   "settingsNotificationsOn": "On",
@@ -313,7 +312,6 @@
   "settingsPermissionRequiredTitle": "Permission Required",
   "settingsPermissionRequiredBody": "This permission has been permanently denied. Please enable it in your device settings.",
   "settingsPermissionOpenSettings": "Open Settings",
-  "settingsCustomizeDescription": "Tap a picture to change it",
   "settingsStorageDescription": "Space Later uses on this phone",
   "settingsStorageFooter": "Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.",
   "settingsStorageCache": "Cache",

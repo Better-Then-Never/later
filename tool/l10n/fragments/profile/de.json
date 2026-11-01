@@ -95,5 +95,18 @@
   "stampColourHex": "Farbcode",
   "stampPreview": "Vorschau",
   "stampSaveFailed": "Deine Briefmarke konnte nicht gespeichert werden. Bitte versuche es erneut.",
-  "stampDone": "Fertig"
+  "stampDone": "Fertig",
+  "editProfileTitle": "Profil bearbeiten",
+  "editProfileHint": "Tippe auf das Titelbild oder die Briefmarke, um sie zu ändern.",
+  "editProfileAboutYou": "Über dich",
+  "editProfileYourPostcard": "Deine Postkarte",
+  "editProfileHomeTown": "Heimatort",
+  "editProfileHomeTownNote": "Steht auf deiner Postkarte und in deinem Reisepass.",
+  "editProfileAdd": "Hinzufügen",
+  "editProfileChange": "Ändern",
+  "editProfileCover": "Titelbild",
+  "editProfilePhoto": "Dein Foto",
+  "editProfileStamp": "Briefmarke",
+  "editProfileStampValue": "{shape} · {colour}",
+  "editProfileHomeTownFailed": "Dein Heimatort konnte nicht gespeichert werden. Bitte versuche es erneut."
 }

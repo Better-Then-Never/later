@@ -95,5 +95,18 @@
   "stampColourHex": "Código de color",
   "stampPreview": "Vista previa",
   "stampSaveFailed": "No se pudo guardar tu sello. Inténtalo de nuevo.",
-  "stampDone": "Listo"
+  "stampDone": "Listo",
+  "editProfileTitle": "Editar perfil",
+  "editProfileHint": "Toca la portada o el sello para cambiarlos.",
+  "editProfileAboutYou": "Sobre ti",
+  "editProfileYourPostcard": "Tu postal",
+  "editProfileHomeTown": "Ciudad",
+  "editProfileHomeTownNote": "Aparece en tu postal y en tu pasaporte.",
+  "editProfileAdd": "Añadir",
+  "editProfileChange": "Cambiar",
+  "editProfileCover": "Foto de portada",
+  "editProfilePhoto": "Tu foto",
+  "editProfileStamp": "Sello",
+  "editProfileStampValue": "{shape} · {colour}",
+  "editProfileHomeTownFailed": "No se pudo guardar tu ciudad. Inténtalo de nuevo."
 }

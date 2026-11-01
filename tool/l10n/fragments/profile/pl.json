@@ -95,5 +95,18 @@
   "stampColourHex": "Kod koloru",
   "stampPreview": "Podgląd",
   "stampSaveFailed": "Nie udało się zapisać znaczka. Spróbuj ponownie.",
-  "stampDone": "Gotowe"
+  "stampDone": "Gotowe",
+  "editProfileTitle": "Edytuj profil",
+  "editProfileHint": "Dotknij zdjęcia w tle lub znaczka, aby je zmienić.",
+  "editProfileAboutYou": "O Tobie",
+  "editProfileYourPostcard": "Twoja pocztówka",
+  "editProfileHomeTown": "Miasto",
+  "editProfileHomeTownNote": "Widoczne na pocztówce i w paszporcie.",
+  "editProfileAdd": "Dodaj",
+  "editProfileChange": "Zmień",
+  "editProfileCover": "Zdjęcie w tle",
+  "editProfilePhoto": "Twoje zdjęcie",
+  "editProfileStamp": "Znaczek",
+  "editProfileStampValue": "{shape} · {colour}",
+  "editProfileHomeTownFailed": "Nie udało się zapisać miasta. Spróbuj ponownie."
 }

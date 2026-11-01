@@ -1053,6 +1053,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonUsernameTaken => 'Username already taken';
 
   @override
+  String get editProfileAboutYou => 'About you';
+
+  @override
+  String get editProfileAdd => 'Add';
+
+  @override
+  String get editProfileChange => 'Change';
+
+  @override
+  String get editProfileCover => 'Cover photo';
+
+  @override
+  String get editProfileHint => 'Tap the cover or the stamp to change them.';
+
+  @override
+  String get editProfileHomeTown => 'Home town';
+
+  @override
+  String get editProfileHomeTownFailed =>
+      'Your home town could not be saved. Please try again.';
+
+  @override
+  String get editProfileHomeTownNote =>
+      'Shown on your postcard and in your Passport.';
+
+  @override
+  String get editProfilePhoto => 'Your photo';
+
+  @override
+  String get editProfileStamp => 'Stamp';
+
+  @override
+  String editProfileStampValue(String shape, String colour) {
+    return '$shape · $colour';
+  }
+
+  @override
+  String get editProfileTitle => 'Edit profile';
+
+  @override
+  String get editProfileYourPostcard => 'Your postcard';
+
+  @override
   String get failureNotFound => 'This item no longer exists.';
 
   @override
@@ -2832,12 +2875,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsCompleteProfileTitle => 'Almost there';
-
-  @override
-  String get settingsCustomizeDescription => 'Tap a picture to change it';
-
-  @override
-  String get settingsCustomizeProfile => 'Customize profile';
 
   @override
   String get settingsDataAndStorage => 'Data and storage';

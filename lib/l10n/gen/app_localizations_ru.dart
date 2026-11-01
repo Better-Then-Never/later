@@ -1091,6 +1091,49 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonUsernameTaken => 'Это имя пользователя уже занято';
 
   @override
+  String get editProfileAboutYou => 'О тебе';
+
+  @override
+  String get editProfileAdd => 'Добавить';
+
+  @override
+  String get editProfileChange => 'Изменить';
+
+  @override
+  String get editProfileCover => 'Обложка';
+
+  @override
+  String get editProfileHint =>
+      'Нажми на обложку или марку, чтобы их изменить.';
+
+  @override
+  String get editProfileHomeTown => 'Родной город';
+
+  @override
+  String get editProfileHomeTownFailed =>
+      'Не удалось сохранить город. Попробуй ещё раз.';
+
+  @override
+  String get editProfileHomeTownNote => 'Видно на открытке и в паспорте.';
+
+  @override
+  String get editProfilePhoto => 'Твоё фото';
+
+  @override
+  String get editProfileStamp => 'Марка';
+
+  @override
+  String editProfileStampValue(String shape, String colour) {
+    return '$shape · $colour';
+  }
+
+  @override
+  String get editProfileTitle => 'Редактировать профиль';
+
+  @override
+  String get editProfileYourPostcard => 'Твоя открытка';
+
+  @override
   String get failureNotFound => 'Этот объект больше не существует.';
 
   @override
@@ -2928,13 +2971,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsCompleteProfileTitle => 'Почти готово';
-
-  @override
-  String get settingsCustomizeDescription =>
-      'Нажмите на фото, чтобы изменить его';
-
-  @override
-  String get settingsCustomizeProfile => 'Настроить профиль';
 
   @override
   String get settingsDataAndStorage => 'Данные и память';

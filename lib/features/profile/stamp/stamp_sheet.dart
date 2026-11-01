@@ -201,6 +201,7 @@ class _StampSheetState extends State<StampSheet> {
                 children: [
                   for (final s in StampShape.values)
                     _ShapeTile(
+                      key: ValueKey('stamp-shape-${s.name}'),
                       label: StampSheet.shapeName(context, s),
                       selected: _style.shape == s,
                       onTap: () =>
@@ -231,6 +232,7 @@ class _StampSheetState extends State<StampSheet> {
                 children: [
                   for (final name in StampColor.names)
                     _Swatch(
+                      key: ValueKey('stamp-colour-$name'),
                       color: ProfileStamp.paperColor(StampColor.named(name)),
                       label: StampSheet.colourName(
                         context,
@@ -279,6 +281,7 @@ class _StampSheetState extends State<StampSheet> {
 
 class _ShapeTile extends StatelessWidget {
   const _ShapeTile({
+    super.key,
     required this.label,
     required this.selected,
     required this.onTap,
@@ -337,6 +340,7 @@ class _ShapeTile extends StatelessWidget {
 /// A round colour to pick; [rainbow] is "Any colour".
 class _Swatch extends StatelessWidget {
   const _Swatch({
+    super.key,
     required this.label,
     required this.selected,
     required this.onTap,

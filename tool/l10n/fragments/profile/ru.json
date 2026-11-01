@@ -95,5 +95,18 @@
   "stampColourHex": "Код цвета",
   "stampPreview": "Превью",
   "stampSaveFailed": "Не удалось сохранить марку. Попробуй ещё раз.",
-  "stampDone": "Готово"
+  "stampDone": "Готово",
+  "editProfileTitle": "Редактировать профиль",
+  "editProfileHint": "Нажми на обложку или марку, чтобы их изменить.",
+  "editProfileAboutYou": "О тебе",
+  "editProfileYourPostcard": "Твоя открытка",
+  "editProfileHomeTown": "Родной город",
+  "editProfileHomeTownNote": "Видно на открытке и в паспорте.",
+  "editProfileAdd": "Добавить",
+  "editProfileChange": "Изменить",
+  "editProfileCover": "Обложка",
+  "editProfilePhoto": "Твоё фото",
+  "editProfileStamp": "Марка",
+  "editProfileStampValue": "{shape} · {colour}",
+  "editProfileHomeTownFailed": "Не удалось сохранить город. Попробуй ещё раз."
 }

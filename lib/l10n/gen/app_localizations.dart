@@ -1766,6 +1766,84 @@ abstract class AppLocalizations {
   /// **'Username already taken'**
   String get commonUsernameTaken;
 
+  /// Small label above name, username, about me and home town on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get editProfileAboutYou;
+
+  /// Value of an empty row on Edit profile (home town, about me).
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get editProfileAdd;
+
+  /// Value of the cover photo and photo rows on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get editProfileChange;
+
+  /// Row on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photo'**
+  String get editProfileCover;
+
+  /// Under the live postcard on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the cover or the stamp to change them.'**
+  String get editProfileHint;
+
+  /// Row and sheet title: the town shown under the name on the postcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Home town'**
+  String get editProfileHomeTown;
+
+  /// Error after saving the home town.
+  ///
+  /// In en, this message translates to:
+  /// **'Your home town could not be saved. Please try again.'**
+  String get editProfileHomeTownFailed;
+
+  /// Under the home town field.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown on your postcard and in your Passport.'**
+  String get editProfileHomeTownNote;
+
+  /// Row on Edit profile: the profile photo (shown in the stamp).
+  ///
+  /// In en, this message translates to:
+  /// **'Your photo'**
+  String get editProfilePhoto;
+
+  /// Row on Edit profile: the stamp's shape and colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Stamp'**
+  String get editProfileStamp;
+
+  /// Value of the Stamp row: shape and colour names.
+  ///
+  /// In en, this message translates to:
+  /// **'{shape} · {colour}'**
+  String editProfileStampValue(String shape, String colour);
+
+  /// Title of the page where the user edits their postcard and details.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfileTitle;
+
+  /// Small label above cover photo, photo and stamp on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your postcard'**
+  String get editProfileYourPostcard;
+
   /// No description provided for @failureNotFound.
   ///
   /// In en, this message translates to:
@@ -4609,18 +4687,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Almost there'**
   String get settingsCompleteProfileTitle;
-
-  /// No description provided for @settingsCustomizeDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap a picture to change it'**
-  String get settingsCustomizeDescription;
-
-  /// No description provided for @settingsCustomizeProfile.
-  ///
-  /// In en, this message translates to:
-  /// **'Customize profile'**
-  String get settingsCustomizeProfile;
 
   /// No description provided for @settingsDataAndStorage.
   ///

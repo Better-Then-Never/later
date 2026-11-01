@@ -457,5 +457,65 @@
   "stampDone": "Done",
   "@stampDone": {
     "description": "Button that closes the stamp sheet and keeps the choice."
+  },
+  "editProfileTitle": "Edit profile",
+  "@editProfileTitle": {
+    "description": "Title of the page where the user edits their postcard and details."
+  },
+  "editProfileHint": "Tap the cover or the stamp to change them.",
+  "@editProfileHint": {
+    "description": "Under the live postcard on Edit profile."
+  },
+  "editProfileAboutYou": "About you",
+  "@editProfileAboutYou": {
+    "description": "Small label above name, username, about me and home town on Edit profile."
+  },
+  "editProfileYourPostcard": "Your postcard",
+  "@editProfileYourPostcard": {
+    "description": "Small label above cover photo, photo and stamp on Edit profile."
+  },
+  "editProfileHomeTown": "Home town",
+  "@editProfileHomeTown": {
+    "description": "Row and sheet title: the town shown under the name on the postcard."
+  },
+  "editProfileHomeTownNote": "Shown on your postcard and in your Passport.",
+  "@editProfileHomeTownNote": {
+    "description": "Under the home town field."
+  },
+  "editProfileAdd": "Add",
+  "@editProfileAdd": {
+    "description": "Value of an empty row on Edit profile (home town, about me)."
+  },
+  "editProfileChange": "Change",
+  "@editProfileChange": {
+    "description": "Value of the cover photo and photo rows on Edit profile."
+  },
+  "editProfileCover": "Cover photo",
+  "@editProfileCover": {
+    "description": "Row on Edit profile."
+  },
+  "editProfilePhoto": "Your photo",
+  "@editProfilePhoto": {
+    "description": "Row on Edit profile: the profile photo (shown in the stamp)."
+  },
+  "editProfileStamp": "Stamp",
+  "@editProfileStamp": {
+    "description": "Row on Edit profile: the stamp's shape and colour."
+  },
+  "editProfileStampValue": "{shape} · {colour}",
+  "@editProfileStampValue": {
+    "description": "Value of the Stamp row: shape and colour names.",
+    "placeholders": {
+      "shape": {
+        "type": "String"
+      },
+      "colour": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfileHomeTownFailed": "Your home town could not be saved. Please try again.",
+  "@editProfileHomeTownFailed": {
+    "description": "Error after saving the home town."
   }
 }

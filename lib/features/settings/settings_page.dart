@@ -12,6 +12,9 @@ import '../../shared/widgets/options/options_section.dart';
 import '../../shared/widgets/options/options_settings_row.dart';
 import '../../app/appearance/appearance_controller.dart';
 import '../friends/friends_store.dart';
+import '../profile/edit_profile_page.dart';
+import '../profile/postcard/own_postcard.dart';
+import '../../app/router/app_page_route.dart';
 import 'device_settings_store.dart';
 import 'pages/about_page.dart';
 import 'pages/appearance_settings_page.dart';
@@ -25,7 +28,6 @@ import 'pages/notification_settings_page.dart';
 import 'pages/password_settings_page.dart';
 import 'pages/permissions_settings_page.dart';
 import 'pages/privacy_settings_page.dart';
-import 'pages/profile_customization_settings_page.dart';
 import 'pages/storage_settings_page.dart';
 import 'pages/username_settings_page.dart';
 import 'settings_store.dart';
@@ -68,6 +70,15 @@ class SettingsPage extends StatelessWidget {
     return SettingsScaffold(
       title: l10n.settingsTitle,
       children: [
+        // Your postcard first: how people see you (Profile v4).
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: MiniOwnPostcard(
+            onTap: () => Navigator.of(
+              context,
+            ).push(appRoute<void>(const EditProfilePage())),
+          ),
+        ),
         OptionsSection(
           title: l10n.settingsSectionAccount,
           children: [
@@ -106,9 +117,9 @@ class SettingsPage extends StatelessWidget {
               trailing: const SizedBox.shrink(),
             ),
             OptionsSettingsRow(
-              title: l10n.settingsCustomizeProfile,
+              title: l10n.editProfileTitle,
               withDivider: false,
-              navigateTo: const ProfileCustomizationSettingsPage(),
+              navigateTo: const EditProfilePage(),
             ),
           ],
         ),

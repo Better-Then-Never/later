@@ -1050,6 +1050,66 @@
     "description": "Letters are a-z only (Latin, lower case)."
   },
   "commonUsernameTaken": "Username already taken",
+  "editProfileAboutYou": "About you",
+  "@editProfileAboutYou": {
+    "description": "Small label above name, username, about me and home town on Edit profile."
+  },
+  "editProfileAdd": "Add",
+  "@editProfileAdd": {
+    "description": "Value of an empty row on Edit profile (home town, about me)."
+  },
+  "editProfileChange": "Change",
+  "@editProfileChange": {
+    "description": "Value of the cover photo and photo rows on Edit profile."
+  },
+  "editProfileCover": "Cover photo",
+  "@editProfileCover": {
+    "description": "Row on Edit profile."
+  },
+  "editProfileHint": "Tap the cover or the stamp to change them.",
+  "@editProfileHint": {
+    "description": "Under the live postcard on Edit profile."
+  },
+  "editProfileHomeTown": "Home town",
+  "@editProfileHomeTown": {
+    "description": "Row and sheet title: the town shown under the name on the postcard."
+  },
+  "editProfileHomeTownFailed": "Your home town could not be saved. Please try again.",
+  "@editProfileHomeTownFailed": {
+    "description": "Error after saving the home town."
+  },
+  "editProfileHomeTownNote": "Shown on your postcard and in your Passport.",
+  "@editProfileHomeTownNote": {
+    "description": "Under the home town field."
+  },
+  "editProfilePhoto": "Your photo",
+  "@editProfilePhoto": {
+    "description": "Row on Edit profile: the profile photo (shown in the stamp)."
+  },
+  "editProfileStamp": "Stamp",
+  "@editProfileStamp": {
+    "description": "Row on Edit profile: the stamp's shape and colour."
+  },
+  "editProfileStampValue": "{shape} · {colour}",
+  "@editProfileStampValue": {
+    "description": "Value of the Stamp row: shape and colour names.",
+    "placeholders": {
+      "shape": {
+        "type": "String"
+      },
+      "colour": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfileTitle": "Edit profile",
+  "@editProfileTitle": {
+    "description": "Title of the page where the user edits their postcard and details."
+  },
+  "editProfileYourPostcard": "Your postcard",
+  "@editProfileYourPostcard": {
+    "description": "Small label above cover photo, photo and stamp on Edit profile."
+  },
   "failureNotFound": "This item no longer exists.",
   "failurePermission": "You are not allowed to do that.",
   "friendsAccept": "Accept",
@@ -2972,8 +3032,6 @@
   "@settingsCompleteProfileTitle": {
     "description": "Title of the page that asks a signed-in account without a profile for a name and username."
   },
-  "settingsCustomizeDescription": "Tap a picture to change it",
-  "settingsCustomizeProfile": "Customize profile",
   "settingsDataAndStorage": "Data and storage",
   "settingsDeleteAccount": "Delete account",
   "settingsDeleteButton": "Delete my account",

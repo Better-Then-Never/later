@@ -451,3 +451,108 @@ class PostcardButtons extends StatelessWidget {
     );
   }
 }
+
+/// The signed-in user's postcard in small, on top of Settings: cover, stamp,
+/// name and "Edit profile".
+class MiniOwnPostcard extends StatelessWidget {
+  const MiniOwnPostcard({super.key, required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final profile = context.select<SessionController, UserProfile?>(
+      (s) => s.profile,
+    );
+    final palette = context.palette;
+    final l10n = context.l10n;
+    return Semantics(
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: palette.surface,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.passportShadow,
+                blurRadius: 10,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 150,
+                height: 100,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fill(
+                      right: 30,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: const OwnCover(),
+                      ),
+                    ),
+                    Positioned(
+                      right: 6,
+                      bottom: -2,
+                      child: OwnStamp(
+                        size: 56,
+                        tilt: 4,
+                        style: profile?.stamp ?? const ProfileStampStyle(),
+                        initial: profile?.initial ?? '',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      profile?.name ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      '@${profile?.username ?? ''}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body.copyWith(
+                        fontSize: 14,
+                        color: palette.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.editProfileTitle,
+                      style: AppTextStyles.body.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: palette.accentText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Image.asset(AppIcons.goHere, width: 20),
+              const SizedBox(width: 6),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

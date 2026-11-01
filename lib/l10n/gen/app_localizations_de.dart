@@ -1075,6 +1075,50 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonUsernameTaken => 'Dieser Benutzername ist schon vergeben';
 
   @override
+  String get editProfileAboutYou => 'Über dich';
+
+  @override
+  String get editProfileAdd => 'Hinzufügen';
+
+  @override
+  String get editProfileChange => 'Ändern';
+
+  @override
+  String get editProfileCover => 'Titelbild';
+
+  @override
+  String get editProfileHint =>
+      'Tippe auf das Titelbild oder die Briefmarke, um sie zu ändern.';
+
+  @override
+  String get editProfileHomeTown => 'Heimatort';
+
+  @override
+  String get editProfileHomeTownFailed =>
+      'Dein Heimatort konnte nicht gespeichert werden. Bitte versuche es erneut.';
+
+  @override
+  String get editProfileHomeTownNote =>
+      'Steht auf deiner Postkarte und in deinem Reisepass.';
+
+  @override
+  String get editProfilePhoto => 'Dein Foto';
+
+  @override
+  String get editProfileStamp => 'Briefmarke';
+
+  @override
+  String editProfileStampValue(String shape, String colour) {
+    return '$shape · $colour';
+  }
+
+  @override
+  String get editProfileTitle => 'Profil bearbeiten';
+
+  @override
+  String get editProfileYourPostcard => 'Deine Postkarte';
+
+  @override
   String get failureNotFound => 'Dieses Element gibt es nicht mehr.';
 
   @override
@@ -2879,13 +2923,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsCompleteProfileTitle => 'Fast geschafft';
-
-  @override
-  String get settingsCustomizeDescription =>
-      'Tippe auf ein Bild, um es zu ändern';
-
-  @override
-  String get settingsCustomizeProfile => 'Profil anpassen';
 
   @override
   String get settingsDataAndStorage => 'Daten und Speicher';
