@@ -3938,6 +3938,12 @@ abstract class AppLocalizations {
   /// **'New Capsule'**
   String get notificationsTypeCapsule;
 
+  /// Kind of notification: a capsule the user may open is near (shown by the phone).
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Nearby'**
+  String get notificationsTypeCapsuleNearby;
+
   /// Kind of notification: a capsule with a date opened.
   ///
   /// In en, this message translates to:
@@ -3986,6 +3992,12 @@ abstract class AppLocalizations {
   /// **'New Message'**
   String get notificationsTypeMessage;
 
+  /// Kind of notification: welcome to a new country (shown by the phone).
+  ///
+  /// In en, this message translates to:
+  /// **'New Country'**
+  String get notificationsTypeNewCountry;
+
   /// No description provided for @notificationsTypeOther.
   ///
   /// In en, this message translates to:
@@ -4021,6 +4033,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown location'**
   String get placeUnknown;
+
+  /// Button on the "Welcome to …" notification: opens the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a capsule'**
+  String get placesLeaveCapsule;
+
+  /// Under "You're near …".
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s {metres} m away. Hold to open it there.'**
+  String placesNearbyBody(int metres);
+
+  /// Phone notification: a capsule the user may open is close (F4).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re near {title}'**
+  String placesNearbyTitle(String title);
+
+  /// Under "Welcome to …".
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been here for 2 hours. Leave a memory?'**
+  String get placesWelcomeBody;
+
+  /// Phone notification after two hours in a new country (F3).
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to {country}'**
+  String placesWelcomeTitle(String country);
 
   /// On the own profile when there is no "about me" line yet; opens its editor.
   ///
@@ -5318,6 +5360,60 @@ abstract class AppLocalizations {
   /// **'Standard (sent faster)'**
   String get settingsPhotoQualityStandard;
 
+  /// Button: go on to the location permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get settingsPlacesAlwaysContinue;
+
+  /// Background location was not given.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location “All the time” in Settings to turn this on.'**
+  String get settingsPlacesAlwaysDenied;
+
+  /// Why background location is asked for.
+  ///
+  /// In en, this message translates to:
+  /// **'To tell you about capsules and countries while Later is closed, Android must let it use your location all the time. Choose “Allow all the time” next.'**
+  String get settingsPlacesAlwaysMessage;
+
+  /// Before asking for background location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location all the time'**
+  String get settingsPlacesAlwaysTitle;
+
+  /// Switch: "Welcome to …" alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to a new country'**
+  String get settingsPlacesCountry;
+
+  /// Under "Welcome to a new country".
+  ///
+  /// In en, this message translates to:
+  /// **'After two hours in a country you\'re visiting'**
+  String get settingsPlacesCountryHint;
+
+  /// Under the Places section.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone checks where it is about every half hour, even when Later is closed. Later doesn\'t save or share your location.'**
+  String get settingsPlacesFooter;
+
+  /// Switch: "You're near …" alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules near you'**
+  String get settingsPlacesNearby;
+
+  /// Under "Capsules near you".
+  ///
+  /// In en, this message translates to:
+  /// **'Within 200 m of one you can open'**
+  String get settingsPlacesNearbyHint;
+
   /// No description provided for @settingsPrivacy.
   ///
   /// In en, this message translates to:
@@ -5509,6 +5605,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PHOTOS'**
   String get settingsSectionPhotos;
+
+  /// Notification settings section: alerts from where the phone is.
+  ///
+  /// In en, this message translates to:
+  /// **'PLACES'**
+  String get settingsSectionPlaces;
 
   /// No description provided for @settingsSectionQuestions.
   ///

@@ -106,6 +106,19 @@ class MapPinStore extends SessionScoped {
       ? _loading ?? Future.value(StoredMap.none)
       : Future.value(StoredMap.none);
 
+  /// [uid]'s pins as the map last kept them, read without a store (the
+  /// place alerts' background check, which runs without the app).
+  static Future<StoredMap> readFile(String uid) async {
+    try {
+      final file = File('${(await _defaultDirectory()).path}/$uid.bin');
+      if (!await file.exists()) return StoredMap.none;
+      return decode(await file.readAsBytes(), uid: uid);
+    } on Object catch (e) {
+      AppLogger.warning('Map pins not read', error: e);
+      return StoredMap.none;
+    }
+  }
+
   /// Keeps [map] as [uid]'s (after the previous write, never two at once).
   Future<void> save(String uid, StoredMap map) {
     if (uid != _uid) return Future.value();
@@ -167,14 +180,16 @@ class MapPinStore extends SessionScoped {
   // ---------------------------------------------------------------- format
 
   /// "LMP" and the format's version (an older one reads as nothing kept:
-  /// the map then reads everything once).
-  static const _magic = 0x4C4D5002;
+  /// the map then reads everything once). 3: a flags byte per pin (opens
+  /// only at its spot, for the nearby alerts of phase 4).
+  static const _magic = 0x4C4D5003;
 
   /// The map as bytes: a header (magic, pin count, synced-to time in ms or
   /// 0, the band's latitude or NaN, the friends), the owners once each, then
   /// per pin its id, owner (index), latitude and longitude (64-bit), colour,
-  /// privacy and source (a byte each) and opening time (ms since the epoch,
-  /// 0 for none). About 55 bytes a pin; read without parsing text (5,000
+  /// privacy and source (a byte each), opening time (ms since the epoch,
+  /// 0 for none) and flags (bit 0: opens only at its spot). About 56 bytes a
+  /// pin; read without parsing text (5,000
   /// pins in a few milliseconds).
   static Uint8List encode(StoredMap map) {
     final list = [
@@ -209,14 +224,15 @@ class MapPinStore extends SessionScoped {
       text(c.id);
       final at = c.location!;
       bytes(
-        ByteData(31)
+        ByteData(32)
           ..setUint32(0, owners[c.ownerId]!)
           ..setFloat64(4, at.latitude)
           ..setFloat64(12, at.longitude)
           ..setUint8(20, c.color.index)
           ..setUint8(21, c.privacy.index)
           ..setUint8(22, p.source.index)
-          ..setInt64(23, c.openAt?.millisecondsSinceEpoch ?? 0),
+          ..setInt64(23, c.openAt?.millisecondsSinceEpoch ?? 0)
+          ..setUint8(31, c.opensHere ? 1 : 0),
       );
     }
     return out.takeBytes();
@@ -275,11 +291,14 @@ class MapPinStore extends SessionScoped {
                   ? null
                   : DateTime.fromMillisecondsSinceEpoch(openAt),
               coAuthors: source == PinSource.co ? [uid] : const [],
+              openWhere: data.getUint8(at + 31) & 1 == 1
+                  ? OpenWhere.here
+                  : OpenWhere.anywhere,
             ),
             source,
           ),
         );
-        at += 31;
+        at += 32;
       }
       return StoredMap(
         pins: pins,

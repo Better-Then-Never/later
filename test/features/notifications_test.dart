@@ -203,6 +203,8 @@ void main() {
           'Made Together',
           'Capsule Open',
           'Capsule Ready',
+          'Capsule Nearby',
+          'New Country',
           'Notification',
         ],
       );

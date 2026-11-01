@@ -87,19 +87,18 @@ class MainActivity : FlutterActivity() {
             }
         // Country names in the app's language (the world view, B7): the
         // platform knows them for every language, no table in the app.
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/locale")
+        CountryNamesChannel.attach(flutterEngine.dartExecutor.binaryMessenger)
+        // The place alerts' half-hourly check (PlacesWorker.kt).
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "later.app/places")
             .setMethodCallHandler { call, result ->
                 when (call.method) {
-                    "countryNames" -> {
-                        val codes = call.argument<List<String>>("codes") ?: emptyList()
-                        val language = java.util.Locale.forLanguageTag(
-                            call.argument<String>("language") ?: "en",
-                        )
-                        result.success(
-                            codes.associateWith { code ->
-                                java.util.Locale("", code).getDisplayCountry(language)
-                            },
-                        )
+                    "schedule" -> {
+                        PlacesWorker.schedule(applicationContext)
+                        result.success(null)
+                    }
+                    "cancel" -> {
+                        PlacesWorker.cancel(applicationContext)
+                        result.success(null)
                     }
                     else -> result.notImplemented()
                 }

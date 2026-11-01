@@ -322,5 +322,48 @@
         "type": "String"
       }
     }
+  },
+  "notificationsTypeCapsuleNearby": "Capsule Nearby",
+  "@notificationsTypeCapsuleNearby": {
+    "description": "Kind of notification: a capsule the user may open is near (shown by the phone)."
+  },
+  "notificationsTypeNewCountry": "New Country",
+  "@notificationsTypeNewCountry": {
+    "description": "Kind of notification: welcome to a new country (shown by the phone)."
+  },
+  "placesNearbyTitle": "You're near {title}",
+  "@placesNearbyTitle": {
+    "description": "Phone notification: a capsule the user may open is close (F4).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "placesNearbyBody": "It's {metres} m away. Hold to open it there.",
+  "@placesNearbyBody": {
+    "description": "Under \"You're near …\".",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesWelcomeTitle": "Welcome to {country}",
+  "@placesWelcomeTitle": {
+    "description": "Phone notification after two hours in a new country (F3).",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "placesWelcomeBody": "You've been here for 2 hours. Leave a memory?",
+  "@placesWelcomeBody": {
+    "description": "Under \"Welcome to …\"."
+  },
+  "placesLeaveCapsule": "Leave a capsule",
+  "@placesLeaveCapsule": {
+    "description": "Button on the \"Welcome to …\" notification: opens the camera."
   }
 }

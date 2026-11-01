@@ -237,5 +237,15 @@
   "settingsUploadsWifiOnlyHint": "Kapseln ohne WLAN warten auf dem Telefon, bis WLAN da ist.",
   "settingsNotificationsVibrate": "Vibration",
   "settingsNotificationsVibrateNeedsSound": "Nur zusammen mit dem Ton",
-  "settingsAboutMapData": "Kartendaten und Lizenzen"
+  "settingsAboutMapData": "Kartendaten und Lizenzen",
+  "settingsSectionPlaces": "ORTE",
+  "settingsPlacesNearby": "Kapseln in deiner Nähe",
+  "settingsPlacesNearbyHint": "Bis 200 m an einer, die du öffnen kannst",
+  "settingsPlacesCountry": "Willkommen in einem neuen Land",
+  "settingsPlacesCountryHint": "Nach zwei Stunden in einem Land, das du besuchst",
+  "settingsPlacesFooter": "Dein Handy prüft etwa jede halbe Stunde, wo es ist, auch wenn Later geschlossen ist. Later speichert oder teilt deinen Standort nicht.",
+  "settingsPlacesAlwaysTitle": "Standort immer",
+  "settingsPlacesAlwaysMessage": "Damit Later dich auch geschlossen auf Kapseln und Länder hinweisen kann, muss Android den Standort immer erlauben. Wähle als Nächstes „Immer zulassen“.",
+  "settingsPlacesAlwaysContinue": "Weiter",
+  "settingsPlacesAlwaysDenied": "Erlaube den Standort in den Einstellungen „Immer“, um das einzuschalten."
 }

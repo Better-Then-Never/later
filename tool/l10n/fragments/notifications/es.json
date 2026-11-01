@@ -59,5 +59,12 @@
   "notificationsTypeCapsuleReady": "Cápsula lista",
   "notificationsCapsuleOpenBody": "La cápsula «{title}» de {name} está abierta",
   "notificationsCapsuleReadyBody": "La cápsula «{title}» de {name} está lista. Te espera en {place}",
-  "notificationsCapsuleReadyHereBody": "La cápsula «{title}» de {name} está lista. Te espera donde la dejaron"
+  "notificationsCapsuleReadyHereBody": "La cápsula «{title}» de {name} está lista. Te espera donde la dejaron",
+  "notificationsTypeCapsuleNearby": "Cápsula cerca",
+  "notificationsTypeNewCountry": "Nuevo país",
+  "placesNearbyTitle": "Estás cerca de {title}",
+  "placesNearbyBody": "Está a {metres} m. Mantén pulsado para abrirla allí.",
+  "placesWelcomeTitle": "Te damos la bienvenida a {country}",
+  "placesWelcomeBody": "Llevas 2 horas aquí. ¿Dejas un recuerdo?",
+  "placesLeaveCapsule": "Dejar una cápsula"
 }

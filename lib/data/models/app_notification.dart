@@ -23,6 +23,14 @@ enum NotificationType {
 
   /// A place capsule's date came: it waits at its spot (F2, locks.js).
   capsuleReady,
+
+  /// The user is near a capsule they may open there (F4; shown by the
+  /// phone itself, app/background_places_main.dart).
+  capsuleNearby,
+
+  /// A couple of hours in a new country: "Leave a memory?" (F3; shown by
+  /// the phone itself).
+  newCountry,
   other;
 
   static NotificationType parse(Object? value) {

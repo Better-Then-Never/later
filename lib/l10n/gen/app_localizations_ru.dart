@@ -2477,6 +2477,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notificationsTypeCapsule => 'Новая капсула';
 
   @override
+  String get notificationsTypeCapsuleNearby => 'Капсула рядом';
+
+  @override
   String get notificationsTypeCapsuleOpen => 'Капсула открыта';
 
   @override
@@ -2499,6 +2502,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get notificationsTypeMessage => 'Новое сообщение';
+
+  @override
+  String get notificationsTypeNewCountry => 'Новая страна';
 
   @override
   String get notificationsTypeOther => 'Уведомление';
@@ -2527,6 +2533,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get placeUnknown => 'Неизвестное место';
+
+  @override
+  String get placesLeaveCapsule => 'Оставить капсулу';
+
+  @override
+  String placesNearbyBody(int metres) {
+    return 'До неё $metres м. Удерживайте, чтобы открыть её там.';
+  }
+
+  @override
+  String placesNearbyTitle(String title) {
+    return 'Рядом: $title';
+  }
+
+  @override
+  String get placesWelcomeBody => 'Вы здесь уже 2 часа. Оставите воспоминание?';
+
+  @override
+  String placesWelcomeTitle(String country) {
+    return 'Добро пожаловать! $country';
+  }
 
   @override
   String get profileAboutPrompt => 'Расскажите немного о себе';
@@ -3323,6 +3350,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsPhotoQualityStandard => 'Обычное (отправка быстрее)';
 
   @override
+  String get settingsPlacesAlwaysContinue => 'Продолжить';
+
+  @override
+  String get settingsPlacesAlwaysDenied =>
+      'Чтобы включить, разрешите геолокацию «Всегда» в настройках.';
+
+  @override
+  String get settingsPlacesAlwaysMessage =>
+      'Чтобы Later сообщал о капсулах и странах, даже когда закрыт, Android должен всегда разрешать ему геолокацию. Дальше выберите «Разрешить всегда».';
+
+  @override
+  String get settingsPlacesAlwaysTitle => 'Геолокация всегда';
+
+  @override
+  String get settingsPlacesCountry => 'Приветствие в новой стране';
+
+  @override
+  String get settingsPlacesCountryHint =>
+      'Через два часа в стране, куда вы приехали';
+
+  @override
+  String get settingsPlacesFooter =>
+      'Телефон проверяет, где он, примерно раз в полчаса, даже когда Later закрыт. Later не сохраняет и не передаёт ваше местоположение.';
+
+  @override
+  String get settingsPlacesNearby => 'Капсулы рядом';
+
+  @override
+  String get settingsPlacesNearbyHint =>
+      'В 200 м от той, которую можно открыть';
+
+  @override
   String get settingsPrivacy => 'Приватность';
 
   @override
@@ -3426,6 +3485,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsSectionPhotos => 'ФОТО';
+
+  @override
+  String get settingsSectionPlaces => 'МЕСТА';
 
   @override
   String get settingsSectionQuestions => 'ВОПРОСЫ';

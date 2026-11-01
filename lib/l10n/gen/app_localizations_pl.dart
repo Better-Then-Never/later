@@ -2487,6 +2487,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get notificationsTypeCapsule => 'Nowa kapsuła';
 
   @override
+  String get notificationsTypeCapsuleNearby => 'Kapsuła w pobliżu';
+
+  @override
   String get notificationsTypeCapsuleOpen => 'Kapsuła otwarta';
 
   @override
@@ -2509,6 +2512,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get notificationsTypeMessage => 'Nowa wiadomość';
+
+  @override
+  String get notificationsTypeNewCountry => 'Nowy kraj';
 
   @override
   String get notificationsTypeOther => 'Powiadomienie';
@@ -2537,6 +2543,28 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get placeUnknown => 'Nieznane miejsce';
+
+  @override
+  String get placesLeaveCapsule => 'Zostaw kapsułę';
+
+  @override
+  String placesNearbyBody(int metres) {
+    return 'Jest $metres m stąd. Przytrzymaj, by ją tam otworzyć.';
+  }
+
+  @override
+  String placesNearbyTitle(String title) {
+    return 'Jesteś w pobliżu: $title';
+  }
+
+  @override
+  String get placesWelcomeBody =>
+      'Jesteś tu od 2 godzin. Zostawisz wspomnienie?';
+
+  @override
+  String placesWelcomeTitle(String country) {
+    return 'Witaj! $country';
+  }
 
   @override
   String get profileAboutPrompt => 'Dodaj kilka słów o sobie';
@@ -3330,6 +3358,38 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsPhotoQualityStandard => 'Standardowa (szybsze wysyłanie)';
 
   @override
+  String get settingsPlacesAlwaysContinue => 'Dalej';
+
+  @override
+  String get settingsPlacesAlwaysDenied =>
+      'Aby to włączyć, zezwól w Ustawieniach na lokalizację „Zawsze”.';
+
+  @override
+  String get settingsPlacesAlwaysMessage =>
+      'Aby Later mógł informować o kapsułach i krajach, gdy jest zamknięty, Android musi zawsze zezwalać na lokalizację. Wybierz dalej „Zezwalaj zawsze”.';
+
+  @override
+  String get settingsPlacesAlwaysTitle => 'Lokalizacja zawsze';
+
+  @override
+  String get settingsPlacesCountry => 'Powitanie w nowym kraju';
+
+  @override
+  String get settingsPlacesCountryHint =>
+      'Po dwóch godzinach w odwiedzanym kraju';
+
+  @override
+  String get settingsPlacesFooter =>
+      'Telefon sprawdza swoje położenie mniej więcej co pół godziny, także gdy Later jest zamknięty. Later nie zapisuje ani nie udostępnia Twojej lokalizacji.';
+
+  @override
+  String get settingsPlacesNearby => 'Kapsuły w pobliżu';
+
+  @override
+  String get settingsPlacesNearbyHint =>
+      'W promieniu 200 m od takiej, którą możesz otworzyć';
+
+  @override
   String get settingsPrivacy => 'Prywatność';
 
   @override
@@ -3434,6 +3494,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsSectionPhotos => 'ZDJĘCIA';
+
+  @override
+  String get settingsSectionPlaces => 'MIEJSCA';
 
   @override
   String get settingsSectionQuestions => 'PYTANIA';

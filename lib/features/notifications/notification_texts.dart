@@ -17,6 +17,8 @@ extension NotificationTypeL10n on NotificationType {
     NotificationType.coAuthor => l10n.notificationsTypeCoAuthor,
     NotificationType.capsuleOpen => l10n.notificationsTypeCapsuleOpen,
     NotificationType.capsuleReady => l10n.notificationsTypeCapsuleReady,
+    NotificationType.capsuleNearby => l10n.notificationsTypeCapsuleNearby,
+    NotificationType.newCountry => l10n.notificationsTypeNewCountry,
     NotificationType.other => l10n.notificationsTypeOther,
   };
 }
@@ -83,6 +85,9 @@ abstract final class NotificationTexts {
           _name,
         ),
       },
+      // Shown by the phone itself, never in the list.
+      NotificationType.capsuleNearby ||
+      NotificationType.newCountry ||
       NotificationType.other => null,
     };
     if (template == null) return (before: '', after: ' ${n.message}');

@@ -2508,6 +2508,10 @@
   },
   "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeCapsuleNearby": "Capsule Nearby",
+  "@notificationsTypeCapsuleNearby": {
+    "description": "Kind of notification: a capsule the user may open is near (shown by the phone)."
+  },
   "notificationsTypeCapsuleOpen": "Capsule Open",
   "@notificationsTypeCapsuleOpen": {
     "description": "Kind of notification: a capsule with a date opened."
@@ -2528,6 +2532,10 @@
   "notificationsTypeFriendAccepted": "New Friend",
   "notificationsTypeFriendRequest": "Friend Request",
   "notificationsTypeMessage": "New Message",
+  "notificationsTypeNewCountry": "New Country",
+  "@notificationsTypeNewCountry": {
+    "description": "Kind of notification: welcome to a new country (shown by the phone)."
+  },
   "notificationsTypeOther": "Notification",
   "notificationsTypeReaction": "New Reaction",
   "notificationsTypeReply": "New Reply",
@@ -2545,6 +2553,41 @@
     "description": "Place pill on a capsule when the phone has no location yet."
   },
   "placeUnknown": "Unknown location",
+  "placesLeaveCapsule": "Leave a capsule",
+  "@placesLeaveCapsule": {
+    "description": "Button on the \"Welcome to …\" notification: opens the camera."
+  },
+  "placesNearbyBody": "It's {metres} m away. Hold to open it there.",
+  "@placesNearbyBody": {
+    "description": "Under \"You're near …\".",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesNearbyTitle": "You're near {title}",
+  "@placesNearbyTitle": {
+    "description": "Phone notification: a capsule the user may open is close (F4).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "placesWelcomeBody": "You've been here for 2 hours. Leave a memory?",
+  "@placesWelcomeBody": {
+    "description": "Under \"Welcome to …\"."
+  },
+  "placesWelcomeTitle": "Welcome to {country}",
+  "@placesWelcomeTitle": {
+    "description": "Phone notification after two hours in a new country (F3).",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
   "profileAboutPrompt": "Add a few words about you",
   "@profileAboutPrompt": {
     "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
@@ -3122,6 +3165,42 @@
   "@settingsPhotoQualityStandard": {
     "description": "Photo quality choice: 1600 px, quicker to upload."
   },
+  "settingsPlacesAlwaysContinue": "Continue",
+  "@settingsPlacesAlwaysContinue": {
+    "description": "Button: go on to the location permission."
+  },
+  "settingsPlacesAlwaysDenied": "Allow location “All the time” in Settings to turn this on.",
+  "@settingsPlacesAlwaysDenied": {
+    "description": "Background location was not given."
+  },
+  "settingsPlacesAlwaysMessage": "To tell you about capsules and countries while Later is closed, Android must let it use your location all the time. Choose “Allow all the time” next.",
+  "@settingsPlacesAlwaysMessage": {
+    "description": "Why background location is asked for."
+  },
+  "settingsPlacesAlwaysTitle": "Location all the time",
+  "@settingsPlacesAlwaysTitle": {
+    "description": "Before asking for background location."
+  },
+  "settingsPlacesCountry": "Welcome to a new country",
+  "@settingsPlacesCountry": {
+    "description": "Switch: \"Welcome to …\" alerts."
+  },
+  "settingsPlacesCountryHint": "After two hours in a country you're visiting",
+  "@settingsPlacesCountryHint": {
+    "description": "Under \"Welcome to a new country\"."
+  },
+  "settingsPlacesFooter": "Your phone checks where it is about every half hour, even when Later is closed. Later doesn't save or share your location.",
+  "@settingsPlacesFooter": {
+    "description": "Under the Places section."
+  },
+  "settingsPlacesNearby": "Capsules near you",
+  "@settingsPlacesNearby": {
+    "description": "Switch: \"You're near …\" alerts."
+  },
+  "settingsPlacesNearbyHint": "Within 200 m of one you can open",
+  "@settingsPlacesNearbyHint": {
+    "description": "Under \"Capsules near you\"."
+  },
   "settingsPrivacy": "Privacy",
   "settingsPrivacyAchievements": "Show my achievements",
   "settingsPrivacyAchievementsHint": "Friends see them on your profile",
@@ -3198,6 +3277,10 @@
   "settingsSectionPhotos": "PHOTOS",
   "@settingsSectionPhotos": {
     "description": "Settings section: how capsule photos are sent and kept."
+  },
+  "settingsSectionPlaces": "PLACES",
+  "@settingsSectionPlaces": {
+    "description": "Notification settings section: alerts from where the phone is."
   },
   "settingsSectionQuestions": "QUESTIONS",
   "settingsSectionQuietHours": "QUIET HOURS",

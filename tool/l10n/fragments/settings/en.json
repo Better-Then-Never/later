@@ -508,5 +508,45 @@
   "settingsAboutMapData": "Map data and licenses",
   "@settingsAboutMapData": {
     "description": "About page: opens the map's data sources and their licences."
+  },
+  "settingsSectionPlaces": "PLACES",
+  "@settingsSectionPlaces": {
+    "description": "Notification settings section: alerts from where the phone is."
+  },
+  "settingsPlacesNearby": "Capsules near you",
+  "@settingsPlacesNearby": {
+    "description": "Switch: \"You're near …\" alerts."
+  },
+  "settingsPlacesNearbyHint": "Within 200 m of one you can open",
+  "@settingsPlacesNearbyHint": {
+    "description": "Under \"Capsules near you\"."
+  },
+  "settingsPlacesCountry": "Welcome to a new country",
+  "@settingsPlacesCountry": {
+    "description": "Switch: \"Welcome to …\" alerts."
+  },
+  "settingsPlacesCountryHint": "After two hours in a country you're visiting",
+  "@settingsPlacesCountryHint": {
+    "description": "Under \"Welcome to a new country\"."
+  },
+  "settingsPlacesFooter": "Your phone checks where it is about every half hour, even when Later is closed. Later doesn't save or share your location.",
+  "@settingsPlacesFooter": {
+    "description": "Under the Places section."
+  },
+  "settingsPlacesAlwaysTitle": "Location all the time",
+  "@settingsPlacesAlwaysTitle": {
+    "description": "Before asking for background location."
+  },
+  "settingsPlacesAlwaysMessage": "To tell you about capsules and countries while Later is closed, Android must let it use your location all the time. Choose “Allow all the time” next.",
+  "@settingsPlacesAlwaysMessage": {
+    "description": "Why background location is asked for."
+  },
+  "settingsPlacesAlwaysContinue": "Continue",
+  "@settingsPlacesAlwaysContinue": {
+    "description": "Button: go on to the location permission."
+  },
+  "settingsPlacesAlwaysDenied": "Allow location “All the time” in Settings to turn this on.",
+  "@settingsPlacesAlwaysDenied": {
+    "description": "Background location was not given."
   }
 }
