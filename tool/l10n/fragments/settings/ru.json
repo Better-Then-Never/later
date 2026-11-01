@@ -237,5 +237,15 @@
   "settingsUploadsWifiOnlyHint": "Капсулы, созданные без Wi-Fi, ждут на телефоне, пока он не появится.",
   "settingsNotificationsVibrate": "Вибрация",
   "settingsNotificationsVibrateNeedsSound": "Работает вместе со звуком",
-  "settingsAboutMapData": "Данные карты и лицензии"
+  "settingsAboutMapData": "Данные карты и лицензии",
+  "settingsSectionPlaces": "МЕСТА",
+  "settingsPlacesNearby": "Капсулы рядом",
+  "settingsPlacesNearbyHint": "В 200 м от той, которую можно открыть",
+  "settingsPlacesCountry": "Приветствие в новой стране",
+  "settingsPlacesCountryHint": "Через два часа в стране, куда вы приехали",
+  "settingsPlacesFooter": "Телефон проверяет, где он, примерно раз в полчаса, даже когда Later закрыт. Later не сохраняет и не передаёт ваше местоположение.",
+  "settingsPlacesAlwaysTitle": "Геолокация всегда",
+  "settingsPlacesAlwaysMessage": "Чтобы Later сообщал о капсулах и странах, даже когда закрыт, Android должен всегда разрешать ему геолокацию. Дальше выберите «Разрешить всегда».",
+  "settingsPlacesAlwaysContinue": "Продолжить",
+  "settingsPlacesAlwaysDenied": "Чтобы включить, разрешите геолокацию «Всегда» в настройках."
 }

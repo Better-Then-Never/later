@@ -1178,7 +1178,7 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
     final start = map.initialCamera;
     final selected = _selected;
     final bottom = NavbarWidget.coveredHeight(context) + 12;
-    final cardHeight = CapsuleInfoPanel.heightFor(context);
+    final cardHeight = CapsuleInfoPanel.heightFor(context, capsule: selected);
     final motion = AppMotion.of(context, AppMotion.emphasized);
     final noCapsules = context.select<OwnCapsulesStore, bool>(
       (s) => s.isLoaded && s.capsules.isEmpty,
@@ -1423,9 +1423,10 @@ class _MapLibreMapViewState extends State<MapLibreMapView>
                             height: cardHeight,
                             child: CapsuleInfoPanel(
                               capsule: selected,
-                              onMoreInfo: () => CapsuleDetailDialog.show(
+                              onMoreInfo: (from) => CapsuleDetailDialog.show(
                                 context,
                                 selected,
+                                from: from,
                                 // Back to the capsule's place on the map.
                                 onPlaceTap: () => _focus.focus(selected),
                               ),

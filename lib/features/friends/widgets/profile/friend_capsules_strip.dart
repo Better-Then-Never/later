@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../capsules/opening/capsule_locks.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../app/shell/selected_page.dart';
 import '../../../../core/l10n/l10n.dart';
@@ -38,7 +39,7 @@ class _FriendCapsulesStripState extends State<FriendCapsulesStrip> {
   static const _height = 150.0;
 
   void _open(Capsule capsule) {
-    if (capsule.isOpen(DateTime.now())) {
+    if (CapsuleLocks.openAt(context, capsule, DateTime.now())) {
       CapsuleDetailDialog.show(context, capsule);
       return;
     }
@@ -124,8 +125,11 @@ class _Card extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final locked = !capsule.isOpen(DateTime.now());
-    final url = capsule.thumbUrl ?? capsule.imageUrl;
+    final now = DateTime.now();
+    final locked = !CapsuleLocks.openAt(context, capsule, now);
+    // A sealed capsule's picture once it may open (capsule v3 B3).
+    final shown = CapsuleLocks.shown(context, capsule, now);
+    final url = shown.thumbUrl ?? shown.imageUrl;
     return AppPressable(
       child: GestureDetector(
         onTap: onTap,

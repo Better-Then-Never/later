@@ -683,9 +683,10 @@ class _MapViewState extends State<_MapView> {
 
   Widget _infoPanel(Capsule capsule) => CapsuleInfoPanel(
     capsule: capsule,
-    onMoreInfo: () => CapsuleDetailDialog.show(
+    onMoreInfo: (from) => CapsuleDetailDialog.show(
       context,
       capsule,
+      from: from,
       // Back to the capsule's place on the map.
       onPlaceTap: () => _focus.focus(capsule),
     ),
@@ -1023,7 +1024,7 @@ class _MapViewState extends State<_MapView> {
     _builtDark = dark;
     final selected = _selected;
     final bottom = NavbarWidget.coveredHeight(context) + 12;
-    final cardHeight = CapsuleInfoPanel.heightFor(context);
+    final cardHeight = CapsuleInfoPanel.heightFor(context, capsule: selected);
     final motion = AppMotion.of(context, AppMotion.emphasized);
     // A new user: nothing of theirs yet (a capsule waiting to upload counts).
     final noCapsules = context.select<OwnCapsulesStore, bool>(

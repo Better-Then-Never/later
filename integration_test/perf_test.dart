@@ -39,7 +39,7 @@ import 'package:later/features/capsules/creation/capsule_creation_page.dart';
 import 'package:later/features/history/own_capsules_store.dart';
 import 'package:later/features/map/map_focus.dart';
 import 'package:later/features/map/map_stats.dart';
-import 'package:later/features/map/widgets/capsule_preview_card.dart';
+import 'package:later/features/capsules/social/capsule_sheet.dart';
 import 'package:later/features/map/widgets/map_compass.dart';
 import 'package:later/features/messages/widgets/chat_list_item.dart';
 import 'package:later/features/messages/widgets/message_bubble.dart';
@@ -535,7 +535,7 @@ void main() {
           await tapAndWait(
             tester,
             find.descendant(
-              of: find.byType(CapsulePreviewCard),
+              of: find.byType(CapsuleSheetPhoto),
               matching: find.byType(GestureDetector),
             ),
           );

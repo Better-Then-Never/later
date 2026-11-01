@@ -11,10 +11,6 @@
   "@mapLocationUnknown": {
     "description": "Toast on the map when no position could be found although location is allowed."
   },
-  "mapCapsuleReady": "Check out what's inside!",
-  "@mapCapsuleReady": {
-    "description": "Line in the small window above a capsule pin when the capsule is already open."
-  },
   "mapCapsuleOpensIn": "Opens in {time}",
   "@mapCapsuleOpensIn": {
     "description": "Countdown in the small window above a locked capsule's pin. {time} is a compact duration made of the mapDuration* parts, e.g. '2d 5h 30m 15s'.",
@@ -72,10 +68,6 @@
   "mapCapsuleLocked": "Locked",
   "@mapCapsuleLocked": {
     "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."
-  },
-  "mapCapsuleNoDescription": "This capsule has no description.",
-  "@mapCapsuleNoDescription": {
-    "description": "Shown in the capsule card opened from the map when the capsule has no description."
   },
   "mapMyLocation": "My location",
   "mapFirstCapsuleTitle": "Leave your first capsule",
@@ -168,5 +160,127 @@
   "mapCapsuleUnavailable": "This capsule is no longer available",
   "@mapCapsuleUnavailable": {
     "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
+  },
+  "mapCapsuleOpenedToday": "Opened today",
+  "@mapCapsuleOpenedToday": {
+    "description": "The map card of a capsule that opened today."
+  },
+  "mapCapsuleOpenedYesterday": "Opened yesterday",
+  "@mapCapsuleOpenedYesterday": {
+    "description": "The map card of a capsule that opened yesterday."
+  },
+  "mapCapsuleOpenedOnLabel": "Opened on",
+  "@mapCapsuleOpenedOnLabel": {
+    "description": "The map card of an open capsule: by the check, with the day it opened on the line below."
+  },
+  "mapCapsuleOpenAnytime": "Open anytime",
+  "@mapCapsuleOpenAnytime": {
+    "description": "The map card of a capsule without an opening date."
+  },
+  "mapCapsuleOpensOn": "Opens on {date}",
+  "@mapCapsuleOpensOn": {
+    "description": "Under the countdown of a locked capsule on its map card. {date} like \"1 Dec 2026\".",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "1 Dec 2026"
+      }
+    }
+  },
+  "mapCapsuleLeftBy": "Left by {name} · {date}",
+  "@mapCapsuleLeftBy": {
+    "description": "Second line of a locked capsule's map card: who left it and when.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      },
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
+  "mapCapsuleLeftOn": "Left {date}",
+  "@mapCapsuleLeftOn": {
+    "description": "Second line of a map card when the author is not shown: when it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
+  "mapCapsuleYoursToOpen": "Yours to open",
+  "@mapCapsuleYoursToOpen": {
+    "description": "The map card of an open capsule the user has not unwrapped yet."
+  },
+  "mapCapsuleBeThere": "Be there to open",
+  "@mapCapsuleBeThere": {
+    "description": "Map card of a capsule that opens only at its spot."
+  },
+  "mapCapsuleReadyToOpen": "Ready to open",
+  "@mapCapsuleReadyToOpen": {
+    "description": "Map card of a place capsule whose date has come."
+  },
+  "mapCapsuleYouAreHere": "You're here",
+  "@mapCapsuleYouAreHere": {
+    "description": "Map card of a place capsule: the user is within 150 m of it."
+  },
+  "mapCapsuleAwayMetres": "{metres} m away",
+  "@mapCapsuleAwayMetres": {
+    "description": "How far a place capsule is.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleAwayKm": "{km} km away",
+  "@mapCapsuleAwayKm": {
+    "description": "How far a place capsule is (km with one decimal).",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleGoThere": "Go there",
+  "@mapCapsuleGoThere": {
+    "description": "Pill on a place capsule's map card: opens directions to it."
+  },
+  "mapCapsuleOpensOnHere": "Opens on {date}, here",
+  "@mapCapsuleOpensOnHere": {
+    "description": "Map card of a locked place capsule: its day, only at its spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleWhereUnknown": "Turn on location to see how far",
+  "@mapCapsuleWhereUnknown": {
+    "description": "Map card of a place capsule when the user's location is unknown."
+  },
+  "mapCapsuleUnlockTooFar": "You're {metres} m away. Come within 150 m to open it.",
+  "@mapCapsuleUnlockTooFar": {
+    "description": "Opening a place capsule failed: too far.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleUnlockNotYet": "It isn't ready to open yet.",
+  "@mapCapsuleUnlockNotYet": {
+    "description": "Opening a place capsule failed: its date hasn't come."
+  },
+  "mapCapsuleUnlockNoLocation": "Your location is needed to open it here.",
+  "@mapCapsuleUnlockNoLocation": {
+    "description": "Opening a place capsule failed: no location fix."
+  },
+  "mapCapsuleUnlockFailed": "Couldn't open it. Try again.",
+  "@mapCapsuleUnlockFailed": {
+    "description": "Opening a place capsule failed for another reason."
   }
 }

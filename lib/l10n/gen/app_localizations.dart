@@ -680,6 +680,36 @@ abstract class AppLocalizations {
   /// **'Welcome to'**
   String get authWelcomeTo;
 
+  /// Chip on the Create preview photo: choose which square of the photo the capsule shows.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust'**
+  String get capsulesAdjust;
+
+  /// Under the Adjust title: the crop only changes the square, not the photo.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole photo opens when someone taps it.'**
+  String get capsulesAdjustHint;
+
+  /// Title over the photo in Adjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move, pinch to zoom'**
+  String get capsulesAdjustTitle;
+
+  /// Under Approximate location on Create after "Only when I'm back here" turned it off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: opening only here needs the exact spot'**
+  String get capsulesApproxOffForHere;
+
+  /// Small chip next to the name of the capsule's author in its comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get capsulesAuthorChip;
+
   /// Screen reader label of the author line on a capsule (opens their profile).
   ///
   /// In en, this message translates to:
@@ -920,12 +950,6 @@ abstract class AppLocalizations {
   /// **'Comments'**
   String get capsulesComments;
 
-  /// Button under a capsule that opens its comments.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}'**
-  String capsulesCommentsCount(int count);
-
   /// First row of a long comment thread: loads older comments.
   ///
   /// In en, this message translates to:
@@ -944,6 +968,18 @@ abstract class AppLocalizations {
   /// **'Be the first to say something.'**
   String get capsulesCommentsEmptyHint;
 
+  /// Under "No comments yet": who will read the first comment.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will see what you write here.'**
+  String capsulesCommentsEmptyHintFor(String name);
+
+  /// The pill at the bottom of an opened capsule that opens its comments.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Comment} other{Comments · {count}}}'**
+  String capsulesCommentsPill(int count);
+
   /// The capsule description composer (a sheet over creation).
   ///
   /// In en, this message translates to:
@@ -956,6 +992,18 @@ abstract class AppLocalizations {
   /// **'Description'**
   String get capsulesComposerTitle;
 
+  /// Toast after a comment's text was copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get capsulesCopied;
+
+  /// In the menu of a long-pressed comment.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy text'**
+  String get capsulesCopyText;
+
   /// No description provided for @capsulesCreationAllowComments.
   ///
   /// In en, this message translates to:
@@ -967,6 +1015,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Allow reactions'**
   String get capsulesCreationAllowReactions;
+
+  /// Create page, "How it opens" row: no opening date.
+  ///
+  /// In en, this message translates to:
+  /// **'Anytime'**
+  String get capsulesCreationAnytime;
 
   /// No description provided for @capsulesCreationApproximate.
   ///
@@ -983,7 +1037,7 @@ abstract class AppLocalizations {
   /// Capsule creation row: friends who made the capsule with the user.
   ///
   /// In en, this message translates to:
-  /// **'Co-authors'**
+  /// **'Made with'**
   String get capsulesCreationCoAuthors;
 
   /// Value of the co-authors row: how many friends are picked.
@@ -995,13 +1049,13 @@ abstract class AppLocalizations {
   /// Value of the co-authors row when nobody is picked.
   ///
   /// In en, this message translates to:
-  /// **'Just me'**
+  /// **'Only me'**
   String get capsulesCreationCoAuthorsNone;
 
   /// Row title: the colour of the capsule's map pin (tapping cycles the colours).
   ///
   /// In en, this message translates to:
-  /// **'Color'**
+  /// **'Colour'**
   String get capsulesCreationColor;
 
   /// Hint in the capsule description field.
@@ -1010,34 +1064,58 @@ abstract class AppLocalizations {
   /// **'Add description...'**
   String get capsulesCreationDescriptionHint;
 
+  /// Under a new capsule's title: it is left today and opens anytime.
+  ///
+  /// In en, this message translates to:
+  /// **'Left today · opens anytime'**
+  String get capsulesCreationLeftToday;
+
+  /// Under a new capsule's title: left today, opens anytime but only at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Left today · opens here'**
+  String get capsulesCreationLeftTodayHere;
+
+  /// Under a new capsule's title: it is left today and opens on {date}.
+  ///
+  /// In en, this message translates to:
+  /// **'Left today · opens {date}'**
+  String capsulesCreationLeftTodayOpens(String date);
+
+  /// Under a new capsule's title: left today, opens on a day, only at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Left today · opens {date}, here'**
+  String capsulesCreationLeftTodayOpensHere(String date);
+
   /// Row title: the day the capsule opens. The chosen date is shown next to it.
   ///
   /// In en, this message translates to:
-  /// **'Open At'**
+  /// **'How it opens'**
   String get capsulesCreationOpenAt;
 
-  /// Section title above the card that shows how the capsule will look.
+  /// Create page: the group label above the switches (shown in capitals).
   ///
   /// In en, this message translates to:
-  /// **'Capsule Preview'**
-  String get capsulesCreationPreview;
+  /// **'Options'**
+  String get capsulesCreationOptions;
 
   /// Row title: who can see the capsule (tapping cycles Public / Friends / Private).
   ///
   /// In en, this message translates to:
-  /// **'Privacy'**
+  /// **'Who sees it'**
   String get capsulesCreationPrivacy;
 
-  /// Shown in the open date row until a date is picked. Keep it short.
+  /// Chip on the photo of a new capsule: back to the camera.
   ///
   /// In en, this message translates to:
-  /// **'Select date'**
-  String get capsulesCreationSelectDate;
+  /// **'Retake'**
+  String get capsulesCreationRetake;
 
   /// Section title above the privacy, open date and colour rows.
   ///
   /// In en, this message translates to:
-  /// **'Capsule Settings'**
+  /// **'Settings'**
   String get capsulesCreationSettings;
 
   /// Creation setting: show the author on the capsule.
@@ -1061,13 +1139,13 @@ abstract class AppLocalizations {
   /// Button at the bottom of the creation screen that saves the new capsule. Keep it short.
   ///
   /// In en, this message translates to:
-  /// **'Create Capsule'**
+  /// **'Create capsule'**
   String get capsulesCreationSubmit;
 
   /// Header title of the screen where a new capsule is set up after taking the photo.
   ///
   /// In en, this message translates to:
-  /// **'Create Capsule'**
+  /// **'New capsule'**
   String get capsulesCreationTitle;
 
   /// Hint in the capsule title field (one line, large bold font, narrow: keep it very short).
@@ -1075,6 +1153,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Title...'**
   String get capsulesCreationTitleHint;
+
+  /// An opened capsule without an opening date: the day it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'Left {date}'**
+  String capsulesDatesLeft(String date);
+
+  /// An opened capsule: the day it was left and the day it opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Left {left} · opened {opened}'**
+  String capsulesDatesLeftOpened(String left, String opened);
 
   /// Title given to a capsule saved without one. It is stored with the capsule.
   ///
@@ -1099,6 +1189,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unfinished capsule'**
   String get capsulesDraftTitle;
+
+  /// Create fails: the server does not take place capsules yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening only here isn\'t available yet. Choose Anywhere and try again.'**
+  String get capsulesErrorHereUnavailable;
 
   /// No description provided for @capsulesErrorNoLocation.
   ///
@@ -1136,6 +1232,90 @@ abstract class AppLocalizations {
   /// **'Frames'**
   String get capsulesFramesTitle;
 
+  /// Under "Anytime" in the "How does it open?" sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Open it whenever you like'**
+  String get capsulesHowAnytimeHint;
+
+  /// Where option: the capsule opens wherever you are.
+  ///
+  /// In en, this message translates to:
+  /// **'Anywhere'**
+  String get capsulesHowAnywhere;
+
+  /// Under "Anywhere" in the "How does it open?" sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wherever you are when it opens'**
+  String get capsulesHowAnywhereHint;
+
+  /// Where option: the capsule opens only within 150 m of where it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'Only when I\'m back here'**
+  String get capsulesHowHere;
+
+  /// Under "Only when I'm back here" in How does it open?
+  ///
+  /// In en, this message translates to:
+  /// **'Within 150 m of this spot'**
+  String get capsulesHowHereHint;
+
+  /// An option in the "How does it open?" sheet: choose the day on a calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get capsulesHowPick;
+
+  /// Under "Pick a date" before a day is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a day on the calendar'**
+  String get capsulesHowPickHint;
+
+  /// The rule in words, at the bottom of the "How does it open?" sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens anytime. It stays on the map where you left it.'**
+  String get capsulesHowSummaryAnytime;
+
+  /// The rule in words in How does it open?: anytime, only back at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens anytime, only within 150 m of this spot.'**
+  String get capsulesHowSummaryAnytimeHere;
+
+  /// The rule in words with a date.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}. It stays on the map where you left it.'**
+  String capsulesHowSummaryDate(String date);
+
+  /// The rule in words in How does it open?: on a day, only back at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}, only within 150 m of this spot.'**
+  String capsulesHowSummaryDateHere(String date);
+
+  /// Title of the sheet that sets when (and where) a capsule opens.
+  ///
+  /// In en, this message translates to:
+  /// **'How does it open?'**
+  String get capsulesHowTitle;
+
+  /// Group label in the "How does it open?" sheet (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'When'**
+  String get capsulesHowWhen;
+
+  /// Group label in the "How does it open?" sheet (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Where'**
+  String get capsulesHowWhere;
+
   /// Capsule menu item for a co-author: take themselves off the capsule.
   ///
   /// In en, this message translates to:
@@ -1154,11 +1334,23 @@ abstract class AppLocalizations {
   /// **'This capsule is not shared with you'**
   String get capsulesLinkNotShared;
 
+  /// On the photo of an opened loop capsule: it is a loop of this many frames.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Loop · 1 frame} other{Loop · {count} frames}}'**
+  String capsulesLoopBadge(int count);
+
   /// Screen reader label of the mark on a loop capsule's picture.
   ///
   /// In en, this message translates to:
   /// **'Loop'**
   String get capsulesLoopMark;
+
+  /// Spoken name of the ⋯ button of an opened capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get capsulesMore;
 
   /// No description provided for @capsulesOpenInMonth.
   ///
@@ -1166,35 +1358,11 @@ abstract class AppLocalizations {
   /// **'In a month'**
   String get capsulesOpenInMonth;
 
-  /// No description provided for @capsulesOpenInWeek.
-  ///
-  /// In en, this message translates to:
-  /// **'In a week'**
-  String get capsulesOpenInWeek;
-
   /// No description provided for @capsulesOpenInYear.
   ///
   /// In en, this message translates to:
   /// **'In a year'**
   String get capsulesOpenInYear;
-
-  /// Open date menu: remove the date, the capsule is open at once
-  ///
-  /// In en, this message translates to:
-  /// **'Open right away'**
-  String get capsulesOpenNow;
-
-  /// No description provided for @capsulesOpenPickDate.
-  ///
-  /// In en, this message translates to:
-  /// **'Pick a date…'**
-  String get capsulesOpenPickDate;
-
-  /// Open date preset
-  ///
-  /// In en, this message translates to:
-  /// **'Tomorrow'**
-  String get capsulesOpenTomorrow;
 
   /// Button on the pin map: back to the phone's position.
   ///
@@ -1226,24 +1394,6 @@ abstract class AppLocalizations {
   /// **'Put it here'**
   String get capsulesPinUse;
 
-  /// Capsule visibility: only the owner's friends can see it.
-  ///
-  /// In en, this message translates to:
-  /// **'Friends'**
-  String get capsulesPrivacyFriends;
-
-  /// Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'.
-  ///
-  /// In en, this message translates to:
-  /// **'Private'**
-  String get capsulesPrivacyPrivate;
-
-  /// Capsule visibility: everyone can see it. Agrees with 'capsule'.
-  ///
-  /// In en, this message translates to:
-  /// **'Public'**
-  String get capsulesPrivacyPublic;
-
   /// No description provided for @capsulesQueued.
   ///
   /// In en, this message translates to:
@@ -1255,6 +1405,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reply to the author'**
   String get capsulesQuickReply;
+
+  /// Under the capsule's title in the quick reply card: the capsule is sent along.
+  ///
+  /// In en, this message translates to:
+  /// **'goes with your message'**
+  String get capsulesQuickReplyAttached;
 
   /// Hint of the quick reply field (the capsule's author).
   ///
@@ -1286,11 +1442,17 @@ abstract class AppLocalizations {
   /// **'Reply'**
   String get capsulesReply;
 
-  /// No description provided for @capsulesReplyHint.
+  /// The pill at the bottom of someone else's capsule that writes to them in chat, and the title of that card.
   ///
   /// In en, this message translates to:
-  /// **'Reply to {name}...'**
-  String capsulesReplyHint(String name);
+  /// **'Reply to {name}'**
+  String capsulesReplyTo(String name);
+
+  /// Chip above the comment field while replying to someone.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {name}'**
+  String capsulesReplyingTo(String name);
 
   /// No description provided for @capsulesReport.
   ///
@@ -1309,6 +1471,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report capsule'**
   String get capsulesReportCapsule;
+
+  /// Under "What is wrong with it?" when reporting.
+  ///
+  /// In en, this message translates to:
+  /// **'The Later team will look at it. The author is not told who reported it.'**
+  String get capsulesReportHint;
 
   /// No description provided for @capsulesReportNudity.
   ///
@@ -1364,6 +1532,12 @@ abstract class AppLocalizations {
   /// **'A time capsule on Later: {title}\n{link}'**
   String capsulesShareMessage(String title, String link);
 
+  /// In the ⋯ menu of an opened capsule: closes it and centres the map on its pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Show on the map'**
+  String get capsulesShowOnMap;
+
   /// Loop speed: 150 ms per frame.
   ///
   /// In en, this message translates to:
@@ -1382,11 +1556,77 @@ abstract class AppLocalizations {
   /// **'Slow'**
   String get capsulesSpeedSlow;
 
+  /// Create page, "Who sees it" row: a public capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get capsulesWhoEveryone;
+
+  /// Create page, "Who sees it" row: a friends-only capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get capsulesWhoFriends;
+
+  /// Create page, "Who sees it" row: a private capsule.
+  ///
+  /// In en, this message translates to:
+  /// **'Only me'**
+  String get capsulesWhoOnlyMe;
+
   /// Line on the user's own capsule (or one they co-authored) naming the others who made it.
   ///
   /// In en, this message translates to:
   /// **'With {names}'**
   String capsulesWith(String names);
+
+  /// The gift tag on a wrapped capsule: who left it (the name is shown bold).
+  ///
+  /// In en, this message translates to:
+  /// **'From {name}'**
+  String capsulesWrapFrom(String name);
+
+  /// The gift tag on a wrapped capsule the user left themselves.
+  ///
+  /// In en, this message translates to:
+  /// **'From you'**
+  String get capsulesWrapFromYou;
+
+  /// Under a wrapped capsule: press and hold it to open it.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to open'**
+  String get capsulesWrapHold;
+
+  /// Under a wrapped capsule after it was let go too early.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold a little longer'**
+  String get capsulesWrapHoldLonger;
+
+  /// Under a wrapped capsule while it is being held.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep holding'**
+  String get capsulesWrapKeepHolding;
+
+  /// The gift tag on a wrapped capsule: when and where it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'Left {date} in {place}'**
+  String capsulesWrapLeftIn(String date, String place);
+
+  /// Screen reader label of a wrapped capsule; a double tap opens it at once.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the capsule'**
+  String get capsulesWrapOpen;
+
+  /// On a wrapped capsule, top: how long it waited since it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Waited 1 day} other{Waited {count} days}}'**
+  String capsulesWrapWaited(int count);
 
   /// No description provided for @capsulesYou.
   ///
@@ -2306,17 +2546,47 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
   String historyYearsAgo(int count);
 
+  /// How far a place capsule is (km with one decimal).
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km away'**
+  String mapCapsuleAwayKm(String km);
+
+  /// How far a place capsule is.
+  ///
+  /// In en, this message translates to:
+  /// **'{metres} m away'**
+  String mapCapsuleAwayMetres(int metres);
+
+  /// Map card of a capsule that opens only at its spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Be there to open'**
+  String get mapCapsuleBeThere;
+
+  /// Pill on a place capsule's map card: opens directions to it.
+  ///
+  /// In en, this message translates to:
+  /// **'Go there'**
+  String get mapCapsuleGoThere;
+
+  /// Second line of a locked capsule's map card: who left it and when.
+  ///
+  /// In en, this message translates to:
+  /// **'Left by {name} · {date}'**
+  String mapCapsuleLeftBy(String name, String date);
+
+  /// Second line of a map card when the author is not shown: when it was left.
+  ///
+  /// In en, this message translates to:
+  /// **'Left {date}'**
+  String mapCapsuleLeftOn(String date);
+
   /// Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'.
   ///
   /// In en, this message translates to:
   /// **'Locked'**
   String get mapCapsuleLocked;
-
-  /// Shown in the capsule card opened from the map when the capsule has no description.
-  ///
-  /// In en, this message translates to:
-  /// **'This capsule has no description.'**
-  String get mapCapsuleNoDescription;
 
   /// Button in the window above an open capsule's pin: shows the capsule. A verb.
   ///
@@ -2324,23 +2594,101 @@ abstract class AppLocalizations {
   /// **'Open'**
   String get mapCapsuleOpen;
 
+  /// The map card of a capsule without an opening date.
+  ///
+  /// In en, this message translates to:
+  /// **'Open anytime'**
+  String get mapCapsuleOpenAnytime;
+
+  /// The map card of an open capsule: by the check, with the day it opened on the line below.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened on'**
+  String get mapCapsuleOpenedOnLabel;
+
+  /// The map card of a capsule that opened today.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened today'**
+  String get mapCapsuleOpenedToday;
+
+  /// The map card of a capsule that opened yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Opened yesterday'**
+  String get mapCapsuleOpenedYesterday;
+
   /// Countdown in the small window above a locked capsule's pin. {time} is a compact duration made of the mapDuration* parts, e.g. '2d 5h 30m 15s'.
   ///
   /// In en, this message translates to:
   /// **'Opens in {time}'**
   String mapCapsuleOpensIn(String time);
 
-  /// Line in the small window above a capsule pin when the capsule is already open.
+  /// Under the countdown of a locked capsule on its map card. {date} like "1 Dec 2026".
   ///
   /// In en, this message translates to:
-  /// **'Check out what\'s inside!'**
-  String get mapCapsuleReady;
+  /// **'Opens on {date}'**
+  String mapCapsuleOpensOn(String date);
+
+  /// Map card of a locked place capsule: its day, only at its spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}, here'**
+  String mapCapsuleOpensOnHere(String date);
+
+  /// Map card of a place capsule whose date has come.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to open'**
+  String get mapCapsuleReadyToOpen;
 
   /// A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user.
   ///
   /// In en, this message translates to:
   /// **'This capsule is no longer available'**
   String get mapCapsuleUnavailable;
+
+  /// Opening a place capsule failed for another reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open it. Try again.'**
+  String get mapCapsuleUnlockFailed;
+
+  /// Opening a place capsule failed: no location fix.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is needed to open it here.'**
+  String get mapCapsuleUnlockNoLocation;
+
+  /// Opening a place capsule failed: its date hasn't come.
+  ///
+  /// In en, this message translates to:
+  /// **'It isn\'t ready to open yet.'**
+  String get mapCapsuleUnlockNotYet;
+
+  /// Opening a place capsule failed: too far.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re {metres} m away. Come within 150 m to open it.'**
+  String mapCapsuleUnlockTooFar(int metres);
+
+  /// Map card of a place capsule when the user's location is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location to see how far'**
+  String get mapCapsuleWhereUnknown;
+
+  /// Map card of a place capsule: the user is within 150 m of it.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re here'**
+  String get mapCapsuleYouAreHere;
+
+  /// The map card of an open capsule the user has not unwrapped yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Yours to open'**
+  String get mapCapsuleYoursToOpen;
 
   /// Screen reader label of the map compass, shown while the map is turned; a tap points it north.
   ///
@@ -3308,6 +3656,24 @@ abstract class AppLocalizations {
   /// **'{name} created a new capsule'**
   String notificationsCapsuleBody(String name);
 
+  /// In-app notification: a capsule opened on its date ({name} is shown bold).
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule “{title}” from {name} is open'**
+  String notificationsCapsuleOpenBody(String title, String name);
+
+  /// In-app notification: a place capsule became ready ({name} bold).
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule “{title}” from {name} is ready. It\'s waiting in {place}'**
+  String notificationsCapsuleReadyBody(String title, String name, String place);
+
+  /// In-app notification: a place capsule became ready, its place unknown ({name} bold).
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule “{title}” from {name} is ready. It\'s waiting where it was left'**
+  String notificationsCapsuleReadyHereBody(String title, String name);
+
   /// No description provided for @notificationsChannelActivity.
   ///
   /// In en, this message translates to:
@@ -3572,6 +3938,24 @@ abstract class AppLocalizations {
   /// **'New Capsule'**
   String get notificationsTypeCapsule;
 
+  /// Kind of notification: a capsule the user may open is near (shown by the phone).
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Nearby'**
+  String get notificationsTypeCapsuleNearby;
+
+  /// Kind of notification: a capsule with a date opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Open'**
+  String get notificationsTypeCapsuleOpen;
+
+  /// Kind of notification: a place capsule became ready to open there.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Ready'**
+  String get notificationsTypeCapsuleReady;
+
   /// Title of a notification: a friend made a capsule with the user (co-author).
   ///
   /// In en, this message translates to:
@@ -3608,6 +3992,12 @@ abstract class AppLocalizations {
   /// **'New Message'**
   String get notificationsTypeMessage;
 
+  /// Kind of notification: welcome to a new country (shown by the phone).
+  ///
+  /// In en, this message translates to:
+  /// **'New Country'**
+  String get notificationsTypeNewCountry;
+
   /// No description provided for @notificationsTypeOther.
   ///
   /// In en, this message translates to:
@@ -3643,6 +4033,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown location'**
   String get placeUnknown;
+
+  /// Button on the "Welcome to …" notification: opens the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a capsule'**
+  String get placesLeaveCapsule;
+
+  /// Under "You're near …".
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s {metres} m away. Hold to open it there.'**
+  String placesNearbyBody(int metres);
+
+  /// Phone notification: a capsule the user may open is close (F4).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re near {title}'**
+  String placesNearbyTitle(String title);
+
+  /// Under "Welcome to …".
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been here for 2 hours. Leave a memory?'**
+  String get placesWelcomeBody;
+
+  /// Phone notification after two hours in a new country (F3).
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to {country}'**
+  String placesWelcomeTitle(String country);
 
   /// On the own profile when there is no "about me" line yet; opens its editor.
   ///
@@ -4940,6 +5360,60 @@ abstract class AppLocalizations {
   /// **'Standard (sent faster)'**
   String get settingsPhotoQualityStandard;
 
+  /// Button: go on to the location permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get settingsPlacesAlwaysContinue;
+
+  /// Background location was not given.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location “All the time” in Settings to turn this on.'**
+  String get settingsPlacesAlwaysDenied;
+
+  /// Why background location is asked for.
+  ///
+  /// In en, this message translates to:
+  /// **'To tell you about capsules and countries while Later is closed, Android must let it use your location all the time. Choose “Allow all the time” next.'**
+  String get settingsPlacesAlwaysMessage;
+
+  /// Before asking for background location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location all the time'**
+  String get settingsPlacesAlwaysTitle;
+
+  /// Switch: "Welcome to …" alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to a new country'**
+  String get settingsPlacesCountry;
+
+  /// Under "Welcome to a new country".
+  ///
+  /// In en, this message translates to:
+  /// **'After two hours in a country you\'re visiting'**
+  String get settingsPlacesCountryHint;
+
+  /// Under the Places section.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone checks where it is about every half hour, even when Later is closed. Later doesn\'t save or share your location.'**
+  String get settingsPlacesFooter;
+
+  /// Switch: "You're near …" alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules near you'**
+  String get settingsPlacesNearby;
+
+  /// Under "Capsules near you".
+  ///
+  /// In en, this message translates to:
+  /// **'Within 200 m of one you can open'**
+  String get settingsPlacesNearbyHint;
+
   /// No description provided for @settingsPrivacy.
   ///
   /// In en, this message translates to:
@@ -5131,6 +5605,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'PHOTOS'**
   String get settingsSectionPhotos;
+
+  /// Notification settings section: alerts from where the phone is.
+  ///
+  /// In en, this message translates to:
+  /// **'PLACES'**
+  String get settingsSectionPlaces;
 
   /// No description provided for @settingsSectionQuestions.
   ///
@@ -5407,6 +5887,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your password'**
   String get settingsYourPassword;
+
+  /// Button on the new stamp: close it.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get stampsLater;
+
+  /// After a capsule in a new town (E1).
+  ///
+  /// In en, this message translates to:
+  /// **'New stamp'**
+  String get stampsNew;
+
+  /// Button on the new stamp: the passport (for now the countries and towns view).
+  ///
+  /// In en, this message translates to:
+  /// **'Open passport'**
+  String get stampsOpenPassport;
+
+  /// Printed at the top of a passport page, as on a real passport (the same in every language).
+  ///
+  /// In en, this message translates to:
+  /// **'STAMPS · PIECZĘCIE'**
+  String get stampsPageLabel;
+
+  /// Under "New stamp": the town and how many towns the user has now. {ordinal} is the number as an ordinal in the language ("22nd", "22.", "22-й").
+  ///
+  /// In en, this message translates to:
+  /// **'{town}, your {ordinal} town'**
+  String stampsTownNumber(String town, String ordinal);
 
   /// Streak card while today is not counted yet (the streak ends tonight without a capsule).
   ///

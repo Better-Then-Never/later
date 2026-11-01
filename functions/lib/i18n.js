@@ -32,6 +32,12 @@ const MESSAGES = {
     achievementBody: '{title}',
     streakTitle: 'Keep your streak',
     streakBody: 'Your {days}-day streak ends tonight. Make a capsule!',
+    openTitle: '{title} is open',
+    openBodyOwn: 'Your capsule from {date}. Tap to open it.',
+    openBodyFrom: "{name}'s capsule from {date}. Tap to open it.",
+    readyTitle: '{title} is ready',
+    readyBody: "{elapsed}. It's waiting for you in {place}.",
+    readyBodyNoPlace: "{elapsed}. It's waiting for you where it was left.",
     someone: 'Someone',
   },
   ru: {
@@ -61,6 +67,12 @@ const MESSAGES = {
     achievementBody: '{title}',
     streakTitle: 'Сохраните серию',
     streakBody: 'Ваша серия из {days} дн. прервётся сегодня ночью. Создайте капсулу!',
+    openTitle: '«{title}» открыта',
+    openBodyOwn: 'Ваша капсула, оставленная {date}. Нажмите, чтобы открыть.',
+    openBodyFrom: 'Капсула {name}, оставленная {date}. Нажмите, чтобы открыть.',
+    readyTitle: '«{title}» готова',
+    readyBody: '{elapsed}. Она ждёт вас: {place}.',
+    readyBodyNoPlace: '{elapsed}. Она ждёт там, где её оставили.',
     someone: 'Кто-то',
   },
   pl: {
@@ -90,6 +102,12 @@ const MESSAGES = {
     achievementBody: '{title}',
     streakTitle: 'Nie przerywaj serii',
     streakBody: 'Twoja seria ({days} dni) skończy się dziś w nocy. Stwórz kapsułę!',
+    openTitle: '„{title}” jest otwarta',
+    openBodyOwn: 'Twoja kapsuła z {date}. Dotknij, by ją otworzyć.',
+    openBodyFrom: 'Kapsuła od {name} z {date}. Dotknij, by ją otworzyć.',
+    readyTitle: '„{title}” jest gotowa',
+    readyBody: '{elapsed}. Czeka na Ciebie: {place}.',
+    readyBodyNoPlace: '{elapsed}. Czeka tam, gdzie ją zostawiono.',
     someone: 'Ktoś',
   },
   de: {
@@ -119,6 +137,12 @@ const MESSAGES = {
     achievementBody: '{title}',
     streakTitle: 'Halte deine Serie',
     streakBody: 'Deine Serie von {days} Tagen endet heute Nacht. Erstelle eine Kapsel!',
+    openTitle: '„{title}“ ist offen',
+    openBodyOwn: 'Deine Kapsel vom {date}. Tippe, um sie zu öffnen.',
+    openBodyFrom: 'Kapsel von {name} vom {date}. Tippe, um sie zu öffnen.',
+    readyTitle: '„{title}“ ist bereit',
+    readyBody: '{elapsed}. Sie wartet in {place} auf dich.',
+    readyBodyNoPlace: '{elapsed}. Sie wartet dort auf dich, wo sie hinterlassen wurde.',
     someone: 'Jemand',
   },
   es: {
@@ -148,9 +172,73 @@ const MESSAGES = {
     achievementBody: '{title}',
     streakTitle: 'Mantén tu racha',
     streakBody: 'Tu racha de {days} días termina esta noche. ¡Crea una cápsula!',
+    openTitle: '«{title}» está abierta',
+    openBodyOwn: 'Tu cápsula del {date}. Tócala para abrirla.',
+    openBodyFrom: 'La cápsula de {name} del {date}. Tócala para abrirla.',
+    readyTitle: '«{title}» está lista',
+    readyBody: '{elapsed}. Te espera en {place}.',
+    readyBodyNoPlace: '{elapsed}. Te espera donde la dejaron.',
     someone: 'Alguien',
   },
 };
+
+/**
+ * How long a capsule waited ("A year has passed", "Прошло 3 года"):
+ * whole years, else months, else days, by each language's plural rules.
+ */
+const ELAPSED = {
+  en: {
+    year: { 1: 'A year has passed', other: '{n} years have passed' },
+    month: { 1: 'A month has passed', other: '{n} months have passed' },
+    day: { 1: 'A day has passed', other: '{n} days have passed' },
+  },
+  de: {
+    year: { 1: 'Ein Jahr ist vergangen', other: '{n} Jahre sind vergangen' },
+    month: { 1: 'Ein Monat ist vergangen', other: '{n} Monate sind vergangen' },
+    day: { 1: 'Ein Tag ist vergangen', other: '{n} Tage sind vergangen' },
+  },
+  es: {
+    year: { 1: 'Ha pasado un año', other: 'Han pasado {n} años' },
+    month: { 1: 'Ha pasado un mes', other: 'Han pasado {n} meses' },
+    day: { 1: 'Ha pasado un día', other: 'Han pasado {n} días' },
+  },
+  pl: {
+    year: { 1: 'Minął rok', few: 'Minęły {n} lata', many: 'Minęło {n} lat', other: 'Minęło {n} roku' },
+    month: { 1: 'Minął miesiąc', few: 'Minęły {n} miesiące', many: 'Minęło {n} miesięcy', other: 'Minęło {n} miesiąca' },
+    day: { 1: 'Minął dzień', few: 'Minęły {n} dni', many: 'Minęło {n} dni', other: 'Minęło {n} dnia' },
+  },
+  ru: {
+    year: { 1: 'Прошёл год', one: 'Прошёл {n} год', few: 'Прошло {n} года', many: 'Прошло {n} лет', other: 'Прошло {n} года' },
+    month: { 1: 'Прошёл месяц', one: 'Прошёл {n} месяц', few: 'Прошло {n} месяца', many: 'Прошло {n} месяцев', other: 'Прошло {n} месяца' },
+    day: { 1: 'Прошёл день', one: 'Прошёл {n} день', few: 'Прошло {n} дня', many: 'Прошло {n} дней', other: 'Прошло {n} дня' },
+  },
+};
+
+function elapsed(lang, from, to) {
+  const forms = ELAPSED[LANGUAGES.includes(lang) ? lang : 'en'];
+  const days = Math.max(1, Math.floor((to.getTime() - from.getTime()) / 86400000));
+  const [unit, n] =
+    days >= 365 ? ['year', Math.floor(days / 365)] :
+    days >= 30 ? ['month', Math.floor(days / 30)] :
+    ['day', days];
+  const table = forms[unit];
+  const form = n === 1 ? table[1] : table[new Intl.PluralRules(lang).select(n)] || table.other;
+  return form.replace('{n}', String(n));
+}
+
+/** [date] as the app writes it ("6 Oct 2025") in [lang]. */
+function day(lang, date) {
+  const locale = lang === 'en' || !LANGUAGES.includes(lang) ? 'en-GB' : lang;
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+    .format(date)
+    // Russian adds "г."; the sentence brings its own full stop.
+    .replace(/\s*г\.$/, '');
+}
 
 function languageOf(settings) {
   const lang = settings && settings.language;
@@ -167,4 +255,4 @@ function t(lang, key, values = {}) {
   );
 }
 
-module.exports = { LANGUAGES, MESSAGES, languageOf, t };
+module.exports = { LANGUAGES, MESSAGES, languageOf, t, elapsed, day };

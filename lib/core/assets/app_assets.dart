@@ -55,6 +55,8 @@ abstract final class AppIcons {
   static const capsulePinColor = 'assets/icons/capsule/pin_color.png';
   static const capsulePrivacy = 'assets/icons/capsule/privacy.png';
   static const capsuleTimer = 'assets/icons/capsule/timer.png';
+  static const capsuleSendArrow = 'assets/icons/capsule/send_arrow.png';
+  static const capsuleFavorites = 'assets/icons/capsule/favorites.png';
   static const _capsulePinColors = {
     'red',
     'blue',
@@ -128,11 +130,17 @@ abstract final class AppIcons {
       'assets/icons/profile/notifications_black_full.png';
   static const openMenu = 'assets/icons/profile/open_menu.png';
   static const reply = 'assets/icons/profile/reply.png';
+  static const profileDone = 'assets/icons/profile/done.png';
+  static const profileWriteNewMessage =
+      'assets/icons/profile/write_new_message.png';
   static const sendCapsule = 'assets/icons/profile/send_capsule.png';
   static const sendMessage = 'assets/icons/profile/send_message.png';
   static const settings = 'assets/icons/profile/settings.png';
   static const share = 'assets/icons/profile/share.png';
   static const shareBlack = 'assets/icons/profile/share_black.png';
+
+  /// The share sign in white, on dark discs over photos in both themes.
+  static const shareWhite = '${AppAssetDirs.iconsDark}profile/share_black.png';
 
   /// Every file under assets/icons (used by the asset test).
   static List<String> get all => [
@@ -152,6 +160,8 @@ abstract final class AppIcons {
     capsulePinColor,
     capsulePrivacy,
     capsuleTimer,
+    capsuleSendArrow,
+    capsuleFavorites,
     for (final c in _capsulePinColors) capsulePin(c),
     friendsDeleteReset,
     friendsBook,
@@ -189,6 +199,8 @@ abstract final class AppIcons {
     notificationsBlackFull,
     openMenu,
     reply,
+    profileDone,
+    profileWriteNewMessage,
     sendCapsule,
     sendMessage,
     settings,

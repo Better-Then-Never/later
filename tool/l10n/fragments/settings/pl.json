@@ -237,5 +237,15 @@
   "settingsUploadsWifiOnlyHint": "Kapsuły zrobione bez Wi-Fi czekają na telefonie na Wi-Fi.",
   "settingsNotificationsVibrate": "Wibracje",
   "settingsNotificationsVibrateNeedsSound": "Działa razem z dźwiękiem",
-  "settingsAboutMapData": "Dane mapy i licencje"
+  "settingsAboutMapData": "Dane mapy i licencje",
+  "settingsSectionPlaces": "MIEJSCA",
+  "settingsPlacesNearby": "Kapsuły w pobliżu",
+  "settingsPlacesNearbyHint": "W promieniu 200 m od takiej, którą możesz otworzyć",
+  "settingsPlacesCountry": "Powitanie w nowym kraju",
+  "settingsPlacesCountryHint": "Po dwóch godzinach w odwiedzanym kraju",
+  "settingsPlacesFooter": "Telefon sprawdza swoje położenie mniej więcej co pół godziny, także gdy Later jest zamknięty. Later nie zapisuje ani nie udostępnia Twojej lokalizacji.",
+  "settingsPlacesAlwaysTitle": "Lokalizacja zawsze",
+  "settingsPlacesAlwaysMessage": "Aby Later mógł informować o kapsułach i krajach, gdy jest zamknięty, Android musi zawsze zezwalać na lokalizację. Wybierz dalej „Zezwalaj zawsze”.",
+  "settingsPlacesAlwaysContinue": "Dalej",
+  "settingsPlacesAlwaysDenied": "Aby to włączyć, zezwól w Ustawieniach na lokalizację „Zawsze”."
 }

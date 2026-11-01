@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../capsules/opening/capsule_locks.dart';
 import '../../../core/assets/app_assets.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
@@ -84,7 +85,15 @@ class CapsuleListTile extends StatelessWidget {
                     child: Stack(
                       children: [
                         _Thumbnail(
-                          url: capsule.thumbUrl ?? capsule.imageUrl,
+                          // A sealed one shows its picture once it may
+                          // open (capsule v3 B3).
+                          url: switch (CapsuleLocks.shown(
+                            context,
+                            capsule,
+                            DateTime.now(),
+                          )) {
+                            final shown => shown.thumbUrl ?? shown.imageUrl,
+                          },
                           width: screen.width * 0.2,
                           height: screen.height * 0.15,
                         ),

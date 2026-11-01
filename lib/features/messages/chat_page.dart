@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_routes.dart';
+import '../../app/shell/selected_page.dart';
 import '../../core/assets/app_assets.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/l10n/l10n.dart';
@@ -37,7 +38,9 @@ import '../../shared/widgets/photo_viewer.dart';
 import '../../shared/widgets/popup/popup_notification_service.dart';
 import '../../shared/widgets/user/user_round_avatar.dart';
 import '../friends/friends_store.dart';
+import '../capsules/opening/capsule_locks.dart';
 import '../capsules/social/capsule_detail_dialog.dart';
+import '../map/map_focus.dart';
 import '../capsules/social/capsule_social_panel.dart'
     show pickReportReason, showReportResult;
 import '../settings/settings_store.dart';
@@ -493,6 +496,14 @@ class _ChatViewState extends State<_ChatView> {
         message: context.l10n.messagesCapsuleUnavailable,
         position: NotificationPosition.top,
       );
+      return;
+    }
+    // Not open for this user yet (its date, or its spot): on the map.
+    if (!CapsuleLocks.openAt(context, capsule, DateTime.now())) {
+      if (capsule.location == null) return;
+      context.read<MapFocus>().focus(capsule);
+      AppRoutes.backToRoot();
+      selectedPageNotifier.value = AppTabs.map;
       return;
     }
     await CapsuleDetailDialog.show(context, capsule);

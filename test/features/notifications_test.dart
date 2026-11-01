@@ -201,6 +201,10 @@ void main() {
           'New Friend',
           'Achievement',
           'Made Together',
+          'Capsule Open',
+          'Capsule Ready',
+          'Capsule Nearby',
+          'New Country',
           'Notification',
         ],
       );

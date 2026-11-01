@@ -7,6 +7,7 @@ const { setAdmin } = require('./set-admin');
 const { setVerified } = require('./set-verified');
 const { backfillCounts } = require('./backfill-counts');
 const { announce, functionsAdmin } = require('./announce');
+const { sealWaitingCapsules } = require('./seal-waiting-capsules');
 
 (async () => {
   const { db, auth } = init([]);
@@ -42,6 +43,31 @@ const { announce, functionsAdmin } = require('./announce');
   assert.equal(counted.followingCount, 1);
   assert.deepEqual(counted.stats, { capsules: 2, publicCapsules: 1 });
   assert.equal((await backfillCounts(db)).changed, 0, 'running again changes nothing');
+
+  // Sealing capsules that wait for their date (capsule v3 B3).
+  const { Timestamp } = require('firebase-admin/firestore');
+  const inADay = Timestamp.fromMillis(Date.now() + 24 * 3600 * 1000);
+  await db.doc('capsules/wait').set({
+    ownerId: user.uid, imageUrl: 'https://img', thumbUrl: 'https://thumb',
+    description: 'Hi', title: 'Lake', openAt: inADay,
+  });
+  await db.doc('capsules/past').set({
+    ownerId: user.uid, imageUrl: 'https://img', openAt: Timestamp.fromMillis(Date.now() - 1000),
+  });
+  const sealDry = await sealWaitingCapsules(db, { dryRun: true });
+  assert.deepEqual(sealDry, { waiting: 1, sealed: 1, skipped: 0 });
+  assert.equal((await db.doc('capsules/wait').get()).get('imageUrl'), 'https://img');
+  await sealWaitingCapsules(db);
+  const waiting = (await db.doc('capsules/wait').get()).data();
+  assert.equal(waiting.sealed, true);
+  assert.equal(waiting.imageUrl, undefined);
+  assert.equal(waiting.description, undefined);
+  assert.deepEqual((await db.doc('capsules/wait/sealed/content').get()).data(), {
+    imageUrl: 'https://img', thumbUrl: 'https://thumb', description: 'Hi',
+  });
+  assert.equal((await db.doc('capsule_schedule/wait').get()).get('kind'), 'release');
+  assert.equal((await db.doc('capsules/past').get()).get('imageUrl'), 'https://img', 'open ones stay');
+  assert.deepEqual(await sealWaitingCapsules(db), { waiting: 1, sealed: 0, skipped: 1 }, 'once');
 
   // Announcement: written with the functions' firebase-admin (its server
   // timestamp failed to serialize with this folder's copy); FCM stands in.

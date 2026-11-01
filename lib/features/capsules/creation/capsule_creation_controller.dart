@@ -15,6 +15,8 @@ import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../map/current_location.dart';
 import '../outbox/capsule_outbox.dart';
+import '../../stamps/stamps.dart';
+import '../../../data/models/world.dart';
 import 'creation_draft.dart';
 
 /// State of the "Create Capsule" screen.
@@ -45,7 +47,14 @@ class CapsuleCreationController extends ChangeNotifier {
     GeocodingService? geocoding,
     CreationDraftStore? drafts,
     CreationDraft? draft,
+    Future<WorldSummary> Function()? world,
   }) : assert(recipientId == null || chats != null),
+       // The towns so far, read while the capsule is made (E1).
+       _world = world == null
+           ? Future.value()
+           : world()
+                 .then<WorldSummary?>((w) => w)
+                 .catchError((Object _) => null),
        _drafts = drafts,
        _photoPath = imagePath,
        _frames = List.of(framePaths),
@@ -79,7 +88,7 @@ class CapsuleCreationController extends ChangeNotifier {
   }
 
   final String ownerId;
-  final String _photoPath;
+  String _photoPath;
   final List<String> _frames;
 
   /// Every file the camera made for this capsule, removed frames too, so
@@ -96,6 +105,27 @@ class CapsuleCreationController extends ChangeNotifier {
 
   /// A loop keeps at least two frames.
   bool get canRemoveFrame => _frames.length > 2;
+
+  /// A new photo (or loop) from Retake: the title, the words and every
+  /// setting stay as they are; the square starts again from the middle.
+  void replacePhoto(String imagePath, {List<String> framePaths = const []}) {
+    _photoPath = imagePath;
+    _frames
+      ..clear()
+      ..addAll(framePaths);
+    _taken.addAll([imagePath, ...framePaths]);
+    _crop = null;
+    notifyListeners();
+  }
+
+  /// The square the capsule shows, chosen with Adjust (null: the middle).
+  CapsuleCrop? _crop;
+  CapsuleCrop? get crop => isLoop ? null : _crop;
+
+  set crop(CapsuleCrop? value) {
+    _crop = value;
+    notifyListeners();
+  }
 
   void removeFrame(int index) {
     if (!canRemoveFrame || index < 0 || index >= _frames.length) return;
@@ -177,6 +207,26 @@ class CapsuleCreationController extends ChangeNotifier {
   /// The last save kept the capsule on the phone, to upload later.
   bool get queued => _queued;
 
+  final Future<WorldSummary?> _world;
+
+  /// The passport stamp the saved capsule earned: its town and the town's
+  /// number (E1); null when the town had one already or is unknown.
+  ({String town, int number, String country})? _newStamp;
+  ({String town, int number, String country})? get newStamp => _newStamp;
+
+  Future<void> _stampFor(CapsuleDraft draft) async {
+    final world = await _world.timeout(
+      const Duration(seconds: 2),
+      onTimeout: () => null,
+    );
+    if (world == null) return;
+    _newStamp = Stamps.newStamp(
+      world,
+      countryCode: draft.countryCode,
+      placeName: draft.placeName,
+    );
+  }
+
   /// Starts from Settings > Privacy; approximate places are rounded before
   /// upload.
   LocationPrecision _precision;
@@ -220,6 +270,30 @@ class CapsuleCreationController extends ChangeNotifier {
     _precision = value
         ? LocationPrecision.approximate
         : LocationPrecision.exact;
+    // A rounded spot cannot be found again within 150 m.
+    if (value) _openWhere = OpenWhere.anywhere;
+    _exactForHere = false;
+    notifyListeners();
+  }
+
+  /// Where it may be opened (How it opens, B2).
+  OpenWhere _openWhere = OpenWhere.anywhere;
+  OpenWhere get openWhere => _openWhere;
+
+  /// "Only when I'm back here" turned Approximate location off (the
+  /// settings say why).
+  bool _exactForHere = false;
+  bool get exactForHere => _exactForHere;
+
+  set openWhere(OpenWhere value) {
+    if (value == _openWhere) return;
+    _openWhere = value;
+    _exactForHere = false;
+    if (value == OpenWhere.here &&
+        _precision == LocationPrecision.approximate) {
+      _precision = LocationPrecision.exact;
+      _exactForHere = true;
+    }
     notifyListeners();
   }
 
@@ -247,6 +321,8 @@ class CapsuleCreationController extends ChangeNotifier {
     _showAuthor = d.showAuthor;
     _precision = d.locationPrecision;
     _frameDelayMs = d.frameDelayMs;
+    _crop = d.crop;
+    _openWhere = d.openWhere;
     if (d.pin case final pin?) {
       _here = _position;
       _position = pin;
@@ -301,6 +377,8 @@ class CapsuleCreationController extends ChangeNotifier {
           showAuthor: _showAuthor,
           locationPrecision: _precision,
           frameDelayMs: _frameDelayMs,
+          crop: crop,
+          openWhere: _openWhere,
           pin: pin,
           recipientId: recipientId,
           capturedAt: capturedAt,
@@ -451,7 +529,9 @@ class CapsuleCreationController extends ChangeNotifier {
         imagePath: imagePath,
         framePaths: framePaths,
         frameDelayMs: _frameDelayMs,
+        crop: crop,
         openAt: _openAt,
+        openWhere: _openWhere,
         recipientId: recipientId,
         capturedAt: capturedAt,
         utcOffsetMinutes: capturedAt.timeZoneOffset.inMinutes,
@@ -469,6 +549,7 @@ class CapsuleCreationController extends ChangeNotifier {
         AppLogger.info('No connection: capsule $_id kept for later');
         await outbox.enqueue(draft);
         _queued = true;
+        await _stampFor(draft);
         _finished = true;
         unawaited(
           _keepInGallery()
@@ -494,12 +575,15 @@ class CapsuleCreationController extends ChangeNotifier {
         }
       }
       _finished = true;
+      await _stampFor(draft);
       unawaited(
         _keepInGallery()
             .whenComplete(_deleteTempPhoto)
             .whenComplete(_dropDraft),
       );
       return null;
+    } on PlaceCapsulesUnavailable {
+      return ValidationFailure(AppL10n.current.capsulesErrorHereUnavailable);
     } catch (e, st) {
       AppLogger.error('Saving the capsule failed', error: e, stackTrace: st);
       return AppFailure.from(

@@ -28,18 +28,35 @@ import '../../../app/session/session_controller.dart';
 /// is built, so it follows the app's language.
 enum _CameraError { unavailable, accessDenied, startFailed }
 
+/// A photo (or a loop's frames) the camera hands back to the Create page.
+class CameraShot {
+  const CameraShot(this.imagePath, {this.frames = const []});
+
+  final String imagePath;
+  final List<String> frames;
+}
+
 /// Full-screen camera used to take the photo of a new capsule.
 ///
 /// Fixes BUG-050 (flash button did nothing), BUG-051 (camera not released
 /// and re-initialised across app pause/resume), BUG-052 (black screen forever
 /// without a camera or when init fails) and BUG-053 (double captures).
 class CameraPage extends StatefulWidget {
-  const CameraPage({super.key, this.initialPrivacy, this.recipientId});
+  const CameraPage({
+    super.key,
+    this.initialPrivacy,
+    this.recipientId,
+    this.retake = false,
+  });
 
   final CapsulePrivacy? initialPrivacy;
 
   /// The friend the capsule will be sent to, if any.
   final String? recipientId;
+
+  /// Retake from the Create page: the new photo (or loop) goes back to it as
+  /// a [CameraShot], so the title and words written there stay.
+  final bool retake;
 
   @override
   State<CameraPage> createState() => _CameraPageState();
@@ -127,7 +144,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         ? ResolutionPreset.veryHigh
         : ResolutionPreset.high;
     unawaited(_setup());
-    unawaited(_loadDraft());
+    if (!widget.retake) unawaited(_loadDraft());
   }
 
   @override
@@ -297,6 +314,10 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       PerfMarks.now('camera.file');
       if (!mounted) return;
       PerfMarks.nextFrame('creation.firstFrame');
+      if (widget.retake) {
+        Navigator.of(context).pop(CameraShot(picture.path));
+        return;
+      }
       await AppRoutes.toCapsuleCreation(
         context,
         imagePath: picture.path,
@@ -363,6 +384,12 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       return;
     }
     // One frame is simply a photo.
+    if (widget.retake) {
+      Navigator.of(context).pop(
+        CameraShot(frames.first, frames: frames.length > 1 ? frames : const []),
+      );
+      return;
+    }
     await AppRoutes.toCapsuleCreation(
       context,
       imagePath: frames.first,

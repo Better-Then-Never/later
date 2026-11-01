@@ -54,5 +54,17 @@
   "notificationsFromLater": "Vom Later-Team",
   "notificationsSwipeRead": "Gelesen",
   "notificationsSwipeDelete": "Löschen",
-  "notificationsNowFriends": "Ihr seid jetzt Freunde"
+  "notificationsNowFriends": "Ihr seid jetzt Freunde",
+  "notificationsTypeCapsuleOpen": "Kapsel offen",
+  "notificationsTypeCapsuleReady": "Kapsel bereit",
+  "notificationsCapsuleOpenBody": "Die Kapsel „{title}“ von {name} ist offen",
+  "notificationsCapsuleReadyBody": "Die Kapsel „{title}“ von {name} ist bereit. Sie wartet in {place}",
+  "notificationsCapsuleReadyHereBody": "Die Kapsel „{title}“ von {name} ist bereit. Sie wartet dort, wo sie hinterlassen wurde",
+  "notificationsTypeCapsuleNearby": "Kapsel in der Nähe",
+  "notificationsTypeNewCountry": "Neues Land",
+  "placesNearbyTitle": "Du bist in der Nähe von {title}",
+  "placesNearbyBody": "Sie ist {metres} m entfernt. Halte gedrückt, um sie dort zu öffnen.",
+  "placesWelcomeTitle": "Willkommen in {country}",
+  "placesWelcomeBody": "Du bist seit 2 Stunden hier. Hinterlässt du eine Erinnerung?",
+  "placesLeaveCapsule": "Kapsel hinterlassen"
 }

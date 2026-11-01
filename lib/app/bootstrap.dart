@@ -11,8 +11,10 @@ import '../features/achievements/achievement_icon.dart';
 import '../features/map/map_licenses.dart';
 import '../firebase_options.dart';
 import 'app_scope.dart';
-// The background upload job's entry point (UploadWorker.kt) must be part
-// of the compiled app; nothing here calls it.
+// The background jobs' entry points (UploadWorker.kt, PlacesWorker.kt) must
+// be part of the compiled app; nothing here calls them.
+// ignore: unused_import
+import 'background_places_main.dart' show backgroundPlacesMain;
 // ignore: unused_import
 import 'background_uploads_main.dart' show backgroundUploadsMain;
 import 'firebase_setup.dart';

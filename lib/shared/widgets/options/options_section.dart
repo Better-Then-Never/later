@@ -130,10 +130,18 @@ class OptionsSwitchRow extends StatelessWidget {
 
 /// The app's switch: brand green when on, grey when off.
 class AppSwitch extends StatelessWidget {
-  const AppSwitch({super.key, required this.value, required this.onChanged});
+  const AppSwitch({
+    super.key,
+    required this.value,
+    required this.onChanged,
+    this.compact = false,
+  });
 
   final bool value;
   final ValueChanged<bool>? onChanged;
+
+  /// Without the 48 dp tap margin: for rows that toggle it on a tap anywhere.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +153,9 @@ class AppSwitch extends StatelessWidget {
       inactiveThumbColor: AppColors.onAccent,
       inactiveTrackColor: context.palette.disabled,
       trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+      materialTapTargetSize: compact
+          ? MaterialTapTargetSize.shrinkWrap
+          : MaterialTapTargetSize.padded,
     );
   }
 }

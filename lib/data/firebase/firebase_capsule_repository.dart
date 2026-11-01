@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../core/logging/app_logger.dart';
 import '../models/capsule.dart';
+import '../models/geo_position.dart';
 import '../repositories/repositories.dart';
 import '../services/image_processor.dart';
 import 'firestore_mappers.dart';
@@ -277,15 +279,21 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
           ]
         : const <Reference>[];
     var frameUrls = const <String>[];
-    // A small copy for lists, chats and the map card. Rules deployed before
-    // it refuse it: the capsule is then saved without one.
+    // Not open at once: its photo and words are kept apart (capsule v3 B3).
+    var sealed = draft.sealedAt(DateTime.now());
+    // A small copy for lists, chats and the map card: the square the
+    // capsule shows (capsule v3 Adjust; the middle one by default). Rules
+    // deployed before it refuse it: the capsule is then saved without one.
     final thumbRef = _thumbRef(draft.ownerId, doc.id);
     String? thumbUrl;
     try {
-      final thumb = await _processor.capsuleJpegFromFile(
+      final crop = draft.crop;
+      final thumb = await _processor.capsuleSquareJpegFromFile(
         draft.imagePath,
-        maxDimension: thumbSize,
-        quality: 75,
+        size: thumbSize,
+        crop: crop == null
+            ? null
+            : (x: crop.x, y: crop.y, w: crop.w, h: crop.h),
       );
       await thumbRef.putData(
         thumb,
@@ -311,15 +319,25 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
             return frameRefs[i].getDownloadURL();
           }(),
       ]);
-      await _setNew(
-        doc,
-        FirestoreMappers.newCapsule(
+      if (sealed) {
+        sealed = await _setSealed(
+          doc,
           draft,
           imageUrl: imageUrl,
           frameUrls: frameUrls,
           thumbUrl: thumbUrl,
-        ),
-      );
+        );
+      } else {
+        await _setNew(
+          doc,
+          FirestoreMappers.newCapsule(
+            draft,
+            imageUrl: imageUrl,
+            frameUrls: frameUrls,
+            thumbUrl: thumbUrl,
+          ),
+        );
+      }
     } catch (_) {
       // Do not leave orphaned images behind.
       await Future.wait([
@@ -329,7 +347,7 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       ]);
       rethrow;
     }
-    return Capsule(
+    final whole = Capsule(
       id: doc.id,
       ownerId: draft.ownerId,
       title: draft.title,
@@ -355,7 +373,141 @@ class FirebaseCapsuleRepository implements CapsuleRepository {
       placeName: draft.placeName,
       frames: frameUrls,
       frameDelayMs: draft.frameDelayMs,
+      crop: draft.crop,
+      openWhere: draft.openWhere,
     );
+    // Sealed: as the server keeps it, without its photo and words.
+    if (!sealed) return whole;
+    return Capsule(
+      id: whole.id,
+      ownerId: whole.ownerId,
+      title: whole.title,
+      location: whole.location,
+      privacy: whole.privacy,
+      color: whole.color,
+      createdAt: whole.createdAt,
+      openAt: whole.openAt,
+      isScheduled: whole.isScheduled,
+      sharedWith: whole.sharedWith,
+      capturedAt: whole.capturedAt,
+      utcOffsetMinutes: whole.utcOffsetMinutes,
+      showAuthor: whole.showAuthor,
+      coAuthors: whole.coAuthors,
+      allowComments: whole.allowComments,
+      allowReactions: whole.allowReactions,
+      locationPrecision: whole.locationPrecision,
+      placeName: whole.placeName,
+      frameDelayMs: whole.frameDelayMs,
+      crop: whole.crop,
+      openWhere: whole.openWhere,
+      sealed: true,
+    );
+  }
+
+  /// The capsule and its sealed part in one batch. Rules from before the
+  /// locks refuse it: a dated capsule is then written whole (as before),
+  /// a place capsule cannot be. Returns whether it went sealed.
+  Future<bool> _setSealed(
+    DocumentReference<Map<String, dynamic>> doc,
+    CapsuleDraft draft, {
+    required String imageUrl,
+    required List<String> frameUrls,
+    required String? thumbUrl,
+  }) async {
+    final batch = _db.batch()
+      ..set(
+        doc,
+        FirestoreMappers.newCapsule(
+          draft,
+          imageUrl: imageUrl,
+          frameUrls: frameUrls,
+          thumbUrl: thumbUrl,
+          sealed: true,
+        ),
+      )
+      ..set(
+        doc.collection(FirestorePaths.sealed).doc(FirestorePaths.sealedContent),
+        FirestoreMappers.sealedContent(
+          draft,
+          imageUrl: imageUrl,
+          frameUrls: frameUrls,
+          thumbUrl: thumbUrl,
+        ),
+      );
+    try {
+      await batch.commit();
+      return true;
+    } on FirebaseException catch (e) {
+      if (e.code != 'permission-denied') rethrow;
+      if (draft.openWhere == OpenWhere.here) {
+        throw const PlaceCapsulesUnavailable();
+      }
+      AppLogger.warning('Sealed capsule refused (older rules): written whole');
+      await _setNew(
+        doc,
+        FirestoreMappers.newCapsule(
+          draft,
+          imageUrl: imageUrl,
+          frameUrls: frameUrls,
+          thumbUrl: thumbUrl,
+        ),
+      );
+      return false;
+    }
+  }
+
+  @override
+  Future<CapsuleContent?> sealedContent(String capsuleId) async {
+    final capsule = _capsules.doc(capsuleId);
+    final part = await capsule
+        .collection(FirestorePaths.sealed)
+        .doc(FirestorePaths.sealedContent)
+        .get();
+    if (part.exists) return FirestoreMappers.capsuleContent(part.data());
+    // Released since (functions/lib/locks.js): the capsule carries it again.
+    return FirestoreMappers.capsuleContent((await capsule.get()).data());
+  }
+
+  @override
+  Stream<Set<String>> watchUnlocked(String uid) => _db
+      .collection(FirestorePaths.users)
+      .doc(uid)
+      .collection(FirestorePaths.unlocked)
+      .snapshots()
+      .map((s) => {for (final d in s.docs) d.id});
+
+  @override
+  Future<CapsuleContent?> unlockHere(
+    String capsuleId,
+    GeoPosition at, {
+    double accuracy = 0,
+  }) async {
+    try {
+      final result = await FirebaseFunctions.instance
+          .httpsCallable('unlockCapsule')
+          .call<Map<String, dynamic>>({
+            'capsuleId': capsuleId,
+            'lat': at.latitude,
+            'lng': at.longitude,
+            'accuracy': accuracy,
+          });
+      final content = result.data['content'];
+      return content is Map
+          ? FirestoreMappers.capsuleContent(Map<String, dynamic>.from(content))
+          : null;
+    } on FirebaseFunctionsException catch (e) {
+      final details = e.details;
+      final distance = details is Map && details['distance'] is num
+          ? (details['distance'] as num).round()
+          : null;
+      throw CapsuleUnlockException(switch (e.code) {
+        'out-of-range' => UnlockRefusal.tooFar,
+        'failed-precondition' => UnlockRefusal.notYet,
+        'not-found' => UnlockRefusal.notFound,
+        'unavailable' || 'deadline-exceeded' => UnlockRefusal.offline,
+        _ => UnlockRefusal.other,
+      }, distance: distance);
+    }
   }
 
   /// Rules deployed before the added capsule fields reject them: the capsule

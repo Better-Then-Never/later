@@ -244,6 +244,13 @@ service cloud.firestore {
       }
 
       // One document per device token, private to the user.
+      // Place capsules this person opened there (capsule v3 B3): written by
+      // the unlockCapsule function only; they let its sealed part be read.
+      match /unlocked/{capsuleId} {
+        allow read: if isMe(uid);
+        allow write: if false;
+      }
+
       match /fcmTokens/{token} {
         allow read, delete: if isMe(uid);
         allow create, update: if isMe(uid)
@@ -411,17 +418,82 @@ service cloud.firestore {
         }
       }
 
+      // A locked capsule's photo and words (capsule v3 B3,
+      // docs/capsule-v3/PHASE3_PLAN.md): written with the capsule in one
+      // batch, never changed. Its owner and co-authors may always read it
+      // (the app still shows it locked); anyone else who may see the
+      // capsule once its date has passed and, for a place capsule, once
+      // they have opened it there.
+      match /sealed/{part} {
+        function sealedOpen() {
+          let c = capsuleData(capsuleId);
+          return c.ownerId == me()
+            || me() in c.get('coAuthors', [])
+            || (canSeeCapsule(capsuleId)
+              && (c.get('openAt', null) == null || request.time >= c.openAt)
+              && (c.get('openWhere', 'anywhere') != 'here'
+                || exists(/databases/$(database)/documents/users/$(me())/unlocked/$(capsuleId))));
+        }
+
+        function validSealed(d) {
+          return d.keys().hasOnly(['imageUrl', 'thumbUrl', 'frames', 'description'])
+            && d.imageUrl is string && d.imageUrl.size() > 0 && d.imageUrl.size() <= 2048
+            && (d.get('thumbUrl', '') is string && d.get('thumbUrl', '').size() <= 2048)
+            && d.get('frames', []) is list && d.get('frames', []).size() <= 10
+            && (d.get('description', null) == null
+              || (d.description is string && d.description.size() <= 2000));
+        }
+
+        allow get: if signedIn() && part == 'content' && sealedOpen();
+        allow list: if false;
+        // Only with its capsule, in the same batch, by the capsule's owner.
+        allow create: if signedIn() && part == 'content'
+          && !exists(/databases/$(database)/documents/capsules/$(capsuleId))
+          && getAfter(/databases/$(database)/documents/capsules/$(capsuleId)).data.ownerId == me()
+          && getAfter(/databases/$(database)/documents/capsules/$(capsuleId)).data.get('sealed', false) == true
+          && validSealed(request.resource.data);
+        allow update: if false;
+        allow delete: if signedIn() && capsuleData(capsuleId).ownerId == me();
+      }
+
+      function validCrop(c) {
+        return c is map && c.keys().hasOnly(['x', 'y', 'w', 'h'])
+          && c.keys().hasAll(['x', 'y', 'w', 'h'])
+          && c.x is number && c.y is number && c.w is number && c.h is number
+          && c.x >= 0 && c.y >= 0 && c.w > 0 && c.h > 0
+          && c.x + c.w <= 1.0001 && c.y + c.h <= 1.0001;
+      }
+
+      // Where it opens (capsule v3 B2): anywhere, or only back at its spot,
+      // which needs the exact spot. A capsule that does not open at once
+      // is sealed: its photo and words are in sealed/content, written in
+      // the same batch. One that opens at once carries them itself.
+      function validLock(d) {
+        let here = d.get('openWhere', 'anywhere') == 'here';
+        let sealed = d.get('sealed', false) == true;
+        return d.get('openWhere', 'anywhere') in ['anywhere', 'here']
+          && d.get('sealed', false) is bool
+          && (!here || (sealed && d.get('locationPrecision', 'exact') == 'exact'))
+          && (sealed
+            ? (!d.keys().hasAny(['imageUrl', 'thumbUrl', 'frames', 'description'])
+              && (here || (d.get('openAt', null) is timestamp && d.openAt > request.time))
+              && existsAfter(/databases/$(database)/documents/capsules/$(capsuleId)/sealed/content))
+            : (d.keys().hasAll(['imageUrl'])
+              && d.imageUrl is string && d.imageUrl.size() <= 2048));
+      }
+
       function validCapsule() {
         let d = request.resource.data;
         return d.keys().hasOnly(['ownerId', 'imageUrl', 'title', 'description',
             'location', 'privacy', 'createdAt', 'isScheduled', 'openAt', 'color',
             'sharedWith', 'capturedAt', 'utcOffsetMinutes', 'showAuthor',
             'allowComments', 'allowReactions', 'locationPrecision', 'frames',
-            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors', 'countryCode'])
-          && d.keys().hasAll(['ownerId', 'imageUrl', 'title', 'location',
+            'frameDelayMs', 'thumbUrl', 'placeName', 'coAuthors', 'countryCode',
+            'crop', 'sealed', 'openWhere'])
+          && d.keys().hasAll(['ownerId', 'title', 'location',
             'privacy', 'createdAt', 'color'])
           && d.ownerId == me()
-          && d.imageUrl is string && d.imageUrl.size() <= 2048
+          && validLock(d)
           && d.title is string && d.title.size() > 0 && d.title.size() <= 100
           && (d.get('description', null) == null
             || (d.description is string && d.description.size() <= 2000))
@@ -447,6 +519,8 @@ service cloud.firestore {
           && (d.get('countryCode', 'XX') is string
             && d.get('countryCode', 'XX').matches('^[A-Z]{2}$'))
           && d.color in ['red', 'blue', 'green', 'yellow', 'orange', 'purple']
+          // The square it shows (capsule v3 Adjust): shares of the photo.
+          && (!d.keys().hasAny(['crop']) || validCrop(d.crop))
           && isServerTime(d.createdAt)
           && (d.get('isScheduled', false) is bool)
           && (d.get('openAt', null) == null || d.openAt is timestamp)
@@ -888,12 +962,14 @@ service cloud.firestore {
             && r.text is string && r.text.size() <= 200;
         }
 
-        // Only your own capsule, shared with this chat's other participant.
+        // Only your own capsule, shared with this chat's other participant;
+        // a sealed one goes without its picture.
         function validCapsuleMessage(d) {
           let capsule = get(/databases/$(database)/documents/capsules/$(d.capsuleId));
           return d.capsuleId is string
             && (!d.keys().hasAny(['imageUrl'])
-              || (d.imageUrl is string && d.imageUrl.size() <= 2048))
+              || (d.imageUrl is string && d.imageUrl.size() <= 2048
+                && capsule.data.get('sealed', false) != true))
             && capsule.data.ownerId == me()
             && other() in capsule.data.get('sharedWith', []);
         }

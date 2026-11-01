@@ -54,5 +54,17 @@
   "notificationsFromLater": "От команды Later",
   "notificationsSwipeRead": "Прочитано",
   "notificationsSwipeDelete": "Удалить",
-  "notificationsNowFriends": "Теперь вы друзья"
+  "notificationsNowFriends": "Теперь вы друзья",
+  "notificationsTypeCapsuleOpen": "Капсула открыта",
+  "notificationsTypeCapsuleReady": "Капсула готова",
+  "notificationsCapsuleOpenBody": "Капсула «{title}» от {name} открыта",
+  "notificationsCapsuleReadyBody": "Капсула «{title}» от {name} готова. Она ждёт вас: {place}",
+  "notificationsCapsuleReadyHereBody": "Капсула «{title}» от {name} готова. Она ждёт там, где её оставили",
+  "notificationsTypeCapsuleNearby": "Капсула рядом",
+  "notificationsTypeNewCountry": "Новая страна",
+  "placesNearbyTitle": "Рядом: {title}",
+  "placesNearbyBody": "До неё {metres} м. Удерживайте, чтобы открыть её там.",
+  "placesWelcomeTitle": "Добро пожаловать! {country}",
+  "placesWelcomeBody": "Вы здесь уже 2 часа. Оставите воспоминание?",
+  "placesLeaveCapsule": "Оставить капсулу"
 }

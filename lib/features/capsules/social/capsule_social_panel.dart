@@ -5,11 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/assets/app_assets.dart';
-import '../../../core/config/feature_flags.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_motion.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -17,155 +15,15 @@ import '../../../data/models/capsule.dart';
 import '../../../data/models/social.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
 import '../../../shared/motion/reaction_burst.dart';
-import '../../../shared/widgets/options_menu.dart';
+import '../../../shared/widgets/app_radio.dart';
+import '../../../shared/widgets/app_sheets.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../history/own_capsules_store.dart';
-import '../../profile/share/sharing_service.dart';
-import 'capsule_comments_sheet.dart';
-import 'quick_reply_card.dart';
 import 'capsule_social_controller.dart';
 
-/// Under an open capsule: the six reactions and the way into its comments
-/// (F-50). Shown only for what the author allowed and the features that are
-/// switched on.
-class CapsuleSocialPanel extends StatelessWidget {
-  const CapsuleSocialPanel({super.key, required this.controller});
-
-  final CapsuleSocialController controller;
-
-  static bool showsAnything(Capsule capsule) =>
-      (FeatureFlags.reactions && capsule.allowReactions) ||
-      (FeatureFlags.comments && capsule.allowComments) ||
-      shareable(capsule);
-
-  /// Capsules that can travel as a link: public and friends-only ones
-  /// (whoever opens it still needs to be allowed to see it).
-  static bool shareable(Capsule capsule) =>
-      capsule.privacy != CapsulePrivacy.private;
-
-  @override
-  Widget build(BuildContext context) {
-    final capsule = controller.capsule;
-    final palette = context.palette;
-    final reactions = FeatureFlags.reactions && capsule.allowReactions;
-    final comments = FeatureFlags.comments && capsule.allowComments;
-    return Container(
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 6),
-      decoration: BoxDecoration(
-        color: palette.surface,
-        borderRadius: AppRadii.lCircular,
-        border: palette.isDark ? Border.all(color: palette.cardBorder) : null,
-      ),
-      child: ListenableBuilder(
-        listenable: controller,
-        builder: (context, _) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (reactions) CapsuleReactionsBar(controller: controller),
-            if (comments || !controller.isOwner || shareable(capsule))
-              Row(
-                children: [
-                  if (comments)
-                    Expanded(
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: palette.textPrimary,
-                          alignment: Alignment.centerLeft,
-                        ),
-                        onPressed: () =>
-                            CapsuleCommentsSheet.show(context, controller),
-                        child: Text(
-                          context.l10n.capsulesCommentsCount(
-                            controller.commentCount,
-                          ),
-                          style: const TextStyle(
-                            fontFamily: kAppFontFamily,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    )
-                  else
-                    const Spacer(),
-                  if (!controller.isOwner)
-                    IconButton(
-                      tooltip: context.l10n.capsulesQuickReply,
-                      onPressed: () => QuickReplyCard.show(context, capsule),
-                      icon: Image.asset(AppIcons.reply, width: 22),
-                    ),
-                  if (shareable(capsule))
-                    IconButton(
-                      tooltip: context.l10n.capsulesShare,
-                      onPressed: () => SharingService.shareCapsule(
-                        context: context,
-                        capsule: capsule,
-                      ),
-                      // Painted in the theme's icon colour (the profile's
-                      // share picture is white, for photo headers).
-                      icon: CustomPaint(
-                        size: const Size.square(24),
-                        painter: _ShareSignPainter(color: palette.icon),
-                      ),
-                    ),
-                  if (!controller.isOwner)
-                    IconButton(
-                      tooltip: context.l10n.capsulesReportCapsule,
-                      onPressed: () => _capsuleMenu(context),
-                      // The chat menu's lines (the profile's menu picture is
-                      // white and did not show on this card).
-                      icon: Image.asset(AppIcons.messagesChatMenu, width: 24),
-                    ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _capsuleMenu(BuildContext context) async {
-    final l10n = context.l10n;
-    final coAuthor = controller.capsule.coAuthors.contains(controller.uid);
-    final choice = await showCenteredSheet<_MenuChoice>(
-      context,
-      OptionsMenu(
-        children: [
-          if (coAuthor)
-            OptionsMenuItem(
-              text: l10n.capsulesLeaveCoAuthors,
-              isFirst: true,
-              onPressed: () => Navigator.of(context).pop(_MenuChoice.leave),
-            ),
-          OptionsMenuItem(
-            text: l10n.capsulesReportCapsule,
-            textColor: AppColors.danger,
-            isFirst: !coAuthor,
-            isLast: true,
-            onPressed: () => Navigator.of(context).pop(_MenuChoice.report),
-          ),
-        ],
-      ),
-    );
-    if (choice == null || !context.mounted) return;
-    if (choice == _MenuChoice.leave) return _leave(context);
-    await reportFlow(
-      context,
-      controller,
-      target: ReportTarget.capsule,
-      targetPath: 'capsules/${controller.capsule.id}',
-    );
-  }
-
-  Future<void> _leave(BuildContext context) =>
-      _leaveCapsule(context, controller.capsule.id);
-}
-
-enum _MenuChoice { leave, report }
-
 /// Takes the user off a capsule they co-authored; it is no longer theirs to
-/// see, so its card closes.
-Future<void> _leaveCapsule(BuildContext context, String capsuleId) async {
+/// see, so the opened capsule closes.
+Future<void> leaveCapsule(BuildContext context, String capsuleId) async {
   final l10n = context.l10n;
   final navigator = Navigator.of(context);
   final failure = await context.read<OwnCapsulesStore>().leave(capsuleId);
@@ -218,59 +76,178 @@ void showReportResult(BuildContext context, AppFailure? failure) {
     PopupNotificationService.showSuccess(
       context: context,
       message: context.l10n.capsulesReportSent,
-      position: NotificationPosition.bottom,
+      position: NotificationPosition.top,
     );
   }
 }
 
 /// Why the user reports something (a capsule, a comment, a message), or
-/// null when they back out.
-Future<ReportReason?> pickReportReason(BuildContext context) {
-  final l10n = context.l10n;
-  final reasons = {
-    ReportReason.spam: l10n.capsulesReportSpam,
-    ReportReason.abuse: l10n.capsulesReportAbuse,
-    ReportReason.nudity: l10n.capsulesReportNudity,
-    ReportReason.violence: l10n.capsulesReportViolence,
-    ReportReason.privacy: l10n.capsulesReportPrivacy,
-    ReportReason.other: l10n.capsulesReportOther,
-  };
-  return showCenteredSheet<ReportReason>(
-    context,
-    OptionsMenu(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(
-            l10n.capsulesReportTitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: kAppFontFamily,
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
-              color: context.palette.textPrimary,
-            ),
-          ),
-        ),
-        for (final (i, entry) in reasons.entries.indexed) ...[
-          const OptionsMenuDivider(),
-          OptionsMenuItem(
-            text: entry.value,
-            isLast: i == reasons.length - 1,
-            onPressed: () => Navigator.of(context).pop(entry.key),
-          ),
-        ],
-      ],
-    ),
-  );
+/// null when they back out: a sheet with the reasons; one is picked first,
+/// then the red Report button sends it (one tap on a reason used to send at
+/// once).
+Future<ReportReason?> pickReportReason(BuildContext context) =>
+    showEdgeSheet<ReportReason>(context, (_) => const ReportReasonSheet());
+
+/// The reasons to report something, with a confirm button (Figma "Report
+/// sheet"): a reason first, then the red Report button.
+class ReportReasonSheet extends StatefulWidget {
+  const ReportReasonSheet({super.key});
+
+  @override
+  State<ReportReasonSheet> createState() => _ReportReasonSheetState();
 }
 
-/// The six reactions in equal slots; the user's choice is tinted green and
-/// each shows how many people chose it.
+class _ReportReasonSheetState extends State<ReportReasonSheet> {
+  ReportReason? _reason;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final palette = context.palette;
+    final reasons = {
+      ReportReason.spam: l10n.capsulesReportSpam,
+      ReportReason.abuse: l10n.capsulesReportAbuse,
+      ReportReason.nudity: l10n.capsulesReportNudity,
+      ReportReason.violence: l10n.capsulesReportViolence,
+      ReportReason.privacy: l10n.capsulesReportPrivacy,
+      ReportReason.other: l10n.capsulesReportOther,
+    };
+    TextStyle row(Color color) => TextStyle(
+      fontFamily: kAppFontFamily,
+      fontSize: 16,
+      height: 1.25,
+      color: color,
+    );
+    return Container(
+      decoration: BoxDecoration(
+        color: palette.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppSheets.radius),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(child: SheetHandle.v2()),
+              const SizedBox(height: 4),
+              Text(
+                l10n.capsulesReportTitle,
+                style: AppTextStyles.sectionTitle.copyWith(
+                  color: palette.textPrimary,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                l10n.capsulesReportHint,
+                style: TextStyle(
+                  fontFamily: kAppFontFamily,
+                  fontSize: 13,
+                  height: 1.25,
+                  color: palette.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              for (final entry in reasons.entries)
+                Semantics(
+                  button: true,
+                  selected: _reason == entry.key,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => setState(() => _reason = entry.key),
+                    child: SizedBox(
+                      height: 42,
+                      child: Row(
+                        children: [
+                          AppRadio(on: _reason == entry.key),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              entry.value,
+                              style: row(palette.textPrimary),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 36),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.danger,
+                    foregroundColor: AppColors.onAccent,
+                    disabledBackgroundColor: palette.disabled,
+                    disabledForegroundColor: AppColors.onAccent,
+                    elevation: 0,
+                    shape: const StadiumBorder(),
+                  ),
+                  onPressed: _reason == null
+                      ? null
+                      : () => Navigator.of(context).pop(_reason),
+                  child: Text(
+                    l10n.capsulesReport,
+                    style: const TextStyle(
+                      fontFamily: kAppFontFamily,
+                      fontSize: 16,
+                      height: 1.2,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Center(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    child: Text(
+                      l10n.commonCancel,
+                      style: row(palette.textSecondary),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The six reactions across the width (Figma "Reactions"): an equal mark each, with
+/// how many people chose it; the user's choice is tinted soft green with a
+/// green outline. The heart is the app's own drawing; the other marks are
+/// Material placeholders until the owner's drawings exist
+/// (docs/polish/PLACEHOLDER_ICONS.md).
 class CapsuleReactionsBar extends StatelessWidget {
   const CapsuleReactionsBar({super.key, required this.controller});
 
   final CapsuleSocialController controller;
+
+  /// The placeholder mark of each reaction but the heart.
+  static IconData? markOf(ReactionType type) => switch (type) {
+    ReactionType.heart => null,
+    ReactionType.laugh => Icons.sentiment_very_satisfied,
+    ReactionType.wow => Icons.sentiment_satisfied,
+    ReactionType.sad => Icons.sentiment_dissatisfied,
+    ReactionType.fire => Icons.local_fire_department,
+    ReactionType.clap => Icons.celebration,
+  };
 
   Future<void> _react(BuildContext context, ReactionType type) async {
     unawaited(HapticFeedback.selectionClick());
@@ -289,64 +266,72 @@ class CapsuleReactionsBar extends StatelessWidget {
     final mine = controller.myReaction;
     final counts = controller.counts;
     final palette = context.palette;
+    // Across the whole width: six equal marks.
     return Row(
       children: [
-        for (final type in ReactionType.values)
+        for (final (i, type) in ReactionType.values.indexed) ...[
+          if (i > 0) const SizedBox(width: 6),
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: Semantics(
-                button: true,
-                selected: mine == type,
-                label: context.l10n.capsulesReactWith(type.emoji),
-                child: AppPressable(
-                  child: GestureDetector(
-                    onTap: () => _react(context, type),
-                    child: AnimatedContainer(
-                      duration: AppMotion.of(context, AppMotion.fast),
-                      curve: AppMotion.standardCurve,
-                      height: 40,
-                      decoration: BoxDecoration(
+            child: Semantics(
+              button: true,
+              selected: mine == type,
+              label: context.l10n.capsulesReactWith(type.emoji),
+              child: AppPressable(
+                child: GestureDetector(
+                  onTap: () => _react(context, type),
+                  child: AnimatedContainer(
+                    duration: AppMotion.of(context, AppMotion.fast),
+                    curve: AppMotion.standardCurve,
+                    height: 42,
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    decoration: BoxDecoration(
+                      color: mine == type
+                          ? AppColors.brandGreen.withValues(alpha: 0.25)
+                          : palette.surface,
+                      borderRadius: BorderRadius.circular(21),
+                      border: Border.all(
                         color: mine == type
-                            ? AppColors.brandGreen.withValues(alpha: 0.18)
-                            : palette.surfaceMuted,
-                        borderRadius: AppRadii.lCircular,
-                        border: Border.all(
-                          color: mine == type
-                              ? AppColors.brandGreen
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
+                            ? AppColors.brandGreen
+                            : palette.divider,
+                        width: mine == type ? 1.5 : 1,
                       ),
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              ReactionBurst(
-                                active: mine == type,
-                                child: Text(
-                                  type.emoji,
-                                  style: const TextStyle(fontSize: 18),
-                                ),
+                    ),
+                    // A big count shrinks rather than spill out.
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ReactionBurst(
+                            active: mine == type,
+                            child: switch (markOf(type)) {
+                              final icon? => Icon(
+                                icon,
+                                size: 22,
+                                color: palette.icon,
                               ),
-                              if ((counts[type] ?? 0) > 0) ...[
-                                const SizedBox(width: 3),
-                                Text(
-                                  '${counts[type]}',
-                                  style: TextStyle(
-                                    fontFamily: kAppFontFamily,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: palette.textPrimary,
-                                  ),
-                                ),
-                              ],
-                            ],
+                              null => Image.asset(
+                                AppIcons.capsuleFavorites,
+                                width: 22,
+                              ),
+                            },
                           ),
-                        ),
+                          if ((counts[type] ?? 0) > 0) ...[
+                            const SizedBox(width: 3),
+                            Text(
+                              '${counts[type]}',
+                              style: TextStyle(
+                                fontFamily: kAppFontFamily,
+                                fontSize: 15,
+                                height: 1.1,
+                                fontWeight: FontWeight.bold,
+                                color: mine == type
+                                    ? palette.accentText
+                                    : palette.textPrimary,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ),
@@ -354,37 +339,8 @@ class CapsuleReactionsBar extends StatelessWidget {
               ),
             ),
           ),
+        ],
       ],
     );
   }
-}
-
-/// The usual share sign: three nodes, two links, in the icons' round stroke.
-class _ShareSignPainter extends CustomPainter {
-  const _ShareSignPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final a = Offset(w * 0.74, h * 0.2);
-    final b = Offset(w * 0.24, h * 0.5);
-    final c = Offset(w * 0.74, h * 0.8);
-    final line = Paint()
-      ..color = color
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round;
-    canvas
-      ..drawLine(a, b, line)
-      ..drawLine(b, c, line);
-    final dot = Paint()..color = color;
-    for (final o in [a, b, c]) {
-      canvas.drawCircle(o, w * 0.13, dot);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_ShareSignPainter old) => old.color != color;
 }

@@ -6,6 +6,7 @@ import 'package:later/core/errors/app_failure.dart';
 import 'package:later/data/models/app_notification.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/data/models/chat.dart';
+import 'package:later/data/models/geo_position.dart';
 import 'package:later/data/models/friend_request.dart';
 import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
@@ -1061,6 +1062,58 @@ class FakeCapsuleRepository implements CapsuleRepository {
 
   @override
   String newCapsuleId() => 'cap-${++_ids}';
+
+  /// Sealed parts by capsule id, and what reading one may throw.
+  final Map<String, CapsuleContent> sealedParts = {};
+  Object? sealedError;
+  int sealedReads = 0;
+
+  @override
+  Future<CapsuleContent?> sealedContent(String capsuleId) async {
+    sealedReads++;
+    if (sealedError case final error?) throw error;
+    return sealedParts[capsuleId];
+  }
+
+  final _unlockedWatchers = <StreamController<Set<String>>>[];
+  Set<String> unlocked = {};
+
+  /// Sets the place capsules the user opened there, as the server would.
+  void setUnlocked(Set<String> ids) {
+    unlocked = ids;
+    for (final w in _unlockedWatchers) {
+      w.add(ids);
+    }
+  }
+
+  @override
+  Stream<Set<String>> watchUnlocked(String uid) {
+    late final StreamController<Set<String>> watcher;
+    watcher = StreamController<Set<String>>(
+      onListen: () {
+        watcher.add(unlocked);
+        _unlockedWatchers.add(watcher);
+      },
+      onCancel: () => _unlockedWatchers.remove(watcher),
+    );
+    return watcher.stream;
+  }
+
+  /// What the next unlock throws (null: it opens).
+  CapsuleUnlockException? refuseUnlock;
+  final List<(String, GeoPosition)> unlocks = [];
+
+  @override
+  Future<CapsuleContent?> unlockHere(
+    String capsuleId,
+    GeoPosition at, {
+    double accuracy = 0,
+  }) async {
+    unlocks.add((capsuleId, at));
+    if (refuseUnlock case final refusal?) throw refusal;
+    setUnlocked({...unlocked, capsuleId});
+    return sealedParts[capsuleId];
+  }
 
   @override
   Future<Capsule> create(CapsuleDraft draft) async {

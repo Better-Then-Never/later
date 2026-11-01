@@ -52,6 +52,11 @@ class AchievementsDestination extends NotificationDestination {
   const AchievementsDestination();
 }
 
+/// The camera for a new capsule ("Welcome to …", F3).
+class NewCapsuleDestination extends NotificationDestination {
+  const NewCapsuleDestination();
+}
+
 /// Turns notification taps (system notifications in every app state, local
 /// foreground notifications and rows of the in-app list) into navigation.
 /// Taps that arrive before the home screen exists are queued (BUG-024).
@@ -118,13 +123,20 @@ class NotificationRouter {
           NotificationType.coAuthor ||
           NotificationType.reaction ||
           NotificationType.comment ||
-          NotificationType.reply:
+          NotificationType.reply ||
+          NotificationType.capsuleOpen ||
+          NotificationType.capsuleReady ||
+          NotificationType.capsuleNearby:
         final capsuleId = tap.capsuleId;
         if (capsuleId == null) return null;
         return CapsuleDestination(
           capsuleId,
-          // A new capsule is shown on the map; the others open it.
-          open: tap.type != NotificationType.capsule,
+          // A new capsule, or one waiting at its spot, is shown on the map;
+          // the others open it.
+          open:
+              tap.type != NotificationType.capsule &&
+              tap.type != NotificationType.capsuleReady &&
+              tap.type != NotificationType.capsuleNearby,
           comments:
               tap.type == NotificationType.comment ||
               tap.type == NotificationType.reply,
@@ -139,6 +151,8 @@ class NotificationRouter {
         return ChatDestination(userId: userId);
       case NotificationType.achievement:
         return const AchievementsDestination();
+      case NotificationType.newCountry:
+        return const NewCapsuleDestination();
       case NotificationType.other:
         return null;
     }
@@ -190,6 +204,11 @@ class NotificationRouter {
       case AchievementsDestination():
         AppRoutes.backToRoot();
         selectedPageNotifier.value = AppTabs.profile;
+      case NewCapsuleDestination():
+        AppRoutes.backToRoot();
+        final root = AppRoutes.navigatorKey.currentContext;
+        if (root == null || !root.mounted) return;
+        await AppRoutes.toCamera(root);
     }
   }
 

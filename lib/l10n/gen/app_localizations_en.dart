@@ -405,6 +405,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authWelcomeTo => 'Welcome to';
 
   @override
+  String get capsulesAdjust => 'Adjust';
+
+  @override
+  String get capsulesAdjustHint =>
+      'The whole photo opens when someone taps it.';
+
+  @override
+  String get capsulesAdjustTitle => 'Drag to move, pinch to zoom';
+
+  @override
+  String get capsulesApproxOffForHere =>
+      'Off: opening only here needs the exact spot';
+
+  @override
+  String get capsulesAuthorChip => 'Author';
+
+  @override
   String capsulesBy(String name) {
     return 'By $name';
   }
@@ -535,18 +552,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesComments => 'Comments';
 
   @override
-  String capsulesCommentsCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count comments',
-      one: '1 comment',
-      zero: 'Comment',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get capsulesCommentsEarlier => 'Show earlier comments';
 
   @override
@@ -556,16 +561,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesCommentsEmptyHint => 'Be the first to say something.';
 
   @override
+  String capsulesCommentsEmptyHintFor(String name) {
+    return '$name will see what you write here.';
+  }
+
+  @override
+  String capsulesCommentsPill(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Comments · $count',
+      zero: 'Comment',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesComposerDone => 'Done';
 
   @override
   String get capsulesComposerTitle => 'Description';
 
   @override
+  String get capsulesCopied => 'Copied';
+
+  @override
+  String get capsulesCopyText => 'Copy text';
+
+  @override
   String get capsulesCreationAllowComments => 'Allow comments';
 
   @override
   String get capsulesCreationAllowReactions => 'Allow reactions';
+
+  @override
+  String get capsulesCreationAnytime => 'Anytime';
 
   @override
   String get capsulesCreationApproximate => 'Approximate location';
@@ -575,7 +605,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'About a kilometre off, not the exact spot';
 
   @override
-  String get capsulesCreationCoAuthors => 'Co-authors';
+  String get capsulesCreationCoAuthors => 'Made with';
 
   @override
   String capsulesCreationCoAuthorsCount(int count) {
@@ -589,28 +619,44 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get capsulesCreationCoAuthorsNone => 'Just me';
+  String get capsulesCreationCoAuthorsNone => 'Only me';
 
   @override
-  String get capsulesCreationColor => 'Color';
+  String get capsulesCreationColor => 'Colour';
 
   @override
   String get capsulesCreationDescriptionHint => 'Add description...';
 
   @override
-  String get capsulesCreationOpenAt => 'Open At';
+  String get capsulesCreationLeftToday => 'Left today · opens anytime';
 
   @override
-  String get capsulesCreationPreview => 'Capsule Preview';
+  String get capsulesCreationLeftTodayHere => 'Left today · opens here';
 
   @override
-  String get capsulesCreationPrivacy => 'Privacy';
+  String capsulesCreationLeftTodayOpens(String date) {
+    return 'Left today · opens $date';
+  }
 
   @override
-  String get capsulesCreationSelectDate => 'Select date';
+  String capsulesCreationLeftTodayOpensHere(String date) {
+    return 'Left today · opens $date, here';
+  }
 
   @override
-  String get capsulesCreationSettings => 'Capsule Settings';
+  String get capsulesCreationOpenAt => 'How it opens';
+
+  @override
+  String get capsulesCreationOptions => 'Options';
+
+  @override
+  String get capsulesCreationPrivacy => 'Who sees it';
+
+  @override
+  String get capsulesCreationRetake => 'Retake';
+
+  @override
+  String get capsulesCreationSettings => 'Settings';
 
   @override
   String get capsulesCreationShowAuthor => 'Show my name';
@@ -622,13 +668,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesCreationSpeed => 'Speed';
 
   @override
-  String get capsulesCreationSubmit => 'Create Capsule';
+  String get capsulesCreationSubmit => 'Create capsule';
 
   @override
-  String get capsulesCreationTitle => 'Create Capsule';
+  String get capsulesCreationTitle => 'New capsule';
 
   @override
   String get capsulesCreationTitleHint => 'Add Title...';
+
+  @override
+  String capsulesDatesLeft(String date) {
+    return 'Left $date';
+  }
+
+  @override
+  String capsulesDatesLeftOpened(String left, String opened) {
+    return 'Left $left · opened $opened';
+  }
 
   @override
   String get capsulesDefaultTitle => 'Capsule';
@@ -641,6 +697,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesDraftTitle => 'Unfinished capsule';
+
+  @override
+  String get capsulesErrorHereUnavailable =>
+      'Opening only here isn\'t available yet. Choose Anywhere and try again.';
 
   @override
   String get capsulesErrorNoLocation => 'We could not detect your location';
@@ -664,6 +724,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesFramesTitle => 'Frames';
 
   @override
+  String get capsulesHowAnytimeHint => 'Open it whenever you like';
+
+  @override
+  String get capsulesHowAnywhere => 'Anywhere';
+
+  @override
+  String get capsulesHowAnywhereHint => 'Wherever you are when it opens';
+
+  @override
+  String get capsulesHowHere => 'Only when I\'m back here';
+
+  @override
+  String get capsulesHowHereHint => 'Within 150 m of this spot';
+
+  @override
+  String get capsulesHowPick => 'Pick a date';
+
+  @override
+  String get capsulesHowPickHint => 'Choose a day on the calendar';
+
+  @override
+  String get capsulesHowSummaryAnytime =>
+      'Opens anytime. It stays on the map where you left it.';
+
+  @override
+  String get capsulesHowSummaryAnytimeHere =>
+      'Opens anytime, only within 150 m of this spot.';
+
+  @override
+  String capsulesHowSummaryDate(String date) {
+    return 'Opens on $date. It stays on the map where you left it.';
+  }
+
+  @override
+  String capsulesHowSummaryDateHere(String date) {
+    return 'Opens on $date, only within 150 m of this spot.';
+  }
+
+  @override
+  String get capsulesHowTitle => 'How does it open?';
+
+  @override
+  String get capsulesHowWhen => 'When';
+
+  @override
+  String get capsulesHowWhere => 'Where';
+
+  @override
   String get capsulesLeaveCoAuthors => 'Remove me as co-author';
 
   @override
@@ -673,25 +781,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesLinkNotShared => 'This capsule is not shared with you';
 
   @override
+  String capsulesLoopBadge(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Loop · $count frames',
+      one: 'Loop · 1 frame',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get capsulesLoopMark => 'Loop';
+
+  @override
+  String get capsulesMore => 'More';
 
   @override
   String get capsulesOpenInMonth => 'In a month';
 
   @override
-  String get capsulesOpenInWeek => 'In a week';
-
-  @override
   String get capsulesOpenInYear => 'In a year';
-
-  @override
-  String get capsulesOpenNow => 'Open right away';
-
-  @override
-  String get capsulesOpenPickDate => 'Pick a date…';
-
-  @override
-  String get capsulesOpenTomorrow => 'Tomorrow';
 
   @override
   String get capsulesPinBack => 'Back to where I am';
@@ -711,20 +821,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesPinUse => 'Put it here';
 
   @override
-  String get capsulesPrivacyFriends => 'Friends';
-
-  @override
-  String get capsulesPrivacyPrivate => 'Private';
-
-  @override
-  String get capsulesPrivacyPublic => 'Public';
-
-  @override
   String get capsulesQueued =>
       'Saved on your phone. It will be uploaded when you are online again.';
 
   @override
   String get capsulesQuickReply => 'Reply to the author';
+
+  @override
+  String get capsulesQuickReplyAttached => 'goes with your message';
 
   @override
   String capsulesQuickReplyHint(String name) {
@@ -748,8 +852,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesReply => 'Reply';
 
   @override
-  String capsulesReplyHint(String name) {
-    return 'Reply to $name...';
+  String capsulesReplyTo(String name) {
+    return 'Reply to $name';
+  }
+
+  @override
+  String capsulesReplyingTo(String name) {
+    return 'Replying to $name';
   }
 
   @override
@@ -760,6 +869,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesReportCapsule => 'Report capsule';
+
+  @override
+  String get capsulesReportHint =>
+      'The Later team will look at it. The author is not told who reported it.';
 
   @override
   String get capsulesReportNudity => 'Nudity';
@@ -792,6 +905,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get capsulesShowOnMap => 'Show on the map';
+
+  @override
   String get capsulesSpeedFast => 'Fast';
 
   @override
@@ -801,8 +917,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get capsulesSpeedSlow => 'Slow';
 
   @override
+  String get capsulesWhoEveryone => 'Everyone';
+
+  @override
+  String get capsulesWhoFriends => 'Friends';
+
+  @override
+  String get capsulesWhoOnlyMe => 'Only me';
+
+  @override
   String capsulesWith(String names) {
     return 'With $names';
+  }
+
+  @override
+  String capsulesWrapFrom(String name) {
+    return 'From $name';
+  }
+
+  @override
+  String get capsulesWrapFromYou => 'From you';
+
+  @override
+  String get capsulesWrapHold => 'Hold to open';
+
+  @override
+  String get capsulesWrapHoldLonger => 'Hold a little longer';
+
+  @override
+  String get capsulesWrapKeepHolding => 'Keep holding';
+
+  @override
+  String capsulesWrapLeftIn(String date, String place) {
+    return 'Left $date in $place';
+  }
+
+  @override
+  String get capsulesWrapOpen => 'Open the capsule';
+
+  @override
+  String capsulesWrapWaited(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Waited $count days',
+      one: 'Waited 1 day',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1352,13 +1513,48 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String mapCapsuleAwayKm(String km) {
+    return '$km km away';
+  }
+
+  @override
+  String mapCapsuleAwayMetres(int metres) {
+    return '$metres m away';
+  }
+
+  @override
+  String get mapCapsuleBeThere => 'Be there to open';
+
+  @override
+  String get mapCapsuleGoThere => 'Go there';
+
+  @override
+  String mapCapsuleLeftBy(String name, String date) {
+    return 'Left by $name · $date';
+  }
+
+  @override
+  String mapCapsuleLeftOn(String date) {
+    return 'Left $date';
+  }
+
+  @override
   String get mapCapsuleLocked => 'Locked';
 
   @override
-  String get mapCapsuleNoDescription => 'This capsule has no description.';
+  String get mapCapsuleOpen => 'Open';
 
   @override
-  String get mapCapsuleOpen => 'Open';
+  String get mapCapsuleOpenAnytime => 'Open anytime';
+
+  @override
+  String get mapCapsuleOpenedOnLabel => 'Opened on';
+
+  @override
+  String get mapCapsuleOpenedToday => 'Opened today';
+
+  @override
+  String get mapCapsuleOpenedYesterday => 'Opened yesterday';
 
   @override
   String mapCapsuleOpensIn(String time) {
@@ -1366,10 +1562,44 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get mapCapsuleReady => 'Check out what\'s inside!';
+  String mapCapsuleOpensOn(String date) {
+    return 'Opens on $date';
+  }
+
+  @override
+  String mapCapsuleOpensOnHere(String date) {
+    return 'Opens on $date, here';
+  }
+
+  @override
+  String get mapCapsuleReadyToOpen => 'Ready to open';
 
   @override
   String get mapCapsuleUnavailable => 'This capsule is no longer available';
+
+  @override
+  String get mapCapsuleUnlockFailed => 'Couldn\'t open it. Try again.';
+
+  @override
+  String get mapCapsuleUnlockNoLocation =>
+      'Your location is needed to open it here.';
+
+  @override
+  String get mapCapsuleUnlockNotYet => 'It isn\'t ready to open yet.';
+
+  @override
+  String mapCapsuleUnlockTooFar(int metres) {
+    return 'You\'re $metres m away. Come within 150 m to open it.';
+  }
+
+  @override
+  String get mapCapsuleWhereUnknown => 'Turn on location to see how far';
+
+  @override
+  String get mapCapsuleYouAreHere => 'You\'re here';
+
+  @override
+  String get mapCapsuleYoursToOpen => 'Yours to open';
 
   @override
   String get mapCompass => 'Turn the map to north';
@@ -1933,6 +2163,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String notificationsCapsuleOpenBody(String title, String name) {
+    return 'The capsule “$title” from $name is open';
+  }
+
+  @override
+  String notificationsCapsuleReadyBody(
+    String title,
+    String name,
+    String place,
+  ) {
+    return 'The capsule “$title” from $name is ready. It\'s waiting in $place';
+  }
+
+  @override
+  String notificationsCapsuleReadyHereBody(String title, String name) {
+    return 'The capsule “$title” from $name is ready. It\'s waiting where it was left';
+  }
+
+  @override
   String get notificationsChannelActivity => 'Activity';
 
   @override
@@ -2151,6 +2400,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationsTypeCapsule => 'New Capsule';
 
   @override
+  String get notificationsTypeCapsuleNearby => 'Capsule Nearby';
+
+  @override
+  String get notificationsTypeCapsuleOpen => 'Capsule Open';
+
+  @override
+  String get notificationsTypeCapsuleReady => 'Capsule Ready';
+
+  @override
   String get notificationsTypeCoAuthor => 'Made Together';
 
   @override
@@ -2167,6 +2425,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationsTypeMessage => 'New Message';
+
+  @override
+  String get notificationsTypeNewCountry => 'New Country';
 
   @override
   String get notificationsTypeOther => 'Notification';
@@ -2193,6 +2454,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placeUnknown => 'Unknown location';
+
+  @override
+  String get placesLeaveCapsule => 'Leave a capsule';
+
+  @override
+  String placesNearbyBody(int metres) {
+    return 'It\'s $metres m away. Hold to open it there.';
+  }
+
+  @override
+  String placesNearbyTitle(String title) {
+    return 'You\'re near $title';
+  }
+
+  @override
+  String get placesWelcomeBody =>
+      'You\'ve been here for 2 hours. Leave a memory?';
+
+  @override
+  String placesWelcomeTitle(String country) {
+    return 'Welcome to $country';
+  }
 
   @override
   String get profileAboutPrompt => 'Add a few words about you';
@@ -2969,6 +3252,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPhotoQualityStandard => 'Standard (sent faster)';
 
   @override
+  String get settingsPlacesAlwaysContinue => 'Continue';
+
+  @override
+  String get settingsPlacesAlwaysDenied =>
+      'Allow location “All the time” in Settings to turn this on.';
+
+  @override
+  String get settingsPlacesAlwaysMessage =>
+      'To tell you about capsules and countries while Later is closed, Android must let it use your location all the time. Choose “Allow all the time” next.';
+
+  @override
+  String get settingsPlacesAlwaysTitle => 'Location all the time';
+
+  @override
+  String get settingsPlacesCountry => 'Welcome to a new country';
+
+  @override
+  String get settingsPlacesCountryHint =>
+      'After two hours in a country you\'re visiting';
+
+  @override
+  String get settingsPlacesFooter =>
+      'Your phone checks where it is about every half hour, even when Later is closed. Later doesn\'t save or share your location.';
+
+  @override
+  String get settingsPlacesNearby => 'Capsules near you';
+
+  @override
+  String get settingsPlacesNearbyHint => 'Within 200 m of one you can open';
+
+  @override
   String get settingsPrivacy => 'Privacy';
 
   @override
@@ -3072,6 +3386,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsSectionPhotos => 'PHOTOS';
+
+  @override
+  String get settingsSectionPlaces => 'PLACES';
 
   @override
   String get settingsSectionQuestions => 'QUESTIONS';
@@ -3221,6 +3538,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Your password';
+
+  @override
+  String get stampsLater => 'Later';
+
+  @override
+  String get stampsNew => 'New stamp';
+
+  @override
+  String get stampsOpenPassport => 'Open passport';
+
+  @override
+  String get stampsPageLabel => 'STAMPS · PIECZĘCIE';
+
+  @override
+  String stampsTownNumber(String town, String ordinal) {
+    return '$town, your $ordinal town';
+  }
 
   @override
   String get streakAtRisk =>

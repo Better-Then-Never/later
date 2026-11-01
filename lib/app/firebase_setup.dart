@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -83,6 +84,11 @@ Future<void> connectEmulatorsIfAsked() async {
   await FirebaseStorage.instance.useStorageEmulator(
     _firebaseEmulatorHost,
     9199,
+    automaticHostMapping: false,
+  );
+  FirebaseFunctions.instance.useFunctionsEmulator(
+    _firebaseEmulatorHost,
+    5001,
     automaticHostMapping: false,
   );
   // Its download links are plain http: loop frames from it are accepted.

@@ -1,0 +1,180 @@
+# Capsule v3: progress
+
+Branch `feature/capsule-v3` (from `main` at `f76658c`, v0.0.36). The design lives in Figma file
+`rDjGzKKbcqpnzJHCBqXTJv`, page 10 "App v2" (section from y 5560) and page 12 "To build (for approval)"
+(`7102:682`), which lists every item by ID. The owner approved A, B, C, D and F on 2026-10-20; E (stamps)
+and G (profile v2, passport, other screens) are for later.
+
+## Plan
+
+| Phase | Items | Needs the backend | State |
+|---|---|---|---|
+| 1 | A1–A10, C1 | no | done, committed locally |
+| 2 | D1–D4: the wrapped first open, press and hold | no | done, committed locally (sound waits for H2) |
+| 3 | B1–B5, C2, F1, F2: how it opens, Adjust, "is open" pushes | yes: a lock in the data first (below) | built 2026-11-01, committed locally; server not deployed (PHASE3_PLAN.md) |
+| 4 | F3, F4: notifications by location | no (the phone checks) | built 2026-11-02, committed locally |
+
+Phase 3 cannot start as UI only. Today the rules let anyone who may see a capsule read its title,
+description and photo URLs before `openAt`; the lock exists only in the app. A place lock (150 m) or a
+real date lock needs the content kept out of reach until it opens, and capsules are treated as
+immutable (delta sync, the pin store). The owner gets a written plan before any of it is built.
+
+## Phase 1 (done)
+
+| ID | What | Where |
+|---|---|---|
+| A1, A2 | Map card: an open capsule shows the photo, who left it, "Opened today / yesterday / on {date}" or "Open anytime" and an Open pill; a locked one shows the pin on its colour, "Opens in …" with a wait bar, "Opens on {date}" and a Locked pill | `lib/features/map/widgets/capsule_info_panel.dart` |
+| A3 | The opened capsule is a sheet over the map: square photo (a tap shows it whole), title with the yellow place chip (a tap shows it on the map), who left it, "Left … · opened …", the words | `lib/features/capsules/social/capsule_sheet.dart`, `AppSheetRoute` in `lib/shared/widgets/app_sheets.dart`, `lib/shared/widgets/capsule/capsule_place_chip.dart` |
+| A4 | Reactions in one row, yours tinted soft green; Material placeholders until the owner's drawings exist (H1, `docs/polish/PLACEHOLDER_ICONS.md`) | `CapsuleReactionsBar` in `capsule_social_panel.dart` |
+| A5 | The newest comment as a preview; an action bar with words: "Comments · N", "Reply to {first name}", share, ⋯ | `capsule_sheet.dart` |
+| A6 | Comments: Author chip on the capsule owner's comments, replies on a thread line, "Replying to {name} ×", your picture in the field, a long-press menu beside the comment (Reply, Copy text, Delete or Report), the empty hint names the author | `capsule_comments_sheet.dart` |
+| A7 | Quick reply sits right above the keyboard with the capsule as a chip; "Sent to {name}". The map no longer resizes under a card's keyboard (its zoom buttons jumped behind the scrim), and the sheet under it keeps its place | `quick_reply_card.dart`, `lib/app/shell/widget_tree.dart` |
+| A8 | The ⋯ menu opens by its button: Show on the map, Remove me as co-author (co-authors), Report | `capsule_sheet.dart` |
+| A9 | Report: a reason first, then the red Report button (one tap on a reason used to send it) | `ReportReasonSheet` in `capsule_social_panel.dart` |
+| A10 | All of it in dark mode (new tokens `accentText`, `accentSoft` in `AppPalette`) | `lib/core/theme/app_palette.dart` |
+| C1 | Create preview in the v3 look: square photo with Retake, the title as big as on the sheet with the place chip (a tap moves the pin), the words, "Left today · opens anytime / opens {date}" | `capsule_creation_page.dart` |
+
+Gone: `CapsulePreviewCard`, `CapsuleSocialPanel`, `CapsulePlacePill`, `CapsuleDatePill`, `CapsuleImagePreview`,
+and the strings only they used.
+
+Not in phase 1, on purpose:
+
+- C1's Adjust chip waits for C2 (phase 3): the square crop has to be stored with the capsule.
+- The Create page keeps its old Settings list; "How it opens" (B2) replaces the "Open At" row in phase 3.
+  Until then an empty date reads "Select date" there and "opens anytime" in the preview (both mean now).
+- A hidden author stays unnamed in the quick reply ("Reply to the author", "Sent"); the old card put their
+  name in the hint.
+
+### Checked
+
+- `tool/dev/checks.sh`: format, analyze, 536 tests, design tokens, no unused strings.
+- New tests: the map card (dates, "Left by", text scale), the sheet (reactions, comments pill, Reply to),
+  the comments sheet (Author chip, long-press menu, Replying to, the empty hint), the report confirm.
+- On the phone (debug build, local emulators), light and dark: map card, sheet, comments with a thread,
+  the long-press menu, quick reply above the keyboard and its toast, the Create preview.
+
+## Matched to Figma (2026-10-21)
+
+The owner found phase 1 off from the design. Every screen was rebuilt from the frames' own values
+(`get_design_context`, not from memory) and checked on the phone side by side, light and dark:
+
+| Screen | Frame |
+|---|---|
+| Map card, open / locked | `7080:1085`, `7080:1191` |
+| Opened sheet, light / dark | `7080:1302`, `7080:1460` |
+| Comments, comment menu, empty | `7084:1258`, `7084:1530`, `7084:1630` |
+| Quick reply, ⋯ menu, report | `7084:1762`, `7084:1868`, `7084:1965` |
+| Create (header, preview, settings, options, button) | `7094:2148` |
+
+The quick reply had been built from an older v2 frame (`7047:784`). New shared pieces: `PillV2`
+(Figma "Pill v2"), `showAnchoredMenu`, `PageHeaderV2`, `SheetHandle.v2`, `PhotoBadge`,
+`SendCircle`. Four of the owner's icons came from the Figma library (send arrow, heart, done check,
+write) with dark variants. Tokens: `accentSoft` is green at 30 %, dark `accentText` #7FD95A. The
+countdown shows days and hours while a day or more is left ("41d 6h"). Still not built: the Adjust
+chip on the Create photo (C2, phase 3).
+
+## Owner's pass on the release build (2026-10-21)
+
+- Opened capsule: as tall as its content; share (the owner's share icon, white on a dark disc) and ⋯
+  on the photo's corner; "Comments" and "Reply to" share the width; reactions across the width;
+  a bigger place tag. A private capsule of your own shares its photo (a link would open for nobody
+  else).
+- No Android ink splash anywhere (theme).
+- Comments: Reply under every comment, a drag down on the empty space (or past the top) closes the
+  sheet (also the co-author picker), the composer no longer dips under the system bar as the
+  keyboard closes, the keyboard no longer makes the sheet jump.
+- Create: descriptions up to 200 characters (the rules still accept 2000 from older versions); the
+  title no longer takes the keyboard back after the description; the description and the quick
+  reply rise with the keyboard; Retake keeps the title, the words and the settings; Create capsule
+  floats on a fade.
+- "How it opens" is the planned sheet (Figma 7094:2488): When works; Where shows "Only when I'm back
+  here" as coming soon until the phase 3 lock exists.
+- C2 Adjust (Figma 7099:2191): the square window over the whole photo, drag and pinch up to 3×. The
+  square is saved as `crop` (x, y, w, h: shares of the photo) and the thumbnail is cut from it at
+  upload, so lists and the map card show it at once. The opened capsule and the photo's flight to
+  full screen start from it. Rules: `validCapsule` accepts `crop` (tested); until they are
+  deployed the app's retry drops the field, so capsules still save (the thumbnail keeps the square).
+
+## Phase 4 and E (2026-11-02)
+
+| ID | What | Where |
+|---|---|---|
+| F3 | "Welcome to <country>. You've been here for 2 hours. Leave a memory?" with Leave a capsule (the camera), after two hours away from home, once a month per country; a month in one country makes it home | `lib/features/places/place_alerts.dart`, `lib/app/background_places_main.dart`, `PlacesWorker.kt` |
+| F4 | "You're near <title>. It's 150 m away. Hold to open it there." for the nearest capsule within 200 m the user may open there and has not (a place capsule not opened there, or a dated one still wrapped), once per capsule; a tap shows it on the map | as above; the map's stored pins keep the place flag (format 3) |
+| F3, F4 | Settings > Notifications > Places: two switches, off by default, Android only; turning one on explains, then asks for location all the time; capsule notifications off or quiet hours: nothing | `notification_settings_page.dart`, `DeviceSettingsStore` |
+| E1, E2 | A stamp the first time the user leaves a capsule in a town (towns as the functions keep them in the world summary, so opening someone else's capsule never gives one): after Create, the new stamp (Figma "Passport / New stamp" 7039:1165) drops onto a passport page with "Gdańsk, your 22nd town"; Open passport opens the countries and towns view until the Passport page exists (G3) | `lib/features/stamps/`, `capsule_creation_controller.dart`; golden `test/goldens/new_stamp_moment.png` |
+
+The background check runs about every half hour while a switch is on, from the last known fix; it reads
+the map's pins kept on the phone and only a candidate's title from the server. iOS has no background job
+in this app, so the switches are not shown there.
+
+## Phase 3: locked capsules (2026-11-01)
+
+The owner answered the plan's six questions (PHASE3_PLAN.md). Built:
+
+| ID | What | Where |
+|---|---|---|
+| B3 | A capsule that does not open at once keeps its photo and words in `capsules/{id}/sealed/content`; the rules hand it out once it may open (owner and co-authors always; the app still keeps it locked for them) | `firestore.rules`, `functions/lib/locks.js`, `FirebaseCapsuleRepository.create`, `CapsuleLocks` (`lib/features/capsules/opening/capsule_locks.dart`) |
+| B1, B2 | "How it opens": Where works (Only when I'm back here, within 150 m); choosing it turns Approximate location off and the row says why | `how_it_opens_sheet.dart`, `capsule_creation_page.dart`, `capsule_creation_controller.dart` |
+| B4 | Place capsule cards: "Be there to open" / "Ready to open" with the distance and Go there (walking directions); a date to come: countdown, "Opens on …, here · 800 m away", Locked; within 150 m: "You're here" and Open, which asks the server (`unlockCapsule`) and then opens it (wrapped the first time) | `capsule_info_panel.dart`, `lib/features/map/directions.dart` |
+| B5 | "Left today · opens 20 Oct 2027, here" on Create; the map card's line | as above |
+| F1, F2 | "<Title> is open" (date capsules, when released) and "<Title> is ready. It's waiting in <place>" (place capsules with a date), in the app and as pushes, to the owner, co-authors and recipient | `functions/lib/locks.js`, `notification_texts.dart`, `notification_router.dart` |
+
+Lists, chats and the data export read the sealed part when they may (a sealed capsule in a chat
+goes without its picture and shows the locked tile). The map filter still sorts a ready place
+capsule under "Open".
+
+Built from the agreed descriptions on Figma page 12 (items B1–B5, F1, F2) and the How sheet frames
+`7102:1139` / `7102:1257`; the place cards have no drawn frame, so they use the approved card
+layouts (`7080:1085`, `7080:1191`).
+
+## Opening and closing as one piece (2026-10-22)
+
+- The owner: share and ⋯ came only after the sheet was open, the white went down faster than the
+  photo, the opening and closing felt clumsy. Cause: the photo flew as a Hero on its own path and
+  curve (drawn over everything, so it hid the buttons until it landed) while the white slid up
+  from below the screen on another curve.
+- Now the sheet grows out of the card's thumbnail (`AppSheetRoute.origin`): the photo starts on
+  it and grows into place while the sheet's top edge follows it; the white, the handle and the
+  buttons fade in with it; closing is the same motion back, 250 ms both ways. The photo lies on the
+  card's thumbnail (same decode, from memory), so no grey box while the full photo loads.
+  Frame-by-frame tests: `test/shared/sheets_test.dart`.
+
+## Phase 2 (done)
+
+| ID | What | Where |
+|---|---|---|
+| D1 | The first open of a capsule arrives wrapped over the whole sheet: the cover pattern (the app's line icons, as the profile covers) in the capsule's colour, paler in light and deeper in dark, its pin on a white seal, a gift tag (From, title, "Left {date} in {place}") on a string, "Waited N days". The map card says "Yours to open" until then | `lib/features/capsules/opening/capsule_wrap.dart`, `capsule_info_panel.dart` |
+| D2 | Press and hold about a second: the ring fills, the pin wobbles, ticks you can feel come closer together; letting go early winds it back ("Hold a little longer") | `CapsuleWrap` |
+| D3 | One firmer tick, then the wrapping tears apart from the pin onto the capsule. The paper sound and chime wait for H2 | `CapsuleWrap` |
+| D4 | Every later open is instant; reduced motion gives a plain fade; a screen reader's double tap opens it at once | `lib/features/capsules/opening/capsule_openings.dart` |
+
+Which capsules arrive wrapped (`CapsuleOpenings`):
+
+- Remembered on the phone, per account (the last 2000 unwrapped). The rule needs no backend, so it is
+  per phone: on a second phone the first open is wrapped again.
+- Only capsules that could first be opened after the phone first asked (`unwrapped_since`): after the
+  update nothing the user may have seen before arrives wrapped. To try it, open a capsule a friend left,
+  or one that reached its date, after installing.
+- Someone else's capsule always; your own (or one you made with others) only when it waited for a date.
+- Not when it is opened for its comments (from a comment notification).
+- New colour tokens: the six capsule colours as the pins draw them (`AppColors.capsuleRed` …); the
+  wrapping takes them 60 % towards white in light, 70 % towards black in dark (the prototype's blue).
+- New motion tokens: `holdToOpen`, `holdWindBack`, `tear`, `tearCurve` (`MOTION_CATALOG.md`).
+
+### Checked
+
+- `tool/dev/checks.sh`: format, analyze, 546 tests, design tokens, no unused strings.
+- New tests (`test/features/capsule_opening_test.dart`, `map_test.dart`): who gets the wrapping, the
+  phone's start, your own capsules, remembered across a restart; arrives wrapped with its tag; early
+  release winds back; a one-second hold tears it open and the next open is instant; the screen reader
+  tap; the card's "Yours to open".
+- On the phone, light and dark, with capsules made in the emulator after the phone's start: the card,
+  the wrapping, an early release, and the tear recorded frame by frame (ring, tear along the edge, the
+  seal dropping away, the sheet underneath). Haptics need a person holding the phone to judge.
+
+## Owner side (H)
+
+- H1: draw the reaction faces and marks (placeholders listed in `docs/polish/PLACEHOLDER_ICONS.md`).
+- H2: pick the opening sound (phase 2).
+- H3: put v0.0.36 back on the phone; it runs the debug build with test data.

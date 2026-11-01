@@ -304,6 +304,26 @@
   "@authWelcomeTo": {
     "description": "First line of the welcome page title; the next line is the app name \"Later\" in bold. Keep it short: one line in a large font."
   },
+  "capsulesAdjust": "Adjust",
+  "@capsulesAdjust": {
+    "description": "Chip on the Create preview photo: choose which square of the photo the capsule shows."
+  },
+  "capsulesAdjustHint": "The whole photo opens when someone taps it.",
+  "@capsulesAdjustHint": {
+    "description": "Under the Adjust title: the crop only changes the square, not the photo."
+  },
+  "capsulesAdjustTitle": "Drag to move, pinch to zoom",
+  "@capsulesAdjustTitle": {
+    "description": "Title over the photo in Adjust."
+  },
+  "capsulesApproxOffForHere": "Off: opening only here needs the exact spot",
+  "@capsulesApproxOffForHere": {
+    "description": "Under Approximate location on Create after \"Only when I'm back here\" turned it off."
+  },
+  "capsulesAuthorChip": "Author",
+  "@capsulesAuthorChip": {
+    "description": "Small chip next to the name of the capsule's author in its comments."
+  },
   "capsulesBy": "By {name}",
   "@capsulesBy": {
     "description": "Screen reader label of the author line on a capsule (opens their profile).",
@@ -452,21 +472,31 @@
   "capsulesCommentHint": "Add a comment...",
   "capsulesCommentTooLong": "Comments can be up to 500 characters",
   "capsulesComments": "Comments",
-  "capsulesCommentsCount": "{count, plural, =0{Comment} =1{1 comment} other{{count} comments}}",
-  "@capsulesCommentsCount": {
-    "description": "Button under a capsule that opens its comments.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "capsulesCommentsEarlier": "Show earlier comments",
   "@capsulesCommentsEarlier": {
     "description": "First row of a long comment thread: loads older comments."
   },
   "capsulesCommentsEmpty": "No comments yet",
   "capsulesCommentsEmptyHint": "Be the first to say something.",
+  "capsulesCommentsEmptyHintFor": "{name} will see what you write here.",
+  "@capsulesCommentsEmptyHintFor": {
+    "description": "Under \"No comments yet\": who will read the first comment.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "capsulesCommentsPill": "{count, plural, =0{Comment} other{Comments · {count}}}",
+  "@capsulesCommentsPill": {
+    "description": "The pill at the bottom of an opened capsule that opens its comments.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "capsulesComposerDone": "Done",
   "@capsulesComposerDone": {
     "description": "The capsule description composer (a sheet over creation)."
@@ -475,11 +505,23 @@
   "@capsulesComposerTitle": {
     "description": "The capsule description composer (a sheet over creation)."
   },
+  "capsulesCopied": "Copied",
+  "@capsulesCopied": {
+    "description": "Toast after a comment's text was copied."
+  },
+  "capsulesCopyText": "Copy text",
+  "@capsulesCopyText": {
+    "description": "In the menu of a long-pressed comment."
+  },
   "capsulesCreationAllowComments": "Allow comments",
   "capsulesCreationAllowReactions": "Allow reactions",
+  "capsulesCreationAnytime": "Anytime",
+  "@capsulesCreationAnytime": {
+    "description": "Create page, \"How it opens\" row: no opening date."
+  },
   "capsulesCreationApproximate": "Approximate location",
   "capsulesCreationApproximateHint": "About a kilometre off, not the exact spot",
-  "capsulesCreationCoAuthors": "Co-authors",
+  "capsulesCreationCoAuthors": "Made with",
   "@capsulesCreationCoAuthors": {
     "description": "Capsule creation row: friends who made the capsule with the user."
   },
@@ -492,11 +534,11 @@
       }
     }
   },
-  "capsulesCreationCoAuthorsNone": "Just me",
+  "capsulesCreationCoAuthorsNone": "Only me",
   "@capsulesCreationCoAuthorsNone": {
     "description": "Value of the co-authors row when nobody is picked."
   },
-  "capsulesCreationColor": "Color",
+  "capsulesCreationColor": "Colour",
   "@capsulesCreationColor": {
     "description": "Row title: the colour of the capsule's map pin (tapping cycles the colours)."
   },
@@ -504,23 +546,50 @@
   "@capsulesCreationDescriptionHint": {
     "description": "Hint in the capsule description field."
   },
-  "capsulesCreationOpenAt": "Open At",
+  "capsulesCreationLeftToday": "Left today · opens anytime",
+  "@capsulesCreationLeftToday": {
+    "description": "Under a new capsule's title: it is left today and opens anytime."
+  },
+  "capsulesCreationLeftTodayHere": "Left today · opens here",
+  "@capsulesCreationLeftTodayHere": {
+    "description": "Under a new capsule's title: left today, opens anytime but only at this spot."
+  },
+  "capsulesCreationLeftTodayOpens": "Left today · opens {date}",
+  "@capsulesCreationLeftTodayOpens": {
+    "description": "Under a new capsule's title: it is left today and opens on {date}.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
+  },
+  "capsulesCreationLeftTodayOpensHere": "Left today · opens {date}, here",
+  "@capsulesCreationLeftTodayOpensHere": {
+    "description": "Under a new capsule's title: left today, opens on a day, only at this spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesCreationOpenAt": "How it opens",
   "@capsulesCreationOpenAt": {
     "description": "Row title: the day the capsule opens. The chosen date is shown next to it."
   },
-  "capsulesCreationPreview": "Capsule Preview",
-  "@capsulesCreationPreview": {
-    "description": "Section title above the card that shows how the capsule will look."
+  "capsulesCreationOptions": "Options",
+  "@capsulesCreationOptions": {
+    "description": "Create page: the group label above the switches (shown in capitals)."
   },
-  "capsulesCreationPrivacy": "Privacy",
+  "capsulesCreationPrivacy": "Who sees it",
   "@capsulesCreationPrivacy": {
     "description": "Row title: who can see the capsule (tapping cycles Public / Friends / Private)."
   },
-  "capsulesCreationSelectDate": "Select date",
-  "@capsulesCreationSelectDate": {
-    "description": "Shown in the open date row until a date is picked. Keep it short."
+  "capsulesCreationRetake": "Retake",
+  "@capsulesCreationRetake": {
+    "description": "Chip on the photo of a new capsule: back to the camera."
   },
-  "capsulesCreationSettings": "Capsule Settings",
+  "capsulesCreationSettings": "Settings",
   "@capsulesCreationSettings": {
     "description": "Section title above the privacy, open date and colour rows."
   },
@@ -536,17 +605,41 @@
   "@capsulesCreationSpeed": {
     "description": "Creation row of a loop capsule: how fast its frames play."
   },
-  "capsulesCreationSubmit": "Create Capsule",
+  "capsulesCreationSubmit": "Create capsule",
   "@capsulesCreationSubmit": {
     "description": "Button at the bottom of the creation screen that saves the new capsule. Keep it short."
   },
-  "capsulesCreationTitle": "Create Capsule",
+  "capsulesCreationTitle": "New capsule",
   "@capsulesCreationTitle": {
     "description": "Header title of the screen where a new capsule is set up after taking the photo."
   },
   "capsulesCreationTitleHint": "Add Title...",
   "@capsulesCreationTitleHint": {
     "description": "Hint in the capsule title field (one line, large bold font, narrow: keep it very short)."
+  },
+  "capsulesDatesLeft": "Left {date}",
+  "@capsulesDatesLeft": {
+    "description": "An opened capsule without an opening date: the day it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "14 Jun 2025"
+      }
+    }
+  },
+  "capsulesDatesLeftOpened": "Left {left} · opened {opened}",
+  "@capsulesDatesLeftOpened": {
+    "description": "An opened capsule: the day it was left and the day it opened.",
+    "placeholders": {
+      "left": {
+        "type": "String",
+        "example": "14 Jun 2025"
+      },
+      "opened": {
+        "type": "String",
+        "example": "14 Jun 2026"
+      }
+    }
   },
   "capsulesDefaultTitle": "Capsule",
   "@capsulesDefaultTitle": {
@@ -563,6 +656,10 @@
   "capsulesDraftTitle": "Unfinished capsule",
   "@capsulesDraftTitle": {
     "description": "Camera card for a capsule left unfinished (B4 drafts)."
+  },
+  "capsulesErrorHereUnavailable": "Opening only here isn't available yet. Choose Anywhere and try again.",
+  "@capsulesErrorHereUnavailable": {
+    "description": "Create fails: the server does not take place capsules yet."
   },
   "capsulesErrorNoLocation": "We could not detect your location",
   "capsulesErrorSaveFailed": "Failed to save capsule",
@@ -587,6 +684,72 @@
   "@capsulesFramesTitle": {
     "description": "Title of the frame strip of a loop being created."
   },
+  "capsulesHowAnytimeHint": "Open it whenever you like",
+  "@capsulesHowAnytimeHint": {
+    "description": "Under \"Anytime\" in the \"How does it open?\" sheet."
+  },
+  "capsulesHowAnywhere": "Anywhere",
+  "@capsulesHowAnywhere": {
+    "description": "Where option: the capsule opens wherever you are."
+  },
+  "capsulesHowAnywhereHint": "Wherever you are when it opens",
+  "@capsulesHowAnywhereHint": {
+    "description": "Under \"Anywhere\" in the \"How does it open?\" sheet."
+  },
+  "capsulesHowHere": "Only when I'm back here",
+  "@capsulesHowHere": {
+    "description": "Where option: the capsule opens only within 150 m of where it was left."
+  },
+  "capsulesHowHereHint": "Within 150 m of this spot",
+  "@capsulesHowHereHint": {
+    "description": "Under \"Only when I'm back here\" in How does it open?"
+  },
+  "capsulesHowPick": "Pick a date",
+  "@capsulesHowPick": {
+    "description": "An option in the \"How does it open?\" sheet: choose the day on a calendar."
+  },
+  "capsulesHowPickHint": "Choose a day on the calendar",
+  "@capsulesHowPickHint": {
+    "description": "Under \"Pick a date\" before a day is chosen."
+  },
+  "capsulesHowSummaryAnytime": "Opens anytime. It stays on the map where you left it.",
+  "@capsulesHowSummaryAnytime": {
+    "description": "The rule in words, at the bottom of the \"How does it open?\" sheet."
+  },
+  "capsulesHowSummaryAnytimeHere": "Opens anytime, only within 150 m of this spot.",
+  "@capsulesHowSummaryAnytimeHere": {
+    "description": "The rule in words in How does it open?: anytime, only back at this spot."
+  },
+  "capsulesHowSummaryDate": "Opens on {date}. It stays on the map where you left it.",
+  "@capsulesHowSummaryDate": {
+    "description": "The rule in words with a date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesHowSummaryDateHere": "Opens on {date}, only within 150 m of this spot.",
+  "@capsulesHowSummaryDateHere": {
+    "description": "The rule in words in How does it open?: on a day, only back at this spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesHowTitle": "How does it open?",
+  "@capsulesHowTitle": {
+    "description": "Title of the sheet that sets when (and where) a capsule opens."
+  },
+  "capsulesHowWhen": "When",
+  "@capsulesHowWhen": {
+    "description": "Group label in the \"How does it open?\" sheet (shown in capitals)."
+  },
+  "capsulesHowWhere": "Where",
+  "@capsulesHowWhere": {
+    "description": "Group label in the \"How does it open?\" sheet (shown in capitals)."
+  },
   "capsulesLeaveCoAuthors": "Remove me as co-author",
   "@capsulesLeaveCoAuthors": {
     "description": "Capsule menu item for a co-author: take themselves off the capsule."
@@ -599,22 +762,25 @@
   "@capsulesLinkNotShared": {
     "description": "Shown when a capsule link opens a capsule the user may not see (or that is gone)."
   },
+  "capsulesLoopBadge": "{count, plural, =1{Loop · 1 frame} other{Loop · {count} frames}}",
+  "@capsulesLoopBadge": {
+    "description": "On the photo of an opened loop capsule: it is a loop of this many frames.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "capsulesLoopMark": "Loop",
   "@capsulesLoopMark": {
     "description": "Screen reader label of the mark on a loop capsule's picture."
   },
+  "capsulesMore": "More",
+  "@capsulesMore": {
+    "description": "Spoken name of the ⋯ button of an opened capsule."
+  },
   "capsulesOpenInMonth": "In a month",
-  "capsulesOpenInWeek": "In a week",
   "capsulesOpenInYear": "In a year",
-  "capsulesOpenNow": "Open right away",
-  "@capsulesOpenNow": {
-    "description": "Open date menu: remove the date, the capsule is open at once"
-  },
-  "capsulesOpenPickDate": "Pick a date…",
-  "capsulesOpenTomorrow": "Tomorrow",
-  "@capsulesOpenTomorrow": {
-    "description": "Open date preset"
-  },
   "capsulesPinBack": "Back to where I am",
   "@capsulesPinBack": {
     "description": "Button on the pin map: back to the phone's position."
@@ -635,22 +801,14 @@
   "@capsulesPinUse": {
     "description": "Button: the capsule goes to the pin."
   },
-  "capsulesPrivacyFriends": "Friends",
-  "@capsulesPrivacyFriends": {
-    "description": "Capsule visibility: only the owner's friends can see it."
-  },
-  "capsulesPrivacyPrivate": "Private",
-  "@capsulesPrivacyPrivate": {
-    "description": "Capsule visibility: only the owner (and the friend it was sent to). Agrees with 'capsule'."
-  },
-  "capsulesPrivacyPublic": "Public",
-  "@capsulesPrivacyPublic": {
-    "description": "Capsule visibility: everyone can see it. Agrees with 'capsule'."
-  },
   "capsulesQueued": "Saved on your phone. It will be uploaded when you are online again.",
   "capsulesQuickReply": "Reply to the author",
   "@capsulesQuickReply": {
     "description": "Screen reader label of the reply button on someone's capsule."
+  },
+  "capsulesQuickReplyAttached": "goes with your message",
+  "@capsulesQuickReplyAttached": {
+    "description": "Under the capsule's title in the quick reply card: the capsule is sent along."
   },
   "capsulesQuickReplyHint": "Write to {name}…",
   "@capsulesQuickReplyHint": {
@@ -683,17 +841,33 @@
   },
   "capsulesReactionFailed": "Could not save your reaction",
   "capsulesReply": "Reply",
-  "capsulesReplyHint": "Reply to {name}...",
-  "@capsulesReplyHint": {
+  "capsulesReplyTo": "Reply to {name}",
+  "@capsulesReplyTo": {
+    "description": "The pill at the bottom of someone else's capsule that writes to them in chat, and the title of that card.",
     "placeholders": {
       "name": {
-        "type": "String"
+        "type": "String",
+        "example": "Bob"
+      }
+    }
+  },
+  "capsulesReplyingTo": "Replying to {name}",
+  "@capsulesReplyingTo": {
+    "description": "Chip above the comment field while replying to someone.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Erin"
       }
     }
   },
   "capsulesReport": "Report",
   "capsulesReportAbuse": "Harassment or hate",
   "capsulesReportCapsule": "Report capsule",
+  "capsulesReportHint": "The Later team will look at it. The author is not told who reported it.",
+  "@capsulesReportHint": {
+    "description": "Under \"What is wrong with it?\" when reporting."
+  },
   "capsulesReportNudity": "Nudity",
   "capsulesReportOther": "Something else",
   "capsulesReportPrivacy": "Private information",
@@ -719,6 +893,10 @@
       }
     }
   },
+  "capsulesShowOnMap": "Show on the map",
+  "@capsulesShowOnMap": {
+    "description": "In the ⋯ menu of an opened capsule: closes it and centres the map on its pin."
+  },
   "capsulesSpeedFast": "Fast",
   "@capsulesSpeedFast": {
     "description": "Loop speed: 150 ms per frame."
@@ -731,6 +909,18 @@
   "@capsulesSpeedSlow": {
     "description": "Loop speed: 500 ms per frame."
   },
+  "capsulesWhoEveryone": "Everyone",
+  "@capsulesWhoEveryone": {
+    "description": "Create page, \"Who sees it\" row: a public capsule."
+  },
+  "capsulesWhoFriends": "Friends",
+  "@capsulesWhoFriends": {
+    "description": "Create page, \"Who sees it\" row: a friends-only capsule."
+  },
+  "capsulesWhoOnlyMe": "Only me",
+  "@capsulesWhoOnlyMe": {
+    "description": "Create page, \"Who sees it\" row: a private capsule."
+  },
   "capsulesWith": "With {names}",
   "@capsulesWith": {
     "description": "Line on the user's own capsule (or one they co-authored) naming the others who made it.",
@@ -738,6 +928,56 @@
       "names": {
         "type": "String",
         "example": "Ben, Carl"
+      }
+    }
+  },
+  "capsulesWrapFrom": "From {name}",
+  "@capsulesWrapFrom": {
+    "description": "The gift tag on a wrapped capsule: who left it (the name is shown bold).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesWrapFromYou": "From you",
+  "@capsulesWrapFromYou": {
+    "description": "The gift tag on a wrapped capsule the user left themselves."
+  },
+  "capsulesWrapHold": "Hold to open",
+  "@capsulesWrapHold": {
+    "description": "Under a wrapped capsule: press and hold it to open it."
+  },
+  "capsulesWrapHoldLonger": "Hold a little longer",
+  "@capsulesWrapHoldLonger": {
+    "description": "Under a wrapped capsule after it was let go too early."
+  },
+  "capsulesWrapKeepHolding": "Keep holding",
+  "@capsulesWrapKeepHolding": {
+    "description": "Under a wrapped capsule while it is being held."
+  },
+  "capsulesWrapLeftIn": "Left {date} in {place}",
+  "@capsulesWrapLeftIn": {
+    "description": "The gift tag on a wrapped capsule: when and where it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesWrapOpen": "Open the capsule",
+  "@capsulesWrapOpen": {
+    "description": "Screen reader label of a wrapped capsule; a double tap opens it at once."
+  },
+  "capsulesWrapWaited": "{count, plural, =1{Waited 1 day} other{Waited {count} days}}",
+  "@capsulesWrapWaited": {
+    "description": "On a wrapped capsule, top: how long it waited since it was left.",
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -1222,17 +1462,79 @@
       }
     }
   },
+  "mapCapsuleAwayKm": "{km} km away",
+  "@mapCapsuleAwayKm": {
+    "description": "How far a place capsule is (km with one decimal).",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleAwayMetres": "{metres} m away",
+  "@mapCapsuleAwayMetres": {
+    "description": "How far a place capsule is.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleBeThere": "Be there to open",
+  "@mapCapsuleBeThere": {
+    "description": "Map card of a capsule that opens only at its spot."
+  },
+  "mapCapsuleGoThere": "Go there",
+  "@mapCapsuleGoThere": {
+    "description": "Pill on a place capsule's map card: opens directions to it."
+  },
+  "mapCapsuleLeftBy": "Left by {name} · {date}",
+  "@mapCapsuleLeftBy": {
+    "description": "Second line of a locked capsule's map card: who left it and when.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Bob"
+      },
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
+  "mapCapsuleLeftOn": "Left {date}",
+  "@mapCapsuleLeftOn": {
+    "description": "Second line of a map card when the author is not shown: when it was left.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "6 Oct 2025"
+      }
+    }
+  },
   "mapCapsuleLocked": "Locked",
   "@mapCapsuleLocked": {
     "description": "Disabled button in the window above a capsule that has not opened yet. Agrees with 'capsule'."
   },
-  "mapCapsuleNoDescription": "This capsule has no description.",
-  "@mapCapsuleNoDescription": {
-    "description": "Shown in the capsule card opened from the map when the capsule has no description."
-  },
   "mapCapsuleOpen": "Open",
   "@mapCapsuleOpen": {
     "description": "Button in the window above an open capsule's pin: shows the capsule. A verb."
+  },
+  "mapCapsuleOpenAnytime": "Open anytime",
+  "@mapCapsuleOpenAnytime": {
+    "description": "The map card of a capsule without an opening date."
+  },
+  "mapCapsuleOpenedOnLabel": "Opened on",
+  "@mapCapsuleOpenedOnLabel": {
+    "description": "The map card of an open capsule: by the check, with the day it opened on the line below."
+  },
+  "mapCapsuleOpenedToday": "Opened today",
+  "@mapCapsuleOpenedToday": {
+    "description": "The map card of a capsule that opened today."
+  },
+  "mapCapsuleOpenedYesterday": "Opened yesterday",
+  "@mapCapsuleOpenedYesterday": {
+    "description": "The map card of a capsule that opened yesterday."
   },
   "mapCapsuleOpensIn": "Opens in {time}",
   "@mapCapsuleOpensIn": {
@@ -1244,13 +1546,65 @@
       }
     }
   },
-  "mapCapsuleReady": "Check out what's inside!",
-  "@mapCapsuleReady": {
-    "description": "Line in the small window above a capsule pin when the capsule is already open."
+  "mapCapsuleOpensOn": "Opens on {date}",
+  "@mapCapsuleOpensOn": {
+    "description": "Under the countdown of a locked capsule on its map card. {date} like \"1 Dec 2026\".",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "1 Dec 2026"
+      }
+    }
+  },
+  "mapCapsuleOpensOnHere": "Opens on {date}, here",
+  "@mapCapsuleOpensOnHere": {
+    "description": "Map card of a locked place capsule: its day, only at its spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleReadyToOpen": "Ready to open",
+  "@mapCapsuleReadyToOpen": {
+    "description": "Map card of a place capsule whose date has come."
   },
   "mapCapsuleUnavailable": "This capsule is no longer available",
   "@mapCapsuleUnavailable": {
     "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
+  },
+  "mapCapsuleUnlockFailed": "Couldn't open it. Try again.",
+  "@mapCapsuleUnlockFailed": {
+    "description": "Opening a place capsule failed for another reason."
+  },
+  "mapCapsuleUnlockNoLocation": "Your location is needed to open it here.",
+  "@mapCapsuleUnlockNoLocation": {
+    "description": "Opening a place capsule failed: no location fix."
+  },
+  "mapCapsuleUnlockNotYet": "It isn't ready to open yet.",
+  "@mapCapsuleUnlockNotYet": {
+    "description": "Opening a place capsule failed: its date hasn't come."
+  },
+  "mapCapsuleUnlockTooFar": "You're {metres} m away. Come within 150 m to open it.",
+  "@mapCapsuleUnlockTooFar": {
+    "description": "Opening a place capsule failed: too far.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleWhereUnknown": "Turn on location to see how far",
+  "@mapCapsuleWhereUnknown": {
+    "description": "Map card of a place capsule when the user's location is unknown."
+  },
+  "mapCapsuleYouAreHere": "You're here",
+  "@mapCapsuleYouAreHere": {
+    "description": "Map card of a place capsule: the user is within 150 m of it."
+  },
+  "mapCapsuleYoursToOpen": "Yours to open",
+  "@mapCapsuleYoursToOpen": {
+    "description": "The map card of an open capsule the user has not unwrapped yet."
   },
   "mapCompass": "Turn the map to north",
   "@mapCompass": {
@@ -1881,6 +2235,45 @@
       }
     }
   },
+  "notificationsCapsuleOpenBody": "The capsule “{title}” from {name} is open",
+  "@notificationsCapsuleOpenBody": {
+    "description": "In-app notification: a capsule opened on its date ({name} is shown bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleReadyBody": "The capsule “{title}” from {name} is ready. It's waiting in {place}",
+  "@notificationsCapsuleReadyBody": {
+    "description": "In-app notification: a place capsule became ready ({name} bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleReadyHereBody": "The capsule “{title}” from {name} is ready. It's waiting where it was left",
+  "@notificationsCapsuleReadyHereBody": {
+    "description": "In-app notification: a place capsule became ready, its place unknown ({name} bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "notificationsChannelActivity": "Activity",
   "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
   "notificationsChannelActivityNoVibration": "Activity (no vibration)",
@@ -2115,6 +2508,18 @@
   },
   "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeCapsuleNearby": "Capsule Nearby",
+  "@notificationsTypeCapsuleNearby": {
+    "description": "Kind of notification: a capsule the user may open is near (shown by the phone)."
+  },
+  "notificationsTypeCapsuleOpen": "Capsule Open",
+  "@notificationsTypeCapsuleOpen": {
+    "description": "Kind of notification: a capsule with a date opened."
+  },
+  "notificationsTypeCapsuleReady": "Capsule Ready",
+  "@notificationsTypeCapsuleReady": {
+    "description": "Kind of notification: a place capsule became ready to open there."
+  },
   "notificationsTypeCoAuthor": "Made Together",
   "@notificationsTypeCoAuthor": {
     "description": "Title of a notification: a friend made a capsule with the user (co-author)."
@@ -2127,6 +2532,10 @@
   "notificationsTypeFriendAccepted": "New Friend",
   "notificationsTypeFriendRequest": "Friend Request",
   "notificationsTypeMessage": "New Message",
+  "notificationsTypeNewCountry": "New Country",
+  "@notificationsTypeNewCountry": {
+    "description": "Kind of notification: welcome to a new country (shown by the phone)."
+  },
   "notificationsTypeOther": "Notification",
   "notificationsTypeReaction": "New Reaction",
   "notificationsTypeReply": "New Reply",
@@ -2144,6 +2553,41 @@
     "description": "Place pill on a capsule when the phone has no location yet."
   },
   "placeUnknown": "Unknown location",
+  "placesLeaveCapsule": "Leave a capsule",
+  "@placesLeaveCapsule": {
+    "description": "Button on the \"Welcome to …\" notification: opens the camera."
+  },
+  "placesNearbyBody": "It's {metres} m away. Hold to open it there.",
+  "@placesNearbyBody": {
+    "description": "Under \"You're near …\".",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "placesNearbyTitle": "You're near {title}",
+  "@placesNearbyTitle": {
+    "description": "Phone notification: a capsule the user may open is close (F4).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "placesWelcomeBody": "You've been here for 2 hours. Leave a memory?",
+  "@placesWelcomeBody": {
+    "description": "Under \"Welcome to …\"."
+  },
+  "placesWelcomeTitle": "Welcome to {country}",
+  "@placesWelcomeTitle": {
+    "description": "Phone notification after two hours in a new country (F3).",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
   "profileAboutPrompt": "Add a few words about you",
   "@profileAboutPrompt": {
     "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
@@ -2721,6 +3165,42 @@
   "@settingsPhotoQualityStandard": {
     "description": "Photo quality choice: 1600 px, quicker to upload."
   },
+  "settingsPlacesAlwaysContinue": "Continue",
+  "@settingsPlacesAlwaysContinue": {
+    "description": "Button: go on to the location permission."
+  },
+  "settingsPlacesAlwaysDenied": "Allow location “All the time” in Settings to turn this on.",
+  "@settingsPlacesAlwaysDenied": {
+    "description": "Background location was not given."
+  },
+  "settingsPlacesAlwaysMessage": "To tell you about capsules and countries while Later is closed, Android must let it use your location all the time. Choose “Allow all the time” next.",
+  "@settingsPlacesAlwaysMessage": {
+    "description": "Why background location is asked for."
+  },
+  "settingsPlacesAlwaysTitle": "Location all the time",
+  "@settingsPlacesAlwaysTitle": {
+    "description": "Before asking for background location."
+  },
+  "settingsPlacesCountry": "Welcome to a new country",
+  "@settingsPlacesCountry": {
+    "description": "Switch: \"Welcome to …\" alerts."
+  },
+  "settingsPlacesCountryHint": "After two hours in a country you're visiting",
+  "@settingsPlacesCountryHint": {
+    "description": "Under \"Welcome to a new country\"."
+  },
+  "settingsPlacesFooter": "Your phone checks where it is about every half hour, even when Later is closed. Later doesn't save or share your location.",
+  "@settingsPlacesFooter": {
+    "description": "Under the Places section."
+  },
+  "settingsPlacesNearby": "Capsules near you",
+  "@settingsPlacesNearby": {
+    "description": "Switch: \"You're near …\" alerts."
+  },
+  "settingsPlacesNearbyHint": "Within 200 m of one you can open",
+  "@settingsPlacesNearbyHint": {
+    "description": "Under \"Capsules near you\"."
+  },
   "settingsPrivacy": "Privacy",
   "settingsPrivacyAchievements": "Show my achievements",
   "settingsPrivacyAchievementsHint": "Friends see them on your profile",
@@ -2797,6 +3277,10 @@
   "settingsSectionPhotos": "PHOTOS",
   "@settingsSectionPhotos": {
     "description": "Settings section: how capsule photos are sent and kept."
+  },
+  "settingsSectionPlaces": "PLACES",
+  "@settingsSectionPlaces": {
+    "description": "Notification settings section: alerts from where the phone is."
   },
   "settingsSectionQuestions": "QUESTIONS",
   "settingsSectionQuietHours": "QUIET HOURS",
@@ -2891,6 +3375,34 @@
   "settingsYourPassword": "Your password",
   "@settingsYourPassword": {
     "description": "Hint of the password field that confirms an account change."
+  },
+  "stampsLater": "Later",
+  "@stampsLater": {
+    "description": "Button on the new stamp: close it."
+  },
+  "stampsNew": "New stamp",
+  "@stampsNew": {
+    "description": "After a capsule in a new town (E1)."
+  },
+  "stampsOpenPassport": "Open passport",
+  "@stampsOpenPassport": {
+    "description": "Button on the new stamp: the passport (for now the countries and towns view)."
+  },
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "@stampsPageLabel": {
+    "description": "Printed at the top of a passport page, as on a real passport (the same in every language)."
+  },
+  "stampsTownNumber": "{town}, your {ordinal} town",
+  "@stampsTownNumber": {
+    "description": "Under \"New stamp\": the town and how many towns the user has now. {ordinal} is the number as an ordinal in the language (\"22nd\", \"22.\", \"22-й\").",
+    "placeholders": {
+      "town": {
+        "type": "String"
+      },
+      "ordinal": {
+        "type": "String"
+      }
+    }
   },
   "streakAtRisk": "Today isn't counted yet: leave a capsule before midnight to keep your streak.",
   "@streakAtRisk": {

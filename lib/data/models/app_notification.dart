@@ -17,6 +17,20 @@ enum NotificationType {
 
   /// A friend made a capsule with the user (notify.js).
   coAuthor,
+
+  /// A capsule with a date opened (F1, locks.js).
+  capsuleOpen,
+
+  /// A place capsule's date came: it waits at its spot (F2, locks.js).
+  capsuleReady,
+
+  /// The user is near a capsule they may open there (F4; shown by the
+  /// phone itself, app/background_places_main.dart).
+  capsuleNearby,
+
+  /// A couple of hours in a new country: "Leave a memory?" (F3; shown by
+  /// the phone itself).
+  newCountry,
   other;
 
   static NotificationType parse(Object? value) {
@@ -42,6 +56,8 @@ class AppNotification {
     this.capsuleId,
     this.reaction,
     this.achievementId,
+    this.capsuleTitle,
+    this.placeName,
   });
 
   final String id;
@@ -66,6 +82,10 @@ class AppNotification {
   /// Which achievement an achievement notification is about.
   final String? achievementId;
 
+  /// The capsule's title and place ("is open", "is ready").
+  final String? capsuleTitle;
+  final String? placeName;
+
   AppNotification markedRead() => AppNotification(
     id: id,
     type: type,
@@ -79,5 +99,7 @@ class AppNotification {
     capsuleId: capsuleId,
     reaction: reaction,
     achievementId: achievementId,
+    capsuleTitle: capsuleTitle,
+    placeName: placeName,
   );
 }

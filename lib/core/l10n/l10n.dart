@@ -18,6 +18,16 @@ abstract final class AppL10n {
 
   static AppLocalizations get current => _current;
 
+  /// The strings in [language] ("ru"), English when unknown: for work done
+  /// without the app's widgets (the place alerts' background check).
+  static AppLocalizations forLanguage(String? language) {
+    try {
+      return lookupAppLocalizations(Locale(language ?? 'en'));
+    } on FlutterError {
+      return lookupAppLocalizations(const Locale('en'));
+    }
+  }
+
   static void update(Locale locale) {
     if (_current.localeName == locale.languageCode) return;
     try {

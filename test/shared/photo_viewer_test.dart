@@ -109,6 +109,9 @@ void main() {
       ),
     );
     await tester.tap(find.text('thumb'));
+    // It waits for the photo to decode, at most 400 ms (it never loads
+    // here), so it does not fly in empty (a white flash).
+    await tester.pump(const Duration(milliseconds: 450));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 60));
     // Mid-flight: the viewer's photo is a hero, and nothing fades the page.

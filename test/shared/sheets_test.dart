@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/features/history/widgets/menu_item_node.dart';
 import 'package:later/features/history/widgets/nested_menu.dart';
+import 'package:later/shared/widgets/app_sheets.dart';
 import 'package:later/shared/widgets/buttons/default_icon_button.dart';
 import 'package:later/shared/widgets/confirm_dialog.dart';
 import 'package:later/shared/widgets/options_menu.dart';
@@ -23,7 +24,142 @@ Widget _launcher(void Function(BuildContext) open) => testApp(
   ),
 );
 
+/// The opened capsule's shape: the handle, the square picture with a
+/// button on it, words under it.
+Widget _sheet() => const SheetSurface(
+  color: AppColors.onMedia,
+  radius: 28,
+  child: Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      SheetHandle.v2(),
+      Flexible(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: SheetPicture(
+                  radius: 20,
+                  over: [
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: SizedBox(
+                        key: ValueKey('button'),
+                        width: 36,
+                        height: 36,
+                      ),
+                    ),
+                  ],
+                  child: ColoredBox(
+                    key: ValueKey('photo'),
+                    color: AppColors.brandGreen,
+                  ),
+                ),
+              ),
+              SizedBox(height: 200),
+            ],
+          ),
+        ),
+      ),
+    ],
+  ),
+);
+
 void main() {
+  group('a sheet growing out of a thumbnail', () {
+    const thumb = Rect.fromLTWH(26, 600, 76, 76);
+    final photo = find.byKey(const ValueKey('photo'));
+    final surface = find.byType(SheetSurface);
+
+    Future<void> open(WidgetTester tester, {SheetOrigin? origin}) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        _launcher(
+          (context) => Navigator.of(context).push(
+            AppSheetRoute<void>(
+              origin: origin,
+              barrierColor: AppColors.mediaScrim,
+              barrierLabel: 'close',
+              builder: (_) => _sheet(),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      // The first frame lays the sheet out unseen (heroes measure it).
+      await tester.pump();
+    }
+
+    double buttonFade(WidgetTester tester) => tester
+        .widget<Opacity>(
+          find
+              .ancestor(
+                of: find.byKey(const ValueKey('button')),
+                matching: find.byType(Opacity),
+              )
+              .first,
+        )
+        .opacity;
+
+    testWidgets('the picture starts on the thumbnail and never leaves its '
+        'place on the sheet', (tester) async {
+      await open(tester, origin: const SheetOrigin(thumb, radius: 14));
+      await tester.pump(const Duration(milliseconds: 1));
+      final first = tester.getRect(photo);
+      expect(first.left, closeTo(thumb.left, 2));
+      expect(first.top, closeTo(thumb.top, 2));
+      expect(first.width, closeTo(thumb.width, 4));
+      expect(buttonFade(tester), lessThan(0.1));
+      var width = first.width;
+      for (var ms = 0; ms < 260; ms += 20) {
+        await tester.pump(const Duration(milliseconds: 20));
+        final now = tester.getRect(photo);
+        // Right under the handle (20 dp) all the way: the sheet and its
+        // picture move as one.
+        expect(now.top - tester.getRect(surface).top, closeTo(20, 0.01));
+        expect(now.width, greaterThanOrEqualTo(width - 0.01));
+        width = now.width;
+      }
+      await tester.pumpAndSettle();
+      expect(tester.getRect(photo), const Rect.fromLTWH(16, 216, 368, 368));
+      expect(buttonFade(tester), 1);
+
+      // Closing: back into the thumbnail the same way.
+      await tester.tapAt(const Offset(200, 40));
+      await tester.pump();
+      for (var ms = 0; ms < 240; ms += 20) {
+        await tester.pump(const Duration(milliseconds: 20));
+        final now = tester.getRect(photo);
+        expect(now.top - tester.getRect(surface).top, closeTo(20, 0.01));
+        expect(now.width, lessThanOrEqualTo(width + 0.01));
+        width = now.width;
+      }
+      final last = tester.getRect(photo);
+      expect(last.top, closeTo(thumb.top, 3));
+      expect(last.left, closeTo(thumb.left, 3));
+      await tester.pumpAndSettle();
+      expect(photo, findsNothing);
+    });
+
+    testWidgets('without one it rises from below the screen, whole', (
+      tester,
+    ) async {
+      await open(tester);
+      await tester.pump(const Duration(milliseconds: 1));
+      expect(tester.getRect(photo).top, greaterThan(800));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getRect(photo).width, 368);
+      expect(buttonFade(tester), 1);
+      await tester.pumpAndSettle();
+      expect(tester.getRect(photo), const Rect.fromLTWH(16, 216, 368, 368));
+    });
+  });
+
   testWidgets('a centred sheet closes on a tap outside, not inside (F-32)', (
     tester,
   ) async {

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import '../../core/assets/app_assets.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_motion.dart';
+import '../../data/models/capsule.dart';
 import '../../data/services/app_image_cache.dart';
 import 'buttons/default_icon_button.dart';
 import 'loop_picture.dart';
@@ -20,9 +22,22 @@ class PhotoViewer extends StatefulWidget {
     this.frames = const [],
     this.frameDelay = const Duration(milliseconds: 300),
     this.heroTag,
+    this.aspect,
+    this.fromRadius = 20,
+    this.crop,
   });
 
   final String url;
+
+  /// The photo's width over its height, when known before it opens: the
+  /// flying photo then turns from the tapped square into the whole photo.
+  final double? aspect;
+
+  /// The corners of the tapped picture the photo flies from.
+  final double fromRadius;
+
+  /// The square the tapped picture showed (null: its middle).
+  final CapsuleCrop? crop;
 
   /// The tapped picture's [Hero] tag: the photo flies from it to full screen
   /// and back.
@@ -35,15 +50,32 @@ class PhotoViewer extends StatefulWidget {
   /// Opens [url] full screen. With [heroTag] the photo flies from the
   /// tapped picture; the black behind it fades in as a painted colour (a
   /// page-wide fade would draw the whole screen offscreen every frame).
+  ///
+  /// With a hero, the full photo is decoded first (a moment, at most 400 ms):
+  /// flying in empty showed the page behind it as a white flash.
   static Future<void> show(
     BuildContext context,
     String url, {
     List<String> frames = const [],
     Duration frameDelay = const Duration(milliseconds: 300),
     Object? heroTag,
-  }) {
+    double fromRadius = 20,
+    CapsuleCrop? crop,
+  }) async {
     final reduced = AppMotion.reduced(context);
-    return Navigator.of(context).push(
+    double? aspect;
+    if (heroTag != null && frames.length <= 1) {
+      aspect = await _aspectOf(
+        _providerFor(
+          url,
+          MediaQuery.sizeOf(context),
+          MediaQuery.devicePixelRatioOf(context),
+        ),
+        createLocalImageConfiguration(context),
+      );
+      if (!context.mounted) return;
+    }
+    await Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: false,
         transitionDuration: reduced ? Duration.zero : AppMotion.emphasized,
@@ -53,6 +85,9 @@ class PhotoViewer extends StatefulWidget {
           frames: frames,
           frameDelay: frameDelay,
           heroTag: heroTag,
+          aspect: aspect,
+          fromRadius: fromRadius,
+          crop: crop,
         ),
         // The page itself moves in only without a hero: the photo grows a
         // little as it fades (one picture-sized layer, briefly).
@@ -71,8 +106,124 @@ class PhotoViewer extends StatefulWidget {
     );
   }
 
+  /// The full photo as the viewer shows it: decoded for a 2x zoom.
+  static ImageProvider _providerFor(String url, Size size, double ratio) =>
+      url.startsWith('file:')
+      ? FileImage(File.fromUri(Uri.parse(url)))
+      : AppImageCache.provider(
+          url,
+          width: AppImageCache.decodeWidth(size.width * 2, ratio),
+        );
+
+  /// Decodes [provider] (kept in the image cache for the viewer) and gives
+  /// its width over height; null if it takes longer than 400 ms or fails.
+  static Future<double?> _aspectOf(
+    ImageProvider provider,
+    ImageConfiguration configuration,
+  ) {
+    final done = Completer<double?>();
+    final stream = provider.resolve(configuration);
+    late final ImageStreamListener listener;
+    void finish(double? value) {
+      if (!done.isCompleted) done.complete(value);
+      stream.removeListener(listener);
+    }
+
+    listener = ImageStreamListener(
+      (info, _) => finish(info.image.width / info.image.height),
+      onError: (_, _) => finish(null),
+    );
+    stream.addListener(listener);
+    return done.future.timeout(
+      const Duration(milliseconds: 400),
+      onTimeout: () {
+        stream.removeListener(listener);
+        return null;
+      },
+    );
+  }
+
   @override
   State<PhotoViewer> createState() => _PhotoViewerState();
+}
+
+/// The flying photo: at the start the tapped square (the capsule's chosen
+/// square, rounded), at the end the whole photo fitted to the screen, and
+/// every step between, so nothing jumps or blinks.
+class _PhotoFlight extends StatelessWidget {
+  const _PhotoFlight({
+    required this.animation,
+    required this.image,
+    required this.aspect,
+    required this.radius,
+    required this.crop,
+  });
+
+  final Animation<double> animation;
+  final ImageProvider image;
+  final double aspect;
+  final double radius;
+  final CapsuleCrop? crop;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) => AnimatedBuilder(
+      animation: animation,
+      builder: (context, _) {
+        final t = animation.value.clamp(0.0, 1.0);
+        final size = box.biggest;
+        // The whole photo fitted into the flight's rectangle.
+        var width = size.width;
+        var height = width / aspect;
+        if (height > size.height) {
+          height = size.height;
+          width = height * aspect;
+        }
+        final whole = Rect.fromCenter(
+          center: size.center(Offset.zero),
+          width: width,
+          height: height,
+        );
+        // Where the whole photo sits at the start: so that the chosen
+        // square fills the tapped square.
+        final square = Offset.zero & size;
+        final crop = this.crop ?? CapsuleCrop.centre(aspect);
+        final fullWidth = square.width / crop.w;
+        final fullHeight = square.height / crop.h;
+        final from = Rect.fromLTWH(
+          -crop.x * fullWidth,
+          -crop.y * fullHeight,
+          fullWidth,
+          fullHeight,
+        );
+        final window = Rect.lerp(square, whole, t)!;
+        final photo = Rect.lerp(from, whole, t)!;
+        return Stack(
+          children: [
+            Positioned.fromRect(
+              rect: window,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(radius * (1 - t)),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned.fromRect(
+                      rect: photo.shift(-window.topLeft),
+                      child: Image(
+                        image: image,
+                        fit: BoxFit.fill,
+                        gaplessPlayback: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
 }
 
 class _PhotoViewerState extends State<PhotoViewer>
@@ -164,13 +315,11 @@ class _PhotoViewerState extends State<PhotoViewer>
     final size = MediaQuery.sizeOf(context);
     final url = widget.url;
     // Decoded for a 2x zoom without blur.
-    final width = AppImageCache.decodeWidth(
-      size.width * 2,
+    final ImageProvider image = PhotoViewer._providerFor(
+      url,
+      size,
       MediaQuery.devicePixelRatioOf(context),
     );
-    final ImageProvider image = url.startsWith('file:')
-        ? FileImage(File.fromUri(Uri.parse(url)))
-        : AppImageCache.provider(url, width: width);
     // The black fades as the photo is dragged away, and with the route.
     final route = ModalRoute.of(context)?.animation;
     final fade = (1 - _drag.abs() / (_dismissDistance * 3)).clamp(0.0, 1.0);
@@ -188,7 +337,22 @@ class _PhotoViewerState extends State<PhotoViewer>
             errorBuilder: (_, _, _) => const SizedBox.shrink(),
           );
     if (widget.heroTag case final tag?) {
-      photo = Hero(tag: tag, child: photo);
+      final aspect = widget.aspect;
+      photo = Hero(
+        tag: tag,
+        // Straight from the square to the screen (the default arc bends it).
+        createRectTween: (begin, end) => RectTween(begin: begin, end: end),
+        flightShuttleBuilder: aspect == null
+            ? null
+            : (_, animation, _, _, _) => _PhotoFlight(
+                animation: animation,
+                image: image,
+                aspect: aspect,
+                radius: widget.fromRadius,
+                crop: widget.crop,
+              ),
+        child: photo,
+      );
     } else if (route != null) {
       photo = FadeTransition(opacity: route, child: photo);
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../features/capsules/opening/capsule_locks.dart';
 import '../../data/models/capsule.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/signup_page.dart';
@@ -65,6 +66,12 @@ abstract final class AppRoutes {
     final nav = Navigator.of(context);
     return replace ? nav.pushReplacement(route) : nav.push(route);
   }
+
+  /// The camera for Retake on the Create page: gives back the new photo
+  /// (or loop) instead of opening a new capsule.
+  static Future<CameraShot?> retakePhoto(BuildContext context) => Navigator.of(
+    context,
+  ).push(appSheetRoute<CameraShot>(const CameraPage(retake: true)));
 
   /// Capsule form after taking the photo (replaces the camera route).
   static Future<void> toCapsuleCreation(
@@ -165,7 +172,8 @@ abstract final class AppRoutes {
     backToRoot();
     selectedPageNotifier.value = AppTabs.map;
     if (capsule.location != null) root.read<MapFocus>().focus(capsule);
-    if (capsule.isOpen(DateTime.now())) {
+    // Opened here (a place capsule waits on the map for its spot).
+    if (CapsuleLocks.openAt(root, capsule, DateTime.now())) {
       await CapsuleDetailDialog.show(root, capsule);
     }
   }

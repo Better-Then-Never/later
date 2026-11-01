@@ -36,6 +36,20 @@ abstract final class AppMotion {
   /// Scale of a pressed button or card.
   static const pressedScale = 0.97;
 
+  /// Opening a wrapped capsule (D2): how long to hold it, and how fast the
+  /// ring winds back when it is let go early.
+  static const holdToOpen = Duration(milliseconds: 950);
+  static const holdWindBack = Duration(milliseconds: 320);
+
+  /// The wrapping tearing open from the pin (D3).
+  static const tear = Duration(milliseconds: 640);
+
+  /// A new passport stamp dropping onto its page (E1).
+  static const stampLand = Duration(milliseconds: 280);
+
+  /// The tear's ease: a quick start and a long settle.
+  static const tearCurve = Cubic(0.2, 0.7, 0.2, 1);
+
   /// Whether the user asked the system to reduce motion.
   static bool reduced(BuildContext context) =>
       MediaQuery.maybeDisableAnimationsOf(context) ?? false;

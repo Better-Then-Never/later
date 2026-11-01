@@ -5,18 +5,13 @@ import 'package:later/data/models/capsule.dart';
 import 'package:later/shared/widgets/capsule/capsule_author_row.dart';
 import 'package:later/data/models/social.dart';
 import 'package:later/data/models/user_profile.dart';
-import 'package:later/data/services/profile_image_cache.dart';
-import 'package:later/app/session/session_controller.dart';
-import 'package:later/data/repositories/repositories.dart';
-import 'package:later/data/services/geocoding_service.dart';
 import 'package:later/features/capsules/social/capsule_comments_sheet.dart';
 import 'package:later/features/capsules/social/capsule_detail_dialog.dart';
+import 'package:later/features/capsules/social/capsule_sheet.dart';
 import 'package:later/features/capsules/social/capsule_social_controller.dart';
-import 'package:later/features/capsules/social/capsule_social_panel.dart';
-import 'package:later/features/users/user_directory.dart';
-import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
+import '../helpers/capsule_host.dart';
 import '../helpers/test_app.dart';
 
 const _capsule = Capsule(
@@ -26,14 +21,6 @@ const _capsule = Capsule(
   privacy: CapsulePrivacy.public,
   color: CapsuleColor.blue,
 );
-
-class _Session extends ChangeNotifier implements SessionController {
-  @override
-  String? get uid => 'me';
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
 
 void main() {
   late FakeSocialRepository social;
@@ -214,25 +201,10 @@ void main() {
   });
 
   group('widgets', () {
-    Widget host(Widget child) {
-      final users = FakeUserRepository()
-        ..put(const UserProfile(uid: 'me', name: 'Me', username: 'me'))
-        ..put(const UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe'));
-      return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => UserDirectory(users)),
-          ChangeNotifierProvider(
-            create: (_) => ProfileImageCache(
-              FakeImageStorageRepository(),
-              evict: (_) async {},
-            ),
-          ),
-        ],
-        child: testApp(
-          home: Scaffold(body: Center(child: child)),
-        ),
-      );
-    }
+    Finder inComments(String text) => find.descendant(
+      of: find.byType(CapsuleCommentsSheet),
+      matching: find.text(text),
+    );
 
     testWidgets('opened from a comment notification, the thread opens too', (
       tester,
@@ -245,22 +217,10 @@ void main() {
           text: 'Lovely place',
         ),
       ];
-      final users = FakeUserRepository()
-        ..put(const UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe'));
       await tester.pumpWidget(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider<SessionController>.value(value: _Session()),
-            Provider<SocialRepository>.value(value: social),
-            Provider(create: (_) => GeocodingService()),
-            ChangeNotifierProvider(create: (_) => UserDirectory(users)),
-            ChangeNotifierProvider(
-              create: (_) => ProfileImageCache(
-                FakeImageStorageRepository(),
-                evict: (_) async {},
-              ),
-            ),
-          ],
+        capsuleHost(
+          social: social,
+          people: const [UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe')],
           child: testApp(
             home: Builder(
               builder: (context) => TextButton(
@@ -279,12 +239,29 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.byType(CapsuleCommentsSheet), findsOneWidget);
-      expect(find.text('Lovely place'), findsOneWidget);
+      expect(inComments('Lovely place'), findsOneWidget);
       // Someone else's open capsule counts for "Curious" (B7).
       expect(social.viewed, ['me/cap']);
     });
 
-    testWidgets('the panel reacts and opens the comments', (tester) async {
+    Widget sheet(CapsuleSocialController c) => capsuleHost(
+      social: social,
+      people: const [
+        UserProfile(uid: 'me', name: 'Me', username: 'me'),
+        UserProfile(uid: 'zoe', name: 'Zoe', username: 'zoe'),
+        UserProfile(uid: 'owner', name: 'Olga', username: 'olga'),
+      ],
+      child: testApp(
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.bottomCenter,
+            child: CapsuleSheet(capsule: _capsule, controller: c),
+          ),
+        ),
+      ),
+    );
+
+    testWidgets('the sheet reacts and opens the comments', (tester) async {
       social.comments['cap'] = [
         const CapsuleComment(
           id: 'c1',
@@ -294,25 +271,77 @@ void main() {
         ),
       ];
       final c = open();
-      await tester.pumpWidget(host(CapsuleSocialPanel(controller: c)));
+      await tester.pumpWidget(sheet(c));
       await tester.pumpAndSettle();
-      expect(find.text('1 comment'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      expect(find.text('Comments · 1'), findsOneWidget);
+      expect(find.text('Reply to Olga'), findsOneWidget);
+      // The newest comment shows under the reactions.
+      expect(find.text('Lovely place'), findsOneWidget);
 
-      await tester.tap(find.text('🔥'));
+      await tester.tap(find.byIcon(Icons.local_fire_department));
       await tester.pumpAndSettle();
       expect(social.reactions['cap']!['me'], ReactionType.fire);
-      expect(find.text('1'), findsOneWidget, reason: 'count next to 🔥');
+      expect(find.text('1'), findsOneWidget, reason: 'the count by the fire');
 
-      await tester.tap(find.text('1 comment'));
+      await tester.tap(find.text('Comments · 1'));
       await tester.pumpAndSettle();
       expect(find.byType(CapsuleCommentsSheet), findsOneWidget);
-      expect(find.text('Lovely place'), findsOneWidget);
+      expect(inComments('Lovely place'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'Thanks!');
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       expect(social.comments['cap']!.last.text, 'Thanks!');
-      expect(find.text('Thanks!'), findsOneWidget);
+      expect(inComments('Thanks!'), findsOneWidget);
+      c.dispose();
+    });
+
+    testWidgets('comments: the author is marked; a long press offers a menu', (
+      tester,
+    ) async {
+      social.comments['cap'] = [
+        const CapsuleComment(
+          id: 'c1',
+          capsuleId: 'cap',
+          authorId: 'zoe',
+          text: 'Lovely place',
+        ),
+        const CapsuleComment(
+          id: 'c2',
+          capsuleId: 'cap',
+          authorId: 'owner',
+          text: 'Thank you',
+          replyTo: 'c1',
+        ),
+      ];
+      final c = open();
+      await tester.pumpWidget(sheet(c));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Comments · 2'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Author'), findsOneWidget, reason: "Olga's reply");
+
+      await tester.longPress(inComments('Lovely place'));
+      await tester.pumpAndSettle();
+      expect(find.text('Copy text'), findsOneWidget);
+      expect(find.text('Report'), findsOneWidget, reason: "Zoe's comment");
+      expect(find.text('Delete comment'), findsNothing);
+
+      await tester.tap(find.text('Reply').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Replying to Zoe'), findsOneWidget);
+      c.dispose();
+    });
+
+    testWidgets('no comments yet: the hint names the author', (tester) async {
+      final c = open();
+      await tester.pumpWidget(sheet(c));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Comment'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Olga'), findsWidgets);
       c.dispose();
     });
 
@@ -328,7 +357,7 @@ void main() {
         allowComments: false,
         allowReactions: false,
       );
-      expect(CapsuleSocialPanel.showsAnything(closed), isFalse);
+      expect(CapsuleSheet.showsAnything(closed), isFalse);
       // A public one can still be shared as a link.
       const public = Capsule(
         id: 'cap',
@@ -339,8 +368,8 @@ void main() {
         allowComments: false,
         allowReactions: false,
       );
-      expect(CapsuleSocialPanel.showsAnything(public), isTrue);
-      expect(CapsuleSocialPanel.shareable(public), isTrue);
+      expect(CapsuleSheet.showsAnything(public), isTrue);
+      expect(CapsuleSheet.shareable(public), isTrue);
     });
   });
 }

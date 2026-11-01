@@ -35,6 +35,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     required this.infoCardFill,
     required this.infoCardBorder,
     required this.toastNeutral,
+    required this.accentText,
+    required this.accentSoft,
     required this.scrim,
     required this.shadowCard,
     required this.shadowRaised,
@@ -83,6 +85,14 @@ class AppPalette extends ThemeExtension<AppPalette> {
   final Color infoCardBorder;
   final Color toastNeutral;
 
+  /// Green words on cards and sheets ("Opened today", your reaction's count):
+  /// the brand green is too light to read as text on white.
+  final Color accentText;
+
+  /// The soft green behind something that is yours or chosen (your reaction,
+  /// a pressed comment, a quiet pill).
+  final Color accentSoft;
+
   final Color scrim;
   final Color shadowCard;
   final Color shadowRaised;
@@ -116,6 +126,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     infoCardFill: Color(0x1A2196F3),
     infoCardBorder: Color(0x4D2196F3),
     toastNeutral: Color(0xFF424242),
+    accentText: Color(0xFF2F8A16),
+    accentSoft: Color(0x4D56C92E),
     scrim: Color(0x80000000),
     shadowCard: Color(0x1F000000),
     shadowRaised: Color(0x42000000),
@@ -149,6 +161,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     infoCardFill: Color(0x262196F3),
     infoCardBorder: Color(0x662196F3),
     toastNeutral: Color(0xFF3A3A3A),
+    accentText: Color(0xFF7FD95A),
+    accentSoft: Color(0x4D56C92E),
     scrim: Color(0xB3000000),
     shadowCard: Color(0x66000000),
     shadowRaised: Color(0x8C000000),
@@ -182,6 +196,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     infoCardFill: Color(0x262196F3),
     infoCardBorder: Color(0x662196F3),
     toastNeutral: Color(0xFF34403A),
+    accentText: Color(0xFF7FD95A),
+    accentSoft: Color(0x4D56C92E),
     scrim: Color(0xB3000000),
     shadowCard: Color(0x66000000),
     shadowRaised: Color(0x8C000000),
@@ -215,6 +231,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
     infoCardFill: Color(0x262196F3),
     infoCardBorder: Color(0x662196F3),
     toastNeutral: Color(0xFF2F3947),
+    accentText: Color(0xFF7FD95A),
+    accentSoft: Color(0x4D56C92E),
     scrim: Color(0xB3000000),
     shadowCard: Color(0x66000000),
     shadowRaised: Color(0x8C000000),
@@ -265,6 +283,8 @@ class AppPalette extends ThemeExtension<AppPalette> {
       infoCardFill: l(infoCardFill, other.infoCardFill),
       infoCardBorder: l(infoCardBorder, other.infoCardBorder),
       toastNeutral: l(toastNeutral, other.toastNeutral),
+      accentText: l(accentText, other.accentText),
+      accentSoft: l(accentSoft, other.accentSoft),
       scrim: l(scrim, other.scrim),
       shadowCard: l(shadowCard, other.shadowCard),
       shadowRaised: l(shadowRaised, other.shadowRaised),

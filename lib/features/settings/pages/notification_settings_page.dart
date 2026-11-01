@@ -4,11 +4,15 @@ import 'package:provider/provider.dart';
 
 import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../data/models/user_settings.dart';
+import '../../../shared/widgets/confirm_dialog.dart';
 import '../../../shared/widgets/options/options_section.dart';
 import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/default_text.dart';
+import '../../places/background_places.dart';
+import '../device_settings_store.dart';
 import '../settings_store.dart';
 import '../widgets/settings_scaffold.dart';
 
@@ -97,6 +101,54 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
             : n.quietHours.copyWith(end: value),
       ),
     );
+  }
+
+  /// A place alert on: it needs location all the time (Android's second
+  /// step). Explained first, then asked; the switch stays off without it.
+  Future<void> _turnOnPlaceAlert(Future<void> Function() turnOn) async {
+    final l10n = context.l10n;
+    if (!await Permission.locationAlways.isGranted) {
+      if (!mounted) return;
+      var asked = false;
+      await ConfirmDialog.show(
+        context: context,
+        title: l10n.settingsPlacesAlwaysTitle,
+        message: l10n.settingsPlacesAlwaysMessage,
+        confirmText: l10n.settingsPlacesAlwaysContinue,
+        cancelText: l10n.commonCancel,
+        confirmButtonColor: AppColors.brandGreen,
+        onConfirm: () => asked = true,
+      );
+      if (!asked || !mounted) return;
+      // "While using the app" comes first; "all the time" after it.
+      if (!await Permission.locationWhenInUse.request().isGranted ||
+          !await Permission.locationAlways.request().isGranted) {
+        if (!mounted) return;
+        PopupNotificationService.showError(
+          context: context,
+          message: l10n.settingsPlacesAlwaysDenied,
+          position: NotificationPosition.bottom,
+        );
+        return;
+      }
+    }
+    await turnOn();
+    // Checked now, then about every half hour.
+    final places = BackgroundPlaces();
+    await places.schedule();
+    await places.runNow();
+  }
+
+  Future<void> _setPlaceAlert(
+    DeviceSettingsStore device,
+    bool value,
+    Future<void> Function(bool) set,
+  ) async {
+    if (value) return _turnOnPlaceAlert(() => set(true));
+    await set(false);
+    if (!device.nearbyAlerts && !device.countryAlerts) {
+      await BackgroundPlaces().cancel();
+    }
   }
 
   String _time(int minutes) =>
@@ -233,6 +285,39 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
             ),
           ],
         ),
+        // Phase 4 (F3, F4): checked by the phone in the background, Android
+        // only.
+        if (BackgroundPlaces.isSupported)
+          Builder(
+            builder: (context) {
+              final device = context.watch<DeviceSettingsStore>();
+              return OptionsSection(
+                title: l10n.settingsSectionPlaces,
+                footer: l10n.settingsPlacesFooter,
+                children: [
+                  OptionsSwitchRow(
+                    title: l10n.settingsPlacesNearby,
+                    subtitle: l10n.settingsPlacesNearbyHint,
+                    value: device.nearbyAlerts,
+                    onChanged: on
+                        ? (v) =>
+                              _setPlaceAlert(device, v, device.setNearbyAlerts)
+                        : null,
+                  ),
+                  OptionsSwitchRow(
+                    title: l10n.settingsPlacesCountry,
+                    subtitle: l10n.settingsPlacesCountryHint,
+                    value: device.countryAlerts,
+                    withDivider: false,
+                    onChanged: on
+                        ? (v) =>
+                              _setPlaceAlert(device, v, device.setCountryAlerts)
+                        : null,
+                  ),
+                ],
+              );
+            },
+          ),
         if (_activityRows(l10n, n, on) case final rows when rows.isNotEmpty)
           OptionsSection(
             title: l10n.settingsSectionMoreActivity,

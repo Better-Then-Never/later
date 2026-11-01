@@ -237,5 +237,15 @@
   "settingsUploadsWifiOnlyHint": "Las cápsulas hechas sin Wi-Fi esperan en el teléfono hasta tener Wi-Fi.",
   "settingsNotificationsVibrate": "Vibración",
   "settingsNotificationsVibrateNeedsSound": "Va junto con el sonido",
-  "settingsAboutMapData": "Datos del mapa y licencias"
+  "settingsAboutMapData": "Datos del mapa y licencias",
+  "settingsSectionPlaces": "LUGARES",
+  "settingsPlacesNearby": "Cápsulas cerca de ti",
+  "settingsPlacesNearbyHint": "A menos de 200 m de una que puedes abrir",
+  "settingsPlacesCountry": "Bienvenida a un nuevo país",
+  "settingsPlacesCountryHint": "Tras dos horas en un país que visitas",
+  "settingsPlacesFooter": "Tu teléfono comprueba dónde está cada media hora, incluso con Later cerrada. Later no guarda ni comparte tu ubicación.",
+  "settingsPlacesAlwaysTitle": "Ubicación siempre",
+  "settingsPlacesAlwaysMessage": "Para avisarte de cápsulas y países con Later cerrada, Android debe dejarle usar tu ubicación siempre. Elige «Permitir todo el tiempo» a continuación.",
+  "settingsPlacesAlwaysContinue": "Continuar",
+  "settingsPlacesAlwaysDenied": "Permite la ubicación «Todo el tiempo» en Ajustes para activarlo."
 }

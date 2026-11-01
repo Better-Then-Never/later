@@ -6,6 +6,7 @@ import '../../core/l10n/l10n.dart';
 import '../../core/logging/app_logger.dart';
 import '../../core/session/session_scoped.dart';
 import '../../data/services/preferences_store.dart';
+import '../places/background_places.dart';
 
 /// How the map draws the world.
 enum MapLook {
@@ -87,6 +88,8 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
   static const _qualityKey = 'photo_quality';
   static const _galleryKey = 'save_to_gallery';
   static const _wifiKey = 'uploads_wifi_only';
+  static const _nearbyKey = 'alerts_nearby';
+  static const _countryKey = 'alerts_country';
 
   String? _uid;
   MapLook _map = MapLook.standard;
@@ -95,6 +98,15 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
   PhotoQuality _quality = PhotoQuality.standard;
   bool _saveToGallery = false;
   bool _wifiOnly = false;
+  bool _nearbyAlerts = false;
+  bool _countryAlerts = false;
+
+  /// "You're near …" while the app is closed (phase 4, F4). Needs location
+  /// all the time; off until the user turns it on.
+  bool get nearbyAlerts => _nearbyAlerts;
+
+  /// "Welcome to …" after a while in a new country (phase 4, F3).
+  bool get countryAlerts => _countryAlerts;
 
   /// Capsules wait for Wi-Fi (no upload on a metered network).
   bool get uploadsWifiOnly => _wifiOnly;
@@ -121,6 +133,8 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
       final quality = await _prefs.string(uid, _qualityKey);
       final gallery = await _prefs.string(uid, _galleryKey);
       final wifi = await _prefs.string(uid, _wifiKey);
+      final nearby = await _prefs.string(uid, _nearbyKey);
+      final country = await _prefs.string(uid, _countryKey);
       if (_uid != uid) return;
       _map = MapLook.parse(map);
       _camera = StartCamera.parse(camera);
@@ -128,7 +142,12 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
       _quality = PhotoQuality.parse(quality);
       _saveToGallery = gallery == 'true';
       _wifiOnly = wifi == 'true';
+      _nearbyAlerts = nearby == 'true';
+      _countryAlerts = country == 'true';
       notifyListeners();
+      if (_nearbyAlerts || _countryAlerts) {
+        unawaited(BackgroundPlaces().schedule());
+      }
     } catch (e, st) {
       AppLogger.warning(
         'Loading device settings failed',
@@ -147,6 +166,8 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     _quality = PhotoQuality.standard;
     _saveToGallery = false;
     _wifiOnly = false;
+    _nearbyAlerts = false;
+    _countryAlerts = false;
     notifyListeners();
   }
 
@@ -198,6 +219,32 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     _wifiOnly = value;
     notifyListeners();
     await _prefs.setString(uid, _wifiKey, '$value');
+  }
+
+  /// The place alerts' switches of [uid], read without a store (the
+  /// background check runs without the app).
+  static Future<({bool nearby, bool country})> readPlaceAlerts(
+    PreferencesStore prefs,
+    String uid,
+  ) async => (
+    nearby: await prefs.string(uid, _nearbyKey) == 'true',
+    country: await prefs.string(uid, _countryKey) == 'true',
+  );
+
+  Future<void> setNearbyAlerts(bool value) async {
+    final uid = _uid;
+    if (uid == null || value == _nearbyAlerts) return;
+    _nearbyAlerts = value;
+    notifyListeners();
+    await _prefs.setString(uid, _nearbyKey, '$value');
+  }
+
+  Future<void> setCountryAlerts(bool value) async {
+    final uid = _uid;
+    if (uid == null || value == _countryAlerts) return;
+    _countryAlerts = value;
+    notifyListeners();
+    await _prefs.setString(uid, _countryKey, '$value');
   }
 
   Future<void> setSaveToGallery(bool value) async {

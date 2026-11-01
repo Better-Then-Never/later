@@ -4,7 +4,13 @@ import '../../data/models/capsule.dart';
 /// earlier years, the most recent year first. Uses the moment the photo was
 /// taken when known (an offline capsule may arrive later).
 abstract final class OnThisDay {
-  static List<Capsule> from(Iterable<Capsule> capsules, DateTime now) {
+  /// [open] says whether a capsule may be opened (default: its date came;
+  /// the app passes CapsuleLocks, which also knows place capsules).
+  static List<Capsule> from(
+    Iterable<Capsule> capsules,
+    DateTime now, {
+    bool Function(Capsule capsule)? open,
+  }) {
     final found = capsules.where((c) {
       final at = _at(c);
       return at != null &&
@@ -12,7 +18,7 @@ abstract final class OnThisDay {
           at.year < now.year &&
           at.month == now.month &&
           at.day == now.day &&
-          c.isOpen(now);
+          (open?.call(c) ?? c.isOpen(now));
     }).toList()..sort((a, b) => _at(b)!.compareTo(_at(a)!));
     return found;
   }
