@@ -157,5 +157,10 @@
   "capsulesCreationLeftTodayHere": "Zostawiona dziś · otwiera się tutaj",
   "capsulesCreationLeftTodayOpensHere": "Zostawiona dziś · otwiera się {date}, tutaj",
   "capsulesApproxOffForHere": "Wyłączone: otwieranie tylko tutaj wymaga dokładnego miejsca",
-  "capsulesErrorHereUnavailable": "Otwieranie tylko tutaj nie jest jeszcze dostępne. Wybierz Wszędzie i spróbuj ponownie."
+  "capsulesErrorHereUnavailable": "Otwieranie tylko tutaj nie jest jeszcze dostępne. Wybierz Wszędzie i spróbuj ponownie.",
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "stampsNew": "Nowa pieczątka",
+  "stampsTownNumber": "{town}, Twoje {ordinal} miasto",
+  "stampsOpenPassport": "Otwórz paszport",
+  "stampsLater": "Później"
 }

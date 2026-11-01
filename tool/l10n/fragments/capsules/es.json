@@ -157,5 +157,10 @@
   "capsulesCreationLeftTodayHere": "Dejada hoy · se abre aquí",
   "capsulesCreationLeftTodayOpensHere": "Dejada hoy · se abre el {date}, aquí",
   "capsulesApproxOffForHere": "Desactivado: abrir solo aquí necesita el lugar exacto",
-  "capsulesErrorHereUnavailable": "Abrir solo aquí aún no está disponible. Elige En cualquier lugar e inténtalo de nuevo."
+  "capsulesErrorHereUnavailable": "Abrir solo aquí aún no está disponible. Elige En cualquier lugar e inténtalo de nuevo.",
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "stampsNew": "Nuevo sello",
+  "stampsTownNumber": "{town}, tu {ordinal} ciudad",
+  "stampsOpenPassport": "Abrir pasaporte",
+  "stampsLater": "Luego"
 }

@@ -676,5 +676,33 @@
   "capsulesErrorHereUnavailable": "Opening only here isn't available yet. Choose Anywhere and try again.",
   "@capsulesErrorHereUnavailable": {
     "description": "Create fails: the server does not take place capsules yet."
+  },
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "@stampsPageLabel": {
+    "description": "Printed at the top of a passport page, as on a real passport (the same in every language)."
+  },
+  "stampsNew": "New stamp",
+  "@stampsNew": {
+    "description": "After a capsule in a new town (E1)."
+  },
+  "stampsTownNumber": "{town}, your {ordinal} town",
+  "@stampsTownNumber": {
+    "description": "Under \"New stamp\": the town and how many towns the user has now. {ordinal} is the number as an ordinal in the language (\"22nd\", \"22.\", \"22-й\").",
+    "placeholders": {
+      "town": {
+        "type": "String"
+      },
+      "ordinal": {
+        "type": "String"
+      }
+    }
+  },
+  "stampsOpenPassport": "Open passport",
+  "@stampsOpenPassport": {
+    "description": "Button on the new stamp: the passport (for now the countries and towns view)."
+  },
+  "stampsLater": "Later",
+  "@stampsLater": {
+    "description": "Button on the new stamp: close it."
   }
 }

@@ -157,5 +157,10 @@
   "capsulesCreationLeftTodayHere": "Оставлена сегодня · откроется здесь",
   "capsulesCreationLeftTodayOpensHere": "Оставлена сегодня · откроется {date}, здесь",
   "capsulesApproxOffForHere": "Выключено: чтобы открыть только здесь, нужно точное место",
-  "capsulesErrorHereUnavailable": "Открытие только здесь пока недоступно. Выберите «Где угодно» и попробуйте снова."
+  "capsulesErrorHereUnavailable": "Открытие только здесь пока недоступно. Выберите «Где угодно» и попробуйте снова.",
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "stampsNew": "Новый штамп",
+  "stampsTownNumber": "{town} — ваш {ordinal} город",
+  "stampsOpenPassport": "Открыть паспорт",
+  "stampsLater": "Позже"
 }

@@ -3562,6 +3562,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsYourPassword => 'Tu contraseña';
 
   @override
+  String get stampsLater => 'Luego';
+
+  @override
+  String get stampsNew => 'Nuevo sello';
+
+  @override
+  String get stampsOpenPassport => 'Abrir pasaporte';
+
+  @override
+  String get stampsPageLabel => 'STAMPS · PIECZĘCIE';
+
+  @override
+  String stampsTownNumber(String town, String ordinal) {
+    return '$town, tu $ordinal ciudad';
+  }
+
+  @override
   String get streakAtRisk =>
       'Hoy aún no cuenta: deja una cápsula antes de medianoche para mantener tu racha.';
 

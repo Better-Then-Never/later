@@ -22,6 +22,7 @@ import 'package:later/features/friends/widgets/requests/friend_requests_received
 import 'package:later/features/history/widgets/capsule_list_tile.dart';
 import 'package:later/features/map/current_location.dart';
 import 'package:later/features/profile/widgets/image_options_sheet.dart';
+import 'package:later/features/stamps/new_stamp_moment.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
@@ -183,6 +184,30 @@ void main() {
     await expectLater(
       find.byType(ImageOptionsSheet),
       matchesGoldenFile('image_options_sheet.png'),
+    );
+  });
+
+  testWidgets('new stamp (Figma 7039:1172)', (tester) async {
+    await phone(tester);
+    await tester.pumpWidget(
+      _app(
+        Center(
+          child: NewStampMoment(
+            town: 'Gdańsk',
+            number: 22,
+            color: CapsuleColor.orange,
+            countryCode: 'PL',
+            day: DateTime(2026, 10, 20),
+          ),
+        ),
+      ),
+    );
+    // The stamp lands.
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    await expectLater(
+      find.byType(NewStampMoment),
+      matchesGoldenFile('new_stamp_moment.png'),
     );
   });
 }

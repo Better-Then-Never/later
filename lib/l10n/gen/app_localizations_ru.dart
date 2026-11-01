@@ -3640,6 +3640,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsYourPassword => 'Ваш пароль';
 
   @override
+  String get stampsLater => 'Позже';
+
+  @override
+  String get stampsNew => 'Новый штамп';
+
+  @override
+  String get stampsOpenPassport => 'Открыть паспорт';
+
+  @override
+  String get stampsPageLabel => 'STAMPS · PIECZĘCIE';
+
+  @override
+  String stampsTownNumber(String town, String ordinal) {
+    return '$town — ваш $ordinal город';
+  }
+
+  @override
   String get streakAtRisk =>
       'Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.';
 

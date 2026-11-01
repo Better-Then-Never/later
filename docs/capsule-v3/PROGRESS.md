@@ -12,7 +12,7 @@ and G (profile v2, passport, other screens) are for later.
 | 1 | A1–A10, C1 | no | done, committed locally |
 | 2 | D1–D4: the wrapped first open, press and hold | no | done, committed locally (sound waits for H2) |
 | 3 | B1–B5, C2, F1, F2: how it opens, Adjust, "is open" pushes | yes: a lock in the data first (below) | built 2026-11-01, committed locally; server not deployed (PHASE3_PLAN.md) |
-| 4 | F3, F4: notifications by location | yes | later |
+| 4 | F3, F4: notifications by location | no (the phone checks) | built 2026-11-02, committed locally |
 
 Phase 3 cannot start as UI only. Today the rules let anyone who may see a capsule read its title,
 description and photo URLs before `openAt`; the lock exists only in the app. A place lock (150 m) or a
@@ -94,6 +94,19 @@ chip on the Create photo (C2, phase 3).
   upload, so lists and the map card show it at once. The opened capsule and the photo's flight to
   full screen start from it. Rules: `validCapsule` accepts `crop` (tested); until they are
   deployed the app's retry drops the field, so capsules still save (the thumbnail keeps the square).
+
+## Phase 4 and E (2026-11-02)
+
+| ID | What | Where |
+|---|---|---|
+| F3 | "Welcome to <country>. You've been here for 2 hours. Leave a memory?" with Leave a capsule (the camera), after two hours away from home, once a month per country; a month in one country makes it home | `lib/features/places/place_alerts.dart`, `lib/app/background_places_main.dart`, `PlacesWorker.kt` |
+| F4 | "You're near <title>. It's 150 m away. Hold to open it there." for the nearest capsule within 200 m the user may open there and has not (a place capsule not opened there, or a dated one still wrapped), once per capsule; a tap shows it on the map | as above; the map's stored pins keep the place flag (format 3) |
+| F3, F4 | Settings > Notifications > Places: two switches, off by default, Android only; turning one on explains, then asks for location all the time; capsule notifications off or quiet hours: nothing | `notification_settings_page.dart`, `DeviceSettingsStore` |
+| E1, E2 | A stamp the first time the user leaves a capsule in a town (towns as the functions keep them in the world summary, so opening someone else's capsule never gives one): after Create, the new stamp (Figma "Passport / New stamp" 7039:1165) drops onto a passport page with "Gdańsk, your 22nd town"; Open passport opens the countries and towns view until the Passport page exists (G3) | `lib/features/stamps/`, `capsule_creation_controller.dart`; golden `test/goldens/new_stamp_moment.png` |
+
+The background check runs about every half hour while a switch is on, from the last known fix; it reads
+the map's pins kept on the phone and only a candidate's title from the server. iOS has no background job
+in this app, so the switches are not shown there.
 
 ## Phase 3: locked capsules (2026-11-01)
 

@@ -96,16 +96,19 @@ class CapsuleWrap extends StatefulWidget {
   /// The wrapping is gone.
   final VoidCallback onDone;
 
+  /// A capsule's pin colour.
+  static Color pinColorOf(CapsuleColor color) => switch (color) {
+    CapsuleColor.red => AppColors.capsuleRed,
+    CapsuleColor.blue => AppColors.capsuleBlue,
+    CapsuleColor.green => AppColors.capsuleGreen,
+    CapsuleColor.yellow => AppColors.capsuleYellow,
+    CapsuleColor.orange => AppColors.capsuleOrange,
+    CapsuleColor.purple => AppColors.capsulePurple,
+  };
+
   /// The wrapping's colour: the capsule's, paler in light, deeper in dark.
   static Color coverOf(CapsuleColor color, {required bool dark}) {
-    final pin = switch (color) {
-      CapsuleColor.red => AppColors.capsuleRed,
-      CapsuleColor.blue => AppColors.capsuleBlue,
-      CapsuleColor.green => AppColors.capsuleGreen,
-      CapsuleColor.yellow => AppColors.capsuleYellow,
-      CapsuleColor.orange => AppColors.capsuleOrange,
-      CapsuleColor.purple => AppColors.capsulePurple,
-    };
+    final pin = pinColorOf(color);
     return dark
         ? Color.lerp(pin, AppColors.mediaBlack, 0.7)!
         : Color.lerp(pin, AppColors.onAccent, 0.6)!;

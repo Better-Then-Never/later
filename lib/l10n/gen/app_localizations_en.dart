@@ -3540,6 +3540,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsYourPassword => 'Your password';
 
   @override
+  String get stampsLater => 'Later';
+
+  @override
+  String get stampsNew => 'New stamp';
+
+  @override
+  String get stampsOpenPassport => 'Open passport';
+
+  @override
+  String get stampsPageLabel => 'STAMPS · PIECZĘCIE';
+
+  @override
+  String stampsTownNumber(String town, String ordinal) {
+    return '$town, your $ordinal town';
+  }
+
+  @override
   String get streakAtRisk =>
       'Today isn\'t counted yet: leave a capsule before midnight to keep your streak.';
 

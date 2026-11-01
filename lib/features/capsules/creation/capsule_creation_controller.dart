@@ -15,6 +15,8 @@ import '../../../data/services/geocoding_service.dart';
 import '../../../data/services/location_service.dart';
 import '../../map/current_location.dart';
 import '../outbox/capsule_outbox.dart';
+import '../../stamps/stamps.dart';
+import '../../../data/models/world.dart';
 import 'creation_draft.dart';
 
 /// State of the "Create Capsule" screen.
@@ -45,7 +47,14 @@ class CapsuleCreationController extends ChangeNotifier {
     GeocodingService? geocoding,
     CreationDraftStore? drafts,
     CreationDraft? draft,
+    Future<WorldSummary> Function()? world,
   }) : assert(recipientId == null || chats != null),
+       // The towns so far, read while the capsule is made (E1).
+       _world = world == null
+           ? Future.value()
+           : world()
+                 .then<WorldSummary?>((w) => w)
+                 .catchError((Object _) => null),
        _drafts = drafts,
        _photoPath = imagePath,
        _frames = List.of(framePaths),
@@ -197,6 +206,26 @@ class CapsuleCreationController extends ChangeNotifier {
 
   /// The last save kept the capsule on the phone, to upload later.
   bool get queued => _queued;
+
+  final Future<WorldSummary?> _world;
+
+  /// The passport stamp the saved capsule earned: its town and the town's
+  /// number (E1); null when the town had one already or is unknown.
+  ({String town, int number, String country})? _newStamp;
+  ({String town, int number, String country})? get newStamp => _newStamp;
+
+  Future<void> _stampFor(CapsuleDraft draft) async {
+    final world = await _world.timeout(
+      const Duration(seconds: 2),
+      onTimeout: () => null,
+    );
+    if (world == null) return;
+    _newStamp = Stamps.newStamp(
+      world,
+      countryCode: draft.countryCode,
+      placeName: draft.placeName,
+    );
+  }
 
   /// Starts from Settings > Privacy; approximate places are rounded before
   /// upload.
@@ -520,6 +549,7 @@ class CapsuleCreationController extends ChangeNotifier {
         AppLogger.info('No connection: capsule $_id kept for later');
         await outbox.enqueue(draft);
         _queued = true;
+        await _stampFor(draft);
         _finished = true;
         unawaited(
           _keepInGallery()
@@ -545,6 +575,7 @@ class CapsuleCreationController extends ChangeNotifier {
         }
       }
       _finished = true;
+      await _stampFor(draft);
       unawaited(
         _keepInGallery()
             .whenComplete(_deleteTempPhoto)

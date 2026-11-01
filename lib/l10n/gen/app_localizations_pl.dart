@@ -3649,6 +3649,23 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsYourPassword => 'Twoje hasło';
 
   @override
+  String get stampsLater => 'Później';
+
+  @override
+  String get stampsNew => 'Nowa pieczątka';
+
+  @override
+  String get stampsOpenPassport => 'Otwórz paszport';
+
+  @override
+  String get stampsPageLabel => 'STAMPS · PIECZĘCIE';
+
+  @override
+  String stampsTownNumber(String town, String ordinal) {
+    return '$town, Twoje $ordinal miasto';
+  }
+
+  @override
   String get streakAtRisk =>
       'Dzisiaj jeszcze się nie liczy: zostaw kapsułę przed północą, aby utrzymać serię.';
 

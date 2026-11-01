@@ -39,6 +39,7 @@ import 'widgets/capsule_creation_description_input.dart';
 import 'widgets/capsule_creation_title_input.dart';
 import 'widgets/loop_frame_strip.dart';
 import '../../../shared/widgets/capsule/cropped_photo.dart';
+import '../../stamps/new_stamp_moment.dart';
 import 'widgets/adjust_photo_page.dart';
 import 'widgets/how_it_opens_sheet.dart';
 import 'widgets/pin_picker_sheet.dart';
@@ -98,6 +99,11 @@ class CapsuleCreationPage extends StatelessWidget {
             GalleryService.isSupported &&
             context.read<DeviceSettingsStore>().saveToGallery,
         gallery: GalleryService(),
+        // The towns so far, for the passport stamp after Create (E1).
+        world: () => context
+            .read<SocialRepository>()
+            .watchWorld(context.read<SessionController>().uid!)
+            .first,
         // Town and country for the passport (B7).
         geocoding: context.read<GeocodingService>(),
         // Kept as left until it is made (B4).
@@ -524,7 +530,26 @@ class _CapsuleCreationView extends StatelessWidget {
                 label: l10n.capsulesCreationSubmit,
                 saving: controller.isSaving,
                 onSave: () => _save(context),
-                onDone: () => Navigator.of(context).pop(),
+                onDone: () {
+                  final stamp = controller.newStamp;
+                  final color = controller.color;
+                  Navigator.of(context).pop();
+                  // A capsule in a new town: its stamp, over the map (E1).
+                  if (stamp != null) {
+                    final root = AppRoutes.navigatorKey.currentContext;
+                    if (root != null) {
+                      unawaited(
+                        NewStampMoment.show(
+                          root,
+                          town: stamp.town,
+                          number: stamp.number,
+                          color: color,
+                          countryCode: stamp.country,
+                        ),
+                      );
+                    }
+                  }
+                },
               ),
             ),
           ],

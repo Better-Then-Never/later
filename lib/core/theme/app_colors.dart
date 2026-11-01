@@ -27,6 +27,13 @@ abstract final class AppColors {
   static const pendingYellow = Color(0xFFFDDB07);
   static const warningOrange = Color(0xFFFF9800);
 
+  // The passport (Figma Foundations: passport/paper, passport/ink): a
+  // printed booklet, the same in light and dark.
+  static const passportPaper = Color(0xFFF3EBD6);
+  static const passportInk = Color(0xFF5E553F);
+  static const passportText = Color(0xFF000000);
+  static const passportShadow = Color(0x2E000000);
+
   // Content on colour and on photos: the same in light and dark.
   /// Text and icons on brand green, danger red, info blue.
   static const onAccent = Color(0xFFFFFFFF);

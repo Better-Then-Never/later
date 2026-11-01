@@ -157,5 +157,10 @@
   "capsulesCreationLeftTodayHere": "Heute hinterlassen · öffnet sich hier",
   "capsulesCreationLeftTodayOpensHere": "Heute hinterlassen · öffnet sich am {date}, hier",
   "capsulesApproxOffForHere": "Aus: Nur hier öffnen braucht den genauen Ort",
-  "capsulesErrorHereUnavailable": "Nur hier öffnen ist noch nicht verfügbar. Wähle Überall und versuche es noch einmal."
+  "capsulesErrorHereUnavailable": "Nur hier öffnen ist noch nicht verfügbar. Wähle Überall und versuche es noch einmal.",
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "stampsNew": "Neuer Stempel",
+  "stampsTownNumber": "{town}, deine {ordinal} Stadt",
+  "stampsOpenPassport": "Pass öffnen",
+  "stampsLater": "Später"
 }

@@ -44,6 +44,9 @@ abstract final class AppMotion {
   /// The wrapping tearing open from the pin (D3).
   static const tear = Duration(milliseconds: 640);
 
+  /// A new passport stamp dropping onto its page (E1).
+  static const stampLand = Duration(milliseconds: 280);
+
   /// The tear's ease: a quick start and a long settle.
   static const tearCurve = Cubic(0.2, 0.7, 0.2, 1);
 

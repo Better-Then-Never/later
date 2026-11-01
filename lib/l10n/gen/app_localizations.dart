@@ -5888,6 +5888,36 @@ abstract class AppLocalizations {
   /// **'Your password'**
   String get settingsYourPassword;
 
+  /// Button on the new stamp: close it.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get stampsLater;
+
+  /// After a capsule in a new town (E1).
+  ///
+  /// In en, this message translates to:
+  /// **'New stamp'**
+  String get stampsNew;
+
+  /// Button on the new stamp: the passport (for now the countries and towns view).
+  ///
+  /// In en, this message translates to:
+  /// **'Open passport'**
+  String get stampsOpenPassport;
+
+  /// Printed at the top of a passport page, as on a real passport (the same in every language).
+  ///
+  /// In en, this message translates to:
+  /// **'STAMPS · PIECZĘCIE'**
+  String get stampsPageLabel;
+
+  /// Under "New stamp": the town and how many towns the user has now. {ordinal} is the number as an ordinal in the language ("22nd", "22.", "22-й").
+  ///
+  /// In en, this message translates to:
+  /// **'{town}, your {ordinal} town'**
+  String stampsTownNumber(String town, String ordinal);
+
   /// Streak card while today is not counted yet (the streak ends tonight without a capsule).
   ///
   /// In en, this message translates to:

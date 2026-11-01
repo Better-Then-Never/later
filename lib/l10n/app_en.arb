@@ -3376,6 +3376,34 @@
   "@settingsYourPassword": {
     "description": "Hint of the password field that confirms an account change."
   },
+  "stampsLater": "Later",
+  "@stampsLater": {
+    "description": "Button on the new stamp: close it."
+  },
+  "stampsNew": "New stamp",
+  "@stampsNew": {
+    "description": "After a capsule in a new town (E1)."
+  },
+  "stampsOpenPassport": "Open passport",
+  "@stampsOpenPassport": {
+    "description": "Button on the new stamp: the passport (for now the countries and towns view)."
+  },
+  "stampsPageLabel": "STAMPS · PIECZĘCIE",
+  "@stampsPageLabel": {
+    "description": "Printed at the top of a passport page, as on a real passport (the same in every language)."
+  },
+  "stampsTownNumber": "{town}, your {ordinal} town",
+  "@stampsTownNumber": {
+    "description": "Under \"New stamp\": the town and how many towns the user has now. {ordinal} is the number as an ordinal in the language (\"22nd\", \"22.\", \"22-й\").",
+    "placeholders": {
+      "town": {
+        "type": "String"
+      },
+      "ordinal": {
+        "type": "String"
+      }
+    }
+  },
   "streakAtRisk": "Today isn't counted yet: leave a capsule before midnight to keep your streak.",
   "@streakAtRisk": {
     "description": "Streak card while today is not counted yet (the streak ends tonight without a capsule)."
