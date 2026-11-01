@@ -25,6 +25,33 @@ enum LocationPrecision {
       value == approximate.name ? approximate : exact;
 }
 
+/// Where a capsule may be opened (capsule v3 B1).
+enum OpenWhere {
+  /// Wherever you are when its date comes.
+  anywhere,
+
+  /// Only within 150 m of its spot (functions/lib/locks.js).
+  here;
+
+  static OpenWhere parse(Object? value) => value == here.name ? here : anywhere;
+}
+
+/// A locked capsule's photo and words, kept apart from the capsule until it
+/// may open (`capsules/{id}/sealed/content`, capsule v3 B3).
+class CapsuleContent {
+  const CapsuleContent({
+    required this.imageUrl,
+    this.thumbUrl,
+    this.frames = const [],
+    this.description,
+  });
+
+  final String imageUrl;
+  final String? thumbUrl;
+  final List<String> frames;
+  final String? description;
+}
+
 /// The six reactions (functions/lib/social.js REACTIONS).
 enum ReactionType {
   heart('❤️'),
@@ -154,7 +181,17 @@ class Capsule {
     this.commentCount = 0,
     this.pending = false,
     this.coAuthors = const [],
+    this.openWhere = OpenWhere.anywhere,
+    this.sealed = false,
   });
+
+  /// Where it may be opened.
+  final OpenWhere openWhere;
+
+  /// Its photo and words are kept apart until it may open (capsule v3 B3):
+  /// [imageUrl], [thumbUrl], [frames] and [description] are empty until
+  /// [withContent] fills them in.
+  final bool sealed;
 
   /// Most co-authors a capsule may have (firestore.rules).
   static const maxCoAuthors = 5;
@@ -227,7 +264,45 @@ class Capsule {
 
   bool get isLoop => frames.length > 1;
 
+  /// Only within 150 m of its spot.
+  bool get opensHere => openWhere == OpenWhere.here;
+
+  /// Its date has come (a place capsule must then still be opened there).
   bool isOpen(DateTime now) => openAt == null || !openAt!.isAfter(now);
+
+  /// The capsule with its sealed photo and words in place.
+  Capsule withContent(CapsuleContent content) => Capsule(
+    id: id,
+    ownerId: ownerId,
+    title: title,
+    privacy: privacy,
+    color: color,
+    imageUrl: content.imageUrl,
+    description: content.description,
+    location: location,
+    createdAt: createdAt,
+    openAt: openAt,
+    isScheduled: isScheduled,
+    sharedWith: sharedWith,
+    capturedAt: capturedAt,
+    utcOffsetMinutes: utcOffsetMinutes,
+    showAuthor: showAuthor,
+    coAuthors: coAuthors,
+    allowComments: allowComments,
+    allowReactions: allowReactions,
+    locationPrecision: locationPrecision,
+    frames: content.frames,
+    frameDelayMs: frameDelayMs,
+    thumbUrl: content.thumbUrl,
+    crop: crop,
+    placeName: placeName,
+    reactionCounts: reactionCounts,
+    reactionTotal: reactionTotal,
+    commentCount: commentCount,
+    pending: pending,
+    openWhere: openWhere,
+    sealed: sealed,
+  );
 
   Duration timeUntilOpen(DateTime now) =>
       isOpen(now) ? Duration.zero : openAt!.difference(now);
@@ -266,6 +341,8 @@ class Capsule {
     reactionCounts: reactionCounts ?? this.reactionCounts,
     reactionTotal: reactionTotal ?? this.reactionTotal,
     commentCount: commentCount ?? this.commentCount,
+    openWhere: openWhere,
+    sealed: sealed,
   );
 
   @override
@@ -298,7 +375,9 @@ class Capsule {
       other.placeName == placeName &&
       _mapEquals(other.reactionCounts, reactionCounts) &&
       other.reactionTotal == reactionTotal &&
-      other.commentCount == commentCount;
+      other.commentCount == commentCount &&
+      other.openWhere == openWhere &&
+      other.sealed == sealed;
 
   @override
   int get hashCode => Object.hash(
@@ -317,6 +396,7 @@ class Capsule {
     reactionTotal,
     commentCount,
     frames.length,
+    Object.hash(openWhere, sealed),
   );
 }
 
@@ -357,7 +437,16 @@ class CapsuleDraft {
     this.coAuthors = const [],
     this.highQuality = false,
     this.crop,
+    this.openWhere = OpenWhere.anywhere,
   });
+
+  /// Where it may be opened (only here needs the exact spot).
+  final OpenWhere openWhere;
+
+  /// Whether it is written sealed: it does not open at once (a later date,
+  /// or only back at its spot).
+  bool sealedAt(DateTime now) =>
+      openWhere == OpenWhere.here || (openAt?.isAfter(now) ?? false);
 
   /// The square chosen with Adjust (null: the middle of the photo).
   final CapsuleCrop? crop;
@@ -423,6 +512,7 @@ class CapsuleDraft {
     coAuthors: coAuthors,
     highQuality: highQuality,
     crop: crop,
+    openWhere: openWhere,
   );
 
   /// Local files of a loop capsule, in order; [imagePath] is the first.

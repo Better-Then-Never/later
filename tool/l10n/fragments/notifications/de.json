@@ -54,5 +54,10 @@
   "notificationsFromLater": "Vom Later-Team",
   "notificationsSwipeRead": "Gelesen",
   "notificationsSwipeDelete": "Löschen",
-  "notificationsNowFriends": "Ihr seid jetzt Freunde"
+  "notificationsNowFriends": "Ihr seid jetzt Freunde",
+  "notificationsTypeCapsuleOpen": "Kapsel offen",
+  "notificationsTypeCapsuleReady": "Kapsel bereit",
+  "notificationsCapsuleOpenBody": "Die Kapsel „{title}“ von {name} ist offen",
+  "notificationsCapsuleReadyBody": "Die Kapsel „{title}“ von {name} ist bereit. Sie wartet in {place}",
+  "notificationsCapsuleReadyHereBody": "Die Kapsel „{title}“ von {name} ist bereit. Sie wartet dort, wo sie hinterlassen wurde"
 }

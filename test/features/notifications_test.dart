@@ -201,6 +201,8 @@ void main() {
           'New Friend',
           'Achievement',
           'Made Together',
+          'Capsule Open',
+          'Capsule Ready',
           'Notification',
         ],
       );

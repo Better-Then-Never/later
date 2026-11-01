@@ -118,13 +118,18 @@ class NotificationRouter {
           NotificationType.coAuthor ||
           NotificationType.reaction ||
           NotificationType.comment ||
-          NotificationType.reply:
+          NotificationType.reply ||
+          NotificationType.capsuleOpen ||
+          NotificationType.capsuleReady:
         final capsuleId = tap.capsuleId;
         if (capsuleId == null) return null;
         return CapsuleDestination(
           capsuleId,
-          // A new capsule is shown on the map; the others open it.
-          open: tap.type != NotificationType.capsule,
+          // A new capsule, or one waiting at its spot, is shown on the map;
+          // the others open it.
+          open:
+              tap.type != NotificationType.capsule &&
+              tap.type != NotificationType.capsuleReady,
           comments:
               tap.type == NotificationType.comment ||
               tap.type == NotificationType.reply,

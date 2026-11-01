@@ -206,18 +206,20 @@ class _CapsuleCreationView extends StatelessWidget {
     if (pick != null) controller.coAuthors = pick.friends;
   }
 
-  /// "How does it open?": when (and, after the server update, where).
+  /// "How does it open?": when, and where (anywhere, or only back here).
   Future<void> _chooseOpenDate(BuildContext context) async {
     final controller = context.read<CapsuleCreationController>();
     final result = await HowItOpensSheet.show(
       context,
       openAt: controller.openAt,
+      openWhere: controller.openWhere,
     );
     if (result.cancelled || !context.mounted) return;
     final openAt = result.openAt;
     openAt == null
         ? controller.clearOpenDate()
         : controller.setOpenDate(openAt);
+    controller.openWhere = result.openWhere;
   }
 
   /// Saves; true when the capsule is made (or kept to upload later).
@@ -334,7 +336,12 @@ class _CapsuleCreationView extends StatelessWidget {
                                             controller.descriptionController,
                                       ),
                                       const SizedBox(height: 8),
-                                      _PreviewDates(openAt: openAt),
+                                      _PreviewDates(
+                                        openAt: openAt,
+                                        here:
+                                            controller.openWhere ==
+                                            OpenWhere.here,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -361,15 +368,24 @@ class _CapsuleCreationView extends StatelessWidget {
                                     title: l10n.capsulesCreationOpenAt,
                                     // Once set, the rule is a line under the
                                     // title (Figma "Create: after Done").
-                                    value: openAt == null
+                                    value:
+                                        openAt == null &&
+                                            controller.openWhere ==
+                                                OpenWhere.anywhere
                                         ? l10n.capsulesCreationAnytime
                                         : null,
-                                    subtitle: openAt == null
-                                        ? null
-                                        : AppDates.medium(
-                                            openAt,
-                                            l10n.localeName,
-                                          ),
+                                    subtitle: switch ((
+                                      openAt,
+                                      controller.openWhere,
+                                    )) {
+                                      (null, OpenWhere.anywhere) => null,
+                                      (null, OpenWhere.here) =>
+                                        l10n.capsulesHowHere,
+                                      (final at?, OpenWhere.anywhere) =>
+                                        AppDates.medium(at, l10n.localeName),
+                                      (final at?, OpenWhere.here) =>
+                                        '${AppDates.medium(at, l10n.localeName)} · ${l10n.capsulesHowHere}',
+                                    },
                                     onTap: () => _chooseOpenDate(context),
                                   ),
                                   const _RowDivider(inset: 58),
@@ -453,8 +469,11 @@ class _CapsuleCreationView extends StatelessWidget {
                                   const _RowDivider(inset: 16),
                                   _SwitchRowV2(
                                     title: l10n.capsulesCreationApproximate,
-                                    subtitle:
-                                        l10n.capsulesCreationApproximateHint,
+                                    // Turned off by "Only when I'm back
+                                    // here", which says why (B2).
+                                    subtitle: controller.exactForHere
+                                        ? l10n.capsulesApproxOffForHere
+                                        : l10n.capsulesCreationApproximateHint,
                                     value:
                                         controller.locationPrecision ==
                                         LocationPrecision.approximate,
@@ -824,12 +843,14 @@ class _PreviewPhoto extends StatelessWidget {
   }
 }
 
-/// "Left today · opens anytime" (or the day it opens) under the words, as
-/// the opened capsule shows its dates.
+/// "Left today · opens anytime" (or the day it opens, and ", here" when it
+/// opens only at its spot) under the words, as the opened capsule shows its
+/// dates (B5).
 class _PreviewDates extends StatelessWidget {
-  const _PreviewDates({required this.openAt});
+  const _PreviewDates({required this.openAt, this.here = false});
 
   final DateTime? openAt;
+  final bool here;
 
   @override
   Widget build(BuildContext context) {
@@ -841,11 +862,16 @@ class _PreviewDates extends StatelessWidget {
         const SizedBox(width: 6),
         Flexible(
           child: Text(
-            opens == null
-                ? l10n.capsulesCreationLeftToday
-                : l10n.capsulesCreationLeftTodayOpens(
-                    AppDates.medium(opens, l10n.localeName),
-                  ),
+            switch ((opens, here)) {
+              (null, false) => l10n.capsulesCreationLeftToday,
+              (null, true) => l10n.capsulesCreationLeftTodayHere,
+              (final at?, false) => l10n.capsulesCreationLeftTodayOpens(
+                AppDates.medium(at, l10n.localeName),
+              ),
+              (final at?, true) => l10n.capsulesCreationLeftTodayOpensHere(
+                AppDates.medium(at, l10n.localeName),
+              ),
+            },
             style: AppTextStyles.body.copyWith(
               fontSize: 13,
               color: context.palette.textSecondary,

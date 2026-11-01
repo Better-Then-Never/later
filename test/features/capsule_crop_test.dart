@@ -94,29 +94,8 @@ void main() {
   });
 
   group('How does it open?', () {
-    Future<({bool cancelled, DateTime? openAt})?> open(
-      WidgetTester tester, {
-      DateTime? openAt,
-    }) async {
-      ({bool cancelled, DateTime? openAt})? result;
-      await tester.pumpWidget(
-        testApp(
-          home: Builder(
-            builder: (context) => TextButton(
-              onPressed: () async =>
-                  result = await HowItOpensSheet.show(context, openAt: openAt),
-              child: const Text('open'),
-            ),
-          ),
-        ),
-      );
-      await tester.tap(find.text('open'));
-      await tester.pumpAndSettle();
-      return result;
-    }
-
     testWidgets('a year from now, then Done', (tester) async {
-      ({bool cancelled, DateTime? openAt})? result;
+      ({bool cancelled, DateTime? openAt, OpenWhere openWhere})? result;
       await tester.pumpWidget(
         testApp(
           home: Builder(
@@ -145,15 +124,34 @@ void main() {
       expect(result!.openAt!.year, now.year + 1);
     });
 
-    testWidgets('only back here waits for the server update', (tester) async {
-      await open(tester);
+    testWidgets('only back here: within 150 m of the spot', (tester) async {
+      ({bool cancelled, DateTime? openAt, OpenWhere openWhere})? result;
+      await tester.pumpWidget(
+        testApp(
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () async =>
+                  result = await HowItOpensSheet.show(context, openAt: null),
+              child: const Text('open'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text("Only when I'm back here"));
       await tester.pumpAndSettle();
-      // Still the anywhere rule.
       expect(
-        find.text('Opens anytime. It stays on the map where you left it.'),
+        find.text('Opens anytime, only within 150 m of this spot.'),
         findsOneWidget,
       );
+      await tester.tap(find.text('In a year'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('only within 150 m'), findsOneWidget);
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+      expect(result!.openWhere, OpenWhere.here);
+      expect(result!.openAt!.year, DateTime.now().year + 1);
     });
   });
 }

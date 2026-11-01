@@ -15,6 +15,8 @@ extension NotificationTypeL10n on NotificationType {
     NotificationType.friendAccepted => l10n.notificationsTypeFriendAccepted,
     NotificationType.achievement => l10n.notificationsTypeAchievement,
     NotificationType.coAuthor => l10n.notificationsTypeCoAuthor,
+    NotificationType.capsuleOpen => l10n.notificationsTypeCapsuleOpen,
+    NotificationType.capsuleReady => l10n.notificationsTypeCapsuleReady,
     NotificationType.other => l10n.notificationsTypeOther,
   };
 }
@@ -66,6 +68,21 @@ abstract final class NotificationTexts {
         _name,
       ),
       NotificationType.coAuthor => strings.notificationsCoAuthorBody(_name),
+      NotificationType.capsuleOpen => strings.notificationsCapsuleOpenBody(
+        n.capsuleTitle ?? '',
+        _name,
+      ),
+      NotificationType.capsuleReady => switch (n.placeName) {
+        final place? => strings.notificationsCapsuleReadyBody(
+          n.capsuleTitle ?? '',
+          _name,
+          place,
+        ),
+        null => strings.notificationsCapsuleReadyHereBody(
+          n.capsuleTitle ?? '',
+          _name,
+        ),
+      },
       NotificationType.other => null,
     };
     if (template == null) return (before: '', after: ' ${n.message}');

@@ -11,7 +11,7 @@ and G (profile v2, passport, other screens) are for later.
 |---|---|---|---|
 | 1 | A1–A10, C1 | no | done, committed locally |
 | 2 | D1–D4: the wrapped first open, press and hold | no | done, committed locally (sound waits for H2) |
-| 3 | B1–B5, C2, F1, F2: how it opens, Adjust, "is open" pushes | yes: a lock in the data first (below) | plan for the owner first |
+| 3 | B1–B5, C2, F1, F2: how it opens, Adjust, "is open" pushes | yes: a lock in the data first (below) | built 2026-11-01, committed locally; server not deployed (PHASE3_PLAN.md) |
 | 4 | F3, F4: notifications by location | yes | later |
 
 Phase 3 cannot start as UI only. Today the rules let anyone who may see a capsule read its title,
@@ -94,6 +94,26 @@ chip on the Create photo (C2, phase 3).
   upload, so lists and the map card show it at once. The opened capsule and the photo's flight to
   full screen start from it. Rules: `validCapsule` accepts `crop` (tested); until they are
   deployed the app's retry drops the field, so capsules still save (the thumbnail keeps the square).
+
+## Phase 3: locked capsules (2026-11-01)
+
+The owner answered the plan's six questions (PHASE3_PLAN.md). Built:
+
+| ID | What | Where |
+|---|---|---|
+| B3 | A capsule that does not open at once keeps its photo and words in `capsules/{id}/sealed/content`; the rules hand it out once it may open (owner and co-authors always; the app still keeps it locked for them) | `firestore.rules`, `functions/lib/locks.js`, `FirebaseCapsuleRepository.create`, `CapsuleLocks` (`lib/features/capsules/opening/capsule_locks.dart`) |
+| B1, B2 | "How it opens": Where works (Only when I'm back here, within 150 m); choosing it turns Approximate location off and the row says why | `how_it_opens_sheet.dart`, `capsule_creation_page.dart`, `capsule_creation_controller.dart` |
+| B4 | Place capsule cards: "Be there to open" / "Ready to open" with the distance and Go there (walking directions); a date to come: countdown, "Opens on …, here · 800 m away", Locked; within 150 m: "You're here" and Open, which asks the server (`unlockCapsule`) and then opens it (wrapped the first time) | `capsule_info_panel.dart`, `lib/features/map/directions.dart` |
+| B5 | "Left today · opens 20 Oct 2027, here" on Create; the map card's line | as above |
+| F1, F2 | "<Title> is open" (date capsules, when released) and "<Title> is ready. It's waiting in <place>" (place capsules with a date), in the app and as pushes, to the owner, co-authors and recipient | `functions/lib/locks.js`, `notification_texts.dart`, `notification_router.dart` |
+
+Lists, chats and the data export read the sealed part when they may (a sealed capsule in a chat
+goes without its picture and shows the locked tile). The map filter still sorts a ready place
+capsule under "Open".
+
+Built from the agreed descriptions on Figma page 12 (items B1–B5, F1, F2) and the How sheet frames
+`7102:1139` / `7102:1257`; the place cards have no drawn frame, so they use the approved card
+layouts (`7080:1085`, `7080:1191`).
 
 ## Opening and closing as one piece (2026-10-22)
 

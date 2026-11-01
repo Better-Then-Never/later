@@ -40,5 +40,17 @@
   "mapCapsuleOpensOn": "Öffnet am {date}",
   "mapCapsuleLeftBy": "Von {name} · {date}",
   "mapCapsuleLeftOn": "Hinterlassen am {date}",
-  "mapCapsuleYoursToOpen": "Wartet auf dich"
+  "mapCapsuleYoursToOpen": "Wartet auf dich",
+  "mapCapsuleBeThere": "Vor Ort öffnen",
+  "mapCapsuleReadyToOpen": "Bereit zum Öffnen",
+  "mapCapsuleYouAreHere": "Du bist hier",
+  "mapCapsuleAwayMetres": "{metres} m entfernt",
+  "mapCapsuleAwayKm": "{km} km entfernt",
+  "mapCapsuleGoThere": "Hinführen",
+  "mapCapsuleOpensOnHere": "Öffnet sich am {date}, hier",
+  "mapCapsuleWhereUnknown": "Standort einschalten, um die Entfernung zu sehen",
+  "mapCapsuleUnlockTooFar": "Du bist {metres} m entfernt. Komm bis auf 150 m heran, um sie zu öffnen.",
+  "mapCapsuleUnlockNotYet": "Sie lässt sich noch nicht öffnen.",
+  "mapCapsuleUnlockNoLocation": "Dein Standort wird gebraucht, um sie hier zu öffnen.",
+  "mapCapsuleUnlockFailed": "Öffnen fehlgeschlagen. Versuche es noch einmal."
 }

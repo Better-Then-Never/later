@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../features/capsules/opening/capsule_locks.dart';
 import '../../data/models/capsule.dart';
 import '../../features/auth/login_page.dart';
 import '../../features/auth/signup_page.dart';
@@ -171,7 +172,8 @@ abstract final class AppRoutes {
     backToRoot();
     selectedPageNotifier.value = AppTabs.map;
     if (capsule.location != null) root.read<MapFocus>().focus(capsule);
-    if (capsule.isOpen(DateTime.now())) {
+    // Opened here (a place capsule waits on the map for its spot).
+    if (CapsuleLocks.openAt(root, capsule, DateTime.now())) {
       await CapsuleDetailDialog.show(root, capsule);
     }
   }

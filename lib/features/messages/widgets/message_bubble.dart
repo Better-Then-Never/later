@@ -195,19 +195,20 @@ class MessageBubble extends StatelessWidget {
                 ),
               ),
             if (message.isCapsule) ...[
-              if (imageUrl != null)
-                Semantics(
-                  button: true,
-                  label: context.l10n.messagesOpenCapsule(message.text),
-                  child: GestureDetector(
-                    onTap: onCapsuleTap,
-                    child: _CapsulePhoto(
-                      imageUrl: imageUrl,
-                      width: screen.width * 0.6,
-                      height: screen.width * 0.45,
-                    ),
+              // A capsule sealed until it opens goes without its picture
+              // (capsule v3 B3): the locked tile.
+              Semantics(
+                button: true,
+                label: context.l10n.messagesOpenCapsule(message.text),
+                child: GestureDetector(
+                  onTap: onCapsuleTap,
+                  child: _CapsulePhoto(
+                    imageUrl: imageUrl,
+                    width: screen.width * 0.6,
+                    height: screen.width * 0.45,
                   ),
                 ),
+              ),
               const SizedBox(height: 6),
               Align(
                 alignment: Alignment.centerLeft,
@@ -376,7 +377,8 @@ class _CapsulePhoto extends StatelessWidget {
     required this.height,
   });
 
-  final String imageUrl;
+  /// Null: a locked capsule, shown as the lock on a grey tile.
+  final String? imageUrl;
   final double width;
   final double height;
 
@@ -390,7 +392,17 @@ class _CapsulePhoto extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            AppNetworkImage(url: imageUrl),
+            if (imageUrl case final url?)
+              AppNetworkImage(url: url)
+            else
+              ColoredBox(
+                color: context.palette.skeleton,
+                child: const Icon(
+                  Icons.lock_clock,
+                  size: 36,
+                  color: AppColors.onMedia,
+                ),
+              ),
             Positioned(
               top: 8,
               left: 8,

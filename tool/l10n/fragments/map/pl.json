@@ -40,5 +40,17 @@
   "mapCapsuleOpensOn": "Otwarcie {date}",
   "mapCapsuleLeftBy": "Od {name} · {date}",
   "mapCapsuleLeftOn": "Zostawiona {date}",
-  "mapCapsuleYoursToOpen": "Czeka na ciebie"
+  "mapCapsuleYoursToOpen": "Czeka na ciebie",
+  "mapCapsuleBeThere": "Bądź tam, by otworzyć",
+  "mapCapsuleReadyToOpen": "Gotowa do otwarcia",
+  "mapCapsuleYouAreHere": "Jesteś tutaj",
+  "mapCapsuleAwayMetres": "{metres} m stąd",
+  "mapCapsuleAwayKm": "{km} km stąd",
+  "mapCapsuleGoThere": "Prowadź",
+  "mapCapsuleOpensOnHere": "Otwiera się {date}, tutaj",
+  "mapCapsuleWhereUnknown": "Włącz lokalizację, by zobaczyć odległość",
+  "mapCapsuleUnlockTooFar": "Jesteś {metres} m stąd. Podejdź na 150 m, by ją otworzyć.",
+  "mapCapsuleUnlockNotYet": "Jeszcze nie można jej otworzyć.",
+  "mapCapsuleUnlockNoLocation": "Potrzebna jest Twoja lokalizacja, by ją tu otworzyć.",
+  "mapCapsuleUnlockFailed": "Nie udało się otworzyć. Spróbuj ponownie."
 }

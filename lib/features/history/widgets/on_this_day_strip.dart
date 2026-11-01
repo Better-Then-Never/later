@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../capsules/opening/capsule_locks.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_dimens.dart';
 import '../../../core/theme/app_palette.dart';
@@ -66,7 +67,12 @@ class OnThisDayStrip extends StatelessWidget {
               separatorBuilder: (_, _) => const SizedBox(width: 10),
               itemBuilder: (context, i) {
                 final capsule = capsules[i];
-                final url = capsule.thumbUrl ?? capsule.imageUrl;
+                final shown = CapsuleLocks.shown(
+                  context,
+                  capsule,
+                  DateTime.now(),
+                );
+                final url = shown.thumbUrl ?? shown.imageUrl;
                 return AppPressable(
                   child: GestureDetector(
                     onTap: () => onTap(capsule),

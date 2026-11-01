@@ -146,10 +146,16 @@
   "capsulesHowAnywhere": "Überall",
   "capsulesHowAnywhereHint": "Wo auch immer du gerade bist",
   "capsulesHowHere": "Nur wenn ich wieder hier bin",
-  "capsulesHowHereSoon": "Im Umkreis von 150 m · bald verfügbar",
   "capsulesHowSummaryAnytime": "Jederzeit zu öffnen. Sie bleibt auf der Karte, wo du sie hinterlassen hast.",
   "capsulesHowSummaryDate": "Öffnet sich am {date}. Sie bleibt auf der Karte, wo du sie hinterlassen hast.",
   "capsulesAdjust": "Anpassen",
   "capsulesAdjustTitle": "Ziehen zum Verschieben, zwei Finger zum Zoomen",
-  "capsulesAdjustHint": "Mit einem Tipp öffnet sich das ganze Foto."
+  "capsulesAdjustHint": "Mit einem Tipp öffnet sich das ganze Foto.",
+  "capsulesHowHereHint": "Im Umkreis von 150 m um diesen Ort",
+  "capsulesHowSummaryAnytimeHere": "Öffnet sich jederzeit, aber nur im Umkreis von 150 m um diesen Ort.",
+  "capsulesHowSummaryDateHere": "Öffnet sich am {date}, nur im Umkreis von 150 m um diesen Ort.",
+  "capsulesCreationLeftTodayHere": "Heute hinterlassen · öffnet sich hier",
+  "capsulesCreationLeftTodayOpensHere": "Heute hinterlassen · öffnet sich am {date}, hier",
+  "capsulesApproxOffForHere": "Aus: Nur hier öffnen braucht den genauen Ort",
+  "capsulesErrorHereUnavailable": "Nur hier öffnen ist noch nicht verfügbar. Wähle Überall und versuche es noch einmal."
 }

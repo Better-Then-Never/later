@@ -214,5 +214,73 @@
   "mapCapsuleYoursToOpen": "Yours to open",
   "@mapCapsuleYoursToOpen": {
     "description": "The map card of an open capsule the user has not unwrapped yet."
+  },
+  "mapCapsuleBeThere": "Be there to open",
+  "@mapCapsuleBeThere": {
+    "description": "Map card of a capsule that opens only at its spot."
+  },
+  "mapCapsuleReadyToOpen": "Ready to open",
+  "@mapCapsuleReadyToOpen": {
+    "description": "Map card of a place capsule whose date has come."
+  },
+  "mapCapsuleYouAreHere": "You're here",
+  "@mapCapsuleYouAreHere": {
+    "description": "Map card of a place capsule: the user is within 150 m of it."
+  },
+  "mapCapsuleAwayMetres": "{metres} m away",
+  "@mapCapsuleAwayMetres": {
+    "description": "How far a place capsule is.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleAwayKm": "{km} km away",
+  "@mapCapsuleAwayKm": {
+    "description": "How far a place capsule is (km with one decimal).",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleGoThere": "Go there",
+  "@mapCapsuleGoThere": {
+    "description": "Pill on a place capsule's map card: opens directions to it."
+  },
+  "mapCapsuleOpensOnHere": "Opens on {date}, here",
+  "@mapCapsuleOpensOnHere": {
+    "description": "Map card of a locked place capsule: its day, only at its spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleWhereUnknown": "Turn on location to see how far",
+  "@mapCapsuleWhereUnknown": {
+    "description": "Map card of a place capsule when the user's location is unknown."
+  },
+  "mapCapsuleUnlockTooFar": "You're {metres} m away. Come within 150 m to open it.",
+  "@mapCapsuleUnlockTooFar": {
+    "description": "Opening a place capsule failed: too far.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleUnlockNotYet": "It isn't ready to open yet.",
+  "@mapCapsuleUnlockNotYet": {
+    "description": "Opening a place capsule failed: its date hasn't come."
+  },
+  "mapCapsuleUnlockNoLocation": "Your location is needed to open it here.",
+  "@mapCapsuleUnlockNoLocation": {
+    "description": "Opening a place capsule failed: no location fix."
+  },
+  "mapCapsuleUnlockFailed": "Couldn't open it. Try again.",
+  "@mapCapsuleUnlockFailed": {
+    "description": "Opening a place capsule failed for another reason."
   }
 }

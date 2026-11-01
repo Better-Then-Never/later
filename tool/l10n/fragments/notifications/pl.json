@@ -54,5 +54,10 @@
   "notificationsFromLater": "Od zespołu Later",
   "notificationsSwipeRead": "Przeczytane",
   "notificationsSwipeDelete": "Usuń",
-  "notificationsNowFriends": "Jesteście teraz znajomymi"
+  "notificationsNowFriends": "Jesteście teraz znajomymi",
+  "notificationsTypeCapsuleOpen": "Kapsuła otwarta",
+  "notificationsTypeCapsuleReady": "Kapsuła gotowa",
+  "notificationsCapsuleOpenBody": "Kapsuła „{title}” od {name} jest otwarta",
+  "notificationsCapsuleReadyBody": "Kapsuła „{title}” od {name} jest gotowa. Czeka: {place}",
+  "notificationsCapsuleReadyHereBody": "Kapsuła „{title}” od {name} jest gotowa. Czeka tam, gdzie ją zostawiono"
 }

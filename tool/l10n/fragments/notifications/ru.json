@@ -54,5 +54,10 @@
   "notificationsFromLater": "От команды Later",
   "notificationsSwipeRead": "Прочитано",
   "notificationsSwipeDelete": "Удалить",
-  "notificationsNowFriends": "Теперь вы друзья"
+  "notificationsNowFriends": "Теперь вы друзья",
+  "notificationsTypeCapsuleOpen": "Капсула открыта",
+  "notificationsTypeCapsuleReady": "Капсула готова",
+  "notificationsCapsuleOpenBody": "Капсула «{title}» от {name} открыта",
+  "notificationsCapsuleReadyBody": "Капсула «{title}» от {name} готова. Она ждёт вас: {place}",
+  "notificationsCapsuleReadyHereBody": "Капсула «{title}» от {name} готова. Она ждёт там, где её оставили"
 }

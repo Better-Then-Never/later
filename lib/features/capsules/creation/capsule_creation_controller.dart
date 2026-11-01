@@ -241,6 +241,30 @@ class CapsuleCreationController extends ChangeNotifier {
     _precision = value
         ? LocationPrecision.approximate
         : LocationPrecision.exact;
+    // A rounded spot cannot be found again within 150 m.
+    if (value) _openWhere = OpenWhere.anywhere;
+    _exactForHere = false;
+    notifyListeners();
+  }
+
+  /// Where it may be opened (How it opens, B2).
+  OpenWhere _openWhere = OpenWhere.anywhere;
+  OpenWhere get openWhere => _openWhere;
+
+  /// "Only when I'm back here" turned Approximate location off (the
+  /// settings say why).
+  bool _exactForHere = false;
+  bool get exactForHere => _exactForHere;
+
+  set openWhere(OpenWhere value) {
+    if (value == _openWhere) return;
+    _openWhere = value;
+    _exactForHere = false;
+    if (value == OpenWhere.here &&
+        _precision == LocationPrecision.approximate) {
+      _precision = LocationPrecision.exact;
+      _exactForHere = true;
+    }
     notifyListeners();
   }
 
@@ -269,6 +293,7 @@ class CapsuleCreationController extends ChangeNotifier {
     _precision = d.locationPrecision;
     _frameDelayMs = d.frameDelayMs;
     _crop = d.crop;
+    _openWhere = d.openWhere;
     if (d.pin case final pin?) {
       _here = _position;
       _position = pin;
@@ -324,6 +349,7 @@ class CapsuleCreationController extends ChangeNotifier {
           locationPrecision: _precision,
           frameDelayMs: _frameDelayMs,
           crop: crop,
+          openWhere: _openWhere,
           pin: pin,
           recipientId: recipientId,
           capturedAt: capturedAt,
@@ -476,6 +502,7 @@ class CapsuleCreationController extends ChangeNotifier {
         frameDelayMs: _frameDelayMs,
         crop: crop,
         openAt: _openAt,
+        openWhere: _openWhere,
         recipientId: recipientId,
         capturedAt: capturedAt,
         utcOffsetMinutes: capturedAt.timeZoneOffset.inMinutes,
@@ -524,6 +551,8 @@ class CapsuleCreationController extends ChangeNotifier {
             .whenComplete(_dropDraft),
       );
       return null;
+    } on PlaceCapsulesUnavailable {
+      return ValidationFailure(AppL10n.current.capsulesErrorHereUnavailable);
     } catch (e, st) {
       AppLogger.error('Saving the capsule failed', error: e, stackTrace: st);
       return AppFailure.from(

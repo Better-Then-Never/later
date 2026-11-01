@@ -698,6 +698,12 @@ abstract class AppLocalizations {
   /// **'Drag to move, pinch to zoom'**
   String get capsulesAdjustTitle;
 
+  /// Under Approximate location on Create after "Only when I'm back here" turned it off.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: opening only here needs the exact spot'**
+  String get capsulesApproxOffForHere;
+
   /// Small chip next to the name of the capsule's author in its comments.
   ///
   /// In en, this message translates to:
@@ -1064,11 +1070,23 @@ abstract class AppLocalizations {
   /// **'Left today · opens anytime'**
   String get capsulesCreationLeftToday;
 
+  /// Under a new capsule's title: left today, opens anytime but only at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Left today · opens here'**
+  String get capsulesCreationLeftTodayHere;
+
   /// Under a new capsule's title: it is left today and opens on {date}.
   ///
   /// In en, this message translates to:
   /// **'Left today · opens {date}'**
   String capsulesCreationLeftTodayOpens(String date);
+
+  /// Under a new capsule's title: left today, opens on a day, only at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Left today · opens {date}, here'**
+  String capsulesCreationLeftTodayOpensHere(String date);
 
   /// Row title: the day the capsule opens. The chosen date is shown next to it.
   ///
@@ -1172,6 +1190,12 @@ abstract class AppLocalizations {
   /// **'Unfinished capsule'**
   String get capsulesDraftTitle;
 
+  /// Create fails: the server does not take place capsules yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening only here isn\'t available yet. Choose Anywhere and try again.'**
+  String get capsulesErrorHereUnavailable;
+
   /// No description provided for @capsulesErrorNoLocation.
   ///
   /// In en, this message translates to:
@@ -1232,11 +1256,11 @@ abstract class AppLocalizations {
   /// **'Only when I\'m back here'**
   String get capsulesHowHere;
 
-  /// Under "Only when I'm back here" while the option is not available yet.
+  /// Under "Only when I'm back here" in How does it open?
   ///
   /// In en, this message translates to:
-  /// **'Within 150 m of this spot · coming soon'**
-  String get capsulesHowHereSoon;
+  /// **'Within 150 m of this spot'**
+  String get capsulesHowHereHint;
 
   /// An option in the "How does it open?" sheet: choose the day on a calendar.
   ///
@@ -1256,11 +1280,23 @@ abstract class AppLocalizations {
   /// **'Opens anytime. It stays on the map where you left it.'**
   String get capsulesHowSummaryAnytime;
 
+  /// The rule in words in How does it open?: anytime, only back at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens anytime, only within 150 m of this spot.'**
+  String get capsulesHowSummaryAnytimeHere;
+
   /// The rule in words with a date.
   ///
   /// In en, this message translates to:
   /// **'Opens on {date}. It stays on the map where you left it.'**
   String capsulesHowSummaryDate(String date);
+
+  /// The rule in words in How does it open?: on a day, only back at this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}, only within 150 m of this spot.'**
+  String capsulesHowSummaryDateHere(String date);
 
   /// Title of the sheet that sets when (and where) a capsule opens.
   ///
@@ -2510,6 +2546,30 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
   String historyYearsAgo(int count);
 
+  /// How far a place capsule is (km with one decimal).
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km away'**
+  String mapCapsuleAwayKm(String km);
+
+  /// How far a place capsule is.
+  ///
+  /// In en, this message translates to:
+  /// **'{metres} m away'**
+  String mapCapsuleAwayMetres(int metres);
+
+  /// Map card of a capsule that opens only at its spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Be there to open'**
+  String get mapCapsuleBeThere;
+
+  /// Pill on a place capsule's map card: opens directions to it.
+  ///
+  /// In en, this message translates to:
+  /// **'Go there'**
+  String get mapCapsuleGoThere;
+
   /// Second line of a locked capsule's map card: who left it and when.
   ///
   /// In en, this message translates to:
@@ -2570,11 +2630,59 @@ abstract class AppLocalizations {
   /// **'Opens on {date}'**
   String mapCapsuleOpensOn(String date);
 
+  /// Map card of a locked place capsule: its day, only at its spot.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens on {date}, here'**
+  String mapCapsuleOpensOnHere(String date);
+
+  /// Map card of a place capsule whose date has come.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to open'**
+  String get mapCapsuleReadyToOpen;
+
   /// A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user.
   ///
   /// In en, this message translates to:
   /// **'This capsule is no longer available'**
   String get mapCapsuleUnavailable;
+
+  /// Opening a place capsule failed for another reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open it. Try again.'**
+  String get mapCapsuleUnlockFailed;
+
+  /// Opening a place capsule failed: no location fix.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location is needed to open it here.'**
+  String get mapCapsuleUnlockNoLocation;
+
+  /// Opening a place capsule failed: its date hasn't come.
+  ///
+  /// In en, this message translates to:
+  /// **'It isn\'t ready to open yet.'**
+  String get mapCapsuleUnlockNotYet;
+
+  /// Opening a place capsule failed: too far.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re {metres} m away. Come within 150 m to open it.'**
+  String mapCapsuleUnlockTooFar(int metres);
+
+  /// Map card of a place capsule when the user's location is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location to see how far'**
+  String get mapCapsuleWhereUnknown;
+
+  /// Map card of a place capsule: the user is within 150 m of it.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re here'**
+  String get mapCapsuleYouAreHere;
 
   /// The map card of an open capsule the user has not unwrapped yet.
   ///
@@ -3548,6 +3656,24 @@ abstract class AppLocalizations {
   /// **'{name} created a new capsule'**
   String notificationsCapsuleBody(String name);
 
+  /// In-app notification: a capsule opened on its date ({name} is shown bold).
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule “{title}” from {name} is open'**
+  String notificationsCapsuleOpenBody(String title, String name);
+
+  /// In-app notification: a place capsule became ready ({name} bold).
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule “{title}” from {name} is ready. It\'s waiting in {place}'**
+  String notificationsCapsuleReadyBody(String title, String name, String place);
+
+  /// In-app notification: a place capsule became ready, its place unknown ({name} bold).
+  ///
+  /// In en, this message translates to:
+  /// **'The capsule “{title}” from {name} is ready. It\'s waiting where it was left'**
+  String notificationsCapsuleReadyHereBody(String title, String name);
+
   /// No description provided for @notificationsChannelActivity.
   ///
   /// In en, this message translates to:
@@ -3811,6 +3937,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New Capsule'**
   String get notificationsTypeCapsule;
+
+  /// Kind of notification: a capsule with a date opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Open'**
+  String get notificationsTypeCapsuleOpen;
+
+  /// Kind of notification: a place capsule became ready to open there.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsule Ready'**
+  String get notificationsTypeCapsuleReady;
 
   /// Title of a notification: a friend made a capsule with the user (co-author).
   ///

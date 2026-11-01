@@ -5,6 +5,7 @@ import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_palette.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../data/models/capsule.dart';
 import '../../../../shared/widgets/app_radio.dart';
 import '../../../../shared/widgets/app_sheets.dart';
 import '../capsule_creation_controller.dart';
@@ -15,28 +16,44 @@ enum OpenWhen { anytime, month, year, pick }
 
 /// "How does it open?" (Figma "v3c Create / How sheet"): When (anytime, in a
 /// month, in a year, a picked day) and Where (anywhere, or only back at this
-/// spot), the rule in words in green, and Done. Returns the day it opens
-/// (null: anytime), or nothing when closed without Done.
-///
-/// "Only when I'm back here" needs the server's lock (capsule v3 phase 3,
-/// docs/capsule-v3/PHASE3_PLAN.md): it is shown, and not yet chosen.
+/// spot, within 150 m: the server's lock, functions/lib/locks.js), the rule
+/// in words in green, and Done. Returns the day it opens (null: anytime) and
+/// where, or nothing when closed without Done.
 class HowItOpensSheet extends StatefulWidget {
-  const HowItOpensSheet({super.key, required this.openAt, required this.now});
+  const HowItOpensSheet({
+    super.key,
+    required this.openAt,
+    required this.now,
+    this.openWhere = OpenWhere.anywhere,
+  });
 
   /// The day chosen so far (null: anytime).
   final DateTime? openAt;
   final DateTime now;
 
-  /// The day the capsule opens, or `(cancelled: true)` when closed.
-  static Future<({bool cancelled, DateTime? openAt})> show(
+  /// Where chosen so far.
+  final OpenWhere openWhere;
+
+  /// The day the capsule opens and where, or `(cancelled: true)` when
+  /// closed.
+  static Future<({bool cancelled, DateTime? openAt, OpenWhere openWhere})> show(
     BuildContext context, {
     required DateTime? openAt,
+    OpenWhere openWhere = OpenWhere.anywhere,
   }) async {
-    final picked = await showEdgeSheet<({DateTime? openAt})>(
+    final picked = await showEdgeSheet<({DateTime? openAt, OpenWhere where})>(
       context,
-      (_) => HowItOpensSheet(openAt: openAt, now: DateTime.now()),
+      (_) => HowItOpensSheet(
+        openAt: openAt,
+        openWhere: openWhere,
+        now: DateTime.now(),
+      ),
     );
-    return (cancelled: picked == null, openAt: picked?.openAt);
+    return (
+      cancelled: picked == null,
+      openAt: picked?.openAt,
+      openWhere: picked?.where ?? openWhere,
+    );
   }
 
   @override
@@ -45,6 +62,7 @@ class HowItOpensSheet extends StatefulWidget {
 
 class _HowItOpensSheetState extends State<HowItOpensSheet> {
   late OpenWhen _when;
+  late OpenWhere _where = widget.openWhere;
   DateTime? _picked;
 
   DateTime get _month => CapsuleCreationController.addMonths(widget.now, 1);
@@ -155,18 +173,16 @@ class _HowItOpensSheetState extends State<HowItOpensSheet> {
               const SizedBox(height: 4),
               Text(l10n.capsulesHowWhere.toUpperCase(), style: label()),
               _Option(
-                on: true,
+                on: _where == OpenWhere.anywhere,
                 title: l10n.capsulesHowAnywhere,
                 hint: l10n.capsulesHowAnywhereHint,
-                onTap: () {},
+                onTap: () => setState(() => _where = OpenWhere.anywhere),
               ),
-              // Needs the server's lock first (phase 3).
               _Option(
-                on: false,
-                enabled: false,
+                on: _where == OpenWhere.here,
                 title: l10n.capsulesHowHere,
-                hint: l10n.capsulesHowHereSoon,
-                onTap: () {},
+                hint: l10n.capsulesHowHereHint,
+                onTap: () => setState(() => _where = OpenWhere.here),
               ),
               const SizedBox(height: 4),
               Container(
@@ -180,11 +196,18 @@ class _HowItOpensSheetState extends State<HowItOpensSheet> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Text(
-                  openAt == null
-                      ? l10n.capsulesHowSummaryAnytime
-                      : l10n.capsulesHowSummaryDate(
-                          AppDates.medium(openAt, locale),
-                        ),
+                  switch ((openAt, _where)) {
+                    (null, OpenWhere.anywhere) =>
+                      l10n.capsulesHowSummaryAnytime,
+                    (null, OpenWhere.here) =>
+                      l10n.capsulesHowSummaryAnytimeHere,
+                    (final at?, OpenWhere.anywhere) =>
+                      l10n.capsulesHowSummaryDate(AppDates.medium(at, locale)),
+                    (final at?, OpenWhere.here) =>
+                      l10n.capsulesHowSummaryDateHere(
+                        AppDates.medium(at, locale),
+                      ),
+                  },
                   style: TextStyle(
                     fontFamily: kAppFontFamily,
                     fontSize: 13,
@@ -209,7 +232,9 @@ class _HowItOpensSheetState extends State<HowItOpensSheet> {
                   // A picked day must be picked first.
                   onPressed: _when == OpenWhen.pick && _picked == null
                       ? null
-                      : () => Navigator.of(context).pop((openAt: openAt)),
+                      : () => Navigator.of(
+                          context,
+                        ).pop((openAt: openAt, where: _where)),
                   child: Text(
                     l10n.capsulesComposerDone,
                     style: const TextStyle(
@@ -236,60 +261,54 @@ class _Option extends StatelessWidget {
     required this.title,
     required this.hint,
     required this.onTap,
-    this.enabled = true,
   });
 
   final bool on;
   final String title;
   final String hint;
   final VoidCallback onTap;
-  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     return Semantics(
-      button: enabled,
+      button: true,
       selected: on,
-      enabled: enabled,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: enabled ? onTap : null,
-        child: Opacity(
-          opacity: enabled ? 1 : 0.45,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 7),
-            child: Row(
-              children: [
-                AppRadio(on: on, size: 22),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontFamily: kAppFontFamily,
-                          fontSize: 16,
-                          height: 1.25,
-                          color: palette.textPrimary,
-                        ),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          child: Row(
+            children: [
+              AppRadio(on: on, size: 22),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: 16,
+                        height: 1.25,
+                        color: palette.textPrimary,
                       ),
-                      Text(
-                        hint,
-                        style: TextStyle(
-                          fontFamily: kAppFontFamily,
-                          fontSize: 13,
-                          height: 1.25,
-                          color: palette.textSecondary,
-                        ),
+                    ),
+                    Text(
+                      hint,
+                      style: TextStyle(
+                        fontFamily: kAppFontFamily,
+                        fontSize: 13,
+                        height: 1.25,
+                        color: palette.textSecondary,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

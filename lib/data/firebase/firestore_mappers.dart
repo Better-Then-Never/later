@@ -28,6 +28,13 @@ abstract final class FirestorePaths {
   static const settings = 'settings';
   static const reactions = 'reactions';
   static const comments = 'comments';
+
+  /// `capsules/{id}/sealed/content`: a locked capsule's photo and words.
+  static const sealed = 'sealed';
+  static const sealedContent = 'content';
+
+  /// `users/{uid}/unlocked/{capsuleId}`: place capsules opened there.
+  static const unlocked = 'unlocked';
   static const achievements = 'achievements';
   static const viewed = 'viewed';
   static const world = 'world';
@@ -185,6 +192,21 @@ abstract final class FirestoreMappers {
       },
       reactionTotal: _count(data['reactionTotal']),
       commentCount: _count(data['commentCount']),
+      openWhere: OpenWhere.parse(data['openWhere']),
+      sealed: data['sealed'] == true,
+    );
+  }
+
+  /// A sealed capsule's photo and words (`capsules/{id}/sealed/content`, or
+  /// the capsule itself once it was released); null without a photo.
+  static CapsuleContent? capsuleContent(Map<String, dynamic>? data) {
+    final imageUrl = _nonEmptyString(data?['imageUrl']);
+    if (data == null || imageUrl == null) return null;
+    return CapsuleContent(
+      imageUrl: imageUrl,
+      thumbUrl: _nonEmptyString(data['thumbUrl']),
+      frames: _stringList(data['frames']).where(_isFrameUrl).toList(),
+      description: _nonEmptyString(data['description']),
     );
   }
 
@@ -230,16 +252,34 @@ abstract final class FirestoreMappers {
       if (!capsuleFieldsAdded.contains(e.key)) e.key: e.value,
   };
 
-  static Map<String, dynamic> newCapsule(
+  /// The photo and words of a capsule written sealed ([newCapsule] with
+  /// `sealed`), for `capsules/{id}/sealed/content`.
+  static Map<String, dynamic> sealedContent(
     CapsuleDraft draft, {
     required String imageUrl,
     List<String> frameUrls = const [],
     String? thumbUrl,
   }) => {
-    'ownerId': draft.ownerId,
     'imageUrl': imageUrl,
+    if (thumbUrl != null) 'thumbUrl': thumbUrl,
+    if (frameUrls.length > 1) 'frames': frameUrls,
+    if (draft.description case final String words) 'description': words,
+  };
+
+  /// A new capsule. [sealed]: one that does not open at once leaves its
+  /// photo and words to [sealedContent] (capsule v3 B3).
+  static Map<String, dynamic> newCapsule(
+    CapsuleDraft draft, {
+    required String imageUrl,
+    List<String> frameUrls = const [],
+    String? thumbUrl,
+    bool sealed = false,
+  }) => {
+    'ownerId': draft.ownerId,
+    if (!sealed) ...{'imageUrl': imageUrl, 'description': draft.description},
+    if (sealed) 'sealed': true,
+    if (draft.openWhere == OpenWhere.here) 'openWhere': OpenWhere.here.name,
     'title': draft.title,
-    'description': draft.description,
     'location': GeoPoint(draft.location.latitude, draft.location.longitude),
     'privacy': draft.privacy.name,
     'createdAt': FieldValue.serverTimestamp(),
@@ -262,10 +302,10 @@ abstract final class FirestoreMappers {
     if (draft.locationPrecision != LocationPrecision.exact)
       'locationPrecision': draft.locationPrecision.name,
     if (frameUrls.length > 1) ...{
-      'frames': frameUrls,
+      if (!sealed) 'frames': frameUrls,
       'frameDelayMs': draft.frameDelayMs.clamp(80, 2000),
     },
-    if (thumbUrl != null) 'thumbUrl': thumbUrl,
+    if (thumbUrl != null && !sealed) 'thumbUrl': thumbUrl,
     if (draft.crop case final crop?) 'crop': crop.toMap(),
     if (draft.placeName case final String place when place.trim().isNotEmpty)
       'placeName': place.length > 200 ? place.substring(0, 200) : place,
@@ -547,6 +587,8 @@ abstract final class FirestoreMappers {
       capsuleId: _nonEmptyString(data['capsuleId']),
       reaction: ReactionType.parse(data['reaction'])?.emoji,
       achievementId: _nonEmptyString(data['achievementId']),
+      capsuleTitle: _nonEmptyString(data['capsuleTitle']),
+      placeName: _nonEmptyString(data['placeName']),
     );
   }
 }

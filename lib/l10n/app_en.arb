@@ -316,6 +316,10 @@
   "@capsulesAdjustTitle": {
     "description": "Title over the photo in Adjust."
   },
+  "capsulesApproxOffForHere": "Off: opening only here needs the exact spot",
+  "@capsulesApproxOffForHere": {
+    "description": "Under Approximate location on Create after \"Only when I'm back here\" turned it off."
+  },
   "capsulesAuthorChip": "Author",
   "@capsulesAuthorChip": {
     "description": "Small chip next to the name of the capsule's author in its comments."
@@ -546,6 +550,10 @@
   "@capsulesCreationLeftToday": {
     "description": "Under a new capsule's title: it is left today and opens anytime."
   },
+  "capsulesCreationLeftTodayHere": "Left today · opens here",
+  "@capsulesCreationLeftTodayHere": {
+    "description": "Under a new capsule's title: left today, opens anytime but only at this spot."
+  },
   "capsulesCreationLeftTodayOpens": "Left today · opens {date}",
   "@capsulesCreationLeftTodayOpens": {
     "description": "Under a new capsule's title: it is left today and opens on {date}.",
@@ -553,6 +561,15 @@
       "date": {
         "type": "String",
         "example": "14 Jun 2026"
+      }
+    }
+  },
+  "capsulesCreationLeftTodayOpensHere": "Left today · opens {date}, here",
+  "@capsulesCreationLeftTodayOpensHere": {
+    "description": "Under a new capsule's title: left today, opens on a day, only at this spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
       }
     }
   },
@@ -640,6 +657,10 @@
   "@capsulesDraftTitle": {
     "description": "Camera card for a capsule left unfinished (B4 drafts)."
   },
+  "capsulesErrorHereUnavailable": "Opening only here isn't available yet. Choose Anywhere and try again.",
+  "@capsulesErrorHereUnavailable": {
+    "description": "Create fails: the server does not take place capsules yet."
+  },
   "capsulesErrorNoLocation": "We could not detect your location",
   "capsulesErrorSaveFailed": "Failed to save capsule",
   "capsulesErrorSavedNotSent": "The capsule was saved but not sent. Tap save to try again.",
@@ -679,9 +700,9 @@
   "@capsulesHowHere": {
     "description": "Where option: the capsule opens only within 150 m of where it was left."
   },
-  "capsulesHowHereSoon": "Within 150 m of this spot · coming soon",
-  "@capsulesHowHereSoon": {
-    "description": "Under \"Only when I'm back here\" while the option is not available yet."
+  "capsulesHowHereHint": "Within 150 m of this spot",
+  "@capsulesHowHereHint": {
+    "description": "Under \"Only when I'm back here\" in How does it open?"
   },
   "capsulesHowPick": "Pick a date",
   "@capsulesHowPick": {
@@ -695,9 +716,22 @@
   "@capsulesHowSummaryAnytime": {
     "description": "The rule in words, at the bottom of the \"How does it open?\" sheet."
   },
+  "capsulesHowSummaryAnytimeHere": "Opens anytime, only within 150 m of this spot.",
+  "@capsulesHowSummaryAnytimeHere": {
+    "description": "The rule in words in How does it open?: anytime, only back at this spot."
+  },
   "capsulesHowSummaryDate": "Opens on {date}. It stays on the map where you left it.",
   "@capsulesHowSummaryDate": {
     "description": "The rule in words with a date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesHowSummaryDateHere": "Opens on {date}, only within 150 m of this spot.",
+  "@capsulesHowSummaryDateHere": {
+    "description": "The rule in words in How does it open?: on a day, only back at this spot.",
     "placeholders": {
       "date": {
         "type": "String"
@@ -1428,6 +1462,32 @@
       }
     }
   },
+  "mapCapsuleAwayKm": "{km} km away",
+  "@mapCapsuleAwayKm": {
+    "description": "How far a place capsule is (km with one decimal).",
+    "placeholders": {
+      "km": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleAwayMetres": "{metres} m away",
+  "@mapCapsuleAwayMetres": {
+    "description": "How far a place capsule is.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleBeThere": "Be there to open",
+  "@mapCapsuleBeThere": {
+    "description": "Map card of a capsule that opens only at its spot."
+  },
+  "mapCapsuleGoThere": "Go there",
+  "@mapCapsuleGoThere": {
+    "description": "Pill on a place capsule's map card: opens directions to it."
+  },
   "mapCapsuleLeftBy": "Left by {name} · {date}",
   "@mapCapsuleLeftBy": {
     "description": "Second line of a locked capsule's map card: who left it and when.",
@@ -1496,9 +1556,51 @@
       }
     }
   },
+  "mapCapsuleOpensOnHere": "Opens on {date}, here",
+  "@mapCapsuleOpensOnHere": {
+    "description": "Map card of a locked place capsule: its day, only at its spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "mapCapsuleReadyToOpen": "Ready to open",
+  "@mapCapsuleReadyToOpen": {
+    "description": "Map card of a place capsule whose date has come."
+  },
   "mapCapsuleUnavailable": "This capsule is no longer available",
   "@mapCapsuleUnavailable": {
     "description": "A pin tapped while the map was still loading: the capsule was deleted, hidden or is no longer visible to the user."
+  },
+  "mapCapsuleUnlockFailed": "Couldn't open it. Try again.",
+  "@mapCapsuleUnlockFailed": {
+    "description": "Opening a place capsule failed for another reason."
+  },
+  "mapCapsuleUnlockNoLocation": "Your location is needed to open it here.",
+  "@mapCapsuleUnlockNoLocation": {
+    "description": "Opening a place capsule failed: no location fix."
+  },
+  "mapCapsuleUnlockNotYet": "It isn't ready to open yet.",
+  "@mapCapsuleUnlockNotYet": {
+    "description": "Opening a place capsule failed: its date hasn't come."
+  },
+  "mapCapsuleUnlockTooFar": "You're {metres} m away. Come within 150 m to open it.",
+  "@mapCapsuleUnlockTooFar": {
+    "description": "Opening a place capsule failed: too far.",
+    "placeholders": {
+      "metres": {
+        "type": "int"
+      }
+    }
+  },
+  "mapCapsuleWhereUnknown": "Turn on location to see how far",
+  "@mapCapsuleWhereUnknown": {
+    "description": "Map card of a place capsule when the user's location is unknown."
+  },
+  "mapCapsuleYouAreHere": "You're here",
+  "@mapCapsuleYouAreHere": {
+    "description": "Map card of a place capsule: the user is within 150 m of it."
   },
   "mapCapsuleYoursToOpen": "Yours to open",
   "@mapCapsuleYoursToOpen": {
@@ -2133,6 +2235,45 @@
       }
     }
   },
+  "notificationsCapsuleOpenBody": "The capsule “{title}” from {name} is open",
+  "@notificationsCapsuleOpenBody": {
+    "description": "In-app notification: a capsule opened on its date ({name} is shown bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleReadyBody": "The capsule “{title}” from {name} is ready. It's waiting in {place}",
+  "@notificationsCapsuleReadyBody": {
+    "description": "In-app notification: a place capsule became ready ({name} bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleReadyHereBody": "The capsule “{title}” from {name} is ready. It's waiting where it was left",
+  "@notificationsCapsuleReadyHereBody": {
+    "description": "In-app notification: a place capsule became ready, its place unknown ({name} bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "notificationsChannelActivity": "Activity",
   "notificationsChannelActivityDescription": "Followers, friend requests, reactions, comments and new capsules",
   "notificationsChannelActivityNoVibration": "Activity (no vibration)",
@@ -2367,6 +2508,14 @@
   },
   "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
+  "notificationsTypeCapsuleOpen": "Capsule Open",
+  "@notificationsTypeCapsuleOpen": {
+    "description": "Kind of notification: a capsule with a date opened."
+  },
+  "notificationsTypeCapsuleReady": "Capsule Ready",
+  "@notificationsTypeCapsuleReady": {
+    "description": "Kind of notification: a place capsule became ready to open there."
+  },
   "notificationsTypeCoAuthor": "Made Together",
   "@notificationsTypeCoAuthor": {
     "description": "Title of a notification: a friend made a capsule with the user (co-author)."

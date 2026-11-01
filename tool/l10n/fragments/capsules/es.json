@@ -146,10 +146,16 @@
   "capsulesHowAnywhere": "En cualquier lugar",
   "capsulesHowAnywhereHint": "Estés donde estés cuando se abra",
   "capsulesHowHere": "Solo cuando vuelva aquí",
-  "capsulesHowHereSoon": "A 150 m de este lugar · muy pronto",
   "capsulesHowSummaryAnytime": "Se abre cuando quieras. Se queda en el mapa donde la dejaste.",
   "capsulesHowSummaryDate": "Se abre el {date}. Se queda en el mapa donde la dejaste.",
   "capsulesAdjust": "Ajustar",
   "capsulesAdjustTitle": "Arrastra para mover, pellizca para ampliar",
-  "capsulesAdjustHint": "Al tocarla se abre la foto entera."
+  "capsulesAdjustHint": "Al tocarla se abre la foto entera.",
+  "capsulesHowHereHint": "A menos de 150 m de este lugar",
+  "capsulesHowSummaryAnytimeHere": "Se abre cuando quieras, solo a menos de 150 m de este lugar.",
+  "capsulesHowSummaryDateHere": "Se abre el {date}, solo a menos de 150 m de este lugar.",
+  "capsulesCreationLeftTodayHere": "Dejada hoy · se abre aquí",
+  "capsulesCreationLeftTodayOpensHere": "Dejada hoy · se abre el {date}, aquí",
+  "capsulesApproxOffForHere": "Desactivado: abrir solo aquí necesita el lugar exacto",
+  "capsulesErrorHereUnavailable": "Abrir solo aquí aún no está disponible. Elige En cualquier lugar e inténtalo de nuevo."
 }

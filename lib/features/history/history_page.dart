@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../capsules/opening/capsule_locks.dart';
 import '../../app/shell/navbar_widget.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/assets/app_assets.dart';
@@ -255,7 +256,11 @@ class _HistoryPageState extends State<HistoryPage> {
     // The whole list, unsearched and unfiltered: then memories lead it.
     final now = DateTime.now();
     final memories = FeatureFlags.memories && !_controller.isNarrowed
-        ? OnThisDay.from(all, now)
+        ? OnThisDay.from(
+            all,
+            now,
+            open: (c) => CapsuleLocks.openAt(context, c, now),
+          )
         : const <Capsule>[];
     final lead = memories.isEmpty ? 0 : 1;
 

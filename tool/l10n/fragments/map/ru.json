@@ -40,5 +40,17 @@
   "mapCapsuleOpensOn": "Откроется {date}",
   "mapCapsuleLeftBy": "От {name} · {date}",
   "mapCapsuleLeftOn": "Оставлена {date}",
-  "mapCapsuleYoursToOpen": "Ждёт вас"
+  "mapCapsuleYoursToOpen": "Ждёт вас",
+  "mapCapsuleBeThere": "Откроется на месте",
+  "mapCapsuleReadyToOpen": "Готова открыться",
+  "mapCapsuleYouAreHere": "Вы на месте",
+  "mapCapsuleAwayMetres": "В {metres} м",
+  "mapCapsuleAwayKm": "В {km} км",
+  "mapCapsuleGoThere": "Маршрут",
+  "mapCapsuleOpensOnHere": "Откроется {date}, здесь",
+  "mapCapsuleWhereUnknown": "Включите геолокацию, чтобы увидеть расстояние",
+  "mapCapsuleUnlockTooFar": "Вы в {metres} м. Подойдите ближе 150 м, чтобы открыть.",
+  "mapCapsuleUnlockNotYet": "Её пока нельзя открыть.",
+  "mapCapsuleUnlockNoLocation": "Чтобы открыть её здесь, нужна ваша геолокация.",
+  "mapCapsuleUnlockFailed": "Не удалось открыть. Попробуйте снова."
 }

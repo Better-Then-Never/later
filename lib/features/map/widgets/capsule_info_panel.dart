@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/session/session_controller.dart';
@@ -20,6 +21,13 @@ import '../../../shared/widgets/loop_mark.dart';
 import '../../../shared/widgets/pill_v2.dart';
 import '../../capsules/opening/capsule_openings.dart';
 import '../../capsules/social/capsule_sheet.dart';
+import '../../capsules/opening/capsule_locks.dart';
+import '../current_location.dart';
+import '../../../data/services/location_service.dart';
+import '../directions.dart';
+import '../../../data/models/geo_position.dart';
+import '../../../data/repositories/repositories.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
 
 /// The card above a tapped pin (capsule v3, Figma "v3 Map / Card open" and
 /// "Card locked"): a picture, the title, who left it and, for an open
@@ -42,6 +50,10 @@ class CapsuleInfoPanel extends StatefulWidget {
   /// The locked card's height at the normal text size: its five short lines
   /// with the padding and the dark theme's border (the tallest card).
   static const double minHeight = 108;
+
+  /// How close you must be to open a place capsule (functions/lib/locks.js;
+  /// the server adds the fix's accuracy).
+  static const double openRadius = 150;
 
   /// The open card's height at the normal text size: the 76 dp picture with
   /// the padding.
@@ -120,6 +132,71 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   DateTime _now = DateTime.now();
   final _photo = GlobalKey();
 
+  /// A place capsule being opened at its spot (B4).
+  bool _opening = false;
+
+  /// Where the user is, when the map knows (null in tests and before the
+  /// first fix).
+  GeoPosition? _here(BuildContext context) {
+    try {
+      return context.select<CurrentLocation, GeoPosition?>((l) => l.position);
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  /// "350 m away", "2.4 km away"; null when unknown.
+  static String? _away(double? metres, AppLocalizations l10n) {
+    if (metres == null) return null;
+    if (metres < 1000) {
+      return l10n.mapCapsuleAwayMetres(((metres / 10).round() * 10).toInt());
+    }
+    final km = metres / 1000;
+    final format = NumberFormat(
+      km < 100 ? '#,##0.0' : '#,##0',
+      l10n.localeName,
+    );
+    return l10n.mapCapsuleAwayKm(format.format(km));
+  }
+
+  /// Opens a place capsule here: a fresh fix, the server's check, then the
+  /// capsule (wrapped the first time, D1); a note when it says no.
+  Future<void> _openHere(CapsuleLocks locks) async {
+    final l10n = context.l10n;
+    final location = context.read<LocationService>();
+    setState(() => _opening = true);
+    void say(String message) => PopupNotificationService.showError(
+      context: context,
+      message: message,
+      position: NotificationPosition.top,
+    );
+    try {
+      final fix = await location.currentFix(request: true);
+      if (!mounted) return;
+      if (fix == null) return say(l10n.mapCapsuleUnlockNoLocation);
+      await locks.unlockHere(
+        widget.capsule,
+        fix.position,
+        accuracy: fix.accuracy,
+      );
+      if (!mounted) return;
+      widget.onMoreInfo(null);
+    } on CapsuleUnlockException catch (e) {
+      if (!mounted) return;
+      say(switch (e.reason) {
+        UnlockRefusal.tooFar => l10n.mapCapsuleUnlockTooFar(e.distance ?? 0),
+        UnlockRefusal.notYet => l10n.mapCapsuleUnlockNotYet,
+        UnlockRefusal.offline => l10n.commonNoConnection,
+        UnlockRefusal.notFound ||
+        UnlockRefusal.other => l10n.mapCapsuleUnlockFailed,
+      });
+    } catch (_) {
+      if (mounted) say(l10n.mapCapsuleUnlockFailed);
+    } finally {
+      if (mounted) setState(() => _opening = false);
+    }
+  }
+
   bool get _isOpen => widget.capsule.isOpen(_now);
 
   @override
@@ -157,8 +234,17 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
   @override
   Widget build(BuildContext context) {
     final capsule = widget.capsule;
-    final isOpen = _isOpen;
+    final locks = CapsuleLocks.maybeOf(context);
+    // Its date came and, for a place capsule, it was opened there (B3).
+    final isOpen = locks?.mayOpen(capsule, _now) ?? _isOpen;
+    // A place capsule whose date came: it waits for you at its spot (B4).
+    final ready = !isOpen && capsule.opensHere && _isOpen;
+    final spot = capsule.location;
+    final me = capsule.opensHere ? _here(context) : null;
+    final metres = me == null || spot == null ? null : me.distanceTo(spot);
+    final there = metres != null && metres <= CapsuleInfoPanel.openRadius;
     final l10n = context.l10n;
+    final away = _away(metres, l10n);
     final palette = context.palette;
     final uid = context.select<SessionController, String?>((s) => s.uid);
     // Not unwrapped yet (D1): it waits for its first open.
@@ -197,7 +283,8 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
           children: [
             _Thumbnail(
               key: _photo,
-              capsule: capsule,
+              // A sealed capsule's picture once it may open (B3).
+              capsule: locks?.resolve(capsule, _now) ?? capsule,
               isOpen: isOpen,
               size: math.min(76, box.hasBoundedHeight ? box.maxHeight : 76),
             ),
@@ -216,14 +303,25 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                       height: 1.2,
                     ),
                   ),
-                  SizedBox(height: isOpen ? 2 : 3),
+                  SizedBox(height: isOpen || ready ? 2 : 3),
                   _SecondLine(
                     second,
                     date: left,
                     style: _line(palette.textSecondary),
                   ),
-                  SizedBox(height: isOpen ? 2 : 3),
-                  if (isOpen)
+                  SizedBox(height: isOpen || ready ? 2 : 3),
+                  if (ready)
+                    _PlaceStatus(
+                      headline: there
+                          ? l10n.mapCapsuleYouAreHere
+                          : capsule.openAt == null
+                          ? l10n.mapCapsuleBeThere
+                          : l10n.mapCapsuleReadyToOpen,
+                      away: away ?? l10n.mapCapsuleWhereUnknown,
+                      headlineStyle: _line(palette.accentText, bold: true),
+                      awayStyle: _line(palette.textSecondary, size: 12),
+                    )
+                  else if (isOpen)
                     _OpenedStatus(
                       label: wrapped
                           ? (l10n.mapCapsuleYoursToOpen, null)
@@ -252,23 +350,35 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
                     _WaitLine(done: CapsuleInfoPanel.waitDone(capsule, _now)),
                     if (capsule.openAt != null) ...[
                       const SizedBox(height: 3),
-                      _Fit(
-                        l10n.mapCapsuleOpensOn(
-                          AppDates.compact(
-                            capsule.openAt!,
-                            l10n.localeName,
-                            _now,
-                          ),
-                        ),
-                        style: _line(palette.textMuted, size: 12),
-                      ),
+                      _Fit(switch (AppDates.compact(
+                        capsule.openAt!,
+                        l10n.localeName,
+                        _now,
+                      )) {
+                        // Only at its spot: the day, "here" and how far.
+                        final day when capsule.opensHere => [
+                          l10n.mapCapsuleOpensOnHere(day),
+                          ?away,
+                        ].join(' · '),
+                        final day => l10n.mapCapsuleOpensOn(day),
+                      }, style: _line(palette.textMuted, size: 12)),
                     ],
                   ],
                 ],
               ),
             ),
             const SizedBox(width: 12),
-            if (isOpen)
+            if (ready && there && locks != null)
+              PillV2(
+                label: l10n.mapCapsuleOpen,
+                onTap: _opening ? null : () => _openHere(locks),
+              )
+            else if (ready && spot != null)
+              PillV2(
+                label: l10n.mapCapsuleGoThere,
+                onTap: () => Directions.open(spot),
+              )
+            else if (isOpen)
               PillV2(
                 label: l10n.mapCapsuleOpen,
                 onTap: () => widget.onMoreInfo(
@@ -298,6 +408,38 @@ class _CapsuleInfoPanelState extends State<CapsuleInfoPanel> {
         fontWeight: bold ? FontWeight.bold : FontWeight.normal,
         color: color,
       );
+}
+
+/// A place capsule whose date came (B4): "Be there to open", "Ready to
+/// open" or "You're here" in green, and how far it is under it.
+class _PlaceStatus extends StatelessWidget {
+  const _PlaceStatus({
+    required this.headline,
+    required this.away,
+    required this.headlineStyle,
+    required this.awayStyle,
+  });
+
+  final String headline;
+  final String away;
+  final TextStyle headlineStyle;
+  final TextStyle awayStyle;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _Fit(headline, style: headlineStyle),
+      const SizedBox(height: 2),
+      Row(
+        children: [
+          Image.asset(AppIcons.capsuleLocation, width: 14),
+          const SizedBox(width: 4),
+          Flexible(child: _Fit(away, style: awayStyle)),
+        ],
+      ),
+    ],
+  );
 }
 
 /// An open capsule's state in green: the check with the words ("Opened

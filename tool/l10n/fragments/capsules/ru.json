@@ -146,10 +146,16 @@
   "capsulesHowAnywhere": "Где угодно",
   "capsulesHowAnywhereHint": "Где бы вы ни были, когда она откроется",
   "capsulesHowHere": "Только когда вернусь сюда",
-  "capsulesHowHereSoon": "В пределах 150 м · скоро",
   "capsulesHowSummaryAnytime": "Открывается в любое время. Остаётся на карте там, где вы её оставили.",
   "capsulesHowSummaryDate": "Откроется {date}. Остаётся на карте там, где вы её оставили.",
   "capsulesAdjust": "Кадр",
   "capsulesAdjustTitle": "Перетащите или разведите пальцы, чтобы приблизить",
-  "capsulesAdjustHint": "По нажатию откроется всё фото."
+  "capsulesAdjustHint": "По нажатию откроется всё фото.",
+  "capsulesHowHereHint": "В пределах 150 м от этого места",
+  "capsulesHowSummaryAnytimeHere": "Открывается в любой момент, но только в пределах 150 м от этого места.",
+  "capsulesHowSummaryDateHere": "Откроется {date}, только в пределах 150 м от этого места.",
+  "capsulesCreationLeftTodayHere": "Оставлена сегодня · откроется здесь",
+  "capsulesCreationLeftTodayOpensHere": "Оставлена сегодня · откроется {date}, здесь",
+  "capsulesApproxOffForHere": "Выключено: чтобы открыть только здесь, нужно точное место",
+  "capsulesErrorHereUnavailable": "Открытие только здесь пока недоступно. Выберите «Где угодно» и попробуйте снова."
 }

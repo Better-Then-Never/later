@@ -442,6 +442,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Przeciągnij, aby przesunąć, rozsuń palce, aby powiększyć';
 
   @override
+  String get capsulesApproxOffForHere =>
+      'Wyłączone: otwieranie tylko tutaj wymaga dokładnego miejsca';
+
+  @override
   String get capsulesAuthorChip => 'Autor';
 
   @override
@@ -659,8 +663,17 @@ class AppLocalizationsPl extends AppLocalizations {
       'Zostawiona dziś · otwórz, kiedy chcesz';
 
   @override
+  String get capsulesCreationLeftTodayHere =>
+      'Zostawiona dziś · otwiera się tutaj';
+
+  @override
   String capsulesCreationLeftTodayOpens(String date) {
     return 'Zostawiona dziś · otworzy się $date';
+  }
+
+  @override
+  String capsulesCreationLeftTodayOpensHere(String date) {
+    return 'Zostawiona dziś · otwiera się $date, tutaj';
   }
 
   @override
@@ -719,6 +732,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesDraftTitle => 'Niedokończona kapsuła';
 
   @override
+  String get capsulesErrorHereUnavailable =>
+      'Otwieranie tylko tutaj nie jest jeszcze dostępne. Wybierz Wszędzie i spróbuj ponownie.';
+
+  @override
   String get capsulesErrorNoLocation =>
       'Nie udało się ustalić twojej lokalizacji';
 
@@ -754,7 +771,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get capsulesHowHere => 'Tylko gdy tu wrócę';
 
   @override
-  String get capsulesHowHereSoon => 'W promieniu 150 m · już wkrótce';
+  String get capsulesHowHereHint => 'W promieniu 150 m od tego miejsca';
 
   @override
   String get capsulesHowPick => 'Wybierz datę';
@@ -767,8 +784,17 @@ class AppLocalizationsPl extends AppLocalizations {
       'Otworzysz ją, kiedy chcesz. Zostaje na mapie tam, gdzie ją zostawisz.';
 
   @override
+  String get capsulesHowSummaryAnytimeHere =>
+      'Otwiera się w każdej chwili, ale tylko w promieniu 150 m od tego miejsca.';
+
+  @override
   String capsulesHowSummaryDate(String date) {
     return 'Otworzy się $date. Zostaje na mapie tam, gdzie ją zostawisz.';
+  }
+
+  @override
+  String capsulesHowSummaryDateHere(String date) {
+    return 'Otwiera się $date, tylko w promieniu 150 m od tego miejsca.';
   }
 
   @override
@@ -1540,6 +1566,22 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String mapCapsuleAwayKm(String km) {
+    return '$km km stąd';
+  }
+
+  @override
+  String mapCapsuleAwayMetres(int metres) {
+    return '$metres m stąd';
+  }
+
+  @override
+  String get mapCapsuleBeThere => 'Bądź tam, by otworzyć';
+
+  @override
+  String get mapCapsuleGoThere => 'Prowadź';
+
+  @override
   String mapCapsuleLeftBy(String name, String date) {
     return 'Od $name · $date';
   }
@@ -1578,7 +1620,38 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String mapCapsuleOpensOnHere(String date) {
+    return 'Otwiera się $date, tutaj';
+  }
+
+  @override
+  String get mapCapsuleReadyToOpen => 'Gotowa do otwarcia';
+
+  @override
   String get mapCapsuleUnavailable => 'Ta kapsuła nie jest już dostępna';
+
+  @override
+  String get mapCapsuleUnlockFailed =>
+      'Nie udało się otworzyć. Spróbuj ponownie.';
+
+  @override
+  String get mapCapsuleUnlockNoLocation =>
+      'Potrzebna jest Twoja lokalizacja, by ją tu otworzyć.';
+
+  @override
+  String get mapCapsuleUnlockNotYet => 'Jeszcze nie można jej otworzyć.';
+
+  @override
+  String mapCapsuleUnlockTooFar(int metres) {
+    return 'Jesteś $metres m stąd. Podejdź na 150 m, by ją otworzyć.';
+  }
+
+  @override
+  String get mapCapsuleWhereUnknown =>
+      'Włącz lokalizację, by zobaczyć odległość';
+
+  @override
+  String get mapCapsuleYouAreHere => 'Jesteś tutaj';
 
   @override
   String get mapCapsuleYoursToOpen => 'Czeka na ciebie';
@@ -2163,6 +2236,25 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String notificationsCapsuleOpenBody(String title, String name) {
+    return 'Kapsuła „$title” od $name jest otwarta';
+  }
+
+  @override
+  String notificationsCapsuleReadyBody(
+    String title,
+    String name,
+    String place,
+  ) {
+    return 'Kapsuła „$title” od $name jest gotowa. Czeka: $place';
+  }
+
+  @override
+  String notificationsCapsuleReadyHereBody(String title, String name) {
+    return 'Kapsuła „$title” od $name jest gotowa. Czeka tam, gdzie ją zostawiono';
+  }
+
+  @override
   String get notificationsChannelActivity => 'Aktywność';
 
   @override
@@ -2393,6 +2485,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get notificationsTypeCapsule => 'Nowa kapsuła';
+
+  @override
+  String get notificationsTypeCapsuleOpen => 'Kapsuła otwarta';
+
+  @override
+  String get notificationsTypeCapsuleReady => 'Kapsuła gotowa';
 
   @override
   String get notificationsTypeCoAuthor => 'Razem';

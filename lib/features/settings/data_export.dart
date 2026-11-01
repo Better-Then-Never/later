@@ -19,6 +19,7 @@ import '../friends/friends_store.dart';
 import '../history/own_capsules_store.dart';
 import '../messages/chats_store.dart';
 import '../users/user_directory.dart';
+import '../../data/repositories/repositories.dart';
 import 'settings_store.dart';
 
 /// "Download my data": what Later keeps about the user, as one JSON file
@@ -72,6 +73,7 @@ abstract final class DataExport {
           'color': c.color.name,
           'createdAt': _date(c.createdAt),
           'openAt': ?(c.openAt == null ? null : _date(c.openAt)),
+          if (c.opensHere) 'opensOnlyHere': true,
           if (c.location case final at?)
             'location': {'latitude': at.latitude, 'longitude': at.longitude},
           'place': ?c.placeName,
@@ -104,12 +106,25 @@ abstract final class DataExport {
       return ValidationFailure(AppL10n.current.settingsDownloadDataFailed);
     }
     final settings = context.read<SettingsStore>().settings;
-    final capsules = context.read<OwnCapsulesStore>().capsules;
+    final own = context.read<OwnCapsulesStore>().capsules;
+    final repository = context.read<CapsuleRepository>();
     final friendsStore = context.read<FriendsStore>();
     final chats = context.read<ChatsStore>().chats;
     final directory = context.read<UserDirectory>();
     try {
       final names = await directory.resolveAll(friendsStore.friendIds);
+      // Your own locked capsules with their photo and words (kept apart on
+      // the server until they open; yours to read any time).
+      final capsules = await Future.wait([
+        for (final c in own)
+          if (!c.sealed || c.imageUrl != null || c.ownerId != profile.uid)
+            Future.value(c)
+          else
+            repository
+                .sealedContent(c.id)
+                .then((content) => content == null ? c : c.withContent(content))
+                .catchError((Object _) => c),
+      ]);
       final now = DateTime.now();
       final data = build(
         profile: profile,

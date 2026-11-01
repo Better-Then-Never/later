@@ -54,6 +54,45 @@ class LocationService {
     }
   }
 
+  /// A fresh fix with how good it is (metres), for opening a place capsule
+  /// at its spot; the last known one when no fresh fix comes in [timeout];
+  /// null without the permission or any fix.
+  Future<({GeoPosition position, double accuracy})?> currentFix({
+    Duration timeout = const Duration(seconds: 8),
+    bool request = false,
+  }) async {
+    if (await availability(request: request) !=
+        LocationAvailability.available) {
+      return null;
+    }
+    ({GeoPosition position, double accuracy})? of(Position? p) {
+      if (p == null) return null;
+      final position = GeoPosition(p.latitude, p.longitude);
+      return position.isValid
+          ? (position: position, accuracy: p.accuracy)
+          : null;
+    }
+
+    try {
+      final fresh = of(
+        await Geolocator.getCurrentPosition(
+          locationSettings: LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: timeout,
+          ),
+        ),
+      );
+      if (fresh != null) return fresh;
+    } catch (e) {
+      AppLogger.debug('No fresh location fix: $e');
+    }
+    try {
+      return of(await Geolocator.getLastKnownPosition());
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<GeoPosition?> lastKnownPosition() async {
     try {
       final p = await Geolocator.getLastKnownPosition();

@@ -57,3 +57,4 @@ material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.senti
 material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.local_fire_department  # placeholder (reaction: fire)
 material-icon lib/features/capsules/social/capsule_social_panel.dart Icons.celebration  # placeholder (reaction: clap)
 material-icon lib/features/capsules/social/capsule_sheet.dart Icons.more_horiz  # placeholder (the ⋯ button)
+material-icon lib/features/messages/widgets/message_bubble.dart Icons.lock_clock  # locked capsule (sealed, capsule v3 B3)

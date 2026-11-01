@@ -4,6 +4,7 @@ import '../models/app_notification.dart';
 import '../models/capsule.dart';
 import '../models/chat.dart';
 import '../models/friend_request.dart';
+import '../models/geo_position.dart';
 import '../models/social.dart';
 import '../models/user_profile.dart';
 import '../models/world.dart';
@@ -277,6 +278,39 @@ abstract interface class ChatRepository {
   });
 }
 
+/// Why a place capsule did not open there (functions/lib/locks.js).
+enum UnlockRefusal {
+  /// More than 150 m (plus the fix) from its spot.
+  tooFar,
+
+  /// Its date has not come.
+  notYet,
+
+  /// Gone, or not yours to see.
+  notFound,
+
+  /// No connection.
+  offline,
+  other,
+}
+
+/// A place capsule that did not open: [reason], and how far away the
+/// server thinks you are (metres) when it was too far.
+class CapsuleUnlockException implements Exception {
+  const CapsuleUnlockException(this.reason, {this.distance});
+
+  final UnlockRefusal reason;
+  final int? distance;
+
+  @override
+  String toString() => 'CapsuleUnlockException(${reason.name}, $distance)';
+}
+
+/// The server does not take place capsules yet (its rules predate them).
+class PlaceCapsulesUnavailable implements Exception {
+  const PlaceCapsulesUnavailable();
+}
+
 abstract interface class CapsuleRepository {
   Stream<List<Capsule>> watchOwn(String uid);
 
@@ -338,9 +372,29 @@ abstract interface class CapsuleRepository {
   /// An id for a new capsule, made on the device (see [CapsuleDraft.id]).
   String newCapsuleId();
 
+  /// A sealed capsule's photo and words, once it may open (its owner and
+  /// co-authors may read them any time); null when it has none. Throws
+  /// while it may not be read.
+  Future<CapsuleContent?> sealedContent(String capsuleId);
+
+  /// Ids of the place capsules [uid] opened there.
+  Stream<Set<String>> watchUnlocked(String uid);
+
+  /// Opens place capsule [capsuleId] for the signed-in user, who is at [at]
+  /// (a fix [accuracy] metres good): its photo and words. Throws
+  /// [CapsuleUnlockException] when the server says no.
+  Future<CapsuleContent?> unlockHere(
+    String capsuleId,
+    GeoPosition at, {
+    double accuracy,
+  });
+
   /// Uploads the photo and writes the capsule. With [CapsuleDraft.id] it is
   /// idempotent: a capsule that already exists under that id is returned
-  /// as is (an earlier attempt succeeded but its answer was lost).
+  /// as is (an earlier attempt succeeded but its answer was lost). One that
+  /// does not open at once is written sealed (capsule v3 B3); on a server
+  /// without the locks a dated one is written whole, and a place one throws
+  /// [PlaceCapsulesUnavailable].
   Future<Capsule> create(CapsuleDraft draft);
   Future<void> delete(Iterable<Capsule> capsules);
 }

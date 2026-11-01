@@ -9,6 +9,8 @@ import 'package:later/data/services/preferences_store.dart';
 import 'package:later/features/capsules/opening/capsule_openings.dart';
 import 'package:later/data/services/profile_image_cache.dart';
 import 'package:later/features/users/user_directory.dart';
+import 'package:later/features/capsules/opening/capsule_locks.dart';
+import 'package:later/features/map/current_location.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,6 +39,8 @@ Widget capsuleHost({
   List<UserProfile> people = const [],
   SocialRepository? social,
   CapsuleOpenings? openings,
+  CapsuleLocks? locks,
+  CurrentLocation? here,
 }) {
   final users = FakeUserRepository();
   for (final p in people) {
@@ -62,6 +66,10 @@ Widget capsuleHost({
             ),
       ),
       if (social != null) Provider<SocialRepository>.value(value: social),
+      if (locks != null)
+        ChangeNotifierProvider<CapsuleLocks>.value(value: locks),
+      if (here != null)
+        ChangeNotifierProvider<CurrentLocation>.value(value: here),
     ],
     child: child,
   );

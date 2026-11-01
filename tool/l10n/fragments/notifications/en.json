@@ -275,5 +275,52 @@
   "notificationsNowFriends": "You are friends now",
   "@notificationsNowFriends": {
     "description": "Under a friend request notification once accepted."
+  },
+  "notificationsTypeCapsuleOpen": "Capsule Open",
+  "@notificationsTypeCapsuleOpen": {
+    "description": "Kind of notification: a capsule with a date opened."
+  },
+  "notificationsTypeCapsuleReady": "Capsule Ready",
+  "@notificationsTypeCapsuleReady": {
+    "description": "Kind of notification: a place capsule became ready to open there."
+  },
+  "notificationsCapsuleOpenBody": "The capsule “{title}” from {name} is open",
+  "@notificationsCapsuleOpenBody": {
+    "description": "In-app notification: a capsule opened on its date ({name} is shown bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleReadyBody": "The capsule “{title}” from {name} is ready. It's waiting in {place}",
+  "@notificationsCapsuleReadyBody": {
+    "description": "In-app notification: a place capsule became ready ({name} bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationsCapsuleReadyHereBody": "The capsule “{title}” from {name} is ready. It's waiting where it was left",
+  "@notificationsCapsuleReadyHereBody": {
+    "description": "In-app notification: a place capsule became ready, its place unknown ({name} bold).",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

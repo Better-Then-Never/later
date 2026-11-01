@@ -18,6 +18,7 @@ import '../data/services/country_names.dart';
 import '../data/services/geocoding_service.dart';
 import '../data/services/location_service.dart';
 import '../data/services/network_service.dart';
+import '../features/capsules/opening/capsule_locks.dart';
 import '../features/capsules/opening/capsule_openings.dart';
 import '../features/capsules/outbox/background_uploads.dart';
 import '../data/services/preferences_store.dart';
@@ -96,6 +97,7 @@ class _AppScopeState extends State<AppScope> {
   final _push = PushMessagingService();
   final _mapFocus = MapFocus();
   late final _openings = CapsuleOpenings(_prefs);
+  late final _locks = CapsuleLocks(_capsules);
   final _currentLocation = CurrentLocation();
   late final _imageCache = ProfileImageCache(_images, prefs: _prefs);
   late final _notificationsStore = NotificationsStore(_notifications);
@@ -151,6 +153,7 @@ class _AppScopeState extends State<AppScope> {
         _settingsStore,
         _deviceSettings,
         _entitlements,
+        _locks,
         PushRegistration(push: _push, tokens: _pushTokens),
       ],
     )..start();
@@ -233,6 +236,7 @@ class _AppScopeState extends State<AppScope> {
         ),
         ChangeNotifierProvider<MapFocus>.value(value: _mapFocus),
         ChangeNotifierProvider<CapsuleOpenings>.value(value: _openings),
+        ChangeNotifierProvider<CapsuleLocks>.value(value: _locks),
         ChangeNotifierProvider<OwnCapsulesStore>.value(value: _ownCapsules),
         Provider<MapPinStore>.value(value: _mapPins),
         ChangeNotifierProvider<CapsuleOutbox>.value(value: _outbox),

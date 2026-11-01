@@ -93,6 +93,41 @@ A capsule that opens at once and anywhere ("Anytime, Anywhere") stays one docume
 - Order: deploy the server first (the current app keeps working: it writes unsealed capsules, which
   stay valid), then release the app.
 
+## Built (2026-11-01, local, not deployed)
+
+What changed from the plan while building:
+
+- The unlocks live in `users/{uid}/unlocked/{capsuleId}` (one list per person, which the app reads
+  for its lists and the rules check with `exists`), not `capsules/{id}/unlocks/{uid}`. A deleted
+  capsule's entries stay there; they name a capsule that is gone and open nothing.
+- A capsule doc says `sealed: true` while its content is apart, and `openWhere: 'here'` for a place
+  capsule (which stays sealed for good). Release removes `sealed` and copies the content back.
+- Capsules are queued in `capsule_schedule/{id}` (server only) when created; the 5-minute run reads
+  that queue by `openAt`, so no composite index is needed. An older app's unsealed capsule for later
+  is queued too and gets "is open".
+- Four functions, not three: `queueCapsuleOpening` (on create), `releaseOpenedCapsules` (every 5
+  minutes), `unlockCapsule` (callable), `cleanupCapsule` (on delete).
+- The app adds `cloud_functions` (for the callable). On a server without the new rules a capsule for
+  later is written whole as before; a place capsule is refused with a message ("isn't available
+  yet").
+- Old capsules: `tools/admin/seal-waiting-capsules.js` (`--dry-run` first).
+
+### Deploy, in this order (owner's go)
+
+1. `firebase deploy --only firestore:rules` (the current app keeps working: it writes unsealed
+   capsules, which stay valid).
+2. Create the four functions once with gcloud (the CLI cannot create new ones here; see
+   docs/feel/DEPLOY_LOG.md): `queueCapsuleOpening` and `cleanupCapsule` as Firestore triggers in
+   `europe-west1` with `--trigger-location=eur3`; `releaseOpenedCapsules` and `unlockCapsule` in
+   `us-central1` as `--trigger-http` with the labels `deployment-scheduled=true` and
+   `deployment-callable=true`. Then `firebase deploy --only functions:queueCapsuleOpening,functions:releaseOpenedCapsules,functions:unlockCapsule,functions:cleanupCapsule`.
+3. `node tools/admin/seal-waiting-capsules.js --project later-da778 --production --dry-run`, then
+   without `--dry-run`.
+4. Then the app release.
+
+Tests: rules `tools/rules-tests` (90), functions `functions` `npm run test:emulate` (76), admin
+`tools/admin` `npm run selftest`, app `flutter test` (567).
+
 ## The owner's answers (2026-11-01)
 
 1. Own capsule: owner and co-authors can always read the sealed part; the app shows it locked

@@ -614,10 +614,6 @@
   "@capsulesHowHere": {
     "description": "Where option: the capsule opens only within 150 m of where it was left."
   },
-  "capsulesHowHereSoon": "Within 150 m of this spot · coming soon",
-  "@capsulesHowHereSoon": {
-    "description": "Under \"Only when I'm back here\" while the option is not available yet."
-  },
   "capsulesHowSummaryAnytime": "Opens anytime. It stays on the map where you left it.",
   "@capsulesHowSummaryAnytime": {
     "description": "The rule in words, at the bottom of the \"How does it open?\" sheet."
@@ -642,5 +638,43 @@
   "capsulesAdjustHint": "The whole photo opens when someone taps it.",
   "@capsulesAdjustHint": {
     "description": "Under the Adjust title: the crop only changes the square, not the photo."
+  },
+  "capsulesHowHereHint": "Within 150 m of this spot",
+  "@capsulesHowHereHint": {
+    "description": "Under \"Only when I'm back here\" in How does it open?"
+  },
+  "capsulesHowSummaryAnytimeHere": "Opens anytime, only within 150 m of this spot.",
+  "@capsulesHowSummaryAnytimeHere": {
+    "description": "The rule in words in How does it open?: anytime, only back at this spot."
+  },
+  "capsulesHowSummaryDateHere": "Opens on {date}, only within 150 m of this spot.",
+  "@capsulesHowSummaryDateHere": {
+    "description": "The rule in words in How does it open?: on a day, only back at this spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesCreationLeftTodayHere": "Left today · opens here",
+  "@capsulesCreationLeftTodayHere": {
+    "description": "Under a new capsule's title: left today, opens anytime but only at this spot."
+  },
+  "capsulesCreationLeftTodayOpensHere": "Left today · opens {date}, here",
+  "@capsulesCreationLeftTodayOpensHere": {
+    "description": "Under a new capsule's title: left today, opens on a day, only at this spot.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesApproxOffForHere": "Off: opening only here needs the exact spot",
+  "@capsulesApproxOffForHere": {
+    "description": "Under Approximate location on Create after \"Only when I'm back here\" turned it off."
+  },
+  "capsulesErrorHereUnavailable": "Opening only here isn't available yet. Choose Anywhere and try again.",
+  "@capsulesErrorHereUnavailable": {
+    "description": "Create fails: the server does not take place capsules yet."
   }
 }

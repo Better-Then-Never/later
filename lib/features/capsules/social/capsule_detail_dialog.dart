@@ -10,6 +10,7 @@ import '../../../core/theme/app_palette.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../shared/widgets/app_sheets.dart';
+import '../opening/capsule_locks.dart';
 import '../opening/capsule_openings.dart';
 import '../opening/capsule_wrap.dart';
 import 'capsule_comments_sheet.dart';
@@ -28,19 +29,41 @@ abstract final class CapsuleDetailDialog {
     SheetOrigin? from,
     VoidCallback? onPlaceTap,
     bool openComments = false,
+  }) async {
+    // A locked capsule's photo and words once it may open (capsule v3 B3):
+    // at once when this phone has them already.
+    final locks = CapsuleLocks.maybeOf(context, listen: false);
+    final shown = locks == null ? capsule : await locks.fill(capsule);
+    if (!context.mounted) return;
+    return _show(
+      context,
+      shown,
+      open:
+          locks?.mayOpen(shown, DateTime.now()) ?? shown.isOpen(DateTime.now()),
+      from: from,
+      onPlaceTap: onPlaceTap,
+      openComments: openComments,
+    );
+  }
+
+  static Future<void> _show(
+    BuildContext context,
+    Capsule capsule, {
+    required bool open,
+    SheetOrigin? from,
+    VoidCallback? onPlaceTap,
+    bool openComments = false,
   }) {
     final uid = context.read<SessionController>().uid;
     final social = context.read<SocialRepository>();
     final withSocial =
-        uid != null &&
-        capsule.isOpen(DateTime.now()) &&
-        CapsuleSheet.showsAnything(capsule);
+        uid != null && open && CapsuleSheet.showsAnything(capsule);
     // Someone else's open capsule counts for "Curious" (B7), once.
     if (FeatureFlags.achievements &&
         uid != null &&
         capsule.ownerId != uid &&
         !capsule.coAuthors.contains(uid) &&
-        capsule.isOpen(DateTime.now())) {
+        open) {
       unawaited(social.markViewed(uid, capsule.id));
     }
     final openings = context.read<CapsuleOpenings>();
