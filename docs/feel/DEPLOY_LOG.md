@@ -47,3 +47,20 @@ for the run only; nothing was written to disk or to the repository.
   for `storage.rules`); the app falls back to the older document shapes.
 - Functions: the new ones only react to new documents; delete any in the console. The five older ones run the
   new code; redeploying from `8e16d84` brings back #77's version.
+
+# Capsule v3 phase 3 (locked capsules), 1 Nov 2026
+
+Run at the owner's request ("deploy it and install on my phone"), project `later-da778`, from `feature/capsule-v3`
+(`c4b021e`). Times are CET.
+
+| # | Step | Result |
+|---|---|---|
+| 1 | `firebase deploy --only firestore:rules` | ✓ ~20:05. Sealed capsules, `users/{uid}/unlocked`, `crop`, `openWhere`; additive (the released app writes unsealed capsules, still valid). |
+| 2 | gcloud first-create of the four new functions | ✓ 20:09–20:12. `queueCapsuleOpening` (created) and `cleanupCapsule` (deleted) on `capsules/{capsuleId}` in `europe-west1`, `eur3` trigger; `releaseOpenedCapsules` (label `deployment-scheduled`) and `unlockCapsule` (label `deployment-callable`) in `us-central1`; `later-functions` as run and build account. |
+| 3 | `firebase deploy --only functions:<the four>` | ✓ after a retry with `FUNCTIONS_DISCOVERY_TIMEOUT=120` (the first attempt timed out loading the code while an APK build ran). Cloud Scheduler job `firebase-schedule-releaseOpenedCapsules-us-central1`, every 5 minutes, enabled. Older functions untouched. |
+| 4 | `tools/admin/seal-waiting-capsules.js` (dry run, then for real) | ✓ 1 capsule waiting for its date sealed and queued; a second dry run finds nothing to seal. |
+| 5 | Release APK of `c4b021e` on the owner's phone (`adb install -r`) | ✓ signed in as before. |
+
+Rollback: rules from `b2682af` (`git show b2682af:firestore.rules`); delete the four functions in the console. A
+sealed capsule stays sealed until its date, when the release run (if still deployed) opens it; without it, older app
+versions show it without a photo.
