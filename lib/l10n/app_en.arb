@@ -2592,6 +2592,10 @@
   "@profileAboutPrompt": {
     "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
   },
+  "profileAddCover": "Add a cover photo",
+  "@profileAddCover": {
+    "description": "On a profile postcard without a cover photo; opens the photo picker."
+  },
   "profileAddFriends": "Add friends",
   "@profileAddFriends": {
     "description": "Card on the own profile page that opens Add Friends."
@@ -2613,6 +2617,27 @@
   "@profileCopyLink": {
     "description": "Button on Share Profile that copies the profile link (half-width button with an icon: keep it short)."
   },
+  "profileCountries": "{count, plural, =1{1 country} other{{count} countries}}",
+  "@profileCountries": {
+    "description": "On the profile postcard after followers and following: countries with the person's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileCountriesTowns": "{countries} · {towns}",
+  "@profileCountriesTowns": {
+    "description": "Under a Passport row: the countries and the towns, each already worded (\"7 countries\", \"15 towns\").",
+    "placeholders": {
+      "countries": {
+        "type": "String"
+      },
+      "towns": {
+        "type": "String"
+      }
+    }
+  },
   "profileErrorCopyLink": "Failed to copy link",
   "profileErrorDeleteBackground": "Failed to delete background picture",
   "profileErrorDeletePicture": "Failed to delete profile picture",
@@ -2632,6 +2657,24 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "profileFriendCapsules": "{name}'s capsules",
+  "@profileFriendCapsules": {
+    "description": "Section title on a friend's profile above their capsules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileFriendPassport": "{name}'s Passport",
+  "@profileFriendPassport": {
+    "description": "Row on a friend's profile: opens their Passport (countries and towns of their capsules).",
+    "placeholders": {
+      "name": {
+        "type": "String"
       }
     }
   },
@@ -2725,6 +2768,14 @@
     "description": "Title of the sheet where the user picks the friends pinned to their profile."
   },
   "profilePinnedUpdated": "Pinned friends updated successfully!",
+  "profilePlacesSection": "Places",
+  "@profilePlacesSection": {
+    "description": "Section title on a profile above the Places card (map and Passport)."
+  },
+  "profilePostcardOpen": "Pull down to see the whole photo",
+  "@profilePostcardOpen": {
+    "description": "Screen reader hint on the profile postcard: pulling down opens the cover photo."
+  },
   "profileQrError": "Something went wrong...",
   "@profileQrError": {
     "description": "Shown in place of the QR code on Share Profile if it cannot be drawn."
@@ -2781,6 +2832,15 @@
   "@profileShareTitle": {
     "description": "Page title of Share Profile."
   },
+  "profileStampLabel": "{name}'s stamp",
+  "@profileStampLabel": {
+    "description": "Screen reader label of a person's stamp (their photo as a postage stamp).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
   "@profileStatCapsules": {
     "description": "Label under the number of the user's capsules on the profile.",
@@ -2802,6 +2862,15 @@
   "profileStatTogether": "with friends",
   "@profileStatTogether": {
     "description": "Label under the number of capsules made with friends (co-authors)."
+  },
+  "profileTowns": "{count, plural, =1{1 town} other{{count} towns}}",
+  "@profileTowns": {
+    "description": "How many towns have someone's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "profileUnpin": "Unpin",
   "@profileUnpin": {
@@ -3375,6 +3444,106 @@
   "settingsYourPassword": "Your password",
   "@settingsYourPassword": {
     "description": "Hint of the password field that confirms an account change."
+  },
+  "stampChangePhoto": "Change photo",
+  "@stampChangePhoto": {
+    "description": "Button on the stamp sheet: pick another profile photo."
+  },
+  "stampColour": "Colour",
+  "@stampColour": {
+    "description": "Label above the stamp colours."
+  },
+  "stampColourAny": "Any colour",
+  "@stampColourAny": {
+    "description": "The last colour swatch (a rainbow); opens a picker for any colour. Also the title of that picker."
+  },
+  "stampColourBlack": "Black",
+  "@stampColourBlack": {
+    "description": "A stamp colour."
+  },
+  "stampColourBlue": "Blue",
+  "@stampColourBlue": {
+    "description": "A stamp colour."
+  },
+  "stampColourForest": "Forest",
+  "@stampColourForest": {
+    "description": "A stamp colour: the dark green of the passport cover."
+  },
+  "stampColourGreen": "Green",
+  "@stampColourGreen": {
+    "description": "A stamp colour."
+  },
+  "stampColourHex": "Colour code",
+  "@stampColourHex": {
+    "description": "Label of the field with the colour as #RRGGBB."
+  },
+  "stampColourOrange": "Orange",
+  "@stampColourOrange": {
+    "description": "A stamp colour."
+  },
+  "stampColourPaper": "Paper",
+  "@stampColourPaper": {
+    "description": "A stamp colour: the cream of the passport pages."
+  },
+  "stampColourRecent": "Recent",
+  "@stampColourRecent": {
+    "description": "Label before the colours picked recently in the Any colour picker."
+  },
+  "stampColourRed": "Red",
+  "@stampColourRed": {
+    "description": "A stamp colour."
+  },
+  "stampColourWhite": "White",
+  "@stampColourWhite": {
+    "description": "A stamp colour."
+  },
+  "stampColourYellow": "Yellow",
+  "@stampColourYellow": {
+    "description": "A stamp colour."
+  },
+  "stampDone": "Done",
+  "@stampDone": {
+    "description": "Button that closes the stamp sheet and keeps the choice."
+  },
+  "stampPreview": "Preview",
+  "@stampPreview": {
+    "description": "Under the stamp in the Any colour picker."
+  },
+  "stampSaveFailed": "Your stamp could not be saved. Please try again.",
+  "@stampSaveFailed": {
+    "description": "Error after choosing a stamp shape or colour."
+  },
+  "stampShapeClassic": "Classic",
+  "@stampShapeClassic": {
+    "description": "Stamp shape: perforated, square corners."
+  },
+  "stampShapePolaroid": "Polaroid",
+  "@stampShapePolaroid": {
+    "description": "Stamp shape: an instant print with your name under the photo."
+  },
+  "stampShapeRound": "Round",
+  "@stampShapeRound": {
+    "description": "Stamp shape: a perforated circle."
+  },
+  "stampShapeRounded": "Rounded",
+  "@stampShapeRounded": {
+    "description": "Stamp shape: perforated, round corners."
+  },
+  "stampShapeSoft": "Soft",
+  "@stampShapeSoft": {
+    "description": "Stamp shape: no perforation, very round corners."
+  },
+  "stampShapeTicket": "Ticket",
+  "@stampShapeTicket": {
+    "description": "Stamp shape: two notches on the sides, like a pass."
+  },
+  "stampSubtitle": "How your photo sits on your postcard.",
+  "@stampSubtitle": {
+    "description": "Under \"Your stamp\"."
+  },
+  "stampTitle": "Your stamp",
+  "@stampTitle": {
+    "description": "Title of the sheet where you choose your stamp's shape and colour (your photo as a postage stamp on your postcard)."
   },
   "stampsLater": "Later",
   "@stampsLater": {

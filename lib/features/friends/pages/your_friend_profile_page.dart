@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:later/app/router/app_page_route.dart';
 import 'package:later/app/router/app_routes.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/data/models/capsule.dart';
+import 'package:later/features/profile/postcard/postcard_scaffold.dart';
+import 'package:later/features/profile/postcard/profile_postcard.dart';
+import 'package:later/features/profile/postcard/user_postcard.dart';
 import 'package:later/features/profile/share/sharing_service.dart';
-import 'package:later/shared/styles/box_decorations.dart';
-import 'package:later/shared/widgets/buttons/default_button_with_icon.dart';
-import 'package:later/shared/widgets/default_text.dart';
-import 'package:later/shared/widgets/shadow_top_overlay.dart';
-import 'package:later/features/friends/widgets/profile/friend_profile_action_buttons_row.dart';
-import 'package:later/features/profile/widgets/profile_header_background_image.dart';
-import 'package:later/shared/widgets/user/user_name_and_username.dart';
-import 'package:later/shared/widgets/user/user_square_avatar.dart';
 import 'package:later/features/friends/widgets/friend_options_modal.dart';
 import 'package:later/features/friends/widgets/profile/friend_capsules_strip.dart';
-import 'package:later/core/theme/app_colors.dart';
-import 'package:later/core/theme/app_palette.dart';
 import 'package:later/core/l10n/l10n.dart';
 import 'package:later/core/config/feature_flags.dart';
 import 'package:later/data/models/user_profile.dart';
 import 'package:later/features/achievements/achievements_view.dart';
 import 'package:later/features/users/user_directory.dart';
+import 'package:later/features/world/world_page.dart';
+import 'package:later/shared/widgets/user/user_background_image.dart';
+import 'package:later/shared/widgets/user/user_stamp.dart';
+import 'package:later/shared/widgets/v2/card_v2.dart';
 import 'package:provider/provider.dart';
-import 'package:later/shared/widgets/user/user_about_line.dart';
 
+/// A friend's profile (Profile v4, Figma page 13 `7185:4831`): their
+/// postcard with their stamp, then Open chat and Send a capsule well below
+/// their words, their capsules, their Passport and their achievements.
 class YourFriendProfilePage extends StatelessWidget {
   final String friendUid;
 
@@ -30,121 +30,98 @@ class YourFriendProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
     final friend = context.select<UserDirectory, UserProfile?>(
       (d) => d.profile(friendUid),
     );
+    final l10n = context.l10n;
+    final first = (friend?.name ?? '').split(' ').first;
+    final stats = friend?.stats;
 
-    return Scaffold(
-      backgroundColor: context.palette.background,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                ProfileHeaderBackground(userId: friendUid),
-                ShadowTopOverlay(width: screenWidth),
-                ProfileActionButtonsRow(
-                  onBack: () => Navigator.pop(context),
-                  onShare: () => SharingService.shareUserProfile(
-                    context: context,
-                    userId: friendUid,
-                  ),
-                  onOptions: () => FriendOptionsModal.show(context, friendUid),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: screenWidth * 0.04,
-                    top: screenHeight * 0.108,
-                  ),
-                  child: SizedBox(
-                    width: screenWidth - 32,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        UserSquareAvatar(
-                          userId: friendUid,
-                          size: 115,
-                          borderRadius: 25,
-                        ),
-                        SizedBox(width: screenWidth * 0.04),
-                        Expanded(
-                          child: UserNameAndUsername(
-                            showCounts: true,
-                            userId: friendUid,
-                            nameFontSize: screenWidth * 0.07,
-                            usernameFontSize: screenWidth * 0.05,
-                            nameColor: AppColors.onMedia,
-                            usernameColor: AppColors.onMedia,
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+    return PostcardScaffold(
+      postcard: (context, open) => UserPostcard(userId: friendUid, open: open),
+      strip: ProfilePhotoStrip(
+        cover: UserBackgroundImage(userId: friendUid),
+        stamp: UserStamp(userId: friendUid, size: 56, tilt: -4),
+        name: friend?.name ?? '',
+        username: friend?.username ?? '',
+        leading: const SizedBox(width: 40),
+      ),
+      leading: PostcardIconButton(
+        asset: AppIcons.goBackCircle,
+        label: l10n.commonBack,
+        onTap: () => Navigator.pop(context),
+      ),
+      buttons: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PostcardIconButton(
+            asset: AppIcons.share,
+            label: l10n.friendsShareProfile,
+            onTap: () => SharingService.shareUserProfile(
+              context: context,
+              userId: friendUid,
             ),
-
-            UserAboutLine(userId: friendUid),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DefaultButtonWithIcon(
-                          decoration: BoxDecorations.whiteCard(context),
-                          textFontSize: 18,
-                          textFontWeight: FontWeight.bold,
-                          onTap: () => AppRoutes.toChat(context, friendUid),
-                          assetPath: AppIcons.sendMessage,
-                          text: context.l10n.friendsOpenChat,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DefaultButtonWithIcon(
-                          decoration: BoxDecorations.whiteCard(context),
-                          textFontSize: 18,
-                          textFontWeight: FontWeight.bold,
-                          onTap: () => AppRoutes.toCamera(
-                            context,
-                            privacy: CapsulePrivacy.private,
-                            recipientId: friendUid,
-                          ),
-                          assetPath: AppIcons.sendCapsule,
-                          text: context.l10n.friendsSendCapsule,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-                  DefaultText(
-                    context.l10n.friendsFriendCapsulesTitle,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  const SizedBox(height: 8),
-                  FriendCapsulesStrip(friendUid: friendUid),
-                  const SizedBox(height: 16),
-                  // Shown when the friend shares them (Settings > Privacy).
-                  if (FeatureFlags.achievements &&
-                      friend != null &&
-                      friend.showAchievements) ...[
-                    AchievementsPanel(profile: friend),
-                    const SizedBox(height: 16),
-                  ],
-                ],
+          ),
+          PostcardIconButton(
+            asset: AppIcons.openMenu,
+            label: MaterialLocalizations.of(context).showMenuTooltip,
+            onTap: () => FriendOptionsModal.show(context, friendUid),
+          ),
+        ],
+      ),
+      body: [
+        // Clear of their words (they touched in v2).
+        const SizedBox(height: 16),
+        CardV2Rows(
+          children: [
+            RowV2(
+              iconPath: AppIcons.sendMessage,
+              title: l10n.friendsOpenChat,
+              onTap: () => AppRoutes.toChat(context, friendUid),
+            ),
+            RowV2(
+              iconPath: AppIcons.sendCapsule,
+              title: l10n.friendsSendCapsule,
+              onTap: () => AppRoutes.toCamera(
+                context,
+                privacy: CapsulePrivacy.private,
+                recipientId: friendUid,
               ),
             ),
           ],
         ),
-      ),
+        SectionTitleV2(
+          first.isEmpty
+              ? l10n.friendsFriendCapsulesTitle
+              : l10n.profileFriendCapsules(first),
+        ),
+        FriendCapsulesStrip(friendUid: friendUid),
+        SectionTitleV2(l10n.profilePlacesSection),
+        CardV2(
+          child: RowV2(
+            iconPath: AppIcons.capsuleLocation,
+            title: first.isEmpty
+                ? l10n.worldTitle
+                : l10n.profileFriendPassport(first),
+            subtitle: stats == null
+                ? null
+                : l10n.profileCountriesTowns(
+                    l10n.profileCountries(stats.countries),
+                    l10n.profileTowns(stats.cities),
+                  ),
+            onTap: () => Navigator.of(
+              context,
+            ).push(appRoute<void>(WorldPage(uid: friendUid))),
+          ),
+        ),
+        // Shown when the friend shares them (Settings > Privacy).
+        if (FeatureFlags.achievements &&
+            friend != null &&
+            friend.showAchievements) ...[
+          const SizedBox(height: 16),
+          AchievementsPanel(profile: friend),
+        ],
+      ],
     );
   }
 }

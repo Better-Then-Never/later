@@ -288,5 +288,174 @@
   "worldNote": "Stamps come from capsules made since this update.",
   "@worldNote": {
     "description": "Footnote: older capsules have no country, so they are not in the passport."
+  },
+  "profileAddCover": "Add a cover photo",
+  "@profileAddCover": {
+    "description": "On a profile postcard without a cover photo; opens the photo picker."
+  },
+  "profileCountries": "{count, plural, =1{1 country} other{{count} countries}}",
+  "@profileCountries": {
+    "description": "On the profile postcard after followers and following: countries with the person's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileStampLabel": "{name}'s stamp",
+  "@profileStampLabel": {
+    "description": "Screen reader label of a person's stamp (their photo as a postage stamp).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profilePostcardOpen": "Pull down to see the whole photo",
+  "@profilePostcardOpen": {
+    "description": "Screen reader hint on the profile postcard: pulling down opens the cover photo."
+  },
+  "profilePlacesSection": "Places",
+  "@profilePlacesSection": {
+    "description": "Section title on a profile above the Places card (map and Passport)."
+  },
+  "profileFriendPassport": "{name}'s Passport",
+  "@profileFriendPassport": {
+    "description": "Row on a friend's profile: opens their Passport (countries and towns of their capsules).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileCountriesTowns": "{countries} · {towns}",
+  "@profileCountriesTowns": {
+    "description": "Under a Passport row: the countries and the towns, each already worded (\"7 countries\", \"15 towns\").",
+    "placeholders": {
+      "countries": {
+        "type": "String"
+      },
+      "towns": {
+        "type": "String"
+      }
+    }
+  },
+  "profileTowns": "{count, plural, =1{1 town} other{{count} towns}}",
+  "@profileTowns": {
+    "description": "How many towns have someone's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFriendCapsules": "{name}'s capsules",
+  "@profileFriendCapsules": {
+    "description": "Section title on a friend's profile above their capsules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "stampTitle": "Your stamp",
+  "@stampTitle": {
+    "description": "Title of the sheet where you choose your stamp's shape and colour (your photo as a postage stamp on your postcard)."
+  },
+  "stampSubtitle": "How your photo sits on your postcard.",
+  "@stampSubtitle": {
+    "description": "Under \"Your stamp\"."
+  },
+  "stampChangePhoto": "Change photo",
+  "@stampChangePhoto": {
+    "description": "Button on the stamp sheet: pick another profile photo."
+  },
+  "stampShapeClassic": "Classic",
+  "@stampShapeClassic": {
+    "description": "Stamp shape: perforated, square corners."
+  },
+  "stampShapeRounded": "Rounded",
+  "@stampShapeRounded": {
+    "description": "Stamp shape: perforated, round corners."
+  },
+  "stampShapeRound": "Round",
+  "@stampShapeRound": {
+    "description": "Stamp shape: a perforated circle."
+  },
+  "stampShapeSoft": "Soft",
+  "@stampShapeSoft": {
+    "description": "Stamp shape: no perforation, very round corners."
+  },
+  "stampShapeTicket": "Ticket",
+  "@stampShapeTicket": {
+    "description": "Stamp shape: two notches on the sides, like a pass."
+  },
+  "stampShapePolaroid": "Polaroid",
+  "@stampShapePolaroid": {
+    "description": "Stamp shape: an instant print with your name under the photo."
+  },
+  "stampColour": "Colour",
+  "@stampColour": {
+    "description": "Label above the stamp colours."
+  },
+  "stampColourWhite": "White",
+  "@stampColourWhite": {
+    "description": "A stamp colour."
+  },
+  "stampColourPaper": "Paper",
+  "@stampColourPaper": {
+    "description": "A stamp colour: the cream of the passport pages."
+  },
+  "stampColourGreen": "Green",
+  "@stampColourGreen": {
+    "description": "A stamp colour."
+  },
+  "stampColourYellow": "Yellow",
+  "@stampColourYellow": {
+    "description": "A stamp colour."
+  },
+  "stampColourOrange": "Orange",
+  "@stampColourOrange": {
+    "description": "A stamp colour."
+  },
+  "stampColourRed": "Red",
+  "@stampColourRed": {
+    "description": "A stamp colour."
+  },
+  "stampColourBlue": "Blue",
+  "@stampColourBlue": {
+    "description": "A stamp colour."
+  },
+  "stampColourForest": "Forest",
+  "@stampColourForest": {
+    "description": "A stamp colour: the dark green of the passport cover."
+  },
+  "stampColourBlack": "Black",
+  "@stampColourBlack": {
+    "description": "A stamp colour."
+  },
+  "stampColourAny": "Any colour",
+  "@stampColourAny": {
+    "description": "The last colour swatch (a rainbow); opens a picker for any colour. Also the title of that picker."
+  },
+  "stampColourRecent": "Recent",
+  "@stampColourRecent": {
+    "description": "Label before the colours picked recently in the Any colour picker."
+  },
+  "stampColourHex": "Colour code",
+  "@stampColourHex": {
+    "description": "Label of the field with the colour as #RRGGBB."
+  },
+  "stampPreview": "Preview",
+  "@stampPreview": {
+    "description": "Under the stamp in the Any colour picker."
+  },
+  "stampSaveFailed": "Your stamp could not be saved. Please try again.",
+  "@stampSaveFailed": {
+    "description": "Error after choosing a stamp shape or colour."
+  },
+  "stampDone": "Done",
+  "@stampDone": {
+    "description": "Button that closes the stamp sheet and keeps the choice."
   }
 }

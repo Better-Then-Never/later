@@ -2570,6 +2570,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get profileAboutPrompt => 'Dodaj kilka słów o sobie';
 
   @override
+  String get profileAddCover => 'Dodaj zdjęcie w tle';
+
+  @override
   String get profileAddFriends => 'Dodaj znajomych';
 
   @override
@@ -2586,6 +2589,24 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get profileCopyLink => 'Kopiuj link';
+
+  @override
+  String profileCountries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kraju',
+      many: '$count krajów',
+      few: '$count kraje',
+      one: '$count kraj',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCountriesTowns(String countries, String towns) {
+    return '$countries · $towns';
+  }
 
   @override
   String get profileErrorCopyLink => 'Nie udało się skopiować linku';
@@ -2625,6 +2646,16 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String profileFollowing(int count) {
     return '$count obserwowanych';
+  }
+
+  @override
+  String profileFriendCapsules(String name) {
+    return 'Kapsuły: $name';
+  }
+
+  @override
+  String profileFriendPassport(String name) {
+    return 'Paszport: $name';
   }
 
   @override
@@ -2699,6 +2730,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get profilePinnedUpdated => 'Przypięci znajomi zaktualizowani!';
 
   @override
+  String get profilePlacesSection => 'Miejsca';
+
+  @override
+  String get profilePostcardOpen =>
+      'Pociągnij w dół, aby zobaczyć całe zdjęcie';
+
+  @override
   String get profileQrError => 'Coś poszło nie tak...';
 
   @override
@@ -2735,6 +2773,11 @@ class AppLocalizationsPl extends AppLocalizations {
   String get profileShareTitle => 'Udostępnij profil';
 
   @override
+  String profileStampLabel(String name) {
+    return 'Znaczek: $name';
+  }
+
+  @override
   String profileStatCapsules(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2762,6 +2805,19 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get profileStatTogether => 'z przyjaciółmi';
+
+  @override
+  String profileTowns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count miasta',
+      many: '$count miast',
+      few: '$count miasta',
+      one: '$count miasto',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get profileUnpin => 'Odepnij';
@@ -3647,6 +3703,82 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Twoje hasło';
+
+  @override
+  String get stampChangePhoto => 'Zmień zdjęcie';
+
+  @override
+  String get stampColour => 'Kolor';
+
+  @override
+  String get stampColourAny => 'Dowolny kolor';
+
+  @override
+  String get stampColourBlack => 'Czarny';
+
+  @override
+  String get stampColourBlue => 'Niebieski';
+
+  @override
+  String get stampColourForest => 'Leśny';
+
+  @override
+  String get stampColourGreen => 'Zielony';
+
+  @override
+  String get stampColourHex => 'Kod koloru';
+
+  @override
+  String get stampColourOrange => 'Pomarańczowy';
+
+  @override
+  String get stampColourPaper => 'Papier';
+
+  @override
+  String get stampColourRecent => 'Ostatnie';
+
+  @override
+  String get stampColourRed => 'Czerwony';
+
+  @override
+  String get stampColourWhite => 'Biały';
+
+  @override
+  String get stampColourYellow => 'Żółty';
+
+  @override
+  String get stampDone => 'Gotowe';
+
+  @override
+  String get stampPreview => 'Podgląd';
+
+  @override
+  String get stampSaveFailed =>
+      'Nie udało się zapisać znaczka. Spróbuj ponownie.';
+
+  @override
+  String get stampShapeClassic => 'Klasyczny';
+
+  @override
+  String get stampShapePolaroid => 'Polaroid';
+
+  @override
+  String get stampShapeRound => 'Okrągły';
+
+  @override
+  String get stampShapeRounded => 'Zaokrąglony';
+
+  @override
+  String get stampShapeSoft => 'Miękki';
+
+  @override
+  String get stampShapeTicket => 'Bilet';
+
+  @override
+  String get stampSubtitle => 'Tak wygląda Twoje zdjęcie na pocztówce.';
+
+  @override
+  String get stampTitle => 'Twój znaczek';
 
   @override
   String get stampsLater => 'Później';

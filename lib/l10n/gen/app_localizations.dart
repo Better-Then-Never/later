@@ -4070,6 +4070,12 @@ abstract class AppLocalizations {
   /// **'Add a few words about you'**
   String get profileAboutPrompt;
 
+  /// On a profile postcard without a cover photo; opens the photo picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a cover photo'**
+  String get profileAddCover;
+
   /// Card on the own profile page that opens Add Friends.
   ///
   /// In en, this message translates to:
@@ -4105,6 +4111,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copy Link'**
   String get profileCopyLink;
+
+  /// On the profile postcard after followers and following: countries with the person's capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 country} other{{count} countries}}'**
+  String profileCountries(int count);
+
+  /// Under a Passport row: the countries and the towns, each already worded ("7 countries", "15 towns").
+  ///
+  /// In en, this message translates to:
+  /// **'{countries} · {towns}'**
+  String profileCountriesTowns(String countries, String towns);
 
   /// No description provided for @profileErrorCopyLink.
   ///
@@ -4153,6 +4171,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} following'**
   String profileFollowing(int count);
+
+  /// Section title on a friend's profile above their capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s capsules'**
+  String profileFriendCapsules(String name);
+
+  /// Row on a friend's profile: opens their Passport (countries and towns of their capsules).
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s Passport'**
+  String profileFriendPassport(String name);
 
   /// Link on the profile's friends card to the whole friends list.
   ///
@@ -4286,6 +4316,18 @@ abstract class AppLocalizations {
   /// **'Pinned friends updated successfully!'**
   String get profilePinnedUpdated;
 
+  /// Section title on a profile above the Places card (map and Passport).
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get profilePlacesSection;
+
+  /// Screen reader hint on the profile postcard: pulling down opens the cover photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull down to see the whole photo'**
+  String get profilePostcardOpen;
+
   /// Shown in place of the QR code on Share Profile if it cannot be drawn.
   ///
   /// In en, this message translates to:
@@ -4346,6 +4388,12 @@ abstract class AppLocalizations {
   /// **'Share Profile'**
   String get profileShareTitle;
 
+  /// Screen reader label of a person's stamp (their photo as a postage stamp).
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s stamp'**
+  String profileStampLabel(String name);
+
   /// Label under the number of the user's capsules on the profile.
   ///
   /// In en, this message translates to:
@@ -4363,6 +4411,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'with friends'**
   String get profileStatTogether;
+
+  /// How many towns have someone's capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 town} other{{count} towns}}'**
+  String profileTowns(int count);
 
   /// Quick action: unpin the friend.
   ///
@@ -5887,6 +5941,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your password'**
   String get settingsYourPassword;
+
+  /// Button on the stamp sheet: pick another profile photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get stampChangePhoto;
+
+  /// Label above the stamp colours.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get stampColour;
+
+  /// The last colour swatch (a rainbow); opens a picker for any colour. Also the title of that picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Any colour'**
+  String get stampColourAny;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get stampColourBlack;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get stampColourBlue;
+
+  /// A stamp colour: the dark green of the passport cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest'**
+  String get stampColourForest;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get stampColourGreen;
+
+  /// Label of the field with the colour as #RRGGBB.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour code'**
+  String get stampColourHex;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get stampColourOrange;
+
+  /// A stamp colour: the cream of the passport pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper'**
+  String get stampColourPaper;
+
+  /// Label before the colours picked recently in the Any colour picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get stampColourRecent;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get stampColourRed;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get stampColourWhite;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow'**
+  String get stampColourYellow;
+
+  /// Button that closes the stamp sheet and keeps the choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get stampDone;
+
+  /// Under the stamp in the Any colour picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get stampPreview;
+
+  /// Error after choosing a stamp shape or colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stamp could not be saved. Please try again.'**
+  String get stampSaveFailed;
+
+  /// Stamp shape: perforated, square corners.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get stampShapeClassic;
+
+  /// Stamp shape: an instant print with your name under the photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Polaroid'**
+  String get stampShapePolaroid;
+
+  /// Stamp shape: a perforated circle.
+  ///
+  /// In en, this message translates to:
+  /// **'Round'**
+  String get stampShapeRound;
+
+  /// Stamp shape: perforated, round corners.
+  ///
+  /// In en, this message translates to:
+  /// **'Rounded'**
+  String get stampShapeRounded;
+
+  /// Stamp shape: no perforation, very round corners.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft'**
+  String get stampShapeSoft;
+
+  /// Stamp shape: two notches on the sides, like a pass.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket'**
+  String get stampShapeTicket;
+
+  /// Under "Your stamp".
+  ///
+  /// In en, this message translates to:
+  /// **'How your photo sits on your postcard.'**
+  String get stampSubtitle;
+
+  /// Title of the sheet where you choose your stamp's shape and colour (your photo as a postage stamp on your postcard).
+  ///
+  /// In en, this message translates to:
+  /// **'Your stamp'**
+  String get stampTitle;
 
   /// Button on the new stamp: close it.
   ///

@@ -2494,6 +2494,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileAboutPrompt => 'Añade unas palabras sobre ti';
 
   @override
+  String get profileAddCover => 'Añadir foto de portada';
+
+  @override
   String get profileAddFriends => 'Añadir amigos';
 
   @override
@@ -2510,6 +2513,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileCopyLink => 'Copiar enlace';
+
+  @override
+  String profileCountries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count países',
+      one: '1 país',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCountriesTowns(String countries, String towns) {
+    return '$countries · $towns';
+  }
 
   @override
   String get profileErrorCopyLink => 'No se pudo copiar el enlace';
@@ -2546,6 +2565,16 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String profileFollowing(int count) {
     return '$count seguidos';
+  }
+
+  @override
+  String profileFriendCapsules(String name) {
+    return 'Cápsulas de $name';
+  }
+
+  @override
+  String profileFriendPassport(String name) {
+    return 'Pasaporte de $name';
   }
 
   @override
@@ -2620,6 +2649,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profilePinnedUpdated => '¡Amigos fijados actualizados!';
 
   @override
+  String get profilePlacesSection => 'Lugares';
+
+  @override
+  String get profilePostcardOpen =>
+      'Desliza hacia abajo para ver la foto entera';
+
+  @override
   String get profileQrError => 'Algo salió mal...';
 
   @override
@@ -2656,6 +2692,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileShareTitle => 'Compartir perfil';
 
   @override
+  String profileStampLabel(String name) {
+    return 'Sello de $name';
+  }
+
+  @override
   String profileStatCapsules(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2679,6 +2720,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileStatTogether => 'con amigos';
+
+  @override
+  String profileTowns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ciudades',
+      one: '1 ciudad',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get profileUnpin => 'Desfijar';
@@ -3560,6 +3612,82 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Tu contraseña';
+
+  @override
+  String get stampChangePhoto => 'Cambiar foto';
+
+  @override
+  String get stampColour => 'Color';
+
+  @override
+  String get stampColourAny => 'Cualquier color';
+
+  @override
+  String get stampColourBlack => 'Negro';
+
+  @override
+  String get stampColourBlue => 'Azul';
+
+  @override
+  String get stampColourForest => 'Bosque';
+
+  @override
+  String get stampColourGreen => 'Verde';
+
+  @override
+  String get stampColourHex => 'Código de color';
+
+  @override
+  String get stampColourOrange => 'Naranja';
+
+  @override
+  String get stampColourPaper => 'Papel';
+
+  @override
+  String get stampColourRecent => 'Recientes';
+
+  @override
+  String get stampColourRed => 'Rojo';
+
+  @override
+  String get stampColourWhite => 'Blanco';
+
+  @override
+  String get stampColourYellow => 'Amarillo';
+
+  @override
+  String get stampDone => 'Listo';
+
+  @override
+  String get stampPreview => 'Vista previa';
+
+  @override
+  String get stampSaveFailed =>
+      'No se pudo guardar tu sello. Inténtalo de nuevo.';
+
+  @override
+  String get stampShapeClassic => 'Clásico';
+
+  @override
+  String get stampShapePolaroid => 'Polaroid';
+
+  @override
+  String get stampShapeRound => 'Redondo';
+
+  @override
+  String get stampShapeRounded => 'Redondeado';
+
+  @override
+  String get stampShapeSoft => 'Suave';
+
+  @override
+  String get stampShapeTicket => 'Billete';
+
+  @override
+  String get stampSubtitle => 'Cómo queda tu foto en tu postal.';
+
+  @override
+  String get stampTitle => 'Tu sello';
 
   @override
   String get stampsLater => 'Luego';

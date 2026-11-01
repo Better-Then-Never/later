@@ -2525,6 +2525,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileAboutPrompt => 'Schreib ein paar Worte über dich';
 
   @override
+  String get profileAddCover => 'Titelbild hinzufügen';
+
+  @override
   String get profileAddFriends => 'Freunde hinzufügen';
 
   @override
@@ -2541,6 +2544,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileCopyLink => 'Kopieren';
+
+  @override
+  String profileCountries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Länder',
+      one: '1 Land',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCountriesTowns(String countries, String towns) {
+    return '$countries · $towns';
+  }
 
   @override
   String get profileErrorCopyLink => 'Link konnte nicht kopiert werden';
@@ -2578,6 +2597,16 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String profileFollowing(int count) {
     return '$count folgt';
+  }
+
+  @override
+  String profileFriendCapsules(String name) {
+    return 'Kapseln von $name';
+  }
+
+  @override
+  String profileFriendPassport(String name) {
+    return 'Reisepass von $name';
   }
 
   @override
@@ -2652,6 +2681,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profilePinnedUpdated => 'Angepinnte Freunde aktualisiert!';
 
   @override
+  String get profilePlacesSection => 'Orte';
+
+  @override
+  String get profilePostcardOpen =>
+      'Nach unten ziehen, um das ganze Foto zu sehen';
+
+  @override
   String get profileQrError => 'Etwas ist schiefgelaufen...';
 
   @override
@@ -2688,6 +2724,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileShareTitle => 'Profil teilen';
 
   @override
+  String profileStampLabel(String name) {
+    return 'Briefmarke von $name';
+  }
+
+  @override
   String profileStatCapsules(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2711,6 +2752,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get profileStatTogether => 'mit Freunden';
+
+  @override
+  String profileTowns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Orte',
+      one: '1 Ort',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get profileUnpin => 'Lösen';
@@ -3600,6 +3652,82 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Dein Passwort';
+
+  @override
+  String get stampChangePhoto => 'Foto ändern';
+
+  @override
+  String get stampColour => 'Farbe';
+
+  @override
+  String get stampColourAny => 'Beliebige Farbe';
+
+  @override
+  String get stampColourBlack => 'Schwarz';
+
+  @override
+  String get stampColourBlue => 'Blau';
+
+  @override
+  String get stampColourForest => 'Waldgrün';
+
+  @override
+  String get stampColourGreen => 'Grün';
+
+  @override
+  String get stampColourHex => 'Farbcode';
+
+  @override
+  String get stampColourOrange => 'Orange';
+
+  @override
+  String get stampColourPaper => 'Papier';
+
+  @override
+  String get stampColourRecent => 'Zuletzt';
+
+  @override
+  String get stampColourRed => 'Rot';
+
+  @override
+  String get stampColourWhite => 'Weiß';
+
+  @override
+  String get stampColourYellow => 'Gelb';
+
+  @override
+  String get stampDone => 'Fertig';
+
+  @override
+  String get stampPreview => 'Vorschau';
+
+  @override
+  String get stampSaveFailed =>
+      'Deine Briefmarke konnte nicht gespeichert werden. Bitte versuche es erneut.';
+
+  @override
+  String get stampShapeClassic => 'Klassisch';
+
+  @override
+  String get stampShapePolaroid => 'Polaroid';
+
+  @override
+  String get stampShapeRound => 'Rund';
+
+  @override
+  String get stampShapeRounded => 'Abgerundet';
+
+  @override
+  String get stampShapeSoft => 'Weich';
+
+  @override
+  String get stampShapeTicket => 'Ticket';
+
+  @override
+  String get stampSubtitle => 'So sitzt dein Foto auf deiner Postkarte.';
+
+  @override
+  String get stampTitle => 'Deine Briefmarke';
 
   @override
   String get stampsLater => 'Später';

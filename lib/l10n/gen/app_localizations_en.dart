@@ -2481,6 +2481,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileAboutPrompt => 'Add a few words about you';
 
   @override
+  String get profileAddCover => 'Add a cover photo';
+
+  @override
   String get profileAddFriends => 'Add friends';
 
   @override
@@ -2498,6 +2501,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileCopyLink => 'Copy Link';
+
+  @override
+  String profileCountries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count countries',
+      one: '1 country',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCountriesTowns(String countries, String towns) {
+    return '$countries · $towns';
+  }
 
   @override
   String get profileErrorCopyLink => 'Failed to copy link';
@@ -2533,6 +2552,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String profileFollowing(int count) {
     return '$count following';
+  }
+
+  @override
+  String profileFriendCapsules(String name) {
+    return '$name\'s capsules';
+  }
+
+  @override
+  String profileFriendPassport(String name) {
+    return '$name\'s Passport';
   }
 
   @override
@@ -2607,6 +2636,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profilePinnedUpdated => 'Pinned friends updated successfully!';
 
   @override
+  String get profilePlacesSection => 'Places';
+
+  @override
+  String get profilePostcardOpen => 'Pull down to see the whole photo';
+
+  @override
   String get profileQrError => 'Something went wrong...';
 
   @override
@@ -2643,6 +2678,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileShareTitle => 'Share Profile';
 
   @override
+  String profileStampLabel(String name) {
+    return '$name\'s stamp';
+  }
+
+  @override
   String profileStatCapsules(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2666,6 +2706,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileStatTogether => 'with friends';
+
+  @override
+  String profileTowns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count towns',
+      one: '1 town',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get profileUnpin => 'Unpin';
@@ -3538,6 +3589,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Your password';
+
+  @override
+  String get stampChangePhoto => 'Change photo';
+
+  @override
+  String get stampColour => 'Colour';
+
+  @override
+  String get stampColourAny => 'Any colour';
+
+  @override
+  String get stampColourBlack => 'Black';
+
+  @override
+  String get stampColourBlue => 'Blue';
+
+  @override
+  String get stampColourForest => 'Forest';
+
+  @override
+  String get stampColourGreen => 'Green';
+
+  @override
+  String get stampColourHex => 'Colour code';
+
+  @override
+  String get stampColourOrange => 'Orange';
+
+  @override
+  String get stampColourPaper => 'Paper';
+
+  @override
+  String get stampColourRecent => 'Recent';
+
+  @override
+  String get stampColourRed => 'Red';
+
+  @override
+  String get stampColourWhite => 'White';
+
+  @override
+  String get stampColourYellow => 'Yellow';
+
+  @override
+  String get stampDone => 'Done';
+
+  @override
+  String get stampPreview => 'Preview';
+
+  @override
+  String get stampSaveFailed =>
+      'Your stamp could not be saved. Please try again.';
+
+  @override
+  String get stampShapeClassic => 'Classic';
+
+  @override
+  String get stampShapePolaroid => 'Polaroid';
+
+  @override
+  String get stampShapeRound => 'Round';
+
+  @override
+  String get stampShapeRounded => 'Rounded';
+
+  @override
+  String get stampShapeSoft => 'Soft';
+
+  @override
+  String get stampShapeTicket => 'Ticket';
+
+  @override
+  String get stampSubtitle => 'How your photo sits on your postcard.';
+
+  @override
+  String get stampTitle => 'Your stamp';
 
   @override
   String get stampsLater => 'Later';

@@ -2559,6 +2559,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileAboutPrompt => 'Расскажите немного о себе';
 
   @override
+  String get profileAddCover => 'Добавить обложку';
+
+  @override
   String get profileAddFriends => 'Добавить друзей';
 
   @override
@@ -2575,6 +2578,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileCopyLink => 'Копировать';
+
+  @override
+  String profileCountries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count страны',
+      many: '$count стран',
+      few: '$count страны',
+      one: '$count страна',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCountriesTowns(String countries, String towns) {
+    return '$countries · $towns';
+  }
 
   @override
   String get profileErrorCopyLink => 'Не удалось скопировать ссылку';
@@ -2618,6 +2639,16 @@ class AppLocalizationsRu extends AppLocalizations {
       one: '$count подписка',
     );
     return '$_temp0';
+  }
+
+  @override
+  String profileFriendCapsules(String name) {
+    return 'Капсулы: $name';
+  }
+
+  @override
+  String profileFriendPassport(String name) {
+    return 'Паспорт: $name';
   }
 
   @override
@@ -2692,6 +2723,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profilePinnedUpdated => 'Закреплённые друзья обновлены!';
 
   @override
+  String get profilePlacesSection => 'Места';
+
+  @override
+  String get profilePostcardOpen => 'Потяните вниз, чтобы увидеть всё фото';
+
+  @override
   String get profileQrError => 'Что-то пошло не так...';
 
   @override
@@ -2728,6 +2765,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileShareTitle => 'Поделиться профилем';
 
   @override
+  String profileStampLabel(String name) {
+    return 'Марка: $name';
+  }
+
+  @override
   String profileStatCapsules(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2755,6 +2797,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileStatTogether => 'с друзьями';
+
+  @override
+  String profileTowns(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count города',
+      many: '$count городов',
+      few: '$count города',
+      one: '$count город',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get profileUnpin => 'Открепить';
@@ -3638,6 +3693,81 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsYourPassword => 'Ваш пароль';
+
+  @override
+  String get stampChangePhoto => 'Сменить фото';
+
+  @override
+  String get stampColour => 'Цвет';
+
+  @override
+  String get stampColourAny => 'Любой цвет';
+
+  @override
+  String get stampColourBlack => 'Чёрный';
+
+  @override
+  String get stampColourBlue => 'Синий';
+
+  @override
+  String get stampColourForest => 'Лесной';
+
+  @override
+  String get stampColourGreen => 'Зелёный';
+
+  @override
+  String get stampColourHex => 'Код цвета';
+
+  @override
+  String get stampColourOrange => 'Оранжевый';
+
+  @override
+  String get stampColourPaper => 'Бумага';
+
+  @override
+  String get stampColourRecent => 'Недавние';
+
+  @override
+  String get stampColourRed => 'Красный';
+
+  @override
+  String get stampColourWhite => 'Белый';
+
+  @override
+  String get stampColourYellow => 'Жёлтый';
+
+  @override
+  String get stampDone => 'Готово';
+
+  @override
+  String get stampPreview => 'Превью';
+
+  @override
+  String get stampSaveFailed => 'Не удалось сохранить марку. Попробуй ещё раз.';
+
+  @override
+  String get stampShapeClassic => 'Классика';
+
+  @override
+  String get stampShapePolaroid => 'Полароид';
+
+  @override
+  String get stampShapeRound => 'Круглая';
+
+  @override
+  String get stampShapeRounded => 'Скруглённая';
+
+  @override
+  String get stampShapeSoft => 'Мягкая';
+
+  @override
+  String get stampShapeTicket => 'Билет';
+
+  @override
+  String get stampSubtitle => 'Как твоё фото выглядит на открытке.';
+
+  @override
+  String get stampTitle => 'Твоя марка';
 
   @override
   String get stampsLater => 'Позже';
