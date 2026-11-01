@@ -64,3 +64,21 @@ Run at the owner's request ("deploy it and install on my phone"), project `later
 Rollback: rules from `b2682af` (`git show b2682af:firestore.rules`); delete the four functions in the console. A
 sealed capsule stays sealed until its date, when the release run (if still deployed) opens it; without it, older app
 versions show it without a photo.
+
+## Checked on the owner's phone (1 Nov 2026, 19:20–19:55 UTC)
+
+All against production with private test capsules titled "Test Claude …":
+
+- Create, "Only when I'm back here": the sheet, "Opens anytime, only within 150 m of this spot.", "Left today ·
+  opens here", Approximate location switched off with "Off: opening only here needs the exact spot". Stored sealed,
+  exact, no photo in the capsule, the photo and thumbnail in the sealed part.
+- The map card at the spot: "You're here · 0 m away · Open"; Open → `unlockCapsule` (logged "Capsule unlocked") →
+  the photo. A dated place capsule after its date: "Ready"/"You're here", Open, then the wrapping and Hold to open.
+- Dated capsules (written with the admin SDK to open within minutes): queued by `queueCapsuleOpening`, released by
+  the 5-minute run, "‹Title› is open" pushed to the phone; a place capsule with a date: "‹Title› is ready. It's
+  waiting in Warszawa." In the app's list: the three notifications with the right sentences; a tap shows it.
+- Between a capsule's date and the release run, My capsules shows its photo (read from the sealed part).
+- Found and fixed (`831fba7`): the keyboard came back on the title after any menu on Create; a list on screen when a
+  capsule came to its date kept the lock until rebuilt.
+- `unlockCapsule` logs an App Check warning on each call (App Check is not enforced; harmless).
+- Left behind: the four private test capsules (deleting them in the owner's account waits for the owner).
