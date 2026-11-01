@@ -34,6 +34,29 @@ class CapsuleLocks extends ChangeNotifier implements SessionScoped {
   final Map<String, Future<CapsuleContent?>> _loading = {};
   final Map<String, DateTime> _failedAt = {};
 
+  /// Wakes the screens when the next capsule they showed locked comes to
+  /// its date (a list on screen then shows it open).
+  Timer? _wake;
+  DateTime? _wakeAt;
+
+  void _wakeWhenDue(DateTime openAt) {
+    final now = _clock();
+    // Today's only: a screen is rebuilt long before a later one comes due.
+    if (!openAt.isAfter(now) ||
+        openAt.difference(now) > const Duration(days: 1)) {
+      return;
+    }
+    final at = _wakeAt;
+    if (at != null && !openAt.isBefore(at)) return;
+    _wake?.cancel();
+    _wakeAt = openAt;
+    _wake = Timer(openAt.difference(now), () {
+      _wake = null;
+      _wakeAt = null;
+      notifyListeners();
+    });
+  }
+
   /// Where [context] has them; null in tests and pages built without them.
   static CapsuleLocks? maybeOf(BuildContext context, {bool listen = true}) {
     try {
@@ -70,7 +93,12 @@ class CapsuleLocks extends ChangeNotifier implements SessionScoped {
   /// it is done).
   Capsule resolve(Capsule capsule, DateTime now) {
     if (!capsule.sealed || capsule.imageUrl != null) return capsule;
-    if (!mayOpen(capsule, now)) return capsule;
+    if (!mayOpen(capsule, now)) {
+      if (capsule.openAt case final openAt? when !capsule.opensHere) {
+        _wakeWhenDue(openAt);
+      }
+      return capsule;
+    }
     if (_content.containsKey(capsule.id)) {
       final content = _content[capsule.id];
       return content == null ? capsule : capsule.withContent(content);
@@ -162,8 +190,17 @@ class CapsuleLocks extends ChangeNotifier implements SessionScoped {
   }
 
   @override
+  void dispose() {
+    _wake?.cancel();
+    super.dispose();
+  }
+
+  @override
   void detach() {
     _uid = null;
+    _wake?.cancel();
+    _wake = null;
+    _wakeAt = null;
     unawaited(_unlockedSub?.cancel());
     _unlockedSub = null;
     _unlocked = const {};

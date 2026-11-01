@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +9,12 @@ import 'package:later/data/models/geo_position.dart';
 import 'package:later/data/repositories/repositories.dart';
 import 'package:later/features/capsules/opening/capsule_locks.dart';
 import 'package:later/features/map/current_location.dart';
+import 'package:later/data/services/geocoding_service.dart';
+import 'package:later/data/services/preferences_store.dart';
+import 'package:later/features/history/widgets/capsule_list_tile.dart';
 import 'package:later/features/map/widgets/capsule_info_panel.dart';
+import 'package:later/features/settings/device_settings_store.dart';
+import 'package:provider/provider.dart';
 import 'package:later/features/notifications/notification_texts.dart';
 import 'package:later/l10n/gen/app_localizations_en.dart';
 
@@ -17,6 +23,15 @@ import '../helpers/capsule_host.dart';
 import '../helpers/test_app.dart';
 
 final _now = DateTime(2026, 11, 1, 12);
+
+/// An image of the sealed thumbnail (whatever size it is decoded at).
+bool _showsThumb(Widget w) {
+  if (w is! Image) return false;
+  final image = w.image;
+  final source = image is ResizeImage ? image.imageProvider : image;
+  return source is CachedNetworkImageProvider && source.url == 'https://thumb';
+}
+
 const _spot = GeoPosition(52.2497, 21.0122);
 const _content = CapsuleContent(
   imageUrl: 'https://img',
@@ -118,6 +133,25 @@ void main() {
         ),
       );
       expect(locks.mayOpen(place, _now), isFalse);
+    });
+
+    testWidgets('screens hear when a locked one comes to its date', (
+      tester,
+    ) async {
+      final start = DateTime.now();
+      final timed = CapsuleLocks(repo)..attach('me');
+      addTearDown(timed.detach);
+      final soon = _capsule(openAt: start.add(const Duration(seconds: 2)));
+      var heard = 0;
+      timed.addListener(() => heard++);
+      expect(timed.resolve(soon, start).imageUrl, isNull);
+      // The unlocked list arriving at sign-in is heard first.
+      await tester.pump();
+      heard = 0;
+      await tester.pump(const Duration(seconds: 1));
+      expect(heard, 0);
+      await tester.pump(const Duration(seconds: 2));
+      expect(heard, 1, reason: 'woken at its date, so a list shows it open');
     });
 
     test('a failed read is tried again later, not on every build', () async {
@@ -281,6 +315,45 @@ void main() {
       await card(tester, _capsule(where: OpenWhere.here));
       expect(find.text('Turn on location to see how far'), findsOneWidget);
     });
+  });
+
+  testWidgets('My capsules: a sealed one past its date shows its photo '
+      'before the server releases it', (tester) async {
+    final repo = FakeCapsuleRepository()..sealedParts['d1'] = _content;
+    final locks = CapsuleLocks(repo)..attach('me');
+    addTearDown(locks.detach);
+    final due = _capsule(
+      id: 'd1',
+      openAt: DateTime.now().subtract(const Duration(minutes: 1)),
+    );
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider(create: (_) => GeocodingService()),
+          ChangeNotifierProvider(
+            create: (_) => DeviceSettingsStore(PreferencesStore()),
+          ),
+          ChangeNotifierProvider(create: (_) => CurrentLocation()),
+          ChangeNotifierProvider<CapsuleLocks>.value(value: locks),
+        ],
+        child: testApp(
+          home: Scaffold(
+            body: CapsuleListTile(
+              capsule: due,
+              isFavorite: false,
+              onFavoriteTap: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.byWidgetPredicate(_showsThumb), findsNothing);
+    await tester.pump();
+    await tester.pump();
+    expect(repo.sealedReads, 1);
+    // The tile now loads the sealed thumbnail (the lock stays only while
+    // it loads, and in tests a network image never does).
+    expect(find.byWidgetPredicate(_showsThumb), findsOneWidget);
   });
 
   test('"is open" and "is ready" in the notification list (F1, F2)', () {

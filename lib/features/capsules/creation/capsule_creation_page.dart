@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -111,6 +112,14 @@ class CapsuleCreationPage extends StatelessWidget {
   }
 }
 
+/// Before a menu or page over Create: the title or words let go of the
+/// keyboard, or it comes back on them when that closes (the route hands
+/// focus back to them).
+// The field itself, not the page's scope: unfocusing the scope keeps the
+// field as the one it gives focus back to.
+void _letGoOfKeyboard(BuildContext context) =>
+    FocusManager.instance.primaryFocus?.unfocus();
+
 class _CapsuleCreationView extends StatelessWidget {
   const _CapsuleCreationView({this.initialPrivacy, this.recipientId});
 
@@ -118,6 +127,7 @@ class _CapsuleCreationView extends StatelessWidget {
   final String? recipientId;
 
   Future<void> _choosePrivacy(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final l10n = context.l10n;
     final controller = context.read<CapsuleCreationController>();
     final chosen = await showChoiceMenu<CapsulePrivacy>(
@@ -139,6 +149,7 @@ class _CapsuleCreationView extends StatelessWidget {
       };
 
   Future<void> _chooseSpeed(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final l10n = context.l10n;
     final controller = context.read<CapsuleCreationController>();
     final chosen = await showChoiceMenu<int>(
@@ -154,6 +165,7 @@ class _CapsuleCreationView extends StatelessWidget {
   }
 
   Future<void> _choosePlace(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final controller = context.read<CapsuleCreationController>();
     final here = controller.here;
     if (here == null) return;
@@ -167,6 +179,7 @@ class _CapsuleCreationView extends StatelessWidget {
   }
 
   Future<void> _chooseColor(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final l10n = context.l10n;
     final controller = context.read<CapsuleCreationController>();
     final chosen = await showChoiceMenu<CapsuleColor>(
@@ -190,6 +203,7 @@ class _CapsuleCreationView extends StatelessWidget {
   }
 
   Future<void> _chooseCoAuthors(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final l10n = context.l10n;
     final controller = context.read<CapsuleCreationController>();
     final pick = await GroupFriendsPicker.show(
@@ -208,6 +222,7 @@ class _CapsuleCreationView extends StatelessWidget {
 
   /// "How does it open?": when, and where (anywhere, or only back here).
   Future<void> _chooseOpenDate(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final controller = context.read<CapsuleCreationController>();
     final result = await HowItOpensSheet.show(
       context,
@@ -252,6 +267,7 @@ class _CapsuleCreationView extends StatelessWidget {
     final openAt = controller.openAt;
     // Only the photo changes: the title, the words and the settings stay.
     Future<void> retake() async {
+      _letGoOfKeyboard(context);
       final shot = await AppRoutes.retakePhoto(context);
       if (shot == null || !context.mounted) return;
       context.read<CapsuleCreationController>().replacePhoto(
@@ -262,7 +278,7 @@ class _CapsuleCreationView extends StatelessWidget {
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
-      onTap: () => FocusScope.of(context).unfocus(),
+      onTap: () => _letGoOfKeyboard(context),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: context.palette.backgroundAlt,
@@ -753,6 +769,7 @@ class _PreviewPhoto extends StatelessWidget {
   final VoidCallback onRetake;
 
   Future<void> _adjust(BuildContext context) async {
+    _letGoOfKeyboard(context);
     final crop = await AdjustPhotoPage.show(
       context,
       imagePath: controller.imagePath,
@@ -772,13 +789,18 @@ class _PreviewPhoto extends StatelessWidget {
         children: [
           // A look at the whole photo before saving.
           GestureDetector(
-            onTap: () => PhotoViewer.show(
-              context,
-              Uri.file(controller.imagePath).toString(),
-              heroTag: loop ? null : 'creation-photo',
-              fromRadius: 16,
-              crop: crop,
-            ),
+            onTap: () {
+              _letGoOfKeyboard(context);
+              unawaited(
+                PhotoViewer.show(
+                  context,
+                  Uri.file(controller.imagePath).toString(),
+                  heroTag: loop ? null : 'creation-photo',
+                  fromRadius: 16,
+                  crop: crop,
+                ),
+              );
+            },
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
               child: loop
