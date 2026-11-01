@@ -57,14 +57,29 @@ function peopleOf(capsule) {
   return [...new Set(people.filter((id) => typeof id === 'string' && id))];
 }
 
-/** The push for "is open" (F1) or "is ready" (F2). */
-function openMessage({ kind, capsuleId, title, placeName }, token, sound = true, lang = 'en') {
+/**
+ * The push for "is open" (F1: "Bob's capsule from 6 Oct 2025. Tap to open
+ * it.", "Your capsule …" for its owner and co-authors) or "is ready" (F2:
+ * "A year has passed. It's waiting for you in Stavanger."), as the lock
+ * screen design has them.
+ */
+function openMessage(
+  { kind, capsuleId, title, placeName, ownerName = '', own = false, left = null, now = new Date() },
+  token,
+  sound = true,
+  lang = 'en',
+) {
   const ready = kind === 'ready';
+  const since = left || now;
+  const waited = i18n.elapsed(lang, since, now);
+  const date = i18n.day(lang, since);
   const body = ready
     ? placeName
-      ? i18n.t(lang, 'readyBody', { place: placeName })
-      : i18n.t(lang, 'readyBodyNoPlace')
-    : i18n.t(lang, 'openBody');
+      ? i18n.t(lang, 'readyBody', { place: placeName, elapsed: waited })
+      : i18n.t(lang, 'readyBodyNoPlace', { elapsed: waited })
+    : own || !ownerName
+      ? i18n.t(lang, 'openBodyOwn', { date })
+      : i18n.t(lang, 'openBodyFrom', { name: ownerName, date });
   return {
     token,
     notification: {
@@ -112,15 +127,16 @@ async function announce(services, capsuleId, capsule, kind) {
   }
   await batch.commit();
   const at = notify.now(services);
+  const left = toDate(capsule.createdAt);
+  const makers = new Set([capsule.ownerId, ...(Array.isArray(capsule.coAuthors) ? capsule.coAuthors : [])]);
   const results = await Promise.all(
     people.map(async (uid) => {
       const settings = await prefs.loadSettings(db, uid);
       if (prefs.blockedReason(settings, 'capsules', at)) return { sent: 0, pruned: 0 };
       const sound = prefs.alertOf(settings);
       const lang = i18n.languageOf(settings);
-      return notify.sendToUser(services, uid, (token) =>
-        openMessage({ kind, capsuleId, title, placeName }, token, sound, lang),
-      );
+      const fields = { kind, capsuleId, title, placeName, ownerName, own: makers.has(uid), left, now: at };
+      return notify.sendToUser(services, uid, (token) => openMessage(fields, token, sound, lang));
     }),
   );
   return { people: people.length, sent: results.reduce((n, r) => n + r.sent, 0) };

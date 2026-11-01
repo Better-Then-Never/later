@@ -91,6 +91,11 @@ describe('released when the date comes', () => {
     // Alice and her co-author Bob, not Carol.
     assert.deepEqual(messaging.sent.map((m) => m.token).sort(), ['ta', 'tb']);
     assert.equal(messaging.sent[0].notification.title, 'Lake is open');
+    // Its owner and co-author made it: "Your capsule from …" (the lock
+    // screen design), dated the day it was left.
+    for (const push of messaging.sent) {
+      assert.equal(push.notification.body, 'Your capsule from 31 Oct 2026. Tap to open it.');
+    }
     assert.equal(messaging.sent[0].data.type, 'capsuleOpen');
     assert.equal(messaging.sent[0].data.capsuleId, 'c1');
     const [notice] = await notifications('bob');
@@ -109,6 +114,11 @@ describe('released when the date comes', () => {
     await locks.releaseOpenedCapsules(services(messaging));
     const toDan = messaging.sent.find((m) => m.token === 'td');
     assert.equal(toDan.notification.title, '„Lake“ ist offen');
+    // Someone else's capsule, in Dan's language.
+    assert.equal(
+      toDan.notification.body,
+      'Kapsel von alice vom 31. Okt. 2026. Tippe, um sie zu öffnen.',
+    );
   });
 
   test('a place capsule stays sealed and is announced as ready, with its place', async () => {
@@ -122,7 +132,10 @@ describe('released when the date comes', () => {
     assert.equal(capsule.sealed, true);
     assert.equal(capsule.imageUrl, undefined);
     assert.equal(messaging.sent[0].notification.title, 'Lake is ready');
-    assert.equal(messaging.sent[0].notification.body, "It's waiting in Old Town.");
+    assert.equal(
+      messaging.sent[0].notification.body,
+      "A day has passed. It's waiting for you in Old Town.",
+    );
     assert.equal(messaging.sent[0].data.type, 'capsuleReady');
   });
 

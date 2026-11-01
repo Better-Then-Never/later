@@ -82,3 +82,10 @@ All against production with private test capsules titled "Test Claude …":
   capsule came to its date kept the lock until rebuilt.
 - `unlockCapsule` logs an App Check warning on each call (App Check is not enforced; harmless).
 - Left behind: the four private test capsules (deleting them in the owner's account waits for the owner).
+
+## 2 Nov 2026: the "is open" and "is ready" texts of the lock screen design
+
+At the owner's request ("do it"): `firebase deploy --only functions:releaseOpenedCapsules` (✓). "‹Title› is open":
+"Your capsule from 6 Oct 2025. Tap to open it." for its owner and co-authors, "Bob's capsule from …" for the friend
+it was sent to; "‹Title› is ready": "A year has passed. It's waiting for you in Stavanger." (no distance: the server
+does not know where the phone is). Five languages, plural rules per language (functions/lib/i18n.js).
