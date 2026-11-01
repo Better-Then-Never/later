@@ -1,4 +1,7 @@
 import '../../core/l10n/l10n.dart';
+import 'profile_stamp.dart';
+
+export 'profile_stamp.dart';
 
 /// Totals the Cloud Functions keep on `users/{uid}.stats`
 /// (functions/lib/gamification.js, social.js). Read-only for the app.
@@ -120,7 +123,12 @@ class UserProfile {
     this.stats = const UserStats(),
     this.about = '',
     this.searchName,
+    this.stamp = const ProfileStampStyle(),
+    this.homeTown = '',
   });
+
+  /// Longest home town (firestore.rules).
+  static const maxHomeTown = 40;
 
   /// Longest "about me" line (firestore.rules).
   static const maxAbout = 100;
@@ -138,7 +146,9 @@ class UserProfile {
       showAchievements = true,
       stats = const UserStats(),
       about = '',
-      searchName = null;
+      searchName = null,
+      stamp = const ProfileStampStyle(),
+      homeTown = '';
 
   final String uid;
   final String name;
@@ -164,6 +174,12 @@ class UserProfile {
   /// is not found by name (or an older app never wrote it).
   final String? searchName;
 
+  /// How their photo sits on their postcard (Profile v4).
+  final ProfileStampStyle stamp;
+
+  /// The town under their name on the postcard; empty when not set.
+  final String homeTown;
+
   UserProfile copyWith({
     String? name,
     String? username,
@@ -171,6 +187,8 @@ class UserProfile {
     Set<String>? favorites,
     bool? showAchievements,
     String? about,
+    ProfileStampStyle? stamp,
+    String? homeTown,
   }) => UserProfile(
     uid: uid,
     name: name ?? this.name,
@@ -184,6 +202,8 @@ class UserProfile {
     stats: stats,
     about: about ?? this.about,
     searchName: searchName,
+    stamp: stamp ?? this.stamp,
+    homeTown: homeTown ?? this.homeTown,
   );
 
   /// First letter used to group friend lists; never throws on empty names.
@@ -205,7 +225,10 @@ class UserProfile {
       other.followerCount == followerCount &&
       other.followingCount == followingCount &&
       other.showAchievements == showAchievements &&
-      other.stats == stats;
+      other.stats == stats &&
+      other.about == about &&
+      other.stamp == stamp &&
+      other.homeTown == homeTown;
 
   @override
   int get hashCode => Object.hash(

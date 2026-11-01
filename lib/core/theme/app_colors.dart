@@ -31,6 +31,10 @@ abstract final class AppColors {
   // printed booklet, the same in light and dark.
   static const passportPaper = Color(0xFFF3EBD6);
   static const passportInk = Color(0xFF5E553F);
+
+  /// The leather of the booklet (Figma passport/cover); also a stamp colour
+  /// ("Forest").
+  static const passportCover = Color(0xFF1E4A2D);
   static const passportText = Color(0xFF000000);
   static const passportShadow = Color(0x2E000000);
 

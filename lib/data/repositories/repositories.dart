@@ -98,6 +98,12 @@ abstract interface class UserRepository {
   /// The "about me" line (empty removes it).
   Future<void> setAbout(String uid, String about);
 
+  /// How [uid]'s photo sits on their postcard (Profile v4).
+  Future<void> setStamp(String uid, ProfileStampStyle stamp);
+
+  /// The town on [uid]'s postcard (empty removes it).
+  Future<void> setHomeTown(String uid, String town);
+
   /// What others find [uid] by when searching names; null takes them out of
   /// the name search.
   Future<void> setSearchName(String uid, String? lowerCaseName);

@@ -135,6 +135,20 @@ describe('users', () => {
     await assertFails(updateDoc(doc(as('alice'), 'users/alice'), { name: '' }));
   });
 
+  test('the stamp on your postcard and your home town (profile v4)', async () => {
+    const alice = doc(as('alice'), 'users/alice');
+    await assertSucceeds(updateDoc(alice, { stampShape: 'round', stampColor: 'blue' }));
+    await assertSucceeds(updateDoc(alice, { stampColor: '#2A998F' }));
+    await assertFails(updateDoc(alice, { stampShape: 'star' }));
+    await assertFails(updateDoc(alice, { stampColor: 'pink' }));
+    await assertFails(updateDoc(alice, { stampColor: '#12345' }));
+    await assertFails(updateDoc(alice, { stampColor: 7 }));
+    await assertSucceeds(updateDoc(alice, { homeTown: 'Warszawa' }));
+    await assertFails(updateDoc(alice, { homeTown: 'x'.repeat(41) }));
+    await assertSucceeds(updateDoc(alice, { homeTown: deleteField() }));
+    await assertFails(updateDoc(doc(as('carol'), 'users/alice'), { stampShape: 'soft' }));
+  });
+
   test('a few words about yourself, and the lower-case name for search', async () => {
     const alice = doc(as('alice'), 'users/alice');
     await assertSucceeds(updateDoc(alice, { about: 'Collecting sunsets' }));

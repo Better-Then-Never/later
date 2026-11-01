@@ -23,6 +23,8 @@ import 'package:later/features/history/widgets/capsule_list_tile.dart';
 import 'package:later/features/map/current_location.dart';
 import 'package:later/features/profile/widgets/image_options_sheet.dart';
 import 'package:later/features/stamps/new_stamp_moment.dart';
+import 'package:later/data/models/profile_stamp.dart';
+import 'package:later/shared/widgets/user/profile_stamp.dart';
 import 'package:provider/provider.dart';
 
 import '../fakes/fake_repositories.dart';
@@ -208,6 +210,56 @@ void main() {
     await expectLater(
       find.byType(NewStampMoment),
       matchesGoldenFile('new_stamp_moment.png'),
+    );
+  });
+
+  testWidgets('profile stamps: six shapes, a few colours (Figma 7177:3811)', (
+    tester,
+  ) async {
+    await phone(tester);
+    Widget row(List<ProfileStampStyle> styles) => Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (final s in styles)
+          ProfileStamp(style: s, size: 52, initial: 'A', caption: 'alice'),
+      ],
+    );
+    await tester.pumpWidget(
+      _app(
+        ColoredBox(
+          key: const ValueKey('stamps'),
+          color: const Color(0xFFF2F2F2),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                row([
+                  for (final s in StampShape.values)
+                    ProfileStampStyle(shape: s),
+                ]),
+                const SizedBox(height: 16),
+                row([
+                  for (final (s, c) in [
+                    (StampShape.classic, 'green'),
+                    (StampShape.round, 'yellow'),
+                    (StampShape.soft, 'blue'),
+                    (StampShape.rounded, 'paper'),
+                    (StampShape.ticket, 'forest'),
+                    (StampShape.polaroid, 'black'),
+                  ])
+                    ProfileStampStyle(shape: s, color: StampColor.named(c)),
+                ]),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await expectLater(
+      find.byKey(const ValueKey('stamps')),
+      matchesGoldenFile('profile_stamps.png'),
     );
   });
 }

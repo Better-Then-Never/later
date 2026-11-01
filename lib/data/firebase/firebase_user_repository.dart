@@ -176,6 +176,18 @@ class FirebaseUserRepository implements UserRepository {
   });
 
   @override
+  Future<void> setStamp(String uid, ProfileStampStyle stamp) =>
+      _users.doc(uid).update({
+        'stampShape': stamp.shape.name,
+        'stampColor': stamp.color.value,
+      });
+
+  @override
+  Future<void> setHomeTown(String uid, String town) => _users.doc(uid).update({
+    'homeTown': town.isEmpty ? FieldValue.delete() : town,
+  });
+
+  @override
   Future<void> setSearchName(String uid, String? lowerCaseName) => _users
       .doc(uid)
       .update({'nameLower': lowerCaseName ?? FieldValue.delete()});
