@@ -9,7 +9,7 @@ Where a page exists in the app today, its file is named; the design replaces its
 | Page | Frame | Reached from | What it shows | In the app today |
 |---|---|---|---|---|
 | Notifications | `7188:684` | the bell | Filters All / Friends / Capsules / Places. Friend requests wait in one card on top (their stamps, a count). Today and Earlier; unread rows tinted, a dot. People show their stamp; a capsule shows its photo as a stamp and as a thumbnail on the right; a place alert shows the pin; a new passport stamp shows the stamp. "Follow back" inline. | `notifications/notifications_page.dart` |
-| Settings | `7188:917` | the gear | Starts with your postcard (cover, stamp, name, "Edit profile"). Then Account (username, email, password), Notifications and privacy (notifications, Places alerts, who sees my capsules, blocked), This phone, Support, Log out and Delete account in red. | `settings/settings_page.dart` and its pages |
+| Settings | `7188:917` | the gear | Starts with your postcard (cover, stamp, name, "Edit profile"). Then Account (username, email, password), Notifications and privacy (notifications, Places alerts, streak reminder, who sees my capsules, blocked; the two alerts are this phone only), This phone, Support, Log out and Delete account in red. | `settings/settings_page.dart` and its pages |
 | Edit profile | `7188:1035` | Settings, or a long press on your postcard | A live postcard: "Change cover" on the photo, a camera badge on the stamp (photo, shape, colour). Fields: name, username (available / taken), About me with a 150 counter, home town. Rows: cover photo, your photo, stamp. "Remove cover photo". Save in the title bar. | replaces `profile_customization_settings_page.dart`, `name_settings_page.dart` and the profile image editor entry |
 | Your Later card, front | `7189:723` | the share button | The same postcard as the profile with the Later logo and your link. "Tap the card to turn it over" with two dots. Share, Save image, Copy link; Scan a friend's code. | `profile/share/share_profile_page.dart` |
 | Your Later card, back | `7189:812` | tapping the card (3D flip, 400 ms) | A written postcard: your About me on ruled lines, signed; your stamp; a postmark with today and your town; the QR code; name, username, link on address lines. | new |
@@ -40,11 +40,13 @@ The owner likes the Passport (page 8) and asked for it to grow. Four new pages, 
 | You and a friend | `7192:1306` | From a friend's profile: both stamps, what you both have (stamps), only them, only you, and "Make a capsule for Bob in Iceland?". |
 | Share a page | `7192:1508` | Any page goes out as an image: send to a friend in Later, save, more apps. |
 
-## Open questions for the owner
+## Decided (2 Nov 2026)
 
-1. The friend's Places: the friend profile has no Places card today; "You and a friend" needs an entry
-   (a Places row on their profile, or in their menu).
-2. Achievements: the drawing shows nine marks in three groups and "3 of 12" (as Profile v2 does); the
-   catalogue (`achievement_catalog.dart`) has thirteen, from first_capsule to curious. The groups and
-   the count follow the catalogue when built.
-3. Streak reminder: a new local notification (this phone only) or part of the existing notification settings.
+1. **A friend's Places**: a row on their profile, under their capsules: "Bob's Passport, 7 countries ·
+   2 you both have" (page 13, frame `7185:4831`). It opens "You and a friend".
+2. **Achievements**: the groups and the count follow the catalogue (`achievement_catalog.dart`, thirteen
+   today), not the drawing's nine marks and "3 of 12".
+3. **Streak reminder**: scheduled on the phone (a local notification at the chosen time, skipped on days
+   you already made a capsule; no server push). Its switch lives in Settings > Notifications and privacy
+   next to Places alerts, both marked "this phone only" (Settings frame updated); the switch on the
+   Streak page is the same setting.

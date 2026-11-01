@@ -43,7 +43,7 @@ friends see the choice wherever the person appears (profile, notifications, frie
   the empty bio bubble; 0 followers; the v2 empty states below.
 - **A friend**: their cover and their stamp; back on the left, share and the menu on the right; Open
   chat and Send a capsule start 24 dp below the postcard (they touched the About me in v2); then their
-  capsules and achievements.
+  capsules, a Places row (their Passport, "2 you both have") and their achievements.
 
 ## What it needs from the backend
 
