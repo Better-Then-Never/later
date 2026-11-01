@@ -965,6 +965,19 @@ describe('chats', () => {
     await assertFails(send(as('bob'), 'bob', 'alice', { ...msg, capsuleId: 'carols' }));
     await assertFails(send(as('carol'), 'carol', 'alice', { ...msg, capsuleId: 'carols' }, 'alice_carol'));
     await assertFails(send(alice, 'alice', 'bob', { ...msg, capsuleId: 'missing' }));
+    // A sealed capsule goes without its picture (capsule v3 B3).
+    const { imageUrl: _photo, ...sealedGift } = capsule;
+    await seed((db) =>
+      setDoc(doc(db, 'capsules/sealedGift'), {
+        ...sealedGift,
+        createdAt: Timestamp.now(),
+        sealed: true,
+        openAt: Timestamp.fromMillis(Date.now() + 86400e3),
+      }),
+    );
+    await assertFails(send(alice, 'alice', 'bob', { ...msg, capsuleId: 'sealedGift' }));
+    const { imageUrl: _image, ...bare } = msg;
+    await assertSucceeds(send(alice, 'alice', 'bob', { ...bare, capsuleId: 'sealedGift' }));
   });
 });
 
@@ -1356,5 +1369,115 @@ describe('group chats', () => {
     await assertSucceeds(getDoc(doc(as('carol'), `chats/${G}/typing/bob`)));
     await assertFails(setDoc(doc(as('dave'), `chats/${G}/typing/dave`), { at: serverTimestamp() }));
     await assertFails(setDoc(doc(as('bob'), `chats/${G}/typing/carol`), { at: serverTimestamp() }));
+  });
+});
+
+describe('sealed capsules (capsule v3 B3)', () => {
+  const day = 86400e3;
+  const later = () => Timestamp.fromMillis(Date.now() + day);
+  const earlier = () => Timestamp.fromMillis(Date.now() - day);
+  const content = { imageUrl: 'https://img', thumbUrl: 'https://thumb', description: 'Hi' };
+  const fresh = (extra = {}) => ({
+    ownerId: 'alice',
+    title: 'T',
+    location: new GeoPoint(37.4, -122.08),
+    privacy: 'friends',
+    createdAt: serverTimestamp(),
+    isScheduled: true,
+    openAt: later(),
+    color: 'red',
+    sealed: true,
+    ...extra,
+  });
+
+  /** Writes the capsule and its sealed part in one batch as [uid]. */
+  function create(uid, id, capsule, part = content) {
+    const db = as(uid);
+    const batch = writeBatch(db);
+    batch.set(doc(db, 'capsules/' + id), capsule);
+    if (part) batch.set(doc(db, 'capsules/' + id + '/sealed/content'), part);
+    return batch.commit();
+  }
+
+  test('a capsule for later is written with its sealed part, in one batch', async () => {
+    await assertSucceeds(create('alice', 's1', fresh()));
+    // Not without it, not with the photo left in the capsule, not open at once.
+    await assertFails(create('alice', 's2', fresh(), null));
+    await assertFails(create('alice', 's3', fresh({ imageUrl: 'https://img' })));
+    await assertFails(create('alice', 's4', fresh({ description: 'Hi' })));
+    await assertFails(create('alice', 's5', fresh({ openAt: earlier() })));
+    await assertFails(create('alice', 's6', fresh({ openAt: null })));
+    await assertFails(create('alice', 's7', fresh(), { ...content, extra: 1 }));
+    await assertFails(create('alice', 's8', fresh(), { thumbUrl: 'https://thumb' }));
+    // An unsealed capsule still needs its photo.
+    const { sealed: _sealed, ...open } = fresh({ openAt: null });
+    await assertFails(setDoc(doc(as('alice'), 'capsules/s9'), open));
+    // The sealed part later, or for someone else's capsule, is refused.
+    await assertFails(setDoc(doc(as('alice'), 'capsules/s1/sealed/content'), content));
+    await assertFails(create('bob', 's10', fresh()));
+    // It is never changed; its owner may delete it.
+    await assertFails(updateDoc(doc(as('alice'), 'capsules/s1/sealed/content'), { description: 'X' }));
+    await assertFails(deleteDoc(doc(as('bob'), 'capsules/s1/sealed/content')));
+    await assertSucceeds(deleteDoc(doc(as('alice'), 'capsules/s1/sealed/content')));
+  });
+
+  test('only back here: sealed, and at the exact spot', async () => {
+    await assertSucceeds(create('alice', 'h1', fresh({ openWhere: 'here', openAt: null, isScheduled: false })));
+    await assertSucceeds(create('alice', 'h2', fresh({ openWhere: 'here' })));
+    await assertFails(create('alice', 'h3', fresh({ openWhere: 'here', locationPrecision: 'approximate' })));
+    await assertFails(create('alice', 'h4', fresh({ openWhere: 'there' })));
+    const { sealed: _sealed, ...unsealed } = fresh({ openWhere: 'here', imageUrl: 'https://img' });
+    await assertFails(setDoc(doc(as('alice'), 'capsules/h5'), unsealed));
+  });
+
+  test('its owner and co-authors read it always; others once its date has passed', async () => {
+    await seed(async (db) => {
+      const sealed = (extra) => ({ ...fresh(extra), createdAt: Timestamp.now() });
+      await setDoc(doc(db, 'capsules/waiting'), sealed({ coAuthors: ['bob'], privacy: 'private' }));
+      await setDoc(doc(db, 'capsules/waiting/sealed/content'), content);
+      await setDoc(doc(db, 'capsules/due'), sealed({ openAt: earlier() }));
+      await setDoc(doc(db, 'capsules/due/sealed/content'), content);
+      await setDoc(doc(db, 'capsules/dueFriend'), sealed({ ownerId: 'bob', openAt: earlier() }));
+      await setDoc(doc(db, 'capsules/dueFriend/sealed/content'), content);
+    });
+    await assertSucceeds(getDoc(doc(as('alice'), 'capsules/waiting/sealed/content')));
+    await assertSucceeds(getDoc(doc(as('bob'), 'capsules/waiting/sealed/content')));
+    await assertFails(getDoc(doc(as('carol'), 'capsules/waiting/sealed/content')));
+    // The capsule itself stays visible as before (title, place, date).
+    await assertSucceeds(getDoc(doc(as('bob'), 'capsules/waiting')));
+    // Date passed: Bob (a friend) reads Alice's; Carol may not see it at all.
+    await assertSucceeds(getDoc(doc(as('bob'), 'capsules/due/sealed/content')));
+    await assertFails(getDoc(doc(as('carol'), 'capsules/due/sealed/content')));
+    await assertSucceeds(getDoc(doc(as('alice'), 'capsules/dueFriend/sealed/content')));
+    // Never listed.
+    await assertFails(getDocs(collection(as('alice'), 'capsules/due/sealed')));
+  });
+
+  test('a place capsule: others read it only after opening it there', async () => {
+    await seed(async (db) => {
+      const place = (extra) => ({ ...fresh({ openWhere: 'here', ...extra }), createdAt: Timestamp.now() });
+      await setDoc(doc(db, 'capsules/spot'), place({ openAt: null }));
+      await setDoc(doc(db, 'capsules/spot/sealed/content'), content);
+      await setDoc(doc(db, 'capsules/spotLater'), place({ openAt: later() }));
+      await setDoc(doc(db, 'capsules/spotLater/sealed/content'), content);
+    });
+    await assertSucceeds(getDoc(doc(as('alice'), 'capsules/spot/sealed/content')));
+    await assertFails(getDoc(doc(as('bob'), 'capsules/spot/sealed/content')));
+    await seed(async (db) => {
+      await setDoc(doc(db, 'users/bob/unlocked/spot'), { at: Timestamp.now() });
+      await setDoc(doc(db, 'users/bob/unlocked/spotLater'), { at: Timestamp.now() });
+    });
+    await assertSucceeds(getDoc(doc(as('bob'), 'capsules/spot/sealed/content')));
+    // Opened there, but its date has not come.
+    await assertFails(getDoc(doc(as('bob'), 'capsules/spotLater/sealed/content')));
+  });
+
+  test('the unlocked list: its person reads it, only the server writes it', async () => {
+    await seed((db) => setDoc(doc(db, 'users/bob/unlocked/spot'), { at: Timestamp.now() }));
+    await assertSucceeds(getDoc(doc(as('bob'), 'users/bob/unlocked/spot')));
+    await assertSucceeds(getDocs(collection(as('bob'), 'users/bob/unlocked')));
+    await assertFails(getDoc(doc(as('alice'), 'users/bob/unlocked/spot')));
+    await assertFails(setDoc(doc(as('bob'), 'users/bob/unlocked/other'), { at: serverTimestamp() }));
+    await assertFails(deleteDoc(doc(as('bob'), 'users/bob/unlocked/spot')));
   });
 });

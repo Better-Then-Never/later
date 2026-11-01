@@ -93,7 +93,19 @@ A capsule that opens at once and anywhere ("Anytime, Anywhere") stays one docume
 - Order: deploy the server first (the current app keeps working: it writes unsealed capsules, which
   stay valid), then release the app.
 
-## Decisions for you
+## The owner's answers (2026-11-01)
+
+1. Own capsule: owner and co-authors can always read the sealed part; the app shows it locked
+   until it opens (option A).
+2. Capsules already waiting for a date: sealed by a one-off script, run after the deploy with the
+   owner's go.
+3. "Only when I'm back here" turns Approximate location off and says why.
+4. "is open" / "is ready" go to the owner, co-authors and the friend it was sent to.
+5. Faked GPS: as described (the reported position is trusted, each unlock logged); not asked
+   further.
+6. Deploy: built and tested in the emulators; nothing reaches production without the owner's go.
+
+## Decisions for you (asked)
 
 1. **Your own capsule:** you (and co-authors) can always read its sealed part, and the app hides it
    until it opens (recommended: your phone took the photo anyway). Or lock it for its owner too.

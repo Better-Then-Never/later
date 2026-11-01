@@ -20,6 +20,7 @@ const broadcast = require('./lib/broadcast');
 const chats = require('./lib/chats');
 const contacts = require('./lib/contacts');
 const mapsync = require('./lib/mapsync');
+const locks = require('./lib/locks');
 
 admin.initializeApp();
 
@@ -337,6 +338,55 @@ exports.onCapsuleViewed = onDocumentCreated(
 exports.sendStreakReminders = onSchedule(
   'every 60 minutes',
   logged('Streak reminders', () => gamification.sendStreakReminders(services())),
+);
+
+// ---- locked capsules (functions/lib/locks.js, docs/capsule-v3/PHASE3_PLAN.md)
+
+// A capsule that opens later is queued for its date.
+exports.queueCapsuleOpening = onDocumentCreated(
+  'capsules/{capsuleId}',
+  logged('Capsule queued', (e) =>
+    locks.onCapsuleCreated(services(), e.params.capsuleId, data(e.data)),
+  ),
+);
+
+// Releases the capsules whose date came ("is open") and announces place
+// capsules that became ready ("is ready").
+exports.releaseOpenedCapsules = onSchedule(
+  'every 5 minutes',
+  logged('Capsules released', () => locks.releaseOpenedCapsules(services())),
+);
+
+// Someone at a place capsule's spot opens it (logged: the position is the
+// phone's own).
+exports.unlockCapsule = onCall(async (request) => {
+  try {
+    const result = await locks.unlockCapsule(services(), request.auth, request.data);
+    logger.info('Capsule unlocked', {
+      uid: request.auth && request.auth.uid,
+      capsuleId: request.data && request.data.capsuleId,
+      distance: result.distance,
+    });
+    return result;
+  } catch (error) {
+    if (error instanceof locks.UnlockError) {
+      logger.info('Capsule unlock refused', {
+        uid: request.auth && request.auth.uid,
+        capsuleId: request.data && request.data.capsuleId,
+        code: error.code,
+        details: error.details,
+      });
+      throw new HttpsError(error.code, error.message, error.details);
+    }
+    logger.error('Capsule unlock failed', error);
+    throw new HttpsError('internal', 'Opening the capsule failed.');
+  }
+});
+
+// A deleted capsule's sealed part, comments and reactions go with it.
+exports.cleanupCapsule = onDocumentDeleted(
+  'capsules/{capsuleId}',
+  logged('Capsule cleanup', (e) => locks.onCapsuleDeleted(services(), e.params.capsuleId)),
 );
 
 // ---- announcements (functions/lib/broadcast.js, docs/ux/ADMIN.md) ------------
