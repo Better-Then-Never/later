@@ -27,6 +27,16 @@ class BackgroundPlaces {
     }
   }
 
+  /// One check now (an alert was just turned on).
+  Future<void> runNow() async {
+    if (!isSupported) return;
+    try {
+      await _channel.invokeMethod<void>('runNow');
+    } catch (e) {
+      AppLogger.warning('Place alerts check not started', error: e);
+    }
+  }
+
   /// Both alerts are off.
   Future<void> cancel() async {
     if (!isSupported) return;

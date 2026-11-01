@@ -96,6 +96,10 @@ class MainActivity : FlutterActivity() {
                         PlacesWorker.schedule(applicationContext)
                         result.success(null)
                     }
+                    "runNow" -> {
+                        PlacesWorker.runNow(applicationContext)
+                        result.success(null)
+                    }
                     "cancel" -> {
                         PlacesWorker.cancel(applicationContext)
                         result.success(null)

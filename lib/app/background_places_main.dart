@@ -43,6 +43,7 @@ Future<void> backgroundPlacesMain() async {
 }
 
 Future<void> _check() async {
+  AppLogger.info('Place alerts: check');
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   try {
     await connectEmulatorsIfAsked();
@@ -54,23 +55,34 @@ Future<void> _check() async {
   final prefs = PreferencesStore();
   await prefs.init();
   final on = await DeviceSettingsStore.readPlaceAlerts(prefs, uid);
+  AppLogger.info('Place alerts: on $on');
   if (!on.nearby && !on.country) return;
   final fix = await const LocationService().currentFix(
     timeout: const Duration(seconds: 20),
   );
-  if (fix == null) return;
+  if (fix == null) {
+    AppLogger.info('Place alerts: no location');
+    return;
+  }
+  AppLogger.info('Place alerts: fix ±${fix.accuracy.round()} m');
   final now = DateTime.now();
   final memory = await PlaceAlertsMemory.read(prefs, uid);
   final notes = <_Note>[];
+  // Settings first: an alert held back (quiet hours, capsule notifications
+  // off) is not used up; it may come at a later check.
+  final settings = await FirebaseSettingsRepository().watch(uid).first;
+  final n = settings.notifications;
+  final allowed =
+      n.enabled && n.capsules && !PlaceAlerts.quiet(n.quietHours, now);
 
   String? country;
   if (on.country) {
     country = (await GeocodingService().place(fix.position))?.countryCode;
-    final welcome = PlaceAlerts.welcome(memory, country, now);
+    final welcome = PlaceAlerts.welcome(memory, country, now, allowed: allowed);
     if (welcome != null) notes.add(_Note.welcome(welcome));
   }
 
-  if (on.nearby) {
+  if (on.nearby && allowed) {
     final capsules = FirebaseCapsuleRepository();
     final pins = await MapPinStore.readFile(uid);
     final unlocked = await capsules.watchUnlocked(uid).first;
@@ -88,6 +100,9 @@ Future<void> _check() async {
       ),
       announced: memory.nearby,
     );
+    AppLogger.info(
+      'Place alerts: ${pins.pins.length} pins, ${found.length} near',
+    );
     // The nearest one only: one alert at a time.
     for (final (pin, metres) in found.take(1)) {
       final capsule = await capsules.getById(pin.id);
@@ -98,13 +113,8 @@ Future<void> _check() async {
   }
 
   await memory.save(prefs, uid);
+  AppLogger.info('Place alerts: ${notes.length} to show (allowed: $allowed)');
   if (notes.isEmpty) return;
-  final settings = await FirebaseSettingsRepository().watch(uid).first;
-  final n = settings.notifications;
-  // Capsule notifications on, and not in quiet hours.
-  if (!n.enabled || !n.capsules || PlaceAlerts.quiet(n.quietHours, now)) {
-    return;
-  }
   final l10n = AppL10n.forLanguage(settings.language);
   final names = country == null
       ? const <String, String>{}

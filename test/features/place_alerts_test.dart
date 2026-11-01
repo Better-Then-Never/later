@@ -123,6 +123,17 @@ void main() {
       expect(m.country, 'AT');
     });
 
+    test('held back (quiet hours): not used up, welcomed at a later check', () {
+      final m = PlaceAlertsMemory()..home = 'PL';
+      var t = _now;
+      PlaceAlerts.welcome(m, 'AT', t);
+      t = t.add(const Duration(hours: 3));
+      expect(PlaceAlerts.welcome(m, 'AT', t, allowed: false), isNull);
+      expect(m.welcomed, isEmpty);
+      t = t.add(const Duration(hours: 8));
+      expect(PlaceAlerts.welcome(m, 'AT', t), 'AT');
+    });
+
     test('a month in one country makes it home', () {
       final m = PlaceAlertsMemory()..home = 'PL';
       var t = _now;

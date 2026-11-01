@@ -1,9 +1,12 @@
 package com.btn.later
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -28,6 +31,7 @@ class PlacesWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.Main) {
+        Log.i(TAG, "check starts")
         val loader = FlutterInjector.instance().flutterLoader()
         if (!loader.initialized()) loader.startInitialization(applicationContext)
         loader.ensureInitializationComplete(applicationContext, null)
@@ -51,13 +55,15 @@ class PlacesWorker(context: Context, params: WorkerParameters) :
             ),
         )
         // A location fix and a few reads: well within WorkManager's ten minutes.
-        withTimeoutOrNull(TimeUnit.MINUTES.toMillis(3)) { outcome.await() }
+        val done = withTimeoutOrNull(TimeUnit.MINUTES.toMillis(3)) { outcome.await() }
+        Log.i(TAG, if (done == null) "check timed out" else "check done")
         engine.destroy()
         // A missed check is simply the next one: never retried.
         Result.success()
     }
 
     companion object {
+        private const val TAG = "PlacesWorker"
         private const val NAME = "place-alerts"
 
         fun schedule(context: Context) {
@@ -70,6 +76,19 @@ class PlacesWorker(context: Context, params: WorkerParameters) :
                 .build()
             WorkManager.getInstance(context)
                 .enqueueUniquePeriodicWork(NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+        }
+
+        /** One check now (an alert was just turned on), besides the half-hourly ones. */
+        fun runNow(context: Context) {
+            val request = OneTimeWorkRequestBuilder<PlacesWorker>()
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build(),
+                )
+                .build()
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork("$NAME-now", ExistingWorkPolicy.REPLACE, request)
         }
 
         fun cancel(context: Context) {

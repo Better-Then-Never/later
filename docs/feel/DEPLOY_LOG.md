@@ -89,3 +89,13 @@ At the owner's request ("do it"): `firebase deploy --only functions:releaseOpene
 "Your capsule from 6 Oct 2025. Tap to open it." for its owner and co-authors, "Bob's capsule from …" for the friend
 it was sent to; "‹Title› is ready": "A year has passed. It's waiting for you in Stavanger." (no distance: the server
 does not know where the phone is). Five languages, plural rules per language (functions/lib/i18n.js).
+
+## 2 Nov 2026: place alerts checked on the owner's phone
+
+The owner allowed location "All the time" and turned both Places switches on. A private test place capsule 50 m
+from the phone (admin SDK) → the check (run at once by turning the switch on) showed "You're near Test Claude
+near — It's 50 m away. Hold to open it there."; the tap opened the map on it ("You're here · 50 m away · Open").
+The test capsule was deleted afterwards (its sealed part went with it). Found and fixed on the way: the check's
+entry point was not in the compiled app (nothing imported it; now kept by bootstrap.dart like the uploads'); an
+alert held back by quiet hours was used up; the first check waited half an hour (now it runs when a switch is
+turned on). Samsung's app freezer pauses the app's process in the background between checks; the check still ran.

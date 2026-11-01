@@ -147,11 +147,14 @@ abstract final class PlaceAlerts {
   /// country seen is home; a stay starts when the country changes; after
   /// [stayBeforeWelcome] away from home the user is welcomed, once in
   /// [welcomeAgainAfter].
+  /// Without [allowed] (quiet hours, notifications off) the stay is still
+  /// followed, but nobody is welcomed: that waits for a later check.
   static String? welcome(
     PlaceAlertsMemory memory,
     String? country,
-    DateTime now,
-  ) {
+    DateTime now, {
+    bool allowed = true,
+  }) {
     if (country == null) return null;
     memory.home ??= country;
     if (country != memory.country) {
@@ -163,7 +166,9 @@ abstract final class PlaceAlerts {
     final since = memory.countrySince ?? now;
     final stay = now.difference(since);
     if (stay >= becomesHome) memory.home = country;
-    if (country == memory.home || stay < stayBeforeWelcome) return null;
+    if (country == memory.home || stay < stayBeforeWelcome || !allowed) {
+      return null;
+    }
     final last = memory.welcomed[country];
     if (last != null && now.difference(last) < welcomeAgainAfter) return null;
     memory.welcomed[country] = now;

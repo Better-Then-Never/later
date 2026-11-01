@@ -133,7 +133,10 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
       }
     }
     await turnOn();
-    await BackgroundPlaces().schedule();
+    // Checked now, then about every half hour.
+    final places = BackgroundPlaces();
+    await places.schedule();
+    await places.runNow();
   }
 
   Future<void> _setPlaceAlert(
