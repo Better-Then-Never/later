@@ -18,12 +18,14 @@ import '../../shared/widgets/app_sheets.dart';
 import '../../shared/widgets/pill_v2.dart';
 import '../capsules/opening/capsule_wrap.dart';
 import '../world/world_page.dart';
+import 'guilloche.dart';
+import 'ink_stamp.dart';
 import 'stamps.dart';
 
 /// The moment a capsule lands in a new town (Figma "Passport / New stamp"
 /// 7039:1165, capsule v3 E1): a passport page with the town's stamp in the
 /// capsule's pin colour, "New stamp", "Gdańsk, your 22nd town", and Open
-/// passport (for now the world view) or Later. The stamp drops from 1.4×
+/// passport (at its stamps) or Later. The stamp drops from 1.4×
 /// and lands with a small wobble (280 ms), its ink darkening as it settles,
 /// with one medium haptic.
 class NewStampMoment extends StatefulWidget {
@@ -117,7 +119,9 @@ class _NewStampMomentState extends State<NewStampMoment>
     Navigator.of(context).pop();
     if (uid == null) return;
     final root = Navigator.of(context, rootNavigator: true);
-    unawaited(root.push(appRoute<void>(WorldPage(uid: uid))));
+    unawaited(
+      root.push(appRoute<void>(WorldPage(uid: uid, focusTown: widget.town))),
+    );
   }
 
   @override
@@ -229,11 +233,14 @@ class _NewStampMomentState extends State<NewStampMoment>
                   );
                 },
                 child: Center(
-                  child: _Stamp(
+                  child: InkStamp(
                     ink: ink,
-                    town: widget.town,
-                    day: AppDates.medium(widget.day, l10n.localeName),
-                    country: _country ?? '',
+                    top: widget.town.toUpperCase(),
+                    middle: AppDates.medium(
+                      widget.day,
+                      l10n.localeName,
+                    ).toUpperCase(),
+                    bottom: (_country ?? '').toUpperCase(),
                   ),
                 ),
               ),
@@ -298,144 +305,4 @@ class _NewStampMomentState extends State<NewStampMoment>
       ),
     );
   }
-}
-
-/// A town's stamp (Figma "Passport / Stamp", Shape=Oval): a thick oval
-/// border and a thin one inside it, the town on top, the day with the pin
-/// in the middle, the country below, all in [ink].
-class _Stamp extends StatelessWidget {
-  const _Stamp({
-    required this.ink,
-    required this.town,
-    required this.day,
-    required this.country,
-  });
-
-  final Color ink;
-  final String town;
-  final String day;
-  final String country;
-
-  @override
-  Widget build(BuildContext context) {
-    TextStyle style(double size, {double spacing = 0, double height = 1.1}) =>
-        TextStyle(
-          fontFamily: kAppFontFamily,
-          fontSize: size,
-          height: height,
-          letterSpacing: spacing,
-          fontWeight: FontWeight.bold,
-          color: ink,
-        );
-    Widget line(String text, TextStyle style, double top, {double dx = 0}) =>
-        Positioned(
-          left: 13.5 + dx,
-          top: top,
-          width: 145.8,
-          child: Text(
-            text,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            style: style,
-          ),
-        );
-    return SizedBox(
-      width: 172.8,
-      height: 113.4,
-      child: Stack(
-        children: [
-          Positioned.fill(child: CustomPaint(painter: _StampPainter(ink))),
-          line(town.toUpperCase(), style(13.5, spacing: 1.62), 16.2),
-          line(day.toUpperCase(), style(17.55, height: 1.25), 48.6, dx: 10.8),
-          line(country.toUpperCase(), style(13.5, spacing: 1.62), 83.7),
-        ],
-      ),
-    );
-  }
-}
-
-/// The stamp's borders and pin, drawn from the design's vectors.
-class _StampPainter extends CustomPainter {
-  const _StampPainter(this.ink);
-
-  final Color ink;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // The design strokes each oval 7.02 and 2.7 wide and masks it to the
-    // oval: half of each shows, inside the line.
-    final outer = Paint()
-      ..color = ink
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3.51;
-    canvas.drawOval(
-      const Rect.fromLTWH(0, 0, 172.8, 113.4).deflate(1.755),
-      outer,
-    );
-    final inner = Paint()
-      ..color = ink
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.35;
-    canvas.drawOval(
-      const Rect.fromLTWH(6.75, 6.75, 159.3, 99.9).deflate(0.675),
-      inner,
-    );
-    // The pin (14.58 × 19.44 at 18.9, 47.25), hole and all.
-    canvas
-      ..save()
-      ..translate(18.9, 47.25);
-    final pin = Path()
-      ..fillType = PathFillType.evenOdd
-      ..moveTo(7.29, 0)
-      ..cubicTo(3.2805, 0, 0, 3.2805, 0, 7.29)
-      ..cubicTo(0, 12.7575, 7.29, 19.44, 7.29, 19.44)
-      ..cubicTo(7.29, 19.44, 14.58, 12.7575, 14.58, 7.29)
-      ..cubicTo(14.58, 3.2805, 11.2995, 0, 7.29, 0)
-      ..close()
-      ..addOval(
-        Rect.fromCircle(center: const Offset(7.29, 7.29), radius: 2.916),
-      );
-    canvas
-      ..drawPath(pin, Paint()..color = ink)
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(_StampPainter old) => old.ink != ink;
-}
-
-/// The passport's security print (Figma "Passport / Guilloche"): eighteen
-/// ovals, 280 × 96, turned 10° apart round the middle of a 300 square, in
-/// passport ink.
-class GuillochePainter extends CustomPainter {
-  const GuillochePainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.passportInk
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.2;
-    canvas
-      ..save()
-      ..scale(size.width / 300, size.height / 300)
-      ..translate(150, 150);
-    for (var i = 0; i < 18; i++) {
-      canvas
-        ..save()
-        ..rotate(i * 10 * math.pi / 180);
-      canvas
-        ..drawOval(
-          Rect.fromCenter(center: Offset.zero, width: 280, height: 96),
-          paint,
-        )
-        ..restore();
-    }
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(GuillochePainter old) => false;
 }

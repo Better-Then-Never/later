@@ -2735,6 +2735,154 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get passportBothLabel => 'BEIDE';
+
+  @override
+  String get passportCapsulesLabel => 'KAPSELN';
+
+  @override
+  String get passportCountriesLabel => 'LÄNDER';
+
+  @override
+  String get passportCoverBrand => 'LATER';
+
+  @override
+  String passportCoverFriend(String name) {
+    return 'Orte, an denen $name eine Kapsel hinterlassen hat';
+  }
+
+  @override
+  String get passportCoverOwn =>
+      'Orte, an denen du eine Kapsel hinterlassen hast';
+
+  @override
+  String get passportCoverTitle => 'REISEPASS';
+
+  @override
+  String get passportEmptyBody =>
+      'Hinterlasse irgendwo eine Kapsel und ihr Ort wird hier gestempelt.';
+
+  @override
+  String passportEmptyFriend(String name) {
+    return '$name hat noch keine Stempel.';
+  }
+
+  @override
+  String get passportEmptyTitle => 'Dein erster Stempel';
+
+  @override
+  String get passportFirstEntry => 'ERSTE EINREISE';
+
+  @override
+  String passportFriendHint(String name) {
+    return 'Wische zu den Seiten von $name';
+  }
+
+  @override
+  String get passportGivenNames => 'VORNAMEN';
+
+  @override
+  String get passportHomeTown => 'HEIMATORT';
+
+  @override
+  String get passportInLater => 'IN LATER';
+
+  @override
+  String get passportMakeCapsule => 'Kapsel erstellen';
+
+  @override
+  String get passportName => 'NAME';
+
+  @override
+  String get passportNewLabel => 'NEU';
+
+  @override
+  String get passportNewThisYear => 'NEU IN DIESEM JAHR';
+
+  @override
+  String get passportNone => 'Noch keine';
+
+  @override
+  String get passportNothingShared => 'Noch keine gemeinsamen Orte';
+
+  @override
+  String passportOnlyThem(String name) {
+    return 'NUR $name';
+  }
+
+  @override
+  String get passportOnlyYou => 'NUR DU';
+
+  @override
+  String get passportPhotoLabel =>
+      'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ';
+
+  @override
+  String get passportShare => 'Diese Seite teilen';
+
+  @override
+  String get passportShareText => 'Eine Seite aus einem Later-Pass';
+
+  @override
+  String passportStampFirstHere(String date) {
+    return 'Erste Kapsel hier am $date';
+  }
+
+  @override
+  String passportStampFirstIn(String country, String date) {
+    return 'Erste Kapsel in $country am $date';
+  }
+
+  @override
+  String get passportStampsHint => 'Tippe auf einen Stempel für mehr';
+
+  @override
+  String passportStampsSince(String date) {
+    return 'Stempel seit $date';
+  }
+
+  @override
+  String get passportSurname => 'NACHNAME';
+
+  @override
+  String get passportSwipeHint => 'Wische, um umzublättern';
+
+  @override
+  String get passportTapToOpen => 'Zum Öffnen tippen';
+
+  @override
+  String passportTogetherBoth(String countries, String towns) {
+    return 'Ihr beide: $countries, $towns';
+  }
+
+  @override
+  String passportTogetherLabel(String name) {
+    return 'DU UND $name';
+  }
+
+  @override
+  String get passportTownsLabel => 'ORTE';
+
+  @override
+  String get passportUsername => 'BENUTZERNAME';
+
+  @override
+  String get passportVisa => 'VISUM';
+
+  @override
+  String get passportVisasHint => 'Tippe auf ein Visum, um seine Orte zu sehen';
+
+  @override
+  String get passportVisasLabel => 'VISA';
+
+  @override
+  String get passportYearLabel => 'DEIN JAHR';
+
+  @override
+  String get passportYearMonthsNote =>
+      'Jedes Land beim letzten Besuch in diesem Jahr';
+
+  @override
   String get placeNoLocation => 'Kein Standort';
 
   @override
@@ -4077,18 +4225,6 @@ class AppLocalizationsDe extends AppLocalizations {
       one: 'Land',
     );
     return '$_temp0';
-  }
-
-  @override
-  String get worldDescription => 'Länder und Orte deiner Kapseln';
-
-  @override
-  String get worldEmpty =>
-      'Hinterlasse eine Kapsel an einem neuen Ort, und ihr Land bekommt hier einen Stempel.';
-
-  @override
-  String worldFirst(String date) {
-    return 'Zuerst: $date';
   }
 
   @override

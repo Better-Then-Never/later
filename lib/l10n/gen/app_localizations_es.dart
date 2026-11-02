@@ -2704,6 +2704,153 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get passportBothLabel => 'LOS DOS';
+
+  @override
+  String get passportCapsulesLabel => 'CÁPSULAS';
+
+  @override
+  String get passportCountriesLabel => 'PAÍSES';
+
+  @override
+  String get passportCoverBrand => 'LATER';
+
+  @override
+  String passportCoverFriend(String name) {
+    return 'Lugares donde $name dejó una cápsula';
+  }
+
+  @override
+  String get passportCoverOwn => 'Lugares donde dejaste una cápsula';
+
+  @override
+  String get passportCoverTitle => 'PASAPORTE';
+
+  @override
+  String get passportEmptyBody =>
+      'Deja una cápsula en algún lugar y su ciudad se sellará aquí.';
+
+  @override
+  String passportEmptyFriend(String name) {
+    return '$name aún no tiene sellos.';
+  }
+
+  @override
+  String get passportEmptyTitle => 'Tu primer sello';
+
+  @override
+  String get passportFirstEntry => 'PRIMERA ENTRADA';
+
+  @override
+  String passportFriendHint(String name) {
+    return 'Desliza para ver las páginas de $name';
+  }
+
+  @override
+  String get passportGivenNames => 'NOMBRES';
+
+  @override
+  String get passportHomeTown => 'CIUDAD NATAL';
+
+  @override
+  String get passportInLater => 'EN LATER';
+
+  @override
+  String get passportMakeCapsule => 'Crear una cápsula';
+
+  @override
+  String get passportName => 'NOMBRE';
+
+  @override
+  String get passportNewLabel => 'NUEVOS';
+
+  @override
+  String get passportNewThisYear => 'NUEVOS ESTE AÑO';
+
+  @override
+  String get passportNone => 'Ninguno todavía';
+
+  @override
+  String get passportNothingShared => 'Aún no hay ciudades en común';
+
+  @override
+  String passportOnlyThem(String name) {
+    return 'SOLO $name';
+  }
+
+  @override
+  String get passportOnlyYou => 'SOLO TÚ';
+
+  @override
+  String get passportPhotoLabel =>
+      'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ';
+
+  @override
+  String get passportShare => 'Compartir esta página';
+
+  @override
+  String get passportShareText => 'Una página de un pasaporte de Later';
+
+  @override
+  String passportStampFirstHere(String date) {
+    return 'Primera cápsula aquí el $date';
+  }
+
+  @override
+  String passportStampFirstIn(String country, String date) {
+    return 'Primera cápsula en $country el $date';
+  }
+
+  @override
+  String get passportStampsHint => 'Toca un sello para ver más';
+
+  @override
+  String passportStampsSince(String date) {
+    return 'sellos desde $date';
+  }
+
+  @override
+  String get passportSurname => 'APELLIDOS';
+
+  @override
+  String get passportSwipeHint => 'Desliza para pasar la página';
+
+  @override
+  String get passportTapToOpen => 'Toca para abrir';
+
+  @override
+  String passportTogetherBoth(String countries, String towns) {
+    return 'Los dos: $countries, $towns';
+  }
+
+  @override
+  String passportTogetherLabel(String name) {
+    return 'TÚ Y $name';
+  }
+
+  @override
+  String get passportTownsLabel => 'CIUDADES';
+
+  @override
+  String get passportUsername => 'USUARIO';
+
+  @override
+  String get passportVisa => 'VISADO';
+
+  @override
+  String get passportVisasHint => 'Toca un visado para ver sus ciudades';
+
+  @override
+  String get passportVisasLabel => 'VISADOS';
+
+  @override
+  String get passportYearLabel => 'TU AÑO';
+
+  @override
+  String get passportYearMonthsNote =>
+      'Cada país en su última visita de este año';
+
+  @override
   String get placeNoLocation => 'Sin ubicación';
 
   @override
@@ -4037,18 +4184,6 @@ class AppLocalizationsEs extends AppLocalizations {
       one: 'país',
     );
     return '$_temp0';
-  }
-
-  @override
-  String get worldDescription => 'Países y ciudades de tus cápsulas';
-
-  @override
-  String get worldEmpty =>
-      'Deja una cápsula en un lugar nuevo y su país tendrá aquí un sello.';
-
-  @override
-  String worldFirst(String date) {
-    return 'Primera vez: $date';
   }
 
   @override

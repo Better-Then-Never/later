@@ -2773,6 +2773,153 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get passportBothLabel => 'ОБА';
+
+  @override
+  String get passportCapsulesLabel => 'КАПСУЛЫ';
+
+  @override
+  String get passportCountriesLabel => 'СТРАНЫ';
+
+  @override
+  String get passportCoverBrand => 'LATER';
+
+  @override
+  String passportCoverFriend(String name) {
+    return 'Места, где $name оставляет капсулы';
+  }
+
+  @override
+  String get passportCoverOwn => 'Места, где ты оставляешь капсулы';
+
+  @override
+  String get passportCoverTitle => 'ПАСПОРТ';
+
+  @override
+  String get passportEmptyBody =>
+      'Оставь где-нибудь капсулу, и её город появится здесь штампом.';
+
+  @override
+  String passportEmptyFriend(String name) {
+    return '$name: пока нет штампов.';
+  }
+
+  @override
+  String get passportEmptyTitle => 'Твой первый штамп';
+
+  @override
+  String get passportFirstEntry => 'ПЕРВЫЙ ВЪЕЗД';
+
+  @override
+  String passportFriendHint(String name) {
+    return 'Листай к страницам, где только $name';
+  }
+
+  @override
+  String get passportGivenNames => 'ИМЯ';
+
+  @override
+  String get passportHomeTown => 'РОДНОЙ ГОРОД';
+
+  @override
+  String get passportInLater => 'В LATER';
+
+  @override
+  String get passportMakeCapsule => 'Создать капсулу';
+
+  @override
+  String get passportName => 'ИМЯ';
+
+  @override
+  String get passportNewLabel => 'НОВЫЕ';
+
+  @override
+  String get passportNewThisYear => 'НОВЫЕ В ЭТОМ ГОДУ';
+
+  @override
+  String get passportNone => 'Пока нет';
+
+  @override
+  String get passportNothingShared => 'Пока нет общих городов';
+
+  @override
+  String passportOnlyThem(String name) {
+    return 'ТОЛЬКО $name';
+  }
+
+  @override
+  String get passportOnlyYou => 'ТОЛЬКО ТЫ';
+
+  @override
+  String get passportPhotoLabel =>
+      'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ';
+
+  @override
+  String get passportShare => 'Поделиться страницей';
+
+  @override
+  String get passportShareText => 'Страница из паспорта Later';
+
+  @override
+  String passportStampFirstHere(String date) {
+    return 'Первая капсула здесь: $date';
+  }
+
+  @override
+  String passportStampFirstIn(String country, String date) {
+    return 'Первая капсула в стране $country: $date';
+  }
+
+  @override
+  String get passportStampsHint => 'Нажми на штамп, чтобы узнать больше';
+
+  @override
+  String passportStampsSince(String date) {
+    return 'штампы с $date';
+  }
+
+  @override
+  String get passportSurname => 'ФАМИЛИЯ';
+
+  @override
+  String get passportSwipeHint => 'Листай, чтобы перевернуть страницу';
+
+  @override
+  String get passportTapToOpen => 'Нажми, чтобы открыть';
+
+  @override
+  String passportTogetherBoth(String countries, String towns) {
+    return 'Вы оба: $countries, $towns';
+  }
+
+  @override
+  String passportTogetherLabel(String name) {
+    return 'ТЫ И $name';
+  }
+
+  @override
+  String get passportTownsLabel => 'ГОРОДА';
+
+  @override
+  String get passportUsername => 'ИМЯ ПОЛЬЗОВАТЕЛЯ';
+
+  @override
+  String get passportVisa => 'ВИЗА';
+
+  @override
+  String get passportVisasHint => 'Нажми на визу, чтобы увидеть её города';
+
+  @override
+  String get passportVisasLabel => 'ВИЗЫ';
+
+  @override
+  String get passportYearLabel => 'ТВОЙ ГОД';
+
+  @override
+  String get passportYearMonthsNote =>
+      'Каждая страна в месяце последнего визита в этом году';
+
+  @override
   String get placeNoLocation => 'Нет геопозиции';
 
   @override
@@ -4133,18 +4280,6 @@ class AppLocalizationsRu extends AppLocalizations {
       one: 'страна',
     );
     return '$_temp0';
-  }
-
-  @override
-  String get worldDescription => 'Страны и города ваших капсул';
-
-  @override
-  String get worldEmpty =>
-      'Оставьте капсулу в новом месте, и здесь появится штамп её страны.';
-
-  @override
-  String worldFirst(String date) {
-    return 'Впервые: $date';
   }
 
   @override

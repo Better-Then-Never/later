@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:later/app/router/app_page_route.dart';
 import 'package:later/app/router/app_routes.dart';
+import 'package:later/app/session/session_controller.dart';
 import 'package:later/core/assets/app_assets.dart';
 import 'package:later/data/models/capsule.dart';
 import 'package:later/features/profile/postcard/postcard_scaffold.dart';
@@ -109,9 +110,15 @@ class YourFriendProfilePage extends StatelessWidget {
                     l10n.profileCountries(stats.countries),
                     l10n.profileTowns(stats.cities),
                   ),
-            onTap: () => Navigator.of(
-              context,
-            ).push(appRoute<void>(WorldPage(uid: friendUid))),
+            onTap: () => Navigator.of(context).push(
+              appRoute<void>(
+                // Opens at You and <friend>.
+                WorldPage(
+                  uid: friendUid,
+                  viewerUid: context.read<SessionController>().uid,
+                ),
+              ),
+            ),
           ),
         ),
         // Shown when the friend shares them (Settings > Privacy).

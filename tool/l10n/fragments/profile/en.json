@@ -209,10 +209,6 @@
   "@worldTitle": {
     "description": "The world view (B7): a passport of the countries where the user left capsules."
   },
-  "worldDescription": "Countries and towns of your capsules",
-  "@worldDescription": {
-    "description": "Under the passport title."
-  },
   "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
   "@worldCountriesLabel": {
     "description": "Under the number of countries in the passport and on the profile.",
@@ -239,19 +235,6 @@
         "type": "int"
       }
     }
-  },
-  "worldFirst": "First: {date}",
-  "@worldFirst": {
-    "description": "On a country stamp: the month of the first capsule there (\"Oct 2026\").",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
-  "worldEmpty": "Leave a capsule somewhere new and its country gets a stamp here.",
-  "@worldEmpty": {
-    "description": "Passport without stamps."
   },
   "worldNote": "Stamps come from capsules made since this update.",
   "@worldNote": {

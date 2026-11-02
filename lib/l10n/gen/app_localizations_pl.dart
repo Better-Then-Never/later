@@ -2783,6 +2783,153 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get passportBothLabel => 'OBOJE';
+
+  @override
+  String get passportCapsulesLabel => 'KAPSUŁY';
+
+  @override
+  String get passportCountriesLabel => 'KRAJE';
+
+  @override
+  String get passportCoverBrand => 'LATER';
+
+  @override
+  String passportCoverFriend(String name) {
+    return 'Miejsca, w których $name zostawia kapsuły';
+  }
+
+  @override
+  String get passportCoverOwn => 'Miejsca, w których zostawiasz kapsuły';
+
+  @override
+  String get passportCoverTitle => 'PASZPORT';
+
+  @override
+  String get passportEmptyBody =>
+      'Zostaw gdzieś kapsułę, a jej miasto zostanie tu podstemplowane.';
+
+  @override
+  String passportEmptyFriend(String name) {
+    return '$name nie ma jeszcze pieczęci.';
+  }
+
+  @override
+  String get passportEmptyTitle => 'Twoja pierwsza pieczęć';
+
+  @override
+  String get passportFirstEntry => 'PIERWSZY WJAZD';
+
+  @override
+  String passportFriendHint(String name) {
+    return 'Przesuń do stron, które ma $name';
+  }
+
+  @override
+  String get passportGivenNames => 'IMIONA';
+
+  @override
+  String get passportHomeTown => 'MIASTO RODZINNE';
+
+  @override
+  String get passportInLater => 'W LATER';
+
+  @override
+  String get passportMakeCapsule => 'Utwórz kapsułę';
+
+  @override
+  String get passportName => 'IMIĘ';
+
+  @override
+  String get passportNewLabel => 'NOWE';
+
+  @override
+  String get passportNewThisYear => 'NOWE W TYM ROKU';
+
+  @override
+  String get passportNone => 'Jeszcze brak';
+
+  @override
+  String get passportNothingShared => 'Jeszcze brak wspólnych miast';
+
+  @override
+  String passportOnlyThem(String name) {
+    return 'TYLKO $name';
+  }
+
+  @override
+  String get passportOnlyYou => 'TYLKO TY';
+
+  @override
+  String get passportPhotoLabel =>
+      'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ';
+
+  @override
+  String get passportShare => 'Udostępnij tę stronę';
+
+  @override
+  String get passportShareText => 'Strona z paszportu Later';
+
+  @override
+  String passportStampFirstHere(String date) {
+    return 'Pierwsza kapsuła tutaj: $date';
+  }
+
+  @override
+  String passportStampFirstIn(String country, String date) {
+    return 'Pierwsza kapsuła w kraju $country: $date';
+  }
+
+  @override
+  String get passportStampsHint => 'Dotknij pieczęci, aby zobaczyć więcej';
+
+  @override
+  String passportStampsSince(String date) {
+    return 'pieczęcie od $date';
+  }
+
+  @override
+  String get passportSurname => 'NAZWISKO';
+
+  @override
+  String get passportSwipeHint => 'Przesuń, aby przewrócić stronę';
+
+  @override
+  String get passportTapToOpen => 'Dotknij, aby otworzyć';
+
+  @override
+  String passportTogetherBoth(String countries, String towns) {
+    return 'Wy oboje: $countries, $towns';
+  }
+
+  @override
+  String passportTogetherLabel(String name) {
+    return 'TY I $name';
+  }
+
+  @override
+  String get passportTownsLabel => 'MIASTA';
+
+  @override
+  String get passportUsername => 'NAZWA UŻYTKOWNIKA';
+
+  @override
+  String get passportVisa => 'WIZA';
+
+  @override
+  String get passportVisasHint => 'Dotknij wizy, aby zobaczyć jej miasta';
+
+  @override
+  String get passportVisasLabel => 'WIZY';
+
+  @override
+  String get passportYearLabel => 'TWÓJ ROK';
+
+  @override
+  String get passportYearMonthsNote =>
+      'Każdy kraj przy ostatniej wizycie w tym roku';
+
+  @override
   String get placeNoLocation => 'Brak lokalizacji';
 
   @override
@@ -4146,18 +4293,6 @@ class AppLocalizationsPl extends AppLocalizations {
       one: 'kraj',
     );
     return '$_temp0';
-  }
-
-  @override
-  String get worldDescription => 'Kraje i miasta twoich kapsuł';
-
-  @override
-  String get worldEmpty =>
-      'Zostaw kapsułę w nowym miejscu, a jej kraj dostanie tu pieczątkę.';
-
-  @override
-  String worldFirst(String date) {
-    return 'Pierwszy raz: $date';
   }
 
   @override
