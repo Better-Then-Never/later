@@ -2624,6 +2624,54 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
   String historyYearsAgo(int count);
 
+  /// Screen reader label of the back of the Later card.
+  ///
+  /// In en, this message translates to:
+  /// **'The back of your card: your words, your stamp and your code'**
+  String get laterCardBack;
+
+  /// Text on the postmark on the back of the Later card (a brand mark; keep it as is unless your language needs otherwise).
+  ///
+  /// In en, this message translates to:
+  /// **'LATER POST'**
+  String get laterCardPost;
+
+  /// Link under the Later card: opens the QR scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a friend\'s code'**
+  String get laterCardScanFriend;
+
+  /// On the back of the Later card, next to the QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to add me on Later'**
+  String get laterCardScanMe;
+
+  /// Screen reader text of the two dots under the card.
+  ///
+  /// In en, this message translates to:
+  /// **'Side {number} of 2'**
+  String laterCardSide(int number);
+
+  /// Title of the share page: your postcard as a card to send.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Later card'**
+  String get laterCardTitle;
+
+  /// Under the front of the Later card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the card to turn it over'**
+  String get laterCardTurn;
+
+  /// Under the back of the Later card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to turn it back'**
+  String get laterCardTurnBack;
+
   /// How far a place capsule is (km with one decimal).
   ///
   /// In en, this message translates to:
@@ -4406,12 +4454,6 @@ abstract class AppLocalizations {
   /// **'Pull down to see the whole photo'**
   String get profilePostcardOpen;
 
-  /// Shown in place of the QR code on Share Profile if it cannot be drawn.
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong...'**
-  String get profileQrError;
-
   /// Quick action on a friend in the profile: send them a capsule.
   ///
   /// In en, this message translates to:
@@ -4430,18 +4472,6 @@ abstract class AppLocalizations {
   /// **'Share'**
   String get profileShare;
 
-  /// Heading above the QR code on Share Profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Share Your Profile'**
-  String get profileShareHeading;
-
-  /// Blue info card at the bottom of Share Profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Others can scan this code with their camera or the app to add you as a friend'**
-  String get profileShareHint;
-
   /// Text passed to the system share sheet when sharing a profile (the user's own or a friend's).
   ///
   /// In en, this message translates to:
@@ -4453,18 +4483,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connect with {name} on Later'**
   String profileShareSubject(String name);
-
-  /// Grey line under the heading on Share Profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Let others scan this QR code to add you as a friend'**
-  String get profileShareSubtitle;
-
-  /// Page title of Share Profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Share Profile'**
-  String get profileShareTitle;
 
   /// Screen reader label of a person's stamp (their photo as a postage stamp).
   ///

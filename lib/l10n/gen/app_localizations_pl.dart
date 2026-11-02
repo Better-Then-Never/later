@@ -1609,6 +1609,33 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get laterCardBack =>
+      'Tył Twojej karty: Twoje słowa, Twój znaczek i Twój kod';
+
+  @override
+  String get laterCardPost => 'LATER POST';
+
+  @override
+  String get laterCardScanFriend => 'Zeskanuj kod znajomego';
+
+  @override
+  String get laterCardScanMe => 'Zeskanuj, aby dodać mnie w Later';
+
+  @override
+  String laterCardSide(int number) {
+    return 'Strona $number z 2';
+  }
+
+  @override
+  String get laterCardTitle => 'Twoja karta Later';
+
+  @override
+  String get laterCardTurn => 'Dotknij karty, aby ją odwrócić';
+
+  @override
+  String get laterCardTurnBack => 'Dotknij, aby odwrócić z powrotem';
+
+  @override
   String mapCapsuleAwayKm(String km) {
     return '$km km stąd';
   }
@@ -2780,9 +2807,6 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pociągnij w dół, aby zobaczyć całe zdjęcie';
 
   @override
-  String get profileQrError => 'Coś poszło nie tak...';
-
-  @override
   String get profileQuickCapsule => 'Wyślij kapsułę';
 
   @override
@@ -2790,13 +2814,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get profileShare => 'Udostępnij';
-
-  @override
-  String get profileShareHeading => 'Udostępnij swój profil';
-
-  @override
-  String get profileShareHint =>
-      'Inni mogą zeskanować ten kod aparatem lub w aplikacji, aby dodać cię do znajomych';
 
   @override
   String profileShareMessage(String name, String link) {
@@ -2807,13 +2824,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String profileShareSubject(String name) {
     return '$name czeka na ciebie w Later';
   }
-
-  @override
-  String get profileShareSubtitle =>
-      'Pokaż ten kod QR, aby inni mogli dodać cię do znajomych';
-
-  @override
-  String get profileShareTitle => 'Udostępnij profil';
 
   @override
   String profileStampLabel(String name) {

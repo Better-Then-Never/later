@@ -1600,6 +1600,33 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get laterCardBack =>
+      'Обратная сторона карточки: твои слова, марка и код';
+
+  @override
+  String get laterCardPost => 'LATER POST';
+
+  @override
+  String get laterCardScanFriend => 'Отсканировать код друга';
+
+  @override
+  String get laterCardScanMe => 'Отсканируй, чтобы добавить меня в Later';
+
+  @override
+  String laterCardSide(int number) {
+    return 'Сторона $number из 2';
+  }
+
+  @override
+  String get laterCardTitle => 'Твоя карточка Later';
+
+  @override
+  String get laterCardTurn => 'Нажми на карточку, чтобы перевернуть';
+
+  @override
+  String get laterCardTurnBack => 'Нажми, чтобы перевернуть обратно';
+
+  @override
   String mapCapsuleAwayKm(String km) {
     return 'В $km км';
   }
@@ -2772,9 +2799,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profilePostcardOpen => 'Потяните вниз, чтобы увидеть всё фото';
 
   @override
-  String get profileQrError => 'Что-то пошло не так...';
-
-  @override
   String get profileQuickCapsule => 'Отправить капсулу';
 
   @override
@@ -2782,13 +2806,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileShare => 'Поделиться';
-
-  @override
-  String get profileShareHeading => 'Поделитесь профилем';
-
-  @override
-  String get profileShareHint =>
-      'Друзья могут отсканировать этот код камерой телефона или в приложении, чтобы добавить вас';
 
   @override
   String profileShareMessage(String name, String link) {
@@ -2799,13 +2816,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String profileShareSubject(String name) {
     return '$name ждёт вас в Later';
   }
-
-  @override
-  String get profileShareSubtitle =>
-      'Покажите этот QR-код, чтобы вас добавили в друзья';
-
-  @override
-  String get profileShareTitle => 'Поделиться профилем';
 
   @override
   String profileStampLabel(String name) {

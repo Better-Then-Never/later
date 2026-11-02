@@ -1522,6 +1522,43 @@
       }
     }
   },
+  "laterCardBack": "The back of your card: your words, your stamp and your code",
+  "@laterCardBack": {
+    "description": "Screen reader label of the back of the Later card."
+  },
+  "laterCardPost": "LATER POST",
+  "@laterCardPost": {
+    "description": "Text on the postmark on the back of the Later card (a brand mark; keep it as is unless your language needs otherwise)."
+  },
+  "laterCardScanFriend": "Scan a friend's code",
+  "@laterCardScanFriend": {
+    "description": "Link under the Later card: opens the QR scanner."
+  },
+  "laterCardScanMe": "Scan to add me on Later",
+  "@laterCardScanMe": {
+    "description": "On the back of the Later card, next to the QR code."
+  },
+  "laterCardSide": "Side {number} of 2",
+  "@laterCardSide": {
+    "description": "Screen reader text of the two dots under the card.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "laterCardTitle": "Your Later card",
+  "@laterCardTitle": {
+    "description": "Title of the share page: your postcard as a card to send."
+  },
+  "laterCardTurn": "Tap the card to turn it over",
+  "@laterCardTurn": {
+    "description": "Under the front of the Later card."
+  },
+  "laterCardTurnBack": "Tap to turn it back",
+  "@laterCardTurnBack": {
+    "description": "Under the back of the Later card."
+  },
   "mapCapsuleAwayKm": "{km} km away",
   "@mapCapsuleAwayKm": {
     "description": "How far a place capsule is (km with one decimal).",
@@ -2836,10 +2873,6 @@
   "@profilePostcardOpen": {
     "description": "Screen reader hint on the profile postcard: pulling down opens the cover photo."
   },
-  "profileQrError": "Something went wrong...",
-  "@profileQrError": {
-    "description": "Shown in place of the QR code on Share Profile if it cannot be drawn."
-  },
   "profileQuickCapsule": "Send a capsule",
   "@profileQuickCapsule": {
     "description": "Quick action on a friend in the profile: send them a capsule."
@@ -2851,14 +2884,6 @@
   "profileShare": "Share",
   "@profileShare": {
     "description": "Button on Share Profile that opens the system share sheet (half-width button with an icon: keep it short)."
-  },
-  "profileShareHeading": "Share Your Profile",
-  "@profileShareHeading": {
-    "description": "Heading above the QR code on Share Profile."
-  },
-  "profileShareHint": "Others can scan this code with their camera or the app to add you as a friend",
-  "@profileShareHint": {
-    "description": "Blue info card at the bottom of Share Profile."
   },
   "profileShareMessage": "Check out {name} on Later!\n{link}",
   "@profileShareMessage": {
@@ -2883,14 +2908,6 @@
         "example": "Anna Smith"
       }
     }
-  },
-  "profileShareSubtitle": "Let others scan this QR code to add you as a friend",
-  "@profileShareSubtitle": {
-    "description": "Grey line under the heading on Share Profile."
-  },
-  "profileShareTitle": "Share Profile",
-  "@profileShareTitle": {
-    "description": "Page title of Share Profile."
   },
   "profileStampLabel": "{name}'s stamp",
   "@profileStampLabel": {
