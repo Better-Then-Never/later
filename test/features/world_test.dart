@@ -1,5 +1,5 @@
 // The world view (B7): the summary as read, the place from the geocoder at
-// creation, the passport page and its row on the profile.
+// creation, the Passport opened and its row on the profile.
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,9 +11,14 @@ import 'package:later/data/models/world.dart';
 import 'package:later/data/repositories/repositories.dart';
 import 'package:later/data/services/country_names.dart';
 import 'package:later/data/services/geocoding_service.dart';
+import 'package:later/data/services/profile_image_cache.dart';
 import 'package:later/data/services/location_service.dart';
 import 'package:later/features/capsules/creation/capsule_creation_controller.dart';
 import 'package:later/features/map/current_location.dart';
+import 'package:later/features/passport/passport_cover.dart';
+import 'package:later/features/passport/passport_data.dart';
+import 'package:later/features/passport/passport_stamps_page.dart';
+import 'package:later/features/users/user_directory.dart';
 import 'package:later/features/world/world_page.dart';
 import 'package:provider/provider.dart';
 
@@ -101,11 +106,20 @@ void main() {
 
   Future<void> pumpPage(WidgetTester tester, WorldSummary world) async {
     final social = FakeSocialRepository()..worlds['me'] = world;
+    final users = FakeUserRepository()
+      ..put(const UserProfile(uid: 'me', name: 'Ann Lee', username: 'ann'));
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MultiProvider(
         providers: [
           Provider<SocialRepository>.value(value: social),
           Provider(create: (_) => CountryNames()),
+          ChangeNotifierProvider(create: (_) => UserDirectory(users)),
+          ChangeNotifierProvider(
+            create: (_) => ProfileImageCache(FakeImageStorageRepository()),
+          ),
         ],
         child: testApp(home: const WorldPage(uid: 'me')),
       ),
@@ -113,7 +127,10 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('the passport: totals and a stamp per country', (tester) async {
+  // The booklet itself: test/features/passport_test.dart.
+  testWidgets('the passport: the cover with the totals, then its pages', (
+    tester,
+  ) async {
     await pumpPage(
       tester,
       WorldSummary(
@@ -129,20 +146,36 @@ void main() {
       ),
     );
     expect(find.text('Passport'), findsOneWidget);
-    expect(find.text('countries'), findsOneWidget);
-    expect(find.text('towns'), findsOneWidget);
-    expect(find.byType(Stamp), findsNWidgets(2));
+    expect(
+      find.text('2 countries · 3 towns · stamps since 1 May 2026'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byType(PassportCover));
+    await tester.pumpAndSettle();
+    expect(find.text('ANN'), findsOneWidget);
+    // Photo, stamps, visas.
+    for (var i = 0; i < 2; i++) {
+      await tester.drag(find.byType(PageView), const Offset(-400, 0));
+      await tester.pumpAndSettle();
+    }
     // Off Android the name is the code.
-    expect(find.text('PL'), findsOneWidget);
-    expect(find.text('3 capsules'), findsOneWidget);
-    expect(find.text('Warszawa, Gdańsk +1'), findsOneWidget);
-    expect(find.text('First: May 2026'), findsOneWidget);
+    expect(find.text('VISA · PL'), findsOneWidget);
+    expect(find.text('3 towns · 3 capsules'), findsOneWidget);
+    expect(find.text('1 MAY 2026'), findsOneWidget);
+    expect(find.text('VISA · DE'), findsOneWidget);
   });
 
   testWidgets('an empty passport says how to get a stamp', (tester) async {
     await pumpPage(tester, WorldSummary.empty);
-    expect(find.byType(Stamp), findsNothing);
-    expect(find.textContaining('gets a stamp here'), findsOneWidget);
+    await tester.tap(find.byType(PassportCover));
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(PageView), const Offset(-400, 0));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('its town is stamped here'), findsOneWidget);
+    expect(
+      find.text('Stamps come from capsules made since this update.'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a long name at a large text size fits its stamp', (
@@ -150,21 +183,22 @@ void main() {
   ) async {
     await tester.pumpWidget(
       testApp(
-        home: MediaQuery(
-          data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+        home: const MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(1.3)),
           child: Center(
             child: SizedBox(
-              width: 164,
-              height: 182,
-              child: Stamp(
-                visit: CountryVisit(
-                  code: 'US',
-                  capsules: 12,
-                  cities: const {'New York': 9, 'Los Angeles': 3},
-                  first: DateTime(2026, 1),
+              width: 120,
+              height: 120,
+              child: FittedBox(
+                child: PassportTownStamp(
+                  town: PassportTown(
+                    town: 'Gorzów Wielkopolski',
+                    countryCode: 'US',
+                    capsules: 12,
+                  ),
+                  index: 0,
+                  countryName: 'Соединенные Штаты Америки',
                 ),
-                name: 'Соединенные Штаты Америки',
-                index: 0,
               ),
             ),
           ),

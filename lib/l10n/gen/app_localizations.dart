@@ -4022,6 +4022,258 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} unread notification} other{{count} unread notifications}}'**
   String notificationsUnreadBadge(int count);
 
+  /// Small caps label on the You and a friend page above the towns both people have.
+  ///
+  /// In en, this message translates to:
+  /// **'BOTH'**
+  String get passportBothLabel;
+
+  /// Small caps label under a number on a Passport page: capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'CAPSULES'**
+  String get passportCapsulesLabel;
+
+  /// Small caps label under a number on a Passport page: countries.
+  ///
+  /// In en, this message translates to:
+  /// **'COUNTRIES'**
+  String get passportCountriesLabel;
+
+  /// The app's name in foil letters on the Passport's cover (the brand, the same in every language).
+  ///
+  /// In en, this message translates to:
+  /// **'LATER'**
+  String get passportCoverBrand;
+
+  /// The line on the cover of a friend's Passport; name is their first name.
+  ///
+  /// In en, this message translates to:
+  /// **'Places where {name} left a capsule'**
+  String passportCoverFriend(String name);
+
+  /// The line on the cover of your own Passport.
+  ///
+  /// In en, this message translates to:
+  /// **'Places where you left a capsule'**
+  String get passportCoverOwn;
+
+  /// The word printed in foil under the globe on the Passport's cover.
+  ///
+  /// In en, this message translates to:
+  /// **'PASSPORT'**
+  String get passportCoverTitle;
+
+  /// Text of an empty Passport's stamps page.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a capsule somewhere and its town is stamped here.'**
+  String get passportEmptyBody;
+
+  /// Text of a friend's empty Passport; name is their first name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has no stamps yet.'**
+  String passportEmptyFriend(String name);
+
+  /// Title of an empty Passport's stamps page.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first stamp'**
+  String get passportEmptyTitle;
+
+  /// On a visa and on the photo page's stamp: the day of the first capsule in a country.
+  ///
+  /// In en, this message translates to:
+  /// **'FIRST ENTRY'**
+  String get passportFirstEntry;
+
+  /// Hint under the You and a friend page; name is the friend's first name.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for {name}\'s own pages'**
+  String passportFriendHint(String name);
+
+  /// Field label on the Passport's photo page: the person's name without the surname.
+  ///
+  /// In en, this message translates to:
+  /// **'GIVEN NAMES'**
+  String get passportGivenNames;
+
+  /// Field label on the Passport's photo page: the home town from the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'HOME TOWN'**
+  String get passportHomeTown;
+
+  /// On a visa: label above the country's towns and capsules in the app.
+  ///
+  /// In en, this message translates to:
+  /// **'IN LATER'**
+  String get passportInLater;
+
+  /// Button on an empty Passport: opens the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule'**
+  String get passportMakeCapsule;
+
+  /// Field label on the Passport's photo page when the person's name is one word.
+  ///
+  /// In en, this message translates to:
+  /// **'NAME'**
+  String get passportName;
+
+  /// Small caps label under a number on the Your year page: countries first entered this year.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get passportNewLabel;
+
+  /// Label on the Your year page above the countries first entered this year.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW THIS YEAR'**
+  String get passportNewThisYear;
+
+  /// On the You and a friend page under ONLY YOU or ONLY <name> when the list is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'None yet'**
+  String get passportNone;
+
+  /// On the You and a friend page when the two have no town in common.
+  ///
+  /// In en, this message translates to:
+  /// **'No towns in common yet'**
+  String get passportNothingShared;
+
+  /// Small caps label on the You and a friend page above the countries only the friend has; name is their first name in capitals.
+  ///
+  /// In en, this message translates to:
+  /// **'ONLY {name}'**
+  String passportOnlyThem(String name);
+
+  /// Small caps label on the You and a friend page above the countries only you have.
+  ///
+  /// In en, this message translates to:
+  /// **'ONLY YOU'**
+  String get passportOnlyYou;
+
+  /// Printed at the top of the Passport's photo page in the app's five languages, as on a real passport (the same in every language).
+  ///
+  /// In en, this message translates to:
+  /// **'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ'**
+  String get passportPhotoLabel;
+
+  /// The share button in the Passport's header (screen readers): sends the open page as a picture.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this page'**
+  String get passportShare;
+
+  /// Text sent with a shared picture of a Passport page.
+  ///
+  /// In en, this message translates to:
+  /// **'A page from a Later passport'**
+  String get passportShareText;
+
+  /// In a town's stamp sheet: the day of the first capsule in that town.
+  ///
+  /// In en, this message translates to:
+  /// **'First capsule here on {date}'**
+  String passportStampFirstHere(String date);
+
+  /// In a town's stamp sheet or a visa's sheet: the day of the first capsule in the country (the app does not know the day per town).
+  ///
+  /// In en, this message translates to:
+  /// **'First capsule in {country} on {date}'**
+  String passportStampFirstIn(String country, String date);
+
+  /// Hint under a Passport page of town stamps.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a stamp to see more'**
+  String get passportStampsHint;
+
+  /// Under the Passport's cover after the countries and towns: the day of the first stamp ("12 Mar 2025").
+  ///
+  /// In en, this message translates to:
+  /// **'stamps since {date}'**
+  String passportStampsSince(String date);
+
+  /// Field label on the Passport's photo page: the last word of the person's name.
+  ///
+  /// In en, this message translates to:
+  /// **'SURNAME'**
+  String get passportSurname;
+
+  /// Hint under a Passport page.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to turn the page'**
+  String get passportSwipeHint;
+
+  /// Hint under the Passport's closed cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open'**
+  String get passportTapToOpen;
+
+  /// On the You and a friend page: the countries ("2 countries") and towns ("3 towns") both people have a stamp in.
+  ///
+  /// In en, this message translates to:
+  /// **'Both of you: {countries}, {towns}'**
+  String passportTogetherBoth(String countries, String towns);
+
+  /// Printed at the top of the You and a friend page of a friend's Passport; name is their first name in capitals.
+  ///
+  /// In en, this message translates to:
+  /// **'YOU AND {name}'**
+  String passportTogetherLabel(String name);
+
+  /// Small caps label under a number on a Passport page: towns.
+  ///
+  /// In en, this message translates to:
+  /// **'TOWNS'**
+  String get passportTownsLabel;
+
+  /// Field label on the Passport's photo page: the @username.
+  ///
+  /// In en, this message translates to:
+  /// **'USERNAME'**
+  String get passportUsername;
+
+  /// On a visa in the Passport, before the country code ("VISA · PL").
+  ///
+  /// In en, this message translates to:
+  /// **'VISA'**
+  String get passportVisa;
+
+  /// Hint under a Passport page of visas (one per country).
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a visa to see its towns'**
+  String get passportVisasHint;
+
+  /// Printed at the top of a Passport page of visas (one per country).
+  ///
+  /// In en, this message translates to:
+  /// **'VISAS'**
+  String get passportVisasLabel;
+
+  /// Printed at the top of the Passport's last page: the current year in places.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR YEAR'**
+  String get passportYearLabel;
+
+  /// Note under the month line on the Your year page.
+  ///
+  /// In en, this message translates to:
+  /// **'Each country at its latest visit this year'**
+  String get passportYearMonthsNote;
+
   /// Place pill on a capsule when the phone has no location yet.
   ///
   /// In en, this message translates to:
@@ -6157,24 +6409,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{country} other{countries}}'**
   String worldCountriesLabel(int count);
-
-  /// Under the passport title.
-  ///
-  /// In en, this message translates to:
-  /// **'Countries and towns of your capsules'**
-  String get worldDescription;
-
-  /// Passport without stamps.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave a capsule somewhere new and its country gets a stamp here.'**
-  String get worldEmpty;
-
-  /// On a country stamp: the month of the first capsule there ("Oct 2026").
-  ///
-  /// In en, this message translates to:
-  /// **'First: {date}'**
-  String worldFirst(String date);
 
   /// Footnote: older capsules have no country, so they are not in the passport.
   ///
