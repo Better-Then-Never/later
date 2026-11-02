@@ -260,17 +260,59 @@ abstract class AppLocalizations {
   /// **'Travel {km} km between your capsules'**
   String achievementTravelerGoal(String km);
 
+  /// One achievement sheet: every level of it is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count} levels done'**
+  String achievementsAllLevels(int count);
+
+  /// Achievements page: how many achievements are earned of all of them.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}'**
+  String achievementsCount(int done, int total);
+
   /// No description provided for @achievementsDescription.
   ///
   /// In en, this message translates to:
   /// **'Unlocked by using Later, never by paying'**
   String get achievementsDescription;
 
-  /// No description provided for @achievementsLocked.
+  /// Under an achievement whose every level is reached (green).
   ///
   /// In en, this message translates to:
-  /// **'Locked'**
-  String get achievementsLocked;
+  /// **'Done'**
+  String get achievementsDone;
+
+  /// Achievements page: the group of capsule achievements (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules'**
+  String get achievementsGroupCapsules;
+
+  /// Achievements page: the group of social achievements (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get achievementsGroupFriends;
+
+  /// Achievements page: the group of the streak, night owl and early bird (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get achievementsGroupHabits;
+
+  /// Achievements page: the group of places and distance achievements (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get achievementsGroupPlaces;
+
+  /// Under an achievement with a level reached: the level and how far along the next one is.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level} · {percent} %'**
+  String achievementsLevelPercent(int level, int percent);
 
   /// No description provided for @achievementsNoneYet.
   ///
@@ -278,11 +320,35 @@ abstract class AppLocalizations {
   /// **'Your first one is a capsule away.'**
   String get achievementsNoneYet;
 
+  /// Under an achievement with no progress yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get achievementsNotStarted;
+
+  /// Under an achievement: how far along its first level is.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} %'**
+  String achievementsPercent(int percent);
+
+  /// One achievement sheet, under the progress bar. The numbers are already formatted.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} of {goal} · {left} to go'**
+  String achievementsProgressOf(String value, String goal, String left);
+
   /// No description provided for @achievementsSeeAll.
   ///
   /// In en, this message translates to:
   /// **'See all'**
   String get achievementsSeeAll;
+
+  /// One achievement sheet, a places achievement: opens the Passport (the world page).
+  ///
+  /// In en, this message translates to:
+  /// **'See your countries in the Passport'**
+  String get achievementsSeePassport;
 
   /// No description provided for @achievementsStreakDays.
   ///
@@ -5210,12 +5276,6 @@ abstract class AppLocalizations {
   /// **'Streak reminder'**
   String get settingsNotificationsStreak;
 
-  /// No description provided for @settingsNotificationsStreakHint.
-  ///
-  /// In en, this message translates to:
-  /// **'In the evening, when your streak would end tonight'**
-  String get settingsNotificationsStreakHint;
-
   /// Notification settings switch: pushes vibrate.
   ///
   /// In en, this message translates to:
@@ -5684,6 +5744,12 @@ abstract class AppLocalizations {
   /// **'SIZE'**
   String get settingsSectionSize;
 
+  /// Notification settings section: the daily streak reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'STREAK'**
+  String get settingsSectionStreak;
+
   /// No description provided for @settingsSectionSupport.
   ///
   /// In en, this message translates to:
@@ -5797,6 +5863,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.'**
   String get settingsStorageFooter;
+
+  /// Under the Streak section of notification settings.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone only: the reminder comes from this phone, even offline, and not from your other devices.'**
+  String get settingsStreakFooter;
+
+  /// Under the Streak reminder switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day at {time}, unless a capsule already counts today'**
+  String settingsStreakReminderHint(String time);
+
+  /// Row: when the streak reminder comes; tap to change.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get settingsStreakReminderTime;
 
   /// Line of the app information for support (copied or added to support emails).
   ///
@@ -6128,6 +6212,24 @@ abstract class AppLocalizations {
   /// **'Today isn\'t counted yet: leave a capsule before midnight to keep your streak.'**
   String get streakAtRisk;
 
+  /// Streak page: row with the longest streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Best streak'**
+  String get streakBest;
+
+  /// Streak page: the streak's length (large) and the best streak.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String streakDaysCount(int count);
+
+  /// Streak page, today not counted yet: hours until midnight.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule today to keep it. {hours, plural, =1{1 hour left.} other{{hours} hours left.}}'**
+  String streakKeepHoursLeft(int hours);
+
   /// Streak card: the longest streak so far, in days.
   ///
   /// In en, this message translates to:
@@ -6140,11 +6242,77 @@ abstract class AppLocalizations {
   /// **'Make a capsule'**
   String get streakMakeCapsule;
 
+  /// Achievements page, the streak row, when there is no streak.
+  ///
+  /// In en, this message translates to:
+  /// **'No streak yet'**
+  String get streakNoneTitle;
+
+  /// Title of the Streak page.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streakPageTitle;
+
+  /// Streak page: the daily reminder's switch row; tap to change the time.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me at {time}'**
+  String streakRemindAt(String time);
+
+  /// Error when the phone refuses notifications for the streak reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications for Later in your phone\'s settings to get the reminder'**
+  String get streakReminderDenied;
+
+  /// Streak reminder notification body, when a streak would end tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Your 1-day streak ends at midnight. A capsule today keeps it.} other{Your {count}-day streak ends at midnight. A capsule today keeps it.}}'**
+  String streakReminderKeepBody(int count);
+
+  /// Streak reminder notification title.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your streak'**
+  String get streakReminderKeepTitle;
+
+  /// Streak page: under the reminder when all notifications are off.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off in Settings'**
+  String get streakReminderPushOff;
+
+  /// Streak reminder notification title, when there is no streak to keep.
+  ///
+  /// In en, this message translates to:
+  /// **'A capsule today?'**
+  String get streakReminderStartTitle;
+
+  /// Title of the time picker for the streak reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me at'**
+  String get streakReminderTimeTitle;
+
   /// Streak card once today counts.
   ///
   /// In en, this message translates to:
   /// **'Today counts. See you tomorrow!'**
   String get streakSafe;
+
+  /// Streak row and page (and the reminder) when there is no streak to keep.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule today to start a streak'**
+  String get streakStartToday;
+
+  /// Streak page: label above the week's days (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get streakThisWeek;
 
   /// On a country stamp: capsules left there.
   ///

@@ -114,10 +114,94 @@
       }
     }
   },
+  "achievementsAllLevels": "All {count} levels done",
+  "@achievementsAllLevels": {
+    "description": "One achievement sheet: every level of it is reached.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsCount": "{done} of {total}",
+  "@achievementsCount": {
+    "description": "Achievements page: how many achievements are earned of all of them.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "achievementsDescription": "Unlocked by using Later, never by paying",
-  "achievementsLocked": "Locked",
+  "achievementsDone": "Done",
+  "@achievementsDone": {
+    "description": "Under an achievement whose every level is reached (green)."
+  },
+  "achievementsGroupCapsules": "Capsules",
+  "@achievementsGroupCapsules": {
+    "description": "Achievements page: the group of capsule achievements (shown in capitals)."
+  },
+  "achievementsGroupFriends": "Friends",
+  "@achievementsGroupFriends": {
+    "description": "Achievements page: the group of social achievements (shown in capitals)."
+  },
+  "achievementsGroupHabits": "Habits",
+  "@achievementsGroupHabits": {
+    "description": "Achievements page: the group of the streak, night owl and early bird (shown in capitals)."
+  },
+  "achievementsGroupPlaces": "Places",
+  "@achievementsGroupPlaces": {
+    "description": "Achievements page: the group of places and distance achievements (shown in capitals)."
+  },
+  "achievementsLevelPercent": "Level {level} · {percent} %",
+  "@achievementsLevelPercent": {
+    "description": "Under an achievement with a level reached: the level and how far along the next one is.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "achievementsNoneYet": "Your first one is a capsule away.",
+  "achievementsNotStarted": "Not started",
+  "@achievementsNotStarted": {
+    "description": "Under an achievement with no progress yet."
+  },
+  "achievementsPercent": "{percent} %",
+  "@achievementsPercent": {
+    "description": "Under an achievement: how far along its first level is.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsProgressOf": "{value} of {goal} · {left} to go",
+  "@achievementsProgressOf": {
+    "description": "One achievement sheet, under the progress bar. The numbers are already formatted.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
   "achievementsSeeAll": "See all",
+  "achievementsSeePassport": "See your countries in the Passport",
+  "@achievementsSeePassport": {
+    "description": "One achievement sheet, a places achievement: opens the Passport (the world page)."
+  },
   "achievementsStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
   "@achievementsStreakDays": {
     "placeholders": {
@@ -3167,7 +3251,6 @@
   "settingsNotificationsReactions": "Reactions",
   "settingsNotificationsSound": "Sound and vibration",
   "settingsNotificationsStreak": "Streak reminder",
-  "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
   "settingsNotificationsVibrate": "Vibration",
   "@settingsNotificationsVibrate": {
     "description": "Notification settings switch: pushes vibrate."
@@ -3354,6 +3437,10 @@
   "settingsSectionQuestions": "QUESTIONS",
   "settingsSectionQuietHours": "QUIET HOURS",
   "settingsSectionSize": "SIZE",
+  "settingsSectionStreak": "STREAK",
+  "@settingsSectionStreak": {
+    "description": "Notification settings section: the daily streak reminder."
+  },
   "settingsSectionSupport": "SUPPORT",
   "settingsSectionTheme": "THEME",
   "settingsSectionThisPhone": "THIS PHONE",
@@ -3382,6 +3469,23 @@
   "settingsStorageClearing": "Clearing...",
   "settingsStorageDescription": "Space Later uses on this phone",
   "settingsStorageFooter": "Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.",
+  "settingsStreakFooter": "This phone only: the reminder comes from this phone, even offline, and not from your other devices.",
+  "@settingsStreakFooter": {
+    "description": "Under the Streak section of notification settings."
+  },
+  "settingsStreakReminderHint": "Every day at {time}, unless a capsule already counts today",
+  "@settingsStreakReminderHint": {
+    "description": "Under the Streak reminder switch.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsStreakReminderTime": "Time",
+  "@settingsStreakReminderTime": {
+    "description": "Row: when the streak reminder comes; tap to change."
+  },
   "settingsSupportInfoApp": "App: Later {version}",
   "@settingsSupportInfoApp": {
     "description": "Line of the app information for support (copied or added to support emails).",
@@ -3577,6 +3681,28 @@
   "@streakAtRisk": {
     "description": "Streak card while today is not counted yet (the streak ends tonight without a capsule)."
   },
+  "streakBest": "Best streak",
+  "@streakBest": {
+    "description": "Streak page: row with the longest streak."
+  },
+  "streakDaysCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@streakDaysCount": {
+    "description": "Streak page: the streak's length (large) and the best streak.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakKeepHoursLeft": "Make a capsule today to keep it. {hours, plural, =1{1 hour left.} other{{hours} hours left.}}",
+  "@streakKeepHoursLeft": {
+    "description": "Streak page, today not counted yet: hours until midnight.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "streakLongest": "Longest: {count, plural, =1{1 day} other{{count} days}}",
   "@streakLongest": {
     "description": "Streak card: the longest streak so far, in days.",
@@ -3590,9 +3716,63 @@
   "@streakMakeCapsule": {
     "description": "Streak card button (at risk): opens the camera."
   },
+  "streakNoneTitle": "No streak yet",
+  "@streakNoneTitle": {
+    "description": "Achievements page, the streak row, when there is no streak."
+  },
+  "streakPageTitle": "Streak",
+  "@streakPageTitle": {
+    "description": "Title of the Streak page."
+  },
+  "streakRemindAt": "Remind me at {time}",
+  "@streakRemindAt": {
+    "description": "Streak page: the daily reminder's switch row; tap to change the time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "streakReminderDenied": "Allow notifications for Later in your phone's settings to get the reminder",
+  "@streakReminderDenied": {
+    "description": "Error when the phone refuses notifications for the streak reminder."
+  },
+  "streakReminderKeepBody": "{count, plural, =1{Your 1-day streak ends at midnight. A capsule today keeps it.} other{Your {count}-day streak ends at midnight. A capsule today keeps it.}}",
+  "@streakReminderKeepBody": {
+    "description": "Streak reminder notification body, when a streak would end tonight.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakReminderKeepTitle": "Keep your streak",
+  "@streakReminderKeepTitle": {
+    "description": "Streak reminder notification title."
+  },
+  "streakReminderPushOff": "Notifications are off in Settings",
+  "@streakReminderPushOff": {
+    "description": "Streak page: under the reminder when all notifications are off."
+  },
+  "streakReminderStartTitle": "A capsule today?",
+  "@streakReminderStartTitle": {
+    "description": "Streak reminder notification title, when there is no streak to keep."
+  },
+  "streakReminderTimeTitle": "Remind me at",
+  "@streakReminderTimeTitle": {
+    "description": "Title of the time picker for the streak reminder."
+  },
   "streakSafe": "Today counts. See you tomorrow!",
   "@streakSafe": {
     "description": "Streak card once today counts."
+  },
+  "streakStartToday": "Make a capsule today to start a streak",
+  "@streakStartToday": {
+    "description": "Streak row and page (and the reminder) when there is no streak to keep."
+  },
+  "streakThisWeek": "This week",
+  "@streakThisWeek": {
+    "description": "Streak page: label above the week's days (shown in capitals)."
   },
   "worldCapsules": "{count, plural, =1{1 capsule} other{{count} capsules}}",
   "@worldCapsules": {

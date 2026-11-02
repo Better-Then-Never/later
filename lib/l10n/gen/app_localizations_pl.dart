@@ -191,17 +191,60 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String achievementsAllLevels(int count) {
+    return 'Wszystkie poziomy zdobyte ($count)';
+  }
+
+  @override
+  String achievementsCount(int done, int total) {
+    return '$done z $total';
+  }
+
+  @override
   String get achievementsDescription =>
       'Zdobywasz je, korzystając z Later, nigdy za pieniądze';
 
   @override
-  String get achievementsLocked => 'Zablokowane';
+  String get achievementsDone => 'Zdobyte';
+
+  @override
+  String get achievementsGroupCapsules => 'Kapsuły';
+
+  @override
+  String get achievementsGroupFriends => 'Znajomi';
+
+  @override
+  String get achievementsGroupHabits => 'Nawyki';
+
+  @override
+  String get achievementsGroupPlaces => 'Miejsca';
+
+  @override
+  String achievementsLevelPercent(int level, int percent) {
+    return 'Poziom $level · $percent%';
+  }
 
   @override
   String get achievementsNoneYet => 'Do pierwszego dzieli cię jedna kapsuła.';
 
   @override
+  String get achievementsNotStarted => 'Nierozpoczęte';
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String achievementsProgressOf(String value, String goal, String left) {
+    return '$value z $goal · zostało $left';
+  }
+
+  @override
   String get achievementsSeeAll => 'Wszystkie';
+
+  @override
+  String get achievementsSeePassport => 'Zobacz swoje kraje w Paszporcie';
 
   @override
   String achievementsStreakDays(int count) {
@@ -3289,10 +3332,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsNotificationsStreak => 'Przypomnienie o serii';
 
   @override
-  String get settingsNotificationsStreakHint =>
-      'Wieczorem, gdy seria dziś by się skończyła';
-
-  @override
   String get settingsNotificationsVibrate => 'Wibracje';
 
   @override
@@ -3564,6 +3603,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsSectionSize => 'ROZMIAR';
 
   @override
+  String get settingsSectionStreak => 'SERIA';
+
+  @override
   String get settingsSectionSupport => 'WSPARCIE';
 
   @override
@@ -3623,6 +3665,18 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get settingsStorageFooter =>
       'Zdjęcia zrobione lub wybrane do kapsuł i obrazy pobrane z internetu. Twoje kapsuły, czaty i konto zostaną.';
+
+  @override
+  String get settingsStreakFooter =>
+      'Tylko ten telefon: przypomnienie przychodzi z tego telefonu, także offline, a nie z innych urządzeń.';
+
+  @override
+  String settingsStreakReminderHint(String time) {
+    return 'Codziennie o $time, chyba że dziś kapsuła już się liczy';
+  }
+
+  @override
+  String get settingsStreakReminderTime => 'Godzina';
 
   @override
   String settingsSupportInfoApp(String version) {
@@ -3802,6 +3856,35 @@ class AppLocalizationsPl extends AppLocalizations {
       'Dzisiaj jeszcze się nie liczy: zostaw kapsułę przed północą, aby utrzymać serię.';
 
   @override
+  String get streakBest => 'Najlepsza seria';
+
+  @override
+  String streakDaysCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dnia',
+      many: '$count dni',
+      few: '$count dni',
+      one: '$count dzień',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakKeepHoursLeft(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Zostało $hours godziny.',
+      many: 'Zostało $hours godzin.',
+      few: 'Zostały $hours godziny.',
+      one: 'Została $hours godzina.',
+    );
+    return 'Zrób dziś kapsułę, aby ją utrzymać. $_temp0';
+  }
+
+  @override
   String streakLongest(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -3818,7 +3901,58 @@ class AppLocalizationsPl extends AppLocalizations {
   String get streakMakeCapsule => 'Utwórz kapsułę';
 
   @override
+  String get streakNoneTitle => 'Jeszcze bez serii';
+
+  @override
+  String get streakPageTitle => 'Seria';
+
+  @override
+  String streakRemindAt(String time) {
+    return 'Przypomnij o $time';
+  }
+
+  @override
+  String get streakReminderDenied =>
+      'Zezwól Later na powiadomienia w ustawieniach telefonu, aby dostać przypomnienie';
+
+  @override
+  String streakReminderKeepBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Twoja seria ($count dnia) kończy się o północy. Kapsuła dziś ją utrzyma.',
+      many:
+          'Twoja seria ($count dni) kończy się o północy. Kapsuła dziś ją utrzyma.',
+      few:
+          'Twoja seria ($count dni) kończy się o północy. Kapsuła dziś ją utrzyma.',
+      one:
+          'Twoja seria ($count dzień) kończy się o północy. Kapsuła dziś ją utrzyma.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakReminderKeepTitle => 'Utrzymaj serię';
+
+  @override
+  String get streakReminderPushOff =>
+      'Powiadomienia są wyłączone w Ustawieniach';
+
+  @override
+  String get streakReminderStartTitle => 'Kapsuła na dziś?';
+
+  @override
+  String get streakReminderTimeTitle => 'Przypomnij o';
+
+  @override
   String get streakSafe => 'Dzisiaj się liczy. Do jutra!';
+
+  @override
+  String get streakStartToday => 'Zrób dziś kapsułę, aby zacząć serię';
+
+  @override
+  String get streakThisWeek => 'Ten tydzień';
 
   @override
   String worldCapsules(int count) {

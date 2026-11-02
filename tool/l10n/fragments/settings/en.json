@@ -397,7 +397,6 @@
   "settingsNotificationsCommentsHint": "On your capsules and replies to you",
   "settingsNotificationsAchievements": "Achievements",
   "settingsNotificationsStreak": "Streak reminder",
-  "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
   "settingsNotificationsNews": "News from Later",
   "settingsNotificationsNewsHint": "Rare announcements from the team",
   "settingsAboutDescription": "A few words under your name, for everyone who opens your profile.",
@@ -548,5 +547,26 @@
   "settingsPlacesAlwaysDenied": "Allow location “All the time” in Settings to turn this on.",
   "@settingsPlacesAlwaysDenied": {
     "description": "Background location was not given."
+  },
+  "settingsSectionStreak": "STREAK",
+  "@settingsSectionStreak": {
+    "description": "Notification settings section: the daily streak reminder."
+  },
+  "settingsStreakReminderHint": "Every day at {time}, unless a capsule already counts today",
+  "@settingsStreakReminderHint": {
+    "description": "Under the Streak reminder switch.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsStreakReminderTime": "Time",
+  "@settingsStreakReminderTime": {
+    "description": "Row: when the streak reminder comes; tap to change."
+  },
+  "settingsStreakFooter": "This phone only: the reminder comes from this phone, even offline, and not from your other devices.",
+  "@settingsStreakFooter": {
+    "description": "Under the Streak section of notification settings."
   }
 }

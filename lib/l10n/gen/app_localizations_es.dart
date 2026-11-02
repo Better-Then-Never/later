@@ -171,18 +171,61 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String achievementsAllLevels(int count) {
+    return 'Los $count niveles logrados';
+  }
+
+  @override
+  String achievementsCount(int done, int total) {
+    return '$done de $total';
+  }
+
+  @override
   String get achievementsDescription =>
       'Se desbloquean usando Later, nunca pagando';
 
   @override
-  String get achievementsLocked => 'Bloqueado';
+  String get achievementsDone => 'Logrado';
+
+  @override
+  String get achievementsGroupCapsules => 'Cápsulas';
+
+  @override
+  String get achievementsGroupFriends => 'Amigos';
+
+  @override
+  String get achievementsGroupHabits => 'Hábitos';
+
+  @override
+  String get achievementsGroupPlaces => 'Lugares';
+
+  @override
+  String achievementsLevelPercent(int level, int percent) {
+    return 'Nivel $level · $percent %';
+  }
 
   @override
   String get achievementsNoneYet =>
       'El primero está a una cápsula de distancia.';
 
   @override
+  String get achievementsNotStarted => 'Sin empezar';
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent %';
+  }
+
+  @override
+  String achievementsProgressOf(String value, String goal, String left) {
+    return '$value de $goal · faltan $left';
+  }
+
+  @override
   String get achievementsSeeAll => 'Ver todos';
+
+  @override
+  String get achievementsSeePassport => 'Ver tus países en el Pasaporte';
 
   @override
   String achievementsStreakDays(int count) {
@@ -3199,10 +3242,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsNotificationsStreak => 'Recordatorio de racha';
 
   @override
-  String get settingsNotificationsStreakHint =>
-      'Por la tarde, si tu racha terminaría hoy';
-
-  @override
   String get settingsNotificationsVibrate => 'Vibración';
 
   @override
@@ -3473,6 +3512,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSectionSize => 'TAMAÑO';
 
   @override
+  String get settingsSectionStreak => 'RACHA';
+
+  @override
   String get settingsSectionSupport => 'SOPORTE';
 
   @override
@@ -3532,6 +3574,18 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsStorageFooter =>
       'Fotos hechas o elegidas para cápsulas e imágenes cargadas desde internet. Tus cápsulas, chats y cuenta se quedan.';
+
+  @override
+  String get settingsStreakFooter =>
+      'Solo este teléfono: el recordatorio llega desde este teléfono, incluso sin conexión, y no desde tus otros dispositivos.';
+
+  @override
+  String settingsStreakReminderHint(String time) {
+    return 'Cada día a las $time, salvo si hoy ya cuenta una cápsula';
+  }
+
+  @override
+  String get settingsStreakReminderTime => 'Hora';
 
   @override
   String settingsSupportInfoApp(String version) {
@@ -3711,6 +3765,31 @@ class AppLocalizationsEs extends AppLocalizations {
       'Hoy aún no cuenta: deja una cápsula antes de medianoche para mantener tu racha.';
 
   @override
+  String get streakBest => 'Mejor racha';
+
+  @override
+  String streakDaysCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakKeepHoursLeft(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Quedan $hours horas.',
+      one: 'Queda 1 hora.',
+    );
+    return 'Crea una cápsula hoy para mantenerla. $_temp0';
+  }
+
+  @override
   String streakLongest(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -3725,7 +3804,54 @@ class AppLocalizationsEs extends AppLocalizations {
   String get streakMakeCapsule => 'Crear una cápsula';
 
   @override
+  String get streakNoneTitle => 'Aún no hay racha';
+
+  @override
+  String get streakPageTitle => 'Racha';
+
+  @override
+  String streakRemindAt(String time) {
+    return 'Recordarme a las $time';
+  }
+
+  @override
+  String get streakReminderDenied =>
+      'Permite las notificaciones de Later en los ajustes del teléfono para recibir el recordatorio';
+
+  @override
+  String streakReminderKeepBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Tu racha de $count días termina a medianoche. Una cápsula hoy la mantiene.',
+      one:
+          'Tu racha de 1 día termina a medianoche. Una cápsula hoy la mantiene.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakReminderKeepTitle => 'Mantén tu racha';
+
+  @override
+  String get streakReminderPushOff =>
+      'Las notificaciones están desactivadas en Ajustes';
+
+  @override
+  String get streakReminderStartTitle => '¿Una cápsula hoy?';
+
+  @override
+  String get streakReminderTimeTitle => 'Recordarme a las';
+
+  @override
   String get streakSafe => 'Hoy cuenta. ¡Hasta mañana!';
+
+  @override
+  String get streakStartToday => 'Crea una cápsula hoy para empezar una racha';
+
+  @override
+  String get streakThisWeek => 'Esta semana';
 
   @override
   String worldCapsules(int count) {
