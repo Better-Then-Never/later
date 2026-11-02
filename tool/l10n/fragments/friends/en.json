@@ -281,5 +281,9 @@
   "friendsRemoveFriend": "Remove friend",
   "@friendsRemoveFriend": {
     "description": "Row in a friend's menu: asks to confirm, then removes the friend."
+  },
+  "friendsFollowing": "Following",
+  "@friendsFollowing": {
+    "description": "State of the follow button when the user already follows this friend."
   }
 }

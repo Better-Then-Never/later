@@ -790,6 +790,11 @@ class AppLocalizationsPl extends AppLocalizations {
       'Kapsuła została zapisana, ale nie wysłana. Dotknij przycisku jeszcze raz, żeby spróbować ponownie.';
 
   @override
+  String capsulesForFriendTitle(String name) {
+    return 'Kapsuła dla: $name';
+  }
+
+  @override
   String capsulesFrameRemove(int number) {
     return 'Usuń klatkę $number';
   }
@@ -994,6 +999,9 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Wolno';
+
+  @override
+  String get capsulesTo => 'Do';
 
   @override
   String get capsulesWhoEveryone => 'Wszyscy';
@@ -1274,6 +1282,9 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get friendsFollowed =>
       'Obserwujesz! Dostaniesz powiadomienia o nowych kapsułach';
+
+  @override
+  String get friendsFollowing => 'Obserwujesz';
 
   @override
   String get friendsFriendCapsulesEmpty =>

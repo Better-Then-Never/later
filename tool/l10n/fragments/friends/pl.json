@@ -90,5 +90,6 @@
   "friendsUnpinFromProfile": "Odepnij od mojego profilu",
   "friendsShareTheirCard": "Udostępnij kartę: {name}",
   "friendsFollowRow": "Powiadomienia o kapsułach: {name}",
-  "friendsRemoveFriend": "Usuń ze znajomych"
+  "friendsRemoveFriend": "Usuń ze znajomych",
+  "friendsFollowing": "Obserwujesz"
 }

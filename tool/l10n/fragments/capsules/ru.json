@@ -162,5 +162,7 @@
   "stampsNew": "Новый штамп",
   "stampsTownNumber": "{town} — ваш {ordinal} город",
   "stampsOpenPassport": "Открыть паспорт",
-  "stampsLater": "Позже"
+  "stampsLater": "Позже",
+  "capsulesForFriendTitle": "Капсула для: {name}",
+  "capsulesTo": "Кому"
 }

@@ -162,5 +162,7 @@
   "stampsNew": "Nuevo sello",
   "stampsTownNumber": "{town}, tu {ordinal} ciudad",
   "stampsOpenPassport": "Abrir pasaporte",
-  "stampsLater": "Luego"
+  "stampsLater": "Luego",
+  "capsulesForFriendTitle": "Una cápsula para {name}",
+  "capsulesTo": "Para"
 }

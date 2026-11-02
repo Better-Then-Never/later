@@ -90,5 +90,6 @@
   "friendsUnpinFromProfile": "Quitar de mi perfil",
   "friendsShareTheirCard": "Compartir la tarjeta de {name}",
   "friendsFollowRow": "Avisos de las cápsulas de {name}",
-  "friendsRemoveFriend": "Eliminar amigo"
+  "friendsRemoveFriend": "Eliminar amigo",
+  "friendsFollowing": "Siguiendo"
 }

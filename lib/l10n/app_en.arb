@@ -751,6 +751,15 @@
   "@capsulesErrorSavedNotSent": {
     "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
   },
+  "capsulesForFriendTitle": "A capsule for {name}",
+  "@capsulesForFriendTitle": {
+    "description": "Title of the Create page when it was opened from a friend's profile (Send a capsule); {name} is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "capsulesFrameRemove": "Remove frame {number}",
   "@capsulesFrameRemove": {
     "description": "Screen reader label of the cross on a frame.",
@@ -992,6 +1001,10 @@
   "capsulesSpeedSlow": "Slow",
   "@capsulesSpeedSlow": {
     "description": "Loop speed: 500 ms per frame."
+  },
+  "capsulesTo": "To",
+  "@capsulesTo": {
+    "description": "Label before the friend a capsule is sent to, on the Create page."
   },
   "capsulesWhoEveryone": "Everyone",
   "@capsulesWhoEveryone": {
@@ -1264,6 +1277,10 @@
     }
   },
   "friendsFollowed": "Following! You'll get notifications about their capsules",
+  "friendsFollowing": "Following",
+  "@friendsFollowing": {
+    "description": "State of the follow button when the user already follows this friend."
+  },
   "friendsFriendCapsulesEmpty": "Friend's capsules will appear here",
   "friendsFriendCapsulesTitle": "Friend's capsules",
   "friendsFromContacts": "From your contacts",

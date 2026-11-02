@@ -162,5 +162,7 @@
   "stampsNew": "Nowa pieczątka",
   "stampsTownNumber": "{town}, Twoje {ordinal} miasto",
   "stampsOpenPassport": "Otwórz paszport",
-  "stampsLater": "Później"
+  "stampsLater": "Później",
+  "capsulesForFriendTitle": "Kapsuła dla: {name}",
+  "capsulesTo": "Do"
 }

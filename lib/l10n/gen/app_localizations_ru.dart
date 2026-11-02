@@ -788,6 +788,11 @@ class AppLocalizationsRu extends AppLocalizations {
       'Капсула сохранена, но не отправлена. Нажмите кнопку ещё раз, чтобы повторить.';
 
   @override
+  String capsulesForFriendTitle(String name) {
+    return 'Капсула для: $name';
+  }
+
+  @override
   String capsulesFrameRemove(int number) {
     return 'Убрать кадр $number';
   }
@@ -992,6 +997,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Медленно';
+
+  @override
+  String get capsulesTo => 'Кому';
 
   @override
   String get capsulesWhoEveryone => 'Все';
@@ -1270,6 +1278,9 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get friendsFollowed =>
       'Вы подписались! Будем сообщать о новых капсулах';
+
+  @override
+  String get friendsFollowing => 'Вы подписаны';
 
   @override
   String get friendsFriendCapsulesEmpty => 'Здесь появятся капсулы друга';

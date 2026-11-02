@@ -775,6 +775,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Kapsel wurde gespeichert, aber nicht gesendet. Tippe noch einmal auf den Button, um es erneut zu versuchen.';
 
   @override
+  String capsulesForFriendTitle(String name) {
+    return 'Eine Kapsel für $name';
+  }
+
+  @override
   String capsulesFrameRemove(int number) {
     return 'Bild $number entfernen';
   }
@@ -978,6 +983,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Langsam';
+
+  @override
+  String get capsulesTo => 'An';
 
   @override
   String get capsulesWhoEveryone => 'Alle';
@@ -1259,6 +1267,9 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get friendsFollowed =>
       'Du folgst jetzt! Du bekommst Benachrichtigungen über neue Kapseln';
+
+  @override
+  String get friendsFollowing => 'Gefolgt';
 
   @override
   String get friendsFriendCapsulesEmpty =>

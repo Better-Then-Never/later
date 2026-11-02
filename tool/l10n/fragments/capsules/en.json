@@ -704,5 +704,18 @@
   "stampsLater": "Later",
   "@stampsLater": {
     "description": "Button on the new stamp: close it."
+  },
+  "capsulesForFriendTitle": "A capsule for {name}",
+  "@capsulesForFriendTitle": {
+    "description": "Title of the Create page when it was opened from a friend's profile (Send a capsule); {name} is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "capsulesTo": "To",
+  "@capsulesTo": {
+    "description": "Label before the friend a capsule is sent to, on the Create page."
   }
 }

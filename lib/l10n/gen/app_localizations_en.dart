@@ -756,6 +756,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'The capsule was saved but not sent. Tap save to try again.';
 
   @override
+  String capsulesForFriendTitle(String name) {
+    return 'A capsule for $name';
+  }
+
+  @override
   String capsulesFrameRemove(int number) {
     return 'Remove frame $number';
   }
@@ -958,6 +963,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capsulesSpeedSlow => 'Slow';
+
+  @override
+  String get capsulesTo => 'To';
 
   @override
   String get capsulesWhoEveryone => 'Everyone';
@@ -1230,6 +1238,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get friendsFollowed =>
       'Following! You\'ll get notifications about their capsules';
+
+  @override
+  String get friendsFollowing => 'Following';
 
   @override
   String get friendsFriendCapsulesEmpty =>

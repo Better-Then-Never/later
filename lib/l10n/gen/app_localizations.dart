@@ -1280,6 +1280,12 @@ abstract class AppLocalizations {
   /// **'The capsule was saved but not sent. Tap save to try again.'**
   String get capsulesErrorSavedNotSent;
 
+  /// Title of the Create page when it was opened from a friend's profile (Send a capsule); {name} is the friend's first name.
+  ///
+  /// In en, this message translates to:
+  /// **'A capsule for {name}'**
+  String capsulesForFriendTitle(String name);
+
   /// Screen reader label of the cross on a frame.
   ///
   /// In en, this message translates to:
@@ -1621,6 +1627,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Slow'**
   String get capsulesSpeedSlow;
+
+  /// Label before the friend a capsule is sent to, on the Create page.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get capsulesTo;
 
   /// Create page, "Who sees it" row: a public capsule.
   ///
@@ -2071,6 +2083,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Following! You\'ll get notifications about their capsules'**
   String get friendsFollowed;
+
+  /// State of the follow button when the user already follows this friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get friendsFollowing;
 
   /// No description provided for @friendsFriendCapsulesEmpty.
   ///

@@ -90,5 +90,6 @@
   "friendsUnpinFromProfile": "Открепить от профиля",
   "friendsShareTheirCard": "Поделиться карточкой: {name}",
   "friendsFollowRow": "Уведомления о капсулах: {name}",
-  "friendsRemoveFriend": "Удалить из друзей"
+  "friendsRemoveFriend": "Удалить из друзей",
+  "friendsFollowing": "Вы подписаны"
 }
