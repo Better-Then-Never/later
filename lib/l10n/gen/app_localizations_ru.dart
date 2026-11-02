@@ -1192,13 +1192,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsAdd => 'Добавить';
 
   @override
+  String get friendsAddPlus => '+ Добавить';
+
+  @override
   String get friendsAddTitle => 'Добавить друзей';
+
+  @override
+  String get friendsAskedToBeFriend => 'Хотят дружить';
 
   @override
   String get friendsBlock => 'Заблокировать';
 
   @override
   String get friendsBlockConfirm => 'Точно заблокировать этого пользователя?';
+
+  @override
+  String friendsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count друга',
+      many: '$count друзей',
+      few: '$count друга',
+      one: '$count друг',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get friendsDone => 'Готово';
+
+  @override
+  String get friendsEdit => 'Изменить';
 
   @override
   String get friendsEmpty => 'Вы пока не добавили друзей';
@@ -1238,14 +1263,13 @@ class AppLocalizationsRu extends AppLocalizations {
       'Найдите человека по @нику или отсканируйте QR-код друга. Здесь появятся знакомые ваших друзей.';
 
   @override
-  String get friendsFollow => 'Подписаться';
+  String friendsFollowRow(String name) {
+    return 'Уведомления о капсулах: $name';
+  }
 
   @override
   String get friendsFollowed =>
       'Вы подписались! Будем сообщать о новых капсулах';
-
-  @override
-  String get friendsFollowing => 'Вы подписаны';
 
   @override
   String get friendsFriendCapsulesEmpty => 'Здесь появятся капсулы друга';
@@ -1282,10 +1306,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsHideSuggestionLabel => 'Скрыть рекомендацию';
 
   @override
-  String get friendsMakeFriends => 'Найдите друзей';
-
-  @override
-  String get friendsManageFriendship => 'Настройки дружбы';
+  String friendsMoreFor(String name) {
+    return 'Ещё: $name';
+  }
 
   @override
   String friendsMutualCount(int count) {
@@ -1310,13 +1333,40 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsNoMatches => 'Среди друзей никого не нашлось';
 
   @override
+  String get friendsNoRequestsHint =>
+      'Когда кто-то захочет с вами дружить, заявка появится здесь';
+
+  @override
   String get friendsNoSuggestions => 'Больше рекомендаций нет';
+
+  @override
+  String get friendsNotNow => 'Не сейчас';
 
   @override
   String get friendsOpenChat => 'Открыть чат';
 
   @override
   String get friendsPending => 'Заявка отправлена';
+
+  @override
+  String get friendsPeopleYouMayKnow => 'Возможно, вы знакомы';
+
+  @override
+  String friendsPinSheetCount(int pinned, int max) {
+    return 'Закреплено $pinned из $max';
+  }
+
+  @override
+  String get friendsPinSheetSearch => 'Найти друга';
+
+  @override
+  String get friendsPinSheetTitle => 'Закрепить в профиле';
+
+  @override
+  String get friendsPinToProfile => 'Закрепить в профиле';
+
+  @override
+  String get friendsPinnedOnProfile => 'Закреплены в профиле';
 
   @override
   String get friendsQrHint => 'Наведите камеру на QR-код, чтобы добавить друга';
@@ -1332,13 +1382,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsReject => 'Отклонить';
 
   @override
-  String get friendsRemove => 'Удалить из друзей';
-
-  @override
   String get friendsRemoveAction => 'Удалить';
 
   @override
   String get friendsRemoveConfirm => 'Точно удалить пользователя из друзей?';
+
+  @override
+  String get friendsRemoveFriend => 'Удалить из друзей';
 
   @override
   String get friendsRemoving => 'Удаляем...';
@@ -1369,7 +1419,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsRequestSent => 'Заявка в друзья отправлена!';
 
   @override
-  String get friendsRequestsButton => 'Заявки';
+  String get friendsRequested => 'Заявка отправлена';
 
   @override
   String get friendsRequestsEmptySubtitle =>
@@ -1385,7 +1435,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsRequestsSentTab => 'Отправленные';
 
   @override
+  String friendsRequestsTab(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Заявки ($count)',
+      zero: 'Заявки',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get friendsRequestsTitle => 'Заявки в друзья';
+
+  @override
+  String get friendsScanTile => 'Сканировать код друга';
 
   @override
   String get friendsSearchHint => 'Поиск среди друзей';
@@ -1394,10 +1458,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsSearchPeopleHint => 'Имя или @ник';
 
   @override
+  String get friendsSearchResults => 'Найдены';
+
+  @override
   String get friendsSendCapsule => 'Отправить капсулу';
 
   @override
   String get friendsSendRequestLabel => 'Отправить заявку в друзья';
+
+  @override
+  String get friendsSentByYou => 'Отправленные вами';
 
   @override
   String get friendsSentEmptySubtitle =>
@@ -1407,10 +1477,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get friendsSentEmptyTitle => 'Нет отправленных заявок';
 
   @override
+  String get friendsShareCardTile => 'Поделиться карточкой Later';
+
+  @override
   String get friendsShareProfile => 'Поделиться профилем';
 
   @override
-  String get friendsShareProfileTo => 'Поделиться профилем ...';
+  String friendsShareTheirCard(String name) {
+    return 'Поделиться карточкой: $name';
+  }
+
+  @override
+  String get friendsSuggestedTab => 'Рекомендации';
 
   @override
   String get friendsSuggestionRemoved => 'Рекомендация убрана из списка!';
@@ -1420,6 +1498,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get friendsUnfollowed => 'Вы отписались';
+
+  @override
+  String get friendsUnpinFromProfile => 'Открепить от профиля';
 
   @override
   String get friendsViewProfile => 'Открыть профиль';
@@ -2860,16 +2941,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String profilePinned(String name) {
     return '$name: закреплено';
   }
-
-  @override
-  String get profilePinnedHint =>
-      'Если выберете меньше трёх, покажем случайных друзей из вашего списка';
-
-  @override
-  String get profilePinnedLimit => 'Закрепить можно не больше 3 друзей';
-
-  @override
-  String get profilePinnedTitle => 'Закрепите до 3 друзей';
 
   @override
   String get profilePinnedUpdated => 'Закреплённые друзья обновлены!';

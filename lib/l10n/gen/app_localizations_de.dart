@@ -1177,7 +1177,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsAdd => 'Hinzufügen';
 
   @override
+  String get friendsAddPlus => '+ Hinzufügen';
+
+  @override
   String get friendsAddTitle => 'Freunde hinzufügen';
+
+  @override
+  String get friendsAskedToBeFriend => 'Möchten mit dir befreundet sein';
 
   @override
   String get friendsBlock => 'Blockieren';
@@ -1185,6 +1191,23 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get friendsBlockConfirm =>
       'Möchtest du diese Person wirklich blockieren?';
+
+  @override
+  String friendsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Freunde',
+      one: '1 Freund',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get friendsDone => 'Fertig';
+
+  @override
+  String get friendsEdit => 'Bearbeiten';
 
   @override
   String get friendsEmpty => 'Du hast noch keine Freunde hinzugefügt';
@@ -1229,14 +1252,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Suche nach @Nutzername oder scanne den QR-Code eines Freundes. Hier erscheinen Leute, die deine Freunde kennen.';
 
   @override
-  String get friendsFollow => 'Folgen';
+  String friendsFollowRow(String name) {
+    return 'Benachrichtigungen zu Kapseln von $name';
+  }
 
   @override
   String get friendsFollowed =>
       'Du folgst jetzt! Du bekommst Benachrichtigungen über neue Kapseln';
-
-  @override
-  String get friendsFollowing => 'Gefolgt';
 
   @override
   String get friendsFriendCapsulesEmpty =>
@@ -1274,10 +1296,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsHideSuggestionLabel => 'Vorschlag ausblenden';
 
   @override
-  String get friendsMakeFriends => 'Freunde finden';
-
-  @override
-  String get friendsManageFriendship => 'Freundschaft verwalten';
+  String friendsMoreFor(String name) {
+    return 'Mehr zu $name';
+  }
 
   @override
   String friendsMutualCount(int count) {
@@ -1300,13 +1321,40 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsNoMatches => 'Keine Freunde passen zu deiner Suche';
 
   @override
+  String get friendsNoRequestsHint =>
+      'Wenn dir jemand eine Freundschaftsanfrage schickt, erscheint sie hier';
+
+  @override
   String get friendsNoSuggestions => 'Keine weiteren Vorschläge';
+
+  @override
+  String get friendsNotNow => 'Nicht jetzt';
 
   @override
   String get friendsOpenChat => 'Chat öffnen';
 
   @override
   String get friendsPending => 'Ausstehend';
+
+  @override
+  String get friendsPeopleYouMayKnow => 'Leute, die du kennen könntest';
+
+  @override
+  String friendsPinSheetCount(int pinned, int max) {
+    return '$pinned von $max angeheftet';
+  }
+
+  @override
+  String get friendsPinSheetSearch => 'Freund finden';
+
+  @override
+  String get friendsPinSheetTitle => 'An dein Profil heften';
+
+  @override
+  String get friendsPinToProfile => 'An mein Profil heften';
+
+  @override
+  String get friendsPinnedOnProfile => 'Auf deinem Profil angeheftet';
 
   @override
   String get friendsQrHint =>
@@ -1323,14 +1371,14 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsReject => 'Ablehnen';
 
   @override
-  String get friendsRemove => 'Aus Freunden entfernen';
-
-  @override
   String get friendsRemoveAction => 'Entfernen';
 
   @override
   String get friendsRemoveConfirm =>
       'Möchtest du diese Person wirklich aus deinen Freunden entfernen?';
+
+  @override
+  String get friendsRemoveFriend => 'Freund entfernen';
 
   @override
   String get friendsRemoving => 'Wird entfernt...';
@@ -1363,7 +1411,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsRequestSent => 'Freundschaftsanfrage gesendet!';
 
   @override
-  String get friendsRequestsButton => 'Anfragen';
+  String get friendsRequested => 'Angefragt';
 
   @override
   String get friendsRequestsEmptySubtitle =>
@@ -1379,7 +1427,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsRequestsSentTab => 'Gesendet';
 
   @override
+  String friendsRequestsTab(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Anfragen ($count)',
+      zero: 'Anfragen',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get friendsRequestsTitle => 'Freundschaftsanfragen';
+
+  @override
+  String get friendsScanTile => 'Code eines Freundes scannen';
 
   @override
   String get friendsSearchHint => 'Freunde durchsuchen';
@@ -1388,10 +1450,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsSearchPeopleHint => 'Name oder @Nutzername';
 
   @override
+  String get friendsSearchResults => 'Gefunden';
+
+  @override
   String get friendsSendCapsule => 'Kapsel senden';
 
   @override
   String get friendsSendRequestLabel => 'Freundschaftsanfrage senden';
+
+  @override
+  String get friendsSentByYou => 'Von dir gesendet';
 
   @override
   String get friendsSentEmptySubtitle =>
@@ -1401,10 +1469,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get friendsSentEmptyTitle => 'Keine gesendeten Anfragen';
 
   @override
+  String get friendsShareCardTile => 'Deine Later-Karte teilen';
+
+  @override
   String get friendsShareProfile => 'Profil teilen';
 
   @override
-  String get friendsShareProfileTo => 'Profil teilen ...';
+  String friendsShareTheirCard(String name) {
+    return 'Karte von $name teilen';
+  }
+
+  @override
+  String get friendsSuggestedTab => 'Vorschläge';
 
   @override
   String get friendsSuggestionRemoved => 'Vorschlag aus der Liste entfernt!';
@@ -1414,6 +1490,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get friendsUnfollowed => 'Du folgst dieser Person nicht mehr';
+
+  @override
+  String get friendsUnpinFromProfile => 'Von meinem Profil lösen';
 
   @override
   String get friendsViewProfile => 'Profil ansehen';
@@ -2817,16 +2896,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String profilePinned(String name) {
     return '$name angeheftet';
   }
-
-  @override
-  String get profilePinnedHint =>
-      'Wählst du weniger als 3 aus, zeigen wir zufällige Freunde aus deiner Liste';
-
-  @override
-  String get profilePinnedLimit => 'Du kannst höchstens 3 Freunde anpinnen';
-
-  @override
-  String get profilePinnedTitle => 'Pinne bis zu 3 Freunde an';
 
   @override
   String get profilePinnedUpdated => 'Angepinnte Freunde aktualisiert!';

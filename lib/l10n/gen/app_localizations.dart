@@ -1940,11 +1940,23 @@ abstract class AppLocalizations {
   /// **'Add'**
   String get friendsAdd;
 
+  /// Small button on a suggested person: sends them a friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add'**
+  String get friendsAddPlus;
+
   /// No description provided for @friendsAddTitle.
   ///
   /// In en, this message translates to:
-  /// **'Add Friends'**
+  /// **'Add friends'**
   String get friendsAddTitle;
+
+  /// Small label above the received friend requests (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Asked to be your friend'**
+  String get friendsAskedToBeFriend;
 
   /// Menu item and confirm button that block a user.
   ///
@@ -1957,6 +1969,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to block this user?'**
   String get friendsBlockConfirm;
+
+  /// How many friends the user has, at the end of My friends.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 friend} other{{count} friends}}'**
+  String friendsCount(int count);
+
+  /// Closes the Pin to your profile sheet and saves the pins.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get friendsDone;
+
+  /// Text button next to the pinned friends label: opens the Pin a friend sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get friendsEdit;
 
   /// No description provided for @friendsEmpty.
   ///
@@ -2030,23 +2060,17 @@ abstract class AppLocalizations {
   /// **'Search by @username or scan a friend\'s QR code. People your friends know show up here.'**
   String get friendsFindByUsernameHint;
 
-  /// Button in Manage friendship: get notified about this friend's capsules.
+  /// Row with a switch in a friend's menu: following the friend (notifications about their capsules). The name is the friend's first name.
   ///
   /// In en, this message translates to:
-  /// **'Follow'**
-  String get friendsFollow;
+  /// **'Notifications about {name}\'s capsules'**
+  String friendsFollowRow(String name);
 
   /// No description provided for @friendsFollowed.
   ///
   /// In en, this message translates to:
   /// **'Following! You\'ll get notifications about their capsules'**
   String get friendsFollowed;
-
-  /// State of the follow button when the user already follows this friend.
-  ///
-  /// In en, this message translates to:
-  /// **'Following'**
-  String get friendsFollowing;
 
   /// No description provided for @friendsFriendCapsulesEmpty.
   ///
@@ -2108,17 +2132,11 @@ abstract class AppLocalizations {
   /// **'Hide suggestion'**
   String get friendsHideSuggestionLabel;
 
-  /// Section title above the suggested people on Add Friends.
+  /// Screen reader label of the three dots button on a friend's row.
   ///
   /// In en, this message translates to:
-  /// **'Make friends'**
-  String get friendsMakeFriends;
-
-  /// No description provided for @friendsManageFriendship.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage friendship'**
-  String get friendsManageFriendship;
+  /// **'More for {name}'**
+  String friendsMoreFor(String name);
 
   /// After the @username of a suggested person.
   ///
@@ -2144,11 +2162,23 @@ abstract class AppLocalizations {
   /// **'No friends match your search'**
   String get friendsNoMatches;
 
+  /// Under 'No friend requests' on the Requests tab of Add friends.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone asks to be your friend, it shows up here'**
+  String get friendsNoRequestsHint;
+
   /// No description provided for @friendsNoSuggestions.
   ///
   /// In en, this message translates to:
   /// **'No more suggested friends'**
   String get friendsNoSuggestions;
+
+  /// Declines a friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get friendsNotNow;
 
   /// No description provided for @friendsOpenChat.
   ///
@@ -2161,6 +2191,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get friendsPending;
+
+  /// Small label above the suggested people (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'People you may know'**
+  String get friendsPeopleYouMayKnow;
+
+  /// Under the Pin to your profile title: how many friends are pinned of the most allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'{pinned} of {max} pinned'**
+  String friendsPinSheetCount(int pinned, int max);
+
+  /// Hint of the search field in the Pin to your profile sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a friend'**
+  String get friendsPinSheetSearch;
+
+  /// Title of the sheet where the user chooses the friends pinned to their profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to your profile'**
+  String get friendsPinSheetTitle;
+
+  /// Row in a friend's menu: pins the friend at the top of the user's profile friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to my profile'**
+  String get friendsPinToProfile;
+
+  /// Small label above the row of pinned friends on My friends (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned on your profile'**
+  String get friendsPinnedOnProfile;
 
   /// No description provided for @friendsQrHint.
   ///
@@ -2186,12 +2252,6 @@ abstract class AppLocalizations {
   /// **'Reject'**
   String get friendsReject;
 
-  /// No description provided for @friendsRemove.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove from friends'**
-  String get friendsRemove;
-
   /// Confirm button of the remove-friend dialog.
   ///
   /// In en, this message translates to:
@@ -2203,6 +2263,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to remove user from friends?'**
   String get friendsRemoveConfirm;
+
+  /// Row in a friend's menu: asks to confirm, then removes the friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove friend'**
+  String get friendsRemoveFriend;
 
   /// No description provided for @friendsRemoving.
   ///
@@ -2258,11 +2324,11 @@ abstract class AppLocalizations {
   /// **'Friend request sent!'**
   String get friendsRequestSent;
 
-  /// Button on Add Friends that opens the friend requests.
+  /// Shown instead of + Add when the user already sent a friend request.
   ///
   /// In en, this message translates to:
-  /// **'Requests'**
-  String get friendsRequestsButton;
+  /// **'Requested'**
+  String get friendsRequested;
 
   /// No description provided for @friendsRequestsEmptySubtitle.
   ///
@@ -2288,11 +2354,23 @@ abstract class AppLocalizations {
   /// **'Sent'**
   String get friendsRequestsSentTab;
 
+  /// Tab on Add friends with the friend requests the user received, and how many.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Requests} other{Requests ({count})}}'**
+  String friendsRequestsTab(int count);
+
   /// No description provided for @friendsRequestsTitle.
   ///
   /// In en, this message translates to:
   /// **'Friend Requests'**
   String get friendsRequestsTitle;
+
+  /// Tile on Add friends: opens the QR code scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a friend\'s code'**
+  String get friendsScanTile;
 
   /// Search hint on My friends (searches only among the user's friends). Keep it short.
   ///
@@ -2306,6 +2384,12 @@ abstract class AppLocalizations {
   /// **'Name or @username'**
   String get friendsSearchPeopleHint;
 
+  /// Small label above the people found by the search on Add friends (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Found'**
+  String get friendsSearchResults;
+
   /// No description provided for @friendsSendCapsule.
   ///
   /// In en, this message translates to:
@@ -2317,6 +2401,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send friend request'**
   String get friendsSendRequestLabel;
+
+  /// Small label above the friend requests the user sent (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Sent by you'**
+  String get friendsSentByYou;
 
   /// No description provided for @friendsSentEmptySubtitle.
   ///
@@ -2330,17 +2420,29 @@ abstract class AppLocalizations {
   /// **'No sent requests'**
   String get friendsSentEmptyTitle;
 
+  /// Tile on Add friends: opens the user's own shareable card (profile link and QR code).
+  ///
+  /// In en, this message translates to:
+  /// **'Share your Later card'**
+  String get friendsShareCardTile;
+
   /// No description provided for @friendsShareProfile.
   ///
   /// In en, this message translates to:
   /// **'Share Profile'**
   String get friendsShareProfile;
 
-  /// No description provided for @friendsShareProfileTo.
+  /// Row in a friend's menu: shares the friend's profile link. The name is the friend's first name.
   ///
   /// In en, this message translates to:
-  /// **'Share profile to ...'**
-  String get friendsShareProfileTo;
+  /// **'Share {name}\'s card'**
+  String friendsShareTheirCard(String name);
+
+  /// Tab on Add friends with people the user may know.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested'**
+  String get friendsSuggestedTab;
 
   /// No description provided for @friendsSuggestionRemoved.
   ///
@@ -2359,6 +2461,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unfollowed successfully'**
   String get friendsUnfollowed;
+
+  /// Row in a friend's menu when the friend is pinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin from my profile'**
+  String get friendsUnpinFromProfile;
 
   /// Main button on the profile of someone who is already a friend: opens their friend profile.
   ///
@@ -4531,24 +4639,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} pinned'**
   String profilePinned(String name);
-
-  /// Explanation under the title of the pinned friends chooser.
-  ///
-  /// In en, this message translates to:
-  /// **'If you choose fewer than 3, random friends from your list will be shown'**
-  String get profilePinnedHint;
-
-  /// Error when the user ticks a fourth pinned friend.
-  ///
-  /// In en, this message translates to:
-  /// **'You can only pin up to 3 friends'**
-  String get profilePinnedLimit;
-
-  /// Title of the sheet where the user picks the friends pinned to their profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose up to 3 pinned friends'**
-  String get profilePinnedTitle;
 
   /// No description provided for @profilePinnedUpdated.
   ///

@@ -5,19 +5,24 @@ import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../data/models/user_profile.dart';
 import '../../../shared/widgets/buttons/default_icon_button.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../../../shared/widgets/default_search_bar.dart';
 import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/buttons/go_back_button.dart';
+import '../../settings/settings_store.dart';
 import '../../users/user_directory.dart';
 import '../friends_store.dart';
+import '../pinned_friends_controller.dart';
+import '../widgets/friend_options_modal.dart';
 import '../widgets/my_friends/my_friends_grouped_by_letter_list.dart';
-import '../../../core/l10n/l10n.dart';
-import '../../../core/theme/app_palette.dart';
+import '../widgets/my_friends/pinned_friends_row.dart';
 
-/// All friends grouped by first letter, with a local search.
+/// My friends (Figma page 14, `7190:972`): the search with the QR button,
+/// the friends pinned on the profile, then everyone A to Z and a count.
 class MyFriendsPage extends StatefulWidget {
   const MyFriendsPage({super.key});
 
@@ -30,9 +35,17 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   Timer? _debounce;
   String _query = '';
 
+  /// The pins live in the settings, so this one stays in step with the
+  /// profile's own controller.
+  late final PinnedFriendsController _pins;
+
   @override
   void initState() {
     super.initState();
+    _pins = PinnedFriendsController(
+      friends: context.read<FriendsStore>(),
+      settings: context.read<SettingsStore>(),
+    );
     _searchController.addListener(() {
       _debounce?.cancel();
       _debounce = Timer(const Duration(milliseconds: 300), () {
@@ -47,12 +60,14 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
   void dispose() {
     _debounce?.cancel();
     _searchController.dispose();
+    _pins.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
+    final l10n = context.l10n;
+    final palette = context.palette;
     final store = context.watch<FriendsStore>();
     final directory = context.watch<UserDirectory>();
 
@@ -73,39 +88,61 @@ class _MyFriendsPageState extends State<MyFriendsPage> {
           directory.profile(uid) ?? UserProfile.unknown(uid),
       ];
       final grouped = groupFriendsByInitial(friends, _query);
-      body = grouped.isEmpty
-          ? DefaultEmptyInboxInfo(
-              message: _query.isEmpty
-                  ? context.l10n.friendsEmpty
-                  : context.l10n.friendsNoMatches,
-              assetPath: AppIcons.profileFriendSearch,
-            )
-          : MyFriendsGroupedByLetterList(
-              groupedFriends: grouped,
-              screenWidth: screenWidth,
-            );
+      if (grouped.isEmpty) {
+        body = DefaultEmptyInboxInfo(
+          message: _query.isEmpty ? l10n.friendsEmpty : l10n.friendsNoMatches,
+          assetPath: AppIcons.profileFriendSearch,
+        );
+      } else {
+        body = MyFriendsGroupedByLetterList(
+          groupedFriends: grouped,
+          header: _query.isEmpty
+              ? ChangeNotifierProvider.value(
+                  value: _pins,
+                  child: const PinnedFriendsRow(),
+                )
+              : null,
+          footer: Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              l10n.friendsCount(ids.length),
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body.copyWith(
+                fontSize: 13,
+                color: palette.textSecondary,
+              ),
+            ),
+          ),
+          // The friend's menu; removing them here keeps this page open.
+          onMore: (uid) =>
+              FriendOptionsModal.show(context, uid, leavePage: false),
+        );
+      }
     }
 
     return Scaffold(
-      backgroundColor: context.palette.background,
+      backgroundColor: palette.background,
       body: Column(
         children: [
-          PageHeader(
-            mainText: context.l10n.friendsMyFriendsTitle,
-            leadingButton: GoBackButton(context: context),
-            searchBar: DefaultSearchBar(
+          PageHeaderV2(
+            title: l10n.friendsMyFriendsTitle,
+            onBack: () => Navigator.of(context).maybePop(),
+            backLabel: l10n.commonBack,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            child: DefaultSearchBar(
               controller: _searchController,
-              hintText: context.l10n.friendsSearchHint,
+              hintText: l10n.friendsSearchHint,
               trailingButton: DefaultIconButton(
                 onTap: () => AppRoutes.scanProfileQr(context),
                 assetPath: AppIcons.friendsQrScan,
-                semanticLabel: context.l10n.friendsQrTitle,
-                size: screenWidth * 0.09,
+                semanticLabel: l10n.friendsQrTitle,
+                size: 30,
               ),
             ),
           ),
           Expanded(child: body),
-          const SizedBox(height: 24),
         ],
       ),
     );
