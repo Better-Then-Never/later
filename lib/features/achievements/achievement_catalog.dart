@@ -5,6 +5,21 @@ import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../data/models/user_profile.dart';
 
+/// The groups the Achievements page shows the catalogue in.
+enum AchievementGroup {
+  /// Making capsules: the first, how many, public ones, loops.
+  capsules,
+
+  /// Coming back: the streak, the night and the early morning.
+  habits,
+
+  /// Where the capsules are: places and the distance between them.
+  places,
+
+  /// Other people: friends, reactions, comments, capsules opened.
+  friends,
+}
+
 /// One achievement of the registry. Mirrors ACHIEVEMENTS in
 /// functions/lib/gamification.js (ids, metrics and tiers must match; the
 /// server unlocks, the app only shows).
@@ -16,9 +31,13 @@ class AchievementDef {
     required this.metric,
     required this.title,
     required this.goal,
+    required this.group,
   });
 
   final String id;
+
+  /// Where the Achievements page shows it.
+  final AchievementGroup group;
 
   /// Thresholds of the levels, lowest first.
   final List<num> tiers;
@@ -47,6 +66,7 @@ abstract final class AchievementCatalog {
   static final all = <AchievementDef>[
     AchievementDef(
       id: 'first_capsule',
+      group: AchievementGroup.capsules,
       tiers: const [1],
       icon: Icons.photo_camera,
       metric: (p) => p.stats.capsules,
@@ -55,6 +75,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'collector',
+      group: AchievementGroup.capsules,
       tiers: const [5, 25, 100, 500],
       icon: Icons.collections,
       metric: (p) => p.stats.capsules,
@@ -63,6 +84,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'open_book',
+      group: AchievementGroup.capsules,
       tiers: const [1, 10, 50],
       icon: Icons.public,
       metric: (p) => p.stats.publicCapsules,
@@ -71,6 +93,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'animator',
+      group: AchievementGroup.capsules,
       tiers: const [1, 10],
       icon: Icons.animation,
       metric: (p) => p.stats.loopCapsules,
@@ -79,6 +102,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'streak',
+      group: AchievementGroup.habits,
       tiers: const [3, 7, 14, 30, 100],
       icon: Icons.local_fire_department,
       metric: (p) => p.stats.streakLongest,
@@ -87,6 +111,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'explorer',
+      group: AchievementGroup.places,
       tiers: const [3, 10, 25, 100],
       icon: Icons.explore,
       metric: (p) => p.stats.places,
@@ -95,6 +120,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'traveler',
+      group: AchievementGroup.places,
       tiers: const [100, 1000, 10000],
       icon: Icons.flight_takeoff,
       metric: (p) => p.stats.distanceKm,
@@ -105,6 +131,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'crowd_pleaser',
+      group: AchievementGroup.friends,
       tiers: const [10, 100, 1000],
       icon: Icons.favorite,
       metric: (p) => p.stats.reactionsReceived,
@@ -113,6 +140,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'chatterbox',
+      group: AchievementGroup.friends,
       tiers: const [1, 25, 100],
       icon: Icons.chat_bubble,
       metric: (p) => p.stats.commentsWritten,
@@ -121,6 +149,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'friendly',
+      group: AchievementGroup.friends,
       tiers: const [1, 10, 50],
       icon: Icons.group,
       metric: (p) => p.friends.length,
@@ -129,6 +158,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'night_owl',
+      group: AchievementGroup.habits,
       tiers: const [1, 10],
       icon: Icons.nightlight,
       metric: (p) => p.stats.nightCapsules,
@@ -137,6 +167,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'early_bird',
+      group: AchievementGroup.habits,
       tiers: const [1, 10],
       icon: Icons.wb_twilight,
       metric: (p) => p.stats.morningCapsules,
@@ -145,6 +176,7 @@ abstract final class AchievementCatalog {
     ),
     AchievementDef(
       id: 'curious',
+      group: AchievementGroup.friends,
       tiers: const [10, 50, 250, 1000],
       icon: Icons.visibility,
       metric: (p) => p.stats.capsulesViewed,

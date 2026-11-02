@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router/app_page_route.dart';
+import '../../app/session/session_controller.dart';
+import '../../core/assets/app_assets.dart';
 import '../../core/config/feature_flags.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_dimens.dart';
-import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../data/models/social.dart';
@@ -14,10 +15,13 @@ import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
 import '../../shared/motion/app_motion_widgets.dart';
 import '../../shared/styles/box_decorations.dart';
-import '../../shared/widgets/buttons/go_back_button.dart';
 import '../../shared/widgets/page_header.dart';
+import '../../shared/widgets/v2/card_v2.dart';
+import '../streak/streak_page.dart';
 import 'achievement_catalog.dart';
 import 'achievement_icon.dart';
+import 'achievement_mark.dart';
+import 'achievement_sheet.dart';
 import 'streak_flame.dart';
 
 /// An achievement as one user stands with it: the level the server
@@ -35,6 +39,17 @@ class AchievementStanding {
 
   /// The threshold of the next level (null when complete).
   num? get nextGoal => complete ? null : def.tiers[tier + 1];
+
+  /// Something done toward it already.
+  bool get started => unlocked || value > 0;
+
+  /// How far along the next level is, from 0 to 1 ("16 of 20" is 0.8);
+  /// 1 when complete.
+  double get progress {
+    final next = nextGoal;
+    if (next == null) return 1;
+    return (value / next).clamp(0.0, 1.0).toDouble();
+  }
 
   static List<AchievementStanding> of(
     UserProfile profile,
@@ -187,7 +202,10 @@ class StreakChip extends StatelessWidget {
     final now = DateTime.now();
     final streak = profile.stats.streakAt(now);
     final today = profile.stats.extendedToday(now);
-    return Container(
+    final own = context.select<SessionController?, bool>(
+      (s) => s?.uid == profile.uid,
+    );
+    final chip = Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.warningOrange.withValues(alpha: 0.15),
@@ -220,42 +238,71 @@ class StreakChip extends StatelessWidget {
         ),
       ),
     );
+    if (!own) return chip;
+    return Semantics(
+      button: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => StreakPage.open(context),
+        child: chip,
+      ),
+    );
   }
 }
 
-/// Every achievement with its level and the next goal.
+/// Every achievement of the catalogue (Figma page 14, `7191:1084`): the
+/// streak on top (the signed-in user's own page), how many are earned, then
+/// the marks in their groups. A mark opens its sheet.
 class AchievementsPage extends StatelessWidget {
   const AchievementsPage({super.key, required this.profile});
 
+  /// Whose achievements: the signed-in user's or a friend's.
   final UserProfile profile;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
+    // Your own page follows the live stats (a capsule just made counts).
+    final own = context.select<SessionController?, UserProfile?>(
+      (s) => s?.uid == profile.uid ? (s?.profile ?? profile) : null,
+    );
+    final shown = own ?? profile;
     return Scaffold(
       backgroundColor: palette.backgroundAlt,
       body: Column(
         children: [
-          PageHeader(
-            mainText: l10n.achievementsTitle,
-            description: l10n.achievementsDescription,
-            leadingButton: GoBackButton(context: context),
+          PageHeaderV2(
+            title: l10n.achievementsTitle,
+            backLabel: l10n.commonBack,
+            onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
             child: AchievementsBuilder(
-              profile: profile,
-              builder: (context, standings) => ListView.separated(
+              profile: shown,
+              builder: (context, standings) => ListView(
                 padding: EdgeInsets.fromLTRB(
                   16,
                   16,
                   16,
-                  16 + MediaQuery.viewPaddingOf(context).bottom,
+                  24 + MediaQuery.viewPaddingOf(context).bottom,
                 ),
-                itemCount: standings.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (context, i) =>
-                    _AchievementRow(standing: standings[i]),
+                children: [
+                  if (own != null && FeatureFlags.streaks) ...[
+                    _StreakRow(stats: own.stats),
+                    const SizedBox(height: 12),
+                  ],
+                  AchievementsGrid(standings: standings, passportUid: own?.uid),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.achievementsDescription,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.body.copyWith(
+                      fontSize: 13,
+                      color: palette.textMuted,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -265,90 +312,149 @@ class AchievementsPage extends StatelessWidget {
   }
 }
 
-class _AchievementRow extends StatelessWidget {
-  const _AchievementRow({required this.standing});
+/// "3 of 13", then a card of marks per group (Capsules, Habits, Places,
+/// Friends), three to a row.
+class AchievementsGrid extends StatelessWidget {
+  const AchievementsGrid({
+    super.key,
+    required this.standings,
+    this.passportUid,
+  });
 
-  final AchievementStanding standing;
+  final List<AchievementStanding> standings;
+
+  /// Passed on to a mark's sheet (its Passport button).
+  final String? passportUid;
+
+  static String groupName(AppLocalizations l10n, AchievementGroup group) =>
+      switch (group) {
+        AchievementGroup.capsules => l10n.achievementsGroupCapsules,
+        AchievementGroup.habits => l10n.achievementsGroupHabits,
+        AchievementGroup.places => l10n.achievementsGroupPlaces,
+        AchievementGroup.friends => l10n.achievementsGroupFriends,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final earned = standings.where((s) => s.unlocked).length;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            l10n.achievementsCount(earned, standings.length),
+            textAlign: TextAlign.end,
+            style: AppTextStyles.body.copyWith(
+              fontSize: 13,
+              color: context.palette.textSecondary,
+            ),
+          ),
+        ),
+        for (final group in AchievementGroup.values)
+          if (standings.where((s) => s.def.group == group).toList()
+              case final members when members.isNotEmpty) ...[
+            GroupLabelV2(groupName(l10n, group)),
+            CardV2(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  for (var i = 0; i < members.length; i += 3)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var j = i; j < i + 3; j++)
+                          Expanded(
+                            child: j < members.length
+                                ? AchievementTile(
+                                    standing: members[j],
+                                    onTap: () => AchievementSheet.show(
+                                      context,
+                                      members[j],
+                                      passportUid: passportUid,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+      ],
+    );
+  }
+}
+
+/// The streak on top of the page: the flame, the days, what today needs.
+/// Opens the Streak page.
+class _StreakRow extends StatelessWidget {
+  const _StreakRow({required this.stats});
+
+  final UserStats stats;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
-    final def = standing.def;
-    final next = standing.nextGoal;
-    final floor = standing.tier < 0 ? 0 : def.tiers[standing.tier];
-    final progress = next == null
-        ? 1.0
-        : ((standing.value - floor) / (next - floor)).clamp(0.0, 1.0);
-    return Container(
-      decoration: BoxDecorations.whiteCard(context, borderRadius: 20),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          AchievementIcon(
-            id: def.id,
-            icon: def.icon,
-            tier: standing.tier,
-            tiers: def.tiers.length,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    final now = DateTime.now();
+    final days = stats.streakAt(now);
+    final today = stats.extendedToday(now);
+    final title = days > 0
+        ? l10n.achievementsStreakDays(days)
+        : l10n.streakNoneTitle;
+    final line = today
+        ? l10n.achievementsStreakTodayDone
+        : days > 0
+        ? l10n.achievementsStreakKeep
+        : l10n.streakStartToday;
+    return CardV2(
+      child: Semantics(
+        button: true,
+        label: '$title. $line',
+        excludeSemantics: true,
+        child: InkWell(
+          onTap: () => StreakPage.open(context),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 14, 16),
+            child: Row(
               children: [
-                Text(
-                  def.title(l10n),
-                  style: TextStyle(
-                    fontFamily: kAppFontFamily,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: palette.textPrimary,
-                  ),
-                ),
-                Text(
-                  standing.unlocked
-                      ? l10n.achievementsTier(
-                          standing.tier + 1,
-                          def.tiers.length,
-                        )
-                      : l10n.achievementsLocked,
-                  style: TextStyle(
-                    fontFamily: kAppFontFamily,
-                    fontSize: 12,
-                    color: palette.textMuted,
-                  ),
-                ),
-                if (next != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    def.goal(l10n, next),
-                    style: TextStyle(
-                      fontFamily: kAppFontFamily,
-                      fontSize: 13,
-                      color: palette.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    // Fills from empty when the page opens.
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0, end: progress.toDouble()),
-                      duration: AppMotion.of(context, AppMotion.reveal),
-                      curve: AppMotion.enter,
-                      builder: (context, value, _) => LinearProgressIndicator(
-                        value: value,
-                        minHeight: 6,
-                        backgroundColor: palette.surfaceMuted,
-                        color: AppColors.brandGreen,
+                StreakFlame(size: 28, greyed: !today),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: AppTextStyles.body.copyWith(
+                          fontSize: 18,
+                          height: 1.2,
+                          fontWeight: FontWeight.bold,
+                          color: palette.textPrimary,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 2),
+                      Text(
+                        line,
+                        style: AppTextStyles.body.copyWith(
+                          fontSize: 13,
+                          height: 1.25,
+                          color: palette.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
+                const SizedBox(width: 12),
+                Image.asset(AppIcons.goHere, width: 20),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

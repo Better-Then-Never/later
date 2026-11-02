@@ -207,7 +207,6 @@
   "settingsNotificationsCommentsHint": "Pod twoimi kapsułami i odpowiedzi do ciebie",
   "settingsNotificationsAchievements": "Osiągnięcia",
   "settingsNotificationsStreak": "Przypomnienie o serii",
-  "settingsNotificationsStreakHint": "Wieczorem, gdy seria dziś by się skończyła",
   "settingsNotificationsNews": "Wiadomości od Later",
   "settingsNotificationsNewsHint": "Rzadkie ogłoszenia od zespołu",
   "settingsAboutDescription": "Kilka słów pod twoim imieniem dla każdego, kto otworzy twój profil.",
@@ -245,5 +244,9 @@
   "settingsPlacesAlwaysTitle": "Lokalizacja zawsze",
   "settingsPlacesAlwaysMessage": "Aby Later mógł informować o kapsułach i krajach, gdy jest zamknięty, Android musi zawsze zezwalać na lokalizację. Wybierz dalej „Zezwalaj zawsze”.",
   "settingsPlacesAlwaysContinue": "Dalej",
-  "settingsPlacesAlwaysDenied": "Aby to włączyć, zezwól w Ustawieniach na lokalizację „Zawsze”."
+  "settingsPlacesAlwaysDenied": "Aby to włączyć, zezwól w Ustawieniach na lokalizację „Zawsze”.",
+  "settingsSectionStreak": "SERIA",
+  "settingsStreakReminderHint": "Codziennie o {time}, chyba że dziś kapsuła już się liczy",
+  "settingsStreakReminderTime": "Godzina",
+  "settingsStreakFooter": "Tylko ten telefon: przypomnienie przychodzi z tego telefonu, także offline, a nie z innych urządzeń."
 }

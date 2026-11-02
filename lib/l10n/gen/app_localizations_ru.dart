@@ -191,17 +191,60 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String achievementsAllLevels(int count) {
+    return 'Все уровни получены ($count)';
+  }
+
+  @override
+  String achievementsCount(int done, int total) {
+    return '$done из $total';
+  }
+
+  @override
   String get achievementsDescription =>
       'Открываются, когда вы пользуетесь Later, а не за деньги';
 
   @override
-  String get achievementsLocked => 'Закрыто';
+  String get achievementsDone => 'Получено';
+
+  @override
+  String get achievementsGroupCapsules => 'Капсулы';
+
+  @override
+  String get achievementsGroupFriends => 'Друзья';
+
+  @override
+  String get achievementsGroupHabits => 'Привычки';
+
+  @override
+  String get achievementsGroupPlaces => 'Места';
+
+  @override
+  String achievementsLevelPercent(int level, int percent) {
+    return 'Ур. $level · $percent %';
+  }
 
   @override
   String get achievementsNoneYet => 'До первого — всего одна капсула.';
 
   @override
+  String get achievementsNotStarted => 'Не начато';
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent %';
+  }
+
+  @override
+  String achievementsProgressOf(String value, String goal, String left) {
+    return '$value из $goal · осталось $left';
+  }
+
+  @override
   String get achievementsSeeAll => 'Все';
+
+  @override
+  String get achievementsSeePassport => 'Посмотреть свои страны в Паспорте';
 
   @override
   String achievementsStreakDays(int count) {
@@ -3365,10 +3408,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsNotificationsStreak => 'Напоминание о серии';
 
   @override
-  String get settingsNotificationsStreakHint =>
-      'Вечером, если серия сегодня прервётся';
-
-  @override
   String get settingsNotificationsVibrate => 'Вибрация';
 
   @override
@@ -3639,6 +3678,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsSectionSize => 'РАЗМЕР';
 
   @override
+  String get settingsSectionStreak => 'СЕРИЯ';
+
+  @override
   String get settingsSectionSupport => 'ПОДДЕРЖКА';
 
   @override
@@ -3698,6 +3740,18 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get settingsStorageFooter =>
       'Фото, снятые или выбранные для капсул, и картинки, загруженные из интернета. Ваши капсулы, чаты и аккаунт останутся.';
+
+  @override
+  String get settingsStreakFooter =>
+      'Только этот телефон: напоминание приходит с этого телефона, даже без интернета, а не с других устройств.';
+
+  @override
+  String settingsStreakReminderHint(String time) {
+    return 'Каждый день в $time, если сегодня ещё нет капсулы';
+  }
+
+  @override
+  String get settingsStreakReminderTime => 'Время';
 
   @override
   String settingsSupportInfoApp(String version) {
@@ -3876,6 +3930,35 @@ class AppLocalizationsRu extends AppLocalizations {
       'Сегодня ещё не засчитано: оставьте капсулу до полуночи, чтобы сохранить серию.';
 
   @override
+  String get streakBest => 'Лучшая серия';
+
+  @override
+  String streakDaysCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count дней',
+      few: '$count дня',
+      one: '$count день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakKeepHoursLeft(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Осталось $hours часа.',
+      many: 'Осталось $hours часов.',
+      few: 'Осталось $hours часа.',
+      one: 'Остался $hours час.',
+    );
+    return 'Создайте капсулу сегодня, чтобы её сохранить. $_temp0';
+  }
+
+  @override
   String streakLongest(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -3892,7 +3975,57 @@ class AppLocalizationsRu extends AppLocalizations {
   String get streakMakeCapsule => 'Создать капсулу';
 
   @override
+  String get streakNoneTitle => 'Серии пока нет';
+
+  @override
+  String get streakPageTitle => 'Серия';
+
+  @override
+  String streakRemindAt(String time) {
+    return 'Напомнить в $time';
+  }
+
+  @override
+  String get streakReminderDenied =>
+      'Разрешите Later уведомления в настройках телефона, чтобы получать напоминание';
+
+  @override
+  String streakReminderKeepBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Ваша серия ($count дня) закончится в полночь. Капсула сегодня её сохранит.',
+      many:
+          'Ваша серия ($count дней) закончится в полночь. Капсула сегодня её сохранит.',
+      few:
+          'Ваша серия ($count дня) закончится в полночь. Капсула сегодня её сохранит.',
+      one:
+          'Ваша серия ($count день) закончится в полночь. Капсула сегодня её сохранит.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakReminderKeepTitle => 'Сохраните серию';
+
+  @override
+  String get streakReminderPushOff => 'Уведомления выключены в настройках';
+
+  @override
+  String get streakReminderStartTitle => 'Капсула сегодня?';
+
+  @override
+  String get streakReminderTimeTitle => 'Напомнить в';
+
+  @override
   String get streakSafe => 'Сегодня засчитано. До завтра!';
+
+  @override
+  String get streakStartToday => 'Создайте капсулу сегодня, чтобы начать серию';
+
+  @override
+  String get streakThisWeek => 'Эта неделя';
 
   @override
   String worldCapsules(int count) {
