@@ -299,6 +299,14 @@ class FakeUserRepository implements UserRepository {
   Future<void> setAbout(String uid, String about) async =>
       put(profiles[uid]!.copyWith(about: about));
 
+  @override
+  Future<void> setStamp(String uid, ProfileStampStyle stamp) async =>
+      put(profiles[uid]!.copyWith(stamp: stamp));
+
+  @override
+  Future<void> setHomeTown(String uid, String town) async =>
+      put(profiles[uid]!.copyWith(homeTown: town));
+
   /// Lower-case names people are found by (`nameLower`).
   final Map<String, String> searchNames = {};
 
@@ -318,6 +326,8 @@ class FakeUserRepository implements UserRepository {
         showAchievements: p.showAchievements,
         about: p.about,
         searchName: lowerCaseName,
+        stamp: p.stamp,
+        homeTown: p.homeTown,
       ),
     );
   }

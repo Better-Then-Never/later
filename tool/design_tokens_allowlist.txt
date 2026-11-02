@@ -18,9 +18,6 @@ material-icon lib/features/notifications/widgets/notification_selection_action_b
 material-icon lib/features/notifications/widgets/notification_selection_action_bar.dart Icons.delete_outline  # original design
 material-icon lib/features/notifications/widgets/notification_selection_action_bar.dart Icons.close  # original design
 material-icon lib/features/notifications/widgets/notification_thumbnail.dart Icons.image  # original design (thumbnail placeholder)
-material-icon lib/features/profile/share/share_profile_page.dart Icons.share  # original design
-material-icon lib/features/profile/share/share_profile_page.dart Icons.copy  # original design
-material-icon lib/features/profile/share/share_profile_page.dart Icons.info_outline  # original design
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.check_circle  # original design (toasts)
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.error  # original design (toasts)
 material-icon lib/shared/widgets/popup/popup_notification_service.dart Icons.info  # original design (toasts)

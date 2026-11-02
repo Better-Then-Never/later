@@ -99,3 +99,10 @@ The test capsule was deleted afterwards (its sealed part went with it). Found an
 entry point was not in the compiled app (nothing imported it; now kept by bootstrap.dart like the uploads'); an
 alert held back by quiet hours was used up; the first check waited half an hour (now it runs when a switch is
 turned on). Samsung's app freezer pauses the app's process in the background between checks; the check still ran.
+
+## 2 Nov 2026: Profile v4 rules
+
+At the owner's request ("deploy the rules and release it"): `firebase deploy --only firestore:rules` (✓) from
+`feature/profile-v4` (977c5ff). `users/{uid}` may now carry `stampShape` (one of six), `stampColor` (a name or
+`#RRGGBB`) and `homeTown` (at most 40 characters), written by their owner only. Rules tests 91/91 before the deploy.
+No functions, indexes or data changed. Older apps never write these fields and read profiles as before.

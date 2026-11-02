@@ -13,6 +13,8 @@ import '../../../core/config/feature_flags.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../shared/widgets/user/user_stamp.dart';
+import '../../users/user_directory.dart';
 import '../../../data/models/capsule.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/gallery_service.dart';
@@ -271,6 +273,12 @@ class _CapsuleCreationView extends StatelessWidget {
     final controller = context.watch<CapsuleCreationController>();
     final l10n = context.l10n;
     final openAt = controller.openAt;
+    final to = recipientId;
+    final toName = to == null
+        ? ''
+        : context.select<UserDirectory, String>(
+            (d) => (d.profile(to)?.name ?? '').split(' ').first,
+          );
     // Only the photo changes: the title, the words and the settings stay.
     Future<void> retake() async {
       _letGoOfKeyboard(context);
@@ -297,7 +305,9 @@ class _CapsuleCreationView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 PageHeaderV2(
-                  title: l10n.capsulesCreationTitle,
+                  title: toName.isEmpty
+                      ? l10n.capsulesCreationTitle
+                      : l10n.capsulesForFriendTitle(toName),
                   backLabel: l10n.commonBack,
                   onBack: () => Navigator.pop(context),
                 ),
@@ -314,6 +324,49 @@ class _CapsuleCreationView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Sent to one friend (from their profile): who it
+                          // is for, as their stamp (Profile v4).
+                          if (to != null) ...[
+                            _CardV2(
+                              padding: const EdgeInsets.fromLTRB(
+                                16,
+                                10,
+                                16,
+                                10,
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    l10n.capsulesTo,
+                                    style: TextStyle(
+                                      fontFamily: kAppFontFamily,
+                                      fontSize: 15,
+                                      color: context.palette.textSecondary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  UserStamp(userId: to, size: 36, tilt: -4),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      context.select<UserDirectory, String>(
+                                        (d) => d.profile(to)?.name ?? '',
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontFamily: kAppFontFamily,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: context.palette.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                          ],
                           // The capsule as it will look (Figma "Preview v3"):
                           // the photo as a square, the title and its place, the
                           // words, when it is left and opens.

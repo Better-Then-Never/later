@@ -95,6 +95,11 @@ abstract final class FirestoreMappers {
       stats: userStats(_map(data['stats'])),
       about: _string(data['about'], ''),
       searchName: _nonEmptyString(data['nameLower']),
+      stamp: ProfileStampStyle(
+        shape: StampShape.parse(data['stampShape']),
+        color: StampColor.parse(data['stampColor']),
+      ),
+      homeTown: _string(data['homeTown'], ''),
     );
   }
 

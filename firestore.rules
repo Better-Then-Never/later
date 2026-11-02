@@ -80,6 +80,8 @@ service cloud.firestore {
         return isMe(uid)
           && keys.hasOnly(['name', 'username', 'friends', 'favorites',
             'showAchievements', 'about', 'nameLower',
+            // Profile v4: the stamp on the postcard and the town under the name.
+            'stampShape', 'stampColor', 'homeTown',
             // Legacy fields of older app versions may only be removed.
             'email', 'fcmToken', 'fcmTokenUpdatedAt', 'blockedUsers'])
           && (!keys.hasAny(['name']) || validName(d.name))
@@ -92,6 +94,12 @@ service cloud.firestore {
           // A few words under the name.
           && (!keys.hasAny(['about'])
             || (d.get('about', '') is string && d.get('about', '').size() <= 100))
+          && (!keys.hasAny(['stampShape']) || d.stampShape in
+            ['classic', 'rounded', 'round', 'soft', 'ticket', 'polaroid'])
+          && (!keys.hasAny(['stampColor']) || (d.stampColor is string
+            && d.stampColor.matches('^(white|paper|green|yellow|orange|red|blue|forest|black|#[0-9A-Fa-f]{6})$')))
+          && (!keys.hasAny(['homeTown'])
+            || (d.get('homeTown', '') is string && d.get('homeTown', '').size() <= 40))
           // The name in lower case, for search by name; removed when the
           // user does not want to be found by name. Old apps change the name
           // without it (the index then lags until the new app fixes it).

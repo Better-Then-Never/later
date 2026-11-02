@@ -171,18 +171,58 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String achievementsAllLevels(int count) {
+    return 'Los $count niveles logrados';
+  }
+
+  @override
+  String achievementsCount(int done, int total) {
+    return '$done de $total';
+  }
+
+  @override
   String get achievementsDescription =>
       'Se desbloquean usando Later, nunca pagando';
 
   @override
-  String get achievementsLocked => 'Bloqueado';
+  String get achievementsDone => 'Logrado';
+
+  @override
+  String get achievementsGroupCapsules => 'Cápsulas';
+
+  @override
+  String get achievementsGroupFriends => 'Amigos';
+
+  @override
+  String get achievementsGroupHabits => 'Hábitos';
+
+  @override
+  String get achievementsGroupPlaces => 'Lugares';
+
+  @override
+  String achievementsLevelPercent(int level, int percent) {
+    return 'Nivel $level · $percent %';
+  }
 
   @override
   String get achievementsNoneYet =>
       'El primero está a una cápsula de distancia.';
 
   @override
-  String get achievementsSeeAll => 'Ver todos';
+  String get achievementsNotStarted => 'Sin empezar';
+
+  @override
+  String achievementsPercent(int percent) {
+    return '$percent %';
+  }
+
+  @override
+  String achievementsProgressOf(String value, String goal, String left) {
+    return '$value de $goal · faltan $left';
+  }
+
+  @override
+  String get achievementsSeePassport => 'Ver tus países en el Pasaporte';
 
   @override
   String achievementsStreakDays(int count) {
@@ -721,6 +761,11 @@ class AppLocalizationsEs extends AppLocalizations {
       'La cápsula se ha guardado, pero no se ha enviado. Vuelve a tocar el botón para intentarlo de nuevo.';
 
   @override
+  String capsulesForFriendTitle(String name) {
+    return 'Una cápsula para $name';
+  }
+
+  @override
   String capsulesFrameRemove(int number) {
     return 'Quitar fotograma $number';
   }
@@ -924,6 +969,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get capsulesSpeedSlow => 'Lenta';
 
   @override
+  String get capsulesTo => 'Para';
+
+  @override
   String get capsulesWhoEveryone => 'Todos';
 
   @override
@@ -1060,6 +1108,49 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commonUsernameTaken => 'Ese nombre de usuario ya está en uso';
 
   @override
+  String get editProfileAboutYou => 'Sobre ti';
+
+  @override
+  String get editProfileAdd => 'Añadir';
+
+  @override
+  String get editProfileChange => 'Cambiar';
+
+  @override
+  String get editProfileCover => 'Foto de portada';
+
+  @override
+  String get editProfileHint => 'Toca la portada o el sello para cambiarlos.';
+
+  @override
+  String get editProfileHomeTown => 'Ciudad';
+
+  @override
+  String get editProfileHomeTownFailed =>
+      'No se pudo guardar tu ciudad. Inténtalo de nuevo.';
+
+  @override
+  String get editProfileHomeTownNote =>
+      'Aparece en tu postal y en tu pasaporte.';
+
+  @override
+  String get editProfilePhoto => 'Tu foto';
+
+  @override
+  String get editProfileStamp => 'Sello';
+
+  @override
+  String editProfileStampValue(String shape, String colour) {
+    return '$shape · $colour';
+  }
+
+  @override
+  String get editProfileTitle => 'Editar perfil';
+
+  @override
+  String get editProfileYourPostcard => 'Tu postal';
+
+  @override
   String get failureNotFound => 'Este elemento ya no existe.';
 
   @override
@@ -1075,7 +1166,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsAdd => 'Añadir';
 
   @override
+  String get friendsAddPlus => '+ Añadir';
+
+  @override
   String get friendsAddTitle => 'Añadir amigos';
+
+  @override
+  String get friendsAskedToBeFriend => 'Quieren ser tus amigos';
 
   @override
   String get friendsBlock => 'Bloquear';
@@ -1083,6 +1180,23 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get friendsBlockConfirm =>
       '¿Seguro que quieres bloquear a este usuario?';
+
+  @override
+  String friendsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count amigos',
+      one: '1 amigo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get friendsDone => 'Listo';
+
+  @override
+  String get friendsEdit => 'Editar';
 
   @override
   String get friendsEmpty => 'Aún no has añadido amigos';
@@ -1124,7 +1238,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Busca por @usuario o escanea el código QR de un amigo. Aquí aparecerán personas que conocen tus amigos.';
 
   @override
-  String get friendsFollow => 'Seguir';
+  String friendsFollowRow(String name) {
+    return 'Avisos de las cápsulas de $name';
+  }
 
   @override
   String get friendsFollowed =>
@@ -1169,10 +1285,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsHideSuggestionLabel => 'Ocultar sugerencia';
 
   @override
-  String get friendsMakeFriends => 'Haz amigos';
-
-  @override
-  String get friendsManageFriendship => 'Gestionar amistad';
+  String friendsMoreFor(String name) {
+    return 'Más sobre $name';
+  }
 
   @override
   String friendsMutualCount(int count) {
@@ -1195,13 +1310,40 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsNoMatches => 'Ningún amigo coincide con tu búsqueda';
 
   @override
+  String get friendsNoRequestsHint =>
+      'Cuando alguien quiera ser tu amigo, aparecerá aquí';
+
+  @override
   String get friendsNoSuggestions => 'No hay más sugerencias';
+
+  @override
+  String get friendsNotNow => 'Ahora no';
 
   @override
   String get friendsOpenChat => 'Abrir chat';
 
   @override
   String get friendsPending => 'Pendiente';
+
+  @override
+  String get friendsPeopleYouMayKnow => 'Personas que quizá conozcas';
+
+  @override
+  String friendsPinSheetCount(int pinned, int max) {
+    return '$pinned de $max fijados';
+  }
+
+  @override
+  String get friendsPinSheetSearch => 'Buscar un amigo';
+
+  @override
+  String get friendsPinSheetTitle => 'Fijar en tu perfil';
+
+  @override
+  String get friendsPinToProfile => 'Fijar en mi perfil';
+
+  @override
+  String get friendsPinnedOnProfile => 'Fijados en tu perfil';
 
   @override
   String get friendsQrHint =>
@@ -1218,14 +1360,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsReject => 'Rechazar';
 
   @override
-  String get friendsRemove => 'Eliminar de amigos';
-
-  @override
   String get friendsRemoveAction => 'Eliminar';
 
   @override
   String get friendsRemoveConfirm =>
       '¿Seguro que quieres eliminar a este usuario de tus amigos?';
+
+  @override
+  String get friendsRemoveFriend => 'Eliminar amigo';
 
   @override
   String get friendsRemoving => 'Eliminando...';
@@ -1258,7 +1400,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsRequestSent => '¡Solicitud de amistad enviada!';
 
   @override
-  String get friendsRequestsButton => 'Solicitudes';
+  String get friendsRequested => 'Solicitado';
 
   @override
   String get friendsRequestsEmptySubtitle =>
@@ -1274,7 +1416,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsRequestsSentTab => 'Enviadas';
 
   @override
+  String friendsRequestsTab(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Solicitudes ($count)',
+      zero: 'Solicitudes',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get friendsRequestsTitle => 'Solicitudes de amistad';
+
+  @override
+  String get friendsScanTile => 'Escanea el código de un amigo';
 
   @override
   String get friendsSearchHint => 'Buscar entre tus amigos';
@@ -1283,10 +1439,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsSearchPeopleHint => 'Nombre o @usuario';
 
   @override
+  String get friendsSearchResults => 'Encontrados';
+
+  @override
   String get friendsSendCapsule => 'Enviar cápsula';
 
   @override
   String get friendsSendRequestLabel => 'Enviar solicitud de amistad';
+
+  @override
+  String get friendsSentByYou => 'Enviadas por ti';
 
   @override
   String get friendsSentEmptySubtitle =>
@@ -1296,10 +1458,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get friendsSentEmptyTitle => 'No hay solicitudes enviadas';
 
   @override
+  String get friendsShareCardTile => 'Comparte tu tarjeta de Later';
+
+  @override
   String get friendsShareProfile => 'Compartir perfil';
 
   @override
-  String get friendsShareProfileTo => 'Compartir perfil ...';
+  String friendsShareTheirCard(String name) {
+    return 'Compartir la tarjeta de $name';
+  }
+
+  @override
+  String get friendsSuggestedTab => 'Sugerencias';
 
   @override
   String get friendsSuggestionRemoved => '¡Sugerencia eliminada de la lista!';
@@ -1309,6 +1479,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get friendsUnfollowed => 'Ya no sigues a este usuario';
+
+  @override
+  String get friendsUnpinFromProfile => 'Quitar de mi perfil';
 
   @override
   String get friendsViewProfile => 'Ver perfil';
@@ -1522,6 +1695,33 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get laterCardBack =>
+      'El reverso de tu tarjeta: tus palabras, tu sello y tu código';
+
+  @override
+  String get laterCardPost => 'LATER POST';
+
+  @override
+  String get laterCardScanFriend => 'Escanear el código de un amigo';
+
+  @override
+  String get laterCardScanMe => 'Escanea para añadirme en Later';
+
+  @override
+  String laterCardSide(int number) {
+    return 'Cara $number de 2';
+  }
+
+  @override
+  String get laterCardTitle => 'Tu tarjeta de Later';
+
+  @override
+  String get laterCardTurn => 'Toca la tarjeta para darle la vuelta';
+
+  @override
+  String get laterCardTurnBack => 'Toca para volver';
 
   @override
   String mapCapsuleAwayKm(String km) {
@@ -2287,16 +2487,35 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get notificationsEarlier => 'Antes';
+
+  @override
   String get notificationsEmptyAll =>
       'Aquí aparecerán tus notificaciones y tu actividad';
 
   @override
-  String get notificationsEmptyComments =>
-      'Aquí aparecerán los comentarios en tus cápsulas';
+  String get notificationsEmptyCapsules =>
+      'Aquí aparecerán reacciones, comentarios y cápsulas abiertas';
 
   @override
-  String get notificationsEmptyReplies =>
-      'Aquí aparecerán las respuestas a tus mensajes';
+  String get notificationsEmptyFriends =>
+      'Aquí aparecerán tus nuevos seguidores y amigos';
+
+  @override
+  String get notificationsEmptyPlaces =>
+      'Aquí aparecerán las cápsulas que te esperan en sus lugares';
+
+  @override
+  String get notificationsFilterCapsules => 'Cápsulas';
+
+  @override
+  String get notificationsFilterFriends => 'Amigos';
+
+  @override
+  String get notificationsFilterPlaces => 'Lugares';
+
+  @override
+  String get notificationsFollowBack => 'Seguir también';
 
   @override
   String notificationsFollowBody(String name) {
@@ -2311,6 +2530,17 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String notificationsFriendRequestBody(String name) {
     return '$name quiere ser tu amigo';
+  }
+
+  @override
+  String notificationsFriendRequests(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count solicitudes de amistad',
+      one: '$count solicitud de amistad',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2379,6 +2609,16 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String notificationsRequestNamesMore(String first, String second, int count) {
+    return '$first, $second y $count más';
+  }
+
+  @override
+  String notificationsRequestNamesTwo(String first, String second) {
+    return '$first y $second';
+  }
+
+  @override
   String notificationsSelectedCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2399,13 +2639,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notificationsTabAll => 'Todas';
 
   @override
-  String get notificationsTabComments => 'Comentarios';
-
-  @override
-  String get notificationsTabReplies => 'Respuestas';
-
-  @override
   String get notificationsTitle => 'Notificaciones';
+
+  @override
+  String get notificationsToday => 'Hoy';
 
   @override
   String get notificationsTypeAchievement => 'Logro';
@@ -2464,6 +2701,153 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get passportBothLabel => 'LOS DOS';
+
+  @override
+  String get passportCapsulesLabel => 'CÁPSULAS';
+
+  @override
+  String get passportCountriesLabel => 'PAÍSES';
+
+  @override
+  String get passportCoverBrand => 'LATER';
+
+  @override
+  String passportCoverFriend(String name) {
+    return 'Lugares donde $name dejó una cápsula';
+  }
+
+  @override
+  String get passportCoverOwn => 'Lugares donde dejaste una cápsula';
+
+  @override
+  String get passportCoverTitle => 'PASAPORTE';
+
+  @override
+  String get passportEmptyBody =>
+      'Deja una cápsula en algún lugar y su ciudad se sellará aquí.';
+
+  @override
+  String passportEmptyFriend(String name) {
+    return '$name aún no tiene sellos.';
+  }
+
+  @override
+  String get passportEmptyTitle => 'Tu primer sello';
+
+  @override
+  String get passportFirstEntry => 'PRIMERA ENTRADA';
+
+  @override
+  String passportFriendHint(String name) {
+    return 'Desliza para ver las páginas de $name';
+  }
+
+  @override
+  String get passportGivenNames => 'NOMBRES';
+
+  @override
+  String get passportHomeTown => 'CIUDAD NATAL';
+
+  @override
+  String get passportInLater => 'EN LATER';
+
+  @override
+  String get passportMakeCapsule => 'Crear una cápsula';
+
+  @override
+  String get passportName => 'NOMBRE';
+
+  @override
+  String get passportNewLabel => 'NUEVOS';
+
+  @override
+  String get passportNewThisYear => 'NUEVOS ESTE AÑO';
+
+  @override
+  String get passportNone => 'Ninguno todavía';
+
+  @override
+  String get passportNothingShared => 'Aún no hay ciudades en común';
+
+  @override
+  String passportOnlyThem(String name) {
+    return 'SOLO $name';
+  }
+
+  @override
+  String get passportOnlyYou => 'SOLO TÚ';
+
+  @override
+  String get passportPhotoLabel =>
+      'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ';
+
+  @override
+  String get passportShare => 'Compartir esta página';
+
+  @override
+  String get passportShareText => 'Una página de un pasaporte de Later';
+
+  @override
+  String passportStampFirstHere(String date) {
+    return 'Primera cápsula aquí el $date';
+  }
+
+  @override
+  String passportStampFirstIn(String country, String date) {
+    return 'Primera cápsula en $country el $date';
+  }
+
+  @override
+  String get passportStampsHint => 'Toca un sello para ver más';
+
+  @override
+  String passportStampsSince(String date) {
+    return 'sellos desde $date';
+  }
+
+  @override
+  String get passportSurname => 'APELLIDOS';
+
+  @override
+  String get passportSwipeHint => 'Desliza para pasar la página';
+
+  @override
+  String get passportTapToOpen => 'Toca para abrir';
+
+  @override
+  String passportTogetherBoth(String countries, String towns) {
+    return 'Los dos: $countries, $towns';
+  }
+
+  @override
+  String passportTogetherLabel(String name) {
+    return 'TÚ Y $name';
+  }
+
+  @override
+  String get passportTownsLabel => 'CIUDADES';
+
+  @override
+  String get passportUsername => 'USUARIO';
+
+  @override
+  String get passportVisa => 'VISADO';
+
+  @override
+  String get passportVisasHint => 'Toca un visado para ver sus ciudades';
+
+  @override
+  String get passportVisasLabel => 'VISADOS';
+
+  @override
+  String get passportYearLabel => 'TU AÑO';
+
+  @override
+  String get passportYearMonthsNote =>
+      'Cada país en su última visita de este año';
+
+  @override
   String get placeNoLocation => 'Sin ubicación';
 
   @override
@@ -2494,7 +2878,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileAboutPrompt => 'Añade unas palabras sobre ti';
 
   @override
+  String get profileAddCover => 'Añadir foto de portada';
+
+  @override
   String get profileAddFriends => 'Añadir amigos';
+
+  @override
+  String get profileAllAchievements => 'Todos los logros';
 
   @override
   String get profileBackgroundDelete => 'Eliminar imagen de fondo';
@@ -2506,10 +2896,48 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileBackgroundUpdated => '¡Imagen de fondo actualizada!';
 
   @override
+  String profileCapsulesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cápsulas',
+      one: '1 cápsula',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCapsulesLine(int places, int together) {
+    String _temp0 = intl.Intl.pluralLogic(
+      places,
+      locale: localeName,
+      other: 'en $places lugares',
+      one: 'en 1 lugar',
+    );
+    return '$_temp0 · $together con amigos';
+  }
+
+  @override
   String get profileChoosePinned => 'Fijar amigos';
 
   @override
   String get profileCopyLink => 'Copiar enlace';
+
+  @override
+  String profileCountries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count países',
+      one: '1 país',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCountriesTowns(String countries, String towns) {
+    return '$countries · $towns';
+  }
 
   @override
   String get profileErrorCopyLink => 'No se pudo copiar el enlace';
@@ -2549,7 +2977,14 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get profileFriendsAll => 'Todos';
+  String profileFriendCapsules(String name) {
+    return 'Cápsulas de $name';
+  }
+
+  @override
+  String profileFriendPassport(String name) {
+    return 'Pasaporte de $name';
+  }
 
   @override
   String get profileFriendsSection => 'Amigos';
@@ -2579,10 +3014,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get profileNewForFriends => 'Para amigos';
 
   @override
+  String get profileNoCapsules => 'Aún no hay cápsulas';
+
+  @override
+  String get profileNoCapsulesHint => 'Tu primera aparecerá aquí';
+
+  @override
   String get profileNoFriends => 'Aún no tienes amigos';
 
   @override
   String get profileNoFriendsAction => 'Encuentra a gente que conoces';
+
+  @override
+  String get profileOpenMap => 'Abrir el mapa';
 
   @override
   String get profilePictureDelete => 'Eliminar foto de perfil';
@@ -2607,20 +3051,14 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get profilePinnedHint =>
-      'Si eliges menos de 3, mostraremos amigos al azar de tu lista';
-
-  @override
-  String get profilePinnedLimit => 'Solo puedes fijar hasta 3 amigos';
-
-  @override
-  String get profilePinnedTitle => 'Fija hasta 3 amigos';
-
-  @override
   String get profilePinnedUpdated => '¡Amigos fijados actualizados!';
 
   @override
-  String get profileQrError => 'Algo salió mal...';
+  String get profilePlacesSection => 'Lugares';
+
+  @override
+  String get profilePostcardOpen =>
+      'Desliza hacia abajo para ver la foto entera';
 
   @override
   String get profileQuickCapsule => 'Enviar una cápsula';
@@ -2630,13 +3068,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get profileShare => 'Compartir';
-
-  @override
-  String get profileShareHeading => 'Comparte tu perfil';
-
-  @override
-  String get profileShareHint =>
-      'Otros pueden escanear este código con la cámara o desde la app para añadirte como amigo';
 
   @override
   String profileShareMessage(String name, String link) {
@@ -2649,36 +3080,23 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get profileShareSubtitle =>
-      'Deja que otros escaneen este código QR para añadirte como amigo';
-
-  @override
-  String get profileShareTitle => 'Compartir perfil';
-
-  @override
-  String profileStatCapsules(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'cápsulas',
-      one: 'cápsula',
-    );
-    return '$_temp0';
+  String profileStampLabel(String name) {
+    return 'Sello de $name';
   }
 
   @override
-  String profileStatPlaces(int count) {
+  String get profileStampsHint => 'Los sellos llegan con tus cápsulas';
+
+  @override
+  String profileTowns(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'lugares',
-      one: 'lugar',
+      other: '$count ciudades',
+      one: '1 ciudad',
     );
     return '$_temp0';
   }
-
-  @override
-  String get profileStatTogether => 'con amigos';
 
   @override
   String get profileUnpin => 'Desfijar';
@@ -2795,12 +3213,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsCompleteProfileTitle => 'Ya casi está';
-
-  @override
-  String get settingsCustomizeDescription => 'Toca una imagen para cambiarla';
-
-  @override
-  String get settingsCustomizeProfile => 'Personalizar perfil';
 
   @override
   String get settingsDataAndStorage => 'Datos y almacenamiento';
@@ -3147,10 +3559,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsNotificationsStreak => 'Recordatorio de racha';
 
   @override
-  String get settingsNotificationsStreakHint =>
-      'Por la tarde, si tu racha terminaría hoy';
-
-  @override
   String get settingsNotificationsVibrate => 'Vibración';
 
   @override
@@ -3421,6 +3829,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsSectionSize => 'TAMAÑO';
 
   @override
+  String get settingsSectionStreak => 'RACHA';
+
+  @override
   String get settingsSectionSupport => 'SOPORTE';
 
   @override
@@ -3480,6 +3891,18 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsStorageFooter =>
       'Fotos hechas o elegidas para cápsulas e imágenes cargadas desde internet. Tus cápsulas, chats y cuenta se quedan.';
+
+  @override
+  String get settingsStreakFooter =>
+      'Solo este teléfono: el recordatorio llega desde este teléfono, incluso sin conexión, y no desde tus otros dispositivos.';
+
+  @override
+  String settingsStreakReminderHint(String time) {
+    return 'Cada día a las $time, salvo si hoy ya cuenta una cápsula';
+  }
+
+  @override
+  String get settingsStreakReminderTime => 'Hora';
 
   @override
   String settingsSupportInfoApp(String version) {
@@ -3562,6 +3985,82 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsYourPassword => 'Tu contraseña';
 
   @override
+  String get stampChangePhoto => 'Cambiar foto';
+
+  @override
+  String get stampColour => 'Color';
+
+  @override
+  String get stampColourAny => 'Cualquier color';
+
+  @override
+  String get stampColourBlack => 'Negro';
+
+  @override
+  String get stampColourBlue => 'Azul';
+
+  @override
+  String get stampColourForest => 'Bosque';
+
+  @override
+  String get stampColourGreen => 'Verde';
+
+  @override
+  String get stampColourHex => 'Código de color';
+
+  @override
+  String get stampColourOrange => 'Naranja';
+
+  @override
+  String get stampColourPaper => 'Papel';
+
+  @override
+  String get stampColourRecent => 'Recientes';
+
+  @override
+  String get stampColourRed => 'Rojo';
+
+  @override
+  String get stampColourWhite => 'Blanco';
+
+  @override
+  String get stampColourYellow => 'Amarillo';
+
+  @override
+  String get stampDone => 'Listo';
+
+  @override
+  String get stampPreview => 'Vista previa';
+
+  @override
+  String get stampSaveFailed =>
+      'No se pudo guardar tu sello. Inténtalo de nuevo.';
+
+  @override
+  String get stampShapeClassic => 'Clásico';
+
+  @override
+  String get stampShapePolaroid => 'Polaroid';
+
+  @override
+  String get stampShapeRound => 'Redondo';
+
+  @override
+  String get stampShapeRounded => 'Redondeado';
+
+  @override
+  String get stampShapeSoft => 'Suave';
+
+  @override
+  String get stampShapeTicket => 'Billete';
+
+  @override
+  String get stampSubtitle => 'Cómo queda tu foto en tu postal.';
+
+  @override
+  String get stampTitle => 'Tu sello';
+
+  @override
   String get stampsLater => 'Luego';
 
   @override
@@ -3583,6 +4082,31 @@ class AppLocalizationsEs extends AppLocalizations {
       'Hoy aún no cuenta: deja una cápsula antes de medianoche para mantener tu racha.';
 
   @override
+  String get streakBest => 'Mejor racha';
+
+  @override
+  String streakDaysCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count días',
+      one: '1 día',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakKeepHoursLeft(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Quedan $hours horas.',
+      one: 'Queda 1 hora.',
+    );
+    return 'Crea una cápsula hoy para mantenerla. $_temp0';
+  }
+
+  @override
   String streakLongest(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -3597,7 +4121,54 @@ class AppLocalizationsEs extends AppLocalizations {
   String get streakMakeCapsule => 'Crear una cápsula';
 
   @override
+  String get streakNoneTitle => 'Aún no hay racha';
+
+  @override
+  String get streakPageTitle => 'Racha';
+
+  @override
+  String streakRemindAt(String time) {
+    return 'Recordarme a las $time';
+  }
+
+  @override
+  String get streakReminderDenied =>
+      'Permite las notificaciones de Later en los ajustes del teléfono para recibir el recordatorio';
+
+  @override
+  String streakReminderKeepBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Tu racha de $count días termina a medianoche. Una cápsula hoy la mantiene.',
+      one:
+          'Tu racha de 1 día termina a medianoche. Una cápsula hoy la mantiene.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakReminderKeepTitle => 'Mantén tu racha';
+
+  @override
+  String get streakReminderPushOff =>
+      'Las notificaciones están desactivadas en Ajustes';
+
+  @override
+  String get streakReminderStartTitle => '¿Una cápsula hoy?';
+
+  @override
+  String get streakReminderTimeTitle => 'Recordarme a las';
+
+  @override
   String get streakSafe => 'Hoy cuenta. ¡Hasta mañana!';
+
+  @override
+  String get streakStartToday => 'Crea una cápsula hoy para empezar una racha';
+
+  @override
+  String get streakThisWeek => 'Esta semana';
 
   @override
   String worldCapsules(int count) {
@@ -3611,43 +4182,9 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String worldCountriesLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'países',
-      one: 'país',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get worldDescription => 'Países y ciudades de tus cápsulas';
-
-  @override
-  String get worldEmpty =>
-      'Deja una cápsula en un lugar nuevo y su país tendrá aquí un sello.';
-
-  @override
-  String worldFirst(String date) {
-    return 'Primera vez: $date';
-  }
-
-  @override
   String get worldNote =>
       'Los sellos son para las cápsulas creadas desde esta actualización.';
 
   @override
   String get worldTitle => 'Pasaporte';
-
-  @override
-  String worldTownsLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'ciudades',
-      one: 'ciudad',
-    );
-    return '$_temp0';
-  }
 }

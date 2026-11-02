@@ -12,6 +12,8 @@ import '../../../shared/widgets/options/options_settings_row.dart';
 import '../../../shared/widgets/popup/popup_notification_service.dart';
 import '../../../shared/widgets/default_text.dart';
 import '../../places/background_places.dart';
+import '../../streak/streak_reminder.dart';
+import '../../streak/streak_reminder_controls.dart';
 import '../device_settings_store.dart';
 import '../settings_store.dart';
 import '../widgets/settings_scaffold.dart';
@@ -186,13 +188,6 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
           n.achievements,
           (v) => n.copyWith(achievements: v),
         ),
-      if (FeatureFlags.streaks)
-        (
-          l10n.settingsNotificationsStreak,
-          l10n.settingsNotificationsStreakHint,
-          n.streakReminder,
-          (v) => n.copyWith(streakReminder: v),
-        ),
       if (FeatureFlags.news)
         (
           l10n.settingsNotificationsNews,
@@ -314,6 +309,42 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
                               _setPlaceAlert(device, v, device.setCountryAlerts)
                         : null,
                   ),
+                ],
+              );
+            },
+          ),
+        // The streak reminder: the phone schedules it itself (profile v4;
+        // the server's evening push is no longer offered).
+        if (FeatureFlags.streaks && StreakReminder.isSupported)
+          Builder(
+            builder: (context) {
+              final device = context.watch<DeviceSettingsStore>();
+              final time = StreakReminderControls.time(
+                context,
+                device.streakReminderMinutes,
+              );
+              return OptionsSection(
+                title: l10n.settingsSectionStreak,
+                footer: l10n.settingsStreakFooter,
+                children: [
+                  OptionsSwitchRow(
+                    title: l10n.settingsNotificationsStreak,
+                    subtitle: l10n.settingsStreakReminderHint(time),
+                    value: device.streakReminder,
+                    withDivider: device.streakReminder,
+                    onChanged: on
+                        ? (v) => StreakReminderControls.setOn(context, v)
+                        : null,
+                  ),
+                  if (device.streakReminder)
+                    OptionsSettingsRow(
+                      title: l10n.settingsStreakReminderTime,
+                      trailing: DefaultText(time),
+                      withDivider: false,
+                      onTap: on
+                          ? () => StreakReminderControls.pickTime(context)
+                          : null,
+                    ),
                 ],
               );
             },

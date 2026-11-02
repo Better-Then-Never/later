@@ -6,7 +6,6 @@
   "settingsEmail": "E-mail",
   "settingsPassword": "Hasło",
   "settingsSignedInWithGoogle": "Logowanie przez Google",
-  "settingsCustomizeProfile": "Dostosuj profil",
   "settingsSectionNotificationsPrivacy": "POWIADOMIENIA I PRYWATNOŚĆ",
   "settingsNotifications": "Powiadomienia",
   "settingsNotificationsOn": "Włączone",
@@ -140,7 +139,6 @@
   "settingsPermissionRequiredTitle": "Potrzebne uprawnienie",
   "settingsPermissionRequiredBody": "To uprawnienie zostało trwale odrzucone. Włącz je w ustawieniach urządzenia.",
   "settingsPermissionOpenSettings": "Otwórz ustawienia",
-  "settingsCustomizeDescription": "Stuknij zdjęcie, żeby je zmienić",
   "settingsStorageDescription": "Miejsce, które Later zajmuje na tym telefonie",
   "settingsStorageFooter": "Zdjęcia zrobione lub wybrane do kapsuł i obrazy pobrane z internetu. Twoje kapsuły, czaty i konto zostaną.",
   "settingsStorageCache": "Pamięć podręczna",
@@ -209,7 +207,6 @@
   "settingsNotificationsCommentsHint": "Pod twoimi kapsułami i odpowiedzi do ciebie",
   "settingsNotificationsAchievements": "Osiągnięcia",
   "settingsNotificationsStreak": "Przypomnienie o serii",
-  "settingsNotificationsStreakHint": "Wieczorem, gdy seria dziś by się skończyła",
   "settingsNotificationsNews": "Wiadomości od Later",
   "settingsNotificationsNewsHint": "Rzadkie ogłoszenia od zespołu",
   "settingsAboutDescription": "Kilka słów pod twoim imieniem dla każdego, kto otworzy twój profil.",
@@ -247,5 +244,9 @@
   "settingsPlacesAlwaysTitle": "Lokalizacja zawsze",
   "settingsPlacesAlwaysMessage": "Aby Later mógł informować o kapsułach i krajach, gdy jest zamknięty, Android musi zawsze zezwalać na lokalizację. Wybierz dalej „Zezwalaj zawsze”.",
   "settingsPlacesAlwaysContinue": "Dalej",
-  "settingsPlacesAlwaysDenied": "Aby to włączyć, zezwól w Ustawieniach na lokalizację „Zawsze”."
+  "settingsPlacesAlwaysDenied": "Aby to włączyć, zezwól w Ustawieniach na lokalizację „Zawsze”.",
+  "settingsSectionStreak": "SERIA",
+  "settingsStreakReminderHint": "Codziennie o {time}, chyba że dziś kapsuła już się liczy",
+  "settingsStreakReminderTime": "Godzina",
+  "settingsStreakFooter": "Tylko ten telefon: przypomnienie przychodzi z tego telefonu, także offline, a nie z innych urządzeń."
 }

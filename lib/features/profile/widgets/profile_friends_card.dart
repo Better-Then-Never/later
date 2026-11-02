@@ -1,25 +1,20 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
-import '../../../core/errors/app_failure.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_palette.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/motion/app_motion_widgets.dart';
-import '../../../shared/styles/box_decorations.dart';
-import '../../../shared/widgets/app_sheets.dart';
+import '../../../core/assets/app_assets.dart';
+import '../../../shared/widgets/v2/card_v2.dart';
 import '../../../shared/widgets/options_menu.dart';
 import '../../../shared/widgets/pin_mark.dart';
-import '../../../shared/widgets/popup/popup_notification_service.dart';
-import '../../../shared/widgets/user/user_round_avatar.dart';
 import '../../friends/pinned_friends_controller.dart';
+import '../../friends/widgets/friend_stamp.dart';
+import '../../friends/widgets/pin_friends_sheet.dart';
 import '../../users/user_directory.dart';
-import 'pinned_friends/pinned_friends_selection_dialog.dart';
 
 /// The profile's friends: pinned ones first, then the ones the user chatted
 /// with lately (F-56). A tap opens quick actions (write, send a capsule,
@@ -27,60 +22,8 @@ import 'pinned_friends/pinned_friends_selection_dialog.dart';
 class ProfileFriendsCard extends StatelessWidget {
   const ProfileFriendsCard({super.key});
 
-  static const _avatar = 28.0;
-
-  Future<void> _choosePinned(
-    BuildContext context,
-    PinnedFriendsController controller,
-  ) async {
-    final friends = controller.allFriends.toList();
-    // One batched lookup for the names shown in the sheet.
-    await context.read<UserDirectory>().resolveAll(friends);
-    if (!context.mounted) return;
-    final chosen = await showEdgeSheet<List<String>>(
-      context,
-      (_) => PinnedFriendsSelectionDialog(
-        pinnedUids: controller.pinnedUids,
-        allFriends: friends,
-      ),
-    );
-    if (chosen == null || !context.mounted) return;
-    final failure = await controller.setPinnedFriends(chosen);
-    if (!context.mounted) return;
-    _report(context, failure, context.l10n.profilePinnedUpdated);
-  }
-
-  static void _report(BuildContext context, AppFailure? failure, String done) {
-    failure == null
-        ? PopupNotificationService.showSuccess(
-            context: context,
-            message: done,
-            position: NotificationPosition.top,
-          )
-        : PopupNotificationService.showError(
-            context: context,
-            message: failure.message,
-            position: NotificationPosition.top,
-          );
-  }
-
-  static Future<void> _togglePin(
-    BuildContext context,
-    PinnedFriendsController controller,
-    String uid,
-  ) async {
-    final l10n = context.l10n;
-    final name = context.read<UserDirectory>().profile(uid)?.name ?? '';
-    final pinned = controller.isPinned(uid);
-    unawaited(HapticFeedback.selectionClick());
-    final failure = await controller.togglePin(uid);
-    if (!context.mounted) return;
-    _report(
-      context,
-      failure,
-      pinned ? l10n.profileUnpinned(name) : l10n.profilePinned(name),
-    );
-  }
+  /// The stamps' width (the size of the old avatars).
+  static const _stamp = 56.0;
 
   static Future<void> _quickActions(
     BuildContext context,
@@ -127,80 +70,151 @@ class ProfileFriendsCard extends StatelessWidget {
       case _Quick.profile:
         await AppRoutes.toFriendProfile(context, uid);
       case _Quick.pin:
-        await _togglePin(context, controller, uid);
+        await togglePinnedFriend(context, controller, uid);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<PinnedFriendsController>();
-    final palette = context.palette;
     final l10n = context.l10n;
     final count = controller.allFriends.length;
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecorations.whiteCard(context),
-      padding: const EdgeInsets.fromLTRB(18, 6, 6, 12),
+    final shown = controller.displayFriends;
+    // Profile v4 (Figma 7182:4354): the stamps of pinned and recent friends,
+    // a Pin slot while there is room, then "My friends" with the count.
+    return CardV2(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  count == 0
-                      ? l10n.profileFriendsSection
-                      : '${l10n.profileFriendsSection} · $count',
-                  style: TextStyle(
-                    fontFamily: kAppFontFamily,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: palette.textSecondary,
-                  ),
-                ),
-              ),
-              if (count > 0) ...[
-                IconButton(
-                  tooltip: l10n.profileChoosePinned,
-                  onPressed: () => _choosePinned(context, controller),
-                  icon: PinMark(color: palette.icon, size: 18),
-                ),
-                TextButton(
-                  onPressed: () => AppRoutes.toMyFriends(context),
-                  child: Text(
-                    l10n.profileFriendsAll,
-                    style: const TextStyle(
-                      fontFamily: kAppFontFamily,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.brandGreen,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
           if (controller.isLoading)
-            _Row(children: [for (var i = 0; i < 4; i++) const _Skeleton()])
-          else if (count == 0)
-            _NoFriends(onTap: () => AppRoutes.toAddFriends(context))
-          else
-            _Row(
-              children: [
-                for (final uid in controller.displayFriends)
-                  _FriendChip(
-                    key: ValueKey(uid),
-                    uid: uid,
-                    pinned: controller.isPinned(uid),
-                    onTap: () => _quickActions(context, controller, uid),
-                    onLongPress: () => _togglePin(context, controller, uid),
-                  ),
-              ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+              child: _Row(
+                children: [for (var i = 0; i < 4; i++) const _Skeleton()],
+              ),
+            )
+          else if (count > 0) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+              child: _Row(
+                children: [
+                  for (final (i, uid) in shown.indexed)
+                    _FriendChip(
+                      key: ValueKey(uid),
+                      uid: uid,
+                      tilt: FriendStamp.tiltAt(i),
+                      pinned: controller.isPinned(uid),
+                      onTap: () => _quickActions(context, controller, uid),
+                      onLongPress: () =>
+                          togglePinnedFriend(context, controller, uid),
+                    ),
+                  if (shown.length < PinnedFriendsController.maxShown)
+                    _PinSlot(
+                      onTap: () => PinFriendsSheet.open(context, controller),
+                    ),
+                ],
+              ),
             ),
+            Divider(
+              height: 1,
+              thickness: 1,
+              indent: 16,
+              color: context.palette.divider,
+            ),
+          ],
+          RowV2(
+            iconPath: AppIcons.profileMyFriends,
+            title: l10n.profileMyFriends,
+            subtitle: count == 0 && !controller.isLoading
+                ? l10n.profileNoFriends
+                : null,
+            value: count == 0 ? null : '$count',
+            onTap: () => AppRoutes.toMyFriends(context),
+          ),
         ],
       ),
     );
   }
+}
+
+/// The empty slot after the friends: a dashed square with a pin; opens
+/// "Pin to your profile".
+class _PinSlot extends StatelessWidget {
+  const _PinSlot({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = context.l10n;
+    return Semantics(
+      button: true,
+      label: l10n.profileChoosePinned,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: ExcludeSemantics(
+          child: Column(
+            children: [
+              SizedBox(
+                height: FriendStamp.heightFor(ProfileFriendsCard._stamp),
+                child: Center(
+                  child: CustomPaint(
+                    painter: _DashedSquare(palette.textTertiary),
+                    child: SizedBox.square(
+                      dimension: ProfileFriendsCard._stamp - 4,
+                      child: Center(
+                        child: PinMark(color: palette.iconMuted, size: 20),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.profilePin,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body.copyWith(
+                  fontSize: 13,
+                  color: palette.textTertiary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashedSquare extends CustomPainter {
+  _DashedSquare(this.color);
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          (Offset.zero & size).deflate(0.75),
+          const Radius.circular(10),
+        ),
+      );
+    for (final m in path.computeMetrics()) {
+      for (var d = 0.0; d < m.length; d += 8) {
+        canvas.drawPath(m.extractPath(d, d + 4), paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedSquare old) => old.color != color;
 }
 
 enum _Quick { message, capsule, profile, pin }
@@ -230,12 +244,14 @@ class _FriendChip extends StatelessWidget {
   const _FriendChip({
     super.key,
     required this.uid,
+    required this.tilt,
     required this.pinned,
     required this.onTap,
     required this.onLongPress,
   });
 
   final String uid;
+  final double tilt;
   final bool pinned;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
@@ -261,13 +277,14 @@ class _FriendChip extends StatelessWidget {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    UserRoundAvatar(
+                    FriendStamp(
                       userId: uid,
-                      radius: ProfileFriendsCard._avatar,
+                      size: ProfileFriendsCard._stamp,
+                      tilt: tilt,
                     ),
                     if (pinned)
                       Positioned(
-                        right: -2,
+                        right: -6,
                         top: -2,
                         child: Container(
                           padding: const EdgeInsets.all(3),
@@ -309,59 +326,20 @@ class _Skeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     children: [
-      Container(
-        width: ProfileFriendsCard._avatar * 2,
-        height: ProfileFriendsCard._avatar * 2,
-        decoration: BoxDecoration(
-          color: context.palette.skeleton,
-          shape: BoxShape.circle,
+      SizedBox(
+        height: FriendStamp.heightFor(ProfileFriendsCard._stamp),
+        child: Center(
+          child: Container(
+            width: ProfileFriendsCard._stamp,
+            height: ProfileFriendsCard._stamp,
+            decoration: BoxDecoration(
+              color: context.palette.skeleton,
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
         ),
       ),
       const SizedBox(height: 25),
     ],
-  );
-}
-
-class _NoFriends extends StatelessWidget {
-  const _NoFriends({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: 70,
-    child: Center(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                context.l10n.profileNoFriends,
-                style: TextStyle(
-                  fontFamily: kAppFontFamily,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: context.palette.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                context.l10n.profileNoFriendsAction,
-                style: const TextStyle(
-                  fontFamily: kAppFontFamily,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.brandGreen,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
   );
 }

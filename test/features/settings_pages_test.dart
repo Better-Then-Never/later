@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:later/core/l10n/l10n.dart';
@@ -11,6 +12,8 @@ import 'package:later/features/settings/device_settings_store.dart';
 import 'package:later/features/settings/pages/device_settings_page.dart';
 import 'package:later/features/settings/pages/notification_settings_page.dart';
 import 'package:later/features/settings/settings_store.dart';
+import 'package:later/features/streak/streak_reminder.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -181,6 +184,70 @@ void main() {
       await tester.pump();
       expect(repo.saves, 0);
       store.detach();
+    });
+
+    testWidgets('the streak reminder: this phone, its time, no server push', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues({});
+      StreakReminder.debugSupported = true;
+      addTearDown(() => StreakReminder.debugSupported = null);
+      const permissions = MethodChannel(
+        'flutter.baseflow.com/permissions/methods',
+      );
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        permissions,
+        (call) async => {Permission.notification.value: 1},
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          permissions,
+          null,
+        ),
+      );
+      final repo = FakeSettingsRepository();
+      // Turned on before profile v4: the server's evening push.
+      await repo.saveNotifications(
+        'alice',
+        const NotificationSettings(streakReminder: true),
+      );
+      final store = SettingsStore(repo, utcOffsetMinutes: () => 0)
+        ..attach('alice');
+      final device = DeviceSettingsStore(PreferencesStore())..attach('alice');
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SettingsStore>.value(value: store),
+            ChangeNotifierProvider<DeviceSettingsStore>.value(value: device),
+          ],
+          child: testApp(home: const NotificationSettingsPage()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final reminder = find.text('Streak reminder');
+      await tester.scrollUntilVisible(reminder, 100);
+      expect(reminder, findsOneWidget);
+      expect(
+        find.text(
+          'Every day at 8:00 PM, unless a capsule already counts today',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('This phone only'), findsOneWidget);
+      expect(find.text('Time'), findsNothing);
+
+      await tester.ensureVisible(reminder);
+      await tester.pumpAndSettle();
+      await tester.tap(reminder);
+      await tester.pumpAndSettle();
+      expect(device.streakReminder, isTrue);
+      expect(repo.docs['alice']!.notifications.streakReminder, isFalse);
+      await tester.scrollUntilVisible(find.text('Time'), 100);
+      expect(find.text('Time'), findsOneWidget);
+
+      store.detach();
+      device.detach();
     });
 
     testWidgets('quiet hours show their times when on', (tester) async {

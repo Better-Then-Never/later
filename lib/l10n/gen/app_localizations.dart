@@ -260,17 +260,59 @@ abstract class AppLocalizations {
   /// **'Travel {km} km between your capsules'**
   String achievementTravelerGoal(String km);
 
+  /// One achievement sheet: every level of it is reached.
+  ///
+  /// In en, this message translates to:
+  /// **'All {count} levels done'**
+  String achievementsAllLevels(int count);
+
+  /// Achievements page: how many achievements are earned of all of them.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}'**
+  String achievementsCount(int done, int total);
+
   /// No description provided for @achievementsDescription.
   ///
   /// In en, this message translates to:
   /// **'Unlocked by using Later, never by paying'**
   String get achievementsDescription;
 
-  /// No description provided for @achievementsLocked.
+  /// Under an achievement whose every level is reached (green).
   ///
   /// In en, this message translates to:
-  /// **'Locked'**
-  String get achievementsLocked;
+  /// **'Done'**
+  String get achievementsDone;
+
+  /// Achievements page: the group of capsule achievements (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules'**
+  String get achievementsGroupCapsules;
+
+  /// Achievements page: the group of social achievements (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get achievementsGroupFriends;
+
+  /// Achievements page: the group of the streak, night owl and early bird (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Habits'**
+  String get achievementsGroupHabits;
+
+  /// Achievements page: the group of places and distance achievements (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get achievementsGroupPlaces;
+
+  /// Under an achievement with a level reached: the level and how far along the next one is.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level} · {percent} %'**
+  String achievementsLevelPercent(int level, int percent);
 
   /// No description provided for @achievementsNoneYet.
   ///
@@ -278,11 +320,29 @@ abstract class AppLocalizations {
   /// **'Your first one is a capsule away.'**
   String get achievementsNoneYet;
 
-  /// No description provided for @achievementsSeeAll.
+  /// Under an achievement with no progress yet.
   ///
   /// In en, this message translates to:
-  /// **'See all'**
-  String get achievementsSeeAll;
+  /// **'Not started'**
+  String get achievementsNotStarted;
+
+  /// Under an achievement: how far along its first level is.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} %'**
+  String achievementsPercent(int percent);
+
+  /// One achievement sheet, under the progress bar. The numbers are already formatted.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} of {goal} · {left} to go'**
+  String achievementsProgressOf(String value, String goal, String left);
+
+  /// One achievement sheet, a places achievement: opens the Passport (the world page).
+  ///
+  /// In en, this message translates to:
+  /// **'See your countries in the Passport'**
+  String get achievementsSeePassport;
 
   /// No description provided for @achievementsStreakDays.
   ///
@@ -1214,6 +1274,12 @@ abstract class AppLocalizations {
   /// **'The capsule was saved but not sent. Tap save to try again.'**
   String get capsulesErrorSavedNotSent;
 
+  /// Title of the Create page when it was opened from a friend's profile (Send a capsule); {name} is the friend's first name.
+  ///
+  /// In en, this message translates to:
+  /// **'A capsule for {name}'**
+  String capsulesForFriendTitle(String name);
+
   /// Screen reader label of the cross on a frame.
   ///
   /// In en, this message translates to:
@@ -1556,6 +1622,12 @@ abstract class AppLocalizations {
   /// **'Slow'**
   String get capsulesSpeedSlow;
 
+  /// Label before the friend a capsule is sent to, on the Create page.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get capsulesTo;
+
   /// Create page, "Who sees it" row: a public capsule.
   ///
   /// In en, this message translates to:
@@ -1766,6 +1838,84 @@ abstract class AppLocalizations {
   /// **'Username already taken'**
   String get commonUsernameTaken;
 
+  /// Small label above name, username, about me and home town on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'About you'**
+  String get editProfileAboutYou;
+
+  /// Value of an empty row on Edit profile (home town, about me).
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get editProfileAdd;
+
+  /// Value of the cover photo and photo rows on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get editProfileChange;
+
+  /// Row on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Cover photo'**
+  String get editProfileCover;
+
+  /// Under the live postcard on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the cover or the stamp to change them.'**
+  String get editProfileHint;
+
+  /// Row and sheet title: the town shown under the name on the postcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Home town'**
+  String get editProfileHomeTown;
+
+  /// Error after saving the home town.
+  ///
+  /// In en, this message translates to:
+  /// **'Your home town could not be saved. Please try again.'**
+  String get editProfileHomeTownFailed;
+
+  /// Under the home town field.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown on your postcard and in your Passport.'**
+  String get editProfileHomeTownNote;
+
+  /// Row on Edit profile: the profile photo (shown in the stamp).
+  ///
+  /// In en, this message translates to:
+  /// **'Your photo'**
+  String get editProfilePhoto;
+
+  /// Row on Edit profile: the stamp's shape and colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Stamp'**
+  String get editProfileStamp;
+
+  /// Value of the Stamp row: shape and colour names.
+  ///
+  /// In en, this message translates to:
+  /// **'{shape} · {colour}'**
+  String editProfileStampValue(String shape, String colour);
+
+  /// Title of the page where the user edits their postcard and details.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfileTitle;
+
+  /// Small label above cover photo, photo and stamp on Edit profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your postcard'**
+  String get editProfileYourPostcard;
+
   /// No description provided for @failureNotFound.
   ///
   /// In en, this message translates to:
@@ -1796,11 +1946,23 @@ abstract class AppLocalizations {
   /// **'Add'**
   String get friendsAdd;
 
+  /// Small button on a suggested person: sends them a friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add'**
+  String get friendsAddPlus;
+
   /// No description provided for @friendsAddTitle.
   ///
   /// In en, this message translates to:
-  /// **'Add Friends'**
+  /// **'Add friends'**
   String get friendsAddTitle;
+
+  /// Small label above the received friend requests (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Asked to be your friend'**
+  String get friendsAskedToBeFriend;
 
   /// Menu item and confirm button that block a user.
   ///
@@ -1813,6 +1975,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to block this user?'**
   String get friendsBlockConfirm;
+
+  /// How many friends the user has, at the end of My friends.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 friend} other{{count} friends}}'**
+  String friendsCount(int count);
+
+  /// Closes the Pin to your profile sheet and saves the pins.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get friendsDone;
+
+  /// Text button next to the pinned friends label: opens the Pin a friend sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get friendsEdit;
 
   /// No description provided for @friendsEmpty.
   ///
@@ -1886,11 +2066,11 @@ abstract class AppLocalizations {
   /// **'Search by @username or scan a friend\'s QR code. People your friends know show up here.'**
   String get friendsFindByUsernameHint;
 
-  /// Button in Manage friendship: get notified about this friend's capsules.
+  /// Row with a switch in a friend's menu: following the friend (notifications about their capsules). The name is the friend's first name.
   ///
   /// In en, this message translates to:
-  /// **'Follow'**
-  String get friendsFollow;
+  /// **'Notifications about {name}\'s capsules'**
+  String friendsFollowRow(String name);
 
   /// No description provided for @friendsFollowed.
   ///
@@ -1964,17 +2144,11 @@ abstract class AppLocalizations {
   /// **'Hide suggestion'**
   String get friendsHideSuggestionLabel;
 
-  /// Section title above the suggested people on Add Friends.
+  /// Screen reader label of the three dots button on a friend's row.
   ///
   /// In en, this message translates to:
-  /// **'Make friends'**
-  String get friendsMakeFriends;
-
-  /// No description provided for @friendsManageFriendship.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage friendship'**
-  String get friendsManageFriendship;
+  /// **'More for {name}'**
+  String friendsMoreFor(String name);
 
   /// After the @username of a suggested person.
   ///
@@ -2000,11 +2174,23 @@ abstract class AppLocalizations {
   /// **'No friends match your search'**
   String get friendsNoMatches;
 
+  /// Under 'No friend requests' on the Requests tab of Add friends.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone asks to be your friend, it shows up here'**
+  String get friendsNoRequestsHint;
+
   /// No description provided for @friendsNoSuggestions.
   ///
   /// In en, this message translates to:
   /// **'No more suggested friends'**
   String get friendsNoSuggestions;
+
+  /// Declines a friend request.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get friendsNotNow;
 
   /// No description provided for @friendsOpenChat.
   ///
@@ -2017,6 +2203,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get friendsPending;
+
+  /// Small label above the suggested people (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'People you may know'**
+  String get friendsPeopleYouMayKnow;
+
+  /// Under the Pin to your profile title: how many friends are pinned of the most allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'{pinned} of {max} pinned'**
+  String friendsPinSheetCount(int pinned, int max);
+
+  /// Hint of the search field in the Pin to your profile sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a friend'**
+  String get friendsPinSheetSearch;
+
+  /// Title of the sheet where the user chooses the friends pinned to their profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to your profile'**
+  String get friendsPinSheetTitle;
+
+  /// Row in a friend's menu: pins the friend at the top of the user's profile friends.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin to my profile'**
+  String get friendsPinToProfile;
+
+  /// Small label above the row of pinned friends on My friends (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned on your profile'**
+  String get friendsPinnedOnProfile;
 
   /// No description provided for @friendsQrHint.
   ///
@@ -2042,12 +2264,6 @@ abstract class AppLocalizations {
   /// **'Reject'**
   String get friendsReject;
 
-  /// No description provided for @friendsRemove.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove from friends'**
-  String get friendsRemove;
-
   /// Confirm button of the remove-friend dialog.
   ///
   /// In en, this message translates to:
@@ -2059,6 +2275,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to remove user from friends?'**
   String get friendsRemoveConfirm;
+
+  /// Row in a friend's menu: asks to confirm, then removes the friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove friend'**
+  String get friendsRemoveFriend;
 
   /// No description provided for @friendsRemoving.
   ///
@@ -2114,11 +2336,11 @@ abstract class AppLocalizations {
   /// **'Friend request sent!'**
   String get friendsRequestSent;
 
-  /// Button on Add Friends that opens the friend requests.
+  /// Shown instead of + Add when the user already sent a friend request.
   ///
   /// In en, this message translates to:
-  /// **'Requests'**
-  String get friendsRequestsButton;
+  /// **'Requested'**
+  String get friendsRequested;
 
   /// No description provided for @friendsRequestsEmptySubtitle.
   ///
@@ -2144,11 +2366,23 @@ abstract class AppLocalizations {
   /// **'Sent'**
   String get friendsRequestsSentTab;
 
+  /// Tab on Add friends with the friend requests the user received, and how many.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Requests} other{Requests ({count})}}'**
+  String friendsRequestsTab(int count);
+
   /// No description provided for @friendsRequestsTitle.
   ///
   /// In en, this message translates to:
   /// **'Friend Requests'**
   String get friendsRequestsTitle;
+
+  /// Tile on Add friends: opens the QR code scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a friend\'s code'**
+  String get friendsScanTile;
 
   /// Search hint on My friends (searches only among the user's friends). Keep it short.
   ///
@@ -2162,6 +2396,12 @@ abstract class AppLocalizations {
   /// **'Name or @username'**
   String get friendsSearchPeopleHint;
 
+  /// Small label above the people found by the search on Add friends (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Found'**
+  String get friendsSearchResults;
+
   /// No description provided for @friendsSendCapsule.
   ///
   /// In en, this message translates to:
@@ -2173,6 +2413,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send friend request'**
   String get friendsSendRequestLabel;
+
+  /// Small label above the friend requests the user sent (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Sent by you'**
+  String get friendsSentByYou;
 
   /// No description provided for @friendsSentEmptySubtitle.
   ///
@@ -2186,17 +2432,29 @@ abstract class AppLocalizations {
   /// **'No sent requests'**
   String get friendsSentEmptyTitle;
 
+  /// Tile on Add friends: opens the user's own shareable card (profile link and QR code).
+  ///
+  /// In en, this message translates to:
+  /// **'Share your Later card'**
+  String get friendsShareCardTile;
+
   /// No description provided for @friendsShareProfile.
   ///
   /// In en, this message translates to:
   /// **'Share Profile'**
   String get friendsShareProfile;
 
-  /// No description provided for @friendsShareProfileTo.
+  /// Row in a friend's menu: shares the friend's profile link. The name is the friend's first name.
   ///
   /// In en, this message translates to:
-  /// **'Share profile to ...'**
-  String get friendsShareProfileTo;
+  /// **'Share {name}\'s card'**
+  String friendsShareTheirCard(String name);
+
+  /// Tab on Add friends with people the user may know.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested'**
+  String get friendsSuggestedTab;
 
   /// No description provided for @friendsSuggestionRemoved.
   ///
@@ -2215,6 +2473,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unfollowed successfully'**
   String get friendsUnfollowed;
+
+  /// Row in a friend's menu when the friend is pinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpin from my profile'**
+  String get friendsUnpinFromProfile;
 
   /// Main button on the profile of someone who is already a friend: opens their friend profile.
   ///
@@ -2545,6 +2809,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 year ago} other{{count} years ago}}'**
   String historyYearsAgo(int count);
+
+  /// Screen reader label of the back of the Later card.
+  ///
+  /// In en, this message translates to:
+  /// **'The back of your card: your words, your stamp and your code'**
+  String get laterCardBack;
+
+  /// Text on the postmark on the back of the Later card (a brand mark; keep it as is unless your language needs otherwise).
+  ///
+  /// In en, this message translates to:
+  /// **'LATER POST'**
+  String get laterCardPost;
+
+  /// Link under the Later card: opens the QR scanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a friend\'s code'**
+  String get laterCardScanFriend;
+
+  /// On the back of the Later card, next to the QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to add me on Later'**
+  String get laterCardScanMe;
+
+  /// Screen reader text of the two dots under the card.
+  ///
+  /// In en, this message translates to:
+  /// **'Side {number} of 2'**
+  String laterCardSide(int number);
+
+  /// Title of the share page: your postcard as a card to send.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Later card'**
+  String get laterCardTitle;
+
+  /// Under the front of the Later card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the card to turn it over'**
+  String get laterCardTurn;
+
+  /// Under the back of the Later card.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to turn it back'**
+  String get laterCardTurnBack;
 
   /// How far a place capsule is (km with one decimal).
   ///
@@ -3782,23 +4094,59 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} notification deleted} other{{count} notifications deleted}}'**
   String notificationsDeleted(int count);
 
+  /// Label above the notifications older than today (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notificationsEarlier;
+
   /// No description provided for @notificationsEmptyAll.
   ///
   /// In en, this message translates to:
   /// **'Your notifications and activity will appear here'**
   String get notificationsEmptyAll;
 
-  /// No description provided for @notificationsEmptyComments.
+  /// Empty state of the Capsules filter on the notifications page.
   ///
   /// In en, this message translates to:
-  /// **'Comments on your Capsules will appear here'**
-  String get notificationsEmptyComments;
+  /// **'Reactions, comments and opened capsules will appear here'**
+  String get notificationsEmptyCapsules;
 
-  /// No description provided for @notificationsEmptyReplies.
+  /// Empty state of the Friends filter on the notifications page.
   ///
   /// In en, this message translates to:
-  /// **'Replies to your messages will appear here'**
-  String get notificationsEmptyReplies;
+  /// **'New followers and friends will appear here'**
+  String get notificationsEmptyFriends;
+
+  /// Empty state of the Places filter on the notifications page.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules waiting for you at their places will appear here'**
+  String get notificationsEmptyPlaces;
+
+  /// Filter pill on the notifications page: new capsules, reactions, comments, opened capsules. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules'**
+  String get notificationsFilterCapsules;
+
+  /// Filter pill on the notifications page: followers, friend requests and new friends. Pills sit side by side: keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get notificationsFilterFriends;
+
+  /// Filter pill on the notifications page: capsules waiting at their places. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get notificationsFilterPlaces;
+
+  /// Small button on a "started following you" notification: follow that person too. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow back'**
+  String get notificationsFollowBack;
 
   /// Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.
   ///
@@ -3817,6 +4165,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} wants to be your friend'**
   String notificationsFriendRequestBody(String name);
+
+  /// Bold title of the card on top of the notifications page that leads to the waiting friend requests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} friend request} other{{count} friend requests}}'**
+  String notificationsFriendRequests(int count);
 
   /// Label of an announcement in the notifications list.
   ///
@@ -3884,6 +4238,18 @@ abstract class AppLocalizations {
   /// **'{name} replied: {text}'**
   String notificationsReplyBodyWithText(String name, String text);
 
+  /// Under the friend requests card's title when more than two people asked: the first two first names and how many others.
+  ///
+  /// In en, this message translates to:
+  /// **'{first}, {second} and {count} more'**
+  String notificationsRequestNamesMore(String first, String second, int count);
+
+  /// Under the friend requests card's title: the two people who asked (full names).
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String notificationsRequestNamesTwo(String first, String second);
+
   /// Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.
   ///
   /// In en, this message translates to:
@@ -3908,23 +4274,17 @@ abstract class AppLocalizations {
   /// **'All'**
   String get notificationsTabAll;
 
-  /// Filter tab (and title of its empty state): comments on the user's capsules. Keep it short.
-  ///
-  /// In en, this message translates to:
-  /// **'Comments'**
-  String get notificationsTabComments;
-
-  /// Filter tab (and title of its empty state): replies. Keep it short.
-  ///
-  /// In en, this message translates to:
-  /// **'Replies'**
-  String get notificationsTabReplies;
-
   /// Title of the notifications page and of its empty state.
   ///
   /// In en, this message translates to:
   /// **'Notifications'**
   String get notificationsTitle;
+
+  /// Label above today's notifications (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationsToday;
 
   /// No description provided for @notificationsTypeAchievement.
   ///
@@ -4022,6 +4382,258 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} unread notification} other{{count} unread notifications}}'**
   String notificationsUnreadBadge(int count);
 
+  /// Small caps label on the You and a friend page above the towns both people have.
+  ///
+  /// In en, this message translates to:
+  /// **'BOTH'**
+  String get passportBothLabel;
+
+  /// Small caps label under a number on a Passport page: capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'CAPSULES'**
+  String get passportCapsulesLabel;
+
+  /// Small caps label under a number on a Passport page: countries.
+  ///
+  /// In en, this message translates to:
+  /// **'COUNTRIES'**
+  String get passportCountriesLabel;
+
+  /// The app's name in foil letters on the Passport's cover (the brand, the same in every language).
+  ///
+  /// In en, this message translates to:
+  /// **'LATER'**
+  String get passportCoverBrand;
+
+  /// The line on the cover of a friend's Passport; name is their first name.
+  ///
+  /// In en, this message translates to:
+  /// **'Places where {name} left a capsule'**
+  String passportCoverFriend(String name);
+
+  /// The line on the cover of your own Passport.
+  ///
+  /// In en, this message translates to:
+  /// **'Places where you left a capsule'**
+  String get passportCoverOwn;
+
+  /// The word printed in foil under the globe on the Passport's cover.
+  ///
+  /// In en, this message translates to:
+  /// **'PASSPORT'**
+  String get passportCoverTitle;
+
+  /// Text of an empty Passport's stamps page.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave a capsule somewhere and its town is stamped here.'**
+  String get passportEmptyBody;
+
+  /// Text of a friend's empty Passport; name is their first name.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has no stamps yet.'**
+  String passportEmptyFriend(String name);
+
+  /// Title of an empty Passport's stamps page.
+  ///
+  /// In en, this message translates to:
+  /// **'Your first stamp'**
+  String get passportEmptyTitle;
+
+  /// On a visa and on the photo page's stamp: the day of the first capsule in a country.
+  ///
+  /// In en, this message translates to:
+  /// **'FIRST ENTRY'**
+  String get passportFirstEntry;
+
+  /// Hint under the You and a friend page; name is the friend's first name.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe for {name}\'s own pages'**
+  String passportFriendHint(String name);
+
+  /// Field label on the Passport's photo page: the person's name without the surname.
+  ///
+  /// In en, this message translates to:
+  /// **'GIVEN NAMES'**
+  String get passportGivenNames;
+
+  /// Field label on the Passport's photo page: the home town from the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'HOME TOWN'**
+  String get passportHomeTown;
+
+  /// On a visa: label above the country's towns and capsules in the app.
+  ///
+  /// In en, this message translates to:
+  /// **'IN LATER'**
+  String get passportInLater;
+
+  /// Button on an empty Passport: opens the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule'**
+  String get passportMakeCapsule;
+
+  /// Field label on the Passport's photo page when the person's name is one word.
+  ///
+  /// In en, this message translates to:
+  /// **'NAME'**
+  String get passportName;
+
+  /// Small caps label under a number on the Your year page: countries first entered this year.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get passportNewLabel;
+
+  /// Label on the Your year page above the countries first entered this year.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW THIS YEAR'**
+  String get passportNewThisYear;
+
+  /// On the You and a friend page under ONLY YOU or ONLY <name> when the list is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'None yet'**
+  String get passportNone;
+
+  /// On the You and a friend page when the two have no town in common.
+  ///
+  /// In en, this message translates to:
+  /// **'No towns in common yet'**
+  String get passportNothingShared;
+
+  /// Small caps label on the You and a friend page above the countries only the friend has; name is their first name in capitals.
+  ///
+  /// In en, this message translates to:
+  /// **'ONLY {name}'**
+  String passportOnlyThem(String name);
+
+  /// Small caps label on the You and a friend page above the countries only you have.
+  ///
+  /// In en, this message translates to:
+  /// **'ONLY YOU'**
+  String get passportOnlyYou;
+
+  /// Printed at the top of the Passport's photo page in the app's five languages, as on a real passport (the same in every language).
+  ///
+  /// In en, this message translates to:
+  /// **'PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ'**
+  String get passportPhotoLabel;
+
+  /// The share button in the Passport's header (screen readers): sends the open page as a picture.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this page'**
+  String get passportShare;
+
+  /// Text sent with a shared picture of a Passport page.
+  ///
+  /// In en, this message translates to:
+  /// **'A page from a Later passport'**
+  String get passportShareText;
+
+  /// In a town's stamp sheet: the day of the first capsule in that town.
+  ///
+  /// In en, this message translates to:
+  /// **'First capsule here on {date}'**
+  String passportStampFirstHere(String date);
+
+  /// In a town's stamp sheet or a visa's sheet: the day of the first capsule in the country (the app does not know the day per town).
+  ///
+  /// In en, this message translates to:
+  /// **'First capsule in {country} on {date}'**
+  String passportStampFirstIn(String country, String date);
+
+  /// Hint under a Passport page of town stamps.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a stamp to see more'**
+  String get passportStampsHint;
+
+  /// Under the Passport's cover after the countries and towns: the day of the first stamp ("12 Mar 2025").
+  ///
+  /// In en, this message translates to:
+  /// **'stamps since {date}'**
+  String passportStampsSince(String date);
+
+  /// Field label on the Passport's photo page: the last word of the person's name.
+  ///
+  /// In en, this message translates to:
+  /// **'SURNAME'**
+  String get passportSurname;
+
+  /// Hint under a Passport page.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to turn the page'**
+  String get passportSwipeHint;
+
+  /// Hint under the Passport's closed cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open'**
+  String get passportTapToOpen;
+
+  /// On the You and a friend page: the countries ("2 countries") and towns ("3 towns") both people have a stamp in.
+  ///
+  /// In en, this message translates to:
+  /// **'Both of you: {countries}, {towns}'**
+  String passportTogetherBoth(String countries, String towns);
+
+  /// Printed at the top of the You and a friend page of a friend's Passport; name is their first name in capitals.
+  ///
+  /// In en, this message translates to:
+  /// **'YOU AND {name}'**
+  String passportTogetherLabel(String name);
+
+  /// Small caps label under a number on a Passport page: towns.
+  ///
+  /// In en, this message translates to:
+  /// **'TOWNS'**
+  String get passportTownsLabel;
+
+  /// Field label on the Passport's photo page: the @username.
+  ///
+  /// In en, this message translates to:
+  /// **'USERNAME'**
+  String get passportUsername;
+
+  /// On a visa in the Passport, before the country code ("VISA · PL").
+  ///
+  /// In en, this message translates to:
+  /// **'VISA'**
+  String get passportVisa;
+
+  /// Hint under a Passport page of visas (one per country).
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a visa to see its towns'**
+  String get passportVisasHint;
+
+  /// Printed at the top of a Passport page of visas (one per country).
+  ///
+  /// In en, this message translates to:
+  /// **'VISAS'**
+  String get passportVisasLabel;
+
+  /// Printed at the top of the Passport's last page: the current year in places.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR YEAR'**
+  String get passportYearLabel;
+
+  /// Note under the month line on the Your year page.
+  ///
+  /// In en, this message translates to:
+  /// **'Each country at its latest visit this year'**
+  String get passportYearMonthsNote;
+
   /// Place pill on a capsule when the phone has no location yet.
   ///
   /// In en, this message translates to:
@@ -4070,11 +4682,23 @@ abstract class AppLocalizations {
   /// **'Add a few words about you'**
   String get profileAboutPrompt;
 
+  /// On a profile postcard without a cover photo; opens the photo picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a cover photo'**
+  String get profileAddCover;
+
   /// Card on the own profile page that opens Add Friends.
   ///
   /// In en, this message translates to:
   /// **'Add friends'**
   String get profileAddFriends;
+
+  /// Last row of the achievements card on the profile; opens the achievements page.
+  ///
+  /// In en, this message translates to:
+  /// **'All achievements'**
+  String get profileAllAchievements;
 
   /// Red option in the background picture menu.
   ///
@@ -4094,6 +4718,18 @@ abstract class AppLocalizations {
   /// **'Background picture updated successfully!'**
   String get profileBackgroundUpdated;
 
+  /// Title of the My capsules card on the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 capsule} other{{count} capsules}}'**
+  String profileCapsulesCount(int count);
+
+  /// Under the capsule count on the profile: in how many places, how many made together with friends.
+  ///
+  /// In en, this message translates to:
+  /// **'{places, plural, =1{in 1 place} other{in {places} places}} · {together} made with friends'**
+  String profileCapsulesLine(int places, int together);
+
   /// Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile.
   ///
   /// In en, this message translates to:
@@ -4105,6 +4741,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copy Link'**
   String get profileCopyLink;
+
+  /// On the profile postcard after followers and following: countries with the person's capsules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 country} other{{count} countries}}'**
+  String profileCountries(int count);
+
+  /// Under a Passport row: the countries and the towns, each already worded ("7 countries", "15 towns").
+  ///
+  /// In en, this message translates to:
+  /// **'{countries} · {towns}'**
+  String profileCountriesTowns(String countries, String towns);
 
   /// No description provided for @profileErrorCopyLink.
   ///
@@ -4154,11 +4802,17 @@ abstract class AppLocalizations {
   /// **'{count} following'**
   String profileFollowing(int count);
 
-  /// Link on the profile's friends card to the whole friends list.
+  /// Section title on a friend's profile above their capsules.
   ///
   /// In en, this message translates to:
-  /// **'All'**
-  String get profileFriendsAll;
+  /// **'{name}\'s capsules'**
+  String profileFriendCapsules(String name);
+
+  /// Row on a friend's profile: opens their Passport (countries and towns of their capsules).
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s Passport'**
+  String profileFriendPassport(String name);
 
   /// Small title at the top of the friends card on the profile.
   ///
@@ -4214,6 +4868,18 @@ abstract class AppLocalizations {
   /// **'For friends'**
   String get profileNewForFriends;
 
+  /// My capsules card on the profile of a new user.
+  ///
+  /// In en, this message translates to:
+  /// **'No capsules yet'**
+  String get profileNoCapsules;
+
+  /// Under "No capsules yet".
+  ///
+  /// In en, this message translates to:
+  /// **'Your first one will show up here'**
+  String get profileNoCapsulesHint;
+
   /// Shown instead of the pinned friends on the profile page when the user has no friends.
   ///
   /// In en, this message translates to:
@@ -4225,6 +4891,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Find people you know'**
   String get profileNoFriendsAction;
+
+  /// Screen reader label of the small map on the profile's Places card.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the map'**
+  String get profileOpenMap;
 
   /// Red option in the profile picture menu.
   ///
@@ -4262,35 +4934,23 @@ abstract class AppLocalizations {
   /// **'{name} pinned'**
   String profilePinned(String name);
 
-  /// Explanation under the title of the pinned friends chooser.
-  ///
-  /// In en, this message translates to:
-  /// **'If you choose fewer than 3, random friends from your list will be shown'**
-  String get profilePinnedHint;
-
-  /// Error when the user ticks a fourth pinned friend.
-  ///
-  /// In en, this message translates to:
-  /// **'You can only pin up to 3 friends'**
-  String get profilePinnedLimit;
-
-  /// Title of the sheet where the user picks the friends pinned to their profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose up to 3 pinned friends'**
-  String get profilePinnedTitle;
-
   /// No description provided for @profilePinnedUpdated.
   ///
   /// In en, this message translates to:
   /// **'Pinned friends updated successfully!'**
   String get profilePinnedUpdated;
 
-  /// Shown in place of the QR code on Share Profile if it cannot be drawn.
+  /// Section title on a profile above the Places card (map and Passport).
   ///
   /// In en, this message translates to:
-  /// **'Something went wrong...'**
-  String get profileQrError;
+  /// **'Places'**
+  String get profilePlacesSection;
+
+  /// Screen reader hint on the profile postcard: pulling down opens the cover photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull down to see the whole photo'**
+  String get profilePostcardOpen;
 
   /// Quick action on a friend in the profile: send them a capsule.
   ///
@@ -4310,18 +4970,6 @@ abstract class AppLocalizations {
   /// **'Share'**
   String get profileShare;
 
-  /// Heading above the QR code on Share Profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Share Your Profile'**
-  String get profileShareHeading;
-
-  /// Blue info card at the bottom of Share Profile.
-  ///
-  /// In en, this message translates to:
-  /// **'Others can scan this code with their camera or the app to add you as a friend'**
-  String get profileShareHint;
-
   /// Text passed to the system share sheet when sharing a profile (the user's own or a friend's).
   ///
   /// In en, this message translates to:
@@ -4334,35 +4982,23 @@ abstract class AppLocalizations {
   /// **'Connect with {name} on Later'**
   String profileShareSubject(String name);
 
-  /// Grey line under the heading on Share Profile.
+  /// Screen reader label of a person's stamp (their photo as a postage stamp).
   ///
   /// In en, this message translates to:
-  /// **'Let others scan this QR code to add you as a friend'**
-  String get profileShareSubtitle;
+  /// **'{name}\'s stamp'**
+  String profileStampLabel(String name);
 
-  /// Page title of Share Profile.
+  /// Under Passport on the profile when there are no countries yet.
   ///
   /// In en, this message translates to:
-  /// **'Share Profile'**
-  String get profileShareTitle;
+  /// **'Stamps come with your capsules'**
+  String get profileStampsHint;
 
-  /// Label under the number of the user's capsules on the profile.
+  /// How many towns have someone's capsules.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{capsule} other{capsules}}'**
-  String profileStatCapsules(int count);
-
-  /// Label under the number of places (about 5 km apart) with the user's capsules.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{place} other{places}}'**
-  String profileStatPlaces(int count);
-
-  /// Label under the number of capsules made with friends (co-authors).
-  ///
-  /// In en, this message translates to:
-  /// **'with friends'**
-  String get profileStatTogether;
+  /// **'{count, plural, =1{1 town} other{{count} towns}}'**
+  String profileTowns(int count);
 
   /// Quick action: unpin the friend.
   ///
@@ -4555,18 +5191,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Almost there'**
   String get settingsCompleteProfileTitle;
-
-  /// No description provided for @settingsCustomizeDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap a picture to change it'**
-  String get settingsCustomizeDescription;
-
-  /// No description provided for @settingsCustomizeProfile.
-  ///
-  /// In en, this message translates to:
-  /// **'Customize profile'**
-  String get settingsCustomizeProfile;
 
   /// No description provided for @settingsDataAndStorage.
   ///
@@ -5156,12 +5780,6 @@ abstract class AppLocalizations {
   /// **'Streak reminder'**
   String get settingsNotificationsStreak;
 
-  /// No description provided for @settingsNotificationsStreakHint.
-  ///
-  /// In en, this message translates to:
-  /// **'In the evening, when your streak would end tonight'**
-  String get settingsNotificationsStreakHint;
-
   /// Notification settings switch: pushes vibrate.
   ///
   /// In en, this message translates to:
@@ -5630,6 +6248,12 @@ abstract class AppLocalizations {
   /// **'SIZE'**
   String get settingsSectionSize;
 
+  /// Notification settings section: the daily streak reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'STREAK'**
+  String get settingsSectionStreak;
+
   /// No description provided for @settingsSectionSupport.
   ///
   /// In en, this message translates to:
@@ -5743,6 +6367,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.'**
   String get settingsStorageFooter;
+
+  /// Under the Streak section of notification settings.
+  ///
+  /// In en, this message translates to:
+  /// **'This phone only: the reminder comes from this phone, even offline, and not from your other devices.'**
+  String get settingsStreakFooter;
+
+  /// Under the Streak reminder switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day at {time}, unless a capsule already counts today'**
+  String settingsStreakReminderHint(String time);
+
+  /// Row: when the streak reminder comes; tap to change.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get settingsStreakReminderTime;
 
   /// Line of the app information for support (copied or added to support emails).
   ///
@@ -5888,6 +6530,156 @@ abstract class AppLocalizations {
   /// **'Your password'**
   String get settingsYourPassword;
 
+  /// Button on the stamp sheet: pick another profile photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get stampChangePhoto;
+
+  /// Label above the stamp colours.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour'**
+  String get stampColour;
+
+  /// The last colour swatch (a rainbow); opens a picker for any colour. Also the title of that picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Any colour'**
+  String get stampColourAny;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get stampColourBlack;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue'**
+  String get stampColourBlue;
+
+  /// A stamp colour: the dark green of the passport cover.
+  ///
+  /// In en, this message translates to:
+  /// **'Forest'**
+  String get stampColourForest;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get stampColourGreen;
+
+  /// Label of the field with the colour as #RRGGBB.
+  ///
+  /// In en, this message translates to:
+  /// **'Colour code'**
+  String get stampColourHex;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Orange'**
+  String get stampColourOrange;
+
+  /// A stamp colour: the cream of the passport pages.
+  ///
+  /// In en, this message translates to:
+  /// **'Paper'**
+  String get stampColourPaper;
+
+  /// Label before the colours picked recently in the Any colour picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get stampColourRecent;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Red'**
+  String get stampColourRed;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'White'**
+  String get stampColourWhite;
+
+  /// A stamp colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow'**
+  String get stampColourYellow;
+
+  /// Button that closes the stamp sheet and keeps the choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get stampDone;
+
+  /// Under the stamp in the Any colour picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get stampPreview;
+
+  /// Error after choosing a stamp shape or colour.
+  ///
+  /// In en, this message translates to:
+  /// **'Your stamp could not be saved. Please try again.'**
+  String get stampSaveFailed;
+
+  /// Stamp shape: perforated, square corners.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get stampShapeClassic;
+
+  /// Stamp shape: an instant print with your name under the photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Polaroid'**
+  String get stampShapePolaroid;
+
+  /// Stamp shape: a perforated circle.
+  ///
+  /// In en, this message translates to:
+  /// **'Round'**
+  String get stampShapeRound;
+
+  /// Stamp shape: perforated, round corners.
+  ///
+  /// In en, this message translates to:
+  /// **'Rounded'**
+  String get stampShapeRounded;
+
+  /// Stamp shape: no perforation, very round corners.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft'**
+  String get stampShapeSoft;
+
+  /// Stamp shape: two notches on the sides, like a pass.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket'**
+  String get stampShapeTicket;
+
+  /// Under "Your stamp".
+  ///
+  /// In en, this message translates to:
+  /// **'How your photo sits on your postcard.'**
+  String get stampSubtitle;
+
+  /// Title of the sheet where you choose your stamp's shape and colour (your photo as a postage stamp on your postcard).
+  ///
+  /// In en, this message translates to:
+  /// **'Your stamp'**
+  String get stampTitle;
+
   /// Button on the new stamp: close it.
   ///
   /// In en, this message translates to:
@@ -5924,6 +6716,24 @@ abstract class AppLocalizations {
   /// **'Today isn\'t counted yet: leave a capsule before midnight to keep your streak.'**
   String get streakAtRisk;
 
+  /// Streak page: row with the longest streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Best streak'**
+  String get streakBest;
+
+  /// Streak page: the streak's length (large) and the best streak.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String streakDaysCount(int count);
+
+  /// Streak page, today not counted yet: hours until midnight.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule today to keep it. {hours, plural, =1{1 hour left.} other{{hours} hours left.}}'**
+  String streakKeepHoursLeft(int hours);
+
   /// Streak card: the longest streak so far, in days.
   ///
   /// In en, this message translates to:
@@ -5936,41 +6746,83 @@ abstract class AppLocalizations {
   /// **'Make a capsule'**
   String get streakMakeCapsule;
 
+  /// Achievements page, the streak row, when there is no streak.
+  ///
+  /// In en, this message translates to:
+  /// **'No streak yet'**
+  String get streakNoneTitle;
+
+  /// Title of the Streak page.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get streakPageTitle;
+
+  /// Streak page: the daily reminder's switch row; tap to change the time.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me at {time}'**
+  String streakRemindAt(String time);
+
+  /// Error when the phone refuses notifications for the streak reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications for Later in your phone\'s settings to get the reminder'**
+  String get streakReminderDenied;
+
+  /// Streak reminder notification body, when a streak would end tonight.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Your 1-day streak ends at midnight. A capsule today keeps it.} other{Your {count}-day streak ends at midnight. A capsule today keeps it.}}'**
+  String streakReminderKeepBody(int count);
+
+  /// Streak reminder notification title.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your streak'**
+  String get streakReminderKeepTitle;
+
+  /// Streak page: under the reminder when all notifications are off.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off in Settings'**
+  String get streakReminderPushOff;
+
+  /// Streak reminder notification title, when there is no streak to keep.
+  ///
+  /// In en, this message translates to:
+  /// **'A capsule today?'**
+  String get streakReminderStartTitle;
+
+  /// Title of the time picker for the streak reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me at'**
+  String get streakReminderTimeTitle;
+
   /// Streak card once today counts.
   ///
   /// In en, this message translates to:
   /// **'Today counts. See you tomorrow!'**
   String get streakSafe;
 
+  /// Streak row and page (and the reminder) when there is no streak to keep.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a capsule today to start a streak'**
+  String get streakStartToday;
+
+  /// Streak page: label above the week's days (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get streakThisWeek;
+
   /// On a country stamp: capsules left there.
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 capsule} other{{count} capsules}}'**
   String worldCapsules(int count);
-
-  /// Under the number of countries in the passport and on the profile.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{country} other{countries}}'**
-  String worldCountriesLabel(int count);
-
-  /// Under the passport title.
-  ///
-  /// In en, this message translates to:
-  /// **'Countries and towns of your capsules'**
-  String get worldDescription;
-
-  /// Passport without stamps.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave a capsule somewhere new and its country gets a stamp here.'**
-  String get worldEmpty;
-
-  /// On a country stamp: the month of the first capsule there ("Oct 2026").
-  ///
-  /// In en, this message translates to:
-  /// **'First: {date}'**
-  String worldFirst(String date);
 
   /// Footnote: older capsules have no country, so they are not in the passport.
   ///
@@ -5983,12 +6835,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passport'**
   String get worldTitle;
-
-  /// Under the number of towns in the passport and on the profile.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{town} other{towns}}'**
-  String worldTownsLabel(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -1,11 +1,7 @@
 {
   "notificationsTitle": "Powiadomienia",
   "notificationsTabAll": "Wszystkie",
-  "notificationsTabReplies": "Odpowiedzi",
-  "notificationsTabComments": "Komentarze",
   "notificationsEmptyAll": "Tu pojawią się twoje powiadomienia i aktywność",
-  "notificationsEmptyReplies": "Tu pojawią się odpowiedzi na twoje wiadomości",
-  "notificationsEmptyComments": "Tu pojawią się komentarze do twoich kapsuł",
   "notificationsTypeFollow": "Nowy obserwujący",
   "notificationsTypeCapsule": "Nowa kapsuła",
   "notificationsTypeMessage": "Nowa wiadomość",
@@ -66,5 +62,17 @@
   "placesNearbyBody": "Jest {metres} m stąd. Przytrzymaj, by ją tam otworzyć.",
   "placesWelcomeTitle": "Witaj! {country}",
   "placesWelcomeBody": "Jesteś tu od 2 godzin. Zostawisz wspomnienie?",
-  "placesLeaveCapsule": "Zostaw kapsułę"
+  "placesLeaveCapsule": "Zostaw kapsułę",
+  "notificationsFilterFriends": "Znajomi",
+  "notificationsFilterCapsules": "Kapsuły",
+  "notificationsFilterPlaces": "Miejsca",
+  "notificationsToday": "Dzisiaj",
+  "notificationsEarlier": "Wcześniej",
+  "notificationsFriendRequests": "{count, plural, one{{count} zaproszenie do znajomych} few{{count} zaproszenia do znajomych} many{{count} zaproszeń do znajomych} other{{count} zaproszenia do znajomych}}",
+  "notificationsRequestNamesTwo": "{first} i {second}",
+  "notificationsRequestNamesMore": "{first}, {second} i jeszcze {count}",
+  "notificationsFollowBack": "Obserwuj też",
+  "notificationsEmptyFriends": "Tutaj pojawią się nowi obserwujący i znajomi",
+  "notificationsEmptyCapsules": "Tutaj pojawią się reakcje, komentarze i otwarte kapsuły",
+  "notificationsEmptyPlaces": "Tutaj pojawią się kapsuły, które czekają na ciebie w swoich miejscach"
 }

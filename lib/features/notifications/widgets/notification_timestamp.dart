@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:later/core/l10n/l10n.dart';
-import 'package:later/core/theme/app_palette.dart';
-import 'package:later/features/notifications/notification_texts.dart';
-import 'package:later/shared/widgets/default_text.dart';
 
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../notification_texts.dart';
+
+/// "2h ago" under a notification's sentence.
 class NotificationTimestamp extends StatelessWidget {
   final DateTime timestamp;
 
@@ -11,10 +13,13 @@ class NotificationTimestamp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultText(
+    return Text(
       NotificationTexts.time(timestamp, DateTime.now(), l10n: context.l10n),
-      fontSize: 12,
-      color: context.palette.textMuted,
+      style: AppTextStyles.body.copyWith(
+        fontSize: 13,
+        height: 1.25,
+        color: context.palette.textSecondary,
+      ),
     );
   }
 }

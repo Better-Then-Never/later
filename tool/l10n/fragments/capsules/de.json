@@ -162,5 +162,7 @@
   "stampsNew": "Neuer Stempel",
   "stampsTownNumber": "{town}, deine {ordinal} Stadt",
   "stampsOpenPassport": "Pass öffnen",
-  "stampsLater": "Später"
+  "stampsLater": "Später",
+  "capsulesForFriendTitle": "Eine Kapsel für {name}",
+  "capsulesTo": "An"
 }

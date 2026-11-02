@@ -1,0 +1,221 @@
+{
+  "passportCoverBrand": "LATER",
+  "@passportCoverBrand": {
+    "description": "The app's name in foil letters on the Passport's cover (the brand, the same in every language)."
+  },
+  "passportCoverTitle": "PASSPORT",
+  "@passportCoverTitle": {
+    "description": "The word printed in foil under the globe on the Passport's cover."
+  },
+  "passportCoverOwn": "Places where you left a capsule",
+  "@passportCoverOwn": {
+    "description": "The line on the cover of your own Passport."
+  },
+  "passportCoverFriend": "Places where {name} left a capsule",
+  "@passportCoverFriend": {
+    "description": "The line on the cover of a friend's Passport; name is their first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStampsSince": "stamps since {date}",
+  "@passportStampsSince": {
+    "description": "Under the Passport's cover after the countries and towns: the day of the first stamp (\"12 Mar 2025\").",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "passportTapToOpen": "Tap to open",
+  "@passportTapToOpen": {
+    "description": "Hint under the Passport's closed cover."
+  },
+  "passportSwipeHint": "Swipe to turn the page",
+  "@passportSwipeHint": {
+    "description": "Hint under a Passport page."
+  },
+  "passportStampsHint": "Tap a stamp to see more",
+  "@passportStampsHint": {
+    "description": "Hint under a Passport page of town stamps."
+  },
+  "passportVisasHint": "Tap a visa to see its towns",
+  "@passportVisasHint": {
+    "description": "Hint under a Passport page of visas (one per country)."
+  },
+  "passportFriendHint": "Swipe for {name}'s own pages",
+  "@passportFriendHint": {
+    "description": "Hint under the You and a friend page; name is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportPhotoLabel": "PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ",
+  "@passportPhotoLabel": {
+    "description": "Printed at the top of the Passport's photo page in the app's five languages, as on a real passport (the same in every language)."
+  },
+  "passportSurname": "SURNAME",
+  "@passportSurname": {
+    "description": "Field label on the Passport's photo page: the last word of the person's name."
+  },
+  "passportGivenNames": "GIVEN NAMES",
+  "@passportGivenNames": {
+    "description": "Field label on the Passport's photo page: the person's name without the surname."
+  },
+  "passportName": "NAME",
+  "@passportName": {
+    "description": "Field label on the Passport's photo page when the person's name is one word."
+  },
+  "passportUsername": "USERNAME",
+  "@passportUsername": {
+    "description": "Field label on the Passport's photo page: the @username."
+  },
+  "passportHomeTown": "HOME TOWN",
+  "@passportHomeTown": {
+    "description": "Field label on the Passport's photo page: the home town from the profile."
+  },
+  "passportCapsulesLabel": "CAPSULES",
+  "@passportCapsulesLabel": {
+    "description": "Small caps label under a number on a Passport page: capsules."
+  },
+  "passportCountriesLabel": "COUNTRIES",
+  "@passportCountriesLabel": {
+    "description": "Small caps label under a number on a Passport page: countries."
+  },
+  "passportTownsLabel": "TOWNS",
+  "@passportTownsLabel": {
+    "description": "Small caps label under a number on a Passport page: towns."
+  },
+  "passportFirstEntry": "FIRST ENTRY",
+  "@passportFirstEntry": {
+    "description": "On a visa and on the photo page's stamp: the day of the first capsule in a country."
+  },
+  "passportVisasLabel": "VISAS",
+  "@passportVisasLabel": {
+    "description": "Printed at the top of a Passport page of visas (one per country)."
+  },
+  "passportVisa": "VISA",
+  "@passportVisa": {
+    "description": "On a visa in the Passport, before the country code (\"VISA · PL\")."
+  },
+  "passportInLater": "IN LATER",
+  "@passportInLater": {
+    "description": "On a visa: label above the country's towns and capsules in the app."
+  },
+  "passportYearLabel": "YOUR YEAR",
+  "@passportYearLabel": {
+    "description": "Printed at the top of the Passport's last page: the current year in places."
+  },
+  "passportNewLabel": "NEW",
+  "@passportNewLabel": {
+    "description": "Small caps label under a number on the Your year page: countries first entered this year."
+  },
+  "passportNewThisYear": "NEW THIS YEAR",
+  "@passportNewThisYear": {
+    "description": "Label on the Your year page above the countries first entered this year."
+  },
+  "passportYearMonthsNote": "Each country at its latest visit this year",
+  "@passportYearMonthsNote": {
+    "description": "Note under the month line on the Your year page."
+  },
+  "passportStampFirstHere": "First capsule here on {date}",
+  "@passportStampFirstHere": {
+    "description": "In a town's stamp sheet: the day of the first capsule in that town.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStampFirstIn": "First capsule in {country} on {date}",
+  "@passportStampFirstIn": {
+    "description": "In a town's stamp sheet or a visa's sheet: the day of the first capsule in the country (the app does not know the day per town).",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "passportEmptyTitle": "Your first stamp",
+  "@passportEmptyTitle": {
+    "description": "Title of an empty Passport's stamps page."
+  },
+  "passportEmptyBody": "Leave a capsule somewhere and its town is stamped here.",
+  "@passportEmptyBody": {
+    "description": "Text of an empty Passport's stamps page."
+  },
+  "passportEmptyFriend": "{name} has no stamps yet.",
+  "@passportEmptyFriend": {
+    "description": "Text of a friend's empty Passport; name is their first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportMakeCapsule": "Make a capsule",
+  "@passportMakeCapsule": {
+    "description": "Button on an empty Passport: opens the camera."
+  },
+  "passportShare": "Share this page",
+  "@passportShare": {
+    "description": "The share button in the Passport's header (screen readers): sends the open page as a picture."
+  },
+  "passportShareText": "A page from a Later passport",
+  "@passportShareText": {
+    "description": "Text sent with a shared picture of a Passport page."
+  },
+  "passportTogetherLabel": "YOU AND {name}",
+  "@passportTogetherLabel": {
+    "description": "Printed at the top of the You and a friend page of a friend's Passport; name is their first name in capitals.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportTogetherBoth": "Both of you: {countries}, {towns}",
+  "@passportTogetherBoth": {
+    "description": "On the You and a friend page: the countries (\"2 countries\") and towns (\"3 towns\") both people have a stamp in.",
+    "placeholders": {
+      "countries": {
+        "type": "String"
+      },
+      "towns": {
+        "type": "String"
+      }
+    }
+  },
+  "passportBothLabel": "BOTH",
+  "@passportBothLabel": {
+    "description": "Small caps label on the You and a friend page above the towns both people have."
+  },
+  "passportOnlyThem": "ONLY {name}",
+  "@passportOnlyThem": {
+    "description": "Small caps label on the You and a friend page above the countries only the friend has; name is their first name in capitals.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportOnlyYou": "ONLY YOU",
+  "@passportOnlyYou": {
+    "description": "Small caps label on the You and a friend page above the countries only you have."
+  },
+  "passportNothingShared": "No towns in common yet",
+  "@passportNothingShared": {
+    "description": "On the You and a friend page when the two have no town in common."
+  },
+  "passportNone": "None yet",
+  "@passportNone": {
+    "description": "On the You and a friend page under ONLY YOU or ONLY <name> when the list is empty."
+  }
+}

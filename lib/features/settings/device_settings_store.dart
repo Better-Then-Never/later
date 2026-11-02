@@ -74,7 +74,8 @@ enum PhotoQuality {
 }
 
 /// Preferences of this device for the signed-in user (map look, starting
-/// camera, distance unit, photo quality, saving photos to the gallery).
+/// camera, distance unit, photo quality, saving photos to the gallery, the
+/// place alerts and the streak reminder).
 /// Kept on the device: they describe how this phone behaves, not the
 /// account.
 class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
@@ -90,6 +91,8 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
   static const _wifiKey = 'uploads_wifi_only';
   static const _nearbyKey = 'alerts_nearby';
   static const _countryKey = 'alerts_country';
+  static const _streakKey = 'streak_reminder';
+  static const _streakAtKey = 'streak_reminder_at';
 
   String? _uid;
   MapLook _map = MapLook.standard;
@@ -100,6 +103,22 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
   bool _wifiOnly = false;
   bool _nearbyAlerts = false;
   bool _countryAlerts = false;
+  bool _streakReminder = false;
+  int _streakReminderMinutes = defaultStreakReminderMinutes;
+  bool _loaded = false;
+
+  /// 20:00, in minutes after midnight.
+  static const defaultStreakReminderMinutes = 20 * 60;
+
+  /// The saved settings of the signed-in user are in (not the defaults).
+  bool get isLoaded => _loaded;
+
+  /// The daily streak reminder this phone shows itself (the Streak page and
+  /// Settings > Notifications); off until the user turns it on.
+  bool get streakReminder => _streakReminder;
+
+  /// When the streak reminder comes, in minutes after midnight.
+  int get streakReminderMinutes => _streakReminderMinutes;
 
   /// "You're near …" while the app is closed (phase 4, F4). Needs location
   /// all the time; off until the user turns it on.
@@ -135,6 +154,10 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
       final wifi = await _prefs.string(uid, _wifiKey);
       final nearby = await _prefs.string(uid, _nearbyKey);
       final country = await _prefs.string(uid, _countryKey);
+      final streak = await _prefs.string(uid, _streakKey);
+      final streakAt = int.tryParse(
+        await _prefs.string(uid, _streakAtKey) ?? '',
+      );
       if (_uid != uid) return;
       _map = MapLook.parse(map);
       _camera = StartCamera.parse(camera);
@@ -144,6 +167,12 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
       _wifiOnly = wifi == 'true';
       _nearbyAlerts = nearby == 'true';
       _countryAlerts = country == 'true';
+      _streakReminder = streak == 'true';
+      _streakReminderMinutes =
+          streakAt != null && streakAt >= 0 && streakAt < 24 * 60
+          ? streakAt
+          : defaultStreakReminderMinutes;
+      _loaded = true;
       notifyListeners();
       if (_nearbyAlerts || _countryAlerts) {
         unawaited(BackgroundPlaces().schedule());
@@ -168,6 +197,9 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     _wifiOnly = false;
     _nearbyAlerts = false;
     _countryAlerts = false;
+    _streakReminder = false;
+    _streakReminderMinutes = defaultStreakReminderMinutes;
+    _loaded = false;
     notifyListeners();
   }
 
@@ -245,6 +277,24 @@ class DeviceSettingsStore extends ChangeNotifier implements SessionScoped {
     _countryAlerts = value;
     notifyListeners();
     await _prefs.setString(uid, _countryKey, '$value');
+  }
+
+  Future<void> setStreakReminder(bool value) async {
+    final uid = _uid;
+    if (uid == null || value == _streakReminder) return;
+    _streakReminder = value;
+    notifyListeners();
+    await _prefs.setString(uid, _streakKey, '$value');
+  }
+
+  /// [minutes] after midnight (0 to 1439).
+  Future<void> setStreakReminderMinutes(int minutes) async {
+    final uid = _uid;
+    final value = minutes.clamp(0, 24 * 60 - 1);
+    if (uid == null || value == _streakReminderMinutes) return;
+    _streakReminderMinutes = value;
+    notifyListeners();
+    await _prefs.setString(uid, _streakAtKey, '$value');
   }
 
   Future<void> setSaveToGallery(bool value) async {

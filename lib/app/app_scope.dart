@@ -43,6 +43,7 @@ import '../features/notifications/notifications_store.dart';
 import '../features/notifications/push_registration.dart';
 import '../features/settings/device_settings_store.dart';
 import '../features/settings/settings_store.dart';
+import '../features/streak/streak_reminder.dart';
 import 'appearance/appearance_controller.dart';
 import 'entitlements_store.dart';
 import '../features/map/map_pin_store.dart';
@@ -125,6 +126,7 @@ class _AppScopeState extends State<AppScope> {
   );
   late final NotificationRouter _notificationRouter;
   late final MomentsController _moments;
+  late final StreakReminderSync _streakReminder;
   late final SearchNameSync _searchName;
   late final _newsTopics = NewsTopics(
     push: _push,
@@ -181,6 +183,14 @@ class _AppScopeState extends State<AppScope> {
       show: MomentToast.show,
     )..start();
     _push.achievementsInApp = FeatureFlags.achievements;
+    // The streak reminder this phone schedules for itself (profile v4).
+    _streakReminder = StreakReminderSync(
+      session: _session,
+      device: _deviceSettings,
+      settings: _settingsStore,
+      own: _ownCapsules,
+      scheduler: LocalStreakReminderScheduler(_push),
+    )..start();
     // Push setup never blocks or breaks startup (BUG-001).
     WidgetsBinding.instance.addPostFrameCallback((_) => _push.initialize());
     _prefs.purgeLegacyGlobalKeys();
@@ -196,6 +206,7 @@ class _AppScopeState extends State<AppScope> {
     _newsTopics.dispose();
     _searchName.dispose();
     _moments.dispose();
+    _streakReminder.dispose();
     _session.dispose();
     _notificationRouter.dispose();
     _push.dispose();

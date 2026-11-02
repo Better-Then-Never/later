@@ -6,7 +6,6 @@
   "settingsEmail": "E-Mail",
   "settingsPassword": "Passwort",
   "settingsSignedInWithGoogle": "Angemeldet mit Google",
-  "settingsCustomizeProfile": "Profil anpassen",
   "settingsSectionNotificationsPrivacy": "BENACHRICHTIGUNGEN & DATENSCHUTZ",
   "settingsNotifications": "Benachrichtigungen",
   "settingsNotificationsOn": "An",
@@ -140,7 +139,6 @@
   "settingsPermissionRequiredTitle": "Berechtigung nötig",
   "settingsPermissionRequiredBody": "Diese Berechtigung wurde dauerhaft abgelehnt. Aktiviere sie in den Einstellungen deines Geräts.",
   "settingsPermissionOpenSettings": "Einstellungen öffnen",
-  "settingsCustomizeDescription": "Tippe auf ein Bild, um es zu ändern",
   "settingsStorageDescription": "Speicherplatz, den Later auf diesem Handy belegt",
   "settingsStorageFooter": "Fotos, die du für Kapseln aufgenommen oder ausgewählt hast, und Bilder aus dem Internet. Deine Kapseln, Chats und dein Konto bleiben erhalten.",
   "settingsStorageCache": "Cache",
@@ -209,7 +207,6 @@
   "settingsNotificationsCommentsHint": "Zu deinen Kapseln und Antworten an dich",
   "settingsNotificationsAchievements": "Erfolge",
   "settingsNotificationsStreak": "Serien-Erinnerung",
-  "settingsNotificationsStreakHint": "Abends, wenn deine Serie heute enden würde",
   "settingsNotificationsNews": "Neuigkeiten von Later",
   "settingsNotificationsNewsHint": "Seltene Ankündigungen vom Team",
   "settingsAboutDescription": "Ein paar Worte unter deinem Namen für alle, die dein Profil öffnen.",
@@ -247,5 +244,9 @@
   "settingsPlacesAlwaysTitle": "Standort immer",
   "settingsPlacesAlwaysMessage": "Damit Later dich auch geschlossen auf Kapseln und Länder hinweisen kann, muss Android den Standort immer erlauben. Wähle als Nächstes „Immer zulassen“.",
   "settingsPlacesAlwaysContinue": "Weiter",
-  "settingsPlacesAlwaysDenied": "Erlaube den Standort in den Einstellungen „Immer“, um das einzuschalten."
+  "settingsPlacesAlwaysDenied": "Erlaube den Standort in den Einstellungen „Immer“, um das einzuschalten.",
+  "settingsSectionStreak": "SERIE",
+  "settingsStreakReminderHint": "Jeden Tag um {time}, außer heute zählt schon eine Kapsel",
+  "settingsStreakReminderTime": "Uhrzeit",
+  "settingsStreakFooter": "Nur dieses Telefon: Die Erinnerung kommt von diesem Telefon, auch offline, nicht von deinen anderen Geräten."
 }

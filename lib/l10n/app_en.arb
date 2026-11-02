@@ -114,10 +114,93 @@
       }
     }
   },
+  "achievementsAllLevels": "All {count} levels done",
+  "@achievementsAllLevels": {
+    "description": "One achievement sheet: every level of it is reached.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsCount": "{done} of {total}",
+  "@achievementsCount": {
+    "description": "Achievements page: how many achievements are earned of all of them.",
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "achievementsDescription": "Unlocked by using Later, never by paying",
-  "achievementsLocked": "Locked",
+  "achievementsDone": "Done",
+  "@achievementsDone": {
+    "description": "Under an achievement whose every level is reached (green)."
+  },
+  "achievementsGroupCapsules": "Capsules",
+  "@achievementsGroupCapsules": {
+    "description": "Achievements page: the group of capsule achievements (shown in capitals)."
+  },
+  "achievementsGroupFriends": "Friends",
+  "@achievementsGroupFriends": {
+    "description": "Achievements page: the group of social achievements (shown in capitals)."
+  },
+  "achievementsGroupHabits": "Habits",
+  "@achievementsGroupHabits": {
+    "description": "Achievements page: the group of the streak, night owl and early bird (shown in capitals)."
+  },
+  "achievementsGroupPlaces": "Places",
+  "@achievementsGroupPlaces": {
+    "description": "Achievements page: the group of places and distance achievements (shown in capitals)."
+  },
+  "achievementsLevelPercent": "Level {level} · {percent} %",
+  "@achievementsLevelPercent": {
+    "description": "Under an achievement with a level reached: the level and how far along the next one is.",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
   "achievementsNoneYet": "Your first one is a capsule away.",
-  "achievementsSeeAll": "See all",
+  "achievementsNotStarted": "Not started",
+  "@achievementsNotStarted": {
+    "description": "Under an achievement with no progress yet."
+  },
+  "achievementsPercent": "{percent} %",
+  "@achievementsPercent": {
+    "description": "Under an achievement: how far along its first level is.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "achievementsProgressOf": "{value} of {goal} · {left} to go",
+  "@achievementsProgressOf": {
+    "description": "One achievement sheet, under the progress bar. The numbers are already formatted.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "goal": {
+        "type": "String"
+      },
+      "left": {
+        "type": "String"
+      }
+    }
+  },
+  "achievementsSeePassport": "See your countries in the Passport",
+  "@achievementsSeePassport": {
+    "description": "One achievement sheet, a places achievement: opens the Passport (the world page)."
+  },
   "achievementsStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
   "@achievementsStreakDays": {
     "placeholders": {
@@ -667,6 +750,15 @@
   "@capsulesErrorSavedNotSent": {
     "description": "The capsule for a friend was created but posting it to the chat failed; tapping the create button again retries."
   },
+  "capsulesForFriendTitle": "A capsule for {name}",
+  "@capsulesForFriendTitle": {
+    "description": "Title of the Create page when it was opened from a friend's profile (Send a capsule); {name} is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "capsulesFrameRemove": "Remove frame {number}",
   "@capsulesFrameRemove": {
     "description": "Screen reader label of the cross on a frame.",
@@ -909,6 +1001,10 @@
   "@capsulesSpeedSlow": {
     "description": "Loop speed: 500 ms per frame."
   },
+  "capsulesTo": "To",
+  "@capsulesTo": {
+    "description": "Label before the friend a capsule is sent to, on the Create page."
+  },
   "capsulesWhoEveryone": "Everyone",
   "@capsulesWhoEveryone": {
     "description": "Create page, \"Who sees it\" row: a public capsule."
@@ -1050,6 +1146,66 @@
     "description": "Letters are a-z only (Latin, lower case)."
   },
   "commonUsernameTaken": "Username already taken",
+  "editProfileAboutYou": "About you",
+  "@editProfileAboutYou": {
+    "description": "Small label above name, username, about me and home town on Edit profile."
+  },
+  "editProfileAdd": "Add",
+  "@editProfileAdd": {
+    "description": "Value of an empty row on Edit profile (home town, about me)."
+  },
+  "editProfileChange": "Change",
+  "@editProfileChange": {
+    "description": "Value of the cover photo and photo rows on Edit profile."
+  },
+  "editProfileCover": "Cover photo",
+  "@editProfileCover": {
+    "description": "Row on Edit profile."
+  },
+  "editProfileHint": "Tap the cover or the stamp to change them.",
+  "@editProfileHint": {
+    "description": "Under the live postcard on Edit profile."
+  },
+  "editProfileHomeTown": "Home town",
+  "@editProfileHomeTown": {
+    "description": "Row and sheet title: the town shown under the name on the postcard."
+  },
+  "editProfileHomeTownFailed": "Your home town could not be saved. Please try again.",
+  "@editProfileHomeTownFailed": {
+    "description": "Error after saving the home town."
+  },
+  "editProfileHomeTownNote": "Shown on your postcard and in your Passport.",
+  "@editProfileHomeTownNote": {
+    "description": "Under the home town field."
+  },
+  "editProfilePhoto": "Your photo",
+  "@editProfilePhoto": {
+    "description": "Row on Edit profile: the profile photo (shown in the stamp)."
+  },
+  "editProfileStamp": "Stamp",
+  "@editProfileStamp": {
+    "description": "Row on Edit profile: the stamp's shape and colour."
+  },
+  "editProfileStampValue": "{shape} · {colour}",
+  "@editProfileStampValue": {
+    "description": "Value of the Stamp row: shape and colour names.",
+    "placeholders": {
+      "shape": {
+        "type": "String"
+      },
+      "colour": {
+        "type": "String"
+      }
+    }
+  },
+  "editProfileTitle": "Edit profile",
+  "@editProfileTitle": {
+    "description": "Title of the page where the user edits their postcard and details."
+  },
+  "editProfileYourPostcard": "Your postcard",
+  "@editProfileYourPostcard": {
+    "description": "Small label above cover photo, photo and stamp on Edit profile."
+  },
   "failureNotFound": "This item no longer exists.",
   "failurePermission": "You are not allowed to do that.",
   "friendsAccept": "Accept",
@@ -1064,12 +1220,37 @@
   "@friendsAdd": {
     "description": "Main button on the profile of someone who is not a friend yet: sends a friend request."
   },
-  "friendsAddTitle": "Add Friends",
+  "friendsAddPlus": "+ Add",
+  "@friendsAddPlus": {
+    "description": "Small button on a suggested person: sends them a friend request."
+  },
+  "friendsAddTitle": "Add friends",
+  "friendsAskedToBeFriend": "Asked to be your friend",
+  "@friendsAskedToBeFriend": {
+    "description": "Small label above the received friend requests (shown in capitals)."
+  },
   "friendsBlock": "Block",
   "@friendsBlock": {
     "description": "Menu item and confirm button that block a user."
   },
   "friendsBlockConfirm": "Are you sure you want to block this user?",
+  "friendsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@friendsCount": {
+    "description": "How many friends the user has, at the end of My friends.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsDone": "Done",
+  "@friendsDone": {
+    "description": "Closes the Pin to your profile sheet and saves the pins."
+  },
+  "friendsEdit": "Edit",
+  "@friendsEdit": {
+    "description": "Text button next to the pinned friends label: opens the Pin a friend sheet."
+  },
   "friendsEmpty": "No friends added yet",
   "friendsErrorAcceptRequest": "Failed to accept request",
   "friendsErrorBlock": "Failed to block user",
@@ -1085,9 +1266,14 @@
   "friendsErrorUnblock": "Failed to unblock user",
   "friendsErrorUnfollow": "Failed to unfollow user",
   "friendsFindByUsernameHint": "Search by @username or scan a friend's QR code. People your friends know show up here.",
-  "friendsFollow": "Follow",
-  "@friendsFollow": {
-    "description": "Button in Manage friendship: get notified about this friend's capsules."
+  "friendsFollowRow": "Notifications about {name}'s capsules",
+  "@friendsFollowRow": {
+    "description": "Row with a switch in a friend's menu: following the friend (notifications about their capsules). The name is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "friendsFollowed": "Following! You'll get notifications about their capsules",
   "friendsFollowing": "Following",
@@ -1128,11 +1314,15 @@
   "@friendsHideSuggestionLabel": {
     "description": "Accessibility label of the cross that hides a suggested friend."
   },
-  "friendsMakeFriends": "Make friends",
-  "@friendsMakeFriends": {
-    "description": "Section title above the suggested people on Add Friends."
+  "friendsMoreFor": "More for {name}",
+  "@friendsMoreFor": {
+    "description": "Screen reader label of the three dots button on a friend's row.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-  "friendsManageFriendship": "Manage friendship",
   "friendsMutualCount": "{count, plural, =1{1 mutual friend} other{{count} mutual friends}}",
   "@friendsMutualCount": {
     "description": "After the @username of a suggested person.",
@@ -1148,11 +1338,51 @@
     "description": "Main button when the opened profile is the user's own."
   },
   "friendsNoMatches": "No friends match your search",
+  "friendsNoRequestsHint": "When someone asks to be your friend, it shows up here",
+  "@friendsNoRequestsHint": {
+    "description": "Under 'No friend requests' on the Requests tab of Add friends."
+  },
   "friendsNoSuggestions": "No more suggested friends",
+  "friendsNotNow": "Not now",
+  "@friendsNotNow": {
+    "description": "Declines a friend request."
+  },
   "friendsOpenChat": "Open chat",
   "friendsPending": "Pending",
   "@friendsPending": {
     "description": "Main button on a profile the user already sent a friend request to."
+  },
+  "friendsPeopleYouMayKnow": "People you may know",
+  "@friendsPeopleYouMayKnow": {
+    "description": "Small label above the suggested people (shown in capitals)."
+  },
+  "friendsPinSheetCount": "{pinned} of {max} pinned",
+  "@friendsPinSheetCount": {
+    "description": "Under the Pin to your profile title: how many friends are pinned of the most allowed.",
+    "placeholders": {
+      "pinned": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsPinSheetSearch": "Find a friend",
+  "@friendsPinSheetSearch": {
+    "description": "Hint of the search field in the Pin to your profile sheet."
+  },
+  "friendsPinSheetTitle": "Pin to your profile",
+  "@friendsPinSheetTitle": {
+    "description": "Title of the sheet where the user chooses the friends pinned to their profile."
+  },
+  "friendsPinToProfile": "Pin to my profile",
+  "@friendsPinToProfile": {
+    "description": "Row in a friend's menu: pins the friend at the top of the user's profile friends."
+  },
+  "friendsPinnedOnProfile": "Pinned on your profile",
+  "@friendsPinnedOnProfile": {
+    "description": "Small label above the row of pinned friends on My friends (shown in capitals)."
   },
   "friendsQrHint": "Point your camera at the QR code to add a friend",
   "friendsQrInvalid": "Invalid QR code. Please scan a Later profile QR code.",
@@ -1161,12 +1391,15 @@
   "@friendsReject": {
     "description": "Button that rejects a received friend request."
   },
-  "friendsRemove": "Remove from friends",
   "friendsRemoveAction": "Remove",
   "@friendsRemoveAction": {
     "description": "Confirm button of the remove-friend dialog."
   },
   "friendsRemoveConfirm": "Are you sure you want to remove user from friends?",
+  "friendsRemoveFriend": "Remove friend",
+  "@friendsRemoveFriend": {
+    "description": "Row in a friend's menu: asks to confirm, then removes the friend."
+  },
   "friendsRemoving": "Removing...",
   "friendsReport": "Report",
   "@friendsReport": {
@@ -1182,9 +1415,9 @@
   "friendsRequestReceivedInfo": "This user sent you a friend request",
   "friendsRequestRejected": "Friend request rejected",
   "friendsRequestSent": "Friend request sent!",
-  "friendsRequestsButton": "Requests",
-  "@friendsRequestsButton": {
-    "description": "Button on Add Friends that opens the friend requests."
+  "friendsRequested": "Requested",
+  "@friendsRequested": {
+    "description": "Shown instead of + Add when the user already sent a friend request."
   },
   "friendsRequestsEmptySubtitle": "When someone sends you a friend request,\nit will appear here",
   "friendsRequestsEmptyTitle": "No friend requests",
@@ -1196,7 +1429,20 @@
   "@friendsRequestsSentTab": {
     "description": "Toggle on Friend Requests: requests the user sent."
   },
+  "friendsRequestsTab": "{count, plural, =0{Requests} other{Requests ({count})}}",
+  "@friendsRequestsTab": {
+    "description": "Tab on Add friends with the friend requests the user received, and how many.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "friendsRequestsTitle": "Friend Requests",
+  "friendsScanTile": "Scan a friend's code",
+  "@friendsScanTile": {
+    "description": "Tile on Add friends: opens the QR code scanner."
+  },
   "friendsSearchHint": "Find my friends",
   "@friendsSearchHint": {
     "description": "Search hint on My friends (searches only among the user's friends). Keep it short."
@@ -1205,18 +1451,46 @@
   "@friendsSearchPeopleHint": {
     "description": "Hint of the people search on Add friends (by name or username)."
   },
+  "friendsSearchResults": "Found",
+  "@friendsSearchResults": {
+    "description": "Small label above the people found by the search on Add friends (shown in capitals)."
+  },
   "friendsSendCapsule": "Send Capsule",
   "friendsSendRequestLabel": "Send friend request",
   "@friendsSendRequestLabel": {
     "description": "Accessibility label of the add icon on a suggested friend."
   },
+  "friendsSentByYou": "Sent by you",
+  "@friendsSentByYou": {
+    "description": "Small label above the friend requests the user sent (shown in capitals)."
+  },
   "friendsSentEmptySubtitle": "Friend requests you send\nwill appear here",
   "friendsSentEmptyTitle": "No sent requests",
+  "friendsShareCardTile": "Share your Later card",
+  "@friendsShareCardTile": {
+    "description": "Tile on Add friends: opens the user's own shareable card (profile link and QR code)."
+  },
   "friendsShareProfile": "Share Profile",
-  "friendsShareProfileTo": "Share profile to ...",
+  "friendsShareTheirCard": "Share {name}'s card",
+  "@friendsShareTheirCard": {
+    "description": "Row in a friend's menu: shares the friend's profile link. The name is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "friendsSuggestedTab": "Suggested",
+  "@friendsSuggestedTab": {
+    "description": "Tab on Add friends with people the user may know."
+  },
   "friendsSuggestionRemoved": "Suggested friend removed from the list!",
   "friendsThisIsYou": "This is your account",
   "friendsUnfollowed": "Unfollowed successfully",
+  "friendsUnpinFromProfile": "Unpin from my profile",
+  "@friendsUnpinFromProfile": {
+    "description": "Row in a friend's menu when the friend is pinned."
+  },
   "friendsViewProfile": "View Profile",
   "@friendsViewProfile": {
     "description": "Main button on the profile of someone who is already a friend: opens their friend profile."
@@ -1461,6 +1735,43 @@
         "type": "int"
       }
     }
+  },
+  "laterCardBack": "The back of your card: your words, your stamp and your code",
+  "@laterCardBack": {
+    "description": "Screen reader label of the back of the Later card."
+  },
+  "laterCardPost": "LATER POST",
+  "@laterCardPost": {
+    "description": "Text on the postmark on the back of the Later card (a brand mark; keep it as is unless your language needs otherwise)."
+  },
+  "laterCardScanFriend": "Scan a friend's code",
+  "@laterCardScanFriend": {
+    "description": "Link under the Later card: opens the QR scanner."
+  },
+  "laterCardScanMe": "Scan to add me on Later",
+  "@laterCardScanMe": {
+    "description": "On the back of the Later card, next to the QR code."
+  },
+  "laterCardSide": "Side {number} of 2",
+  "@laterCardSide": {
+    "description": "Screen reader text of the two dots under the card.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "laterCardTitle": "Your Later card",
+  "@laterCardTitle": {
+    "description": "Title of the share page: your postcard as a card to send."
+  },
+  "laterCardTurn": "Tap the card to turn it over",
+  "@laterCardTurn": {
+    "description": "Under the front of the Later card."
+  },
+  "laterCardTurnBack": "Tap to turn it back",
+  "@laterCardTurnBack": {
+    "description": "Under the back of the Later card."
   },
   "mapCapsuleAwayKm": "{km} km away",
   "@mapCapsuleAwayKm": {
@@ -2356,9 +2667,39 @@
       }
     }
   },
+  "notificationsEarlier": "Earlier",
+  "@notificationsEarlier": {
+    "description": "Label above the notifications older than today (shown in capitals)."
+  },
   "notificationsEmptyAll": "Your notifications and activity will appear here",
-  "notificationsEmptyComments": "Comments on your Capsules will appear here",
-  "notificationsEmptyReplies": "Replies to your messages will appear here",
+  "notificationsEmptyCapsules": "Reactions, comments and opened capsules will appear here",
+  "@notificationsEmptyCapsules": {
+    "description": "Empty state of the Capsules filter on the notifications page."
+  },
+  "notificationsEmptyFriends": "New followers and friends will appear here",
+  "@notificationsEmptyFriends": {
+    "description": "Empty state of the Friends filter on the notifications page."
+  },
+  "notificationsEmptyPlaces": "Capsules waiting for you at their places will appear here",
+  "@notificationsEmptyPlaces": {
+    "description": "Empty state of the Places filter on the notifications page."
+  },
+  "notificationsFilterCapsules": "Capsules",
+  "@notificationsFilterCapsules": {
+    "description": "Filter pill on the notifications page: new capsules, reactions, comments, opened capsules. Keep it short."
+  },
+  "notificationsFilterFriends": "Friends",
+  "@notificationsFilterFriends": {
+    "description": "Filter pill on the notifications page: followers, friend requests and new friends. Pills sit side by side: keep it short."
+  },
+  "notificationsFilterPlaces": "Places",
+  "@notificationsFilterPlaces": {
+    "description": "Filter pill on the notifications page: capsules waiting at their places. Keep it short."
+  },
+  "notificationsFollowBack": "Follow back",
+  "@notificationsFollowBack": {
+    "description": "Small button on a \"started following you\" notification: follow that person too. Keep it short."
+  },
   "notificationsFollowBody": "{name} started following you",
   "@notificationsFollowBody": {
     "description": "Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.",
@@ -2382,6 +2723,15 @@
     "placeholders": {
       "name": {
         "type": "String"
+      }
+    }
+  },
+  "notificationsFriendRequests": "{count, plural, one{{count} friend request} other{{count} friend requests}}",
+  "@notificationsFriendRequests": {
+    "description": "Bold title of the card on top of the notifications page that leads to the waiting friend requests.",
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -2473,6 +2823,33 @@
       }
     }
   },
+  "notificationsRequestNamesMore": "{first}, {second} and {count} more",
+  "@notificationsRequestNamesMore": {
+    "description": "Under the friend requests card's title when more than two people asked: the first two first names and how many others.",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsRequestNamesTwo": "{first} and {second}",
+  "@notificationsRequestNamesTwo": {
+    "description": "Under the friend requests card's title: the two people who asked (full names).",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
   "notificationsSelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
   "@notificationsSelectedCount": {
     "description": "Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.",
@@ -2494,17 +2871,13 @@
   "@notificationsTabAll": {
     "description": "Filter tab: every notification. Tabs sit side by side: keep them short."
   },
-  "notificationsTabComments": "Comments",
-  "@notificationsTabComments": {
-    "description": "Filter tab (and title of its empty state): comments on the user's capsules. Keep it short."
-  },
-  "notificationsTabReplies": "Replies",
-  "@notificationsTabReplies": {
-    "description": "Filter tab (and title of its empty state): replies. Keep it short."
-  },
   "notificationsTitle": "Notifications",
   "@notificationsTitle": {
     "description": "Title of the notifications page and of its empty state."
+  },
+  "notificationsToday": "Today",
+  "@notificationsToday": {
+    "description": "Label above today's notifications (shown in capitals)."
   },
   "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
@@ -2547,6 +2920,225 @@
         "type": "int"
       }
     }
+  },
+  "passportBothLabel": "BOTH",
+  "@passportBothLabel": {
+    "description": "Small caps label on the You and a friend page above the towns both people have."
+  },
+  "passportCapsulesLabel": "CAPSULES",
+  "@passportCapsulesLabel": {
+    "description": "Small caps label under a number on a Passport page: capsules."
+  },
+  "passportCountriesLabel": "COUNTRIES",
+  "@passportCountriesLabel": {
+    "description": "Small caps label under a number on a Passport page: countries."
+  },
+  "passportCoverBrand": "LATER",
+  "@passportCoverBrand": {
+    "description": "The app's name in foil letters on the Passport's cover (the brand, the same in every language)."
+  },
+  "passportCoverFriend": "Places where {name} left a capsule",
+  "@passportCoverFriend": {
+    "description": "The line on the cover of a friend's Passport; name is their first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportCoverOwn": "Places where you left a capsule",
+  "@passportCoverOwn": {
+    "description": "The line on the cover of your own Passport."
+  },
+  "passportCoverTitle": "PASSPORT",
+  "@passportCoverTitle": {
+    "description": "The word printed in foil under the globe on the Passport's cover."
+  },
+  "passportEmptyBody": "Leave a capsule somewhere and its town is stamped here.",
+  "@passportEmptyBody": {
+    "description": "Text of an empty Passport's stamps page."
+  },
+  "passportEmptyFriend": "{name} has no stamps yet.",
+  "@passportEmptyFriend": {
+    "description": "Text of a friend's empty Passport; name is their first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportEmptyTitle": "Your first stamp",
+  "@passportEmptyTitle": {
+    "description": "Title of an empty Passport's stamps page."
+  },
+  "passportFirstEntry": "FIRST ENTRY",
+  "@passportFirstEntry": {
+    "description": "On a visa and on the photo page's stamp: the day of the first capsule in a country."
+  },
+  "passportFriendHint": "Swipe for {name}'s own pages",
+  "@passportFriendHint": {
+    "description": "Hint under the You and a friend page; name is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportGivenNames": "GIVEN NAMES",
+  "@passportGivenNames": {
+    "description": "Field label on the Passport's photo page: the person's name without the surname."
+  },
+  "passportHomeTown": "HOME TOWN",
+  "@passportHomeTown": {
+    "description": "Field label on the Passport's photo page: the home town from the profile."
+  },
+  "passportInLater": "IN LATER",
+  "@passportInLater": {
+    "description": "On a visa: label above the country's towns and capsules in the app."
+  },
+  "passportMakeCapsule": "Make a capsule",
+  "@passportMakeCapsule": {
+    "description": "Button on an empty Passport: opens the camera."
+  },
+  "passportName": "NAME",
+  "@passportName": {
+    "description": "Field label on the Passport's photo page when the person's name is one word."
+  },
+  "passportNewLabel": "NEW",
+  "@passportNewLabel": {
+    "description": "Small caps label under a number on the Your year page: countries first entered this year."
+  },
+  "passportNewThisYear": "NEW THIS YEAR",
+  "@passportNewThisYear": {
+    "description": "Label on the Your year page above the countries first entered this year."
+  },
+  "passportNone": "None yet",
+  "@passportNone": {
+    "description": "On the You and a friend page under ONLY YOU or ONLY <name> when the list is empty."
+  },
+  "passportNothingShared": "No towns in common yet",
+  "@passportNothingShared": {
+    "description": "On the You and a friend page when the two have no town in common."
+  },
+  "passportOnlyThem": "ONLY {name}",
+  "@passportOnlyThem": {
+    "description": "Small caps label on the You and a friend page above the countries only the friend has; name is their first name in capitals.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportOnlyYou": "ONLY YOU",
+  "@passportOnlyYou": {
+    "description": "Small caps label on the You and a friend page above the countries only you have."
+  },
+  "passportPhotoLabel": "PASSPORT · PASZPORT · REISEPASS · PASAPORTE · ПАСПОРТ",
+  "@passportPhotoLabel": {
+    "description": "Printed at the top of the Passport's photo page in the app's five languages, as on a real passport (the same in every language)."
+  },
+  "passportShare": "Share this page",
+  "@passportShare": {
+    "description": "The share button in the Passport's header (screen readers): sends the open page as a picture."
+  },
+  "passportShareText": "A page from a Later passport",
+  "@passportShareText": {
+    "description": "Text sent with a shared picture of a Passport page."
+  },
+  "passportStampFirstHere": "First capsule here on {date}",
+  "@passportStampFirstHere": {
+    "description": "In a town's stamp sheet: the day of the first capsule in that town.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStampFirstIn": "First capsule in {country} on {date}",
+  "@passportStampFirstIn": {
+    "description": "In a town's stamp sheet or a visa's sheet: the day of the first capsule in the country (the app does not know the day per town).",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "passportStampsHint": "Tap a stamp to see more",
+  "@passportStampsHint": {
+    "description": "Hint under a Passport page of town stamps."
+  },
+  "passportStampsSince": "stamps since {date}",
+  "@passportStampsSince": {
+    "description": "Under the Passport's cover after the countries and towns: the day of the first stamp (\"12 Mar 2025\").",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "passportSurname": "SURNAME",
+  "@passportSurname": {
+    "description": "Field label on the Passport's photo page: the last word of the person's name."
+  },
+  "passportSwipeHint": "Swipe to turn the page",
+  "@passportSwipeHint": {
+    "description": "Hint under a Passport page."
+  },
+  "passportTapToOpen": "Tap to open",
+  "@passportTapToOpen": {
+    "description": "Hint under the Passport's closed cover."
+  },
+  "passportTogetherBoth": "Both of you: {countries}, {towns}",
+  "@passportTogetherBoth": {
+    "description": "On the You and a friend page: the countries (\"2 countries\") and towns (\"3 towns\") both people have a stamp in.",
+    "placeholders": {
+      "countries": {
+        "type": "String"
+      },
+      "towns": {
+        "type": "String"
+      }
+    }
+  },
+  "passportTogetherLabel": "YOU AND {name}",
+  "@passportTogetherLabel": {
+    "description": "Printed at the top of the You and a friend page of a friend's Passport; name is their first name in capitals.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "passportTownsLabel": "TOWNS",
+  "@passportTownsLabel": {
+    "description": "Small caps label under a number on a Passport page: towns."
+  },
+  "passportUsername": "USERNAME",
+  "@passportUsername": {
+    "description": "Field label on the Passport's photo page: the @username."
+  },
+  "passportVisa": "VISA",
+  "@passportVisa": {
+    "description": "On a visa in the Passport, before the country code (\"VISA · PL\")."
+  },
+  "passportVisasHint": "Tap a visa to see its towns",
+  "@passportVisasHint": {
+    "description": "Hint under a Passport page of visas (one per country)."
+  },
+  "passportVisasLabel": "VISAS",
+  "@passportVisasLabel": {
+    "description": "Printed at the top of a Passport page of visas (one per country)."
+  },
+  "passportYearLabel": "YOUR YEAR",
+  "@passportYearLabel": {
+    "description": "Printed at the top of the Passport's last page: the current year in places."
+  },
+  "passportYearMonthsNote": "Each country at its latest visit this year",
+  "@passportYearMonthsNote": {
+    "description": "Note under the month line on the Your year page."
   },
   "placeNoLocation": "No location",
   "@placeNoLocation": {
@@ -2592,9 +3184,17 @@
   "@profileAboutPrompt": {
     "description": "On the own profile when there is no \"about me\" line yet; opens its editor."
   },
+  "profileAddCover": "Add a cover photo",
+  "@profileAddCover": {
+    "description": "On a profile postcard without a cover photo; opens the photo picker."
+  },
   "profileAddFriends": "Add friends",
   "@profileAddFriends": {
     "description": "Card on the own profile page that opens Add Friends."
+  },
+  "profileAllAchievements": "All achievements",
+  "@profileAllAchievements": {
+    "description": "Last row of the achievements card on the profile; opens the achievements page."
   },
   "profileBackgroundDelete": "Delete background picture",
   "@profileBackgroundDelete": {
@@ -2605,6 +3205,27 @@
     "description": "Title of the menu shown when the user taps their profile background (narrow, large bold text)."
   },
   "profileBackgroundUpdated": "Background picture updated successfully!",
+  "profileCapsulesCount": "{count, plural, =1{1 capsule} other{{count} capsules}}",
+  "@profileCapsulesCount": {
+    "description": "Title of the My capsules card on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileCapsulesLine": "{places, plural, =1{in 1 place} other{in {places} places}} · {together} made with friends",
+  "@profileCapsulesLine": {
+    "description": "Under the capsule count on the profile: in how many places, how many made together with friends.",
+    "placeholders": {
+      "places": {
+        "type": "int"
+      },
+      "together": {
+        "type": "int"
+      }
+    }
+  },
   "profileChoosePinned": "Choose pinned friends",
   "@profileChoosePinned": {
     "description": "Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile."
@@ -2612,6 +3233,27 @@
   "profileCopyLink": "Copy Link",
   "@profileCopyLink": {
     "description": "Button on Share Profile that copies the profile link (half-width button with an icon: keep it short)."
+  },
+  "profileCountries": "{count, plural, =1{1 country} other{{count} countries}}",
+  "@profileCountries": {
+    "description": "On the profile postcard after followers and following: countries with the person's capsules.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileCountriesTowns": "{countries} · {towns}",
+  "@profileCountriesTowns": {
+    "description": "Under a Passport row: the countries and the towns, each already worded (\"7 countries\", \"15 towns\").",
+    "placeholders": {
+      "countries": {
+        "type": "String"
+      },
+      "towns": {
+        "type": "String"
+      }
+    }
   },
   "profileErrorCopyLink": "Failed to copy link",
   "profileErrorDeleteBackground": "Failed to delete background picture",
@@ -2635,9 +3277,23 @@
       }
     }
   },
-  "profileFriendsAll": "All",
-  "@profileFriendsAll": {
-    "description": "Link on the profile's friends card to the whole friends list."
+  "profileFriendCapsules": "{name}'s capsules",
+  "@profileFriendCapsules": {
+    "description": "Section title on a friend's profile above their capsules.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "profileFriendPassport": "{name}'s Passport",
+  "@profileFriendPassport": {
+    "description": "Row on a friend's profile: opens their Passport (countries and towns of their capsules).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "profileFriendsSection": "Friends",
   "@profileFriendsSection": {
@@ -2672,6 +3328,14 @@
   "@profileNewForFriends": {
     "description": "Profile button: a new capsule for friends."
   },
+  "profileNoCapsules": "No capsules yet",
+  "@profileNoCapsules": {
+    "description": "My capsules card on the profile of a new user."
+  },
+  "profileNoCapsulesHint": "Your first one will show up here",
+  "@profileNoCapsulesHint": {
+    "description": "Under \"No capsules yet\"."
+  },
   "profileNoFriends": "You have no friends yet",
   "@profileNoFriends": {
     "description": "Shown instead of the pinned friends on the profile page when the user has no friends."
@@ -2679,6 +3343,10 @@
   "profileNoFriendsAction": "Find people you know",
   "@profileNoFriendsAction": {
     "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
+  },
+  "profileOpenMap": "Open the map",
+  "@profileOpenMap": {
+    "description": "Screen reader label of the small map on the profile's Places card."
   },
   "profilePictureDelete": "Delete profile icon",
   "@profilePictureDelete": {
@@ -2712,22 +3380,14 @@
       }
     }
   },
-  "profilePinnedHint": "If you choose fewer than 3, random friends from your list will be shown",
-  "@profilePinnedHint": {
-    "description": "Explanation under the title of the pinned friends chooser."
-  },
-  "profilePinnedLimit": "You can only pin up to 3 friends",
-  "@profilePinnedLimit": {
-    "description": "Error when the user ticks a fourth pinned friend."
-  },
-  "profilePinnedTitle": "Choose up to 3 pinned friends",
-  "@profilePinnedTitle": {
-    "description": "Title of the sheet where the user picks the friends pinned to their profile."
-  },
   "profilePinnedUpdated": "Pinned friends updated successfully!",
-  "profileQrError": "Something went wrong...",
-  "@profileQrError": {
-    "description": "Shown in place of the QR code on Share Profile if it cannot be drawn."
+  "profilePlacesSection": "Places",
+  "@profilePlacesSection": {
+    "description": "Section title on a profile above the Places card (map and Passport)."
+  },
+  "profilePostcardOpen": "Pull down to see the whole photo",
+  "@profilePostcardOpen": {
+    "description": "Screen reader hint on the profile postcard: pulling down opens the cover photo."
   },
   "profileQuickCapsule": "Send a capsule",
   "@profileQuickCapsule": {
@@ -2740,14 +3400,6 @@
   "profileShare": "Share",
   "@profileShare": {
     "description": "Button on Share Profile that opens the system share sheet (half-width button with an icon: keep it short)."
-  },
-  "profileShareHeading": "Share Your Profile",
-  "@profileShareHeading": {
-    "description": "Heading above the QR code on Share Profile."
-  },
-  "profileShareHint": "Others can scan this code with their camera or the app to add you as a friend",
-  "@profileShareHint": {
-    "description": "Blue info card at the bottom of Share Profile."
   },
   "profileShareMessage": "Check out {name} on Later!\n{link}",
   "@profileShareMessage": {
@@ -2773,35 +3425,27 @@
       }
     }
   },
-  "profileShareSubtitle": "Let others scan this QR code to add you as a friend",
-  "@profileShareSubtitle": {
-    "description": "Grey line under the heading on Share Profile."
+  "profileStampLabel": "{name}'s stamp",
+  "@profileStampLabel": {
+    "description": "Screen reader label of a person's stamp (their photo as a postage stamp).",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
-  "profileShareTitle": "Share Profile",
-  "@profileShareTitle": {
-    "description": "Page title of Share Profile."
+  "profileStampsHint": "Stamps come with your capsules",
+  "@profileStampsHint": {
+    "description": "Under Passport on the profile when there are no countries yet."
   },
-  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
-  "@profileStatCapsules": {
-    "description": "Label under the number of the user's capsules on the profile.",
+  "profileTowns": "{count, plural, =1{1 town} other{{count} towns}}",
+  "@profileTowns": {
+    "description": "How many towns have someone's capsules.",
     "placeholders": {
       "count": {
         "type": "int"
       }
     }
-  },
-  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
-  "@profileStatPlaces": {
-    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "profileStatTogether": "with friends",
-  "@profileStatTogether": {
-    "description": "Label under the number of capsules made with friends (co-authors)."
   },
   "profileUnpin": "Unpin",
   "@profileUnpin": {
@@ -2903,8 +3547,6 @@
   "@settingsCompleteProfileTitle": {
     "description": "Title of the page that asks a signed-in account without a profile for a name and username."
   },
-  "settingsCustomizeDescription": "Tap a picture to change it",
-  "settingsCustomizeProfile": "Customize profile",
   "settingsDataAndStorage": "Data and storage",
   "settingsDeleteAccount": "Delete account",
   "settingsDeleteButton": "Delete my account",
@@ -3098,7 +3740,6 @@
   "settingsNotificationsReactions": "Reactions",
   "settingsNotificationsSound": "Sound and vibration",
   "settingsNotificationsStreak": "Streak reminder",
-  "settingsNotificationsStreakHint": "In the evening, when your streak would end tonight",
   "settingsNotificationsVibrate": "Vibration",
   "@settingsNotificationsVibrate": {
     "description": "Notification settings switch: pushes vibrate."
@@ -3285,6 +3926,10 @@
   "settingsSectionQuestions": "QUESTIONS",
   "settingsSectionQuietHours": "QUIET HOURS",
   "settingsSectionSize": "SIZE",
+  "settingsSectionStreak": "STREAK",
+  "@settingsSectionStreak": {
+    "description": "Notification settings section: the daily streak reminder."
+  },
   "settingsSectionSupport": "SUPPORT",
   "settingsSectionTheme": "THEME",
   "settingsSectionThisPhone": "THIS PHONE",
@@ -3313,6 +3958,23 @@
   "settingsStorageClearing": "Clearing...",
   "settingsStorageDescription": "Space Later uses on this phone",
   "settingsStorageFooter": "Photos taken or picked for capsules and pictures loaded from the internet. Your capsules, chats and account stay.",
+  "settingsStreakFooter": "This phone only: the reminder comes from this phone, even offline, and not from your other devices.",
+  "@settingsStreakFooter": {
+    "description": "Under the Streak section of notification settings."
+  },
+  "settingsStreakReminderHint": "Every day at {time}, unless a capsule already counts today",
+  "@settingsStreakReminderHint": {
+    "description": "Under the Streak reminder switch.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsStreakReminderTime": "Time",
+  "@settingsStreakReminderTime": {
+    "description": "Row: when the streak reminder comes; tap to change."
+  },
   "settingsSupportInfoApp": "App: Later {version}",
   "@settingsSupportInfoApp": {
     "description": "Line of the app information for support (copied or added to support emails).",
@@ -3376,6 +4038,106 @@
   "@settingsYourPassword": {
     "description": "Hint of the password field that confirms an account change."
   },
+  "stampChangePhoto": "Change photo",
+  "@stampChangePhoto": {
+    "description": "Button on the stamp sheet: pick another profile photo."
+  },
+  "stampColour": "Colour",
+  "@stampColour": {
+    "description": "Label above the stamp colours."
+  },
+  "stampColourAny": "Any colour",
+  "@stampColourAny": {
+    "description": "The last colour swatch (a rainbow); opens a picker for any colour. Also the title of that picker."
+  },
+  "stampColourBlack": "Black",
+  "@stampColourBlack": {
+    "description": "A stamp colour."
+  },
+  "stampColourBlue": "Blue",
+  "@stampColourBlue": {
+    "description": "A stamp colour."
+  },
+  "stampColourForest": "Forest",
+  "@stampColourForest": {
+    "description": "A stamp colour: the dark green of the passport cover."
+  },
+  "stampColourGreen": "Green",
+  "@stampColourGreen": {
+    "description": "A stamp colour."
+  },
+  "stampColourHex": "Colour code",
+  "@stampColourHex": {
+    "description": "Label of the field with the colour as #RRGGBB."
+  },
+  "stampColourOrange": "Orange",
+  "@stampColourOrange": {
+    "description": "A stamp colour."
+  },
+  "stampColourPaper": "Paper",
+  "@stampColourPaper": {
+    "description": "A stamp colour: the cream of the passport pages."
+  },
+  "stampColourRecent": "Recent",
+  "@stampColourRecent": {
+    "description": "Label before the colours picked recently in the Any colour picker."
+  },
+  "stampColourRed": "Red",
+  "@stampColourRed": {
+    "description": "A stamp colour."
+  },
+  "stampColourWhite": "White",
+  "@stampColourWhite": {
+    "description": "A stamp colour."
+  },
+  "stampColourYellow": "Yellow",
+  "@stampColourYellow": {
+    "description": "A stamp colour."
+  },
+  "stampDone": "Done",
+  "@stampDone": {
+    "description": "Button that closes the stamp sheet and keeps the choice."
+  },
+  "stampPreview": "Preview",
+  "@stampPreview": {
+    "description": "Under the stamp in the Any colour picker."
+  },
+  "stampSaveFailed": "Your stamp could not be saved. Please try again.",
+  "@stampSaveFailed": {
+    "description": "Error after choosing a stamp shape or colour."
+  },
+  "stampShapeClassic": "Classic",
+  "@stampShapeClassic": {
+    "description": "Stamp shape: perforated, square corners."
+  },
+  "stampShapePolaroid": "Polaroid",
+  "@stampShapePolaroid": {
+    "description": "Stamp shape: an instant print with your name under the photo."
+  },
+  "stampShapeRound": "Round",
+  "@stampShapeRound": {
+    "description": "Stamp shape: a perforated circle."
+  },
+  "stampShapeRounded": "Rounded",
+  "@stampShapeRounded": {
+    "description": "Stamp shape: perforated, round corners."
+  },
+  "stampShapeSoft": "Soft",
+  "@stampShapeSoft": {
+    "description": "Stamp shape: no perforation, very round corners."
+  },
+  "stampShapeTicket": "Ticket",
+  "@stampShapeTicket": {
+    "description": "Stamp shape: two notches on the sides, like a pass."
+  },
+  "stampSubtitle": "How your photo sits on your postcard.",
+  "@stampSubtitle": {
+    "description": "Under \"Your stamp\"."
+  },
+  "stampTitle": "Your stamp",
+  "@stampTitle": {
+    "description": "Title of the sheet where you choose your stamp's shape and colour (your photo as a postage stamp on your postcard)."
+  },
   "stampsLater": "Later",
   "@stampsLater": {
     "description": "Button on the new stamp: close it."
@@ -3408,6 +4170,28 @@
   "@streakAtRisk": {
     "description": "Streak card while today is not counted yet (the streak ends tonight without a capsule)."
   },
+  "streakBest": "Best streak",
+  "@streakBest": {
+    "description": "Streak page: row with the longest streak."
+  },
+  "streakDaysCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@streakDaysCount": {
+    "description": "Streak page: the streak's length (large) and the best streak.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakKeepHoursLeft": "Make a capsule today to keep it. {hours, plural, =1{1 hour left.} other{{hours} hours left.}}",
+  "@streakKeepHoursLeft": {
+    "description": "Streak page, today not counted yet: hours until midnight.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "streakLongest": "Longest: {count, plural, =1{1 day} other{{count} days}}",
   "@streakLongest": {
     "description": "Streak card: the longest streak so far, in days.",
@@ -3421,9 +4205,63 @@
   "@streakMakeCapsule": {
     "description": "Streak card button (at risk): opens the camera."
   },
+  "streakNoneTitle": "No streak yet",
+  "@streakNoneTitle": {
+    "description": "Achievements page, the streak row, when there is no streak."
+  },
+  "streakPageTitle": "Streak",
+  "@streakPageTitle": {
+    "description": "Title of the Streak page."
+  },
+  "streakRemindAt": "Remind me at {time}",
+  "@streakRemindAt": {
+    "description": "Streak page: the daily reminder's switch row; tap to change the time.",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "streakReminderDenied": "Allow notifications for Later in your phone's settings to get the reminder",
+  "@streakReminderDenied": {
+    "description": "Error when the phone refuses notifications for the streak reminder."
+  },
+  "streakReminderKeepBody": "{count, plural, =1{Your 1-day streak ends at midnight. A capsule today keeps it.} other{Your {count}-day streak ends at midnight. A capsule today keeps it.}}",
+  "@streakReminderKeepBody": {
+    "description": "Streak reminder notification body, when a streak would end tonight.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakReminderKeepTitle": "Keep your streak",
+  "@streakReminderKeepTitle": {
+    "description": "Streak reminder notification title."
+  },
+  "streakReminderPushOff": "Notifications are off in Settings",
+  "@streakReminderPushOff": {
+    "description": "Streak page: under the reminder when all notifications are off."
+  },
+  "streakReminderStartTitle": "A capsule today?",
+  "@streakReminderStartTitle": {
+    "description": "Streak reminder notification title, when there is no streak to keep."
+  },
+  "streakReminderTimeTitle": "Remind me at",
+  "@streakReminderTimeTitle": {
+    "description": "Title of the time picker for the streak reminder."
+  },
   "streakSafe": "Today counts. See you tomorrow!",
   "@streakSafe": {
     "description": "Streak card once today counts."
+  },
+  "streakStartToday": "Make a capsule today to start a streak",
+  "@streakStartToday": {
+    "description": "Streak row and page (and the reminder) when there is no streak to keep."
+  },
+  "streakThisWeek": "This week",
+  "@streakThisWeek": {
+    "description": "Streak page: label above the week's days (shown in capitals)."
   },
   "worldCapsules": "{count, plural, =1{1 capsule} other{{count} capsules}}",
   "@worldCapsules": {
@@ -3434,32 +4272,6 @@
       }
     }
   },
-  "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
-  "@worldCountriesLabel": {
-    "description": "Under the number of countries in the passport and on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "worldDescription": "Countries and towns of your capsules",
-  "@worldDescription": {
-    "description": "Under the passport title."
-  },
-  "worldEmpty": "Leave a capsule somewhere new and its country gets a stamp here.",
-  "@worldEmpty": {
-    "description": "Passport without stamps."
-  },
-  "worldFirst": "First: {date}",
-  "@worldFirst": {
-    "description": "On a country stamp: the month of the first capsule there (\"Oct 2026\").",
-    "placeholders": {
-      "date": {
-        "type": "String"
-      }
-    }
-  },
   "worldNote": "Stamps come from capsules made since this update.",
   "@worldNote": {
     "description": "Footnote: older capsules have no country, so they are not in the passport."
@@ -3467,14 +4279,5 @@
   "worldTitle": "Passport",
   "@worldTitle": {
     "description": "The world view (B7): a passport of the countries where the user left capsules."
-  },
-  "worldTownsLabel": "{count, plural, =1{town} other{towns}}",
-  "@worldTownsLabel": {
-    "description": "Under the number of towns in the passport and on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   }
 }

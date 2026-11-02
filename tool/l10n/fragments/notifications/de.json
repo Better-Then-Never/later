@@ -1,11 +1,7 @@
 {
   "notificationsTitle": "Benachrichtigungen",
   "notificationsTabAll": "Alle",
-  "notificationsTabReplies": "Antworten",
-  "notificationsTabComments": "Kommentare",
   "notificationsEmptyAll": "Hier erscheinen deine Benachrichtigungen und Aktivitäten",
-  "notificationsEmptyReplies": "Hier erscheinen Antworten auf deine Nachrichten",
-  "notificationsEmptyComments": "Hier erscheinen Kommentare zu deinen Kapseln",
   "notificationsTypeFollow": "Neuer Follower",
   "notificationsTypeCapsule": "Neue Kapsel",
   "notificationsTypeMessage": "Neue Nachricht",
@@ -66,5 +62,17 @@
   "placesNearbyBody": "Sie ist {metres} m entfernt. Halte gedrückt, um sie dort zu öffnen.",
   "placesWelcomeTitle": "Willkommen in {country}",
   "placesWelcomeBody": "Du bist seit 2 Stunden hier. Hinterlässt du eine Erinnerung?",
-  "placesLeaveCapsule": "Kapsel hinterlassen"
+  "placesLeaveCapsule": "Kapsel hinterlassen",
+  "notificationsFilterFriends": "Freunde",
+  "notificationsFilterCapsules": "Kapseln",
+  "notificationsFilterPlaces": "Orte",
+  "notificationsToday": "Heute",
+  "notificationsEarlier": "Früher",
+  "notificationsFriendRequests": "{count, plural, one{{count} Freundschaftsanfrage} other{{count} Freundschaftsanfragen}}",
+  "notificationsRequestNamesTwo": "{first} und {second}",
+  "notificationsRequestNamesMore": "{first}, {second} und {count} weitere",
+  "notificationsFollowBack": "Zurückfolgen",
+  "notificationsEmptyFriends": "Neue Follower und Freunde erscheinen hier",
+  "notificationsEmptyCapsules": "Reaktionen, Kommentare und geöffnete Kapseln erscheinen hier",
+  "notificationsEmptyPlaces": "Kapseln, die an ihren Orten auf dich warten, erscheinen hier"
 }

@@ -6,7 +6,6 @@
   "settingsEmail": "Correo electrónico",
   "settingsPassword": "Contraseña",
   "settingsSignedInWithGoogle": "Sesión iniciada con Google",
-  "settingsCustomizeProfile": "Personalizar perfil",
   "settingsSectionNotificationsPrivacy": "NOTIFICACIONES Y PRIVACIDAD",
   "settingsNotifications": "Notificaciones",
   "settingsNotificationsOn": "Activadas",
@@ -140,7 +139,6 @@
   "settingsPermissionRequiredTitle": "Permiso necesario",
   "settingsPermissionRequiredBody": "Este permiso se ha denegado para siempre. Actívalo en los ajustes de tu dispositivo.",
   "settingsPermissionOpenSettings": "Abrir ajustes",
-  "settingsCustomizeDescription": "Toca una imagen para cambiarla",
   "settingsStorageDescription": "Espacio que ocupa Later en este teléfono",
   "settingsStorageFooter": "Fotos hechas o elegidas para cápsulas e imágenes cargadas desde internet. Tus cápsulas, chats y cuenta se quedan.",
   "settingsStorageCache": "Caché",
@@ -209,7 +207,6 @@
   "settingsNotificationsCommentsHint": "En tus cápsulas y respuestas para ti",
   "settingsNotificationsAchievements": "Logros",
   "settingsNotificationsStreak": "Recordatorio de racha",
-  "settingsNotificationsStreakHint": "Por la tarde, si tu racha terminaría hoy",
   "settingsNotificationsNews": "Novedades de Later",
   "settingsNotificationsNewsHint": "Anuncios ocasionales del equipo",
   "settingsAboutDescription": "Unas palabras bajo tu nombre para quien abra tu perfil.",
@@ -247,5 +244,9 @@
   "settingsPlacesAlwaysTitle": "Ubicación siempre",
   "settingsPlacesAlwaysMessage": "Para avisarte de cápsulas y países con Later cerrada, Android debe dejarle usar tu ubicación siempre. Elige «Permitir todo el tiempo» a continuación.",
   "settingsPlacesAlwaysContinue": "Continuar",
-  "settingsPlacesAlwaysDenied": "Permite la ubicación «Todo el tiempo» en Ajustes para activarlo."
+  "settingsPlacesAlwaysDenied": "Permite la ubicación «Todo el tiempo» en Ajustes para activarlo.",
+  "settingsSectionStreak": "RACHA",
+  "settingsStreakReminderHint": "Cada día a las {time}, salvo si hoy ya cuenta una cápsula",
+  "settingsStreakReminderTime": "Hora",
+  "settingsStreakFooter": "Solo este teléfono: el recordatorio llega desde este teléfono, incluso sin conexión, y no desde tus otros dispositivos."
 }

@@ -6,7 +6,6 @@
   "settingsEmail": "Электронная почта",
   "settingsPassword": "Пароль",
   "settingsSignedInWithGoogle": "Вход через Google",
-  "settingsCustomizeProfile": "Настроить профиль",
   "settingsSectionNotificationsPrivacy": "УВЕДОМЛЕНИЯ И ПРИВАТНОСТЬ",
   "settingsNotifications": "Уведомления",
   "settingsNotificationsOn": "Включены",
@@ -140,7 +139,6 @@
   "settingsPermissionRequiredTitle": "Нужно разрешение",
   "settingsPermissionRequiredBody": "Это разрешение запрещено навсегда. Включите его в настройках устройства.",
   "settingsPermissionOpenSettings": "Открыть настройки",
-  "settingsCustomizeDescription": "Нажмите на фото, чтобы изменить его",
   "settingsStorageDescription": "Сколько места Later занимает на этом телефоне",
   "settingsStorageFooter": "Фото, снятые или выбранные для капсул, и картинки, загруженные из интернета. Ваши капсулы, чаты и аккаунт останутся.",
   "settingsStorageCache": "Кэш",
@@ -209,7 +207,6 @@
   "settingsNotificationsCommentsHint": "К вашим капсулам и ответы вам",
   "settingsNotificationsAchievements": "Достижения",
   "settingsNotificationsStreak": "Напоминание о серии",
-  "settingsNotificationsStreakHint": "Вечером, если серия сегодня прервётся",
   "settingsNotificationsNews": "Новости Later",
   "settingsNotificationsNewsHint": "Редкие объявления от команды",
   "settingsAboutDescription": "Пара слов под вашим именем для всех, кто откроет профиль.",
@@ -247,5 +244,9 @@
   "settingsPlacesAlwaysTitle": "Геолокация всегда",
   "settingsPlacesAlwaysMessage": "Чтобы Later сообщал о капсулах и странах, даже когда закрыт, Android должен всегда разрешать ему геолокацию. Дальше выберите «Разрешить всегда».",
   "settingsPlacesAlwaysContinue": "Продолжить",
-  "settingsPlacesAlwaysDenied": "Чтобы включить, разрешите геолокацию «Всегда» в настройках."
+  "settingsPlacesAlwaysDenied": "Чтобы включить, разрешите геолокацию «Всегда» в настройках.",
+  "settingsSectionStreak": "СЕРИЯ",
+  "settingsStreakReminderHint": "Каждый день в {time}, если сегодня ещё нет капсулы",
+  "settingsStreakReminderTime": "Время",
+  "settingsStreakFooter": "Только этот телефон: напоминание приходит с этого телефона, даже без интернета, а не с других устройств."
 }

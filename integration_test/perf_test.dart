@@ -336,8 +336,9 @@ void main() {
       () async {
         await tapAndWait(tester, icon(AppIcons.notifications));
         for (final label in [
-          l10n().notificationsTabReplies,
-          l10n().notificationsTabComments,
+          l10n().notificationsFilterFriends,
+          l10n().notificationsFilterCapsules,
+          l10n().notificationsFilterPlaces,
           l10n().notificationsTabAll,
         ]) {
           await tapAndWait(
