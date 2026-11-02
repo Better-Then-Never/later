@@ -23,7 +23,8 @@ import 'package:later/features/history/widgets/capsule_list_tile.dart';
 import 'package:later/features/map/current_location.dart';
 import 'package:later/features/profile/widgets/image_options_sheet.dart';
 import 'package:later/features/stamps/new_stamp_moment.dart';
-import 'package:later/data/models/profile_stamp.dart';
+import 'package:later/data/models/user_profile.dart';
+import 'package:later/features/users/user_directory.dart';
 import 'package:later/shared/widgets/user/profile_stamp.dart';
 import 'package:provider/provider.dart';
 
@@ -92,6 +93,17 @@ Widget _app(Widget child) => MultiProvider(
     ChangeNotifierProvider(
       create: (_) => DeviceSettingsStore(PreferencesStore()),
     ),
+    ChangeNotifierProvider(
+      create: (_) => UserDirectory(
+        FakeUserRepository()..put(
+          const UserProfile(
+            uid: 'dave',
+            name: 'Dave Miller',
+            username: 'davem',
+          ),
+        ),
+      ),
+    ),
   ],
   child: MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -157,7 +169,7 @@ void main() {
             uid: 'dave',
             name: 'Dave Miller',
             username: 'davem',
-            screenWidth: 1080 / 2.625,
+            mutualFriends: 3,
             onTap: () {},
             onAccept: () {},
             onReject: () {},

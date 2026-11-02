@@ -12,9 +12,9 @@ import '../../../../data/models/user_profile.dart';
 import '../../../../data/repositories/repositories.dart';
 import '../../../../data/services/contacts_service.dart';
 import '../../../../shared/widgets/app_sheets.dart';
-import '../../../../shared/widgets/buttons/default_button_with_icon.dart';
 import '../../../../shared/widgets/buttons/default_green_button.dart';
 import '../../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../../../shared/widgets/v2/card_v2.dart';
 import '../../../users/user_directory.dart';
 import '../../contact_suggestions_controller.dart';
 import '../../friend_actions.dart';
@@ -27,18 +27,17 @@ class FromContactsButton extends StatelessWidget {
   const FromContactsButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(width * 0.05, 0, width * 0.05, 12),
-      child: DefaultButtonWithIcon(
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: 8),
+    child: CardV2(
+      child: RowV2(
+        iconPath: AppIcons.friendsBook,
+        title: context.l10n.friendsFromContacts,
         onTap: () =>
             showEdgeSheet<void>(context, (_) => const _FromContactsSheet()),
-        assetPath: AppIcons.friendsBook,
-        text: context.l10n.friendsFromContacts,
       ),
-    );
-  }
+    ),
+  );
 }
 
 class _FromContactsSheet extends StatefulWidget {
@@ -151,7 +150,6 @@ class _Found extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
     final store = context.watch<FriendsStore>();
     final actions = FriendActions(
       context,
@@ -173,7 +171,6 @@ class _Found extends StatelessWidget {
                 : AppRoutes.toAddFriendProfile(context, p.uid),
             onSendRequest: () => actions.sendRequest(p.uid),
             onRemove: () => store.dismissSuggestion(p.uid),
-            screenWidth: width,
           ),
       ],
     );

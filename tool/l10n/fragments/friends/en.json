@@ -11,7 +11,7 @@
   "@friendsAdd": {
     "description": "Main button on the profile of someone who is not a friend yet: sends a friend request."
   },
-  "friendsAddTitle": "Add Friends",
+  "friendsAddTitle": "Add friends",
   "friendsBlock": "Block",
   "@friendsBlock": {
     "description": "Menu item and confirm button that block a user."
@@ -31,26 +31,13 @@
   "friendsErrorSendRequest": "Failed to send friend request",
   "friendsErrorUnblock": "Failed to unblock user",
   "friendsErrorUnfollow": "Failed to unfollow user",
-  "friendsFollow": "Follow",
-  "@friendsFollow": {
-    "description": "Button in Manage friendship: get notified about this friend's capsules."
-  },
   "friendsFollowed": "Following! You'll get notifications about their capsules",
-  "friendsFollowing": "Following",
-  "@friendsFollowing": {
-    "description": "State of the follow button when the user already follows this friend."
-  },
   "friendsFriendCapsulesEmpty": "Friend's capsules will appear here",
   "friendsFriendCapsulesTitle": "Friend's capsules",
   "friendsHideSuggestionLabel": "Hide suggestion",
   "@friendsHideSuggestionLabel": {
     "description": "Accessibility label of the cross that hides a suggested friend."
   },
-  "friendsMakeFriends": "Make friends",
-  "@friendsMakeFriends": {
-    "description": "Section title above the suggested people on Add Friends."
-  },
-  "friendsManageFriendship": "Manage friendship",
   "friendsMyFriendsTitle": "My friends",
   "friendsMyProfile": "My Profile",
   "@friendsMyProfile": {
@@ -70,7 +57,6 @@
   "@friendsReject": {
     "description": "Button that rejects a received friend request."
   },
-  "friendsRemove": "Remove from friends",
   "friendsRemoveAction": "Remove",
   "@friendsRemoveAction": {
     "description": "Confirm button of the remove-friend dialog."
@@ -91,10 +77,6 @@
   "friendsRequestReceivedInfo": "This user sent you a friend request",
   "friendsRequestRejected": "Friend request rejected",
   "friendsRequestSent": "Friend request sent!",
-  "friendsRequestsButton": "Requests",
-  "@friendsRequestsButton": {
-    "description": "Button on Add Friends that opens the friend requests."
-  },
   "friendsRequestsEmptySubtitle": "When someone sends you a friend request,\nit will appear here",
   "friendsRequestsEmptyTitle": "No friend requests",
   "friendsRequestsReceivedTab": "Received",
@@ -118,7 +100,6 @@
   "friendsSentEmptySubtitle": "Friend requests you send\nwill appear here",
   "friendsSentEmptyTitle": "No sent requests",
   "friendsShareProfile": "Share Profile",
-  "friendsShareProfileTo": "Share profile to ...",
   "friendsSuggestionRemoved": "Suggested friend removed from the list!",
   "friendsThisIsYou": "This is your account",
   "friendsUnfollowed": "Unfollowed successfully",
@@ -167,5 +148,138 @@
   "friendsFromContactsFailed": "Could not look for friends now",
   "@friendsFromContactsFailed": {
     "description": "The look-up failed."
+  },
+  "friendsPinnedOnProfile": "Pinned on your profile",
+  "@friendsPinnedOnProfile": {
+    "description": "Small label above the row of pinned friends on My friends (shown in capitals)."
+  },
+  "friendsEdit": "Edit",
+  "@friendsEdit": {
+    "description": "Text button next to the pinned friends label: opens the Pin a friend sheet."
+  },
+  "friendsCount": "{count, plural, =1{1 friend} other{{count} friends}}",
+  "@friendsCount": {
+    "description": "How many friends the user has, at the end of My friends.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsMoreFor": "More for {name}",
+  "@friendsMoreFor": {
+    "description": "Screen reader label of the three dots button on a friend's row.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "friendsPinSheetTitle": "Pin to your profile",
+  "@friendsPinSheetTitle": {
+    "description": "Title of the sheet where the user chooses the friends pinned to their profile."
+  },
+  "friendsPinSheetCount": "{pinned} of {max} pinned",
+  "@friendsPinSheetCount": {
+    "description": "Under the Pin to your profile title: how many friends are pinned of the most allowed.",
+    "placeholders": {
+      "pinned": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsPinSheetSearch": "Find a friend",
+  "@friendsPinSheetSearch": {
+    "description": "Hint of the search field in the Pin to your profile sheet."
+  },
+  "friendsDone": "Done",
+  "@friendsDone": {
+    "description": "Closes the Pin to your profile sheet and saves the pins."
+  },
+  "friendsShareCardTile": "Share your Later card",
+  "@friendsShareCardTile": {
+    "description": "Tile on Add friends: opens the user's own shareable card (profile link and QR code)."
+  },
+  "friendsScanTile": "Scan a friend's code",
+  "@friendsScanTile": {
+    "description": "Tile on Add friends: opens the QR code scanner."
+  },
+  "friendsRequestsTab": "{count, plural, =0{Requests} other{Requests ({count})}}",
+  "@friendsRequestsTab": {
+    "description": "Tab on Add friends with the friend requests the user received, and how many.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "friendsSuggestedTab": "Suggested",
+  "@friendsSuggestedTab": {
+    "description": "Tab on Add friends with people the user may know."
+  },
+  "friendsAskedToBeFriend": "Asked to be your friend",
+  "@friendsAskedToBeFriend": {
+    "description": "Small label above the received friend requests (shown in capitals)."
+  },
+  "friendsSentByYou": "Sent by you",
+  "@friendsSentByYou": {
+    "description": "Small label above the friend requests the user sent (shown in capitals)."
+  },
+  "friendsPeopleYouMayKnow": "People you may know",
+  "@friendsPeopleYouMayKnow": {
+    "description": "Small label above the suggested people (shown in capitals)."
+  },
+  "friendsSearchResults": "Found",
+  "@friendsSearchResults": {
+    "description": "Small label above the people found by the search on Add friends (shown in capitals)."
+  },
+  "friendsNotNow": "Not now",
+  "@friendsNotNow": {
+    "description": "Declines a friend request."
+  },
+  "friendsAddPlus": "+ Add",
+  "@friendsAddPlus": {
+    "description": "Small button on a suggested person: sends them a friend request."
+  },
+  "friendsRequested": "Requested",
+  "@friendsRequested": {
+    "description": "Shown instead of + Add when the user already sent a friend request."
+  },
+  "friendsNoRequestsHint": "When someone asks to be your friend, it shows up here",
+  "@friendsNoRequestsHint": {
+    "description": "Under 'No friend requests' on the Requests tab of Add friends."
+  },
+  "friendsPinToProfile": "Pin to my profile",
+  "@friendsPinToProfile": {
+    "description": "Row in a friend's menu: pins the friend at the top of the user's profile friends."
+  },
+  "friendsUnpinFromProfile": "Unpin from my profile",
+  "@friendsUnpinFromProfile": {
+    "description": "Row in a friend's menu when the friend is pinned."
+  },
+  "friendsShareTheirCard": "Share {name}'s card",
+  "@friendsShareTheirCard": {
+    "description": "Row in a friend's menu: shares the friend's profile link. The name is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "friendsFollowRow": "Notifications about {name}'s capsules",
+  "@friendsFollowRow": {
+    "description": "Row with a switch in a friend's menu: following the friend (notifications about their capsules). The name is the friend's first name.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "friendsRemoveFriend": "Remove friend",
+  "@friendsRemoveFriend": {
+    "description": "Row in a friend's menu: asks to confirm, then removes the friend."
   }
 }

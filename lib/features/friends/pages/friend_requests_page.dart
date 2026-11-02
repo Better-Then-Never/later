@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:later/shared/widgets/app_segmented_tabs.dart';
 import 'package:provider/provider.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/assets/app_assets.dart';
-import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/theme/app_palette.dart';
+import '../../../shared/widgets/app_segmented_tabs.dart';
 import '../../../shared/widgets/default_empty_inbox_info.dart';
 import '../../../shared/widgets/page_header.dart';
-import '../../../shared/widgets/buttons/go_back_button.dart';
+import '../../../shared/widgets/popup/popup_notification_service.dart';
+import '../../../shared/widgets/v2/card_v2.dart';
 import '../../users/user_directory.dart';
 import '../friend_actions.dart';
 import '../friends_store.dart';
+import '../widgets/friend_stamp.dart';
 import '../widgets/requests/friend_requests_received_row.dart';
 import '../widgets/requests/friend_requests_sent_row.dart';
-import '../../../core/l10n/l10n.dart';
-import '../../../core/theme/app_palette.dart';
 
 /// Received and sent friend requests, live from [FriendsStore]; names come
-/// from [UserDirectory] in one batched lookup.
+/// from [UserDirectory] in one batched lookup. Opened from a friend request
+/// notification (Add friends shows the same requests in its first tab).
 class FriendRequestsPage extends StatefulWidget {
   const FriendRequestsPage({super.key});
 
@@ -36,7 +38,7 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.sizeOf(context).width;
+    final l10n = context.l10n;
     final store = context.watch<FriendsStore>();
     final directory = context.watch<UserDirectory>();
     // Actions use the page context: rows disappear on success (BUG-084).
@@ -52,51 +54,31 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
     if (uids.isEmpty) {
       list = _showReceived
           ? DefaultEmptyInboxInfo(
-              message: context.l10n.friendsRequestsEmptyTitle,
-              subtitle: context.l10n.friendsRequestsEmptySubtitle,
+              message: l10n.friendsRequestsEmptyTitle,
+              subtitle: l10n.friendsRequestsEmptySubtitle,
               assetPath: AppIcons.friendsRequestPage,
             )
           : DefaultEmptyInboxInfo(
-              message: context.l10n.friendsSentEmptyTitle,
-              subtitle: context.l10n.friendsSentEmptySubtitle,
+              message: l10n.friendsSentEmptyTitle,
+              subtitle: l10n.friendsSentEmptySubtitle,
               assetPath: AppIcons.friendsRequestPage,
             );
     } else {
-      list = ListView.builder(
-        padding: const EdgeInsets.all(15),
-        itemCount: uids.length,
-        itemBuilder: (context, index) {
-          final uid = uids[index];
-          final profile = directory.profile(uid);
-          if (profile == null && !directory.isResolved(uid)) {
-            return const SizedBox(height: 80, child: Center());
-          }
-          final name = profile?.name ?? context.l10n.commonUnknownUser;
-          final username =
-              profile?.username ?? context.l10n.commonUnknownUsername;
-          void open() => AppRoutes.toAddFriendProfile(context, uid);
-
-          return _showReceived
-              ? FriendRequestsReceivedRow(
-                  uid: uid,
-                  name: name,
-                  username: username,
-                  screenWidth: screenWidth,
-                  isBusy: store.isBusy(uid),
-                  onAccept: () => actions.acceptRequest(uid),
-                  onReject: () => actions.rejectRequest(uid),
-                  onTap: open,
-                )
-              : FriendRequestsSentRow(
-                  uid: uid,
-                  name: name,
-                  username: username,
-                  screenWidth: screenWidth,
-                  isBusy: store.isBusy(uid),
-                  onCancel: () => actions.cancelRequest(uid),
-                  onTap: open,
-                );
-        },
+      list = ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        children: [
+          CardV2Rows(
+            indent: PersonRowV2.indentFor(FriendRequestsReceivedRow.stampSize),
+            children: [
+              for (final uid in uids)
+                if (directory.profile(uid) == null &&
+                    !directory.isResolved(uid))
+                  const SizedBox(height: 70)
+                else
+                  _row(context, store, directory, actions, uid),
+            ],
+          ),
+        ],
       );
     }
 
@@ -104,21 +86,58 @@ class _FriendRequestsPageState extends State<FriendRequestsPage> {
       backgroundColor: context.palette.background,
       body: Column(
         children: [
-          PageHeader(
-            mainText: context.l10n.friendsRequestsTitle,
-            leadingButton: GoBackButton(context: context),
-            actionButtonsRow: AppSegmentedTabs(
-              labels: [
-                context.l10n.friendsRequestsReceivedTab,
-                context.l10n.friendsRequestsSentTab,
-              ],
-              selected: _showReceived ? 0 : 1,
-              onChanged: (i) => setState(() => _showReceived = i == 0),
-            ),
+          PageHeaderV2(
+            title: l10n.friendsRequestsTitle,
+            onBack: () => Navigator.of(context).maybePop(),
+            backLabel: l10n.commonBack,
+          ),
+          const SizedBox(height: 8),
+          AppSegmentedTabs(
+            labels: [
+              l10n.friendsRequestsReceivedTab,
+              l10n.friendsRequestsSentTab,
+            ],
+            selected: _showReceived ? 0 : 1,
+            onChanged: (i) => setState(() => _showReceived = i == 0),
           ),
           Expanded(child: list),
         ],
       ),
     );
+  }
+
+  Widget _row(
+    BuildContext context,
+    FriendsStore store,
+    UserDirectory directory,
+    FriendActions actions,
+    String uid,
+  ) {
+    final profile = directory.profile(uid);
+    final name = profile?.name ?? context.l10n.commonUnknownUser;
+    final username = profile?.username ?? context.l10n.commonUnknownUsername;
+    void open() => AppRoutes.toAddFriendProfile(context, uid);
+    return _showReceived
+        ? FriendRequestsReceivedRow(
+            key: ValueKey(uid),
+            uid: uid,
+            name: name,
+            username: username,
+            mutualFriends:
+                profile?.friends.where(store.friendIds.contains).length ?? 0,
+            isBusy: store.isBusy(uid),
+            onAccept: () => actions.acceptRequest(uid),
+            onReject: () => actions.rejectRequest(uid),
+            onTap: open,
+          )
+        : FriendRequestsSentRow(
+            key: ValueKey(uid),
+            uid: uid,
+            name: name,
+            username: username,
+            isBusy: store.isBusy(uid),
+            onCancel: () => actions.cancelRequest(uid),
+            onTap: open,
+          );
   }
 }

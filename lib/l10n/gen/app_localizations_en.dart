@@ -1068,13 +1068,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsAdd => 'Add';
 
   @override
-  String get friendsAddTitle => 'Add Friends';
+  String get friendsAddPlus => '+ Add';
+
+  @override
+  String get friendsAddTitle => 'Add friends';
+
+  @override
+  String get friendsAskedToBeFriend => 'Asked to be your friend';
 
   @override
   String get friendsBlock => 'Block';
 
   @override
   String get friendsBlockConfirm => 'Are you sure you want to block this user?';
+
+  @override
+  String friendsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count friends',
+      one: '1 friend',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get friendsDone => 'Done';
+
+  @override
+  String get friendsEdit => 'Edit';
 
   @override
   String get friendsEmpty => 'No friends added yet';
@@ -1114,14 +1137,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Search by @username or scan a friend\'s QR code. People your friends know show up here.';
 
   @override
-  String get friendsFollow => 'Follow';
+  String friendsFollowRow(String name) {
+    return 'Notifications about $name\'s capsules';
+  }
 
   @override
   String get friendsFollowed =>
       'Following! You\'ll get notifications about their capsules';
-
-  @override
-  String get friendsFollowing => 'Following';
 
   @override
   String get friendsFriendCapsulesEmpty =>
@@ -1159,10 +1181,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsHideSuggestionLabel => 'Hide suggestion';
 
   @override
-  String get friendsMakeFriends => 'Make friends';
-
-  @override
-  String get friendsManageFriendship => 'Manage friendship';
+  String friendsMoreFor(String name) {
+    return 'More for $name';
+  }
 
   @override
   String friendsMutualCount(int count) {
@@ -1185,13 +1206,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsNoMatches => 'No friends match your search';
 
   @override
+  String get friendsNoRequestsHint =>
+      'When someone asks to be your friend, it shows up here';
+
+  @override
   String get friendsNoSuggestions => 'No more suggested friends';
+
+  @override
+  String get friendsNotNow => 'Not now';
 
   @override
   String get friendsOpenChat => 'Open chat';
 
   @override
   String get friendsPending => 'Pending';
+
+  @override
+  String get friendsPeopleYouMayKnow => 'People you may know';
+
+  @override
+  String friendsPinSheetCount(int pinned, int max) {
+    return '$pinned of $max pinned';
+  }
+
+  @override
+  String get friendsPinSheetSearch => 'Find a friend';
+
+  @override
+  String get friendsPinSheetTitle => 'Pin to your profile';
+
+  @override
+  String get friendsPinToProfile => 'Pin to my profile';
+
+  @override
+  String get friendsPinnedOnProfile => 'Pinned on your profile';
 
   @override
   String get friendsQrHint =>
@@ -1208,14 +1256,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsReject => 'Reject';
 
   @override
-  String get friendsRemove => 'Remove from friends';
-
-  @override
   String get friendsRemoveAction => 'Remove';
 
   @override
   String get friendsRemoveConfirm =>
       'Are you sure you want to remove user from friends?';
+
+  @override
+  String get friendsRemoveFriend => 'Remove friend';
 
   @override
   String get friendsRemoving => 'Removing...';
@@ -1246,7 +1294,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsRequestSent => 'Friend request sent!';
 
   @override
-  String get friendsRequestsButton => 'Requests';
+  String get friendsRequested => 'Requested';
 
   @override
   String get friendsRequestsEmptySubtitle =>
@@ -1262,7 +1310,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsRequestsSentTab => 'Sent';
 
   @override
+  String friendsRequestsTab(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Requests ($count)',
+      zero: 'Requests',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get friendsRequestsTitle => 'Friend Requests';
+
+  @override
+  String get friendsScanTile => 'Scan a friend\'s code';
 
   @override
   String get friendsSearchHint => 'Find my friends';
@@ -1271,10 +1333,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsSearchPeopleHint => 'Name or @username';
 
   @override
+  String get friendsSearchResults => 'Found';
+
+  @override
   String get friendsSendCapsule => 'Send Capsule';
 
   @override
   String get friendsSendRequestLabel => 'Send friend request';
+
+  @override
+  String get friendsSentByYou => 'Sent by you';
 
   @override
   String get friendsSentEmptySubtitle =>
@@ -1284,10 +1352,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsSentEmptyTitle => 'No sent requests';
 
   @override
+  String get friendsShareCardTile => 'Share your Later card';
+
+  @override
   String get friendsShareProfile => 'Share Profile';
 
   @override
-  String get friendsShareProfileTo => 'Share profile to ...';
+  String friendsShareTheirCard(String name) {
+    return 'Share $name\'s card';
+  }
+
+  @override
+  String get friendsSuggestedTab => 'Suggested';
 
   @override
   String get friendsSuggestionRemoved =>
@@ -1298,6 +1374,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get friendsUnfollowed => 'Unfollowed successfully';
+
+  @override
+  String get friendsUnpinFromProfile => 'Unpin from my profile';
 
   @override
   String get friendsViewProfile => 'View Profile';
@@ -2621,16 +2700,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String profilePinned(String name) {
     return '$name pinned';
   }
-
-  @override
-  String get profilePinnedHint =>
-      'If you choose fewer than 3, random friends from your list will be shown';
-
-  @override
-  String get profilePinnedLimit => 'You can only pin up to 3 friends';
-
-  @override
-  String get profilePinnedTitle => 'Choose up to 3 pinned friends';
 
   @override
   String get profilePinnedUpdated => 'Pinned friends updated successfully!';

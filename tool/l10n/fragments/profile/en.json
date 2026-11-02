@@ -56,18 +56,6 @@
     "description": "Title of the menu shown when the user taps their profile picture (narrow, large bold text)."
   },
   "profilePictureUpdated": "Profile picture updated successfully!",
-  "profilePinnedHint": "If you choose fewer than 3, random friends from your list will be shown",
-  "@profilePinnedHint": {
-    "description": "Explanation under the title of the pinned friends chooser."
-  },
-  "profilePinnedLimit": "You can only pin up to 3 friends",
-  "@profilePinnedLimit": {
-    "description": "Error when the user ticks a fourth pinned friend."
-  },
-  "profilePinnedTitle": "Choose up to 3 pinned friends",
-  "@profilePinnedTitle": {
-    "description": "Title of the sheet where the user picks the friends pinned to their profile."
-  },
   "profilePinnedUpdated": "Pinned friends updated successfully!",
   "profileQrError": "Something went wrong...",
   "@profileQrError": {

@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:later/shared/styles/box_decorations.dart';
-import 'package:later/shared/widgets/default_text.dart';
-import 'package:later/features/friends/widgets/requests/friend_requests_action_button.dart';
-import 'package:later/shared/widgets/user/user_round_avatar.dart';
-import 'package:later/core/theme/app_colors.dart';
-import 'package:later/core/theme/app_palette.dart';
-import 'package:later/core/l10n/l10n.dart';
 
+import '../../../../core/l10n/l10n.dart';
+import '../../../../shared/widgets/pill_v2.dart';
+import '../friend_stamp.dart';
+
+/// A friend request the user received: the stamp, the name, "@username ·
+/// mutual friends", then Accept and Not now (declines it).
 class FriendRequestsReceivedRow extends StatelessWidget {
   final String name;
   final String username;
   final String uid;
-  final double screenWidth;
+
+  /// Friends the user and the sender have in common.
+  final int mutualFriends;
   final bool isBusy;
   final VoidCallback onAccept;
   final VoidCallback onTap;
@@ -22,72 +23,40 @@ class FriendRequestsReceivedRow extends StatelessWidget {
     required this.name,
     required this.username,
     required this.uid,
-    required this.screenWidth,
+    this.mutualFriends = 0,
     this.isBusy = false,
     required this.onTap,
     required this.onAccept,
     required this.onReject,
   });
 
+  static const stampSize = 46.0;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecorations.whiteCard(context),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: InkWell(
-          onTap: onTap,
-          child: Row(
-            children: [
-              UserRoundAvatar(
-                userId: uid,
-                radius: UserRoundAvatar.listRadius(screenWidth),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: FittedBox(
-                        fit: BoxFit.contain,
-                        alignment: Alignment.centerLeft,
-                        child: DefaultText(
-                          name,
-                          fontWeight: FontWeight.bold,
-                          fontSize: screenWidth * 0.045,
-                          color: context.palette.textPrimary,
-                          textAlign: TextAlign.start,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    DefaultText(
-                      '@$username',
-                      fontSize: screenWidth * 0.035,
-                      color: context.palette.textMuted,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: screenWidth * 0.02),
-              FriendRequestsActionButton(
-                onTap: isBusy ? null : onAccept,
-                color: AppColors.brandGreen,
-                text: context.l10n.friendsAccept,
-              ),
-              SizedBox(width: screenWidth * 0.01),
-              FriendRequestsActionButton(
-                onTap: isBusy ? null : onReject,
-                color: AppColors.danger,
-                text: context.l10n.friendsReject,
-              ),
-            ],
+    final l10n = context.l10n;
+    return PersonRowV2(
+      userId: uid,
+      name: name,
+      subtitle: personSubtitle(context, username, mutualFriends),
+      stampSize: stampSize,
+      onTap: onTap,
+      below: Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        children: [
+          PillV2(
+            label: l10n.friendsAccept,
+            size: PillV2Size.small,
+            onTap: isBusy ? null : onAccept,
           ),
-        ),
+          PillV2(
+            label: l10n.friendsNotNow,
+            kind: PillV2Kind.outline,
+            size: PillV2Size.small,
+            onTap: isBusy ? null : onReject,
+          ),
+        ],
       ),
     );
   }
