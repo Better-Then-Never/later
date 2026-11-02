@@ -335,10 +335,9 @@ exports.onCapsuleViewed = onDocumentCreated(
   ),
 );
 
-exports.sendStreakReminders = onSchedule(
-  'every 60 minutes',
-  logged('Streak reminders', () => gamification.sendStreakReminders(services())),
-);
+// The evening streak push (sendStreakReminders) was retired on 2 Nov 2026:
+// the app schedules the reminder on the phone (lib/features/streak), skipped
+// on days that already count.
 
 // ---- locked capsules (functions/lib/locks.js, docs/capsule-v3/PHASE3_PLAN.md)
 

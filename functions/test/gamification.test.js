@@ -233,25 +233,3 @@ describe('capsules viewed (B7)', () => {
     assert.equal(curious.get('tier'), 0);
   });
 });
-
-describe('streak reminders', () => {
-  test('only opted-in users whose streak ends tonight, once a day, at 19:00 local', async () => {
-    // 17:00 UTC = 19:00 at UTC+2.
-    const now = at('2026-10-16T17:00:00Z');
-    await addUser('ana', { stats: { streakCurrent: 6, streakLastDay: '2026-10-15' } }, ['a1']);
-    await setSettings('ana', { language: 'pl', notifications: { streakReminder: true, utcOffsetMinutes: 120 } });
-    await addUser('ben', { stats: { streakCurrent: 6, streakLastDay: '2026-10-16' } }, ['b1']); // already today
-    await setSettings('ben', { notifications: { streakReminder: true, utcOffsetMinutes: 120 } });
-    await addUser('cid', { stats: { streakCurrent: 6, streakLastDay: '2026-10-15' } }, ['c1']); // not opted in
-    await setSettings('cid', { notifications: { utcOffsetMinutes: 120 } });
-    const messaging = fakeMessaging();
-    const result = await g.sendStreakReminders(services(now, messaging));
-    assert.equal(result.checked, 2);
-    assert.equal(messaging.sent.length, 1);
-    assert.equal(messaging.sent[0].token, 'a1');
-    assert.equal(messaging.sent[0].notification.body, 'Twoja seria (6 dni) skończy się dziś w nocy. Stwórz kapsułę!');
-    // Running again within the same day does not repeat it.
-    await g.sendStreakReminders(services(now, messaging));
-    assert.equal(messaging.sent.length, 1);
-  });
-});

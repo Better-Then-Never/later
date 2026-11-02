@@ -106,3 +106,11 @@ At the owner's request ("deploy the rules and release it"): `firebase deploy --o
 `feature/profile-v4` (977c5ff). `users/{uid}` may now carry `stampShape` (one of six), `stampColor` (a name or
 `#RRGGBB`) and `homeTown` (at most 40 characters), written by their owner only. Rules tests 91/91 before the deploy.
 No functions, indexes or data changed. Older apps never write these fields and read profiles as before.
+
+## 2 Nov 2026: the server streak push retired
+
+At the owner's request ("retire the old streak push and deploy it"): `firebase functions:delete sendStreakReminders
+--region us-central1` (✓); its Cloud Scheduler job went with it (only `releaseOpenedCapsules` is scheduled now).
+The reminder is scheduled on the phone since Profile v4 (#87). The code, its test and its push texts are removed
+on `fix/retire-streak-push`; functions tests 75/75. `notifications.streakReminder` in settings is left in place
+(older apps still write it; nothing reads it).

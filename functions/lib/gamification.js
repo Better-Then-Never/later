@@ -404,52 +404,6 @@ async function onCapsuleViewed(services, uid, capsuleId) {
   return { counted };
 }
 
-// ---- streak reminder ------------------------------------------------------------
-
-/**
- * Hourly: users who opted in and whose local time is [reminderHour] get a
- * reminder when their streak was last extended yesterday (it ends tonight).
- * Cost: one query bounded by the opted-in users, one read each.
- */
-async function sendStreakReminders(services, reminderHour = 19) {
-  const { db } = services;
-  const now = notify.now(services);
-  const settingsDocs = await db
-    .collectionGroup('settings')
-    .where('notifications.streakReminder', '==', true)
-    .get();
-  let sent = 0;
-  for (const doc of settingsDocs.docs) {
-    const userRef = doc.ref.parent.parent;
-    if (!userRef) continue;
-    const settings = prefs.normalize(doc.data());
-    const offset = settings.notifications.utcOffsetMinutes;
-    const local = new Date(now.getTime() + offset * 60000);
-    if (local.getUTCHours() !== reminderHour) continue;
-    const today = local.toISOString().slice(0, 10);
-    const user = await userRef.get();
-    const stats = (user.exists && user.get('stats')) || {};
-    if (!stats.streakCurrent || stats.streakLastDay !== previousDay(today)) continue;
-    const privateRef = userRef.collection('private').doc('gamification');
-    const priv = await privateRef.get();
-    if (priv.exists && priv.get('lastReminderDay') === today) continue;
-    await privateRef.set({ lastReminderDay: today }, { merge: true });
-    if (prefs.blockedReason(settings, 'streakReminder', now)) continue;
-    const lang = i18n.languageOf(settings);
-    const result = await notify.sendToUser(services, userRef.id, (token) => ({
-      token,
-      notification: {
-        title: i18n.t(lang, 'streakTitle'),
-        body: i18n.t(lang, 'streakBody', { days: stats.streakCurrent }),
-      },
-      data: { type: 'streak', clickAction: 'FLUTTER_NOTIFICATION_CLICK' },
-      ...notify.delivery('activity', prefs.alertOf(settings)),
-    }));
-    sent += result.sent;
-  }
-  return { checked: settingsDocs.size, sent };
-}
-
 module.exports = {
   ACHIEVEMENTS,
   STREAK_WINDOW_MS,
@@ -467,5 +421,4 @@ module.exports = {
   onUserUpdated,
   checkAchievements,
   onCapsuleViewed,
-  sendStreakReminders,
 };
