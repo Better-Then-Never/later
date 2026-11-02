@@ -1,11 +1,7 @@
 {
   "notificationsTitle": "Уведомления",
   "notificationsTabAll": "Все",
-  "notificationsTabReplies": "Ответы",
-  "notificationsTabComments": "Комментарии",
   "notificationsEmptyAll": "Здесь появятся ваши уведомления и активность",
-  "notificationsEmptyReplies": "Здесь появятся ответы на ваши сообщения",
-  "notificationsEmptyComments": "Здесь появятся комментарии к вашим капсулам",
   "notificationsTypeFollow": "Новый подписчик",
   "notificationsTypeCapsule": "Новая капсула",
   "notificationsTypeMessage": "Новое сообщение",
@@ -66,5 +62,17 @@
   "placesNearbyBody": "До неё {metres} м. Удерживайте, чтобы открыть её там.",
   "placesWelcomeTitle": "Добро пожаловать! {country}",
   "placesWelcomeBody": "Вы здесь уже 2 часа. Оставите воспоминание?",
-  "placesLeaveCapsule": "Оставить капсулу"
+  "placesLeaveCapsule": "Оставить капсулу",
+  "notificationsFilterFriends": "Друзья",
+  "notificationsFilterCapsules": "Капсулы",
+  "notificationsFilterPlaces": "Места",
+  "notificationsToday": "Сегодня",
+  "notificationsEarlier": "Ранее",
+  "notificationsFriendRequests": "{count, plural, one{{count} заявка в друзья} few{{count} заявки в друзья} many{{count} заявок в друзья} other{{count} заявки в друзья}}",
+  "notificationsRequestNamesTwo": "{first} и {second}",
+  "notificationsRequestNamesMore": "{first}, {second} и ещё {count}",
+  "notificationsFollowBack": "Подписаться",
+  "notificationsEmptyFriends": "Здесь появятся новые подписчики и друзья",
+  "notificationsEmptyCapsules": "Здесь появятся реакции, комментарии и открытые капсулы",
+  "notificationsEmptyPlaces": "Здесь появятся капсулы, которые ждут вас в своих местах"
 }

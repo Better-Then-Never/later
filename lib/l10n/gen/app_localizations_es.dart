@@ -2357,16 +2357,35 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get notificationsEarlier => 'Antes';
+
+  @override
   String get notificationsEmptyAll =>
       'Aquí aparecerán tus notificaciones y tu actividad';
 
   @override
-  String get notificationsEmptyComments =>
-      'Aquí aparecerán los comentarios en tus cápsulas';
+  String get notificationsEmptyCapsules =>
+      'Aquí aparecerán reacciones, comentarios y cápsulas abiertas';
 
   @override
-  String get notificationsEmptyReplies =>
-      'Aquí aparecerán las respuestas a tus mensajes';
+  String get notificationsEmptyFriends =>
+      'Aquí aparecerán tus nuevos seguidores y amigos';
+
+  @override
+  String get notificationsEmptyPlaces =>
+      'Aquí aparecerán las cápsulas que te esperan en sus lugares';
+
+  @override
+  String get notificationsFilterCapsules => 'Cápsulas';
+
+  @override
+  String get notificationsFilterFriends => 'Amigos';
+
+  @override
+  String get notificationsFilterPlaces => 'Lugares';
+
+  @override
+  String get notificationsFollowBack => 'Seguir también';
 
   @override
   String notificationsFollowBody(String name) {
@@ -2381,6 +2400,17 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String notificationsFriendRequestBody(String name) {
     return '$name quiere ser tu amigo';
+  }
+
+  @override
+  String notificationsFriendRequests(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count solicitudes de amistad',
+      one: '$count solicitud de amistad',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2449,6 +2479,16 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String notificationsRequestNamesMore(String first, String second, int count) {
+    return '$first, $second y $count más';
+  }
+
+  @override
+  String notificationsRequestNamesTwo(String first, String second) {
+    return '$first y $second';
+  }
+
+  @override
   String notificationsSelectedCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2469,13 +2509,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notificationsTabAll => 'Todas';
 
   @override
-  String get notificationsTabComments => 'Comentarios';
-
-  @override
-  String get notificationsTabReplies => 'Respuestas';
-
-  @override
   String get notificationsTitle => 'Notificaciones';
+
+  @override
+  String get notificationsToday => 'Hoy';
 
   @override
   String get notificationsTypeAchievement => 'Logro';

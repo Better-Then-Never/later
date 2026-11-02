@@ -7,14 +7,16 @@ import 'package:later/core/errors/app_failure.dart';
 import 'package:later/features/notifications/notifications_store.dart';
 import 'package:later/shared/widgets/confirm_dialog.dart';
 import 'package:later/shared/widgets/page_header.dart';
-import 'package:later/shared/widgets/buttons/go_back_button.dart';
-import 'package:later/features/notifications/widgets/notification_filter_tabs.dart';
+import 'package:later/features/notifications/widgets/notification_filter_pills.dart';
 import 'package:later/features/notifications/widgets/notification_selection_action_bar.dart';
 import 'package:later/features/notifications/widgets/notifications_list.dart';
 import 'package:provider/provider.dart';
 import 'package:later/core/theme/app_colors.dart';
 import 'package:later/core/theme/app_motion.dart';
 
+/// The notifications (Profile v4, reached from the bell): the v2 header,
+/// the filter pills, then the list. A long press selects rows to mark read
+/// or delete together.
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
@@ -22,27 +24,25 @@ class NotificationsPage extends StatefulWidget {
   State<NotificationsPage> createState() => _NotificationsPageState();
 }
 
-class _NotificationsPageState extends State<NotificationsPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _NotificationsPageState extends State<NotificationsPage> {
   late NotificationsSelectionController _controller;
+  NotificationFilter _filter = NotificationFilter.all;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     _controller = NotificationsSelectionController();
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, child) => PopScope(
@@ -56,14 +56,17 @@ class _NotificationsPageState extends State<NotificationsPage>
         backgroundColor: context.palette.background,
         body: Column(
           children: [
-            PageHeader(
-              mainText: context.l10n.notificationsTitle,
-              leadingButton: GoBackButton(context: context),
-              actionButtonsRow: NotificationFilterTabs(
-                controller: _tabController,
-              ),
+            PageHeaderV2(
+              title: l10n.notificationsTitle,
+              backLabel: l10n.commonBack,
+              onBack: () => Navigator.maybePop(context),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+            NotificationFilterPills(
+              selected: _filter,
+              onSelected: (filter) => setState(() => _filter = filter),
+            ),
+            const SizedBox(height: 4),
             AnimatedBuilder(
               animation: _controller,
               builder: (context, child) {
@@ -72,7 +75,7 @@ class _NotificationsPageState extends State<NotificationsPage>
                   curve: AppMotion.standardCurve,
                   child: _controller.isSelectionMode
                       ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
                           child: NotificationSelectionActionBar(
                             count: _controller.selectedCount,
                             onCancel: _controller.clearSelection,
@@ -85,22 +88,10 @@ class _NotificationsPageState extends State<NotificationsPage>
               },
             ),
             Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  NotificationsList(
-                    filter: NotificationFilter.all,
-                    selection: _controller,
-                  ),
-                  NotificationsList(
-                    filter: NotificationFilter.replies,
-                    selection: _controller,
-                  ),
-                  NotificationsList(
-                    filter: NotificationFilter.comments,
-                    selection: _controller,
-                  ),
-                ],
+              child: NotificationsList(
+                key: ValueKey(_filter),
+                filter: _filter,
+                selection: _controller,
               ),
             ),
           ],

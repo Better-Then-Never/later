@@ -1,11 +1,7 @@
 {
   "notificationsTitle": "Notificaciones",
   "notificationsTabAll": "Todas",
-  "notificationsTabReplies": "Respuestas",
-  "notificationsTabComments": "Comentarios",
   "notificationsEmptyAll": "Aquí aparecerán tus notificaciones y tu actividad",
-  "notificationsEmptyReplies": "Aquí aparecerán las respuestas a tus mensajes",
-  "notificationsEmptyComments": "Aquí aparecerán los comentarios en tus cápsulas",
   "notificationsTypeFollow": "Nuevo seguidor",
   "notificationsTypeCapsule": "Nueva cápsula",
   "notificationsTypeMessage": "Nuevo mensaje",
@@ -66,5 +62,17 @@
   "placesNearbyBody": "Está a {metres} m. Mantén pulsado para abrirla allí.",
   "placesWelcomeTitle": "Te damos la bienvenida a {country}",
   "placesWelcomeBody": "Llevas 2 horas aquí. ¿Dejas un recuerdo?",
-  "placesLeaveCapsule": "Dejar una cápsula"
+  "placesLeaveCapsule": "Dejar una cápsula",
+  "notificationsFilterFriends": "Amigos",
+  "notificationsFilterCapsules": "Cápsulas",
+  "notificationsFilterPlaces": "Lugares",
+  "notificationsToday": "Hoy",
+  "notificationsEarlier": "Antes",
+  "notificationsFriendRequests": "{count, plural, one{{count} solicitud de amistad} other{{count} solicitudes de amistad}}",
+  "notificationsRequestNamesTwo": "{first} y {second}",
+  "notificationsRequestNamesMore": "{first}, {second} y {count} más",
+  "notificationsFollowBack": "Seguir también",
+  "notificationsEmptyFriends": "Aquí aparecerán tus nuevos seguidores y amigos",
+  "notificationsEmptyCapsules": "Aquí aparecerán reacciones, comentarios y cápsulas abiertas",
+  "notificationsEmptyPlaces": "Aquí aparecerán las cápsulas que te esperan en sus lugares"
 }
