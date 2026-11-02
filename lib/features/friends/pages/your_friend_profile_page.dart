@@ -125,7 +125,7 @@ class YourFriendProfilePage extends StatelessWidget {
         if (FeatureFlags.achievements &&
             friend != null &&
             friend.showAchievements) ...[
-          const SizedBox(height: 16),
+          SectionTitleV2(l10n.achievementsTitle),
           AchievementsPanel(profile: friend),
         ],
       ],

@@ -1,7 +1,6 @@
 {
   "achievementsTitle": "Достижения",
   "achievementsDescription": "Открываются, когда вы пользуетесь Later, а не за деньги",
-  "achievementsSeeAll": "Все",
   "achievementsNoneYet": "До первого — всего одна капсула.",
   "achievementsTier": "Уровень {tier} из {tiers}",
   "achievementsStreakDays": "{count, plural, one{Серия: {count} день} few{Серия: {count} дня} many{Серия: {count} дней} other{Серия: {count} дня}}",

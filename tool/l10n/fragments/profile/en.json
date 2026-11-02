@@ -131,10 +131,6 @@
       }
     }
   },
-  "profileFriendsAll": "All",
-  "@profileFriendsAll": {
-    "description": "Link on the profile's friends card to the whole friends list."
-  },
   "profileQuickMessage": "Message",
   "@profileQuickMessage": {
     "description": "Quick action on a friend in the profile: open the chat."
@@ -171,28 +167,6 @@
       }
     }
   },
-  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
-  "@profileStatCapsules": {
-    "description": "Label under the number of the user's capsules on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
-  "@profileStatPlaces": {
-    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "profileStatTogether": "with friends",
-  "@profileStatTogether": {
-    "description": "Label under the number of capsules made with friends (co-authors)."
-  },
   "profileNewCapsule": "New capsule",
   "@profileNewCapsule": {
     "description": "Screen reader start of the new-capsule buttons on the profile (\"New capsule: For friends\")."
@@ -208,24 +182,6 @@
   "worldTitle": "Passport",
   "@worldTitle": {
     "description": "The world view (B7): a passport of the countries where the user left capsules."
-  },
-  "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
-  "@worldCountriesLabel": {
-    "description": "Under the number of countries in the passport and on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "worldTownsLabel": "{count, plural, =1{town} other{towns}}",
-  "@worldTownsLabel": {
-    "description": "Under the number of towns in the passport and on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   },
   "worldCapsules": "{count, plural, =1{1 capsule} other{{count} capsules}}",
   "@worldCapsules": {
@@ -505,5 +461,46 @@
   "laterCardBack": "The back of your card: your words, your stamp and your code",
   "@laterCardBack": {
     "description": "Screen reader label of the back of the Later card."
+  },
+  "profileCapsulesCount": "{count, plural, =1{1 capsule} other{{count} capsules}}",
+  "@profileCapsulesCount": {
+    "description": "Title of the My capsules card on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileCapsulesLine": "{places, plural, =1{in 1 place} other{in {places} places}} · {together} made with friends",
+  "@profileCapsulesLine": {
+    "description": "Under the capsule count on the profile: in how many places, how many made together with friends.",
+    "placeholders": {
+      "places": {
+        "type": "int"
+      },
+      "together": {
+        "type": "int"
+      }
+    }
+  },
+  "profileNoCapsules": "No capsules yet",
+  "@profileNoCapsules": {
+    "description": "My capsules card on the profile of a new user."
+  },
+  "profileNoCapsulesHint": "Your first one will show up here",
+  "@profileNoCapsulesHint": {
+    "description": "Under \"No capsules yet\"."
+  },
+  "profileStampsHint": "Stamps come with your capsules",
+  "@profileStampsHint": {
+    "description": "Under Passport on the profile when there are no countries yet."
+  },
+  "profileAllAchievements": "All achievements",
+  "@profileAllAchievements": {
+    "description": "Last row of the achievements card on the profile; opens the achievements page."
+  },
+  "profileOpenMap": "Open the map",
+  "@profileOpenMap": {
+    "description": "Screen reader label of the small map on the profile's Places card."
   }
 }

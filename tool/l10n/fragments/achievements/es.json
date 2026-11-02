@@ -1,7 +1,6 @@
 {
   "achievementsTitle": "Logros",
   "achievementsDescription": "Se desbloquean usando Later, nunca pagando",
-  "achievementsSeeAll": "Ver todos",
   "achievementsNoneYet": "El primero está a una cápsula de distancia.",
   "achievementsTier": "Nivel {tier} de {tiers}",
   "achievementsStreakDays": "{count, plural, =1{Racha de 1 día} other{Racha de {count} días}}",

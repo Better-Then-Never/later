@@ -197,7 +197,6 @@
       }
     }
   },
-  "achievementsSeeAll": "See all",
   "achievementsSeePassport": "See your countries in the Passport",
   "@achievementsSeePassport": {
     "description": "One achievement sheet, a places achievement: opens the Passport (the world page)."
@@ -3193,6 +3192,10 @@
   "@profileAddFriends": {
     "description": "Card on the own profile page that opens Add Friends."
   },
+  "profileAllAchievements": "All achievements",
+  "@profileAllAchievements": {
+    "description": "Last row of the achievements card on the profile; opens the achievements page."
+  },
   "profileBackgroundDelete": "Delete background picture",
   "@profileBackgroundDelete": {
     "description": "Red option in the background picture menu."
@@ -3202,6 +3205,27 @@
     "description": "Title of the menu shown when the user taps their profile background (narrow, large bold text)."
   },
   "profileBackgroundUpdated": "Background picture updated successfully!",
+  "profileCapsulesCount": "{count, plural, =1{1 capsule} other{{count} capsules}}",
+  "@profileCapsulesCount": {
+    "description": "Title of the My capsules card on the profile.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileCapsulesLine": "{places, plural, =1{in 1 place} other{in {places} places}} · {together} made with friends",
+  "@profileCapsulesLine": {
+    "description": "Under the capsule count on the profile: in how many places, how many made together with friends.",
+    "placeholders": {
+      "places": {
+        "type": "int"
+      },
+      "together": {
+        "type": "int"
+      }
+    }
+  },
   "profileChoosePinned": "Choose pinned friends",
   "@profileChoosePinned": {
     "description": "Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile."
@@ -3271,10 +3295,6 @@
       }
     }
   },
-  "profileFriendsAll": "All",
-  "@profileFriendsAll": {
-    "description": "Link on the profile's friends card to the whole friends list."
-  },
   "profileFriendsSection": "Friends",
   "@profileFriendsSection": {
     "description": "Small title at the top of the friends card on the profile."
@@ -3308,6 +3328,14 @@
   "@profileNewForFriends": {
     "description": "Profile button: a new capsule for friends."
   },
+  "profileNoCapsules": "No capsules yet",
+  "@profileNoCapsules": {
+    "description": "My capsules card on the profile of a new user."
+  },
+  "profileNoCapsulesHint": "Your first one will show up here",
+  "@profileNoCapsulesHint": {
+    "description": "Under \"No capsules yet\"."
+  },
   "profileNoFriends": "You have no friends yet",
   "@profileNoFriends": {
     "description": "Shown instead of the pinned friends on the profile page when the user has no friends."
@@ -3315,6 +3343,10 @@
   "profileNoFriendsAction": "Find people you know",
   "@profileNoFriendsAction": {
     "description": "Under \"You have no friends yet\" on the profile: tap to open Add friends."
+  },
+  "profileOpenMap": "Open the map",
+  "@profileOpenMap": {
+    "description": "Screen reader label of the small map on the profile's Places card."
   },
   "profilePictureDelete": "Delete profile icon",
   "@profilePictureDelete": {
@@ -3402,27 +3434,9 @@
       }
     }
   },
-  "profileStatCapsules": "{count, plural, =1{capsule} other{capsules}}",
-  "@profileStatCapsules": {
-    "description": "Label under the number of the user's capsules on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "profileStatPlaces": "{count, plural, =1{place} other{places}}",
-  "@profileStatPlaces": {
-    "description": "Label under the number of places (about 5 km apart) with the user's capsules.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "profileStatTogether": "with friends",
-  "@profileStatTogether": {
-    "description": "Label under the number of capsules made with friends (co-authors)."
+  "profileStampsHint": "Stamps come with your capsules",
+  "@profileStampsHint": {
+    "description": "Under Passport on the profile when there are no countries yet."
   },
   "profileTowns": "{count, plural, =1{1 town} other{{count} towns}}",
   "@profileTowns": {
@@ -4258,15 +4272,6 @@
       }
     }
   },
-  "worldCountriesLabel": "{count, plural, =1{country} other{countries}}",
-  "@worldCountriesLabel": {
-    "description": "Under the number of countries in the passport and on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "worldNote": "Stamps come from capsules made since this update.",
   "@worldNote": {
     "description": "Footnote: older capsules have no country, so they are not in the passport."
@@ -4274,14 +4279,5 @@
   "worldTitle": "Passport",
   "@worldTitle": {
     "description": "The world view (B7): a passport of the countries where the user left capsules."
-  },
-  "worldTownsLabel": "{count, plural, =1{town} other{towns}}",
-  "@worldTownsLabel": {
-    "description": "Under the number of towns in the passport and on the profile.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
   }
 }

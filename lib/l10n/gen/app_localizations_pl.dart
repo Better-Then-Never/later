@@ -241,9 +241,6 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get achievementsSeeAll => 'Wszystkie';
-
-  @override
   String get achievementsSeePassport => 'Zobacz swoje kraje w Paszporcie';
 
   @override
@@ -2967,6 +2964,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get profileAddFriends => 'Dodaj znajomych';
 
   @override
+  String get profileAllAchievements => 'Wszystkie osiągnięcia';
+
+  @override
   String get profileBackgroundDelete => 'Usuń zdjęcie w tle';
 
   @override
@@ -2974,6 +2974,32 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get profileBackgroundUpdated => 'Zdjęcie w tle zaktualizowane!';
+
+  @override
+  String profileCapsulesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kapsuły',
+      many: '$count kapsuł',
+      few: '$count kapsuły',
+      one: '$count kapsuła',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCapsulesLine(int places, int together) {
+    String _temp0 = intl.Intl.pluralLogic(
+      places,
+      locale: localeName,
+      other: 'w $places miejscach',
+      many: 'w $places miejscach',
+      few: 'w $places miejscach',
+      one: 'w 1 miejscu',
+    );
+    return '$_temp0 · $together ze znajomymi';
+  }
 
   @override
   String get profileChoosePinned => 'Przypnij znajomych';
@@ -3050,9 +3076,6 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String get profileFriendsAll => 'Wszyscy';
-
-  @override
   String get profileFriendsSection => 'Znajomi';
 
   @override
@@ -3080,10 +3103,19 @@ class AppLocalizationsPl extends AppLocalizations {
   String get profileNewForFriends => 'Dla znajomych';
 
   @override
+  String get profileNoCapsules => 'Jeszcze brak kapsuł';
+
+  @override
+  String get profileNoCapsulesHint => 'Twoja pierwsza pojawi się tutaj';
+
+  @override
   String get profileNoFriends => 'Nie masz jeszcze znajomych';
 
   @override
   String get profileNoFriendsAction => 'Znajdź osoby, które znasz';
+
+  @override
+  String get profileOpenMap => 'Otwórz mapę';
 
   @override
   String get profilePictureDelete => 'Usuń zdjęcie profilowe';
@@ -3142,33 +3174,7 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String profileStatCapsules(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'kapsuły',
-      many: 'kapsuł',
-      few: 'kapsuły',
-      one: 'kapsuła',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String profileStatPlaces(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'miejsca',
-      many: 'miejsc',
-      few: 'miejsca',
-      one: 'miejsce',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get profileStatTogether => 'z przyjaciółmi';
+  String get profileStampsHint => 'Pieczątki przychodzą z kapsułami';
 
   @override
   String profileTowns(int count) {
@@ -4283,35 +4289,9 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
-  String worldCountriesLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'kraju',
-      many: 'krajów',
-      few: 'kraje',
-      one: 'kraj',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get worldNote =>
       'Pieczątki dostają kapsuły utworzone po tej aktualizacji.';
 
   @override
   String get worldTitle => 'Paszport';
-
-  @override
-  String worldTownsLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'miasta',
-      many: 'miast',
-      few: 'miasta',
-      one: 'miasto',
-    );
-    return '$_temp0';
-  }
 }

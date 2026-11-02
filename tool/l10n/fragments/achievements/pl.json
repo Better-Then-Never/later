@@ -1,7 +1,6 @@
 {
   "achievementsTitle": "Osiągnięcia",
   "achievementsDescription": "Zdobywasz je, korzystając z Later, nigdy za pieniądze",
-  "achievementsSeeAll": "Wszystkie",
   "achievementsNoneYet": "Do pierwszego dzieli cię jedna kapsuła.",
   "achievementsTier": "Poziom {tier} z {tiers}",
   "achievementsStreakDays": "{count, plural, one{Seria: {count} dzień} few{Seria: {count} dni} many{Seria: {count} dni} other{Seria: {count} dnia}}",

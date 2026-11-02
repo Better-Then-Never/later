@@ -338,12 +338,6 @@ abstract class AppLocalizations {
   /// **'{value} of {goal} · {left} to go'**
   String achievementsProgressOf(String value, String goal, String left);
 
-  /// No description provided for @achievementsSeeAll.
-  ///
-  /// In en, this message translates to:
-  /// **'See all'**
-  String get achievementsSeeAll;
-
   /// One achievement sheet, a places achievement: opens the Passport (the world page).
   ///
   /// In en, this message translates to:
@@ -4700,6 +4694,12 @@ abstract class AppLocalizations {
   /// **'Add friends'**
   String get profileAddFriends;
 
+  /// Last row of the achievements card on the profile; opens the achievements page.
+  ///
+  /// In en, this message translates to:
+  /// **'All achievements'**
+  String get profileAllAchievements;
+
   /// Red option in the background picture menu.
   ///
   /// In en, this message translates to:
@@ -4717,6 +4717,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Background picture updated successfully!'**
   String get profileBackgroundUpdated;
+
+  /// Title of the My capsules card on the profile.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 capsule} other{{count} capsules}}'**
+  String profileCapsulesCount(int count);
+
+  /// Under the capsule count on the profile: in how many places, how many made together with friends.
+  ///
+  /// In en, this message translates to:
+  /// **'{places, plural, =1{in 1 place} other{in {places} places}} · {together} made with friends'**
+  String profileCapsulesLine(int places, int together);
 
   /// Option in the menu of a pinned friend: opens the list to choose which friends are pinned to the profile.
   ///
@@ -4802,12 +4814,6 @@ abstract class AppLocalizations {
   /// **'{name}\'s Passport'**
   String profileFriendPassport(String name);
 
-  /// Link on the profile's friends card to the whole friends list.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get profileFriendsAll;
-
   /// Small title at the top of the friends card on the profile.
   ///
   /// In en, this message translates to:
@@ -4862,6 +4868,18 @@ abstract class AppLocalizations {
   /// **'For friends'**
   String get profileNewForFriends;
 
+  /// My capsules card on the profile of a new user.
+  ///
+  /// In en, this message translates to:
+  /// **'No capsules yet'**
+  String get profileNoCapsules;
+
+  /// Under "No capsules yet".
+  ///
+  /// In en, this message translates to:
+  /// **'Your first one will show up here'**
+  String get profileNoCapsulesHint;
+
   /// Shown instead of the pinned friends on the profile page when the user has no friends.
   ///
   /// In en, this message translates to:
@@ -4873,6 +4891,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Find people you know'**
   String get profileNoFriendsAction;
+
+  /// Screen reader label of the small map on the profile's Places card.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the map'**
+  String get profileOpenMap;
 
   /// Red option in the profile picture menu.
   ///
@@ -4964,23 +4988,11 @@ abstract class AppLocalizations {
   /// **'{name}\'s stamp'**
   String profileStampLabel(String name);
 
-  /// Label under the number of the user's capsules on the profile.
+  /// Under Passport on the profile when there are no countries yet.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{capsule} other{capsules}}'**
-  String profileStatCapsules(int count);
-
-  /// Label under the number of places (about 5 km apart) with the user's capsules.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{place} other{places}}'**
-  String profileStatPlaces(int count);
-
-  /// Label under the number of capsules made with friends (co-authors).
-  ///
-  /// In en, this message translates to:
-  /// **'with friends'**
-  String get profileStatTogether;
+  /// **'Stamps come with your capsules'**
+  String get profileStampsHint;
 
   /// How many towns have someone's capsules.
   ///
@@ -6812,12 +6824,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 capsule} other{{count} capsules}}'**
   String worldCapsules(int count);
 
-  /// Under the number of countries in the passport and on the profile.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{country} other{countries}}'**
-  String worldCountriesLabel(int count);
-
   /// Footnote: older capsules have no country, so they are not in the passport.
   ///
   /// In en, this message translates to:
@@ -6829,12 +6835,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Passport'**
   String get worldTitle;
-
-  /// Under the number of towns in the passport and on the profile.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{town} other{towns}}'**
-  String worldTownsLabel(int count);
 }
 
 class _AppLocalizationsDelegate

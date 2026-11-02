@@ -1,7 +1,6 @@
 {
   "achievementsTitle": "Erfolge",
   "achievementsDescription": "Freigeschaltet durch Nutzung von Later, nie durch Bezahlen",
-  "achievementsSeeAll": "Alle",
   "achievementsNoneYet": "Dein erster ist nur eine Kapsel entfernt.",
   "achievementsTier": "Stufe {tier} von {tiers}",
   "achievementsStreakDays": "{count, plural, =1{Serie: 1 Tag} other{Serie: {count} Tage}}",

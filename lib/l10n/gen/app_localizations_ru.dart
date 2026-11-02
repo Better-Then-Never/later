@@ -241,9 +241,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get achievementsSeeAll => 'Все';
-
-  @override
   String get achievementsSeePassport => 'Посмотреть свои страны в Паспорте';
 
   @override
@@ -2956,6 +2953,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileAddFriends => 'Добавить друзей';
 
   @override
+  String get profileAllAchievements => 'Все достижения';
+
+  @override
   String get profileBackgroundDelete => 'Удалить фон';
 
   @override
@@ -2963,6 +2963,32 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileBackgroundUpdated => 'Фон профиля обновлён!';
+
+  @override
+  String profileCapsulesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count капсулы',
+      many: '$count капсул',
+      few: '$count капсулы',
+      one: '$count капсула',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileCapsulesLine(int places, int together) {
+    String _temp0 = intl.Intl.pluralLogic(
+      places,
+      locale: localeName,
+      other: 'в $places местах',
+      many: 'в $places местах',
+      few: 'в $places местах',
+      one: 'в $places месте',
+    );
+    return '$_temp0 · $together с друзьями';
+  }
 
   @override
   String get profileChoosePinned => 'Закрепить друзей';
@@ -3043,9 +3069,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get profileFriendsAll => 'Все';
-
-  @override
   String get profileFriendsSection => 'Друзья';
 
   @override
@@ -3073,10 +3096,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileNewForFriends => 'Для друзей';
 
   @override
+  String get profileNoCapsules => 'Пока нет капсул';
+
+  @override
+  String get profileNoCapsulesHint => 'Первая появится здесь';
+
+  @override
   String get profileNoFriends => 'У вас пока нет друзей';
 
   @override
   String get profileNoFriendsAction => 'Найдите знакомых';
+
+  @override
+  String get profileOpenMap => 'Открыть карту';
 
   @override
   String get profilePictureDelete => 'Удалить фото профиля';
@@ -3134,33 +3166,7 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String profileStatCapsules(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'капсулы',
-      many: 'капсул',
-      few: 'капсулы',
-      one: 'капсула',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String profileStatPlaces(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'места',
-      many: 'мест',
-      few: 'места',
-      one: 'место',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get profileStatTogether => 'с друзьями';
+  String get profileStampsHint => 'Штампы появляются с капсулами';
 
   @override
   String profileTowns(int count) {
@@ -4270,35 +4276,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String worldCountriesLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'страны',
-      many: 'стран',
-      few: 'страны',
-      one: 'страна',
-    );
-    return '$_temp0';
-  }
-
-  @override
   String get worldNote =>
       'Штампы получают капсулы, созданные после этого обновления.';
 
   @override
   String get worldTitle => 'Паспорт';
-
-  @override
-  String worldTownsLabel(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'города',
-      many: 'городов',
-      few: 'города',
-      one: 'город',
-    );
-    return '$_temp0';
-  }
 }

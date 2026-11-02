@@ -13,13 +13,10 @@ import '../../core/theme/app_text_styles.dart';
 import '../../data/models/social.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/repositories/repositories.dart';
-import '../../shared/motion/app_motion_widgets.dart';
-import '../../shared/styles/box_decorations.dart';
 import '../../shared/widgets/page_header.dart';
 import '../../shared/widgets/v2/card_v2.dart';
 import '../streak/streak_page.dart';
 import 'achievement_catalog.dart';
-import 'achievement_icon.dart';
 import 'achievement_mark.dart';
 import 'achievement_sheet.dart';
 import 'streak_flame.dart';
@@ -93,95 +90,97 @@ class AchievementsBuilder extends StatelessWidget {
   }
 }
 
-/// The profile card: the streak and the unlocked badges, highest first.
+/// The profile's achievements card (Profile v4, Figma 7182:4354): the
+/// streak, five marks (earned ones first, then the closest to earning) and
+/// "All achievements · 7 of 13".
 class AchievementsPanel extends StatelessWidget {
   const AchievementsPanel({super.key, required this.profile});
 
   final UserProfile profile;
 
+  /// Marks shown on the card.
+  static const marks = 5;
+
+  /// The marks to show: earned first (highest level first), then the ones
+  /// with the most progress.
+  static List<AchievementStanding> pick(List<AchievementStanding> all) {
+    final sorted = [...all]
+      ..sort((a, b) {
+        if (a.unlocked != b.unlocked) return a.unlocked ? -1 : 1;
+        if (a.tier != b.tier) return b.tier.compareTo(a.tier);
+        return b.progress.compareTo(a.progress);
+      });
+    return sorted.take(marks).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final palette = context.palette;
-    final streak = profile.stats.streakAt(DateTime.now());
+    final now = DateTime.now();
+    final streak = profile.stats.streakAt(now);
+    final today = profile.stats.extendedToday(now);
+    final own = context.select<SessionController?, bool>(
+      (s) => s?.uid == profile.uid,
+    );
+    void openAll() => Navigator.of(
+      context,
+    ).push(appRoute<void>(AchievementsPage(profile: profile)));
+    Widget divider() =>
+        Divider(height: 1, thickness: 1, indent: 16, color: palette.divider);
     return AchievementsBuilder(
       profile: profile,
       builder: (context, standings) {
-        final unlocked = standings.where((s) => s.unlocked).toList()
-          ..sort((a, b) => b.tier.compareTo(a.tier));
-        return InkWell(
-          borderRadius: BorderRadius.circular(25),
-          onTap: () => Navigator.of(
-            context,
-          ).push(appRoute<void>(AchievementsPage(profile: profile))),
-          child: Ink(
-            decoration: BoxDecorations.whiteCard(context, borderRadius: 25),
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        final earned = standings.where((s) => s.unlocked).length;
+        return CardV2(
+          child: Column(
+            children: [
+              if (FeatureFlags.streaks && (own || streak > 0)) ...[
+                RowV2(
+                  leading: SizedBox.square(
+                    dimension: 28,
+                    child: Center(child: StreakFlame(size: 22, greyed: !today)),
+                  ),
+                  title: streak > 0
+                      ? l10n.achievementsStreakDays(streak)
+                      : l10n.streakNoneTitle,
+                  subtitle: streak == 0
+                      ? l10n.streakStartToday
+                      : today
+                      ? l10n.achievementsStreakTodayDone
+                      : l10n.achievementsStreakKeep,
+                  onTap: own ? () => StreakPage.open(context) : null,
+                ),
+                divider(),
+              ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text(
-                        l10n.achievementsTitle,
-                        style: TextStyle(
-                          fontFamily: kAppFontFamily,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: palette.textPrimary,
+                    for (final s in pick(standings))
+                      Tooltip(
+                        message: s.def.title(l10n),
+                        child: GestureDetector(
+                          onTap: () => AchievementSheet.show(
+                            context,
+                            s,
+                            passportUid: own ? profile.uid : null,
+                          ),
+                          child: AchievementMark(standing: s, size: 46),
                         ),
                       ),
-                    ),
-                    Text(
-                      l10n.achievementsSeeAll,
-                      style: TextStyle(
-                        fontFamily: kAppFontFamily,
-                        color: palette.textSecondary,
-                      ),
-                    ),
                   ],
                 ),
-                if (FeatureFlags.streaks && streak > 0) ...[
-                  const SizedBox(height: 8),
-                  StreakChip(profile: profile),
-                ],
-                const SizedBox(height: 10),
-                if (unlocked.isEmpty)
-                  Text(
-                    l10n.achievementsNoneYet,
-                    style: TextStyle(
-                      fontFamily: kAppFontFamily,
-                      color: palette.textSecondary,
-                    ),
-                  )
-                else
-                  SizedBox(
-                    height: 52,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: unlocked.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 8),
-                      // One after another the first time (on the card's
-                      // colour: a painted cover, no layer).
-                      itemBuilder: (context, i) => AppEnter(
-                        delay: AppStaggerItem.step * i.clamp(0, 6),
-                        background: palette.surface,
-                        child: Tooltip(
-                          message: unlocked[i].def.title(l10n),
-                          child: AchievementIcon(
-                            id: unlocked[i].def.id,
-                            icon: unlocked[i].def.icon,
-                            tier: unlocked[i].tier,
-                            tiers: unlocked[i].def.tiers.length,
-                            size: 52,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+              ),
+              divider(),
+              RowV2(
+                title: l10n.profileAllAchievements,
+                subtitle: earned == 0 ? l10n.achievementsNoneYet : null,
+                value: l10n.achievementsCount(earned, standings.length),
+                onTap: openAll,
+              ),
+            ],
           ),
         );
       },

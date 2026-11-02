@@ -455,7 +455,9 @@ void main() {
     expect(find.byType(UserStamp), findsNWidgets(4));
     expect(find.byType(UserRoundAvatar), findsNothing);
     expect(find.text('Dave'), findsOneWidget);
-    await tester.tap(find.byTooltip('Choose pinned friends'));
+    // Four friends, five places: the dashed Pin slot opens the sheet.
+    expect(find.text('My friends'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Choose pinned friends'));
     await tester.pumpAndSettle();
     expect(find.text('Pin to your profile'), findsOneWidget);
     expect(find.text('1 of 3 pinned'), findsOneWidget);

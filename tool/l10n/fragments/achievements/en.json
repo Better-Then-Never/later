@@ -1,7 +1,6 @@
 {
   "achievementsTitle": "Achievements",
   "achievementsDescription": "Unlocked by using Later, never by paying",
-  "achievementsSeeAll": "See all",
   "achievementsNoneYet": "Your first one is a capsule away.",
   "achievementsTier": "Level {tier} of {tiers}",
   "@achievementsTier": {

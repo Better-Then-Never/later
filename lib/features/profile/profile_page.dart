@@ -5,6 +5,9 @@ import 'package:later/features/profile/postcard/profile_postcard.dart';
 import 'package:later/features/profile/widgets/profile_capsules_card.dart';
 import 'package:later/features/profile/widgets/profile_friends_card.dart';
 import 'package:later/features/profile/widgets/profile_page_add_friends_button.dart';
+import 'package:later/features/profile/widgets/profile_places_card.dart';
+import 'package:later/core/l10n/l10n.dart';
+import 'package:later/shared/widgets/v2/card_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:later/app/session/session_controller.dart';
 import 'package:later/app/shell/navbar_widget.dart';
@@ -40,6 +43,7 @@ class _ProfilePageState extends State<ProfilePage>
       (s) => s.profile,
     );
     final uid = context.read<SessionController>().uid!;
+    final l10n = context.l10n;
 
     return PostcardScaffold(
       postcard: (context, open) => OwnPostcard(open: open),
@@ -56,10 +60,13 @@ class _ProfilePageState extends State<ProfilePage>
       ),
       buttons: const PostcardButtons(),
       bottomPadding: NavbarWidget.coveredHeight(context) + 16,
+      // Under the postcard, the Profile v2 body (Figma 7182:4354): a titled
+      // section each for capsules, friends, places and achievements.
       body: [
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
+        SectionTitleV2(l10n.profileMyCapsules),
         const ProfileCapsulesCard(),
-        const SizedBox(height: 12),
+        SectionTitleV2(l10n.profileFriendsSection),
         ProfilePageAddFriendsButton(currentUserUid: uid),
         const SizedBox(height: 8),
         ChangeNotifierProvider(
@@ -71,8 +78,10 @@ class _ProfilePageState extends State<ProfilePage>
           ),
           child: const ProfileFriendsCard(),
         ),
+        SectionTitleV2(l10n.profilePlacesSection),
+        const ProfilePlacesCard(),
         if (FeatureFlags.achievements && profile != null) ...[
-          const SizedBox(height: 16),
+          SectionTitleV2(l10n.achievementsTitle),
           AchievementsPanel(profile: profile),
         ],
       ],
