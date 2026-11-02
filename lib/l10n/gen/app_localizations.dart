@@ -3782,23 +3782,59 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} notification deleted} other{{count} notifications deleted}}'**
   String notificationsDeleted(int count);
 
+  /// Label above the notifications older than today (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get notificationsEarlier;
+
   /// No description provided for @notificationsEmptyAll.
   ///
   /// In en, this message translates to:
   /// **'Your notifications and activity will appear here'**
   String get notificationsEmptyAll;
 
-  /// No description provided for @notificationsEmptyComments.
+  /// Empty state of the Capsules filter on the notifications page.
   ///
   /// In en, this message translates to:
-  /// **'Comments on your Capsules will appear here'**
-  String get notificationsEmptyComments;
+  /// **'Reactions, comments and opened capsules will appear here'**
+  String get notificationsEmptyCapsules;
 
-  /// No description provided for @notificationsEmptyReplies.
+  /// Empty state of the Friends filter on the notifications page.
   ///
   /// In en, this message translates to:
-  /// **'Replies to your messages will appear here'**
-  String get notificationsEmptyReplies;
+  /// **'New followers and friends will appear here'**
+  String get notificationsEmptyFriends;
+
+  /// Empty state of the Places filter on the notifications page.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules waiting for you at their places will appear here'**
+  String get notificationsEmptyPlaces;
+
+  /// Filter pill on the notifications page: new capsules, reactions, comments, opened capsules. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Capsules'**
+  String get notificationsFilterCapsules;
+
+  /// Filter pill on the notifications page: followers, friend requests and new friends. Pills sit side by side: keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends'**
+  String get notificationsFilterFriends;
+
+  /// Filter pill on the notifications page: capsules waiting at their places. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Places'**
+  String get notificationsFilterPlaces;
+
+  /// Small button on a "started following you" notification: follow that person too. Keep it short.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow back'**
+  String get notificationsFollowBack;
 
   /// Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.
   ///
@@ -3817,6 +3853,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} wants to be your friend'**
   String notificationsFriendRequestBody(String name);
+
+  /// Bold title of the card on top of the notifications page that leads to the waiting friend requests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} friend request} other{{count} friend requests}}'**
+  String notificationsFriendRequests(int count);
 
   /// Label of an announcement in the notifications list.
   ///
@@ -3884,6 +3926,18 @@ abstract class AppLocalizations {
   /// **'{name} replied: {text}'**
   String notificationsReplyBodyWithText(String name, String text);
 
+  /// Under the friend requests card's title when more than two people asked: the first two first names and how many others.
+  ///
+  /// In en, this message translates to:
+  /// **'{first}, {second} and {count} more'**
+  String notificationsRequestNamesMore(String first, String second, int count);
+
+  /// Under the friend requests card's title: the two people who asked (full names).
+  ///
+  /// In en, this message translates to:
+  /// **'{first} and {second}'**
+  String notificationsRequestNamesTwo(String first, String second);
+
   /// Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.
   ///
   /// In en, this message translates to:
@@ -3908,23 +3962,17 @@ abstract class AppLocalizations {
   /// **'All'**
   String get notificationsTabAll;
 
-  /// Filter tab (and title of its empty state): comments on the user's capsules. Keep it short.
-  ///
-  /// In en, this message translates to:
-  /// **'Comments'**
-  String get notificationsTabComments;
-
-  /// Filter tab (and title of its empty state): replies. Keep it short.
-  ///
-  /// In en, this message translates to:
-  /// **'Replies'**
-  String get notificationsTabReplies;
-
   /// Title of the notifications page and of its empty state.
   ///
   /// In en, this message translates to:
   /// **'Notifications'**
   String get notificationsTitle;
+
+  /// Label above today's notifications (shown in capitals).
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get notificationsToday;
 
   /// No description provided for @notificationsTypeAchievement.
   ///

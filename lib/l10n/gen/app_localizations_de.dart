@@ -2317,16 +2317,35 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get notificationsEarlier => 'Früher';
+
+  @override
   String get notificationsEmptyAll =>
       'Hier erscheinen deine Benachrichtigungen und Aktivitäten';
 
   @override
-  String get notificationsEmptyComments =>
-      'Hier erscheinen Kommentare zu deinen Kapseln';
+  String get notificationsEmptyCapsules =>
+      'Reaktionen, Kommentare und geöffnete Kapseln erscheinen hier';
 
   @override
-  String get notificationsEmptyReplies =>
-      'Hier erscheinen Antworten auf deine Nachrichten';
+  String get notificationsEmptyFriends =>
+      'Neue Follower und Freunde erscheinen hier';
+
+  @override
+  String get notificationsEmptyPlaces =>
+      'Kapseln, die an ihren Orten auf dich warten, erscheinen hier';
+
+  @override
+  String get notificationsFilterCapsules => 'Kapseln';
+
+  @override
+  String get notificationsFilterFriends => 'Freunde';
+
+  @override
+  String get notificationsFilterPlaces => 'Orte';
+
+  @override
+  String get notificationsFollowBack => 'Zurückfolgen';
 
   @override
   String notificationsFollowBody(String name) {
@@ -2341,6 +2360,17 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String notificationsFriendRequestBody(String name) {
     return '$name möchte mit dir befreundet sein';
+  }
+
+  @override
+  String notificationsFriendRequests(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Freundschaftsanfragen',
+      one: '$count Freundschaftsanfrage',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -2409,6 +2439,16 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String notificationsRequestNamesMore(String first, String second, int count) {
+    return '$first, $second und $count weitere';
+  }
+
+  @override
+  String notificationsRequestNamesTwo(String first, String second) {
+    return '$first und $second';
+  }
+
+  @override
   String notificationsSelectedCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -2429,13 +2469,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get notificationsTabAll => 'Alle';
 
   @override
-  String get notificationsTabComments => 'Kommentare';
-
-  @override
-  String get notificationsTabReplies => 'Antworten';
-
-  @override
   String get notificationsTitle => 'Benachrichtigungen';
+
+  @override
+  String get notificationsToday => 'Heute';
 
   @override
   String get notificationsTypeAchievement => 'Erfolg';

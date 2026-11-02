@@ -90,7 +90,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('days, newest first, with the team\'s announcements', (
+  testWidgets('today and earlier, newest first, with the team\'s news', (
     tester,
   ) async {
     final now = DateTime.now();
@@ -107,13 +107,18 @@ void main() {
       ),
     ];
     await pump(tester);
-    expect(find.text('Today'), findsOneWidget);
-    expect(find.text('Yesterday'), findsOneWidget);
+    // Profile v4: two groups instead of a header per day.
+    expect(find.text('TODAY'), findsOneWidget);
+    expect(find.text('EARLIER'), findsOneWidget);
     expect(find.text('From the Later team'), findsOneWidget);
     expect(find.text('New maps'), findsOneWidget);
-    final today = tester.getTopLeft(find.text('Today')).dy;
-    final yesterday = tester.getTopLeft(find.text('Yesterday')).dy;
-    expect(today, lessThan(yesterday));
+    final today = tester.getTopLeft(find.text('TODAY')).dy;
+    final earlier = tester.getTopLeft(find.text('EARLIER')).dy;
+    expect(today, lessThan(earlier));
+    // Yesterday's news comes before the older notification, both Earlier.
+    final news = tester.getTopLeft(find.text('New maps')).dy;
+    expect(news, greaterThan(earlier));
+    expect(news, lessThan(tester.getTopLeft(find.text('3d ago')).dy));
   });
 
   testWidgets('News off: no announcements', (tester) async {

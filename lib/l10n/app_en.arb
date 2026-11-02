@@ -2356,9 +2356,39 @@
       }
     }
   },
+  "notificationsEarlier": "Earlier",
+  "@notificationsEarlier": {
+    "description": "Label above the notifications older than today (shown in capitals)."
+  },
   "notificationsEmptyAll": "Your notifications and activity will appear here",
-  "notificationsEmptyComments": "Comments on your Capsules will appear here",
-  "notificationsEmptyReplies": "Replies to your messages will appear here",
+  "notificationsEmptyCapsules": "Reactions, comments and opened capsules will appear here",
+  "@notificationsEmptyCapsules": {
+    "description": "Empty state of the Capsules filter on the notifications page."
+  },
+  "notificationsEmptyFriends": "New followers and friends will appear here",
+  "@notificationsEmptyFriends": {
+    "description": "Empty state of the Friends filter on the notifications page."
+  },
+  "notificationsEmptyPlaces": "Capsules waiting for you at their places will appear here",
+  "@notificationsEmptyPlaces": {
+    "description": "Empty state of the Places filter on the notifications page."
+  },
+  "notificationsFilterCapsules": "Capsules",
+  "@notificationsFilterCapsules": {
+    "description": "Filter pill on the notifications page: new capsules, reactions, comments, opened capsules. Keep it short."
+  },
+  "notificationsFilterFriends": "Friends",
+  "@notificationsFilterFriends": {
+    "description": "Filter pill on the notifications page: followers, friend requests and new friends. Pills sit side by side: keep it short."
+  },
+  "notificationsFilterPlaces": "Places",
+  "@notificationsFilterPlaces": {
+    "description": "Filter pill on the notifications page: capsules waiting at their places. Keep it short."
+  },
+  "notificationsFollowBack": "Follow back",
+  "@notificationsFollowBack": {
+    "description": "Small button on a \"started following you\" notification: follow that person too. Keep it short."
+  },
   "notificationsFollowBody": "{name} started following you",
   "@notificationsFollowBody": {
     "description": "Notification text; the name is shown in bold. The name cannot be inflected: phrase it so the name stays in its base form.",
@@ -2382,6 +2412,15 @@
     "placeholders": {
       "name": {
         "type": "String"
+      }
+    }
+  },
+  "notificationsFriendRequests": "{count, plural, one{{count} friend request} other{{count} friend requests}}",
+  "@notificationsFriendRequests": {
+    "description": "Bold title of the card on top of the notifications page that leads to the waiting friend requests.",
+    "placeholders": {
+      "count": {
+        "type": "int"
       }
     }
   },
@@ -2473,6 +2512,33 @@
       }
     }
   },
+  "notificationsRequestNamesMore": "{first}, {second} and {count} more",
+  "@notificationsRequestNamesMore": {
+    "description": "Under the friend requests card's title when more than two people asked: the first two first names and how many others.",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsRequestNamesTwo": "{first} and {second}",
+  "@notificationsRequestNamesTwo": {
+    "description": "Under the friend requests card's title: the two people who asked (full names).",
+    "placeholders": {
+      "first": {
+        "type": "String"
+      },
+      "second": {
+        "type": "String"
+      }
+    }
+  },
   "notificationsSelectedCount": "{count, plural, one{{count} selected} other{{count} selected}}",
   "@notificationsSelectedCount": {
     "description": "Selection bar: how many notifications are selected. Starts with the number, which is shown large and bold.",
@@ -2494,17 +2560,13 @@
   "@notificationsTabAll": {
     "description": "Filter tab: every notification. Tabs sit side by side: keep them short."
   },
-  "notificationsTabComments": "Comments",
-  "@notificationsTabComments": {
-    "description": "Filter tab (and title of its empty state): comments on the user's capsules. Keep it short."
-  },
-  "notificationsTabReplies": "Replies",
-  "@notificationsTabReplies": {
-    "description": "Filter tab (and title of its empty state): replies. Keep it short."
-  },
   "notificationsTitle": "Notifications",
   "@notificationsTitle": {
     "description": "Title of the notifications page and of its empty state."
+  },
+  "notificationsToday": "Today",
+  "@notificationsToday": {
+    "description": "Label above today's notifications (shown in capitals)."
   },
   "notificationsTypeAchievement": "Achievement",
   "notificationsTypeCapsule": "New Capsule",
